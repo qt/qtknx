@@ -1,0 +1,34 @@
+include($QT_INSTALL_DOCS/global/qt-module-defaults.qdocconf)
+
+project                 = QtKnx
+description             = Qt KNX Reference Documentation
+version                 = $QT_VERSION
+
+qhp.projects            = QtKnx
+
+qhp.QtKnx.file                = qtknx.qhp
+qhp.QtKnx.namespace           = org.qt-project.qtknx.$QT_VERSION_TAG
+qhp.QtKnx.virtualFolder       = qtknx
+qhp.QtKnx.indexTitle          = Qt KNX
+qhp.QtKnx.indexRoot           =
+
+qhp.QtKnx.filterAttributes    = qtknx $QT_VERSION qtrefdoc
+qhp.QtKnx.customFilters.Qt.name = QtKnx $QT_VERSION
+qhp.QtKnx.customFilters.Qt.filterAttributes = qtknx $QT_VERSION
+
+qhp.QtKnx.subprojects         = classes
+
+qhp.QtKnx.subprojects.classes.title = C++ Classes
+qhp.QtKnx.subprojects.classes.indexTitle = Qt KNX C++ Classes
+qhp.QtKnx.subprojects.classes.selectors = class fake:headerfile
+qhp.QtKnx.subprojects.classes.sortPages = true
+
+headerdirs  += ..
+sourcedirs  += ..
+imagedirs   += images
+excludedirs += ../qt4support
+
+depends += qtcore qtdoc qtnetwork qmake
+
+navigation.landingpage = "Qt KNX"
+navigation.cppclassespage = "Qt KNX C++ Classes"
