@@ -673,16 +673,16 @@ private slots:
         QCOMPARE(address.rawData<QVector<quint8>>(), (QVector<quint8> { 0x01, 0xff }));
     }
 
-    void testIsRouter()
+    void testIndividualIsCouplerOrRouter()
     {
         QKnxAddress address = QKnxAddress::Group::Broadcast;
-        QCOMPARE(address.isRouter(), false);
+        QCOMPARE(address.isCouplerOrRouter(), false);
 
         address = { QKnxAddress::Type::Individual, 0xffff };
-        QCOMPARE(address.isRouter(), false);
+        QCOMPARE(address.isCouplerOrRouter(), false);
 
         address = { QKnxAddress::Type::Individual, 0x0100 };
-        QCOMPARE(address.isRouter(), true);
+        QCOMPARE(address.isCouplerOrRouter(), true);
     }
 
     void testDebugStream()

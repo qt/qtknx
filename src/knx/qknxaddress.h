@@ -40,13 +40,13 @@ public:
     static QKnxAddress createGroup(quint8 mainGroup, quint16 subGroup);
     static QKnxAddress createGroup(quint8 mainGroup, quint8 middleGroup, quint8 subGroup);
 
-    static QKnxAddress createIndividual(quint8 area, quint8 line, quint8 busDevice);
+    static QKnxAddress createIndividual(quint8 area, quint8 line, quint8 sequentialNumber);
 
     bool isValid() const;
     bool isBroadcast() const;
 
-    bool isRouter() const;
     bool isUnregistered() const;
+    bool isCouplerOrRouter() const;
 
     struct Q_KNX_EXPORT Group { static QKnxAddress Broadcast; };
     struct Q_KNX_EXPORT Individual { static QKnxAddress Null; };

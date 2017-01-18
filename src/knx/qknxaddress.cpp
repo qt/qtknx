@@ -40,7 +40,7 @@ QT_BEGIN_NAMESPACE
     \value ThreeLevel   The visual representation for \l Group addresses will
                         be main, middle and sub group separated by a forward
                         slash, while \l Individual addresses will be formated
-                        as area, line and bus device separated by a dot.
+                        as area, line and sequential number separated by a dot.
 
     \note Only \l Group addresses support 2-level notation as of now.
 */
@@ -109,7 +109,7 @@ QKnxAddress::QKnxAddress(QKnxAddress::Type type, quint16 address)
 
     \note For \l Individual address 3-level notation, the value of area should
     be in the range \c 0 to \c 15, the value of line in the range \c 0 to \c 15
-    and the bus device value in the range \c 0 to \c 255.
+    and the sequential number value in the range \c 0 to \c 255.
 */
 QKnxAddress::QKnxAddress(QKnxAddress::Type type, const QString &address)
 {
@@ -212,13 +212,13 @@ QKnxAddress QKnxAddress::createGroup(quint8 mainGroup, quint8 middleGroup, quint
 /*!
     Creates a KNX \l Individual address from the 3-level notation. The value of
     \a area should be in the range \c 0 to \c 15, the value of \a line in the
-    range \c 0 to \c 15 and the \a busDevice value in the range \c 0 to \c 255.
-    Hexadecimal, octal and decimal notation are supported.
+    range \c 0 to \c 15 and the \a sequentialNumber value in the range \c 0 to
+    \c 255. Hexadecimal, octal and decimal notation are supported.
 */
-QKnxAddress QKnxAddress::createIndividual(quint8 area, quint8 line, quint8 busDevice)
+QKnxAddress QKnxAddress::createIndividual(quint8 area, quint8 line, quint8 sequentialNumber)
 {
     return QKnxAddress(QKnxAddress::Type::Individual, area, reinterpret_cast<quint16*> (&line),
-        busDevice);
+        sequentialNumber);
 }
 
 /*!
@@ -250,16 +250,22 @@ QKnxAddress QKnxAddress::Individual::Null = { QKnxAddress::Type::Individual, 0x0
 
 /*!
     Returns \c true if this is a valid \l Individual KNX address object and the
-    device address is set to \c 0x00; \c false otherwise.
+    devices sequential number is set to \c 0x00; \c false otherwise.
+
+    Area and line couplers, as well as KNXnet/IP routers (routing) are given
+    the sequential number \c 0x00.
+
+    Example: Individual Address 1.5.0 - KNXnet/IP router acting as a line
+    coupler, coupling the fifth line with the main line in the first area.
 */
-bool QKnxAddress::isRouter() const
+bool QKnxAddress::isCouplerOrRouter() const
 {
     return (m_type == QKnxAddress::Type::Individual) && (quint8(m_address) == 0x00);
 }
 
 /*!
     Returns \c true if this is a valid \l Individual KNX address object and the
-    device address is set to \c 0xff; \c false otherwise.
+    devices sequential number is set to \c 0xff; \c false otherwise.
 */
 bool QKnxAddress::isUnregistered() const
 {
