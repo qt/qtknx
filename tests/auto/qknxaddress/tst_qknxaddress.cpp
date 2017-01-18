@@ -642,6 +642,26 @@ private slots:
         QCOMPARE(address.rawData<QVector<quint8>>(), (QVector<quint8> { 0x00, 0x00 }));
     }
 
+    void testIndividualNull()
+    {
+        auto address = QKnxAddress::Individual::Null;
+        QCOMPARE(address.type(), QKnxAddress::Type::Individual);
+        QCOMPARE(address.notation(), QKnxAddress::Notation::ThreeLevel);
+        QCOMPARE(address.isValid(), true);
+        QCOMPARE(address.isBroadcast(), false);
+        QCOMPARE(address.isUnregistered(), false);
+        QCOMPARE(address.toString(), QStringLiteral("0.0.0"));
+        QCOMPARE(address.rawData<QVector<quint8>>(), (QVector<quint8> { 0x00, 0x00 }));
+
+        address = { QKnxAddress::Type::Individual, 0x0000 };
+        QCOMPARE(address.type(), QKnxAddress::Type::Individual);
+        QCOMPARE(address.notation(), QKnxAddress::Notation::ThreeLevel);
+        QCOMPARE(address.isValid(), true);
+        QCOMPARE(address.isBroadcast(), false);
+        QCOMPARE(address.toString(), QStringLiteral("0.0.0"));
+        QCOMPARE(address.rawData<QVector<quint8>>(), (QVector<quint8> { 0x00, 0x00 }));
+    }
+
     void testIndividualUnregistered()
     {
         QKnxAddress address = { QKnxAddress::Type::Individual, 0x01ff };

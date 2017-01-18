@@ -234,11 +234,19 @@ bool QKnxAddress::isBroadcast() const
     \relates QKnxAddress
     \variable QKnxAddress::Group::Broadcast
 
-    Represents single KNX \l Group address with value \c 0x0000 that is
-    exclusively reserved for the broadcast address that shall be exclusively
-    used in broadcast communication mode.
+    Represents a single KNX \l Group address with value \c 0x0000 that is
+    reserved for the broadcast address that shall be exclusively used in
+    broadcast communication mode.
 */
 QKnxAddress QKnxAddress::Group::Broadcast = { QKnxAddress::Type::Group, 0x0000 };
+
+/*!
+    \relates QKnxAddress
+    \variable QKnxAddress::Individual::Null
+
+    Represents a single KNX \l Individual address with value \c 0x0000.
+*/
+QKnxAddress QKnxAddress::Individual::Null = { QKnxAddress::Type::Individual, 0x0000 };
 
 /*!
     Returns \c true if this is a valid \l Individual KNX address object and the

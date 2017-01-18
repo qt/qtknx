@@ -48,6 +48,9 @@ public:
     bool isRouter() const;
     bool isUnregistered() const;
 
+    struct Q_KNX_EXPORT Group { static QKnxAddress Broadcast; };
+    struct Q_KNX_EXPORT Individual { static QKnxAddress Null; };
+
     QString toString() const;
     template <typename T> auto rawData() const -> decltype(T())
     {
@@ -59,8 +62,6 @@ public:
         T t(2, Qt::Uninitialized); t[0] = quint8(m_address >> 8), t[1] = quint8(m_address);
         return t;
     }
-
-    struct Q_KNX_EXPORT Group { static QKnxAddress Broadcast; };
 
 private:
     QKnxAddress(QKnxAddress::Type type, quint16 sec1, quint16 *sec2, quint16 sec3);
