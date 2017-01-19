@@ -8,7 +8,8 @@ QMAKE_DOCS = $$PWD/doc/qtknx.qdocconf
 PUBLIC_HEADERS += \
     qknxglobal.h \
     qknxaddress.h \
-    qknxadditionalinfo.h
+    qknxadditionalinfo.h \
+    qknxtypecheck
 
 PRIVATE_HEADERS +=
 
