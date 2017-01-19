@@ -13,6 +13,7 @@
 #include <QtCore/qstring.h>
 #include <QtCore/qvector.h>
 #include <QtKnx/qknxglobal.h>
+#include <QtKnx/qknxtypecheck.h>
 
 QT_BEGIN_NAMESPACE
 
@@ -54,10 +55,8 @@ public:
     QString toString() const;
     template <typename T> auto rawData() const -> decltype(T())
     {
-        static_assert(IsType<T, QByteArray, QVector<quint8>>::value,
-            "Only QByteArray or QVector<quint8> are supported as return type.");
-
-        if (m_type != QKnxAddress::Type::Group && m_type != QKnxAddress::Type::Individual)
+        QKnxTypeCheck::FailIfNotQByteArrayQVectorUint8Type<T>();
+        if (!isValid())
             return {};
         T t(2, Qt::Uninitialized); t[0] = quint8(m_address >> 8), t[1] = quint8(m_address);
         return t;
@@ -69,15 +68,6 @@ private:
 #ifdef Q_QDOC
 public: template <typename T> auto rawData() const; private:
 #endif
-    template <typename T, typename ... Ts> struct IsType
-    {
-        enum { value = false };
-    };
-    template <typename T, typename T1, typename ... Ts> struct IsType<T, T1, Ts...>
-    {
-        enum { value = std::is_same<T, T1>::value || IsType<T, Ts...>::value };
-    };
-
 private:
     qint32 m_address = -1;
     QKnxAddress::Type m_type = static_cast<QKnxAddress::Type>(0xff);
