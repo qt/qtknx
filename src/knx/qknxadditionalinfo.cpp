@@ -7,23 +7,9 @@
 
 #include "qknxadditionalinfo.h"
 
-QT_BEGIN_NAMESPACE
+#include <array>
 
-struct {
-    QKnxAdditionalInfo::Type type;
-    qint32 expectedDataSize;
-} gTypeSizeTable[] = {
-    { QKnxAdditionalInfo::Type::Reserved, -1 },
-    { QKnxAdditionalInfo::Type::PlMediumInformation, 2 },
-    { QKnxAdditionalInfo::Type::RfMediumInformation, 8 },
-    { QKnxAdditionalInfo::Type::BusmonitorStatusInfo, 1 },
-    { QKnxAdditionalInfo::Type::TimestampRelative, 2 },
-    { QKnxAdditionalInfo::Type::TimeDelayUntilSending, 4 },
-    { QKnxAdditionalInfo::Type::ExtendedRelativeTimestamp, 4 },
-    { QKnxAdditionalInfo::Type::BiBatInformation, 2 },
-    { QKnxAdditionalInfo::Type::RfMultiInformation, 4 },
-    { QKnxAdditionalInfo::Type::PreambleAndPostamble, 3 }
-};
+QT_BEGIN_NAMESPACE
 
 /*!
     \class QKnxAdditionalInfo
@@ -60,7 +46,7 @@ struct {
 */
 
 /*!
-    Returns the additional info type.
+    Returns the additional info \l Type.
 */
 QKnxAdditionalInfo::Type QKnxAdditionalInfo::type() const
 {
@@ -74,7 +60,20 @@ QKnxAdditionalInfo::Type QKnxAdditionalInfo::type() const
 */
 
 /*!
-    Constructs an new additional info object and sets its type to \a type and
+    Constructs an new additional info object and sets its \l Type to \a type and
+    data to \a data.
+*/
+QKnxAdditionalInfo::QKnxAdditionalInfo(QKnxAdditionalInfo::Type type, const QByteArray &data)
+{
+    if (isValid(type, data)) {
+        m_type = type;
+        m_data.resize(data.size());
+        std::copy(data.constBegin(), data.constEnd(), m_data.begin());
+    }
+}
+
+/*!
+    Constructs an new additional info object and sets its \l Type to \a type and
     data to \a data.
 */
 QKnxAdditionalInfo::QKnxAdditionalInfo(QKnxAdditionalInfo::Type type, const QVector<quint8> &data)
@@ -97,41 +96,22 @@ bool QKnxAdditionalInfo::isValid() const
 }
 
 /*!
+    \fn bool QKnxAdditionalInfo::isValid(QKnxAdditionalInfo::Type type, const T &data)
+
     Returns \c true if \a type is one of the know enumeration in \l Type and
     \a data has the expected length for \a type.
 
+    \note The Additional Information field included in a cEMI message cannot
+    contain a value larger then 254, value 255 is reserved for future extension.
+    So the maximum valid data size cannot exceed 252 bytes, the two remaining
+    bytes are reserved for the \l Type and length information.
+
     \sa expectedDataSize()
 */
-bool QKnxAdditionalInfo::isValid(QKnxAdditionalInfo::Type type, const QVector<quint8> &data)
-{
-    const int size = data.size();
-    if (size > 252)
-        return false;
-
-    switch (type) {
-    case QKnxAdditionalInfo::Type::PlMediumInformation:
-    case QKnxAdditionalInfo::Type::RfMediumInformation:
-    case QKnxAdditionalInfo::Type::BusmonitorStatusInfo:
-    case QKnxAdditionalInfo::Type::TimestampRelative:
-    case QKnxAdditionalInfo::Type::TimeDelayUntilSending:
-    case QKnxAdditionalInfo::Type::ExtendedRelativeTimestamp:
-    case QKnxAdditionalInfo::Type::BiBatInformation:
-    case QKnxAdditionalInfo::Type::RfMultiInformation:
-    case QKnxAdditionalInfo::Type::PreambleAndPostamble:
-        return size == expectedDataSize(type);
-    case QKnxAdditionalInfo::Type::RfFastAckInformation:
-        return (size >= expectedDataSize(type)) && ((size % 2) == 0);
-    case QKnxAdditionalInfo::Type::ManufactorSpecificData:
-        return size >= expectedDataSize(type);
-    default:
-        break;
-    }
-    return false;
-}
 
 /*!
     Returns the number of bytes representing the additional info, including the
-    byte for type id and the byte for length information.
+    byte for \l Type id and the byte for length information.
 */
 qint32 QKnxAdditionalInfo::size() const
 {
@@ -142,7 +122,7 @@ qint32 QKnxAdditionalInfo::size() const
 
 /*!
     Returns the number of bytes representing the additional info, excluding the
-    byte for type id and the byte for length information.
+    byte for \l Type id and the byte for length information.
 */
 qint32 QKnxAdditionalInfo::dataSize() const
 {
@@ -150,10 +130,10 @@ qint32 QKnxAdditionalInfo::dataSize() const
 }
 
 /*!
-    Returns the number of expected bytes for \a type. The additional \c bool
-    parameter \a isFixedSize is set to \c true if the \a type expects a fixed
-    size of bytes; otherwise to false. If the ype is unknown, the function will
-    return a negative value.
+    Returns the number of expected bytes for \l Type id \a type. The additional
+    \c bool parameter \a isFixedSize is set to \c true if the \a type expects
+    a fixed size of bytes; otherwise to false. If the \a type is unknown, the
+    function will return a negative value.
 
     Know types of variable size are:
     \list
@@ -164,19 +144,24 @@ qint32 QKnxAdditionalInfo::dataSize() const
 */
 qint32 QKnxAdditionalInfo::expectedDataSize(QKnxAdditionalInfo::Type type, bool *isFixedSize)
 {
-    if ((type <= Type::Reserved || type > Type::RfFastAckInformation)
-        && (type < Type::ManufactorSpecificData || type >= Type::EscCode)) {
-        return -1;
-    }
-
+    static const std::array<int, 0x100> table = []() {
+        std::array<int, 0x100> table; table.fill(-1);
+        table[int(QKnxAdditionalInfo::Type::PlMediumInformation)] = 2;
+        table[int(QKnxAdditionalInfo::Type::RfMediumInformation)] = 8;
+        table[int(QKnxAdditionalInfo::Type::BusmonitorStatusInfo)] = 1;
+        table[int(QKnxAdditionalInfo::Type::TimestampRelative)] = 2;
+        table[int(QKnxAdditionalInfo::Type::TimeDelayUntilSending)] = 4;
+        table[int(QKnxAdditionalInfo::Type::ExtendedRelativeTimestamp)] = 4;
+        table[int(QKnxAdditionalInfo::Type::BiBatInformation)] = 2;
+        table[int(QKnxAdditionalInfo::Type::RfMultiInformation)] = 4;
+        table[int(QKnxAdditionalInfo::Type::PreambleAndPostamble)] = 3;
+        table[int(QKnxAdditionalInfo::Type::RfFastAckInformation)] = 2;
+        table[int(QKnxAdditionalInfo::Type::ManufactorSpecificData)] = 3;
+        return table;
+    }();
     if (isFixedSize)
         *isFixedSize = (type < QKnxAdditionalInfo::Type::RfFastAckInformation);
-
-    if (type == QKnxAdditionalInfo::Type::RfFastAckInformation)
-        return 2;
-    if (type == QKnxAdditionalInfo::Type::ManufactorSpecificData)
-        return 3;
-    return gTypeSizeTable[static_cast<quint8> (type)].expectedDataSize;
+    return table[int(type)];
 }
 
 /*!
@@ -200,16 +185,14 @@ QString QKnxAdditionalInfo::toString() const
 }
 
 /*!
+    \fn auto QKnxAdditionalInfo::rawData() const
+
     Returns the additional info as vector of bytes if the information is valid;
     otherwise an empty vector. The vector includes the type id, the size of the
     actual data and the data itself.
+
+    \note Only QByteArray and QVector<quint8> are supported as return type.
 */
-QVector<quint8> QKnxAdditionalInfo::rawData() const
-{
-    if (!isValid())
-        return QVector<quint8>();
-    return QVector<quint8>{ quint8(m_type), quint8(m_data.size()) } + m_data;
-}
 
 /*!
     \relates QKnxAdditionalInfo
@@ -222,7 +205,7 @@ QDebug operator<<(QDebug debug, const QKnxAdditionalInfo &info)
     if (info.isValid()) {
         QDebug &dbg = debug.nospace().noquote() << "0x" << hex << qSetFieldWidth(2)
             << qSetPadChar('0');
-        foreach (quint8 byte, info.rawData())
+        foreach (quint8 byte, info.rawData<QVector<quint8>>())
             dbg << byte;
     } else {
          debug.nospace().noquote() << "0x1nv4l1d";
@@ -238,7 +221,13 @@ QDebug operator<<(QDebug debug, const QKnxAdditionalInfo &info)
 */
 QDataStream &operator>>(QDataStream &stream, QKnxAdditionalInfo &info)
 {
-    return stream >> reinterpret_cast<quint8&> (info.m_type) >> info.m_data;
+    quint8 type, size;
+    stream >> type >> size;
+
+    QByteArray ba(size, Qt::Uninitialized);
+    stream.readRawData(ba.data(), size);
+    info = QKnxAdditionalInfo(QKnxAdditionalInfo::Type(type), ba);
+    return stream;
 }
 
 /*!
@@ -249,7 +238,11 @@ QDataStream &operator>>(QDataStream &stream, QKnxAdditionalInfo &info)
 */
 QDataStream &operator<<(QDataStream &stream, const QKnxAdditionalInfo &info)
 {
-    return stream << static_cast<quint8> (info.m_type) << info.m_data;
+    if (!info.isValid())
+        return stream;
+    for (quint8 byte : info.rawData<QByteArray>())
+        stream << static_cast<quint8> (byte);
+    return stream;
 }
 
 QT_END_NAMESPACE
