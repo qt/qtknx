@@ -315,7 +315,7 @@ QString QKnxAddress::toString() const
     otherwise the return value is empty. Only the first two bytes of the return
     value are part of the address.
 
-    /note Only QByteArray and QVector<quint8> are supported as return type.
+    \note Only QByteArray and QVector<quint8> are supported as return type.
 */
 
 /*!
