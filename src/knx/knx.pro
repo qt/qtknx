@@ -9,13 +9,17 @@ PUBLIC_HEADERS += \
     qknxglobal.h \
     qknxaddress.h \
     qknxadditionalinfo.h \
-    qknxtypecheck.h
+    qknxtypecheck.h \
+    qknxcontrolfield1.h \
+    qknxcontrolfield2.h
 
 PRIVATE_HEADERS +=
 
 SOURCES += \
     qknxaddress.cpp \
-    qknxadditionalinfo.cpp
+    qknxadditionalinfo.cpp \
+    qknxcontrolfield1.cpp \
+    qknxcontrolfield2.cpp
 
 HEADERS += $$PUBLIC_HEADERS $$PRIVATE_HEADERS
 
