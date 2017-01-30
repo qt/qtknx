@@ -9,7 +9,7 @@ PUBLIC_HEADERS += \
     qknxglobal.h \
     qknxaddress.h \
     qknxadditionalinfo.h \
-    qknxtypecheck
+    qknxtypecheck.h
 
 PRIVATE_HEADERS +=
 

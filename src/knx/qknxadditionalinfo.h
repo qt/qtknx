@@ -49,7 +49,7 @@ public:
 #ifndef Q_QDOC
     template <typename T> auto rawData() const -> decltype(T())
     {
-        QKnxTypeCheck::FailIfNotQByteArrayQVectorUint8Type<T>();
+        QKnxTypeCheck::FailIfNot<T, QByteArray, QVector<quint8>>();
         if (!isValid())
             return {};
 
@@ -61,7 +61,7 @@ public:
 
     template<typename T> static bool isValid(QKnxAdditionalInfo::Type type, const T &data)
     {
-        QKnxTypeCheck::FailIfNotQByteArrayQVectorUint8Type<T>();
+        QKnxTypeCheck::FailIfNot<T, QByteArray, QVector<quint8>>();
         const int size = data.size();
         if (size > 252)
             return false;

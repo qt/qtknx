@@ -12,10 +12,9 @@ QT_BEGIN_NAMESPACE
 class QKnxTypeCheck
 {
 public:
-    template <typename T> static void FailIfNotQByteArrayQVectorUint8Type()
+    template <typename T, typename ... Args> static void FailIfNot()
     {
-        static_assert(IsType<T, QByteArray, QVector<quint8>>::value,
-            "Only QByteArray or QVector<quint8> are supported as type.");
+        static_assert(IsType<T, Args...>::value, "Unsupported argument type.");
     }
 
 private:
