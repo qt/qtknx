@@ -120,7 +120,7 @@ QKnxAddress::QKnxAddress(QKnxAddress::Type type, const QString &address)
 
     QVector<quint16> sections;
     const auto convert = [&sections](const QVector<QStringRef> &in) -> bool {
-        foreach (const QStringRef &section, in) {
+        for (const QStringRef &section : qAsConst(in)) {
             bool ok = false;
             const quint16 value = section.toUShort(&ok, 0);
             if (!ok)

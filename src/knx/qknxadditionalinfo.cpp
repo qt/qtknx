@@ -175,7 +175,7 @@ QString QKnxAdditionalInfo::toString() const
         return QString();
 
     QString data;
-    foreach (quint8 byte, m_data)
+    for (quint8 byte : qAsConst(m_data))
         data += QStringLiteral("0x%1, ").arg(byte, 2, 16, QLatin1Char('0'));
     data.chop(2);
 
@@ -205,7 +205,8 @@ QDebug operator<<(QDebug debug, const QKnxAdditionalInfo &info)
     if (info.isValid()) {
         QDebug &dbg = debug.nospace().noquote() << "0x" << hex << qSetFieldWidth(2)
             << qSetPadChar('0');
-        foreach (quint8 byte, info.rawData<QVector<quint8>>())
+        const auto rawData = info.rawData<QVector<quint8>>();
+        for (quint8 byte : qAsConst(rawData))
             dbg << byte;
     } else {
          debug.nospace().noquote() << "0x1nv4l1d";
