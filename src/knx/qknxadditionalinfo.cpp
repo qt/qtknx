@@ -187,7 +187,7 @@ QString QKnxAdditionalInfo::toString() const
 /*!
     \fn auto QKnxAdditionalInfo::rawData() const
 
-    Returns the additional info as vector of bytes if the information is valid;
+    Returns the additional info as range of bytes if the information is valid;
     otherwise an empty vector. The vector includes the type id, the size of the
     actual data and the data itself.
 
