@@ -50,7 +50,7 @@ public:
     bool isCouplerOrRouter() const;
 
     struct Q_KNX_EXPORT Group { static QKnxAddress Broadcast; };
-    struct Q_KNX_EXPORT Individual { static QKnxAddress Null; };
+    struct Q_KNX_EXPORT Individual { static QKnxAddress Unregistered; };
 
     QString toString() const;
     template <typename T> auto rawData() const -> decltype(T())

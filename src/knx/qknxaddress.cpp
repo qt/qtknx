@@ -242,11 +242,11 @@ QKnxAddress QKnxAddress::Group::Broadcast = { QKnxAddress::Type::Group, 0x0000 }
 
 /*!
     \relates QKnxAddress
-    \variable QKnxAddress::Individual::Null
+    \variable QKnxAddress::Individual::Unregistered
 
-    Represents a single KNX \l Individual address with value \c 0x0000.
+    Represents a single KNX \l Individual address with value \c 0xffff.
 */
-QKnxAddress QKnxAddress::Individual::Null = { QKnxAddress::Type::Individual, 0x0000 };
+QKnxAddress QKnxAddress::Individual::Unregistered = { QKnxAddress::Type::Individual, 0xffff };
 
 /*!
     Returns \c true if this is a valid \l Individual KNX address object and the
