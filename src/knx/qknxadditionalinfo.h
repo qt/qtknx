@@ -40,25 +40,29 @@ public:
     QKnxAdditionalInfo(QKnxAdditionalInfo::Type type, const QByteArray &data);
     QKnxAdditionalInfo(QKnxAdditionalInfo::Type type, const QVector<quint8> &data);
 
-    bool isValid() const;
-
-    qint32 size() const;
     qint32 dataSize() const;
+    template <typename T> auto data() const -> decltype(T())
+    {
+        QKnxTypeCheck::FailIfNot<T, QByteArray, QVector<quint8>>();
 
-    QString toString() const;
-#ifndef Q_QDOC
+        T t(m_data.size(), Qt::Uninitialized);
+        std::copy(m_data.constBegin(), m_data.constEnd(), t.begin());
+        return t;
+    }
+
+    qint32 rawSize() const;
     template <typename T> auto rawData() const -> decltype(T())
     {
         QKnxTypeCheck::FailIfNot<T, QByteArray, QVector<quint8>>();
         if (!isValid())
             return {};
 
-        T t(m_data.size() + 2, Qt::Uninitialized);
+        T t(2, Qt::Uninitialized);
         t[0] = quint8(m_type), t[1] = quint8(m_data.size());
-        for (int i = 0; i < m_data.size(); ++i) t[i + 2] = quint8(m_data[i]);
-        return t;
+        return t + data<T>();
     }
 
+    bool isValid() const;
     template<typename T> static bool isValid(QKnxAdditionalInfo::Type type, const T &data)
     {
         QKnxTypeCheck::FailIfNot<T, QByteArray, QVector<quint8>>();
@@ -87,11 +91,9 @@ public:
         return false;
     }
     static qint32 expectedDataSize(QKnxAdditionalInfo::Type type, bool *isFixedSize = nullptr);
-#else
-    template <typename T> auto rawData() const;
-    template <typename T> bool isValid(QKnxAdditionalInfo::Type type, const T &data);
-    qint32 expectedDataSize(QKnxAdditionalInfo::Type type, bool *isFixedSize = nullptr);
-#endif
+
+    QString toString() const;
+
 private:
     QVector<quint8> m_data;
     QKnxAdditionalInfo::Type m_type = QKnxAdditionalInfo::Type::EscCode;

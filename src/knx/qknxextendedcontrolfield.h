@@ -42,19 +42,16 @@ public:
     QKnxExtendedControlField::ExtendedFrameFormat format() const;
     void setFormat(QKnxExtendedControlField::ExtendedFrameFormat format);
 
-    QString toString() const;
-    quint8 rawData() const { return quint8(m_ctrl2.to_ulong()); }
-
-#ifndef Q_QDOC
+    quint8 rawSize() const { return 1; }
     template <typename T> auto rawData() const -> decltype(T())
     {
         QKnxTypeCheck::FailIfNot<T, QByteArray, QVector<quint8>>();
         T t(1, Qt::Uninitialized); t[0] = quint8(m_ctrl2.to_ulong());
         return t;
     }
-#else
-    template <typename T> auto rawData() const;
-#endif
+    quint8 rawData() const { return quint8(m_ctrl2.to_ulong()); }
+
+    QString toString() const;
 
 private:
     std::bitset<8> m_ctrl2 = 0;

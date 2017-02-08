@@ -69,19 +69,16 @@ public:
     QKnxControlField::Confirm confirm() const { return static_cast<Confirm> (m_ctrl1[0]); }
     void setConfirm(QKnxControlField::Confirm confirm) { m_ctrl1[0] = static_cast<int> (confirm); }
 
-    QString toString() const;
-    quint8 rawData() const { return quint8(m_ctrl1.to_ulong()); }
-
-#ifndef Q_QDOC
+    quint8 rawSize() const { return 1; }
     template <typename T> auto rawData() const -> decltype(T())
     {
         QKnxTypeCheck::FailIfNot<T, QByteArray, QVector<quint8>>();
         T t(1, Qt::Uninitialized); t[0] = quint8(m_ctrl1.to_ulong());
         return t;
     }
-#else
-    template <typename T> auto rawData() const;
-#endif
+    quint8 rawData() const { return quint8(m_ctrl1.to_ulong()); }
+
+    QString toString() const;
 
 private:
     std::bitset<8> m_ctrl1 = 0;

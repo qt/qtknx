@@ -52,7 +52,7 @@ public:
     struct Q_KNX_EXPORT Group { static QKnxAddress Broadcast; };
     struct Q_KNX_EXPORT Individual { static QKnxAddress Unregistered; };
 
-    QString toString() const;
+    quint8 rawSize() const { return 2; }
     template <typename T> auto rawData() const -> decltype(T())
     {
         QKnxTypeCheck::FailIfNot<T, QByteArray, QVector<quint8>>();
@@ -62,12 +62,11 @@ public:
         return t;
     }
 
+    QString toString() const;
+
 private:
     QKnxAddress(QKnxAddress::Type type, quint16 sec1, quint16 *sec2, quint16 sec3);
 
-#ifdef Q_QDOC
-public: template <typename T> auto rawData() const; private:
-#endif
 private:
     qint32 m_address = -1;
     QKnxAddress::Type m_type = static_cast<QKnxAddress::Type>(0xff);

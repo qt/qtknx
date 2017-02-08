@@ -113,7 +113,7 @@ bool QKnxAdditionalInfo::isValid() const
     Returns the number of bytes representing the additional info, including the
     byte for \l Type id and the byte for length information.
 */
-qint32 QKnxAdditionalInfo::size() const
+qint32 QKnxAdditionalInfo::rawSize() const
 {
     if (m_data.isEmpty())
         return 0;
