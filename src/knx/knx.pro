@@ -12,7 +12,9 @@ PUBLIC_HEADERS += \
     qknxtypecheck.h \
     qknxcontrolfield.h \
     qknxextendedcontrolfield.h \
-    qknxnetipframe.h
+    qknxnetipframe.h \
+    qknxnetipheader.h \
+    qknxnetiphostprotocoladdressinformation.h
 
 PRIVATE_HEADERS +=
 
