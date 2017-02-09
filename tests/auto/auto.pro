@@ -1,2 +1,2 @@
 TEMPLATE = subdirs
-SUBDIRS += cmake qknxaddress qknxadditionalinfo
+SUBDIRS += cmake qknxaddress qknxadditionalinfo qknxnetipstructure
