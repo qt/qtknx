@@ -28,7 +28,7 @@ static void myMessageHandler(QtMsgType, const QMessageLogContext &, const QStrin
     s_msg = msg;
 }
 
-class tst_Address : public QObject
+class tst_QKnxAddress : public QObject
 {
     Q_OBJECT
 
@@ -723,6 +723,6 @@ private slots:
     }
 };
 
-QTEST_APPLESS_MAIN(tst_Address)
+QTEST_APPLESS_MAIN(tst_QKnxAddress)
 
 #include "tst_qknxaddress.moc"
