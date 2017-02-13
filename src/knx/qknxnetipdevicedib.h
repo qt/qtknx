@@ -31,29 +31,28 @@ public:
     explicit QKnxNetIpDeviceDIB(const QByteArray &data)
         : QKnxNetIpStructure(quint8(DescriptionTypeCode::DeviceInfo), data)
     {
-        padData(54); // size enforced by 7.5.4.2 Device information DIB
+        resize(52, true); // size enforced by 7.5.4.2 Device information DIB
     }
     explicit QKnxNetIpDeviceDIB(const QVector<quint8> &data)
         : QKnxNetIpStructure(quint8(DescriptionTypeCode::DeviceInfo), data)
     {
-        padData(54); // size enforced by 7.5.4.2 Device information DIB
+        resize(52, true); // size enforced by 7.5.4.2 Device information DIB
     }
     QKnxNetIpDeviceDIB(const QByteArray &rawData, qint32 offset)
         : QKnxNetIpStructure(quint8(DescriptionTypeCode::DeviceInfo), rawData, offset)
     {
-        padData(54); // size enforced by 7.5.4.2 Device information DIB
+        resize(52, true); // size enforced by 7.5.4.2 Device information DIB
     }
     QKnxNetIpDeviceDIB(const QVector<quint8> &rawData, qint32 offset)
         : QKnxNetIpStructure(quint8(DescriptionTypeCode::DeviceInfo), rawData, offset)
     {
-        padData(54); // size enforced by 7.5.4.2 Device information DIB
+        resize(52, true); // size enforced by 7.5.4.2 Device information DIB
     }
 
     QKnxNetIpDeviceDIB(MediumCode mediumCode, quint8 deviceStatus, const QKnxAddress &address,
         quint16 projectId, const QByteArray &serialNumber, const QHostAddress &multicastAddress,
         const QByteArray &macAddress, const QByteArray deviceName);
 
-    QKnxNetIpStructure::DescriptionTypeCode descriptionTypeCode() const;
     quint8 deviceStatus() const;
     QKnxAddress individualAddress() const;
     quint16 projectInstallationIdentfier() const;
@@ -61,6 +60,9 @@ public:
     QHostAddress multicastAddress() const;
     QByteArray macAddress() const;
     QByteArray deviceName() const;
+
+    using QKnxNetIpStructure::toString;
+    using QKnxNetIpStructure::descriptionTypeCode;
 };
 
 QT_END_NAMESPACE
