@@ -7,6 +7,11 @@
 
 #pragma once
 
+#include <QtCore/qbytearray.h>
+#include <QtCore/qdatastream.h>
+#include <QtCore/qdebug.h>
+#include <QtCore/qstring.h>
+#include <QtCore/qvector.h>
 #include <QtKnx/qknxglobal.h>
 #include <QtKnx/qknxtypecheck.h>
 
@@ -93,10 +98,26 @@ struct Q_KNX_EXPORT QKnxNetIpStructure
     }
 
 protected:
-    quint8 code() const;
-    void padData(int length = -1);
-
     QKnxNetIpStructure() = default;
+    virtual ~QKnxNetIpStructure() = default;
+
+    virtual QString toString() const;
+    void resize(int size, bool makeEven = false);
+
+    QKnxNetIpStructure::HostProtocolCode hostProtocolCode() const
+    {
+        return QKnxNetIpStructure::HostProtocolCode(m_code);
+    };
+
+    QKnxNetIpStructure::ConnectionTypeCode connectionTypeCode() const
+    {
+        return QKnxNetIpStructure::ConnectionTypeCode(m_code);
+    };
+
+    QKnxNetIpStructure::DescriptionTypeCode descriptionTypeCode() const
+    {
+        return QKnxNetIpStructure::DescriptionTypeCode(m_code);
+    };
 
     template <typename T> QKnxNetIpStructure(quint8 code, const T &data)
     {
@@ -139,6 +160,8 @@ private:
     quint16 m_size = 0;
     QVector<quint8> m_data;
 };
+Q_KNX_EXPORT QDebug operator<<(QDebug debug, const QKnxNetIpStructure &structure);
+Q_KNX_EXPORT QDataStream &operator<<(QDataStream &stream, const QKnxNetIpStructure &structure);
 
 Q_DECLARE_TYPEINFO(QKnxNetIpStructure::HostProtocolCode, Q_PRIMITIVE_TYPE);
 Q_DECLARE_TYPEINFO(QKnxNetIpStructure::ConnectionTypeCode, Q_PRIMITIVE_TYPE);

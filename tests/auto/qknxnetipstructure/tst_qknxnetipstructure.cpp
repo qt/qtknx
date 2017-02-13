@@ -39,6 +39,8 @@ public:
         : QKnxNetIpStructure(code, rawData, offset)
     {
     }
+
+    using QKnxNetIpStructure::toString;
 };
 
 class tst_QKnxNetIpStructure : public QObject
@@ -131,6 +133,13 @@ private slots:
         QCOMPARE(test.data<QByteArray>(10, 10), QByteArray());
     }
 
+    void testToString()
+    {
+        QCOMPARE(TestStructure(0x01, QByteArray::fromHex("001122334466778899aabbccddeeff"))
+            .toString(), QString::fromLatin1("Raw size { 0x11 }, Code { 0x01 }, Data { 0x00, 0x11,"
+                " 0x22, 0x33, 0x44, 0x66, 0x77, 0x88, 0x99, 0xaa, 0xbb, 0xcc, 0xdd, 0xee, 0xff }"));
+    }
+
     void testDebugStream()
     {
         struct DebugHandler
@@ -143,12 +152,19 @@ private slots:
             QtMessageHandler oldMessageHandler;
         } _(myMessageHandler);
 
-        // TODO: implement
+        qDebug() << TestStructure { 0x01, QByteArray::fromHex("001122334466778899aabbccddeeff") };
+        QCOMPARE(s_msg, QString::fromLatin1("0x1101001122334466778899aabbccddeeff"));
     }
 
     void testDataStream()
     {
-        // TODO: implement
+        auto data = QByteArray::fromHex("001122334466778899aabbccddeeff");
+        TestStructure test = { 0x01, data };
+
+        QByteArray byteArray;
+        QDataStream out(&byteArray, QIODevice::WriteOnly);
+        out <<test;
+        QCOMPARE(byteArray, QByteArray::fromHex("1101001122334466778899aabbccddeeff"));
     }
 };
 
