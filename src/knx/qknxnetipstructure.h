@@ -126,6 +126,21 @@ protected:
 
     template <typename T> QKnxNetIpStructure(quint8 code, const T &rawData, qint32 offset)
     {
+        setRawData(code, rawData, offset);
+    }
+
+    template <typename T> void setRawData(quint8 code, const T &data)
+    {
+        QKnxTypeCheck::FailIfNot<T, QByteArray, QVector<quint8>>();
+
+        m_code = code;
+        m_size = data.size();
+        m_data.resize(m_size);
+        std::copy(data.constBegin(), data.constEnd(), m_data.begin());
+    }
+
+    template <typename T> void setRawData(quint8 code, const T &rawData, qint32 offset)
+    {
         QKnxTypeCheck::FailIfNot<T, QByteArray, QVector<quint8>>();
 
         qint32 availableSize = rawData.size() - offset;
@@ -143,16 +158,6 @@ protected:
         if (size > availableSize)
             return;
         setRawData(rawData[codeOffset], rawData.mid(codeOffset + 1, size - offset + 1));
-    }
-
-    template <typename T> void setRawData(quint8 code, const T &data)
-    {
-        QKnxTypeCheck::FailIfNot<T, QByteArray, QVector<quint8>>();
-
-        m_code = code;
-        m_size = data.size();
-        m_data.resize(m_size);
-        std::copy(data.constBegin(), data.constEnd(), m_data.begin());
     }
 
 private:
