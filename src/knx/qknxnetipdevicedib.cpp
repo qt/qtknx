@@ -9,6 +9,15 @@
 
 QT_BEGIN_NAMESPACE
 
+/*!
+    \class QKnxNetIpDeviceDIB
+
+    \inmodule QtKnx
+    \brief The QKnxNetIpDeviceDIB class represents the structure containing the
+    information that is necessary to serve as a device description information
+    block.
+*/
+
 QKnxNetIpDeviceDIB::QKnxNetIpDeviceDIB(MediumCode mediumCode, quint8 deviceStatus,
     const QKnxAddress &individualAddress, quint16 projectId, const QByteArray &serialNumber,
     const QHostAddress &multicastAddress, const QByteArray &macAddress, const QByteArray deviceName)

@@ -49,9 +49,14 @@ public:
         resize(52, true); // size enforced by 7.5.4.2 Device information DIB
     }
 
-    QKnxNetIpDeviceDIB(MediumCode mediumCode, quint8 deviceStatus, const QKnxAddress &address,
-        quint16 projectId, const QByteArray &serialNumber, const QHostAddress &multicastAddress,
-        const QByteArray &macAddress, const QByteArray deviceName);
+    QKnxNetIpDeviceDIB(MediumCode mediumCode,
+                       quint8 deviceStatus,
+                       const QKnxAddress &address,
+                       quint16 projectId,
+                       const QByteArray &serialNumber,
+                       const QHostAddress &multicastAddress,
+                       const QByteArray &macAddress,
+                       const QByteArray deviceName);
 
     quint8 deviceStatus() const;
     QKnxAddress individualAddress() const;
@@ -64,5 +69,6 @@ public:
     using QKnxNetIpStructure::toString;
     using QKnxNetIpStructure::descriptionTypeCode;
 };
+Q_DECLARE_TYPEINFO(QKnxNetIpDeviceDIB, Q_MOVABLE_TYPE);
 
 QT_END_NAMESPACE
