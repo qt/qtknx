@@ -11,7 +11,7 @@
 
 QT_BEGIN_NAMESPACE
 
-class Q_KNX_EXPORT QKnxNetIpHeader
+class Q_KNX_EXPORT QKnxNetIpHeader final
 {
 public:
     enum class ServiceType : quint16 {
