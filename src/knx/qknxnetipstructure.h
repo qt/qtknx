@@ -103,6 +103,7 @@ protected:
 
     virtual QString toString() const;
     void resizeData(int size, bool makeEven = false);
+    void appendData(const QVector<quint8> additinalData);
 
     QKnxNetIpStructure::HostProtocolCode hostProtocolCode() const
     {

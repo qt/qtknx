@@ -16,7 +16,8 @@ PUBLIC_HEADERS += \
     qknxnetipheader.h \
     qknxnetiphpai.h \
     qknxnetipstructure.h \
-    qknxnetipdevicedib.h
+    qknxnetipdevicedib.h \
+    qknxnetipservicefamiliesdib.h
 
 PRIVATE_HEADERS +=
 
@@ -28,7 +29,8 @@ SOURCES += \
     qknxnetipframe.cpp \
     qknxnetipstructure.cpp \
     qknxnetipdevicedib.cpp \
-    qknxnetiphpai.cpp
+    qknxnetiphpai.cpp \
+    qknxnetipservicefamiliesdib.cpp
 
 HEADERS += $$PUBLIC_HEADERS $$PRIVATE_HEADERS
 
