@@ -119,6 +119,12 @@ protected:
         return QKnxNetIpStructure::DescriptionTypeCode(m_code);
     };
 
+    QKnxNetIpStructure(quint8 code, int size, bool makeEven = false)
+    {
+        m_code = code;
+        resizeData(size, makeEven);
+    }
+
     template <typename T> QKnxNetIpStructure(quint8 code, const T &data)
     {
         setRawData(code, data);

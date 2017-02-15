@@ -19,11 +19,10 @@ QT_BEGIN_NAMESPACE
 */
 
 QKnxNetIpDeviceDIB::QKnxNetIpDeviceDIB(MediumCode mediumCode, quint8 deviceStatus,
-    const QKnxAddress &individualAddress, quint16 projectId, const QByteArray &serialNumber,
-    const QHostAddress &multicastAddress, const QByteArray &macAddress, const QByteArray deviceName)
+        const QKnxAddress &individualAddress, quint16 projectId, const QByteArray &serialNumber,
+        const QHostAddress &multicastAddress, const QByteArray &macAddress, const QByteArray deviceName)
+    : QKnxNetIpStructure(quint8(DescriptionTypeCode::DeviceInfo), 52, true)
 {
-    setRawData(quint8(DescriptionTypeCode::DeviceInfo), QByteArray(52, '\0'));
-
     QByteArray rawData;
     rawData[0] = quint8(mediumCode);
     if (deviceStatus > 0x01)

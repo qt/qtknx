@@ -20,6 +20,7 @@ QT_BEGIN_NAMESPACE
 */
 
 QKnxNetIpHPAI::QKnxNetIpHPAI(const QByteArray &rawData, qint32 offset)
+    : QKnxNetIpStructure(quint8(QKnxNetIpStructure::HostProtocolCode::IpV4_Udp), 6)
 {
     qint32 availableSize = rawData.size() - offset;
     if (availableSize <= 2) // at least size and code are to be expected
@@ -34,6 +35,7 @@ QKnxNetIpHPAI::QKnxNetIpHPAI(const QByteArray &rawData, qint32 offset)
 }
 
 QKnxNetIpHPAI::QKnxNetIpHPAI(const QVector<quint8> &rawData, qint32 offset)
+    : QKnxNetIpStructure(quint8(QKnxNetIpStructure::HostProtocolCode::IpV4_Udp), 6)
 {
     qint32 availableSize = rawData.size() - offset;
     if (availableSize <= 2) // at least size and code are to be expected
@@ -53,7 +55,8 @@ QKnxNetIpHPAI::QKnxNetIpHPAI(const QHostAddress &address, quint16 port)
 }
 
 QKnxNetIpHPAI::QKnxNetIpHPAI(QKnxNetIpStructure::HostProtocolCode hpc, const QHostAddress &address,
-    quint16 port)
+        quint16 port)
+    : QKnxNetIpStructure(quint8(hpc), 6)
 {
     QByteArray rawData(6, Qt::Uninitialized);
     auto addr = (address.isNull() ? QHostAddress::LocalHost : address).toIPv4Address();
