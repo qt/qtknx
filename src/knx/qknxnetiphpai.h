@@ -13,7 +13,7 @@
 
 QT_BEGIN_NAMESPACE
 
-class Q_KNX_EXPORT QKnxNetIpHPAI final : public QKnxNetIpStructure
+class Q_KNX_EXPORT QKnxNetIpHPAI final : private QKnxNetIpStructure
 {
 public:
     QKnxNetIpHPAI() = default;
