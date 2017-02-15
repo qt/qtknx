@@ -102,7 +102,7 @@ protected:
     virtual ~QKnxNetIpStructure() = default;
 
     virtual QString toString() const;
-    void resize(int size, bool makeEven = false);
+    void resizeData(int size, bool makeEven = false);
 
     QKnxNetIpStructure::HostProtocolCode hostProtocolCode() const
     {

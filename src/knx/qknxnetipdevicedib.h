@@ -31,22 +31,22 @@ public:
     explicit QKnxNetIpDeviceDIB(const QByteArray &data)
         : QKnxNetIpStructure(quint8(DescriptionTypeCode::DeviceInfo), data)
     {
-        resize(52, true); // size enforced by 7.5.4.2 Device information DIB
+        resizeData(52, true); // size enforced by 7.5.4.2 Device information DIB
     }
     explicit QKnxNetIpDeviceDIB(const QVector<quint8> &data)
         : QKnxNetIpStructure(quint8(DescriptionTypeCode::DeviceInfo), data)
     {
-        resize(52, true); // size enforced by 7.5.4.2 Device information DIB
+        resizeData(52, true); // size enforced by 7.5.4.2 Device information DIB
     }
     QKnxNetIpDeviceDIB(const QByteArray &rawData, qint32 offset)
         : QKnxNetIpStructure(quint8(DescriptionTypeCode::DeviceInfo), rawData, offset)
     {
-        resize(52, true); // size enforced by 7.5.4.2 Device information DIB
+        resizeData(52, true); // size enforced by 7.5.4.2 Device information DIB
     }
     QKnxNetIpDeviceDIB(const QVector<quint8> &rawData, qint32 offset)
         : QKnxNetIpStructure(quint8(DescriptionTypeCode::DeviceInfo), rawData, offset)
     {
-        resize(52, true); // size enforced by 7.5.4.2 Device information DIB
+        resizeData(52, true); // size enforced by 7.5.4.2 Device information DIB
     }
 
     QKnxNetIpDeviceDIB(MediumCode mediumCode,

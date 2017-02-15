@@ -30,7 +30,7 @@ QKnxNetIpHPAI::QKnxNetIpHPAI(const QByteArray &rawData, qint32 offset)
         || hpc == QKnxNetIpStructure::HostProtocolCode::IpV4_Tcp) {
         setRawData(quint8(hpc), rawData, offset);
     }
-    resize(6); // size enforced 8.6.2 Host Protocol Address Information
+    resizeData(6); // size enforced 8.6.2 Host Protocol Address Information
 }
 
 QKnxNetIpHPAI::QKnxNetIpHPAI(const QVector<quint8> &rawData, qint32 offset)
@@ -44,7 +44,7 @@ QKnxNetIpHPAI::QKnxNetIpHPAI(const QVector<quint8> &rawData, qint32 offset)
         || hpc == QKnxNetIpStructure::HostProtocolCode::IpV4_Tcp) {
         setRawData(quint8(hpc), rawData, offset);
     }
-    resize(6); // size enforced 8.6.2 Host Protocol Address Information
+    resizeData(6); // size enforced 8.6.2 Host Protocol Address Information
 }
 
 QKnxNetIpHPAI::QKnxNetIpHPAI(const QHostAddress &address, quint16 port)

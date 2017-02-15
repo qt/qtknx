@@ -58,7 +58,7 @@ QT_BEGIN_NAMESPACE
     may have to be achieved by padding with 00h in the last octet of the structure.
 
 */
-void QKnxNetIpStructure::resize(int size, bool makeEven)
+void QKnxNetIpStructure::resizeData(int size, bool makeEven)
 {
     if (makeEven)
         size += size % 2;

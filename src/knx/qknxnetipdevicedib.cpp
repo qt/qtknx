@@ -51,7 +51,7 @@ QKnxNetIpDeviceDIB::QKnxNetIpDeviceDIB(MediumCode mediumCode, quint8 deviceStatu
     rawData += macAddress + deviceName;
     setRawData(quint8(DescriptionTypeCode::DeviceInfo), rawData);
 
-    resize(52, true); // size enforced by 7.5.4.2 Device information DIB
+    resizeData(52, true); // size enforced by 7.5.4.2 Device information DIB
 }
 
 QKnxNetIpDeviceDIB::MediumCode QKnxNetIpDeviceDIB::mediumCode() const

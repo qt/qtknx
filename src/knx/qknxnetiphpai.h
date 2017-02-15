@@ -20,12 +20,12 @@ public:
     explicit QKnxNetIpHPAI(QKnxNetIpStructure::HostProtocolCode hpc, const QByteArray &data)
         : QKnxNetIpStructure(quint8(hpc), data)
     {
-        resize(6); // size enforced 8.6.2 Host Protocol Address Information
+        resizeData(6); // size enforced 8.6.2 Host Protocol Address Information
     }
     explicit QKnxNetIpHPAI(QKnxNetIpStructure::HostProtocolCode hpc, const QVector<quint8> &data)
         : QKnxNetIpStructure(quint8(hpc), data)
     {
-        resize(6); // size enforced 8.6.2 Host Protocol Address Information
+        resizeData(6); // size enforced 8.6.2 Host Protocol Address Information
     }
 
     QKnxNetIpHPAI(const QByteArray &rawData, qint32 offset);
