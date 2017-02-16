@@ -43,17 +43,20 @@ public:
     qint32 dataSize() const;
     template <typename T> auto data() const -> decltype(T())
     {
-        QKnxTypeCheck::FailIfNot<T, QByteArray, QVector<quint8>>();
+        QKnxTypeCheck::FailIfNot<T, QByteArray, QVector<quint8>, std::deque<quint8>,
+            std::vector<quint8>>();
 
         T t(m_data.size(), Qt::Uninitialized);
-        std::copy(m_data.constBegin(), m_data.constEnd(), t.begin());
+        std::copy(std::begin(m_data), std::end(m_data), std::begin(t));
         return t;
     }
 
     qint32 rawSize() const;
     template <typename T> auto rawData() const -> decltype(T())
     {
-        QKnxTypeCheck::FailIfNot<T, QByteArray, QVector<quint8>>();
+        QKnxTypeCheck::FailIfNot<T, QByteArray, QVector<quint8>, std::deque<quint8>,
+            std::vector<quint8>>();
+
         if (!isValid())
             return {};
 
@@ -65,7 +68,9 @@ public:
     bool isValid() const;
     template<typename T> static bool isValid(QKnxAdditionalInfo::Type type, const T &data)
     {
-        QKnxTypeCheck::FailIfNot<T, QByteArray, QVector<quint8>>();
+        QKnxTypeCheck::FailIfNot<T, QByteArray, QVector<quint8>, std::deque<quint8>,
+            std::vector<quint8>>();
+
         const int size = data.size();
         if (size > 252)
             return false;

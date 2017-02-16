@@ -15,8 +15,9 @@ QT_BEGIN_NAMESPACE
 // 7.5.4.3 Supported service families DIB
 // The service family IDs shall be the high octet of the Service Type ID
 
-class Q_KNX_EXPORT QKnxNetIpServiceFamiliesDIB final : private QKnxNetIpStructure
+class Q_KNX_EXPORT QKnxNetIpServiceFamiliesDIB final : public QKnxNetIpStructure
 {
+public:
     enum class ServiceFamilieId : quint8
     {
         Core = 0x02,
@@ -28,28 +29,16 @@ class Q_KNX_EXPORT QKnxNetIpServiceFamiliesDIB final : private QKnxNetIpStructur
         ObjectServer = 0x08
     };
 
-public:
     QKnxNetIpServiceFamiliesDIB() = default;
-
-    explicit QKnxNetIpServiceFamiliesDIB(const QByteArray &data)
-        : QKnxNetIpStructure(quint8(DescriptionTypeCode::SupportedServiceFamilies), data)
-    {
-    }
-    explicit QKnxNetIpServiceFamiliesDIB(const QVector<quint8> &data)
-        : QKnxNetIpStructure(quint8(DescriptionTypeCode::SupportedServiceFamilies), data)
-    {
-    }
-    QKnxNetIpServiceFamiliesDIB(const QByteArray &rawData, qint32 offset)
-        : QKnxNetIpStructure(quint8(DescriptionTypeCode::SupportedServiceFamilies), rawData, offset)
-    {
-    }
-    QKnxNetIpServiceFamiliesDIB(const QVector<quint8> &rawData, qint32 offset)
-        : QKnxNetIpStructure(quint8(DescriptionTypeCode::SupportedServiceFamilies), rawData, offset)
-    {
-    }
 
     QKnxNetIpServiceFamiliesDIB(const QMap<ServiceFamilieId, quint8> &families);
     QKnxNetIpServiceFamiliesDIB(const QVector<ServiceFamilieId> &ids, const QVector<quint8> &versions);
+
+    explicit QKnxNetIpServiceFamiliesDIB(const QByteArray &data);
+    explicit QKnxNetIpServiceFamiliesDIB(const QVector<quint8> &data);
+
+    static QKnxNetIpServiceFamiliesDIB fromRawData(const QByteArray &rawData, qint32 offset);
+    static QKnxNetIpServiceFamiliesDIB fromRawData(const QVector<quint8> &rawData, qint32 offset);
 
     void add(ServiceFamilieId id, quint8 versions);
     void add(const QMap<ServiceFamilieId, quint8> &families);

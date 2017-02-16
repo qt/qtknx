@@ -57,44 +57,60 @@ struct Q_KNX_EXPORT QKnxNetIpStructure
         NotUsed = 0xff
     };
 
+    template <typename T> auto header(quint8 code, quint16 dataSize) const -> decltype(T())
+    {
+        QKnxTypeCheck::FailIfNot<T, QByteArray, QVector<quint8>, std::deque<quint8>,
+            std::vector<quint8>>();
+
+        T t((dataSize > 0xfc ? 4 : 2), Qt::Uninitialized);
+        if (dataSize > 0xfc) {
+            t[0] = quint8(0xff);
+            t[1] = quint8(quint16(dataSize + 4) >> 8);
+            t[2] = quint8(dataSize + 4);
+            t[3] = code;
+        } else {
+            t[0] = quint8(dataSize + 2);
+            t[1] = code;
+        }
+        return t;
+    }
+
     qint32 dataSize() const;
     template <typename T> auto data() const -> decltype(T())
     {
-        QKnxTypeCheck::FailIfNot<T, QByteArray, QVector<quint8>>();
+        QKnxTypeCheck::FailIfNot<T, QByteArray, QVector<quint8>, std::deque<quint8>,
+            std::vector<quint8>>();
 
         T t(m_size, Qt::Uninitialized);
-        std::copy(m_data.constBegin(), m_data.constEnd(), t.begin());
+        std::copy(std::begin(m_data), std::end(m_data), std::begin(t));
         return t;
     }
 
     template <typename T> auto data(int start, int length) const -> decltype(T())
     {
-        QKnxTypeCheck::FailIfNot<T, QByteArray, QVector<quint8>>();
+        QKnxTypeCheck::FailIfNot<T, QByteArray, QVector<quint8>, std::deque<quint8>,
+            std::vector<quint8>>();
 
         if (m_data.size() < start + length)
             return T();
 
         T t(length, Qt::Uninitialized);
-        std::copy(m_data.constBegin() + start, m_data.constBegin() + start + length, t.begin());
+        auto begin = std::next(std::begin(m_data), start);
+        std::copy(begin, begin + length, std::begin(t));
         return t;
     }
 
     qint32 rawSize() const;
     template <typename T> auto rawData() const -> decltype(T())
     {
-        QKnxTypeCheck::FailIfNot<T, QByteArray, QVector<quint8>>();
+        QKnxTypeCheck::FailIfNot<T, QByteArray, QVector<quint8>, std::deque<quint8>,
+            std::vector<quint8>>();
 
-        T t(m_size > 0xfc ? 4 : 2, Qt::Uninitialized);
-        if (m_size > 0xfc) {
-            t[0] = quint8(0xff);
-            t[1] = quint8(rawSize() >> 8);
-            t[2] = quint8(rawSize());
-            t[3] = m_code;
-        } else {
-            t[0] = quint8(rawSize());
-            t[1] = m_code;
-        }
-        return t + data<T>();
+        T t(rawSize(), Qt::Uninitialized);
+        auto h = header<T>(m_code, m_size);
+        std::copy(std::begin(h), std::end(h), std::begin(t));
+        std::copy(std::begin(m_data), std::end(m_data), std::next(std::begin(t), h.size()));
+        return t;
     }
 
 protected:
@@ -128,43 +144,47 @@ protected:
 
     template <typename T> QKnxNetIpStructure(quint8 code, const T &data)
     {
-        setRawData(code, data);
+        QKnxTypeCheck::FailIfNot<T, QByteArray, QVector<quint8>, std::deque<quint8>,
+            std::vector<quint8>>();
+        setData(code, data);
     }
 
-    template <typename T> QKnxNetIpStructure(quint8 code, const T &rawData, qint32 offset)
+    template <typename T> void setData(quint8 code, const T &data)
     {
-        setRawData(code, rawData, offset);
-    }
+        QKnxTypeCheck::FailIfNot<T, QByteArray, QVector<quint8>, std::deque<quint8>,
+            std::vector<quint8>>();
 
-    template <typename T> void setRawData(quint8 code, const T &data)
-    {
-        QKnxTypeCheck::FailIfNot<T, QByteArray, QVector<quint8>>();
-
-        m_code = code;
-        m_size = data.size();
-        m_data.resize(m_size);
-        std::copy(data.constBegin(), data.constEnd(), m_data.begin());
+        auto h = header<T>(code, quint16(data.size()));
+        T t(h.size() + data.size(), Qt::Uninitialized);
+        std::copy(std::begin(h), std::end(h), std::begin(t));
+        std::copy(std::begin(data), std::end(data), std::next(std::begin(t), h.size()));
+        setRawData(code, t, 0);
     }
 
     template <typename T> void setRawData(quint8 code, const T &rawData, qint32 offset)
     {
-        QKnxTypeCheck::FailIfNot<T, QByteArray, QVector<quint8>>();
+        QKnxTypeCheck::FailIfNot<T, QByteArray, QVector<quint8>, std::deque<quint8>,
+            std::vector<quint8>>();
 
-        qint32 availableSize = rawData.size() - offset;
-        if (availableSize <= 0)
-            return;
+        const qint32 availableSize = rawData.size() - offset;
+        if (availableSize < 1) return; // first byte for the length information
 
         quint16 size = quint8(rawData[offset]);
-        qint32 codeOffset = offset + (size < 0xff ? 2 : 3);
-        if (availableSize < codeOffset || rawData[codeOffset] != code)
-            return;
+        const quint8 headerSize = size == 0xff ? 4 : 2;
+        if (availableSize < headerSize) return; // length information and code information
 
-        if (size == 0xff)
+        if (headerSize == 4)
             size = quint16(rawData[offset + 1]) << 8 | rawData[offset + 2];
 
-        if (size > availableSize)
+        if (availableSize < size || rawData[offset + headerSize - 1] != code)
             return;
-        setRawData(rawData[codeOffset], rawData.mid(codeOffset + 1, size - offset + 1));
+
+        m_code = code;
+        m_size = size - headerSize;
+        m_data.resize(size - headerSize);
+
+        auto begin = std::next(std::begin(rawData), offset + headerSize);
+        std::copy(begin, begin + m_size, std::begin(m_data));
     }
 
 private:

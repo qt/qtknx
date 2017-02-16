@@ -23,34 +23,60 @@ QKnxNetIpDeviceDIB::QKnxNetIpDeviceDIB(MediumCode mediumCode, quint8 deviceStatu
         const QHostAddress &multicastAddress, const QByteArray &macAddress, const QByteArray deviceName)
     : QKnxNetIpStructure(quint8(DescriptionTypeCode::DeviceInfo), 52, true)
 {
-    QByteArray rawData;
-    rawData[0] = quint8(mediumCode);
+    QByteArray data;
+    data[0] = quint8(mediumCode);
     if (deviceStatus > 0x01)
         return;
-    rawData[1] = deviceStatus;
-    rawData += individualAddress.rawData<QByteArray>();
-    rawData[4] = quint8(projectId >> 8);
-    rawData[5] = quint8(projectId);
+    data[1] = deviceStatus;
+    data += individualAddress.rawData<QByteArray>();
+    data[4] = quint8(projectId >> 8);
+    data[5] = quint8(projectId);
 
     if (serialNumber.size() != 6)
         return;
-    rawData += serialNumber;
+    data += serialNumber;
 
     if (multicastAddress != QHostAddress::AnyIPv4 && !multicastAddress.isMulticast())
         return;
 
     auto address = multicastAddress.toIPv4Address();
-    rawData[12] = quint8(address >> 24);
-    rawData[13] = quint8(address >> 16);
-    rawData[14] = quint8(address >> 8);
-    rawData[15] = quint8(address);
+    data[12] = quint8(address >> 24);
+    data[13] = quint8(address >> 16);
+    data[14] = quint8(address >> 8);
+    data[15] = quint8(address);
 
     if (macAddress.size() != 6)
         return;
-    rawData += macAddress + deviceName;
-    setRawData(quint8(DescriptionTypeCode::DeviceInfo), rawData);
+    setData(quint8(DescriptionTypeCode::DeviceInfo), QByteArray(data + macAddress + deviceName));
 
     resizeData(52, true); // size enforced by 7.5.4.2 Device information DIB
+}
+
+QKnxNetIpDeviceDIB::QKnxNetIpDeviceDIB(const QByteArray &data)
+    : QKnxNetIpStructure(quint8(DescriptionTypeCode::DeviceInfo), data)
+{
+    resizeData(52, true); // size enforced by 7.5.4.2 Device information DIB
+}
+
+QKnxNetIpDeviceDIB::QKnxNetIpDeviceDIB(const QVector<quint8> &data)
+    : QKnxNetIpStructure(quint8(DescriptionTypeCode::DeviceInfo), data)
+{
+    resizeData(52, true); // size enforced by 7.5.4.2 Device information DIB
+}
+
+QKnxNetIpDeviceDIB QKnxNetIpDeviceDIB::fromRawData(const QByteArray &rawData, qint32 offset)
+{
+    QKnxNetIpDeviceDIB dib;
+    dib.setRawData(quint8(DescriptionTypeCode::DeviceInfo), rawData, offset);
+    dib.resizeData(52, true); // size enforced by 7.5.4.2 Device information DIB
+    return dib;
+}
+QKnxNetIpDeviceDIB QKnxNetIpDeviceDIB::fromRawData(const QVector<quint8> &rawData, qint32 offset)
+{
+    QKnxNetIpDeviceDIB dib;
+    dib.setRawData(quint8(DescriptionTypeCode::DeviceInfo), rawData, offset);
+    dib.resizeData(52, true); // size enforced by 7.5.4.2 Device information DIB
+    return dib;
 }
 
 QKnxNetIpDeviceDIB::MediumCode QKnxNetIpDeviceDIB::mediumCode() const

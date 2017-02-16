@@ -19,36 +19,6 @@ QT_BEGIN_NAMESPACE
     and the Transport Layer identifier called Port number.
 */
 
-QKnxNetIpHPAI::QKnxNetIpHPAI(const QByteArray &rawData, qint32 offset)
-    : QKnxNetIpStructure(quint8(QKnxNetIpStructure::HostProtocolCode::IpV4_Udp), 6)
-{
-    qint32 availableSize = rawData.size() - offset;
-    if (availableSize <= 2) // at least size and code are to be expected
-        return;
-
-    auto hpc = QKnxNetIpStructure::HostProtocolCode(rawData[offset + 1]);
-    if (hpc == QKnxNetIpStructure::HostProtocolCode::IpV4_Udp
-        || hpc == QKnxNetIpStructure::HostProtocolCode::IpV4_Tcp) {
-        setRawData(quint8(hpc), rawData, offset);
-    }
-    resizeData(6); // size enforced 8.6.2 Host Protocol Address Information
-}
-
-QKnxNetIpHPAI::QKnxNetIpHPAI(const QVector<quint8> &rawData, qint32 offset)
-    : QKnxNetIpStructure(quint8(QKnxNetIpStructure::HostProtocolCode::IpV4_Udp), 6)
-{
-    qint32 availableSize = rawData.size() - offset;
-    if (availableSize <= 2) // at least size and code are to be expected
-        return;
-
-    auto hpc = QKnxNetIpStructure::HostProtocolCode(rawData[offset + 1]);
-    if (hpc == QKnxNetIpStructure::HostProtocolCode::IpV4_Udp
-        || hpc == QKnxNetIpStructure::HostProtocolCode::IpV4_Tcp) {
-        setRawData(quint8(hpc), rawData, offset);
-    }
-    resizeData(6); // size enforced 8.6.2 Host Protocol Address Information
-}
-
 QKnxNetIpHPAI::QKnxNetIpHPAI(const QHostAddress &address, quint16 port)
     : QKnxNetIpHPAI(QKnxNetIpStructure::HostProtocolCode::IpV4_Udp, address, port)
 {
@@ -58,15 +28,59 @@ QKnxNetIpHPAI::QKnxNetIpHPAI(QKnxNetIpStructure::HostProtocolCode hpc, const QHo
         quint16 port)
     : QKnxNetIpStructure(quint8(hpc), 6)
 {
-    QByteArray rawData(6, Qt::Uninitialized);
+    QByteArray data(6, Qt::Uninitialized);
     auto addr = (address.isNull() ? QHostAddress::LocalHost : address).toIPv4Address();
-    rawData[0] = quint8(addr >> 24);
-    rawData[1] = quint8(addr >> 16);
-    rawData[2] = quint8(addr >> 8);
-    rawData[3] = quint8(addr);
-    rawData[4] = quint8(port >> 8);
-    rawData[5] = quint8(port);
-    setRawData(quint8(hpc), rawData);
+    data[0] = quint8(addr >> 24);
+    data[1] = quint8(addr >> 16);
+    data[2] = quint8(addr >> 8);
+    data[3] = quint8(addr);
+    data[4] = quint8(port >> 8);
+    data[5] = quint8(port);
+    setData(quint8(hpc), data);
+}
+
+QKnxNetIpHPAI::QKnxNetIpHPAI(QKnxNetIpStructure::HostProtocolCode hpc, const QByteArray &data)
+    : QKnxNetIpStructure(quint8(hpc), data)
+{
+    resizeData(6); // size enforced 8.6.2 Host Protocol Address Information
+}
+
+QKnxNetIpHPAI::QKnxNetIpHPAI(QKnxNetIpStructure::HostProtocolCode hpc, const QVector<quint8> &data)
+    : QKnxNetIpStructure(quint8(hpc), data)
+{
+    resizeData(6); // size enforced 8.6.2 Host Protocol Address Information
+}
+
+QKnxNetIpHPAI QKnxNetIpHPAI::fromRawData(const QByteArray &rawData, qint32 offset)
+{
+    QKnxNetIpHPAI hpai;
+    qint32 availableSize = rawData.size() - offset;
+    if (availableSize <= 2) // at least size and code are to be expected
+        return hpai;
+
+    auto hpc = QKnxNetIpStructure::HostProtocolCode(rawData[offset + 1]);
+    if (hpc == QKnxNetIpStructure::HostProtocolCode::IpV4_Udp
+        || hpc == QKnxNetIpStructure::HostProtocolCode::IpV4_Tcp) {
+        hpai.setRawData(quint8(hpc), rawData, offset);
+        hpai.resizeData(6); // size enforced 8.6.2 Host Protocol Address Information
+    }
+    return hpai;
+}
+
+QKnxNetIpHPAI QKnxNetIpHPAI::fromRawData(const QVector<quint8> &rawData, qint32 offset)
+{
+    QKnxNetIpHPAI hpai;
+    qint32 availableSize = rawData.size() - offset;
+    if (availableSize <= 2) // at least size and code are to be expected
+        return hpai;
+
+    auto hpc = QKnxNetIpStructure::HostProtocolCode(rawData[offset + 1]);
+    if (hpc == QKnxNetIpStructure::HostProtocolCode::IpV4_Udp
+        || hpc == QKnxNetIpStructure::HostProtocolCode::IpV4_Tcp) {
+        hpai.setRawData(quint8(hpc), rawData, offset);
+        hpai.resizeData(6); // size enforced 8.6.2 Host Protocol Address Information
+    }
+    return hpai;
 }
 
 QHostAddress QKnxNetIpHPAI::address() const

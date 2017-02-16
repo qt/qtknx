@@ -22,6 +22,32 @@ QKnxNetIpServiceFamiliesDIB::QKnxNetIpServiceFamiliesDIB(const QVector<ServiceFa
     add(ids, versions);
 }
 
+QKnxNetIpServiceFamiliesDIB::QKnxNetIpServiceFamiliesDIB(const QByteArray &data)
+    : QKnxNetIpStructure(quint8(DescriptionTypeCode::SupportedServiceFamilies), data)
+{
+}
+
+QKnxNetIpServiceFamiliesDIB::QKnxNetIpServiceFamiliesDIB(const QVector<quint8> &data)
+    : QKnxNetIpStructure(quint8(DescriptionTypeCode::SupportedServiceFamilies), data)
+{
+}
+
+QKnxNetIpServiceFamiliesDIB QKnxNetIpServiceFamiliesDIB::fromRawData(const QByteArray &rawData,
+    qint32 offset)
+{
+    QKnxNetIpServiceFamiliesDIB dib;
+    dib.setRawData(quint8(DescriptionTypeCode::SupportedServiceFamilies), rawData, offset);
+    return dib;
+}
+
+QKnxNetIpServiceFamiliesDIB QKnxNetIpServiceFamiliesDIB::fromRawData(const QVector<quint8> &rawData,
+    qint32 offset)
+{
+    QKnxNetIpServiceFamiliesDIB dib;
+    dib.setRawData(quint8(DescriptionTypeCode::SupportedServiceFamilies), rawData, offset);
+    return dib;
+}
+
 void QKnxNetIpServiceFamiliesDIB::add(ServiceFamilieId id, quint8 versions)
 {
     appendData({ quint8(id), versions });
@@ -31,7 +57,7 @@ void QKnxNetIpServiceFamiliesDIB::add(const QMap<ServiceFamilieId, quint8> &fami
 {
     int i = 0;
     QVector<quint8> additionalData(families.size() * 2, 0u);
-    for (auto it = families.constBegin(); it != families.constEnd(); ++it, ++i)
+    for (auto it = std::begin(families); it != std::end(families); ++it, ++i)
         additionalData[i] = quint8(it.key()), additionalData[i + 1] = it.value();
     appendData(additionalData);
 }

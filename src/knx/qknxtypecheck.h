@@ -9,6 +9,9 @@
 
 QT_BEGIN_NAMESPACE
 
+#include <deque>
+#include <vector>
+
 class QKnxTypeCheck
 {
 public:

@@ -68,7 +68,7 @@ QKnxAdditionalInfo::QKnxAdditionalInfo(QKnxAdditionalInfo::Type type, const QByt
     if (isValid(type, data)) {
         m_type = type;
         m_data.resize(data.size());
-        std::copy(data.constBegin(), data.constEnd(), m_data.begin());
+        std::copy(std::begin(data), std::end(data), std::begin(m_data));
     }
 }
 

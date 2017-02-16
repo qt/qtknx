@@ -55,7 +55,9 @@ public:
     quint8 rawSize() const { return 2; }
     template <typename T> auto rawData() const -> decltype(T())
     {
-        QKnxTypeCheck::FailIfNot<T, QByteArray, QVector<quint8>>();
+        QKnxTypeCheck::FailIfNot<T, QByteArray, QVector<quint8>, std::deque<quint8>,
+            std::vector<quint8>>();
+
         if (!isValid())
             return {};
         T t(2, Qt::Uninitialized); t[0] = quint8(m_address >> 8), t[1] = quint8(m_address);

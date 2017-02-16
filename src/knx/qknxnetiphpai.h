@@ -13,26 +13,19 @@
 
 QT_BEGIN_NAMESPACE
 
-class Q_KNX_EXPORT QKnxNetIpHPAI final : private QKnxNetIpStructure
+class Q_KNX_EXPORT QKnxNetIpHPAI final : public QKnxNetIpStructure
 {
 public:
     QKnxNetIpHPAI() = default;
-    explicit QKnxNetIpHPAI(QKnxNetIpStructure::HostProtocolCode hpc, const QByteArray &data)
-        : QKnxNetIpStructure(quint8(hpc), data)
-    {
-        resizeData(6); // size enforced 8.6.2 Host Protocol Address Information
-    }
-    explicit QKnxNetIpHPAI(QKnxNetIpStructure::HostProtocolCode hpc, const QVector<quint8> &data)
-        : QKnxNetIpStructure(quint8(hpc), data)
-    {
-        resizeData(6); // size enforced 8.6.2 Host Protocol Address Information
-    }
-
-    QKnxNetIpHPAI(const QByteArray &rawData, qint32 offset);
-    QKnxNetIpHPAI(const QVector<quint8> &rawData, qint32 offset);
 
     QKnxNetIpHPAI(const QHostAddress &address, quint16 port);
     QKnxNetIpHPAI(QKnxNetIpStructure::HostProtocolCode hpc, const QHostAddress &address, quint16 port);
+
+    QKnxNetIpHPAI(QKnxNetIpStructure::HostProtocolCode hpc, const QByteArray &data);
+    QKnxNetIpHPAI(QKnxNetIpStructure::HostProtocolCode hpc, const QVector<quint8> &data);
+
+    static QKnxNetIpHPAI fromRawData(const QByteArray &rawData, qint32 offset);
+    static QKnxNetIpHPAI fromRawData(const QVector<quint8> &rawData, qint32 offset);
 
     QHostAddress address() const;
     quint16 port() const;

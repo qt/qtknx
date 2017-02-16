@@ -7,6 +7,7 @@
 
 #pragma once
 
+#include <QtCore/qbytearray.h>
 #include <QtKnx/qknxaddress.h>
 #include <QtKnx/qknxglobal.h>
 #include <QtKnx/qknxnetipstructure.h>
@@ -14,7 +15,7 @@
 
 QT_BEGIN_NAMESPACE
 
-class Q_KNX_EXPORT QKnxNetIpDeviceDIB final : private QKnxNetIpStructure
+class Q_KNX_EXPORT QKnxNetIpDeviceDIB final : public QKnxNetIpStructure
 {
 public:
     enum struct MediumCode : quint8
@@ -28,27 +29,6 @@ public:
 
     QKnxNetIpDeviceDIB() = default;
 
-    explicit QKnxNetIpDeviceDIB(const QByteArray &data)
-        : QKnxNetIpStructure(quint8(DescriptionTypeCode::DeviceInfo), data)
-    {
-        resizeData(52, true); // size enforced by 7.5.4.2 Device information DIB
-    }
-    explicit QKnxNetIpDeviceDIB(const QVector<quint8> &data)
-        : QKnxNetIpStructure(quint8(DescriptionTypeCode::DeviceInfo), data)
-    {
-        resizeData(52, true); // size enforced by 7.5.4.2 Device information DIB
-    }
-    QKnxNetIpDeviceDIB(const QByteArray &rawData, qint32 offset)
-        : QKnxNetIpStructure(quint8(DescriptionTypeCode::DeviceInfo), rawData, offset)
-    {
-        resizeData(52, true); // size enforced by 7.5.4.2 Device information DIB
-    }
-    QKnxNetIpDeviceDIB(const QVector<quint8> &rawData, qint32 offset)
-        : QKnxNetIpStructure(quint8(DescriptionTypeCode::DeviceInfo), rawData, offset)
-    {
-        resizeData(52, true); // size enforced by 7.5.4.2 Device information DIB
-    }
-
     QKnxNetIpDeviceDIB(MediumCode mediumCode,
                        quint8 deviceStatus,
                        const QKnxAddress &address,
@@ -57,6 +37,12 @@ public:
                        const QHostAddress &multicastAddress,
                        const QByteArray &macAddress,
                        const QByteArray deviceName);
+
+    explicit QKnxNetIpDeviceDIB(const QByteArray &data);
+    explicit QKnxNetIpDeviceDIB(const QVector<quint8> &data);
+
+    QKnxNetIpDeviceDIB fromRawData(const QByteArray &rawData, qint32 offset);
+    QKnxNetIpDeviceDIB fromRawData(const QVector<quint8> &rawData, qint32 offset);
 
     quint8 deviceStatus() const;
     QKnxAddress individualAddress() const;
