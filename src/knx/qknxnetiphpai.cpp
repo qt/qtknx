@@ -28,12 +28,9 @@ QKnxNetIpHPAI::QKnxNetIpHPAI(QKnxNetIpStructure::HostProtocolCode hpc, const QHo
         quint16 port)
     : QKnxNetIpStructure(quint8(hpc), 6)
 {
-    QByteArray data(6, Qt::Uninitialized);
-    auto addr = (address.isNull() ? QHostAddress::LocalHost : address).toIPv4Address();
-    data[0] = quint8(addr >> 24);
-    data[1] = quint8(addr >> 16);
-    data[2] = quint8(addr >> 8);
-    data[3] = quint8(addr);
+    QByteArray data(0, Qt::Uninitialized);
+    auto addr = address.isNull() ? QHostAddress::LocalHost : address;
+    data.insert(0, QKnxNetIpUtils::toArray<QByteArray>(addr));
     data[4] = quint8(port >> 8);
     data[5] = quint8(port);
     setData(quint8(hpc), data);
@@ -85,8 +82,7 @@ QKnxNetIpHPAI QKnxNetIpHPAI::fromRawData(const QVector<quint8> &rawData, qint32 
 
 QHostAddress QKnxNetIpHPAI::address() const
 {
-    auto address = data<QVector<quint8>>(0, 4);
-    return QHostAddress(quint32(address[0] << 24 | address[1] << 16 | address[2] << 8 | address[3]));
+    return QKnxNetIpUtils::fromArray(data<QVector<quint8>>(0, 4));
 }
 
 quint16 QKnxNetIpHPAI::port() const

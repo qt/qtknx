@@ -23,31 +23,28 @@ QKnxNetIpDeviceDIB::QKnxNetIpDeviceDIB(MediumCode mediumCode, quint8 deviceStatu
         const QHostAddress &multicastAddress, const QByteArray &macAddress, const QByteArray deviceName)
     : QKnxNetIpStructure(quint8(DescriptionTypeCode::DeviceInfo), 52, true)
 {
-    QByteArray data;
+    QByteArray data(0, Qt::Uninitialized);
     data[0] = quint8(mediumCode);
-    if (deviceStatus > 0x01)
+    if (deviceStatus > DeviceStatus::ActiveProgrammingMode)
         return;
-    data[1] = deviceStatus;
-    data += individualAddress.rawData<QByteArray>();
+    data[1] = quint8(deviceStatus);
+    data.insert(2, individualAddress.rawData<QByteArray>());
     data[4] = quint8(projectId >> 8);
     data[5] = quint8(projectId);
 
     if (serialNumber.size() != 6)
         return;
-    data += serialNumber;
+    data.insert(6, serialNumber);
 
     if (multicastAddress != QHostAddress::AnyIPv4 && !multicastAddress.isMulticast())
         return;
-
-    auto address = multicastAddress.toIPv4Address();
-    data[12] = quint8(address >> 24);
-    data[13] = quint8(address >> 16);
-    data[14] = quint8(address >> 8);
-    data[15] = quint8(address);
+    data.insert(12, QKnxNetIpUtils::toArray<QByteArray>(multicastAddress));
 
     if (macAddress.size() != 6)
         return;
-    setData(quint8(DescriptionTypeCode::DeviceInfo), QByteArray(data + macAddress + deviceName));
+    data.insert(16, macAddress);
+    data.insert(22, deviceName);
+    setData(quint8(DescriptionTypeCode::DeviceInfo), data);
 
     resizeData(52, true); // size enforced by 7.5.4.2 Device information DIB
 }
@@ -107,8 +104,7 @@ QByteArray QKnxNetIpDeviceDIB::serialNumber() const
 
 QHostAddress QKnxNetIpDeviceDIB::multicastAddress() const
 {
-    auto tmp = data<QVector<quint8>>(12, 4);
-    return QHostAddress(quint32(tmp[0] << 24 | tmp[1] << 16 | tmp[2] << 8 | tmp[3]));
+    return QKnxNetIpUtils::fromArray(data<QVector<quint8>>(12, 4));
 }
 
 QByteArray QKnxNetIpDeviceDIB::macAddress() const

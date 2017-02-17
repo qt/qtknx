@@ -14,8 +14,36 @@
 #include <QtCore/qvector.h>
 #include <QtKnx/qknxglobal.h>
 #include <QtKnx/qknxtypecheck.h>
+#include <QtNetwork/qhostaddress.h>
 
 QT_BEGIN_NAMESPACE
+
+struct QKnxNetIpUtils
+{
+    template <typename T, std::size_t S = 0> static QHostAddress fromArray(const T &data)
+    {
+        QKnxTypeCheck::FailIfNot<T, QByteArray, QVector<quint8>, std::deque<quint8>,
+            std::vector<quint8>, std::array<quint8, S>>();
+
+        if (data.size() < 4)
+            return {};
+        return QHostAddress(quint32(data[0] << 24 | data[1] << 16 | data[2] << 8 | data[3]));
+    }
+
+    template <typename T> static auto toArray(const QHostAddress &address) -> decltype(T())
+    {
+        QKnxTypeCheck::FailIfNot<T, QByteArray, QVector<quint8>, std::deque<quint8>,
+            std::vector<quint8>>();
+
+        T t(4, Qt::Uninitialized);
+        auto addr = address.toIPv4Address();
+        t[0] = quint8(addr >> 24);
+        t[1] = quint8(addr >> 16);
+        t[2] = quint8(addr >> 8);
+        t[3] = quint8(addr);
+        return t;
+    }
+};
 
 /*
     03_08_02 Core v01.05.01 AS.pdf
