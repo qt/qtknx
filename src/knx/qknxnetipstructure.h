@@ -147,7 +147,6 @@ protected:
 
     virtual QString toString() const;
     void resizeData(int size, bool makeEven = false);
-    void appendData(const QVector<quint8> additinalData);
 
     QKnxNetIpStructure::HostProtocolCode hostProtocolCode() const
     {
@@ -177,22 +176,35 @@ protected:
         setData(code, data);
     }
 
-    template <typename T> void setData(quint8 code, const T &data)
+    template <typename T, std::size_t S = 0> void setData(quint8 code, const T &data)
     {
         QKnxTypeCheck::FailIfNot<T, QByteArray, QVector<quint8>, std::deque<quint8>,
-            std::vector<quint8>>();
+            std::vector<quint8>, std::array<quint8, S>>();
 
-        auto h = header<T>(code, quint16(data.size()));
-        T t(h.size() + data.size(), Qt::Uninitialized);
-        std::copy(std::begin(h), std::end(h), std::begin(t));
-        std::copy(std::begin(data), std::end(data), std::next(std::begin(t), h.size()));
-        setRawData(code, t, 0);
+        m_code = code;
+        m_size = quint16(data.size());
+        m_data.resize(m_size);
+        std::copy(std::begin(data), std::end(data), std::begin(m_data));
     }
 
-    template <typename T> void setRawData(quint8 code, const T &rawData, qint32 offset)
+    template <typename T, std::size_t S = 0> void appendData(const T &additionalData)
     {
         QKnxTypeCheck::FailIfNot<T, QByteArray, QVector<quint8>, std::deque<quint8>,
-            std::vector<quint8>>();
+            std::vector<quint8>, std::array<quint8, S>>();
+
+        if (additionalData.size() <= 0)
+            return;
+
+        m_size += quint16(additionalData.size());
+        m_data.resize(m_size);
+        std::copy(std::begin(additionalData), std::end(additionalData), std::begin(m_data));
+    }
+
+    template <typename T, std::size_t S = 0>
+        void setRawData(quint8 code, const T &rawData, qint32 offset)
+    {
+        QKnxTypeCheck::FailIfNot<T, QByteArray, QVector<quint8>, std::deque<quint8>,
+            std::vector<quint8>, std::array<quint8, S>>();
 
         const qint32 availableSize = rawData.size() - offset;
         if (availableSize < 1) return; // first byte for the length information

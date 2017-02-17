@@ -69,12 +69,6 @@ void QKnxNetIpStructure::resizeData(int size, bool makeEven)
     }
 }
 
-void QKnxNetIpStructure::appendData(const QVector<quint8> additionalData)
-{
-    m_data += additionalData;
-    m_size += additionalData.size();
-}
-
 /*!
     Returns the number of bytes representing the KNXnet/IP structure's data,
     excluding the bytes for the structure size and code.

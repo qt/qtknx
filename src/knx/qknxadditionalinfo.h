@@ -67,10 +67,12 @@ public:
     }
 
     bool isValid() const;
-    template<typename T> static bool isValid(QKnxAdditionalInfo::Type type, const T &data)
+
+    template<typename T, std::size_t S = 0>
+        static bool isValid(QKnxAdditionalInfo::Type type, const T &data)
     {
         QKnxTypeCheck::FailIfNot<T, QByteArray, QVector<quint8>, std::deque<quint8>,
-            std::vector<quint8>>();
+            std::vector<quint8>, std::array<quint8, S>>();
 
         const int size = data.size();
         if (size > 252)

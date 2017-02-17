@@ -44,8 +44,11 @@ public:
     void add(const QMap<ServiceFamilieId, quint8> &families);
     void add(const QVector<ServiceFamilieId> &ids, const QVector<quint8> &versions);
 
+    // TODO: add access functions for family and version
+
     using QKnxNetIpStructure::toString;
     using QKnxNetIpStructure::descriptionTypeCode;
 };
+Q_DECLARE_TYPEINFO(QKnxNetIpServiceFamiliesDIB, Q_MOVABLE_TYPE);
 
 QT_END_NAMESPACE

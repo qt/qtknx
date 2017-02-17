@@ -51,6 +51,7 @@ QKnxNetIpHPAI::QKnxNetIpHPAI(QKnxNetIpStructure::HostProtocolCode hpc, const QVe
 QKnxNetIpHPAI QKnxNetIpHPAI::fromRawData(const QByteArray &rawData, qint32 offset)
 {
     QKnxNetIpHPAI hpai;
+    hpai.resizeData(6); // size enforced 8.6.2 Host Protocol Address Information
     qint32 availableSize = rawData.size() - offset;
     if (availableSize <= 2) // at least size and code are to be expected
         return hpai;
@@ -67,6 +68,7 @@ QKnxNetIpHPAI QKnxNetIpHPAI::fromRawData(const QByteArray &rawData, qint32 offse
 QKnxNetIpHPAI QKnxNetIpHPAI::fromRawData(const QVector<quint8> &rawData, qint32 offset)
 {
     QKnxNetIpHPAI hpai;
+    hpai.resizeData(6); // size enforced 8.6.2 Host Protocol Address Information
     qint32 availableSize = rawData.size() - offset;
     if (availableSize <= 2) // at least size and code are to be expected
         return hpai;

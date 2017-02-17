@@ -9,6 +9,7 @@
 
 QT_BEGIN_NAMESPACE
 
+#include <array>
 #include <deque>
 #include <vector>
 

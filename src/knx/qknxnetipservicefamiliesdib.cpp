@@ -50,7 +50,7 @@ QKnxNetIpServiceFamiliesDIB QKnxNetIpServiceFamiliesDIB::fromRawData(const QVect
 
 void QKnxNetIpServiceFamiliesDIB::add(ServiceFamilieId id, quint8 versions)
 {
-    appendData({ quint8(id), versions });
+    appendData<std::array<quint8, 2>, 2>(std::array<quint8, 2>{ { quint8(id), versions } });
 }
 
 void QKnxNetIpServiceFamiliesDIB::add(const QMap<ServiceFamilieId, quint8> &families)

@@ -18,7 +18,7 @@ QT_BEGIN_NAMESPACE
 class Q_KNX_EXPORT QKnxNetIpDeviceDIB final : public QKnxNetIpStructure
 {
 public:
-    enum struct MediumCode : quint8
+    enum class MediumCode : quint8
     {
         Tp1 = 0x02,
         Pl110 = 0x04,
