@@ -25,7 +25,8 @@ public:
     explicit QKnxExtendedControlField(const QByteArray &data);
     explicit QKnxExtendedControlField(const QVector<quint8> &data);
 
-    enum class DestinationAddressType : quint8 {
+    enum class DestinationAddressType : quint8
+    {
         Individual = 0x00,
         Group = 0x01
     };
@@ -35,7 +36,8 @@ public:
     quint8 hopCount() const;
     void setHopCount(quint8 hopCount);
 
-    enum class ExtendedFrameFormat {
+    enum class ExtendedFrameFormat
+    {
         Standard = 0x00,
         Lte = 0x01
     };

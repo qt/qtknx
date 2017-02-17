@@ -25,28 +25,32 @@ public:
     explicit QKnxControlField(const QByteArray &data);
     explicit QKnxControlField(const QVector<quint8> &data);
 
-    enum class FrameType : quint8 {
+    enum class FrameType : quint8
+    {
         Extended = 0x00,
         Standard = 0x01
     };
     QKnxControlField::FrameType frameType() const { return static_cast<FrameType> (m_ctrl1[7]); }
     void setFrameType(QKnxControlField::FrameType type) { m_ctrl1[7] = static_cast<int> (type); }
 
-    enum class Repeat : quint8 {
+    enum class Repeat : quint8
+    {
         Repeat = 0x00,
         DoNotRepeat = 0x01
     };
     QKnxControlField::Repeat repeat() const { return static_cast<Repeat> (m_ctrl1[6]); }
     void setRepeat(QKnxControlField::Repeat repeat) { m_ctrl1[6] = static_cast<int> (repeat); }
 
-    enum class Broadcast : quint8 {
+    enum class Broadcast : quint8
+    {
         System = 0x00,
         Domain = 0x01
     };
     QKnxControlField::Broadcast broadcast() const { return static_cast<Broadcast> (m_ctrl1[5]); }
     void setBroadcast(QKnxControlField::Broadcast bcst) { m_ctrl1[5] = static_cast<int> (bcst); }
 
-    enum class Priority : quint8 {
+    enum class Priority : quint8
+    {
         System = 0x00,
         Normal = 0x01,
         Urgent = 0x02,
@@ -55,14 +59,16 @@ public:
     QKnxControlField::Priority priority() const;
     void setPriority(QKnxControlField::Priority priority);
 
-    enum class Acknowledge : quint8 {
+    enum class Acknowledge : quint8
+    {
         NotRequested = 0x00,
         Requested = 0x01
     };
     QKnxControlField::Acknowledge acknowledge() const { return Acknowledge(m_ctrl1[1]); }
     void setAcknowledge(QKnxControlField::Acknowledge ack) { m_ctrl1[1] = static_cast<int> (ack); }
 
-    enum class Confirm : quint8 {
+    enum class Confirm : quint8
+    {
         NoError = 0x00,
         Error = 0x01
     };

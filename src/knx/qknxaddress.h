@@ -20,13 +20,15 @@ QT_BEGIN_NAMESPACE
 class Q_KNX_EXPORT QKnxAddress final
 {
 public:
-    enum struct Type : quint8 {
+    enum class Type : quint8
+    {
         Group = 0x00,
         Individual = 0x01
     };
     QKnxAddress::Type type() const;
 
-    enum struct Notation : quint8 {
+    enum class Notation : quint8
+    {
         TwoLevel = 0x00,
         ThreeLevel = 0x01,
     };

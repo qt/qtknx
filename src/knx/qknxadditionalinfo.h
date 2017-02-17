@@ -19,7 +19,8 @@ QT_BEGIN_NAMESPACE
 class Q_KNX_EXPORT QKnxAdditionalInfo final
 {
 public:
-    enum struct Type : quint8 {
+    enum class Type : quint8
+    {
         Reserved = 0x00,
         PlMediumInformation = 0x01,
         RfMediumInformation = 0x02,

@@ -14,7 +14,8 @@ QT_BEGIN_NAMESPACE
 class Q_KNX_EXPORT QKnxNetIpHeader final
 {
 public:
-    enum class ServiceType : quint16 {
+    enum class ServiceType : quint16
+    {
         // KNXnet/IP Core service type identifiers
         SearchRequest = 0x0201,
         SearchResponse = 0x0202,
