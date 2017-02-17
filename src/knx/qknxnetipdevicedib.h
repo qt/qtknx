@@ -27,10 +27,19 @@ public:
     };
     QKnxNetIpDeviceDIB::MediumCode mediumCode() const;
 
+    // 4.20 Programming Mode (prog_mode)
+    // referred to by 7.5.4.2 Device information DIB device status
+    enum class DeviceStatus : quint8
+    {
+        InactiveProgrammingMode = 0x00,
+        ActiveProgrammingMode = 0x01
+    };
+    QKnxNetIpDeviceDIB::DeviceStatus deviceStatus() const;
+
     QKnxNetIpDeviceDIB() = default;
 
     QKnxNetIpDeviceDIB(MediumCode mediumCode,
-                       quint8 deviceStatus,
+                       DeviceStatus deviceStatus,
                        const QKnxAddress &address,
                        quint16 projectId,
                        const QByteArray &serialNumber,
@@ -44,7 +53,6 @@ public:
     QKnxNetIpDeviceDIB fromRawData(const QByteArray &rawData, qint32 offset);
     QKnxNetIpDeviceDIB fromRawData(const QVector<quint8> &rawData, qint32 offset);
 
-    quint8 deviceStatus() const;
     QKnxAddress individualAddress() const;
     quint16 projectInstallationIdentfier() const;
     QByteArray serialNumber() const;

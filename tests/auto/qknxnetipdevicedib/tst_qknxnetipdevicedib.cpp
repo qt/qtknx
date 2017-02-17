@@ -22,13 +22,14 @@ class tst_QKnxNetIpDeviceDIB : public QObject
 private slots:
     void testConstructor()
     {
-        QKnxNetIpDeviceDIB deviceDIB(QKnxNetIpDeviceDIB::MediumCode::Ip, 0x01,
+        QKnxNetIpDeviceDIB deviceDIB(QKnxNetIpDeviceDIB::MediumCode::Ip,
+            QKnxNetIpDeviceDIB::DeviceStatus::ActiveProgrammingMode,
             QKnxAddress::Individual::Unregistered, 0x1111, QByteArray::fromHex("123456123456"),
             QHostAddress::AnyIPv4, QByteArray::fromHex("bcaec56690f9"), QByteArray("qt.io KNX device"));
 
         QCOMPARE(deviceDIB.mediumCode(), QKnxNetIpDeviceDIB::MediumCode::Ip);
         QCOMPARE(deviceDIB.descriptionTypeCode(), QKnxNetIpStructure::DescriptionTypeCode::DeviceInfo);
-        QCOMPARE(deviceDIB.deviceStatus(), quint8(0x01));
+        QCOMPARE(deviceDIB.deviceStatus(), QKnxNetIpDeviceDIB::DeviceStatus::ActiveProgrammingMode);
         QCOMPARE(deviceDIB.individualAddress().toString(), QKnxAddress::Individual::Unregistered.toString());
         QCOMPARE(deviceDIB.projectInstallationIdentfier(), quint16(0x1111));
         QCOMPARE(deviceDIB.serialNumber(), QByteArray::fromHex("123456123456"));
