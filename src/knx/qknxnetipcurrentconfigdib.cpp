@@ -28,10 +28,10 @@ QKnxNetIpCurrentConfigDIB::QKnxNetIpCurrentConfigDIB(const QHostAddress &ip,
         return; // Only one assignment method shall be enabled from within the possible range.
 
     QByteArray data(0, Qt::Uninitialized);
-    data.insert(0, QKnxNetIpUtils::toArray<QByteArray>(ip));
-    data.insert(4, QKnxNetIpUtils::toArray<QByteArray>(subnetMask));
-    data.insert(8, QKnxNetIpUtils::toArray<QByteArray>(gateway));
-    data.insert(12, QKnxNetIpUtils::toArray<QByteArray>(dhcp));
+    data.insert(0, QKnxUtils::HostAddress::toArray<QByteArray>(ip));
+    data.insert(4, QKnxUtils::HostAddress::toArray<QByteArray>(subnetMask));
+    data.insert(8, QKnxUtils::HostAddress::toArray<QByteArray>(gateway));
+    data.insert(12, QKnxUtils::HostAddress::toArray<QByteArray>(dhcp));
     data[16] = quint8(method);
 
     setData(quint8(DescriptionTypeCode::CurrentIpConfiguration), data);
@@ -69,22 +69,22 @@ QKnxNetIpCurrentConfigDIB QKnxNetIpCurrentConfigDIB::fromRawData(const QVector<q
 
 QHostAddress QKnxNetIpCurrentConfigDIB::ipAddress() const
 {
-    return QKnxNetIpUtils::fromArray(data<QVector<quint8>>(0, 4));
+    return QKnxUtils::HostAddress::fromArray(data<QVector<quint8>>(0, 4));
 }
 
 QHostAddress QKnxNetIpCurrentConfigDIB::subnetMask() const
 {
-    return QKnxNetIpUtils::fromArray(data<QVector<quint8>>(4, 4));
+    return QKnxUtils::HostAddress::fromArray(data<QVector<quint8>>(4, 4));
 }
 
 QHostAddress QKnxNetIpCurrentConfigDIB::defaultGateway() const
 {
-    return QKnxNetIpUtils::fromArray(data<QVector<quint8>>(8, 4));
+    return QKnxUtils::HostAddress::fromArray(data<QVector<quint8>>(8, 4));
 }
 
 QHostAddress QKnxNetIpCurrentConfigDIB::dhcpOrBootP() const
 {
-    return QKnxNetIpUtils::fromArray(data<QVector<quint8>>(12, 4));
+    return QKnxUtils::HostAddress::fromArray(data<QVector<quint8>>(12, 4));
 }
 
 QKnxNetIpCurrentConfigDIB::AssignmentMethod QKnxNetIpCurrentConfigDIB::assignmentMethod() const

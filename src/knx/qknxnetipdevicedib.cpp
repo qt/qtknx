@@ -6,6 +6,7 @@
 ****************************************************************************/
 
 #include "qknxnetipdevicedib.h"
+#include "qknxutils.h"
 
 QT_BEGIN_NAMESPACE
 
@@ -29,8 +30,7 @@ QKnxNetIpDeviceDIB::QKnxNetIpDeviceDIB(MediumCode mediumCode, DeviceStatus devic
         return;
     data[1] = quint8(deviceStatus);
     data.insert(2, individualAddress.rawData<QByteArray>());
-    data[4] = quint8(projectId >> 8);
-    data[5] = quint8(projectId);
+    data.insert(4, QKnxUtils::Integer::quint16ToArray<QByteArray>(projectId));
 
     if (serialNumber.size() != 6)
         return;
@@ -38,7 +38,7 @@ QKnxNetIpDeviceDIB::QKnxNetIpDeviceDIB(MediumCode mediumCode, DeviceStatus devic
 
     if (multicastAddress != QHostAddress::AnyIPv4 && !multicastAddress.isMulticast())
         return;
-    data.insert(12, QKnxNetIpUtils::toArray<QByteArray>(multicastAddress));
+    data.insert(12, QKnxUtils::HostAddress::toArray<QByteArray>(multicastAddress));
 
     if (macAddress.size() != 6)
         return;
@@ -93,8 +93,7 @@ QKnxAddress QKnxNetIpDeviceDIB::individualAddress() const
 
 quint16 QKnxNetIpDeviceDIB::projectInstallationIdentfier() const
 {
-    auto tmp = data<QVector<quint8>>(4, 2);
-    return quint16(tmp[0]) << 8 | tmp[1];
+    return QKnxUtils::Integer::quint16FromArray(data<QVector<quint8>>(4, 2));
 }
 
 QByteArray QKnxNetIpDeviceDIB::serialNumber() const
@@ -104,7 +103,7 @@ QByteArray QKnxNetIpDeviceDIB::serialNumber() const
 
 QHostAddress QKnxNetIpDeviceDIB::multicastAddress() const
 {
-    return QKnxNetIpUtils::fromArray(data<QVector<quint8>>(12, 4));
+    return QKnxUtils::HostAddress::fromArray(data<QVector<quint8>>(12, 4));
 }
 
 QByteArray QKnxNetIpDeviceDIB::macAddress() const

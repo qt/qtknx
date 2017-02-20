@@ -6,6 +6,7 @@
 ****************************************************************************/
 
 #include "qknxnetipconfigdib.h"
+#include "qknxutils.h"
 
 QT_BEGIN_NAMESPACE
 
@@ -25,9 +26,9 @@ QKnxNetIpConfigDIB::QKnxNetIpConfigDIB(const QHostAddress &ip, const QHostAddres
         return;
 
     QByteArray data(0, Qt::Uninitialized);
-    data.insert(0, QKnxNetIpUtils::toArray<QByteArray>(ip));
-    data.insert(4, QKnxNetIpUtils::toArray<QByteArray>(subnetMask));
-    data.insert(8, QKnxNetIpUtils::toArray<QByteArray>(gateway));
+    data.insert(0, QKnxUtils::HostAddress::toArray<QByteArray>(ip));
+    data.insert(4, QKnxUtils::HostAddress::toArray<QByteArray>(subnetMask));
+    data.insert(8, QKnxUtils::HostAddress::toArray<QByteArray>(gateway));
 
     data[12] = quint8(caps);
     data[13] = quint8(methods);
@@ -65,17 +66,17 @@ QKnxNetIpConfigDIB QKnxNetIpConfigDIB::fromRawData(const QVector<quint8> &rawDat
 
 QHostAddress QKnxNetIpConfigDIB::ipAddress() const
 {
-    return QKnxNetIpUtils::fromArray(data<QVector<quint8>>(0, 4));
+    return QKnxUtils::HostAddress::fromArray(data<QVector<quint8>>(0, 4));
 }
 
 QHostAddress QKnxNetIpConfigDIB::subnetMask() const
 {
-    return QKnxNetIpUtils::fromArray(data<QVector<quint8>>(4, 4));
+    return QKnxUtils::HostAddress::fromArray(data<QVector<quint8>>(4, 4));
 }
 
 QHostAddress QKnxNetIpConfigDIB::defaultGateway() const
 {
-    return QKnxNetIpUtils::fromArray(data<QVector<quint8>>(8, 4));
+    return QKnxUtils::HostAddress::fromArray(data<QVector<quint8>>(8, 4));
 }
 
 QKnxNetIpConfigDIB::Capabilities QKnxNetIpConfigDIB::capabilities() const

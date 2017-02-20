@@ -14,6 +14,7 @@
 #include <QtCore/qvector.h>
 #include <QtKnx/qknxglobal.h>
 #include <QtKnx/qknxtypecheck.h>
+#include <QtKnx/qknxutils.h>
 
 QT_BEGIN_NAMESPACE
 
@@ -62,8 +63,7 @@ public:
 
         if (!isValid())
             return {};
-        T t(2, Qt::Uninitialized); t[0] = quint8(m_address >> 8), t[1] = quint8(m_address);
-        return t;
+        return QKnxUtils::Integer::quint16ToArray<T>(quint16(m_address));
     }
 
     QString toString() const;

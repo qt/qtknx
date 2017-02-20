@@ -6,6 +6,7 @@
 ****************************************************************************/
 
 #include "qknxnetiphpai.h"
+#include "qknxutils.h"
 
 QT_BEGIN_NAMESPACE
 
@@ -30,9 +31,8 @@ QKnxNetIpHPAI::QKnxNetIpHPAI(QKnxNetIpStructure::HostProtocolCode hpc, const QHo
 {
     QByteArray data(0, Qt::Uninitialized);
     auto addr = address.isNull() ? QHostAddress::LocalHost : address;
-    data.insert(0, QKnxNetIpUtils::toArray<QByteArray>(addr));
-    data[4] = quint8(port >> 8);
-    data[5] = quint8(port);
+    data.insert(0, QKnxUtils::HostAddress::toArray<QByteArray>(addr));
+    data.insert(4, QKnxUtils::Integer::quint16ToArray<QByteArray>(port));
     setData(quint8(hpc), data);
 }
 
@@ -84,13 +84,12 @@ QKnxNetIpHPAI QKnxNetIpHPAI::fromRawData(const QVector<quint8> &rawData, qint32 
 
 QHostAddress QKnxNetIpHPAI::address() const
 {
-    return QKnxNetIpUtils::fromArray(data<QVector<quint8>>(0, 4));
+    return QKnxUtils::HostAddress::fromArray(data<QVector<quint8>>(0, 4));
 }
 
 quint16 QKnxNetIpHPAI::port() const
 {
-    auto port = data<QVector<quint8>>(4, 2);
-    return quint16(port[0] << 8 | port[1]);
+    return QKnxUtils::Integer::quint16FromArray(data<QVector<quint8>>(4, 2));
 }
 
 QT_END_NAMESPACE
