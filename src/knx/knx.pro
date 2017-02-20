@@ -19,7 +19,8 @@ PUBLIC_HEADERS += \
     qknxnetipdevicedib.h \
     qknxnetipservicefamiliesdib.h \
     qknxnetipconfigdib.h \
-    qknxnetipcurrentconfigdib.h
+    qknxnetipcurrentconfigdib.h \
+    qknxutils.h
 
 PRIVATE_HEADERS +=
 
