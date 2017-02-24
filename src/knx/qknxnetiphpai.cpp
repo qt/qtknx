@@ -22,8 +22,7 @@ QT_BEGIN_NAMESPACE
 
 QKnxNetIpHPAI::QKnxNetIpHPAI(const QHostAddress &address, quint16 port)
     : QKnxNetIpHPAI(QKnxNetIpStructure::HostProtocolCode::IpV4_Udp, address, port)
-{
-}
+{}
 
 QKnxNetIpHPAI::QKnxNetIpHPAI(QKnxNetIpStructure::HostProtocolCode hpc, const QHostAddress &address,
         quint16 port)

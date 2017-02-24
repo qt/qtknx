@@ -14,8 +14,7 @@ QKnxNetIpConfigDIB::QKnxNetIpConfigDIB(const QNetworkAddressEntry &addressAndSub
         const QHostAddress &gateway, Capabilities caps, AssignmentMethods methods)
     : QKnxNetIpConfigDIB(addressAndSubnetMask.ip(), addressAndSubnetMask.netmask(), gateway, caps,
         methods)
-{
-}
+{}
 
 QKnxNetIpConfigDIB::QKnxNetIpConfigDIB(const QHostAddress &ip, const QHostAddress &subnetMask,
         const QHostAddress &gateway, Capabilities caps, AssignmentMethods methods)

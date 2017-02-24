@@ -45,7 +45,6 @@ public:
     QKnxNetIpConfigDIB(const QHostAddress &ipAddress, const QHostAddress &subnetMask,
         const QHostAddress &gateway, Capabilities caps, AssignmentMethods methods);
 
-
     explicit QKnxNetIpConfigDIB(const QByteArray &data);
     explicit QKnxNetIpConfigDIB(const QVector<quint8> &data);
 

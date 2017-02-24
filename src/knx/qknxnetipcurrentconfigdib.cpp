@@ -15,8 +15,7 @@ QKnxNetIpCurrentConfigDIB::QKnxNetIpCurrentConfigDIB(const QNetworkAddressEntry 
         const QHostAddress &gateway, const QHostAddress &dhcp, AssignmentMethod method)
     : QKnxNetIpCurrentConfigDIB(addrSubnetMask.ip(), addrSubnetMask.netmask(), gateway, dhcp,
         method)
-{
-}
+{}
 
 QKnxNetIpCurrentConfigDIB::QKnxNetIpCurrentConfigDIB(const QHostAddress &ip,
         const QHostAddress &subnetMask, const QHostAddress &gateway, const QHostAddress &dhcp,

@@ -10,7 +10,6 @@
 QT_BEGIN_NAMESPACE
 
 QKnxNetIpFrame::~QKnxNetIpFrame()
-{
-}
+{}
 
 QT_END_NAMESPACE

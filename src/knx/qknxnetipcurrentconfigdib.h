@@ -35,7 +35,6 @@ public:
     QKnxNetIpCurrentConfigDIB(const QHostAddress &ipAddress, const QHostAddress &subnetMask,
         const QHostAddress &gateway, const QHostAddress &dhcp, AssignmentMethod method);
 
-
     explicit QKnxNetIpCurrentConfigDIB(const QByteArray &data);
     explicit QKnxNetIpCurrentConfigDIB(const QVector<quint8> &data);
 

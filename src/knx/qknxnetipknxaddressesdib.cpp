@@ -28,13 +28,11 @@ QKnxNetIpKnxAddressesDIB::QKnxNetIpKnxAddressesDIB(const QVector<QKnxAddress> &a
 
 QKnxNetIpKnxAddressesDIB::QKnxNetIpKnxAddressesDIB(const QByteArray &data)
     : QKnxNetIpStructure(quint8(DescriptionTypeCode::KnxAddresses), data)
-{
-}
+{}
 
 QKnxNetIpKnxAddressesDIB::QKnxNetIpKnxAddressesDIB(const QVector<quint8> &data)
     : QKnxNetIpStructure(quint8(DescriptionTypeCode::KnxAddresses), data)
-{
-}
+{}
 
 QKnxNetIpKnxAddressesDIB QKnxNetIpKnxAddressesDIB::fromRawData(const QByteArray &rawData, qint32 offset)
 {

@@ -20,7 +20,6 @@ public:
     explicit QKnxNetIpKnxAddressesDIB(const QKnxAddress &address);
     explicit QKnxNetIpKnxAddressesDIB(const QVector<QKnxAddress> &addresses);
 
-
     explicit QKnxNetIpKnxAddressesDIB(const QByteArray &data);
     explicit QKnxNetIpKnxAddressesDIB(const QVector<quint8> &data);
 

@@ -33,8 +33,7 @@ QKnxNetIpManufacturerDIB::QKnxNetIpManufacturerDIB(quint16 id, const QVector<qui
 
 QKnxNetIpManufacturerDIB::QKnxNetIpManufacturerDIB(const QVector<quint8> &data)
     : QKnxNetIpStructure(quint8(DescriptionTypeCode::ManufactorData), data)
-{
-}
+{}
 
 QKnxNetIpManufacturerDIB QKnxNetIpManufacturerDIB::fromRawData(const QByteArray &rawData, qint32 offset)
 {

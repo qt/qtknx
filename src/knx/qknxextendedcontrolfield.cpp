@@ -30,8 +30,7 @@ const std::bitset<8> gExtFormatMask = 0x0f;
 */
 QKnxExtendedControlField::QKnxExtendedControlField(quint8 data)
     : m_ctrl2(data)
-{
-}
+{}
 
 /*!
     Creates a new extended control field from the first byte of the \a data

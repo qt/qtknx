@@ -44,17 +44,17 @@ private slots:
     {
         TestStructure test;
         QCOMPARE(test.dataSize(), 0);
-        QCOMPARE(test.data<QByteArray>(), QByteArray());
-        QCOMPARE(test.data<QVector<quint8>>(), QVector<quint8>());
+        QCOMPARE(test.data<QByteArray>(), QByteArray {});
+        QCOMPARE(test.data<QVector<quint8>>(), QVector<quint8> {});
 
         QCOMPARE(test.rawSize(), 2);
         QCOMPARE(test.rawData<QByteArray>(), QByteArray::fromHex("0200"));
         QCOMPARE(test.rawData<QVector<quint8>>(), QVector<quint8>({ 0x02, 0x00 }));
 
-        test = TestStructure(0x01, QByteArray());
+        test = TestStructure(0x01, QByteArray {});
         QCOMPARE(test.dataSize(), 0);
-        QCOMPARE(test.data<QByteArray>(), QByteArray());
-        QCOMPARE(test.data<QVector<quint8>>(), QVector<quint8>());
+        QCOMPARE(test.data<QByteArray>(), QByteArray {});
+        QCOMPARE(test.data<QVector<quint8>>(), QVector<quint8> {});
 
         QCOMPARE(test.rawSize(), 2);
         QCOMPARE(test.rawData<QByteArray>(), QByteArray::fromHex("0201"));
@@ -103,8 +103,8 @@ private slots:
 
         test = TestStructure::fromRawData(0x01, QByteArray(), 5);
         QCOMPARE(test.dataSize(), 0);
-        QCOMPARE(test.data<QByteArray>(), QByteArray());
-        QCOMPARE(test.data<QVector<quint8>>(), QVector<quint8>());
+        QCOMPARE(test.data<QByteArray>(), QByteArray {});
+        QCOMPARE(test.data<QVector<quint8>>(), QVector<quint8> {});
 
         QCOMPARE(test.rawSize(), 2);
         QCOMPARE(test.rawData<QByteArray>(), QByteArray::fromHex("0200"));
@@ -112,8 +112,8 @@ private slots:
 
         test = TestStructure::fromRawData(0x01, QVector<quint8>(), 5);
         QCOMPARE(test.dataSize(), 0);
-        QCOMPARE(test.data<QByteArray>(), QByteArray());
-        QCOMPARE(test.data<QVector<quint8>>(), QVector<quint8>());
+        QCOMPARE(test.data<QByteArray>(), QByteArray {});
+        QCOMPARE(test.data<QVector<quint8>>(), QVector<quint8> {});
         QCOMPARE(test.data<std::vector<quint8>>(), std::vector<quint8>());
 
         QCOMPARE(test.rawSize(), 2);
@@ -123,9 +123,9 @@ private slots:
 
         test = TestStructure::fromRawData(0x01, std::vector<quint8>(), 5);
         QCOMPARE(test.dataSize(), 0);
-        QCOMPARE(test.data<QByteArray>(), QByteArray());
-        QCOMPARE(test.data<QVector<quint8>>(), QVector<quint8>());
-        QCOMPARE(test.data<std::vector<quint8>>(), std::vector<quint8>());
+        QCOMPARE(test.data<QByteArray>(), QByteArray {});
+        QCOMPARE(test.data<QVector<quint8>>(), QVector<quint8> {});
+        QCOMPARE(test.data<std::vector<quint8>>(), std::vector<quint8> {});
 
         QCOMPARE(test.rawSize(), 2);
         QCOMPARE(test.rawData<QByteArray>(), QByteArray::fromHex("0200"));
@@ -134,8 +134,8 @@ private slots:
 
         test = TestStructure(0x01, std::vector<quint8>());
         QCOMPARE(test.dataSize(), 0);
-        QCOMPARE(test.data<QByteArray>(), QByteArray());
-        QCOMPARE(test.data<QVector<quint8>>(), QVector<quint8>());
+        QCOMPARE(test.data<QByteArray>(), QByteArray {});
+        QCOMPARE(test.data<QVector<quint8>>(), QVector<quint8> {});
         QCOMPARE(test.data<std::vector<quint8>>(), std::vector<quint8>());
 
         QCOMPARE(test.rawSize(), 2);
@@ -146,28 +146,28 @@ private slots:
         test = TestStructure(0x01, std::deque<quint8> { 0x01, 0x02, 0x03, 0x04, 0x05 });
         QCOMPARE(test.dataSize(), 5);
         QCOMPARE(test.data<QByteArray>(), QByteArray::fromHex("0102030405"));
-        QCOMPARE(test.data<std::deque<quint8>>(), std::deque<quint8> ({ 0x01, 0x02, 0x03, 0x04, 0x05 }));
+        QCOMPARE(test.data<std::deque<quint8>>(), std::deque<quint8>({ 0x01, 0x02, 0x03, 0x04, 0x05 }));
 
         QCOMPARE(test.rawSize(), 7);
         QCOMPARE(test.rawData<QByteArray>(), QByteArray::fromHex("07010102030405"));
         QCOMPARE(test.rawData<std::deque<quint8>>(),
-            std::deque<quint8> ({ 0x07, 0x01, 0x01, 0x02, 0x03, 0x04, 0x05 }));
+            std::deque<quint8>({ 0x07, 0x01, 0x01, 0x02, 0x03, 0x04, 0x05 }));
         QCOMPARE(test.rawData<std::vector<quint8>>(),
-            std::vector<quint8> ({ 0x07, 0x01, 0x01, 0x02, 0x03, 0x04, 0x05 }));
+            std::vector<quint8>({ 0x07, 0x01, 0x01, 0x02, 0x03, 0x04, 0x05 }));
     }
 
     void testData()
     {
         TestStructure test;
-        QCOMPARE(test.data<QByteArray>(0, 10), QByteArray());
-        QCOMPARE(test.data<QVector<quint8>>(10, 10), QVector<quint8>());
+        QCOMPARE(test.data<QByteArray>(0, 10), QByteArray {});
+        QCOMPARE(test.data<QVector<quint8>>(10, 10), QVector<quint8> {});
 
         auto ba = QByteArray::fromHex("001122334466778899aabbccddeeff");
         test = { 0x01, ba };
         QCOMPARE(test.data<QByteArray>(0, 10), ba.mid(0, 10));
         QCOMPARE(test.data<QByteArray>(10, 2), ba.mid(10, 2));
         QCOMPARE(test.data<QByteArray>(20, 2), ba.mid(20, 2));
-        QCOMPARE(test.data<QByteArray>(10, 10), QByteArray());
+        QCOMPARE(test.data<QByteArray>(10, 10), QByteArray {});
     }
 
     void testToString()

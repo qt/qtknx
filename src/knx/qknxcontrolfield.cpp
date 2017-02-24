@@ -28,8 +28,7 @@ const std::bitset<8> gPriorityMask = 0x0c;
 */
 QKnxControlField::QKnxControlField(quint8 data)
     : m_ctrl1(data)
-{
-}
+{}
 
 /*!
     Creates a new control field from the first byte of the \a data byte array.

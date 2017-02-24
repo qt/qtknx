@@ -26,7 +26,7 @@ private slots:
         QCOMPARE(info.type(), QKnxAdditionalInfo::Type::EscCode);
         QCOMPARE(info.isValid(), false);
         QCOMPARE(info.toString(), QStringLiteral(""));
-        QCOMPARE(info.rawData<QVector<quint8>>(), (QVector<quint8> { }));
+        QCOMPARE(info.rawData<QVector<quint8>>(), QVector<quint8> {});
 
         info = QKnxAdditionalInfo(QKnxAdditionalInfo::Type::BiBatInformation, QByteArray::fromHex("1020"));
         QCOMPARE(info.type(), QKnxAdditionalInfo::Type::BiBatInformation);
@@ -38,13 +38,13 @@ private slots:
         QCOMPARE(info.type(), QKnxAdditionalInfo::Type::EscCode);
         QCOMPARE(info.isValid(), false);
         QCOMPARE(info.toString(), QStringLiteral(""));
-        QCOMPARE(info.rawData<QVector<quint8>>(), (QVector<quint8> { }));
+        QCOMPARE(info.rawData<QVector<quint8>>(), QVector<quint8> {});
 
         info = QKnxAdditionalInfo(QKnxAdditionalInfo::Type(0xaa), { 0x10, 0x20, 0x30 });
         QCOMPARE(info.type(), QKnxAdditionalInfo::Type::EscCode);
         QCOMPARE(info.isValid(), false);
         QCOMPARE(info.toString(), QStringLiteral(""));
-        QCOMPARE(info.rawData<QVector<quint8>>(), (QVector<quint8> { }));
+        QCOMPARE(info.rawData<QVector<quint8>>(), QVector<quint8> {});
     }
 
     void testIsValid()
@@ -67,12 +67,12 @@ private slots:
 
         info = { QKnxAdditionalInfo::Type::RfMediumInformation, QByteArray::fromHex("1020303040506070") };
         QCOMPARE(info.isValid(), true);
-        QCOMPARE(info.rawData<QVector<quint8>>(), (QVector<quint8> { 0x02, 0x08, 0x10, 0x20, 0x30, 0x30, 0x40, 0x50, 0x60, 0x70 }));
+        QCOMPARE(info.rawData<QVector<quint8>>(), QVector<quint8> ({ 0x02, 0x08, 0x10, 0x20, 0x30, 0x30, 0x40, 0x50, 0x60, 0x70 }));
 
         // the passed data container has not a valid length
         info = { QKnxAdditionalInfo::Type::RfMediumInformation, QVector<quint8>(0x100, 0xff) };
         QCOMPARE(info.isValid(), false);
-        QCOMPARE(info.rawData<QVector<quint8>>(), { });
+        QCOMPARE(info.rawData<QVector<quint8>>(), {});
     }
 
     void testExpectedDataSize()
@@ -157,7 +157,7 @@ private slots:
         QCOMPARE(info.type(), QKnxAdditionalInfo::Type::BiBatInformation);
         QCOMPARE(info.isValid(), true);
         QCOMPARE(info.toString(), QStringLiteral("Type { 0x07 }, Size { 0x02 }, Data { 0x10, 0x20 }"));
-        QCOMPARE(info.rawData<QVector<quint8>>(), (QVector<quint8> { 0x07, 0x02, 0x10, 0x20 }));
+        QCOMPARE(info.rawData<QVector<quint8>>(), QVector<quint8> ({ 0x07, 0x02, 0x10, 0x20 }));
     }
 };
 

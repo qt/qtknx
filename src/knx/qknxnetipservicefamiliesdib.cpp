@@ -24,13 +24,11 @@ QKnxNetIpServiceFamiliesDIB::QKnxNetIpServiceFamiliesDIB(const QVector<ServiceFa
 
 QKnxNetIpServiceFamiliesDIB::QKnxNetIpServiceFamiliesDIB(const QByteArray &data)
     : QKnxNetIpStructure(quint8(DescriptionTypeCode::SupportedServiceFamilies), data)
-{
-}
+{}
 
 QKnxNetIpServiceFamiliesDIB::QKnxNetIpServiceFamiliesDIB(const QVector<quint8> &data)
     : QKnxNetIpStructure(quint8(DescriptionTypeCode::SupportedServiceFamilies), data)
-{
-}
+{}
 
 QKnxNetIpServiceFamiliesDIB QKnxNetIpServiceFamiliesDIB::fromRawData(const QByteArray &rawData,
     qint32 offset)
