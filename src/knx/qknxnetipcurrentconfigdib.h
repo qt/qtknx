@@ -48,8 +48,15 @@ public:
 
     AssignmentMethod assignmentMethod() const;
 
+    bool isValid() const;
+
     using QKnxNetIpStructure::toString;
     using QKnxNetIpStructure::descriptionTypeCode;
+
+private:
+    QKnxNetIpCurrentConfigDIB(const QKnxNetIpStructure &other)
+        : QKnxNetIpStructure(other)
+    {}
 };
 
 Q_DECLARE_TYPEINFO(QKnxNetIpCurrentConfigDIB, Q_MOVABLE_TYPE);

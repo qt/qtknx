@@ -22,7 +22,7 @@ QT_BEGIN_NAMESPACE
 QKnxNetIpDeviceDIB::QKnxNetIpDeviceDIB(MediumCode mediumCode, DeviceStatus deviceStatus,
         const QKnxAddress &individualAddress, quint16 projectId, const QByteArray &serialNumber,
         const QHostAddress &multicastAddress, const QByteArray &macAddress, const QByteArray deviceName)
-    : QKnxNetIpStructure(quint8(DescriptionTypeCode::DeviceInfo), 52, true)
+    : QKnxNetIpStructure(quint8(DescriptionTypeCode::DeviceInfo))
 {
     QByteArray data(0, Qt::Uninitialized);
     data[0] = quint8(mediumCode);
@@ -44,8 +44,8 @@ QKnxNetIpDeviceDIB::QKnxNetIpDeviceDIB(MediumCode mediumCode, DeviceStatus devic
         return;
     data.insert(16, macAddress);
     data.insert(22, deviceName);
-    setData(quint8(DescriptionTypeCode::DeviceInfo), data);
 
+    setData(data);
     resizeData(52, true); // size enforced by 7.5.4.2 Device information DIB
 }
 
@@ -63,15 +63,13 @@ QKnxNetIpDeviceDIB::QKnxNetIpDeviceDIB(const QVector<quint8> &data)
 
 QKnxNetIpDeviceDIB QKnxNetIpDeviceDIB::fromRawData(const QByteArray &rawData, qint32 offset)
 {
-    QKnxNetIpDeviceDIB dib;
-    dib.setRawData(quint8(DescriptionTypeCode::DeviceInfo), rawData, offset);
+    QKnxNetIpDeviceDIB dib = QKnxNetIpStructure::fromRawData(rawData, offset);
     dib.resizeData(52, true); // size enforced by 7.5.4.2 Device information DIB
     return dib;
 }
 QKnxNetIpDeviceDIB QKnxNetIpDeviceDIB::fromRawData(const QVector<quint8> &rawData, qint32 offset)
 {
-    QKnxNetIpDeviceDIB dib;
-    dib.setRawData(quint8(DescriptionTypeCode::DeviceInfo), rawData, offset);
+    QKnxNetIpDeviceDIB dib = QKnxNetIpStructure::fromRawData(rawData, offset);
     dib.resizeData(52, true); // size enforced by 7.5.4.2 Device information DIB
     return dib;
 }
@@ -114,6 +112,12 @@ QByteArray QKnxNetIpDeviceDIB::macAddress() const
 QByteArray QKnxNetIpDeviceDIB::deviceName() const
 {
     return QByteArray(data<QByteArray>(22, 30).constData());
+}
+
+bool QKnxNetIpDeviceDIB::isValid() const
+{
+    return QKnxNetIpStructure::isValid() && dataSize() == 52
+        && descriptionTypeCode() == DescriptionTypeCode::DeviceInfo;
 }
 
 QT_END_NAMESPACE

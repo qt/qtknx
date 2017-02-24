@@ -58,8 +58,15 @@ public:
     Capabilities capabilities() const;
     AssignmentMethods assignmentMethods() const;
 
+    bool isValid() const;
+
     using QKnxNetIpStructure::toString;
     using QKnxNetIpStructure::descriptionTypeCode;
+
+private:
+    QKnxNetIpConfigDIB(const QKnxNetIpStructure &other)
+        : QKnxNetIpStructure(other)
+    {}
 };
 Q_DECLARE_OPERATORS_FOR_FLAGS(QKnxNetIpConfigDIB::Capabilities)
 Q_DECLARE_OPERATORS_FOR_FLAGS(QKnxNetIpConfigDIB::AssignmentMethods)

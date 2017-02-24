@@ -60,8 +60,15 @@ public:
     QByteArray macAddress() const;
     QByteArray deviceName() const;
 
+    bool isValid() const;
+
     using QKnxNetIpStructure::toString;
     using QKnxNetIpStructure::descriptionTypeCode;
+
+private:
+    QKnxNetIpDeviceDIB(const QKnxNetIpStructure &other)
+        : QKnxNetIpStructure(other)
+    {}
 };
 Q_DECLARE_TYPEINFO(QKnxNetIpDeviceDIB, Q_MOVABLE_TYPE);
 

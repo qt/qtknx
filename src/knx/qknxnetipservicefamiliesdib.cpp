@@ -10,14 +10,14 @@
 QT_BEGIN_NAMESPACE
 
 QKnxNetIpServiceFamiliesDIB::QKnxNetIpServiceFamiliesDIB(const QMap<ServiceFamilieId, quint8> &families)
-    : QKnxNetIpStructure(quint8(DescriptionTypeCode::SupportedServiceFamilies), 2 * families.size())
+    : QKnxNetIpStructure(quint8(DescriptionTypeCode::SupportedServiceFamilies))
 {
     add(families);
 }
 
 QKnxNetIpServiceFamiliesDIB::QKnxNetIpServiceFamiliesDIB(const QVector<ServiceFamilieId> &ids,
         const QVector<quint8> &versions)
-    : QKnxNetIpStructure(quint8(DescriptionTypeCode::SupportedServiceFamilies), 2 * ids.size())
+    : QKnxNetIpStructure(quint8(DescriptionTypeCode::SupportedServiceFamilies))
 {
     add(ids, versions);
 }
@@ -33,17 +33,13 @@ QKnxNetIpServiceFamiliesDIB::QKnxNetIpServiceFamiliesDIB(const QVector<quint8> &
 QKnxNetIpServiceFamiliesDIB QKnxNetIpServiceFamiliesDIB::fromRawData(const QByteArray &rawData,
     qint32 offset)
 {
-    QKnxNetIpServiceFamiliesDIB dib;
-    dib.setRawData(quint8(DescriptionTypeCode::SupportedServiceFamilies), rawData, offset);
-    return dib;
+    return QKnxNetIpStructure::fromRawData(rawData, offset);
 }
 
 QKnxNetIpServiceFamiliesDIB QKnxNetIpServiceFamiliesDIB::fromRawData(const QVector<quint8> &rawData,
     qint32 offset)
 {
-    QKnxNetIpServiceFamiliesDIB dib;
-    dib.setRawData(quint8(DescriptionTypeCode::SupportedServiceFamilies), rawData, offset);
-    return dib;
+    return QKnxNetIpStructure::fromRawData(rawData, offset);
 }
 
 void QKnxNetIpServiceFamiliesDIB::add(ServiceFamilieId id, quint8 versions)
@@ -69,6 +65,12 @@ void QKnxNetIpServiceFamiliesDIB::add(const QVector<ServiceFamilieId> &ids, cons
     for (int i = 0; i < ids.size(); ++i)
         additionalData[i] = quint8(ids[i]), additionalData[i + 1] = versions[i];
     appendData(additionalData);
+}
+
+bool QKnxNetIpServiceFamiliesDIB::isValid() const
+{
+    return QKnxNetIpStructure::isValid() && (dataSize() % 2 == 0) // must be even sized
+        && descriptionTypeCode() == DescriptionTypeCode::SupportedServiceFamilies;
 }
 
 QT_END_NAMESPACE

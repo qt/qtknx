@@ -14,24 +14,13 @@
 #include <QtCore/qvector.h>
 #include <QtKnx/qknxglobal.h>
 #include <QtKnx/qknxtypecheck.h>
-#include <QtNetwork/qhostaddress.h>
 
 QT_BEGIN_NAMESPACE
 
-/*
-    03_08_02 Core v01.05.01 AS.pdf
-
-    2.1.3 Structures: All KNXnet/IP structures follow a common rule: the first
-    octet shall always be the length of the complete structure (as some
-    structures may have fields of variable length e.g. strings) and the second
-    octet shall always be an identifier that shall specify the type of the
-    structure. From the third octet on the structure data shall follow. If the
-    amount of data exceeds 252 octets, the length octet shall be FFh and the
-    next tow octets shall contain the length as a 16 bit value. Then the
-    structure data shall start at the fifth octet.
-*/
 struct Q_KNX_EXPORT QKnxNetIpStructure
 {
+    virtual ~QKnxNetIpStructure() = default;
+
     enum class HostProtocolCode : quint8
     {
         IpV4_Udp = 0x01,
@@ -58,31 +47,16 @@ struct Q_KNX_EXPORT QKnxNetIpStructure
         NotUsed = 0xff
     };
 
-    template <typename T> auto header(quint8 code, quint16 dataSize) const -> decltype(T())
-    {
-        QKnxTypeCheck::FailIfNot<T, QByteArray, QVector<quint8>, std::deque<quint8>,
-            std::vector<quint8>>();
-
-        T t((dataSize > 0xfc ? 4 : 2), Qt::Uninitialized);
-        if (dataSize > 0xfc) {
-            t[0] = quint8(0xff);
-            t[1] = quint8(quint16(dataSize + 4) >> 8);
-            t[2] = quint8(dataSize + 4);
-            t[3] = code;
-        } else {
-            t[0] = quint8(dataSize + 2);
-            t[1] = code;
-        }
-        return t;
-    }
-
     qint32 dataSize() const;
     template <typename T> auto data() const -> decltype(T())
     {
         QKnxTypeCheck::FailIfNot<T, QByteArray, QVector<quint8>, std::deque<quint8>,
             std::vector<quint8>>();
 
-        T t(m_size, Qt::Uninitialized);
+        if (!m_header.isValid())
+            return {};
+
+        T t(m_header.dataSize(), Qt::Uninitialized);
         std::copy(std::begin(m_data), std::end(m_data), std::begin(t));
         return t;
     }
@@ -92,8 +66,8 @@ struct Q_KNX_EXPORT QKnxNetIpStructure
         QKnxTypeCheck::FailIfNot<T, QByteArray, QVector<quint8>, std::deque<quint8>,
             std::vector<quint8>>();
 
-        if (m_data.size() < start + length)
-            return T();
+        if (!m_header.isValid() || m_data.size() < start + length)
+            return {};
 
         T t(length, Qt::Uninitialized);
         auto begin = std::next(std::begin(m_data), start);
@@ -107,8 +81,11 @@ struct Q_KNX_EXPORT QKnxNetIpStructure
         QKnxTypeCheck::FailIfNot<T, QByteArray, QVector<quint8>, std::deque<quint8>,
             std::vector<quint8>>();
 
+        if (!m_header.isValid())
+            return {};
+
         T t(rawSize(), Qt::Uninitialized);
-        auto h = header<T>(m_code, m_size);
+        auto h = m_header.rawData<T>();
         std::copy(std::begin(h), std::end(h), std::begin(t));
         std::copy(std::begin(m_data), std::end(m_data), std::next(std::begin(t), h.size()));
         return t;
@@ -116,93 +93,178 @@ struct Q_KNX_EXPORT QKnxNetIpStructure
 
 protected:
     QKnxNetIpStructure() = default;
-    virtual ~QKnxNetIpStructure() = default;
 
+    virtual bool isValid() const;
     virtual QString toString() const;
+
     void resizeData(int size, bool makeEven = false);
 
     QKnxNetIpStructure::HostProtocolCode hostProtocolCode() const
     {
-        return QKnxNetIpStructure::HostProtocolCode(m_code);
+        return QKnxNetIpStructure::HostProtocolCode(m_header.code());
     };
 
     QKnxNetIpStructure::ConnectionTypeCode connectionTypeCode() const
     {
-        return QKnxNetIpStructure::ConnectionTypeCode(m_code);
+        return QKnxNetIpStructure::ConnectionTypeCode(m_header.code());
     };
 
     QKnxNetIpStructure::DescriptionTypeCode descriptionTypeCode() const
     {
-        return QKnxNetIpStructure::DescriptionTypeCode(m_code);
+        return QKnxNetIpStructure::DescriptionTypeCode(m_header.code());
     };
 
-    QKnxNetIpStructure(quint8 code, int size, bool makeEven = false)
-    {
-        m_code = code;
-        resizeData(size, makeEven);
-    }
+    explicit QKnxNetIpStructure(quint8 code)
+        : m_header({ code })
+    {}
 
     template <typename T> QKnxNetIpStructure(quint8 code, const T &data)
+        : m_header({ code })
     {
         QKnxTypeCheck::FailIfNot<T, QByteArray, QVector<quint8>, std::deque<quint8>,
             std::vector<quint8>>();
-        setData(code, data);
+        setData(data);
     }
 
-    template <typename T, std::size_t S = 0> void setData(quint8 code, const T &data)
+    template <typename T, std::size_t S = 0> void setData(const T &data)
     {
         QKnxTypeCheck::FailIfNot<T, QByteArray, QVector<quint8>, std::deque<quint8>,
             std::vector<quint8>, std::array<quint8, S>>();
 
-        m_code = code;
-        m_size = quint16(data.size());
-        m_data.resize(m_size);
+        m_header.setDataSize(quint16(data.size()));
+        m_data.resize(m_header.dataSize());
         std::copy(std::begin(data), std::end(data), std::begin(m_data));
     }
 
-    template <typename T, std::size_t S = 0> void appendData(const T &additionalData)
+    template <typename T, std::size_t S = 0> void appendData(const T &data)
     {
         QKnxTypeCheck::FailIfNot<T, QByteArray, QVector<quint8>, std::deque<quint8>,
             std::vector<quint8>, std::array<quint8, S>>();
 
-        if (additionalData.size() <= 0)
+        if (data.size() <= 0)
             return;
 
-        m_size += quint16(additionalData.size());
-        m_data.resize(m_size);
-        std::copy(std::begin(additionalData), std::end(additionalData), std::begin(m_data));
+        m_header.setDataSize(m_header.dataSize() + quint16(data.size()));
+        m_data.resize(m_header.dataSize());
+        std::copy(std::begin(data), std::end(data), std::begin(m_data));
     }
 
     template <typename T, std::size_t S = 0>
-        void setRawData(quint8 code, const T &rawData, qint32 offset)
+        static QKnxNetIpStructure fromRawData(const T &rawData, qint32 offset)
     {
         QKnxTypeCheck::FailIfNot<T, QByteArray, QVector<quint8>, std::deque<quint8>,
             std::vector<quint8>, std::array<quint8, S>>();
 
-        const qint32 availableSize = rawData.size() - offset;
-        if (availableSize < 1) return; // first byte for the length information
+        QKnxNetIpStructure structure;
+        auto header = Header::fromRawData(rawData, offset);
+        if (!header.isValid())
+            return structure;
 
-        quint16 size = quint8(rawData[offset]);
-        const quint8 headerSize = size == 0xff ? 4 : 2;
-        if (availableSize < headerSize) return; // length information and code information
+        structure.m_header = header;
+        structure.m_data.resize(header.dataSize());
 
-        if (headerSize == 4)
-            size = quint16(rawData[offset + 1]) << 8 | rawData[offset + 2];
+        auto begin = std::next(std::begin(rawData), offset + header.headerSize());
+        std::copy(begin, begin + header.dataSize(), std::begin(structure.m_data));
 
-        if (availableSize < size || rawData[offset + headerSize - 1] != code)
-            return;
-
-        m_code = code;
-        m_size = size - headerSize;
-        m_data.resize(size - headerSize);
-
-        auto begin = std::next(std::begin(rawData), offset + headerSize);
-        std::copy(begin, begin + m_size, std::begin(m_data));
+        return structure;
     }
 
 private:
-    quint8 m_code = 0;
-    quint16 m_size = 0;
+        /*
+        03_08_02 Core v01.05.01 AS.pdf,
+
+        2.1.3 Structures - All KNXnet/IP structures follow a common rule: the
+        first octet shall always be the length of the complete structure (as
+        some structures may have fields of variable length e.g. strings) and
+        the second octet shall always be an identifier that shall specify the
+        type of the structure. From the third octet on the structure data shall
+        follow. If the amount of data exceeds 252 octets, the length octet
+        shall be FFh and the next two octets shall contain the length as a 16
+        bit value. Then the structure data shall start at the fifth octet.
+    */
+    struct Header
+    {
+        Header() = default;
+        explicit Header(quint8 code)
+            : Header(code, 2)
+        {}
+
+        Header(quint8 code, quint16 rawSize)
+            : m_code(code)
+            , m_rawSize(rawSize)
+            , m_headerSize(rawSize >= 0xff ? 4 : 2)
+        {
+            m_dataSize = rawSize - m_headerSize;
+        }
+
+        quint8 code() const { return m_code; }
+        quint16 rawSize() const { return m_rawSize; }
+        qint8 headerSize() const { return m_headerSize; }
+
+        void setDataSize(quint16 dataSize)
+        {
+            m_headerSize = (dataSize > 0xfc) ? 4 : 2;
+            m_dataSize = dataSize;
+            m_rawSize = m_headerSize + m_dataSize;
+        }
+        quint16 dataSize() const { return m_dataSize; }
+
+        bool isValid() const { return m_rawSize != 0 && m_code != 0 && m_headerSize != 0; }
+
+        template <typename T> auto rawData() const -> decltype(T())
+        {
+            QKnxTypeCheck::FailIfNot<T, QByteArray, QVector<quint8>, std::deque<quint8>,
+                std::vector<quint8>>();
+            return rawData<T>(m_code, m_rawSize);
+        }
+
+        template <typename T> static auto rawData(quint8 code, quint16 rawSize) -> decltype(T())
+        {
+            QKnxTypeCheck::FailIfNot<T, QByteArray, QVector<quint8>, std::deque<quint8>,
+                std::vector<quint8>>();
+
+            T t(rawSize >= 0xff ? 4 : 2, Qt::Uninitialized);
+            if (rawSize >= 0xff) {
+                t[0] = quint8(0xff);
+                t[1] = quint8(quint16(rawSize) >> 8);
+                t[2] = quint8(rawSize);
+                t[3] = code;
+            } else {
+                t[0] = quint8(rawSize);
+                t[1] = code;
+            }
+            return t;
+        }
+
+        template <typename T, std::size_t S = 0> static Header fromRawData(const T &data, qint32 offset)
+        {
+            QKnxTypeCheck::FailIfNot<T, QByteArray, QVector<quint8>, std::deque<quint8>,
+                std::vector<quint8>, std::array<quint8, S>>();
+
+            const qint32 availableSize = data.size() - offset;
+            if (availableSize < 1)
+                return {}; // first byte for the length information required
+
+            quint16 rawSize = quint8(data[offset]);
+            const quint8 headerSize = rawSize == 0xff ? 4 : 2;
+            if (availableSize < headerSize)
+                return {}; // length information and code information required
+
+            if (headerSize == 4)
+                rawSize = quint16(data[offset + 1]) << 8 | data[offset + 2];
+
+            return { quint8(data[offset + headerSize - 1]), rawSize };
+        }
+
+    private:
+        quint8 m_code = 0x00u;
+        quint16 m_rawSize = 0x0000u;
+        quint16 m_dataSize = 0x0000u;
+        qint8 m_headerSize = 0x00;
+    };
+
+private:
+    Header m_header;
     QVector<quint8> m_data;
 };
 Q_KNX_EXPORT QDebug operator<<(QDebug debug, const QKnxNetIpStructure &structure);

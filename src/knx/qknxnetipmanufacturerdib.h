@@ -35,8 +35,15 @@ public:
     QKnxNetIpManufacturerDIB fromRawData(const QByteArray &rawData, qint32 offset);
     QKnxNetIpManufacturerDIB fromRawData(const QVector<quint8> &rawData, qint32 offset);
 
+    bool isValid() const;
+
     using QKnxNetIpStructure::toString;
     using QKnxNetIpStructure::descriptionTypeCode;
+
+private:
+    QKnxNetIpManufacturerDIB(const QKnxNetIpStructure &other)
+        : QKnxNetIpStructure(other)
+    {}
 };
 Q_DECLARE_TYPEINFO(QKnxNetIpManufacturerDIB, Q_MOVABLE_TYPE);
 

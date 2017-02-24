@@ -20,7 +20,7 @@ QKnxNetIpCurrentConfigDIB::QKnxNetIpCurrentConfigDIB(const QNetworkAddressEntry 
 QKnxNetIpCurrentConfigDIB::QKnxNetIpCurrentConfigDIB(const QHostAddress &ip,
         const QHostAddress &subnetMask, const QHostAddress &gateway, const QHostAddress &dhcp,
         AssignmentMethod method)
-    : QKnxNetIpStructure(quint8(DescriptionTypeCode::CurrentIpConfiguration), 18)
+    : QKnxNetIpStructure(quint8(DescriptionTypeCode::CurrentIpConfiguration))
 {
     size_t bitcount = std::bitset<8>(quint8(method)).count();
     if (method < AssignmentMethod::Manual || method > AssignmentMethod::AutoIp || bitcount != 1)
@@ -31,39 +31,31 @@ QKnxNetIpCurrentConfigDIB::QKnxNetIpCurrentConfigDIB(const QHostAddress &ip,
     data.insert(4, QKnxUtils::HostAddress::toArray<QByteArray>(subnetMask));
     data.insert(8, QKnxUtils::HostAddress::toArray<QByteArray>(gateway));
     data.insert(12, QKnxUtils::HostAddress::toArray<QByteArray>(dhcp));
-    data[16] = quint8(method);
 
-    setData(quint8(DescriptionTypeCode::CurrentIpConfiguration), data);
+    data.resize(18);
+    data[17] = quint8(method);
+
+    setData(data);
 }
 
 QKnxNetIpCurrentConfigDIB::QKnxNetIpCurrentConfigDIB(const QByteArray &data)
     : QKnxNetIpStructure(quint8(DescriptionTypeCode::CurrentIpConfiguration), data)
-{
-    resizeData(18); // size enforced by 7.5.4.5 IP Current Config DIB
-}
+{}
 
 QKnxNetIpCurrentConfigDIB::QKnxNetIpCurrentConfigDIB(const QVector<quint8> &data)
     : QKnxNetIpStructure(quint8(DescriptionTypeCode::CurrentIpConfiguration), data)
-{
-    resizeData(18); // size enforced by 7.5.4.5 IP Current Config DIB
-}
+{}
 
 QKnxNetIpCurrentConfigDIB QKnxNetIpCurrentConfigDIB::fromRawData(const QByteArray &rawData,
     qint32 offset)
 {
-    QKnxNetIpCurrentConfigDIB dib;
-    dib.setRawData(quint8(DescriptionTypeCode::CurrentIpConfiguration), rawData, offset);
-    resizeData(18); // size enforced by 7.5.4.5 IP Current Config DIB
-    return dib;
+    return QKnxNetIpStructure::fromRawData(rawData, offset);
 }
 
 QKnxNetIpCurrentConfigDIB QKnxNetIpCurrentConfigDIB::fromRawData(const QVector<quint8> &rawData,
     qint32 offset)
 {
-    QKnxNetIpCurrentConfigDIB dib;
-    dib.setRawData(quint8(DescriptionTypeCode::CurrentIpConfiguration), rawData, offset);
-    resizeData(18); // size enforced by 7.5.4.5 IP Current Config DIB
-    return dib;
+    return QKnxNetIpStructure::fromRawData(rawData, offset);
 }
 
 QHostAddress QKnxNetIpCurrentConfigDIB::ipAddress() const
@@ -89,6 +81,12 @@ QHostAddress QKnxNetIpCurrentConfigDIB::dhcpOrBootP() const
 QKnxNetIpCurrentConfigDIB::AssignmentMethod QKnxNetIpCurrentConfigDIB::assignmentMethod() const
 {
     return QKnxNetIpCurrentConfigDIB::AssignmentMethod(data<QVector<quint8>>(16, 1)[0]);
+}
+
+bool QKnxNetIpCurrentConfigDIB::isValid() const
+{
+    return QKnxNetIpStructure::isValid() && dataSize() == 18
+        && descriptionTypeCode() == DescriptionTypeCode::CurrentIpConfiguration;
 }
 
 QT_END_NAMESPACE

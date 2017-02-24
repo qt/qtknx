@@ -18,7 +18,7 @@ QKnxNetIpConfigDIB::QKnxNetIpConfigDIB(const QNetworkAddressEntry &addressAndSub
 
 QKnxNetIpConfigDIB::QKnxNetIpConfigDIB(const QHostAddress &ip, const QHostAddress &subnetMask,
         const QHostAddress &gateway, Capabilities caps, AssignmentMethods methods)
-    : QKnxNetIpStructure(quint8(DescriptionTypeCode::IpConfiguration), 14)
+    : QKnxNetIpStructure(quint8(DescriptionTypeCode::IpConfiguration))
 {
     // Capabilities are limited and at least one assignment method shall be enabled.
     if (caps > 0x07 || (methods < 0x01 || methods > 0x15))
@@ -29,38 +29,31 @@ QKnxNetIpConfigDIB::QKnxNetIpConfigDIB(const QHostAddress &ip, const QHostAddres
     data.insert(4, QKnxUtils::HostAddress::toArray<QByteArray>(subnetMask));
     data.insert(8, QKnxUtils::HostAddress::toArray<QByteArray>(gateway));
 
+    data.resize(14);
     data[12] = quint8(caps);
     data[13] = quint8(methods);
 
-    setData(quint8(DescriptionTypeCode::IpConfiguration), data);
+    setData(data);
 }
 
 QKnxNetIpConfigDIB::QKnxNetIpConfigDIB(const QByteArray &data)
     : QKnxNetIpStructure(quint8(DescriptionTypeCode::IpConfiguration), data)
 {
-    resizeData(14); // size enforced by 7.5.4.4 IP Config DIB
 }
 
 QKnxNetIpConfigDIB::QKnxNetIpConfigDIB(const QVector<quint8> &data)
     : QKnxNetIpStructure(quint8(DescriptionTypeCode::IpConfiguration), data)
 {
-    resizeData(14); // size enforced by 7.5.4.4 IP Config DIB
 }
 
 QKnxNetIpConfigDIB QKnxNetIpConfigDIB::fromRawData(const QByteArray &rawData, qint32 offset)
 {
-    QKnxNetIpConfigDIB dib;
-    dib.setRawData(quint8(DescriptionTypeCode::IpConfiguration), rawData, offset);
-    resizeData(14); // size enforced by 7.5.4.4 IP Config DIB
-    return dib;
+    return QKnxNetIpStructure::fromRawData(rawData, offset);
 }
 
 QKnxNetIpConfigDIB QKnxNetIpConfigDIB::fromRawData(const QVector<quint8> &rawData, qint32 offset)
 {
-    QKnxNetIpConfigDIB dib;
-    dib.setRawData(quint8(DescriptionTypeCode::IpConfiguration), rawData, offset);
-    resizeData(14); // size enforced by 7.5.4.4 IP Config DIB
-    return dib;
+    return QKnxNetIpStructure::fromRawData(rawData, offset);
 }
 
 QHostAddress QKnxNetIpConfigDIB::ipAddress() const
@@ -86,6 +79,12 @@ QKnxNetIpConfigDIB::Capabilities QKnxNetIpConfigDIB::capabilities() const
 QKnxNetIpConfigDIB::AssignmentMethods QKnxNetIpConfigDIB::assignmentMethods() const
 {
     return QKnxNetIpConfigDIB::AssignmentMethods(data<QVector<quint8>>(13, 1)[0]);
+}
+
+bool QKnxNetIpConfigDIB::isValid() const
+{
+    return QKnxNetIpStructure::isValid() && dataSize() == 14
+        && descriptionTypeCode() == DescriptionTypeCode::IpConfiguration;
 }
 
 QT_END_NAMESPACE

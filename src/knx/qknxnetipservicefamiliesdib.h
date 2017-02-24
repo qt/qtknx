@@ -46,8 +46,15 @@ public:
 
     // TODO: add access functions for family and version
 
+    bool isValid() const;
+
     using QKnxNetIpStructure::toString;
     using QKnxNetIpStructure::descriptionTypeCode;
+
+private:
+    QKnxNetIpServiceFamiliesDIB(const QKnxNetIpStructure &other)
+        : QKnxNetIpStructure(other)
+    {}
 };
 Q_DECLARE_TYPEINFO(QKnxNetIpServiceFamiliesDIB, Q_MOVABLE_TYPE);
 

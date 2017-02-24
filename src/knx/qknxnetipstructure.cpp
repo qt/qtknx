@@ -63,9 +63,9 @@ void QKnxNetIpStructure::resizeData(int size, bool makeEven)
     if (makeEven)
         size += size % 2;
 
-    if (m_size != size) {
-        m_size = size;
-        m_data.resize(size);
+    if (m_data.size() != size) {
+        m_header.setDataSize(size);
+        m_data.resize(m_header.dataSize());
     }
 }
 
@@ -75,7 +75,7 @@ void QKnxNetIpStructure::resizeData(int size, bool makeEven)
 */
 qint32 QKnxNetIpStructure::dataSize() const
 {
-    return m_size;
+    return  m_header.dataSize();
 }
 
 /*!
@@ -84,7 +84,12 @@ qint32 QKnxNetIpStructure::dataSize() const
 */
 qint32 QKnxNetIpStructure::rawSize() const
 {
-    return m_size > 0xfc ? m_size + 4 : m_size + 2;
+    return m_header.headerSize() + m_header.dataSize();
+}
+
+bool QKnxNetIpStructure::isValid() const
+{
+    return m_header.isValid() && m_header.dataSize() == m_data.size();
 }
 
 /*!
@@ -99,7 +104,9 @@ QString QKnxNetIpStructure::toString() const
     data.chop(2);
 
     return QStringLiteral("Raw size { 0x%1 }, Code { 0x%2 }, Data { %3 }")
-        .arg(rawSize(), 2, 16, QLatin1Char('0')).arg(m_code, 2, 16, QLatin1Char('0')).arg(data);
+        .arg(m_header.rawSize(), 2, 16, QLatin1Char('0'))
+        .arg(m_header.code(), 2, 16, QLatin1Char('0'))
+        .arg(data);
 }
 
 /*!

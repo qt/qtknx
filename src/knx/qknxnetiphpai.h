@@ -30,8 +30,15 @@ public:
     QHostAddress address() const;
     quint16 port() const;
 
+    bool isValid() const;
+
     using QKnxNetIpStructure::toString;
     using QKnxNetIpStructure::hostProtocolCode;
+
+private:
+    QKnxNetIpHPAI(const QKnxNetIpStructure &other)
+        : QKnxNetIpStructure(other)
+    {}
 };
 Q_DECLARE_TYPEINFO(QKnxNetIpHPAI, Q_MOVABLE_TYPE);
 
