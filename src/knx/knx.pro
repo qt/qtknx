@@ -22,7 +22,9 @@ PUBLIC_HEADERS += \
     qknxnetipcurrentconfigdib.h \
     qknxnetipknxaddressesdib.h \
     qknxnetipmanufacturerdib.h \
-    qknxutils.h
+    qknxutils.h \
+    qknxnetipcri.h \
+    qknxnetipcrd.h
 
 PRIVATE_HEADERS +=
 
@@ -39,7 +41,9 @@ SOURCES += \
     qknxnetipconfigdib.cpp \
     qknxnetipcurrentconfigdib.cpp \
     qknxnetipknxaddressesdib.cpp \
-    qknxnetipmanufacturerdib.cpp
+    qknxnetipmanufacturerdib.cpp \
+    qknxnetipcri.cpp \
+    qknxnetipcrd.cpp
 
 HEADERS += $$PUBLIC_HEADERS $$PRIVATE_HEADERS
 
