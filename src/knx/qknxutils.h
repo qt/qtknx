@@ -65,3 +65,5 @@ struct QKnxUtils
         }
     };
 };
+
+QT_END_NAMESPACE

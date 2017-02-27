@@ -7,11 +7,11 @@
 
 #pragma once
 
-QT_BEGIN_NAMESPACE
-
 #include <array>
 #include <deque>
 #include <vector>
+
+QT_BEGIN_NAMESPACE
 
 class QKnxTypeCheck
 {
