@@ -12,7 +12,7 @@
 #include <QtCore/qstring.h>
 #include <QtCore/qvector.h>
 #include <QtKnx/qknxglobal.h>
-#include <QtKnx/qknxtypecheck.h>
+#include <QtKnx/qknxtraits.h>
 
 QT_BEGIN_NAMESPACE
 
@@ -44,8 +44,8 @@ public:
     qint32 dataSize() const;
     template <typename T> auto data() const -> decltype(T())
     {
-        QKnxTypeCheck::FailIfNot<T, QByteArray, QVector<quint8>, std::deque<quint8>,
-            std::vector<quint8>>();
+        static_assert(is_type<T, QByteArray, QVector<quint8>, std::deque<quint8>,
+            std::vector<quint8>>::value, "Type not supported.");
 
         T t(m_data.size(), Qt::Uninitialized);
         std::copy(std::begin(m_data), std::end(m_data), std::begin(t));
@@ -55,8 +55,8 @@ public:
     qint32 rawSize() const;
     template <typename T> auto rawData() const -> decltype(T())
     {
-        QKnxTypeCheck::FailIfNot<T, QByteArray, QVector<quint8>, std::deque<quint8>,
-            std::vector<quint8>>();
+        static_assert(is_type<T, QByteArray, QVector<quint8>, std::deque<quint8>,
+            std::vector<quint8>>::value, "Type not supported.");
 
         if (!isValid())
             return {};
@@ -71,8 +71,8 @@ public:
     template<typename T, std::size_t S = 0>
         static bool isValid(QKnxAdditionalInfo::Type type, const T &data)
     {
-        QKnxTypeCheck::FailIfNot<T, QByteArray, QVector<quint8>, std::deque<quint8>,
-            std::vector<quint8>, std::array<quint8, S>>();
+        static_assert(is_type<T, QByteArray, QVector<quint8>, std::deque<quint8>,
+            std::vector<quint8>, std::array<quint8, S>>::value, "Type not supported.");
 
         const int size = data.size();
         if (size > 252)

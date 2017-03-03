@@ -7,7 +7,7 @@
 
 #pragma once
 
-#include <QtKnx/qknxtypecheck.h>
+#include <QtKnx/qknxtraits.h>
 #include <QtNetwork/qhostaddress.h>
 
 QT_BEGIN_NAMESPACE
@@ -18,8 +18,8 @@ struct QKnxUtils
     {
         template <typename T, std::size_t S = 0> static quint16 quint16FromArray(const T &data)
         {
-            QKnxTypeCheck::FailIfNot<T, QByteArray, QVector<quint8>, std::deque<quint8>,
-                std::vector<quint8>, std::array<quint8, S>>();
+            static_assert(is_type<T, QByteArray, QVector<quint8>, std::deque<quint8>,
+                std::vector<quint8>, std::array<quint8, S>>::value, "Type not supported.");
 
             if (data.size() < 2)
                 return {};
@@ -28,8 +28,8 @@ struct QKnxUtils
 
         template <typename T> static auto quint16ToArray(const quint16 integer) -> decltype(T())
         {
-            QKnxTypeCheck::FailIfNot<T, QByteArray, QVector<quint8>, std::deque<quint8>,
-                std::vector<quint8>>();
+            static_assert(is_type<T, QByteArray, QVector<quint8>, std::deque<quint8>,
+                std::vector<quint8>>::value, "Type not supported.");
 
             T t(2, Qt::Uninitialized);
             t[0] = quint8(integer >> 8);
@@ -42,8 +42,8 @@ struct QKnxUtils
     {
         template <typename T, std::size_t S = 0> static QHostAddress fromArray(const T &data)
         {
-            QKnxTypeCheck::FailIfNot<T, QByteArray, QVector<quint8>, std::deque<quint8>,
-                std::vector<quint8>, std::array<quint8, S>>();
+            static_assert(is_type<T, QByteArray, QVector<quint8>, std::deque<quint8>,
+                std::vector<quint8>, std::array<quint8, S>>::value, "Type not supported.");
 
             if (data.size() < 4)
                 return {};
@@ -52,8 +52,8 @@ struct QKnxUtils
 
         template <typename T> static auto toArray(const QHostAddress &address) -> decltype(T())
         {
-            QKnxTypeCheck::FailIfNot<T, QByteArray, QVector<quint8>, std::deque<quint8>,
-                std::vector<quint8>>();
+            static_assert(is_type<T, QByteArray, QVector<quint8>, std::deque<quint8>,
+                std::vector<quint8>>::value, "Type not supported.");
 
             T t(4, Qt::Uninitialized);
             auto addr = address.toIPv4Address();

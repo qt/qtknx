@@ -13,7 +13,7 @@
 #include <QtCore/qstring.h>
 #include <QtCore/qvector.h>
 #include <QtKnx/qknxglobal.h>
-#include <QtKnx/qknxtypecheck.h>
+#include <QtKnx/qknxtraits.h>
 #include <QtKnx/qknxutils.h>
 
 QT_BEGIN_NAMESPACE
@@ -58,8 +58,8 @@ public:
     quint8 rawSize() const { return 2; }
     template <typename T> auto rawData() const -> decltype(T())
     {
-        QKnxTypeCheck::FailIfNot<T, QByteArray, QVector<quint8>, std::deque<quint8>,
-            std::vector<quint8>>();
+        static_assert(is_type<T, QByteArray, QVector<quint8>, std::deque<quint8>,
+            std::vector<quint8>>::value, "Type not supported.");
 
         if (!isValid())
             return {};

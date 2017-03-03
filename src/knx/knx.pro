@@ -9,7 +9,7 @@ PUBLIC_HEADERS += \
     qknxglobal.h \
     qknxaddress.h \
     qknxadditionalinfo.h \
-    qknxtypecheck.h \
+    qknxtraits.h \
     qknxcontrolfield.h \
     qknxextendedcontrolfield.h \
     qknxnetipframe.h \

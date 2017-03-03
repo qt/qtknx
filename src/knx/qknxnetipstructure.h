@@ -13,7 +13,7 @@
 #include <QtCore/qstring.h>
 #include <QtCore/qvector.h>
 #include <QtKnx/qknxglobal.h>
-#include <QtKnx/qknxtypecheck.h>
+#include <QtKnx/qknxtraits.h>
 
 QT_BEGIN_NAMESPACE
 
@@ -50,8 +50,8 @@ struct Q_KNX_EXPORT QKnxNetIpStructure
     qint32 dataSize() const;
     template <typename T> auto data() const -> decltype(T())
     {
-        QKnxTypeCheck::FailIfNot<T, QByteArray, QVector<quint8>, std::deque<quint8>,
-            std::vector<quint8>>();
+        static_assert(is_type<T, QByteArray, QVector<quint8>, std::deque<quint8>,
+            std::vector<quint8>>::value, "Type not supported.");
 
         if (!m_header.isValid())
             return {};
@@ -63,8 +63,8 @@ struct Q_KNX_EXPORT QKnxNetIpStructure
 
     template <typename T> auto data(int start, int length) const -> decltype(T())
     {
-        QKnxTypeCheck::FailIfNot<T, QByteArray, QVector<quint8>, std::deque<quint8>,
-            std::vector<quint8>>();
+        static_assert(is_type<T, QByteArray, QVector<quint8>, std::deque<quint8>,
+            std::vector<quint8>>::value, "Type not supported.");
 
         if (!m_header.isValid() || m_data.size() < start + length)
             return {};
@@ -78,8 +78,8 @@ struct Q_KNX_EXPORT QKnxNetIpStructure
     qint32 rawSize() const;
     template <typename T> auto rawData() const -> decltype(T())
     {
-        QKnxTypeCheck::FailIfNot<T, QByteArray, QVector<quint8>, std::deque<quint8>,
-            std::vector<quint8>>();
+        static_assert(is_type<T, QByteArray, QVector<quint8>, std::deque<quint8>,
+            std::vector<quint8>>::value, "Type not supported.");
 
         if (!m_header.isValid())
             return {};
@@ -121,15 +121,15 @@ protected:
     template <typename T> QKnxNetIpStructure(quint8 code, const T &data)
         : m_header({ code })
     {
-        QKnxTypeCheck::FailIfNot<T, QByteArray, QVector<quint8>, std::deque<quint8>,
-            std::vector<quint8>>();
+        static_assert(is_type<T, QByteArray, QVector<quint8>, std::deque<quint8>,
+            std::vector<quint8>>::value, "Type not supported.");
         setData(data);
     }
 
     template <typename T, std::size_t S = 0> void setData(const T &data)
     {
-        QKnxTypeCheck::FailIfNot<T, QByteArray, QVector<quint8>, std::deque<quint8>,
-            std::vector<quint8>, std::array<quint8, S>>();
+        static_assert(is_type<T, QByteArray, QVector<quint8>, std::deque<quint8>,
+            std::vector<quint8>, std::array<quint8, S>>::value, "Type not supported.");
 
         m_header.setDataSize(quint16(data.size()));
         m_data.resize(m_header.dataSize());
@@ -138,8 +138,8 @@ protected:
 
     template <typename T, std::size_t S = 0> void appendData(const T &data)
     {
-        QKnxTypeCheck::FailIfNot<T, QByteArray, QVector<quint8>, std::deque<quint8>,
-            std::vector<quint8>, std::array<quint8, S>>();
+        static_assert(is_type<T, QByteArray, QVector<quint8>, std::deque<quint8>,
+            std::vector<quint8>, std::array<quint8, S>>::value, "Type not supported.");
 
         if (data.size() <= 0)
             return;
@@ -152,8 +152,8 @@ protected:
     template <typename T, std::size_t S = 0>
         static QKnxNetIpStructure fromRawData(const T &rawData, qint32 offset)
     {
-        QKnxTypeCheck::FailIfNot<T, QByteArray, QVector<quint8>, std::deque<quint8>,
-            std::vector<quint8>, std::array<quint8, S>>();
+        static_assert(is_type<T, QByteArray, QVector<quint8>, std::deque<quint8>,
+            std::vector<quint8>, std::array<quint8, S>>::value, "Type not supported.");
 
         QKnxNetIpStructure structure;
         auto header = Header::fromRawData(rawData, offset);
@@ -213,15 +213,15 @@ private:
 
         template <typename T> auto rawData() const -> decltype(T())
         {
-            QKnxTypeCheck::FailIfNot<T, QByteArray, QVector<quint8>, std::deque<quint8>,
-                std::vector<quint8>>();
+            static_assert(is_type<T, QByteArray, QVector<quint8>, std::deque<quint8>,
+                std::vector<quint8>>::value, "Type not supported.");
             return rawData<T>(m_code, m_rawSize);
         }
 
         template <typename T> static auto rawData(quint8 code, quint16 rawSize) -> decltype(T())
         {
-            QKnxTypeCheck::FailIfNot<T, QByteArray, QVector<quint8>, std::deque<quint8>,
-                std::vector<quint8>>();
+            static_assert(is_type<T, QByteArray, QVector<quint8>, std::deque<quint8>,
+                std::vector<quint8>>::value, "Type not supported.");
 
             T t(rawSize >= 0xff ? 4 : 2, Qt::Uninitialized);
             if (rawSize >= 0xff) {
@@ -238,8 +238,8 @@ private:
 
         template <typename T, std::size_t S = 0> static Header fromRawData(const T &data, qint32 offset)
         {
-            QKnxTypeCheck::FailIfNot<T, QByteArray, QVector<quint8>, std::deque<quint8>,
-                std::vector<quint8>, std::array<quint8, S>>();
+            static_assert(is_type<T, QByteArray, QVector<quint8>, std::deque<quint8>,
+                std::vector<quint8>, std::array<quint8, S>>::value, "Type not supported.");
 
             const qint32 availableSize = data.size() - offset;
             if (availableSize < 1)

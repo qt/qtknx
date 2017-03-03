@@ -27,8 +27,8 @@ public:
     quint16 manufacturerId() const;
     template <typename T> auto manufacturerData() const -> decltype(T())
     {
-        QKnxTypeCheck::FailIfNot<T, QByteArray, QVector<quint8>, std::deque<quint8>,
-            std::vector<quint8>>();
+        static_assert(is_type<T, QByteArray, QVector<quint8>, std::deque<quint8>,
+            std::vector<quint8>>);
         return data<T>(2, dataSize() - 2);
     }
 
