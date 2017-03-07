@@ -6,7 +6,7 @@
 ****************************************************************************/
 
 #include <QtCore/qdebug.h>
-#include <QtKnx/qknxnetipstructure.h>
+#include <QtKnx/qknxnetipstruct.h>
 #include <QtTest/qtest.h>
 
 static QString s_msg;
@@ -15,200 +15,282 @@ static void myMessageHandler(QtMsgType, const QMessageLogContext &, const QStrin
     s_msg = msg;
 }
 
-class TestStructure : public QKnxNetIpStructure
+class TestStructure : private QKnxNetIpStruct
 {
 public:
     TestStructure() = default;
+    explicit TestStructure(quint8 code)
+        : QKnxNetIpStruct(code)
+    {}
+    TestStructure(quint8 code, const QKnxNetIpPayload &payload)
+        : QKnxNetIpStruct(code, payload)
+    {}
+    explicit TestStructure(const QKnxNetIpStructHeader &header)
+        : QKnxNetIpStruct(header)
+    {}
+    TestStructure(const QKnxNetIpStructHeader &header, const QKnxNetIpPayload &payload)
+        : QKnxNetIpStruct(header, payload)
+    {}
 
-    template <typename T> TestStructure(quint8 code, const T &data)
-        : QKnxNetIpStructure(code, data)
+    using QKnxNetIpStruct::code;
+    using QKnxNetIpStruct::setCode;
+
+    using QKnxNetIpStruct::size;
+    using QKnxNetIpStruct::header;
+
+    using QKnxNetIpStruct::payload;
+    using QKnxNetIpStruct::setPayload;
+
+    using QKnxNetIpStruct::isValid;
+    using QKnxNetIpStruct::toString;
+
+    using QKnxNetIpStruct::bytes;
+    template<typename T> static TestStructure fromBytes(const T &bytes, qint32 index)
     {
+        return QKnxNetIpStruct::fromBytes(bytes, index);
     }
-
-    template <typename T> static TestStructure fromRawData(const T &data, int offset)
-    {
-        return QKnxNetIpStructure::fromRawData(data, offset);
-    }
-
-    using QKnxNetIpStructure::toString;
-    bool isValid() const { return true; }
 
 private:
-    TestStructure(const QKnxNetIpStructure &other)
-        : QKnxNetIpStructure(other)
+    TestStructure(const QKnxNetIpStruct &other)
+        : QKnxNetIpStruct(other)
     {}
 };
 
-class tst_QKnxNetIpStructure : public QObject
+class tst_QKnxNetIpStruct : public QObject
 {
     Q_OBJECT
 
 private slots:
-    void testConstructor()
+    void testDefaultConstructor()
     {
         TestStructure test;
-        QCOMPARE(test.dataSize(), 0);
-        QCOMPARE(test.data<QByteArray>(), QByteArray {});
-        QCOMPARE(test.data<QVector<quint8>>(), QVector<quint8> {});
+        QCOMPARE(test.isValid(), false);
+        QCOMPARE(test.code(), quint8(0));
+        QCOMPARE(test.size(), quint16(0));
+        QCOMPARE(test.bytes<QByteArray>(), QByteArray {});
+        QCOMPARE(test.bytes<QVector<quint8>>(), QVector<quint8> {});
+        QCOMPARE(test.bytes<std::deque<quint8>>(), std::deque<quint8> {});
+        QCOMPARE(test.bytes<std::vector<quint8>>(), std::vector<quint8> {});
+        QCOMPARE(test.toString(), QString("Total size { 0x00 }, Code { 0x00 }, Bytes {  }"));
 
-        QCOMPARE(test.rawSize(), 0);
-        QCOMPARE(test.rawData<QByteArray>(), QByteArray {});
-        QCOMPARE(test.rawData<QVector<quint8>>(), QVector<quint8> {});
+        auto header = test.header();
+        QCOMPARE(header.isValid(), false);
+        QCOMPARE(header.code(), quint8(0));
+        QCOMPARE(header.size(), quint16(0));
+        QCOMPARE(header.totalSize(), quint16(0));
+        QCOMPARE(header.payloadSize(), quint16(0));
+        QCOMPARE(header.bytes<QByteArray>(), QByteArray {});
+        QCOMPARE(header.bytes<QVector<quint8>>(), QVector<quint8> {});
+        QCOMPARE(header.bytes<std::deque<quint8>>(), std::deque<quint8> {});
+        QCOMPARE(header.bytes<std::vector<quint8>>(), std::vector<quint8> {});
+        QCOMPARE(header.toString(), QString("Total size { 0x00 }, Code { 0x00 }"));
 
-        test = TestStructure(0x01, QByteArray {});
-        QCOMPARE(test.dataSize(), 0);
-        QCOMPARE(test.data<QByteArray>(), QByteArray {});
-        QCOMPARE(test.data<QVector<quint8>>(), QVector<quint8> {});
-
-        QCOMPARE(test.rawSize(), 2);
-        QCOMPARE(test.rawData<QByteArray>(), QByteArray::fromHex("0201"));
-        QCOMPARE(test.rawData<QVector<quint8>>(), QVector<quint8>({ 0x02, 0x01 }));
-
-        test = TestStructure(0x01, QByteArray::fromHex("0102030405"));
-        QCOMPARE(test.dataSize(), 5);
-        QCOMPARE(test.data<QByteArray>(), QByteArray::fromHex("0102030405"));
-        QCOMPARE(test.data<QVector<quint8>>(), QVector<quint8>({ 0x01, 0x02, 0x03, 0x04, 0x05 }));
-
-        QCOMPARE(test.rawSize(), 7);
-        QCOMPARE(test.rawData<QByteArray>(), QByteArray::fromHex("07010102030405"));
-        QCOMPARE(test.rawData<QVector<quint8>>(), QVector<quint8>({ 0x07, 0x01, 0x01, 0x02, 0x03, 0x04, 0x05 }));
-
-        auto ba = QByteArray(0xf6, 0x05) + QByteArray::fromHex("001122334466778899");
-        auto vec = QVector<quint8>(0xf6, 0x05)
-            + QVector<quint8>({ 0x00, 0x11, 0x22, 0x33, 0x44, 0x66, 0x77, 0x88, 0x99 });
-
-        test = TestStructure(0x01, ba);
-        QCOMPARE(test.dataSize(), 0xff);
-        QCOMPARE(test.data<QByteArray>(), ba);
-        QCOMPARE(test.data<QVector<quint8>>(), vec);
-
-        QCOMPARE(test.rawSize(), 0x103);
-        QCOMPARE(test.rawData<QByteArray>(), QByteArray::fromHex("ff010301") + ba);
-        QCOMPARE(test.rawData<QVector<quint8>>(), QVector<quint8>({ 0xff, 0x01, 0x03, 0x01 }) + vec);
-
-        test = TestStructure::fromRawData(QByteArray::fromHex("aabbccddeeff010301") + ba
-            + QByteArray::fromHex("aabbccddeeff") , 5);
-        QCOMPARE(test.dataSize(), 0xff);
-        QCOMPARE(test.data<QByteArray>(), ba);
-        QCOMPARE(test.data<QVector<quint8>>(), vec);
-
-        QCOMPARE(test.rawSize(), 0x103);
-        QCOMPARE(test.rawData<QByteArray>(), QByteArray::fromHex("ff010301") + ba);
-        QCOMPARE(test.rawData<QVector<quint8>>(), QVector<quint8>({ 0xff, 0x01, 0x03, 0x01 }) + vec);
-
-        test = TestStructure(0x01, vec);
-        QCOMPARE(test.dataSize(), 0xff);
-        QCOMPARE(test.data<QByteArray>(), ba);
-        QCOMPARE(test.data<QVector<quint8>>(), vec);
-
-        QCOMPARE(test.rawSize(), 0x103);
-        QCOMPARE(test.rawData<QByteArray>(), QByteArray::fromHex("ff010301") + ba);
-        QCOMPARE(test.rawData<QVector<quint8>>(), QVector<quint8>({ 0xff, 0x01, 0x03, 0x01 }) + vec);
-
-        test = TestStructure::fromRawData(QByteArray {}, 5);
-        QCOMPARE(test.dataSize(), 0);
-        QCOMPARE(test.data<QByteArray>(), QByteArray {});
-        QCOMPARE(test.data<QVector<quint8>>(), QVector<quint8> {});
-
-        QCOMPARE(test.rawSize(), 0);
-        QCOMPARE(test.rawData<QByteArray>(), QByteArray {});
-        QCOMPARE(test.rawData<QVector<quint8>>(), QVector<quint8> {});
-
-        test = TestStructure::fromRawData(QVector<quint8> {}, 5);
-        QCOMPARE(test.dataSize(), 0);
-        QCOMPARE(test.data<QByteArray>(), QByteArray {});
-        QCOMPARE(test.data<QVector<quint8>>(), QVector<quint8> {});
-        QCOMPARE(test.data<std::vector<quint8>>(), std::vector<quint8>());
-
-        QCOMPARE(test.rawSize(), 0);
-        QCOMPARE(test.rawData<QByteArray>(), QByteArray {});
-        QCOMPARE(test.rawData<QVector<quint8>>(), QVector<quint8> {});
-        QCOMPARE(test.rawData<std::vector<quint8>>(), std::vector<quint8> {});
-
-        test = TestStructure::fromRawData(std::vector<quint8>(), 5);
-        QCOMPARE(test.dataSize(), 0);
-        QCOMPARE(test.data<QByteArray>(), QByteArray {});
-        QCOMPARE(test.data<QVector<quint8>>(), QVector<quint8> {});
-        QCOMPARE(test.data<std::vector<quint8>>(), std::vector<quint8> {});
-
-        QCOMPARE(test.rawSize(), 0);
-        QCOMPARE(test.rawData<QByteArray>(), QByteArray {});
-        QCOMPARE(test.rawData<QVector<quint8>>(), QVector<quint8> {});
-        QCOMPARE(test.rawData<std::vector<quint8>>(), std::vector<quint8> {});
-
-        test = TestStructure(0x01, std::vector<quint8>());
-        QCOMPARE(test.dataSize(), 0);
-        QCOMPARE(test.data<QByteArray>(), QByteArray {});
-        QCOMPARE(test.data<QVector<quint8>>(), QVector<quint8> {});
-        QCOMPARE(test.data<std::vector<quint8>>(), std::vector<quint8>());
-
-        QCOMPARE(test.rawSize(), 2);
-        QCOMPARE(test.rawData<QByteArray>(), QByteArray::fromHex("0201"));
-        QCOMPARE(test.rawData<QVector<quint8>>(), QVector<quint8>({ 0x02, 0x01 }));
-        QCOMPARE(test.rawData<std::vector<quint8>>(), std::vector<quint8>({ 0x02, 0x01 }));
-
-        test = TestStructure(0x01, std::deque<quint8> { 0x01, 0x02, 0x03, 0x04, 0x05 });
-        QCOMPARE(test.dataSize(), 5);
-        QCOMPARE(test.data<QByteArray>(), QByteArray::fromHex("0102030405"));
-        QCOMPARE(test.data<std::deque<quint8>>(), std::deque<quint8>({ 0x01, 0x02, 0x03, 0x04, 0x05 }));
-
-        QCOMPARE(test.rawSize(), 7);
-        QCOMPARE(test.rawData<QByteArray>(), QByteArray::fromHex("07010102030405"));
-        QCOMPARE(test.rawData<std::deque<quint8>>(),
-            std::deque<quint8>({ 0x07, 0x01, 0x01, 0x02, 0x03, 0x04, 0x05 }));
-        QCOMPARE(test.rawData<std::vector<quint8>>(),
-            std::vector<quint8>({ 0x07, 0x01, 0x01, 0x02, 0x03, 0x04, 0x05 }));
+        auto payload = test.payload();
+        QCOMPARE(payload.size(), quint16(0));
+        QCOMPARE(payload.bytes<QByteArray>(), QByteArray {});
+        QCOMPARE(payload.bytes<QVector<quint8>>(), QVector<quint8> {});
+        QCOMPARE(payload.bytes<std::deque<quint8>>(), std::deque<quint8> {});
+        QCOMPARE(payload.bytes<std::vector<quint8>>(), std::vector<quint8> {});
+        QCOMPARE(payload.toString(), QString("Bytes {  }"));
     }
 
-    void testData()
+    void testConstructor_Code()
     {
-        TestStructure test;
-        QCOMPARE(test.data<QByteArray>(0, 10), QByteArray {});
-        QCOMPARE(test.data<QVector<quint8>>(10, 10), QVector<quint8> {});
+        TestStructure test(0x00);
+        QCOMPARE(test.isValid(), false);
+        QCOMPARE(test.code(), quint8(0));
+        QCOMPARE(test.size(), quint16(2));
+        QCOMPARE(test.bytes<QByteArray>(), QByteArray::fromHex("0200"));
+        QCOMPARE(test.bytes<QVector<quint8>>(), QVector<quint8>({ 0x02, 0x00 }));
+        QCOMPARE(test.bytes<std::deque<quint8>>(), std::deque<quint8>({ 0x02, 0x00 }));
+        QCOMPARE(test.bytes<std::vector<quint8>>(), std::vector<quint8>({ 0x02, 0x00 }));
+        QCOMPARE(test.toString(), QString("Total size { 0x02 }, Code { 0x00 }, Bytes {  }"));
 
-        auto ba = QByteArray::fromHex("001122334466778899aabbccddeeff");
-        test = { 0x01, ba };
-        QCOMPARE(test.data<QByteArray>(0, 10), ba.mid(0, 10));
-        QCOMPARE(test.data<QByteArray>(10, 2), ba.mid(10, 2));
-        QCOMPARE(test.data<QByteArray>(20, 2), ba.mid(20, 2));
-        QCOMPARE(test.data<QByteArray>(10, 10), QByteArray {});
+        auto header = test.header();
+        QCOMPARE(header.isValid(), false);
+        QCOMPARE(header.code(), quint8(0));
+        QCOMPARE(header.size(), quint16(2));
+        QCOMPARE(header.totalSize(), quint16(2));
+        QCOMPARE(header.payloadSize(), quint16(0));
+        QCOMPARE(header.bytes<QByteArray>(), QByteArray::fromHex("0200"));
+        QCOMPARE(header.bytes<QVector<quint8>>(), QVector<quint8>({ 0x02, 0x00 }));
+        QCOMPARE(header.bytes<std::deque<quint8>>(), std::deque<quint8>({ 0x02, 0x00 }));
+        QCOMPARE(header.bytes<std::vector<quint8>>(), std::vector<quint8>({ 0x02, 0x00 }));
+        QCOMPARE(header.toString(), QString("Total size { 0x02 }, Code { 0x00 }"));
+
+        auto payload = test.payload();
+        QCOMPARE(payload.size(), quint16(0));
+        QCOMPARE(payload.bytes<QByteArray>(), QByteArray {});
+        QCOMPARE(payload.bytes<QVector<quint8>>(), QVector<quint8> {});
+        QCOMPARE(payload.bytes<std::deque<quint8>>(), std::deque<quint8> {});
+        QCOMPARE(payload.bytes<std::vector<quint8>>(), std::vector<quint8> {});
+        QCOMPARE(payload.toString(), QString("Bytes {  }"));
+
+        test = TestStructure(0x01);
+        QCOMPARE(test.isValid(), true);
+        QCOMPARE(test.code(), quint8(0x01));
+        QCOMPARE(test.size(), quint16(2));
+        QCOMPARE(test.bytes<QByteArray>(), QByteArray::fromHex("0201"));
+        QCOMPARE(test.bytes<QVector<quint8>>(), QVector<quint8>({ 0x02, 0x01 }));
+        QCOMPARE(test.bytes<std::deque<quint8>>(), std::deque<quint8>({ 0x02, 0x01 }));
+        QCOMPARE(test.bytes<std::vector<quint8>>(), std::vector<quint8>({ 0x02, 0x01 }));
+        QCOMPARE(test.toString(), QString("Total size { 0x02 }, Code { 0x01 }, Bytes {  }"));
+
+        header = test.header();
+        QCOMPARE(header.isValid(), true);
+        QCOMPARE(header.code(), quint8(0x01));
+        QCOMPARE(header.size(), quint16(2));
+        QCOMPARE(header.totalSize(), quint16(2));
+        QCOMPARE(header.payloadSize(), quint16(0));
+        QCOMPARE(header.bytes<QByteArray>(), QByteArray::fromHex("0201"));
+        QCOMPARE(header.bytes<QVector<quint8>>(), QVector<quint8>({ 0x02, 0x01 }));
+        QCOMPARE(header.bytes<std::deque<quint8>>(), std::deque<quint8>({ 0x02, 0x01 }));
+        QCOMPARE(header.bytes<std::vector<quint8>>(), std::vector<quint8>({ 0x02, 0x01 }));
+        QCOMPARE(header.toString(), QString("Total size { 0x02 }, Code { 0x01 }"));
+
+        payload = test.payload();
+        QCOMPARE(payload.size(), quint16(0));
+        QCOMPARE(payload.bytes<QByteArray>(), QByteArray {});
+        QCOMPARE(payload.bytes<QVector<quint8>>(), QVector<quint8> {});
+        QCOMPARE(payload.bytes<std::deque<quint8>>(), std::deque<quint8> {});
+        QCOMPARE(payload.bytes<std::vector<quint8>>(), std::vector<quint8> {});
+        QCOMPARE(payload.toString(), QString("Bytes {  }"));
+    }
+
+    void testConstructor_CodeAndPayload()
+    {
+        QKnxNetIpPayload payload;
+
+        TestStructure test(0x00, payload);
+        QCOMPARE(test.isValid(), false);
+        QCOMPARE(test.code(), quint8(0));
+        QCOMPARE(test.size(), quint16(2));
+        QCOMPARE(test.bytes<QByteArray>(), QByteArray::fromHex("0200"));
+        QCOMPARE(test.bytes<QVector<quint8>>(), QVector<quint8>({ 0x02, 0x00 }));
+        QCOMPARE(test.bytes<std::deque<quint8>>(), std::deque<quint8>({ 0x02, 0x00 }));
+        QCOMPARE(test.bytes<std::vector<quint8>>(), std::vector<quint8>({ 0x02, 0x00 }));
+        QCOMPARE(test.toString(), QString("Total size { 0x02 }, Code { 0x00 }, Bytes {  }"));
+
+        auto header = test.header();
+        QCOMPARE(header.isValid(), false);
+        QCOMPARE(header.code(), quint8(0));
+        QCOMPARE(header.size(), quint16(2));
+        QCOMPARE(header.totalSize(), quint16(2));
+        QCOMPARE(header.payloadSize(), quint16(0));
+        QCOMPARE(header.bytes<QByteArray>(), QByteArray::fromHex("0200"));
+        QCOMPARE(header.bytes<QVector<quint8>>(), QVector<quint8>({ 0x02, 0x00 }));
+        QCOMPARE(header.bytes<std::deque<quint8>>(), std::deque<quint8>({ 0x02, 0x00 }));
+        QCOMPARE(header.bytes<std::vector<quint8>>(), std::vector<quint8>({ 0x02, 0x00 }));
+        QCOMPARE(header.toString(), QString("Total size { 0x02 }, Code { 0x00 }"));
+
+        payload = test.payload();
+        QCOMPARE(payload.size(), quint16(0));
+        QCOMPARE(payload.bytes<QByteArray>(), QByteArray {});
+        QCOMPARE(payload.bytes<QVector<quint8>>(), QVector<quint8> {});
+        QCOMPARE(payload.bytes<std::deque<quint8>>(), std::deque<quint8> {});
+        QCOMPARE(payload.bytes<std::vector<quint8>>(), std::vector<quint8> {});
+        QCOMPARE(payload.toString(), QString("Bytes {  }"));
+
+        payload.setBytes(QVector<quint8>({ 0x00, 0x01, 0x02, 0x03, 0x04, 0x05 }));
+        test = TestStructure(0x01, payload);
+        QCOMPARE(test.isValid(), true);
+        QCOMPARE(test.code(), quint8(0x01));
+        QCOMPARE(test.size(), quint16(0x08));
+        QCOMPARE(test.bytes<QByteArray>(), QByteArray::fromHex("0801000102030405"));
+        QCOMPARE(test.bytes<QVector<quint8>>(), QVector<quint8>({ 0x08, 0x01, 0x00, 0x01, 0x02, 0x03, 0x04, 0x05 }));
+        QCOMPARE(test.bytes<std::deque<quint8>>(), std::deque<quint8>({ 0x08, 0x01, 0x00, 0x01, 0x02, 0x03, 0x04, 0x05 }));
+        QCOMPARE(test.bytes<std::vector<quint8>>(), std::vector<quint8>({ 0x08, 0x01, 0x00, 0x01, 0x02, 0x03, 0x04, 0x05 }));
+        QCOMPARE(test.toString(), QString("Total size { 0x08 }, Code { 0x01 }, Bytes { 0x00, 0x01, 0x02, 0x03, 0x04, 0x05 }"));
+
+        header = test.header();
+        QCOMPARE(header.isValid(), true);
+        QCOMPARE(header.code(), quint8(0x01));
+        QCOMPARE(header.size(), quint16(2));
+        QCOMPARE(header.totalSize(), quint16(8));
+        QCOMPARE(header.payloadSize(), quint16(6));
+        QCOMPARE(header.bytes<QByteArray>(), QByteArray::fromHex("0801"));
+        QCOMPARE(header.bytes<QVector<quint8>>(), QVector<quint8>({ 0x08, 0x01 }));
+        QCOMPARE(header.bytes<std::deque<quint8>>(), std::deque<quint8>({ 0x08, 0x01 }));
+        QCOMPARE(header.bytes<std::vector<quint8>>(), std::vector<quint8>({ 0x08, 0x01 }));
+        QCOMPARE(header.toString(), QString("Total size { 0x08 }, Code { 0x01 }"));
+
+        payload = test.payload();
+        QCOMPARE(payload.size(), quint16(0x06));
+        QCOMPARE(payload.bytes<QByteArray>(), QByteArray::fromHex("000102030405"));
+        QCOMPARE(payload.bytes<QVector<quint8>>(), QVector<quint8>({ 0x00, 0x01, 0x02, 0x03, 0x04, 0x05 }));
+        QCOMPARE(payload.bytes<std::deque<quint8>>(), std::deque<quint8>({ 0x00, 0x01, 0x02, 0x03, 0x04, 0x05 }));
+        QCOMPARE(payload.bytes<std::vector<quint8>>(), std::vector<quint8>({ 0x00, 0x01, 0x02, 0x03, 0x04, 0x05 }));
+        QCOMPARE(payload.toString(), QString("Bytes { 0x00, 0x01, 0x02, 0x03, 0x04, 0x05 }"));
+    }
+
+    void testConstructor_Header()
+    {
+        // TODO: add
+    }
+
+    void testConstructor_HeaderPayload()
+    {
+        // TODO: add
+    }
+
+    void testHeaderSize()
+    {
+        QByteArray ba = QByteArray(0xfc, 0x05);
+
+        QKnxNetIpPayload payload;
+        payload.setBytes(ba);
+
+        TestStructure test(0x01, payload);
+        QCOMPARE(test.size(), quint16(0xfe));
+        QCOMPARE(test.bytes<QByteArray>(), QByteArray::fromHex("fe01") + ba);
+
+        QCOMPARE(test.header().size(), quint16(0x02));
+        QCOMPARE(test.header().bytes<QByteArray>(), QByteArray::fromHex("fe01"));
+
+        QCOMPARE(test.payload().size(), quint16(0xfc));
+        QCOMPARE(test.payload().bytes<QByteArray>(), ba);
+
+        ba += QByteArray::fromHex("001122334466778899");
+        payload.setBytes(ba);
+
+        test.setPayload(payload);
+        QCOMPARE(test.size(), quint16(0x109));
+        QCOMPARE(test.bytes<QByteArray>(), QByteArray::fromHex("ff010901") + ba);
+
+        QCOMPARE(test.header().size(), quint16(0x04));
+        QCOMPARE(test.header().bytes<QByteArray>(), QByteArray::fromHex("ff010901"));
+
+        QCOMPARE(test.payload().size(), quint16(0x0105));
+        QCOMPARE(test.payload().bytes<QByteArray>(), ba);
     }
 
     void testToString()
     {
-        QCOMPARE(TestStructure(0x01, QByteArray::fromHex("001122334466778899aabbccddeeff"))
-            .toString(), QString::fromLatin1("Raw size { 0x11 }, Code { 0x01 }, Data { 0x00, 0x11,"
-                " 0x22, 0x33, 0x44, 0x66, 0x77, 0x88, 0x99, 0xaa, 0xbb, 0xcc, 0xdd, 0xee, 0xff }"));
+        TestStructure test;
+        QCOMPARE(test.toString(), QString("Total size { 0x00 }, Code { 0x00 }, Bytes {  }"));
+
+        test.setCode(0x01);
+        QCOMPARE(test.toString(), QString("Total size { 0x02 }, Code { 0x01 }, Bytes {  }"));
+
+        QKnxNetIpPayload payload;
+        payload.setBytes(QByteArray::fromHex("001122334466778899aabbccddeeff"));
+        test.setPayload(payload);
+
+        QCOMPARE(test.toString(), QString("Total size { 0x11 }, Code { 0x01 }, Bytes { 0x00, "
+            "0x11, 0x22, 0x33, 0x44, 0x66, 0x77, 0x88, 0x99, 0xaa, 0xbb, 0xcc, 0xdd, 0xee, 0xff }"));
     }
 
     void testDebugStream()
     {
-        struct DebugHandler
-        {
-            explicit DebugHandler(QtMessageHandler newMessageHandler)
-                : oldMessageHandler(qInstallMessageHandler(newMessageHandler)) {}
-            ~DebugHandler() {
-                qInstallMessageHandler(oldMessageHandler);
-            }
-            QtMessageHandler oldMessageHandler;
-        } _(myMessageHandler);
-
-        qDebug() << TestStructure { 0x01, QByteArray::fromHex("001122334466778899aabbccddeeff") };
-        QCOMPARE(s_msg, QString::fromLatin1("0x1101001122334466778899aabbccddeeff"));
+        // TODO: add
     }
 
     void testDataStream()
     {
-        auto data = QByteArray::fromHex("001122334466778899aabbccddeeff");
-        TestStructure test = { 0x01, data };
-
-        QByteArray byteArray;
-        QDataStream out(&byteArray, QIODevice::WriteOnly);
-        out <<test;
-        QCOMPARE(byteArray, QByteArray::fromHex("1101001122334466778899aabbccddeeff"));
+        // TODO: add
     }
 };
 
-QTEST_APPLESS_MAIN(tst_QKnxNetIpStructure)
+QTEST_APPLESS_MAIN(tst_QKnxNetIpStruct)
 
 #include "tst_qknxnetipstructure.moc"

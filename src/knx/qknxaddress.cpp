@@ -165,7 +165,7 @@ QKnxAddress::QKnxAddress(QKnxAddress::Type type, const QByteArray &address)
         return;
 
     m_type = type;
-    m_address = quint16((quint8(address[0]) & 0xff) << 8 | quint8(address[1]) & 0xff);
+    m_address = QKnxUtils::QUint16::fromBytes(address);
 }
 
 /*!
@@ -183,7 +183,7 @@ QKnxAddress::QKnxAddress(QKnxAddress::Type type, const QVector<quint8> &address)
         return;
 
     m_type = type;
-    m_address = quint16((address[0] & 0xff) << 8 | address[1] & 0xff);
+    m_address = QKnxUtils::QUint16::fromBytes(address);
 }
 
 /*!

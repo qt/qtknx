@@ -13,18 +13,22 @@ PUBLIC_HEADERS += \
     qknxcontrolfield.h \
     qknxextendedcontrolfield.h \
     qknxnetipframe.h \
-    qknxnetipheader.h \
+    qknxnetipframeheader.h \
     qknxnetiphpai.h \
-    qknxnetipstructure.h \
     qknxnetipdevicedib.h \
     qknxnetipservicefamiliesdib.h \
     qknxnetipconfigdib.h \
     qknxnetipcurrentconfigdib.h \
     qknxnetipknxaddressesdib.h \
     qknxnetipmanufacturerdib.h \
+    qknxnetip.h \
     qknxutils.h \
     qknxnetipcri.h \
-    qknxnetipcrd.h
+    qknxnetipcrd.h \
+    qknxnetipstruct.h \
+    qknxnetipbytestore.h \
+    qknxnetippayload.h \
+    qknxnetipstructheader.h
 
 PRIVATE_HEADERS +=
 
@@ -34,7 +38,6 @@ SOURCES += \
     qknxcontrolfield.cpp \
     qknxextendedcontrolfield.cpp \
     qknxnetipframe.cpp \
-    qknxnetipstructure.cpp \
     qknxnetipdevicedib.cpp \
     qknxnetiphpai.cpp \
     qknxnetipservicefamiliesdib.cpp \
@@ -43,7 +46,10 @@ SOURCES += \
     qknxnetipknxaddressesdib.cpp \
     qknxnetipmanufacturerdib.cpp \
     qknxnetipcri.cpp \
-    qknxnetipcrd.cpp
+    qknxnetipcrd.cpp \
+    qknxnetipstruct.cpp \
+    qknxnetipframeheader.cpp \
+    qknxnetipstructheader.cpp
 
 HEADERS += $$PUBLIC_HEADERS $$PRIVATE_HEADERS
 

@@ -8,14 +8,19 @@
 #pragma once
 
 #include <QtCore/qbytearray.h>
+#include <QtCore/qdatastream.h>
+#include <QtCore/qdebug.h>
+#include <QtCore/qstring.h>
+#include <QtCore/qvector.h>
 #include <QtKnx/qknxaddress.h>
 #include <QtKnx/qknxglobal.h>
-#include <QtKnx/qknxnetipstructure.h>
+#include <QtKnx/qknxnetipstruct.h>
+#include <QtKnx/qknxtraits.h>
 #include <QtNetwork/qhostaddress.h>
 
 QT_BEGIN_NAMESPACE
 
-class Q_KNX_EXPORT QKnxNetIpDeviceDIB final : public QKnxNetIpStructure
+class Q_KNX_EXPORT QKnxNetIpDeviceDIB final : private QKnxNetIpStruct
 {
 public:
     enum class MediumCode : quint8
@@ -47,12 +52,12 @@ public:
                        const QByteArray &macAddress,
                        const QByteArray deviceName);
 
-    explicit QKnxNetIpDeviceDIB(const QByteArray &data);
-    explicit QKnxNetIpDeviceDIB(const QVector<quint8> &data);
+    template<typename T> QKnxNetIpDeviceDIB fromBytes(const T &bytes, qint32 index)
+    {
+        return QKnxNetIpStruct::fromBytes(bytes, index);
+    }
 
-    QKnxNetIpDeviceDIB fromRawData(const QByteArray &rawData, qint32 offset);
-    QKnxNetIpDeviceDIB fromRawData(const QVector<quint8> &rawData, qint32 offset);
-
+    QKnxNetIp::DescriptionTypeCode descriptionTypeCode() const;
     QKnxAddress individualAddress() const;
     quint16 projectInstallationIdentfier() const;
     QByteArray serialNumber() const;
@@ -60,15 +65,15 @@ public:
     QByteArray macAddress() const;
     QByteArray deviceName() const;
 
-    bool isValid() const;
+    bool isValid() const override;
 
-    using QKnxNetIpStructure::toString;
-    using QKnxNetIpStructure::descriptionTypeCode;
+    using QKnxNetIpStruct::size;
+    using QKnxNetIpStruct::bytes;
+    using QKnxNetIpStruct::payload;
+    using QKnxNetIpStruct::toString;
 
 private:
-    QKnxNetIpDeviceDIB(const QKnxNetIpStructure &other)
-        : QKnxNetIpStructure(other)
-    {}
+    QKnxNetIpDeviceDIB(const QKnxNetIpStruct &other);
 };
 Q_DECLARE_TYPEINFO(QKnxNetIpDeviceDIB, Q_MOVABLE_TYPE);
 

@@ -7,30 +7,42 @@
 
 #pragma once
 
-#include <QtKnx/qknxnetipstructure.h>
+#include <QtCore/qbytearray.h>
+#include <QtCore/qdatastream.h>
+#include <QtCore/qdebug.h>
+#include <QtCore/qstring.h>
+#include <QtCore/qvector.h>
+#include <QtKnx/qknxglobal.h>
+#include <QtKnx/qknxnetipstruct.h>
+#include <QtKnx/qknxtraits.h>
 
 QT_BEGIN_NAMESPACE
 
-class Q_KNX_EXPORT QKnxNetIpCRI final : public QKnxNetIpStructure
+class Q_KNX_EXPORT QKnxNetIpCRI : private QKnxNetIpStruct
 {
 public:
     QKnxNetIpCRI() = default;
 
-    QKnxNetIpCRI(ConnectionTypeCode type, const QByteArray &data);
-    QKnxNetIpCRI(ConnectionTypeCode type, const QVector<quint8> &data);
+    template <typename T> QKnxNetIpCRI(QKnxNetIp::ConnectionTypeCode type, const T &bytes)
+        : QKnxNetIpStruct(quint8(type), bytes)
+    {}
 
-    QKnxNetIpCRI fromRawData(const QByteArray &rawData, qint32 offset);
-    QKnxNetIpCRI fromRawData(const QVector<quint8> &rawData, qint32 offset);
+    template <typename T> QKnxNetIpCRI fromBytes(const T &bytes, qint32 index)
+    {
+        return QKnxNetIpStruct::fromBytes(bytes, index);
+    }
 
-    bool isValid() const;
+    QKnxNetIp::ConnectionTypeCode connectionTypeCode() const;
 
-    using QKnxNetIpStructure::toString;
-    using QKnxNetIpStructure::connectionTypeCode;
+    bool isValid() const override;
+
+    using QKnxNetIpStruct::size;
+    using QKnxNetIpStruct::bytes;
+    using QKnxNetIpStruct::payload;
+    using QKnxNetIpStruct::toString;
 
 private:
-    QKnxNetIpCRI(const QKnxNetIpStructure &other)
-        : QKnxNetIpStructure(other)
-    {}
+    QKnxNetIpCRI(const QKnxNetIpStruct &other);
 };
 Q_DECLARE_TYPEINFO(QKnxNetIpCRI, Q_MOVABLE_TYPE);
 

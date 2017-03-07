@@ -7,9 +7,9 @@
 
 #pragma once
 
+#include <QtCore/qbytearray.h>
 #include <QtCore/qdatastream.h>
 #include <QtCore/qdebug.h>
-#include <QtCore/qtypeinfo.h>
 #include <QtCore/qstring.h>
 #include <QtCore/qvector.h>
 #include <QtKnx/qknxglobal.h>
@@ -63,7 +63,7 @@ public:
 
         if (!isValid())
             return {};
-        return QKnxUtils::Integer::quint16ToArray<T>(quint16(m_address));
+        return QKnxUtils::QUint16::bytes<T>(quint16(m_address));
     }
 
     QString toString() const;

@@ -7,12 +7,20 @@
 
 #pragma once
 
+#include <QtCore/qbytearray.h>
+#include <QtCore/qdatastream.h>
+#include <QtCore/qdebug.h>
+#include <QtCore/qstring.h>
+#include <QtCore/qvector.h>
+
 #include <QtKnx/qknxaddress.h>
-#include <QtKnx/qknxnetipstructure.h>
+#include <QtKnx/qknxglobal.h>
+#include <QtKnx/qknxnetipstruct.h>
+#include <QtKnx/qknxtraits.h>
 
 QT_BEGIN_NAMESPACE
 
-class Q_KNX_EXPORT QKnxNetIpKnxAddressesDIB final : public QKnxNetIpStructure
+class Q_KNX_EXPORT QKnxNetIpKnxAddressesDIB final : private QKnxNetIpStruct
 {
 public:
     QKnxNetIpKnxAddressesDIB() = default;
@@ -20,23 +28,35 @@ public:
     explicit QKnxNetIpKnxAddressesDIB(const QKnxAddress &address);
     explicit QKnxNetIpKnxAddressesDIB(const QVector<QKnxAddress> &addresses);
 
-    explicit QKnxNetIpKnxAddressesDIB(const QByteArray &data);
-    explicit QKnxNetIpKnxAddressesDIB(const QVector<quint8> &data);
+    template <typename T> QKnxNetIpKnxAddressesDIB fromBytes(const T &bytes, qint32 index)
+    {
+        return QKnxNetIpStruct::fromBytes(bytes, index);
+    }
 
-    QKnxNetIpKnxAddressesDIB fromRawData(const QByteArray &rawData, qint32 offset);
-    QKnxNetIpKnxAddressesDIB fromRawData(const QVector<quint8> &rawData, qint32 offset);
+    QKnxNetIp::DescriptionTypeCode descriptionTypeCode() const;
+    template <typename T> auto individualAddresses() const -> decltype(T())
+    {
+        static_assert(is_type<T, QVector<QKnxAddress>, std::deque<QKnxAddress>,
+            std::vector<QKnxAddress>>::value, "Type not supported.");
 
-    QVector<QKnxAddress> individualAddresses() const;
+        const QKnxNetIpPayload &load = payload();
 
-    bool isValid() const;
+        T addresses(load.size() / 2, Qt::Uninitialized);
+        for (int i = 0; i < load.size(); i += 2)
+            addresses.push_back({ QKnxAddress::Type::Individual, load.bytes<QByteArray>(i, 2) });
+        return addresses;
 
-    using QKnxNetIpStructure::toString;
-    using QKnxNetIpStructure::descriptionTypeCode;
+    }
+
+    bool isValid() const override;
+
+    using QKnxNetIpStruct::size;
+    using QKnxNetIpStruct::bytes;
+    using QKnxNetIpStruct::payload;
+    using QKnxNetIpStruct::toString;
 
 private:
-    QKnxNetIpKnxAddressesDIB(const QKnxNetIpStructure &other)
-        : QKnxNetIpStructure(other)
-    {}
+    QKnxNetIpKnxAddressesDIB(const QKnxNetIpStruct &other);
 };
 Q_DECLARE_TYPEINFO(QKnxNetIpKnxAddressesDIB, Q_MOVABLE_TYPE);
 

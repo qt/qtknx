@@ -8,15 +8,19 @@
 #pragma once
 
 #include <QtCore/qbytearray.h>
-#include <QtKnx/qknxaddress.h>
+#include <QtCore/qdatastream.h>
+#include <QtCore/qdebug.h>
+#include <QtCore/qstring.h>
+#include <QtCore/qvector.h>
 #include <QtKnx/qknxglobal.h>
-#include <QtKnx/qknxnetipstructure.h>
+#include <QtKnx/qknxnetipstruct.h>
+#include <QtKnx/qknxtraits.h>
 #include <QtNetwork/qhostaddress.h>
 #include <QtNetwork/qnetworkinterface.h>
 
 QT_BEGIN_NAMESPACE
 
-class Q_KNX_EXPORT QKnxNetIpCurrentConfigDIB final : public QKnxNetIpStructure
+class Q_KNX_EXPORT QKnxNetIpCurrentConfigDIB final : private QKnxNetIpStruct
 {
 public:
     // 03_08_03 Management v01.06.02 AS, 2.5.5 PID_CURRENT_IP_ASSIGNMENT_METHOD (PID = 54)
@@ -30,35 +34,39 @@ public:
 
     QKnxNetIpCurrentConfigDIB() = default;
 
-    QKnxNetIpCurrentConfigDIB(const QNetworkAddressEntry &addressAndSubnetMask,
-        const QHostAddress &gateway, const QHostAddress &dhcp, AssignmentMethod method);
-    QKnxNetIpCurrentConfigDIB(const QHostAddress &ipAddress, const QHostAddress &subnetMask,
-        const QHostAddress &gateway, const QHostAddress &dhcp, AssignmentMethod method);
+    QKnxNetIpCurrentConfigDIB(const QHostAddress &ipAddress,
+                              const QHostAddress &subnetMask,
+                              const QHostAddress &gateway,
+                              const QHostAddress &dhcp,
+                              AssignmentMethod method);
 
-    explicit QKnxNetIpCurrentConfigDIB(const QByteArray &data);
-    explicit QKnxNetIpCurrentConfigDIB(const QVector<quint8> &data);
+    QKnxNetIpCurrentConfigDIB(const QNetworkAddressEntry &addressEntry,
+                              const QHostAddress &gateway,
+                              const QHostAddress &dhcp,
+                              AssignmentMethod method);
 
-    QKnxNetIpCurrentConfigDIB fromRawData(const QByteArray &rawData, qint32 offset);
-    QKnxNetIpCurrentConfigDIB fromRawData(const QVector<quint8> &rawData, qint32 offset);
+    template <typename T> QKnxNetIpCurrentConfigDIB fromBytes(const T &bytes, qint32 index)
+    {
+        return QKnxNetIpStruct::fromBytes(bytes, index);
+    }
 
+    QKnxNetIp::DescriptionTypeCode descriptionTypeCode() const;
     QHostAddress ipAddress() const;
     QHostAddress subnetMask() const;
     QHostAddress defaultGateway() const;
     QHostAddress dhcpOrBootP() const;
-
     AssignmentMethod assignmentMethod() const;
 
-    bool isValid() const;
+    bool isValid() const override;
 
-    using QKnxNetIpStructure::toString;
-    using QKnxNetIpStructure::descriptionTypeCode;
+    using QKnxNetIpStruct::size;
+    using QKnxNetIpStruct::bytes;
+    using QKnxNetIpStruct::payload;
+    using QKnxNetIpStruct::toString;
 
 private:
-    QKnxNetIpCurrentConfigDIB(const QKnxNetIpStructure &other)
-        : QKnxNetIpStructure(other)
-    {}
+    QKnxNetIpCurrentConfigDIB(const QKnxNetIpStruct &other);
 };
-
 Q_DECLARE_TYPEINFO(QKnxNetIpCurrentConfigDIB, Q_MOVABLE_TYPE);
 
 QT_END_NAMESPACE

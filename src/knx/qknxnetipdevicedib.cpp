@@ -19,105 +19,90 @@ QT_BEGIN_NAMESPACE
     block.
 */
 
+QKnxNetIpDeviceDIB::QKnxNetIpDeviceDIB(const QKnxNetIpStruct &other)
+    : QKnxNetIpStruct(other)
+{}
+
 QKnxNetIpDeviceDIB::QKnxNetIpDeviceDIB(MediumCode mediumCode, DeviceStatus deviceStatus,
         const QKnxAddress &individualAddress, quint16 projectId, const QByteArray &serialNumber,
         const QHostAddress &multicastAddress, const QByteArray &macAddress, const QByteArray deviceName)
-    : QKnxNetIpStructure(quint8(DescriptionTypeCode::DeviceInfo))
+    : QKnxNetIpStruct(quint8(QKnxNetIp::DescriptionTypeCode::DeviceInfo))
 {
-    QByteArray data(0, Qt::Uninitialized);
-    data[0] = quint8(mediumCode);
+    QKnxNetIpPayload payload;
+    payload.setByte(0, quint8(mediumCode));
+
     if (deviceStatus > DeviceStatus::ActiveProgrammingMode)
         return;
-    data[1] = quint8(deviceStatus);
-    data.insert(2, individualAddress.rawData<QByteArray>());
-    data.insert(4, QKnxUtils::Integer::quint16ToArray<QByteArray>(projectId));
+    payload.setByte(1, quint8(deviceStatus));
+
+    payload.appendBytes(individualAddress.rawData<std::vector<quint8>>());
+    payload.appendBytes(QKnxUtils::QUint16::bytes<std::vector<quint8>>(projectId));
 
     if (serialNumber.size() != 6)
         return;
-    data.insert(6, serialNumber);
+    payload.appendBytes(serialNumber);
 
     if (multicastAddress != QHostAddress::AnyIPv4 && !multicastAddress.isMulticast())
         return;
-    data.insert(12, QKnxUtils::HostAddress::toArray<QByteArray>(multicastAddress));
+    payload.appendBytes(QKnxUtils::HostAddress::bytes<std::vector<quint8>>(multicastAddress));
 
     if (macAddress.size() != 6)
         return;
-    data.insert(16, macAddress);
-    data.insert(22, deviceName);
-
-    setData(data);
-    resizeData(52, true); // size enforced by 7.5.4.2 Device information DIB
+    payload.appendBytes(macAddress);
+    payload.appendBytes(deviceName);
+    payload.resize(52); // size enforced by 7.5.4.2 Device information DIB
+    setPayload(payload);
 }
 
-QKnxNetIpDeviceDIB::QKnxNetIpDeviceDIB(const QByteArray &data)
-    : QKnxNetIpStructure(quint8(DescriptionTypeCode::DeviceInfo), data)
+QKnxNetIp::DescriptionTypeCode QKnxNetIpDeviceDIB::descriptionTypeCode() const
 {
-    resizeData(52, true); // size enforced by 7.5.4.2 Device information DIB
-}
-
-QKnxNetIpDeviceDIB::QKnxNetIpDeviceDIB(const QVector<quint8> &data)
-    : QKnxNetIpStructure(quint8(DescriptionTypeCode::DeviceInfo), data)
-{
-    resizeData(52, true); // size enforced by 7.5.4.2 Device information DIB
-}
-
-QKnxNetIpDeviceDIB QKnxNetIpDeviceDIB::fromRawData(const QByteArray &rawData, qint32 offset)
-{
-    QKnxNetIpDeviceDIB dib = QKnxNetIpStructure::fromRawData(rawData, offset);
-    dib.resizeData(52, true); // size enforced by 7.5.4.2 Device information DIB
-    return dib;
-}
-QKnxNetIpDeviceDIB QKnxNetIpDeviceDIB::fromRawData(const QVector<quint8> &rawData, qint32 offset)
-{
-    QKnxNetIpDeviceDIB dib = QKnxNetIpStructure::fromRawData(rawData, offset);
-    dib.resizeData(52, true); // size enforced by 7.5.4.2 Device information DIB
-    return dib;
+    return QKnxNetIp::DescriptionTypeCode(code());
 }
 
 QKnxNetIpDeviceDIB::MediumCode QKnxNetIpDeviceDIB::mediumCode() const
 {
-    return QKnxNetIpDeviceDIB::MediumCode(data<QVector<quint8>>(0, 1)[0]);
+    return QKnxNetIpDeviceDIB::MediumCode(payload().bytes<std::vector<quint8>>(0, 1)[0]);
 }
 
 QKnxNetIpDeviceDIB::DeviceStatus QKnxNetIpDeviceDIB::deviceStatus() const
 {
-    return QKnxNetIpDeviceDIB::DeviceStatus(data<QVector<quint8>>(1, 1)[0]);
+    return QKnxNetIpDeviceDIB::DeviceStatus(payload().bytes<std::vector<quint8>>(1, 1)[0]);
 }
 
 QKnxAddress QKnxNetIpDeviceDIB::individualAddress() const
 {
-    return { QKnxAddress::Type::Individual, data<QVector<quint8>>(2, 2) };
+    return { QKnxAddress::Type::Individual, payload().bytes<QVector<quint8>>(2, 2) };
 }
 
 quint16 QKnxNetIpDeviceDIB::projectInstallationIdentfier() const
 {
-    return QKnxUtils::Integer::quint16FromArray(data<QVector<quint8>>(4, 2));
+    return QKnxUtils::QUint16::fromBytes(payload().bytes<std::vector<quint8>>(4, 2));
 }
 
 QByteArray QKnxNetIpDeviceDIB::serialNumber() const
 {
-    return data<QByteArray>(6, 6);
+    return payload().bytes<QByteArray>(6, 6);
 }
 
 QHostAddress QKnxNetIpDeviceDIB::multicastAddress() const
 {
-    return QKnxUtils::HostAddress::fromArray(data<QVector<quint8>>(12, 4));
+    return QKnxUtils::HostAddress::fromBytes(payload().bytes<std::vector<quint8>>(12, 4));
 }
 
 QByteArray QKnxNetIpDeviceDIB::macAddress() const
 {
-    return data<QByteArray>(16, 6);
+    return payload().bytes<QByteArray>(16, 6);
 }
 
 QByteArray QKnxNetIpDeviceDIB::deviceName() const
 {
-    return QByteArray(data<QByteArray>(22, 30).constData());
+    return QByteArray(payload().bytes<QByteArray>(22, 30).constData());
 }
 
 bool QKnxNetIpDeviceDIB::isValid() const
 {
-    return QKnxNetIpStructure::isValid() && dataSize() == 52
-        && descriptionTypeCode() == DescriptionTypeCode::DeviceInfo;
+    return QKnxNetIpStruct::isValid() && size() == 54
+        && descriptionTypeCode() == QKnxNetIp::DescriptionTypeCode::DeviceInfo;
 }
 
 QT_END_NAMESPACE

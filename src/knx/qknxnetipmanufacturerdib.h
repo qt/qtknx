@@ -7,12 +7,18 @@
 
 #pragma once
 
+#include <QtCore/qbytearray.h>
+#include <QtCore/qdatastream.h>
+#include <QtCore/qdebug.h>
+#include <QtCore/qstring.h>
+#include <QtCore/qvector.h>
 #include <QtKnx/qknxglobal.h>
-#include <QtKnx/qknxnetipstructure.h>
+#include <QtKnx/qknxnetipstruct.h>
+#include <QtKnx/qknxtraits.h>
 
 QT_BEGIN_NAMESPACE
 
-class Q_KNX_EXPORT QKnxNetIpManufacturerDIB final : public QKnxNetIpStructure
+class Q_KNX_EXPORT QKnxNetIpManufacturerDIB final : private QKnxNetIpStruct
 {
 public:
     QKnxNetIpManufacturerDIB() = default;
@@ -21,29 +27,29 @@ public:
     QKnxNetIpManufacturerDIB(quint16 manufacturerId, const QByteArray &manufacturerData);
     QKnxNetIpManufacturerDIB(quint16 manufacturerId, const QVector<quint8> &manufacturerData);
 
-    explicit QKnxNetIpManufacturerDIB(const QByteArray &data);
-    explicit QKnxNetIpManufacturerDIB(const QVector<quint8> &data);
+    template <typename T> QKnxNetIpManufacturerDIB fromBytes(const T &bytes, qint32 index)
+    {
+        return QKnxNetIpStruct::fromBytes(bytes, index);
+    }
 
+    QKnxNetIp::DescriptionTypeCode descriptionTypeCode() const;
     quint16 manufacturerId() const;
     template <typename T> auto manufacturerData() const -> decltype(T())
     {
         static_assert(is_type<T, QByteArray, QVector<quint8>, std::deque<quint8>,
-            std::vector<quint8>>);
-        return data<T>(2, dataSize() - 2);
+            std::vector<quint8>>::value, "Type not supported.");
+        return payload().bytes<T>(2, totalSize() - 2);
     }
 
-    QKnxNetIpManufacturerDIB fromRawData(const QByteArray &rawData, qint32 offset);
-    QKnxNetIpManufacturerDIB fromRawData(const QVector<quint8> &rawData, qint32 offset);
+    bool isValid() const override;
 
-    bool isValid() const;
-
-    using QKnxNetIpStructure::toString;
-    using QKnxNetIpStructure::descriptionTypeCode;
+    using QKnxNetIpStruct::size;
+    using QKnxNetIpStruct::bytes;
+    using QKnxNetIpStruct::payload;
+    using QKnxNetIpStruct::toString;
 
 private:
-    QKnxNetIpManufacturerDIB(const QKnxNetIpStructure &other)
-        : QKnxNetIpStructure(other)
-    {}
+    QKnxNetIpManufacturerDIB(const QKnxNetIpStruct &other);
 };
 Q_DECLARE_TYPEINFO(QKnxNetIpManufacturerDIB, Q_MOVABLE_TYPE);
 

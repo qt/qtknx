@@ -22,21 +22,21 @@ class tst_QKnxNetIpHPAI : public QObject
 private slots:
     void testConstructor()
     {
-        QKnxNetIpHPAI hpai(QKnxNetIpStructure::HostProtocolCode::IpV4_Udp, QHostAddress::LocalHost,
+        QKnxNetIpHPAI hpai(QKnxNetIp::HostProtocolCode::IpV4_Udp, QHostAddress::LocalHost,
             3671);
 
-        QCOMPARE(hpai.hostProtocolCode(), QKnxNetIpStructure::HostProtocolCode::IpV4_Udp);
+        QCOMPARE(hpai.hostProtocolCode(), QKnxNetIp::HostProtocolCode::IpV4_Udp);
         QCOMPARE(hpai.address(), QHostAddress(QHostAddress::LocalHost));
         QCOMPARE(hpai.port(), quint16(3671));
 
-        QCOMPARE(hpai.dataSize(), 6);
-        QCOMPARE(hpai.data<QByteArray>(), QByteArray::fromHex("7f0000010e57"));
+        QCOMPARE(hpai.payload().size(), quint16(6));
+        QCOMPARE(hpai.payload().bytes<QByteArray>(), QByteArray::fromHex("7f0000010e57"));
 
-        QCOMPARE(hpai.rawSize(), 8);
-        QCOMPARE(hpai.rawData<QByteArray>(), QByteArray::fromHex("08017f0000010e57"));
+        QCOMPARE(hpai.size(), quint16(8));
+        QCOMPARE(hpai.bytes<QByteArray>(), QByteArray::fromHex("08017f0000010e57"));
 
-        QCOMPARE(hpai.toString(), QString::fromLatin1("Raw size { 0x08 }, Code { 0x01 }, "
-            "Data { 0x7f, 0x00, 0x00, 0x01, 0x0e, 0x57 }"));
+        QCOMPARE(hpai.toString(), QString::fromLatin1("Total size { 0x08 }, Code { 0x01 }, "
+            "Bytes { 0x7f, 0x00, 0x00, 0x01, 0x0e, 0x57 }"));
     }
 
     void testDebugStream()

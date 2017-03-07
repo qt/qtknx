@@ -9,37 +9,28 @@
 
 QT_BEGIN_NAMESPACE
 
-QKnxNetIpCRI::QKnxNetIpCRI(ConnectionTypeCode type,const QByteArray &data)
-    : QKnxNetIpStructure(quint8(type), data)
+QKnxNetIpCRI::QKnxNetIpCRI(const QKnxNetIpStruct &other)
+    : QKnxNetIpStruct(other)
 {}
 
-QKnxNetIpCRI::QKnxNetIpCRI(ConnectionTypeCode type,const QVector<quint8> &data)
-    : QKnxNetIpStructure(quint8(type), data)
-{}
-
-QKnxNetIpCRI QKnxNetIpCRI::fromRawData(const QByteArray &rawData, qint32 offset)
+QKnxNetIp::ConnectionTypeCode QKnxNetIpCRI::connectionTypeCode() const
 {
-    return QKnxNetIpStructure::fromRawData(rawData, offset);
-}
-
-QKnxNetIpCRI QKnxNetIpCRI::fromRawData(const QVector<quint8> &rawData, qint32 offset)
-{
-    return QKnxNetIpStructure::fromRawData(rawData, offset);
+    return QKnxNetIp::ConnectionTypeCode(code());
 }
 
 bool QKnxNetIpCRI::isValid() const
 {
     switch (connectionTypeCode()) {
-        case ConnectionTypeCode::DeviceManagementConnection:
-        case ConnectionTypeCode::TunnelConnection :
-        case ConnectionTypeCode::RemoteLoggingConnection :
-        case ConnectionTypeCode::RemoteConfigurationConnection :
-        case ConnectionTypeCode::ObjectServerConnection :
+        case QKnxNetIp::ConnectionTypeCode::DeviceManagementConnection:
+        case QKnxNetIp::ConnectionTypeCode::TunnelConnection :
+        case QKnxNetIp::ConnectionTypeCode::RemoteLoggingConnection :
+        case QKnxNetIp::ConnectionTypeCode::RemoteConfigurationConnection :
+        case QKnxNetIp::ConnectionTypeCode::ObjectServerConnection :
             break;
         default:
             return false;
     }
-    return QKnxNetIpStructure::isValid();
+    return QKnxNetIpStruct::isValid();
 }
 
 QT_END_NAMESPACE

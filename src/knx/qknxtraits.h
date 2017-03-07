@@ -7,9 +7,10 @@
 
 #pragma once
 
-#include <QtCore/qglobal.h>
+#include <QtKnx/qknxglobal.h>
 
 #include <array>
+#include <bitset>
 #include <deque>
 #include <vector>
 

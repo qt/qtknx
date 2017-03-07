@@ -11,9 +11,34 @@
 
 QT_BEGIN_NAMESPACE
 
-class Q_KNX_EXPORT QKnxNetIpHeader final
+struct Q_KNX_EXPORT QKnxNetIp final
 {
-public:
+    enum class HostProtocolCode : quint8
+    {
+        IpV4_Udp = 0x01,
+        IpV4_Tcp = 0x02
+    };
+
+    enum class ConnectionTypeCode : quint8
+    {
+        DeviceManagementConnection = 0x03,
+        TunnelConnection = 0x04,
+        RemoteLoggingConnection = 0x06,
+        RemoteConfigurationConnection = 0x07,
+        ObjectServerConnection = 0x08
+    };
+
+    enum class DescriptionTypeCode : quint8
+    {
+        DeviceInfo = 0x01,
+        SupportedServiceFamilies = 0x02,
+        IpConfiguration = 0x03,
+        CurrentIpConfiguration = 0x04,
+        KnxAddresses = 0x05,
+        ManufactorData = 0xfe,
+        NotUsed = 0xff
+    };
+
     enum class ServiceType : quint16
     {
         // KNXnet/IP Core service type identifiers
@@ -39,21 +64,12 @@ public:
         // KNXnet/IP Routing service type identifier
         RoutingIndication = 0x0530,
         RoutingLostMessage = 0x0531,
+        RoutingBusy = 0x0352
     };
-    QKnxNetIpHeader::ServiceType serviceType() const { return m_serviceType; };
-    void setServiceType(QKnxNetIpHeader::ServiceType serviceType) { m_serviceType = serviceType; }
-
-    quint8 version() const { return KnxNetIpVersion_10; /* TODO: Adapt on additional versions. */ }
-    quint8 headerSize() const { return KnxNetIpHeaderSize_10; /* TODO: Adapt on version change. */ }
-
-private:
-    QKnxNetIpHeader::ServiceType m_serviceType;
-
-    static const quint8 KnxNetIpVersion_10 = 0x10;
-    static const quint8 KnxNetIpHeaderSize_10 = 0x06;
 };
-
-Q_DECLARE_TYPEINFO(QKnxNetIpHeader, Q_MOVABLE_TYPE);
-Q_DECLARE_TYPEINFO(QKnxNetIpHeader::ServiceType, Q_PRIMITIVE_TYPE);
+Q_DECLARE_TYPEINFO(QKnxNetIp::HostProtocolCode, Q_PRIMITIVE_TYPE);
+Q_DECLARE_TYPEINFO(QKnxNetIp::ConnectionTypeCode, Q_PRIMITIVE_TYPE);
+Q_DECLARE_TYPEINFO(QKnxNetIp::DescriptionTypeCode, Q_PRIMITIVE_TYPE);
+Q_DECLARE_TYPEINFO(QKnxNetIp::ServiceType,  Q_PRIMITIVE_TYPE);
 
 QT_END_NAMESPACE

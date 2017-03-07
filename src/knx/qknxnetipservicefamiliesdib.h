@@ -7,15 +7,19 @@
 
 #pragma once
 
+#include <QtCore/qbytearray.h>
+#include <QtCore/qdatastream.h>
+#include <QtCore/qdebug.h>
+#include <QtCore/qmap.h>
+#include <QtCore/qstring.h>
+#include <QtCore/qvector.h>
 #include <QtKnx/qknxglobal.h>
-#include <QtKnx/qknxnetipstructure.h>
+#include <QtKnx/qknxnetipstruct.h>
+#include <QtKnx/qknxtraits.h>
 
 QT_BEGIN_NAMESPACE
 
-// 7.5.4.3 Supported service families DIB
-// The service family IDs shall be the high octet of the Service Type ID
-
-class Q_KNX_EXPORT QKnxNetIpServiceFamiliesDIB final : public QKnxNetIpStructure
+class Q_KNX_EXPORT QKnxNetIpServiceFamiliesDIB final : private QKnxNetIpStruct
 {
 public:
     enum class ServiceFamilieId : quint8
@@ -31,30 +35,31 @@ public:
 
     QKnxNetIpServiceFamiliesDIB() = default;
 
+    QKnxNetIpServiceFamiliesDIB(ServiceFamilieId id, quint8 versions);
     QKnxNetIpServiceFamiliesDIB(const QMap<ServiceFamilieId, quint8> &families);
     QKnxNetIpServiceFamiliesDIB(const QVector<ServiceFamilieId> &ids, const QVector<quint8> &versions);
 
-    explicit QKnxNetIpServiceFamiliesDIB(const QByteArray &data);
-    explicit QKnxNetIpServiceFamiliesDIB(const QVector<quint8> &data);
+    template <typename T> static QKnxNetIpServiceFamiliesDIB fromBytes(const T &bytes, qint32 index)
+    {
+        return QKnxNetIpStruct::fromBytes(bytes, index);
+    }
 
-    static QKnxNetIpServiceFamiliesDIB fromRawData(const QByteArray &rawData, qint32 offset);
-    static QKnxNetIpServiceFamiliesDIB fromRawData(const QVector<quint8> &rawData, qint32 offset);
+    QKnxNetIp::DescriptionTypeCode descriptionTypeCode() const;
+    // TODO: add access functions for family and version if needed
 
     void add(ServiceFamilieId id, quint8 versions);
     void add(const QMap<ServiceFamilieId, quint8> &families);
     void add(const QVector<ServiceFamilieId> &ids, const QVector<quint8> &versions);
 
-    // TODO: add access functions for family and version
+    bool isValid() const override;
 
-    bool isValid() const;
-
-    using QKnxNetIpStructure::toString;
-    using QKnxNetIpStructure::descriptionTypeCode;
+    using QKnxNetIpStruct::size;
+    using QKnxNetIpStruct::bytes;
+    using QKnxNetIpStruct::payload;
+    using QKnxNetIpStruct::toString;
 
 private:
-    QKnxNetIpServiceFamiliesDIB(const QKnxNetIpStructure &other)
-        : QKnxNetIpStructure(other)
-    {}
+    QKnxNetIpServiceFamiliesDIB(const QKnxNetIpStruct &other);
 };
 Q_DECLARE_TYPEINFO(QKnxNetIpServiceFamiliesDIB, Q_MOVABLE_TYPE);
 

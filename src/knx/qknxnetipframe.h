@@ -7,26 +7,41 @@
 
 #pragma once
 
+#include <QtCore/qbytearray.h>
+#include <QtCore/qdatastream.h>
+#include <QtCore/qdebug.h>
+#include <QtCore/qstring.h>
+#include <QtCore/qvector.h>
 #include <QtKnx/qknxglobal.h>
-#include <QtKnx/qknxnetipheader.h>
+#include <QtKnx/qknxnetip.h>
+#include <QtKnx/qknxnetipframeheader.h>
+#include <QtKnx/qknxnetippayload.h>
+#include <QtKnx/qknxtraits.h>
 
 QT_BEGIN_NAMESPACE
 
 class Q_KNX_EXPORT QKnxNetIpFrame
 {
 public:
-    QKnxNetIpHeader header() { return m_header; }
-    void setHeader(const QKnxNetIpHeader &header) { m_header = header; }
+    quint8 code() const;
+    void setCode(quint8 code);
 
-    quint16 size() const { return m_header.headerSize() + m_frameSize; }
+    quint16 size() const;
+    QKnxNetIpFrameHeader header() const;
+
+    QKnxNetIpPayload payload() const;
+    void setPayload(const QKnxNetIpPayload &payload);
+
+    virtual bool isValid() const;
+    virtual QString toString() const;
+    virtual ~QKnxNetIpFrame() = default;
+
+protected:
+    QKnxNetIpFrame() = default;
 
 private:
-    virtual ~QKnxNetIpFrame() = 0;
-
-private:
-    QKnxNetIpHeader m_header;
-
-    quint16 m_frameSize = 0;
+    QKnxNetIpFrameHeader m_header;
+    QKnxNetIpPayload m_payload;
 };
 
 QT_END_NAMESPACE

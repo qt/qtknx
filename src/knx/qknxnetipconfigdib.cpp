@@ -10,81 +10,66 @@
 
 QT_BEGIN_NAMESPACE
 
-QKnxNetIpConfigDIB::QKnxNetIpConfigDIB(const QNetworkAddressEntry &addressAndSubnetMask,
+QKnxNetIpConfigDIB::QKnxNetIpConfigDIB(const QKnxNetIpStruct &other)
+    : QKnxNetIpStruct(other)
+{}
+
+QKnxNetIpConfigDIB::QKnxNetIpConfigDIB(const QNetworkAddressEntry &addressEntry,
         const QHostAddress &gateway, Capabilities caps, AssignmentMethods methods)
-    : QKnxNetIpConfigDIB(addressAndSubnetMask.ip(), addressAndSubnetMask.netmask(), gateway, caps,
-        methods)
+    : QKnxNetIpConfigDIB(addressEntry.ip(), addressEntry.netmask(), gateway, caps, methods)
 {}
 
 QKnxNetIpConfigDIB::QKnxNetIpConfigDIB(const QHostAddress &ip, const QHostAddress &subnetMask,
         const QHostAddress &gateway, Capabilities caps, AssignmentMethods methods)
-    : QKnxNetIpStructure(quint8(DescriptionTypeCode::IpConfiguration))
+    : QKnxNetIpStruct(quint8(QKnxNetIp::DescriptionTypeCode::IpConfiguration))
 {
     // Capabilities are limited and at least one assignment method shall be enabled.
     if (caps > 0x07 || (methods < 0x01 || methods > 0x15))
         return;
 
-    QByteArray data(0, Qt::Uninitialized);
-    data.insert(0, QKnxUtils::HostAddress::toArray<QByteArray>(ip));
-    data.insert(4, QKnxUtils::HostAddress::toArray<QByteArray>(subnetMask));
-    data.insert(8, QKnxUtils::HostAddress::toArray<QByteArray>(gateway));
-
-    data.resize(14);
-    data[12] = quint8(caps);
-    data[13] = quint8(methods);
-
-    setData(data);
+    QKnxNetIpPayload payload;
+    payload.setBytes(QKnxUtils::HostAddress::bytes<std::vector<quint8>>(ip));
+    payload.appendBytes(QKnxUtils::HostAddress::bytes<std::vector<quint8>>(subnetMask));
+    payload.appendBytes(QKnxUtils::HostAddress::bytes<std::vector<quint8>>(gateway));
+    payload.setByte(12, quint8(caps));
+    payload.setByte(13, quint8(methods));
+    setPayload(payload);
 }
 
-QKnxNetIpConfigDIB::QKnxNetIpConfigDIB(const QByteArray &data)
-    : QKnxNetIpStructure(quint8(DescriptionTypeCode::IpConfiguration), data)
+QKnxNetIp::DescriptionTypeCode QKnxNetIpConfigDIB::descriptionTypeCode() const
 {
-}
-
-QKnxNetIpConfigDIB::QKnxNetIpConfigDIB(const QVector<quint8> &data)
-    : QKnxNetIpStructure(quint8(DescriptionTypeCode::IpConfiguration), data)
-{
-}
-
-QKnxNetIpConfigDIB QKnxNetIpConfigDIB::fromRawData(const QByteArray &rawData, qint32 offset)
-{
-    return QKnxNetIpStructure::fromRawData(rawData, offset);
-}
-
-QKnxNetIpConfigDIB QKnxNetIpConfigDIB::fromRawData(const QVector<quint8> &rawData, qint32 offset)
-{
-    return QKnxNetIpStructure::fromRawData(rawData, offset);
+    return QKnxNetIp::DescriptionTypeCode(code());
 }
 
 QHostAddress QKnxNetIpConfigDIB::ipAddress() const
 {
-    return QKnxUtils::HostAddress::fromArray(data<QVector<quint8>>(0, 4));
+    return QKnxUtils::HostAddress::fromBytes(payload().bytes<std::vector<quint8>>(0, 4));
 }
 
 QHostAddress QKnxNetIpConfigDIB::subnetMask() const
 {
-    return QKnxUtils::HostAddress::fromArray(data<QVector<quint8>>(4, 4));
+    return QKnxUtils::HostAddress::fromBytes(payload().bytes<std::vector<quint8>>(4, 4));
 }
 
 QHostAddress QKnxNetIpConfigDIB::defaultGateway() const
 {
-    return QKnxUtils::HostAddress::fromArray(data<QVector<quint8>>(8, 4));
+    return QKnxUtils::HostAddress::fromBytes(payload().bytes<std::vector<quint8>>(8, 4));
 }
 
 QKnxNetIpConfigDIB::Capabilities QKnxNetIpConfigDIB::capabilities() const
 {
-    return QKnxNetIpConfigDIB::Capabilities(data<QVector<quint8>>(12, 1)[0]);
+    return QKnxNetIpConfigDIB::Capabilities(payload().bytes<std::vector<quint8>>(12, 1)[0]);
 }
 
 QKnxNetIpConfigDIB::AssignmentMethods QKnxNetIpConfigDIB::assignmentMethods() const
 {
-    return QKnxNetIpConfigDIB::AssignmentMethods(data<QVector<quint8>>(13, 1)[0]);
+    return QKnxNetIpConfigDIB::AssignmentMethods(payload().bytes<std::vector<quint8>>(13, 1)[0]);
 }
 
 bool QKnxNetIpConfigDIB::isValid() const
 {
-    return QKnxNetIpStructure::isValid() && dataSize() == 14
-        && descriptionTypeCode() == DescriptionTypeCode::IpConfiguration;
+    return QKnxNetIpStruct::isValid() && size() == 16
+        && descriptionTypeCode() == QKnxNetIp::DescriptionTypeCode::IpConfiguration;
 }
 
 QT_END_NAMESPACE
