@@ -28,7 +28,24 @@ PUBLIC_HEADERS += \
     qknxnetipstruct.h \
     qknxnetipbytestore.h \
     qknxnetippayload.h \
-    qknxnetipstructheader.h
+    qknxnetipstructheader.h \
+    qknxnetipconnectionstaterequest.h \
+    qknxnetipconnectionstateresponse.h \
+    qknxnetipconnectrequest.h \
+    qknxnetipconnectresponse.h \
+    qknxnetipdescriptionrequest.h \
+    qknxnetipdescriptionresponse.h \
+    qknxnetipdeviceconfigurationacknowledge.h \
+    qknxnetipdeviceconfigurationrequest.h \
+    qknxnetipdisconnectrequest.h \
+    qknxnetipdisconnectresponse.h \
+    qknxnetiproutingbusy.h \
+    qknxnetiproutingindication.h \
+    qknxnetiproutinglostmessage.h \
+    qknxnetipsearchrequest.h \
+    qknxnetipsearchresponse.h \
+    qknxnetiptunnelingacknowledge.h \
+    qknxnetiptunnelingrequest.h
 
 PRIVATE_HEADERS +=
 
@@ -49,7 +66,25 @@ SOURCES += \
     qknxnetipcrd.cpp \
     qknxnetipstruct.cpp \
     qknxnetipframeheader.cpp \
-    qknxnetipstructheader.cpp
+    qknxnetipstructheader.cpp \
+    qknxnetipconnectionstaterequest.cpp \
+    qknxnetipconnectionstateresponse.cpp \
+    qknxnetipconnectrequest.cpp \
+    qknxnetipconnectresponse.cpp \
+    qknxnetipdescriptionrequest.cpp \
+    qknxnetipdescriptionresponse.cpp \
+    qknxnetipdeviceconfigurationacknowledge.cpp \
+    qknxnetipdeviceconfigurationrequest.cpp \
+    qknxnetipdisconnectrequest.cpp \
+    qknxnetipdisconnectresponse.cpp \
+    qknxnetiproutingbusy.cpp \
+    qknxnetiproutingindication.cpp \
+    qknxnetiproutinglostmessage.cpp \
+    qknxnetipsearchrequest.cpp \
+    qknxnetipsearchresponse.cpp \
+    qknxnetiptunnelingacknowledge.cpp \
+    qknxnetiptunnelingrequest.cpp
+
 
 HEADERS += $$PUBLIC_HEADERS $$PRIVATE_HEADERS
 
