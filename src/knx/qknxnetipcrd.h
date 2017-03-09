@@ -27,7 +27,7 @@ public:
         : QKnxNetIpStruct(quint8(type), bytes)
     {}
 
-    template <typename T> QKnxNetIpCRD fromBytes(const T &bytes, qint32 index)
+    template <typename T> static QKnxNetIpCRD fromBytes(const T &bytes, qint32 index)
     {
         return QKnxNetIpStruct::fromBytes(bytes, index);
     }

@@ -66,10 +66,19 @@ struct Q_KNX_EXPORT QKnxNetIp final
         RoutingLostMessage = 0x0531,
         RoutingBusy = 0x0352
     };
+
+    enum class Error : quint8
+    {
+        None = 0x00,
+        ConnectionType = 0x22,
+        ConnectionOption = 0x23,
+        NoMoreConnections = 0x24
+    };
 };
 Q_DECLARE_TYPEINFO(QKnxNetIp::HostProtocolCode, Q_PRIMITIVE_TYPE);
 Q_DECLARE_TYPEINFO(QKnxNetIp::ConnectionTypeCode, Q_PRIMITIVE_TYPE);
 Q_DECLARE_TYPEINFO(QKnxNetIp::DescriptionTypeCode, Q_PRIMITIVE_TYPE);
-Q_DECLARE_TYPEINFO(QKnxNetIp::ServiceType,  Q_PRIMITIVE_TYPE);
+Q_DECLARE_TYPEINFO(QKnxNetIp::ServiceType, Q_PRIMITIVE_TYPE);
+Q_DECLARE_TYPEINFO(QKnxNetIp::Error, Q_PRIMITIVE_TYPE);
 
 QT_END_NAMESPACE

@@ -9,6 +9,15 @@
 
 QT_BEGIN_NAMESPACE
 
+QKnxNetIpFrame::QKnxNetIpFrame(quint16 code)
+    : m_header({ code })
+{}
+
+QKnxNetIpFrame::QKnxNetIpFrame(const QKnxNetIpFrameHeader &header, const QKnxNetIpPayload &payload)
+    : m_header(header)
+    , m_payload(payload)
+{}
+
 quint8 QKnxNetIpFrame::code() const
 {
     return m_header.code();
