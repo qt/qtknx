@@ -29,10 +29,10 @@ QKnxNetIpCurrentConfigDIB::QKnxNetIpCurrentConfigDIB(const QHostAddress &ip,
         return; // Only one assignment method shall be enabled from within the possible range.
 
     QKnxNetIpPayload payload;
-    payload.setBytes(QKnxUtils::HostAddress::bytes<std::vector<quint8>>(ip));
-    payload.appendBytes(QKnxUtils::HostAddress::bytes<std::vector<quint8>>(subnetMask));
-    payload.appendBytes(QKnxUtils::HostAddress::bytes<std::vector<quint8>>(gateway));
-    payload.appendBytes(QKnxUtils::HostAddress::bytes<std::vector<quint8>>(dhcp));
+    payload.setBytes(QKnxUtils::HostAddress::bytes(ip));
+    payload.appendBytes(QKnxUtils::HostAddress::bytes(subnetMask));
+    payload.appendBytes(QKnxUtils::HostAddress::bytes(gateway));
+    payload.appendBytes(QKnxUtils::HostAddress::bytes(dhcp));
     payload.setByte(17, quint8(method));
     setPayload(payload);
 }
@@ -44,27 +44,27 @@ QKnxNetIp::DescriptionTypeCode QKnxNetIpCurrentConfigDIB::descriptionTypeCode() 
 
 QHostAddress QKnxNetIpCurrentConfigDIB::ipAddress() const
 {
-    return QKnxUtils::HostAddress::fromBytes(payload().bytes<std::vector<quint8>>(0, 4));
+    return QKnxUtils::HostAddress::fromBytes(payload().bytes(0, 4));
 }
 
 QHostAddress QKnxNetIpCurrentConfigDIB::subnetMask() const
 {
-    return QKnxUtils::HostAddress::fromBytes(payload().bytes<std::vector<quint8>>(4, 4));
+    return QKnxUtils::HostAddress::fromBytes(payload().bytes(4, 4));
 }
 
 QHostAddress QKnxNetIpCurrentConfigDIB::defaultGateway() const
 {
-    return QKnxUtils::HostAddress::fromBytes(payload().bytes<std::vector<quint8>>(8, 4));
+    return QKnxUtils::HostAddress::fromBytes(payload().bytes(8, 4));
 }
 
 QHostAddress QKnxNetIpCurrentConfigDIB::dhcpOrBootP() const
 {
-    return QKnxUtils::HostAddress::fromBytes(payload().bytes<std::vector<quint8>>(12, 4));
+    return QKnxUtils::HostAddress::fromBytes(payload().bytes(12, 4));
 }
 
 QKnxNetIpCurrentConfigDIB::AssignmentMethod QKnxNetIpCurrentConfigDIB::assignmentMethod() const
 {
-    return QKnxNetIpCurrentConfigDIB::AssignmentMethod(payload().bytes<std::vector<quint8>>(16, 1)[0]);
+    return QKnxNetIpCurrentConfigDIB::AssignmentMethod(payload().bytes(16, 1)[0]);
 }
 
 bool QKnxNetIpCurrentConfigDIB::isValid() const

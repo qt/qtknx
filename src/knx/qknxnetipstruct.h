@@ -45,17 +45,17 @@ protected:
     QKnxNetIpStruct(const QKnxNetIpStruct& ) = default;
     QKnxNetIpStruct &operator=(const QKnxNetIpStruct& ) = default;
 
-    template <typename T> auto bytes() -> decltype(T())
+    template <typename T = std::vector<quint8>> auto bytes() const -> decltype(T())
     {
         static_assert(is_type<T, QByteArray, QVector<quint8>, std::deque<quint8>,
             std::vector<quint8>>::value, "Type not supported.");
 
         T t(m_header.totalSize(), Qt::Uninitialized);
 
-        auto bytes = m_header.bytes<std::vector<quint8>>();
+        auto bytes = m_header.bytes();
         std::copy(std::begin(bytes), std::end(bytes), std::begin(t));
 
-        bytes = m_payload.bytes<std::vector<quint8>>();
+        bytes = m_payload.bytes();
         std::copy(std::begin(bytes), std::end(bytes), std::next(std::begin(t), m_header.size()));
 
         return t;
@@ -64,9 +64,6 @@ protected:
     template <typename T, std::size_t S = 0>
         static QKnxNetIpStruct fromBytes(const T &bytes, quint16 index)
     {
-        static_assert(is_type<T, QByteArray, QVector<quint8>, std::deque<quint8>,
-            std::vector<quint8>, std::array<quint8, S>>::value, "Type not supported.");
-
         auto header = QKnxNetIpStructHeader::fromBytes(bytes, index);
         if (!header.isValid())
             return {};

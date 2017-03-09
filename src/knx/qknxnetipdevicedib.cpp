@@ -36,7 +36,7 @@ QKnxNetIpDeviceDIB::QKnxNetIpDeviceDIB(MediumCode mediumCode, DeviceStatus devic
     payload.setByte(1, quint8(deviceStatus));
 
     payload.appendBytes(individualAddress.rawData<std::vector<quint8>>());
-    payload.appendBytes(QKnxUtils::QUint16::bytes<std::vector<quint8>>(projectId));
+    payload.appendBytes(QKnxUtils::QUint16::bytes(projectId));
 
     if (serialNumber.size() != 6)
         return;
@@ -44,7 +44,7 @@ QKnxNetIpDeviceDIB::QKnxNetIpDeviceDIB(MediumCode mediumCode, DeviceStatus devic
 
     if (multicastAddress != QHostAddress::AnyIPv4 && !multicastAddress.isMulticast())
         return;
-    payload.appendBytes(QKnxUtils::HostAddress::bytes<std::vector<quint8>>(multicastAddress));
+    payload.appendBytes(QKnxUtils::HostAddress::bytes(multicastAddress));
 
     if (macAddress.size() != 6)
         return;
@@ -61,22 +61,22 @@ QKnxNetIp::DescriptionTypeCode QKnxNetIpDeviceDIB::descriptionTypeCode() const
 
 QKnxNetIpDeviceDIB::MediumCode QKnxNetIpDeviceDIB::mediumCode() const
 {
-    return QKnxNetIpDeviceDIB::MediumCode(payload().bytes<std::vector<quint8>>(0, 1)[0]);
+    return QKnxNetIpDeviceDIB::MediumCode(payload().bytes(0, 1)[0]);
 }
 
 QKnxNetIpDeviceDIB::DeviceStatus QKnxNetIpDeviceDIB::deviceStatus() const
 {
-    return QKnxNetIpDeviceDIB::DeviceStatus(payload().bytes<std::vector<quint8>>(1, 1)[0]);
+    return QKnxNetIpDeviceDIB::DeviceStatus(payload().bytes(1, 1)[0]);
 }
 
 QKnxAddress QKnxNetIpDeviceDIB::individualAddress() const
 {
-    return { QKnxAddress::Type::Individual, payload().bytes<QVector<quint8>>(2, 2) };
+    return { QKnxAddress::Type::Individual, payload().bytes<QByteArray>(2, 2) };
 }
 
 quint16 QKnxNetIpDeviceDIB::projectInstallationIdentfier() const
 {
-    return QKnxUtils::QUint16::fromBytes(payload().bytes<std::vector<quint8>>(4, 2));
+    return QKnxUtils::QUint16::fromBytes(payload().bytes(4, 2));
 }
 
 QByteArray QKnxNetIpDeviceDIB::serialNumber() const
@@ -86,7 +86,7 @@ QByteArray QKnxNetIpDeviceDIB::serialNumber() const
 
 QHostAddress QKnxNetIpDeviceDIB::multicastAddress() const
 {
-    return QKnxUtils::HostAddress::fromBytes(payload().bytes<std::vector<quint8>>(12, 4));
+    return QKnxUtils::HostAddress::fromBytes(payload().bytes(12, 4));
 }
 
 QByteArray QKnxNetIpDeviceDIB::macAddress() const

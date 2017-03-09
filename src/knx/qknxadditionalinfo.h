@@ -43,7 +43,7 @@ public:
     QKnxAdditionalInfo(QKnxAdditionalInfo::Type type, const QVector<quint8> &data);
 
     qint32 dataSize() const;
-    template <typename T> auto data() const -> decltype(T())
+    template <typename T = std::vector<quint8>> auto data() const -> decltype(T())
     {
         static_assert(is_type<T, QByteArray, QVector<quint8>, std::deque<quint8>,
             std::vector<quint8>>::value, "Type not supported.");
@@ -54,7 +54,7 @@ public:
     }
 
     qint32 rawSize() const;
-    template <typename T> auto rawData() const -> decltype(T())
+    template <typename T = std::vector<quint8>> auto rawData() const -> decltype(T())
     {
         static_assert(is_type<T, QByteArray, QVector<quint8>, std::deque<quint8>,
             std::vector<quint8>>::value, "Type not supported.");

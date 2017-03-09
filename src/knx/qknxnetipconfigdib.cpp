@@ -28,9 +28,9 @@ QKnxNetIpConfigDIB::QKnxNetIpConfigDIB(const QHostAddress &ip, const QHostAddres
         return;
 
     QKnxNetIpPayload payload;
-    payload.setBytes(QKnxUtils::HostAddress::bytes<std::vector<quint8>>(ip));
-    payload.appendBytes(QKnxUtils::HostAddress::bytes<std::vector<quint8>>(subnetMask));
-    payload.appendBytes(QKnxUtils::HostAddress::bytes<std::vector<quint8>>(gateway));
+    payload.setBytes(QKnxUtils::HostAddress::bytes(ip));
+    payload.appendBytes(QKnxUtils::HostAddress::bytes(subnetMask));
+    payload.appendBytes(QKnxUtils::HostAddress::bytes(gateway));
     payload.setByte(12, quint8(caps));
     payload.setByte(13, quint8(methods));
     setPayload(payload);
@@ -43,27 +43,27 @@ QKnxNetIp::DescriptionTypeCode QKnxNetIpConfigDIB::descriptionTypeCode() const
 
 QHostAddress QKnxNetIpConfigDIB::ipAddress() const
 {
-    return QKnxUtils::HostAddress::fromBytes(payload().bytes<std::vector<quint8>>(0, 4));
+    return QKnxUtils::HostAddress::fromBytes(payload().bytes(0, 4));
 }
 
 QHostAddress QKnxNetIpConfigDIB::subnetMask() const
 {
-    return QKnxUtils::HostAddress::fromBytes(payload().bytes<std::vector<quint8>>(4, 4));
+    return QKnxUtils::HostAddress::fromBytes(payload().bytes(4, 4));
 }
 
 QHostAddress QKnxNetIpConfigDIB::defaultGateway() const
 {
-    return QKnxUtils::HostAddress::fromBytes(payload().bytes<std::vector<quint8>>(8, 4));
+    return QKnxUtils::HostAddress::fromBytes(payload().bytes(8, 4));
 }
 
 QKnxNetIpConfigDIB::Capabilities QKnxNetIpConfigDIB::capabilities() const
 {
-    return QKnxNetIpConfigDIB::Capabilities(payload().bytes<std::vector<quint8>>(12, 1)[0]);
+    return QKnxNetIpConfigDIB::Capabilities(payload().bytes(12, 1)[0]);
 }
 
 QKnxNetIpConfigDIB::AssignmentMethods QKnxNetIpConfigDIB::assignmentMethods() const
 {
-    return QKnxNetIpConfigDIB::AssignmentMethods(payload().bytes<std::vector<quint8>>(13, 1)[0]);
+    return QKnxNetIpConfigDIB::AssignmentMethods(payload().bytes(13, 1)[0]);
 }
 
 bool QKnxNetIpConfigDIB::isValid() const

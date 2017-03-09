@@ -53,7 +53,7 @@ public:
         return QStringLiteral("Bytes { %1 }").arg(bytes);
     }
 
-    template <typename T> auto bytes() const -> decltype(T())
+    template <typename T = std::vector<quint8>> auto bytes() const -> decltype(T())
     {
         static_assert(is_type<T, QByteArray, QVector<quint8>, std::deque<quint8>,
             std::vector<quint8>>::value, "Type not supported.");
@@ -63,7 +63,8 @@ public:
         return t;
     }
 
-    template <typename T> auto bytes(quint16 start, quint16 size) const -> decltype(T())
+    template <typename T = std::vector<quint8>>
+        auto bytes(quint16 start, quint16 size) const -> decltype(T())
     {
         static_assert(is_type<T, QByteArray, QVector<quint8>, std::deque<quint8>,
             std::vector<quint8>>::value, "Type not supported.");
@@ -87,13 +88,13 @@ public:
         std::copy(std::begin(bytes), std::end(bytes), std::begin(m_bytes));
     }
 
-    template <typename T, std::size_t S = 0> void setBytes(const T &bytes, quint16 index, int size)
+    template <typename T, std::size_t S = 0> void setBytes(const T &bytes, quint16 index, quint16 size)
     {
         static_assert(is_type<T, QByteArray, QVector<quint8>, std::deque<quint8>,
             std::vector<quint8>, std::array<quint8, S>>::value, "Type not supported.");
 
         m_bytes.resize(0);
-        if (bytes.size() < (index + size))
+        if (quint16(bytes.size()) < index + size)
             return;
 
         m_bytes.resize(size);

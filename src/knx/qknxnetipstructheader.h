@@ -15,6 +15,7 @@
 #include <QtKnx/qknxglobal.h>
 #include <QtKnx/qknxnetipbytestore.h>
 #include <QtKnx/qknxtraits.h>
+#include <QtKnx/qknxutils.h>
 
 QT_BEGIN_NAMESPACE
 
@@ -52,7 +53,7 @@ public:
             return {}; // total size missing
 
         quint16 totalSize = quint8(bytes[index]);
-        const quint8 headerSize = rawSize == 0xff ? 4 : 2;
+        const quint8 headerSize = totalSize == 0xff ? 4 : 2;
         if (availableSize < headerSize)
             return {}; // total size and code missing
 

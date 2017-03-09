@@ -35,11 +35,14 @@ public:
     using QKnxNetIpByteStore::appendBytes;
 
     template <typename T, std::size_t S = 0>
-        static QKnxNetIpPayload fromBytes(const T &bytes, quint16 index, int size = -1)
+        static QKnxNetIpPayload fromBytes(const T &bytes, quint16 index, quint16 size)
     {
-        QKnxNetIpPayload bag;
-        bag.setBytes(bytes, index, size == -1 ? bytes.size() - index : size);
-        return bag;
+        static_assert(is_type<T, QByteArray, QVector<quint8>, std::deque<quint8>,
+            std::vector<quint8>, std::array<quint8, S>>::value, "Type not supported.");
+
+        QKnxNetIpPayload payload;
+        payload.setBytes(bytes, index, size);
+        return payload;
     }
 };
 

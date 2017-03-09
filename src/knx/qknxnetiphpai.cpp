@@ -33,9 +33,9 @@ QKnxNetIpHPAI::QKnxNetIpHPAI(QKnxNetIp::HostProtocolCode hpc, const QHostAddress
     : QKnxNetIpStruct(quint8(hpc))
 {
     QKnxNetIpPayload payload;
-    payload.setBytes(QKnxUtils::HostAddress::bytes<std::vector<quint8>>(address
+    payload.setBytes(QKnxUtils::HostAddress::bytes(address
         .isNull() ? QHostAddress::LocalHost : address));
-    payload.appendBytes(QKnxUtils::QUint16::bytes<std::vector<quint8>>(port));
+    payload.appendBytes(QKnxUtils::QUint16::bytes(port));
     setPayload(payload);
 }
 
@@ -51,12 +51,12 @@ void QKnxNetIpHPAI::setHostProtocolCode(QKnxNetIp::HostProtocolCode code)
 
 QHostAddress QKnxNetIpHPAI::address() const
 {
-    return QKnxUtils::HostAddress::fromBytes(payload().bytes<std::vector<quint8>>(0, 4));
+    return QKnxUtils::HostAddress::fromBytes(payload().bytes(0, 4));
 }
 
 quint16 QKnxNetIpHPAI::port() const
 {
-    return QKnxUtils::QUint16::fromBytes(payload().bytes<std::vector<quint8>>(4, 2));
+    return QKnxUtils::QUint16::fromBytes(payload().bytes(4, 2));
 }
 
 bool QKnxNetIpHPAI::isValid() const

@@ -31,7 +31,7 @@ quint16 QKnxNetIpFrameHeader::totalSize() const
 {
     if (size() != QKnxNetIpFrameHeader::HeaderSize10)
         return 0;
-    return QKnxUtils::QUint16::fromBytes(bytes<std::vector<quint8>>(4, 2));
+    return QKnxUtils::QUint16::fromBytes(bytes(4, 2));
 }
 
 quint16 QKnxNetIpFrameHeader::payloadSize() const
@@ -46,15 +46,14 @@ void QKnxNetIpFrameHeader::setPayloadSize(quint16 payloadSize)
         setByte(0, QKnxNetIpFrameHeader::HeaderSize10);
         setByte(1, QKnxNetIpFrameHeader::KnxNetIpVersion);
     }
-    appendBytes(QKnxUtils::QUint16::bytes<std::vector<quint8>>(payloadSize
-        + QKnxNetIpFrameHeader::HeaderSize10));
+    appendBytes(QKnxUtils::QUint16::bytes(payloadSize + QKnxNetIpFrameHeader::HeaderSize10));
 }
 
 quint16 QKnxNetIpFrameHeader::code() const
 {
     if (size() != QKnxNetIpFrameHeader::HeaderSize10)
         return 0;
-    return QKnxUtils::QUint16::fromBytes(bytes<std::vector<quint8>>(2, 2));
+    return QKnxUtils::QUint16::fromBytes(bytes(2, 2));
 }
 
 void QKnxNetIpFrameHeader::setCode(quint16 code)
@@ -64,7 +63,7 @@ void QKnxNetIpFrameHeader::setCode(quint16 code)
         setByte(0, QKnxNetIpFrameHeader::HeaderSize10);
         setByte(1, QKnxNetIpFrameHeader::KnxNetIpVersion);
     }
-    appendBytes(QKnxUtils::QUint16::bytes<std::vector<quint8>>(code));
+    appendBytes(QKnxUtils::QUint16::bytes(code));
 }
 
 QString QKnxNetIpFrameHeader::toString() const

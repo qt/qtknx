@@ -43,7 +43,7 @@ quint16 QKnxNetIpStructHeader::totalSize() const
         return byte(0);
 
     if (size() == 4)
-        return QKnxUtils::QUint16::fromBytes(bytes<std::vector<quint8>>(1, 2));
+        return QKnxUtils::QUint16::fromBytes(bytes(1, 2));
      return 0;
 }
 

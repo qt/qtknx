@@ -76,7 +76,7 @@ public:
     void setConfirm(QKnxControlField::Confirm confirm) { m_ctrl1[0] = static_cast<int> (confirm); }
 
     quint8 rawSize() const { return 1; }
-    template <typename T> auto rawData() const -> decltype(T())
+    template <typename T = std::vector<quint8>> auto rawData() const -> decltype(T())
     {
         static_assert(is_type<T, QByteArray, QVector<quint8>, std::deque<quint8>,
             std::vector<quint8>>::value, "Type not supported.");

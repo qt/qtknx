@@ -22,7 +22,8 @@ struct QKnxUtils final
 {
     struct QUint16
     {
-        template <typename T> static auto bytes(quint16 integer) -> decltype(T())
+        template <typename T = std::vector<quint8>>
+            static auto bytes(quint16 integer) -> decltype(T())
         {
             static_assert(is_type<T, QByteArray, QVector<quint8>, std::deque<quint8>,
                 std::vector<quint8>>::value, "Type not supported.");
@@ -46,17 +47,8 @@ struct QKnxUtils final
 
     struct HostAddress final
     {
-        template <typename T, std::size_t S = 0> static QHostAddress fromBytes(const T &data)
-        {
-            static_assert(is_type<T, QByteArray, QVector<quint8>, std::deque<quint8>,
-                std::vector<quint8>, std::array<quint8, S>>::value, "Type not supported.");
-
-            if (data.size() < 4)
-                return {};
-            return QHostAddress(quint32(data[0] << 24 | data[1] << 16 | data[2] << 8 | data[3]));
-        }
-
-        template <typename T> static auto bytes(const QHostAddress &address) -> decltype(T())
+        template <typename T = std::vector<quint8>>
+            static auto bytes(const QHostAddress &address) -> decltype(T())
         {
             static_assert(is_type<T, QByteArray, QVector<quint8>, std::deque<quint8>,
                 std::vector<quint8>>::value, "Type not supported.");
@@ -68,6 +60,16 @@ struct QKnxUtils final
             t[2] = quint8(addr >> 8);
             t[3] = quint8(addr);
             return t;
+        }
+
+        template <typename T, std::size_t S = 0> static QHostAddress fromBytes(const T &data)
+        {
+            static_assert(is_type<T, QByteArray, QVector<quint8>, std::deque<quint8>,
+                std::vector<quint8>, std::array<quint8, S>>::value, "Type not supported.");
+
+            if (data.size() < 4)
+                return {};
+            return QHostAddress(quint32(data[0] << 24 | data[1] << 16 | data[2] << 8 | data[3]));
         }
     };
 };
