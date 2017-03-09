@@ -52,7 +52,7 @@ public:
                        const QByteArray &macAddress,
                        const QByteArray deviceName);
 
-    template<typename T> QKnxNetIpDeviceDIB fromBytes(const T &bytes, qint32 index)
+    template<typename T> static QKnxNetIpDeviceDIB fromBytes(const T &bytes, qint32 index)
     {
         return QKnxNetIpStruct::fromBytes(bytes, index);
     }

@@ -7,14 +7,11 @@
 
 #pragma once
 
-#include <QtCore/qbytearray.h>
-#include <QtCore/qdatastream.h>
-#include <QtCore/qdebug.h>
-#include <QtCore/qstring.h>
-#include <QtCore/qvector.h>
+#include <QtKnx/qknxnetipdevicedib.h>
 #include <QtKnx/qknxnetipframe.h>
+#include <QtKnx/qknxnetiphpai.h>
+#include <QtKnx/qknxnetipservicefamiliesdib.h>
 #include <QtKnx/qknxglobal.h>
-#include <QtKnx/qknxtraits.h>
 
 QT_BEGIN_NAMESPACE
 
@@ -22,7 +19,21 @@ class Q_KNX_EXPORT QKnxNetIpSearchResponse final : private QKnxNetIpFrame
 {
 public:
     QKnxNetIpSearchResponse() = default;
-    ~QKnxNetIpSearchResponse() = default;
+
+    QKnxNetIpSearchResponse(const QKnxNetIpHPAI &controlEndpoint,
+                            const QKnxNetIpDeviceDIB &deviceHardware,
+                            const QKnxNetIpServiceFamiliesDIB &supportedFamilies);
+
+    QKnxNetIpHPAI controlEndpoint() const;
+    QKnxNetIpDeviceDIB deviceHardware() const;
+    QKnxNetIpServiceFamiliesDIB supportedFamilies() const;
+
+    bool isValid() const override;
+
+    using QKnxNetIpFrame::size;
+    using QKnxNetIpFrame::bytes;
+    using QKnxNetIpFrame::payload;
+    using QKnxNetIpFrame::toString;
 };
 
 QT_END_NAMESPACE
