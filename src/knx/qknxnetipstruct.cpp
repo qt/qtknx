@@ -21,15 +21,6 @@ QKnxNetIpStruct::QKnxNetIpStruct(quint8 code)
     : m_header({ code })
 {}
 
-QKnxNetIpStruct::QKnxNetIpStruct(quint8 code, const QKnxNetIpPayload &payload)
-    : m_header(code, payload.size())
-    , m_payload(payload)
-{}
-
-QKnxNetIpStruct::QKnxNetIpStruct(const QKnxNetIpStructHeader &header)
-    : m_header(header)
-{}
-
 QKnxNetIpStruct::QKnxNetIpStruct(const QKnxNetIpStructHeader &h, const QKnxNetIpPayload &pa)
     : m_header(h)
     , m_payload(pa)

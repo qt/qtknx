@@ -22,12 +22,6 @@ public:
     explicit TestStructure(quint8 code)
         : QKnxNetIpStruct(code)
     {}
-    TestStructure(quint8 code, const QKnxNetIpPayload &payload)
-        : QKnxNetIpStruct(code, payload)
-    {}
-    explicit TestStructure(const QKnxNetIpStructHeader &header)
-        : QKnxNetIpStruct(header)
-    {}
     TestStructure(const QKnxNetIpStructHeader &header, const QKnxNetIpPayload &payload)
         : QKnxNetIpStruct(header, payload)
     {}
@@ -157,11 +151,11 @@ private slots:
         QCOMPARE(payload.toString(), QString("Bytes {  }"));
     }
 
-    void testConstructor_CodeAndPayload()
+    void testConstructor_HeaderPayload()
     {
         QKnxNetIpPayload payload;
 
-        TestStructure test(0x00, payload);
+        TestStructure test(QKnxNetIpStructHeader(0x00), payload);
         QCOMPARE(test.isValid(), false);
         QCOMPARE(test.code(), quint8(0));
         QCOMPARE(test.size(), quint16(2));
@@ -192,7 +186,7 @@ private slots:
         QCOMPARE(payload.toString(), QString("Bytes {  }"));
 
         payload.setBytes(QVector<quint8>({ 0x00, 0x01, 0x02, 0x03, 0x04, 0x05 }));
-        test = TestStructure(0x01, payload);
+        test = TestStructure(QKnxNetIpStructHeader(0x01), payload);
         QCOMPARE(test.isValid(), true);
         QCOMPARE(test.code(), quint8(0x01));
         QCOMPARE(test.size(), quint16(0x08));
@@ -223,16 +217,6 @@ private slots:
         QCOMPARE(payload.toString(), QString("Bytes { 0x00, 0x01, 0x02, 0x03, 0x04, 0x05 }"));
     }
 
-    void testConstructor_Header()
-    {
-        // TODO: add
-    }
-
-    void testConstructor_HeaderPayload()
-    {
-        // TODO: add
-    }
-
     void testHeaderSize()
     {
         QByteArray ba = QByteArray(0xfc, 0x05);
@@ -240,7 +224,7 @@ private slots:
         QKnxNetIpPayload payload;
         payload.setBytes(ba);
 
-        TestStructure test(0x01, payload);
+        TestStructure test(QKnxNetIpStructHeader(0x01), payload);
         QCOMPARE(test.size(), quint16(0xfe));
         QCOMPARE(test.bytes<QByteArray>(), QByteArray::fromHex("fe01") + ba);
 

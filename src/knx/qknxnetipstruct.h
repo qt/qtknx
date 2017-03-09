@@ -40,9 +40,6 @@ protected:
     QKnxNetIpStruct() = default;
 
     explicit QKnxNetIpStruct(quint8 code);
-    QKnxNetIpStruct(quint8 code, const QKnxNetIpPayload &payload);
-
-    explicit QKnxNetIpStruct(const QKnxNetIpStructHeader &header);
     QKnxNetIpStruct(const QKnxNetIpStructHeader &header, const QKnxNetIpPayload &payload);
 
     QKnxNetIpStruct(const QKnxNetIpStruct& ) = default;
