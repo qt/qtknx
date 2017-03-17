@@ -7,14 +7,10 @@
 
 #pragma once
 
-#include <QtCore/qbytearray.h>
-#include <QtCore/qdatastream.h>
-#include <QtCore/qdebug.h>
-#include <QtCore/qstring.h>
-#include <QtCore/qvector.h>
 #include <QtKnx/qknxnetipframe.h>
+#include <QtKnx/qknxnetiphpai.h>
 #include <QtKnx/qknxglobal.h>
-#include <QtKnx/qknxtraits.h>
+#include <QtNetwork/qhostaddress.h>
 
 QT_BEGIN_NAMESPACE
 
@@ -22,7 +18,16 @@ class Q_KNX_EXPORT QKnxNetIpDescriptionRequest final : private QKnxNetIpFrame
 {
 public:
     QKnxNetIpDescriptionRequest() = default;
-    ~QKnxNetIpDescriptionRequest() = default;
+    QKnxNetIpDescriptionRequest(const QHostAddress &address, quint16 port);
+    explicit QKnxNetIpDescriptionRequest(const QKnxNetIpHPAI &controlEndpoint);
+
+    bool isValid() const override;
+    QKnxNetIpHPAI controlEndpoint() const;
+
+    using QKnxNetIpFrame::size;
+    using QKnxNetIpFrame::bytes;
+    using QKnxNetIpFrame::payload;
+    using QKnxNetIpFrame::toString;
 };
 
 QT_END_NAMESPACE
