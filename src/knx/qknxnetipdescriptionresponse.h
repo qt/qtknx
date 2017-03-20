@@ -32,7 +32,7 @@ public:
     QKnxNetIpDeviceDIB deviceHardware() const;
     QKnxNetIpServiceFamiliesDIB supportedFamilies() const;
 
-    // TODO: add access functions for optional DIBs
+    QVector<QKnxNetIpPayload> optionalDibs() const;
     template <typename T> void addOptionalDib(const T &dib)
     {
         static_assert(is_type<T, QKnxNetIpDeviceDIB, QKnxNetIpConfigDIB, QKnxNetIpCurrentConfigDIB,

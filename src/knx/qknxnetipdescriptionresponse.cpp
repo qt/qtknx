@@ -29,6 +29,20 @@ QKnxNetIpServiceFamiliesDIB QKnxNetIpDescriptionResponse::supportedFamilies() co
     return QKnxNetIpServiceFamiliesDIB::fromBytes(payload().bytes(), 54);
 }
 
+QVector<QKnxNetIpPayload> QKnxNetIpDescriptionResponse::optionalDibs() const
+{
+    quint16 index = 54;
+    auto bytes = payload().bytes();
+    auto header = QKnxNetIpStructHeader::fromBytes(bytes, index);
+
+    QVector<QKnxNetIpPayload> dibs;
+    while (index < bytes.size()) {
+        header = QKnxNetIpStructHeader::fromBytes(bytes, index += header.totalSize());
+        dibs.push_back(QKnxNetIpPayload::fromBytes(bytes, index, header.totalSize()));
+    }
+    return dibs;
+}
+
 bool QKnxNetIpDescriptionResponse::isValid() const
 {
     return QKnxNetIpFrame::isValid() && size() >= 66;
