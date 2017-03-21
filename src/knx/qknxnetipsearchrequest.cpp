@@ -17,11 +17,6 @@ QKnxNetIpSearchRequest::QKnxNetIpSearchRequest(const QKnxNetIpHPAI &discoveryEnd
     setPayload(payload);
 }
 
-QKnxNetIpSearchRequest::QKnxNetIpSearchRequest(const QHostAddress &address, quint16 port)
-    : QKnxNetIpSearchRequest(QKnxNetIpHPAI { address, port })
-{
-}
-
 bool QKnxNetIpSearchRequest::isValid() const
 {
     return QKnxNetIpFrame::isValid() && size() == 18;

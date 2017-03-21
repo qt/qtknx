@@ -10,7 +10,6 @@
 #include <QtKnx/qknxnetipframe.h>
 #include <QtKnx/qknxnetiphpai.h>
 #include <QtKnx/qknxglobal.h>
-#include <QtNetwork/qhostaddress.h>
 
 QT_BEGIN_NAMESPACE
 
@@ -18,7 +17,8 @@ class Q_KNX_EXPORT QKnxNetIpDescriptionRequest final : private QKnxNetIpFrame
 {
 public:
     QKnxNetIpDescriptionRequest() = default;
-    QKnxNetIpDescriptionRequest(const QHostAddress &address, quint16 port);
+    ~QKnxNetIpDescriptionRequest() override = default;
+
     explicit QKnxNetIpDescriptionRequest(const QKnxNetIpHPAI &controlEndpoint);
 
     bool isValid() const override;
