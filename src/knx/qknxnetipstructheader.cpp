@@ -84,6 +84,10 @@ void QKnxNetIpStructHeader::setCode(quint8 code)
     setByte(size() - 1, code);
 }
 
+/*!
+    Returns the KNXnet/IP structs total size and generic code as string. Code
+    and total size are formatted in hexadecimal notation.
+*/
 QString QKnxNetIpStructHeader::toString() const
 {
     return QStringLiteral("Total size { 0x%1 }, Code { 0x%2 }")

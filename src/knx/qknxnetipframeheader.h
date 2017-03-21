@@ -22,6 +22,7 @@ class Q_KNX_EXPORT QKnxNetIpFrameHeader final : private QKnxNetIpByteStore
 {
 public:
     QKnxNetIpFrameHeader() = default;
+    ~QKnxNetIpFrameHeader() override = default;
 
     explicit QKnxNetIpFrameHeader(quint16 code);
     QKnxNetIpFrameHeader(quint16 code, quint16 payloadSize);

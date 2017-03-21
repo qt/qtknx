@@ -42,11 +42,13 @@ quint16 QKnxNetIpFrameHeader::payloadSize() const
 void QKnxNetIpFrameHeader::setPayloadSize(quint16 payloadSize)
 {
     if (size() != QKnxNetIpFrameHeader::HeaderSize10) {
-        resize(6, 0);
+        resize(QKnxNetIpFrameHeader::HeaderSize10, 0);
         setByte(0, QKnxNetIpFrameHeader::HeaderSize10);
         setByte(1, QKnxNetIpFrameHeader::KnxNetIpVersion);
     }
-    appendBytes(QKnxUtils::QUint16::bytes(payloadSize + QKnxNetIpFrameHeader::HeaderSize10));
+    auto bytes = QKnxUtils::QUint16::bytes(payloadSize + QKnxNetIpFrameHeader::HeaderSize10);
+    setByte(4, bytes[0]);
+    setByte(5, bytes[1]);
 }
 
 quint16 QKnxNetIpFrameHeader::code() const
@@ -59,13 +61,20 @@ quint16 QKnxNetIpFrameHeader::code() const
 void QKnxNetIpFrameHeader::setCode(quint16 code)
 {
     if (size() != QKnxNetIpFrameHeader::HeaderSize10) {
-        resize(6);
+        resize(QKnxNetIpFrameHeader::HeaderSize10, 0);
         setByte(0, QKnxNetIpFrameHeader::HeaderSize10);
         setByte(1, QKnxNetIpFrameHeader::KnxNetIpVersion);
     }
-    appendBytes(QKnxUtils::QUint16::bytes(code));
+    auto bytes = QKnxUtils::QUint16::bytes(code);
+    setByte(2, bytes[0]);
+    setByte(3, bytes[1]);
 }
 
+/*!
+    Returns the KNXnet/IP header size, KNXnet/IP version, generic code and
+    the total size as string. Header size, version, code and total size are
+    formatted in hexadecimal notation.
+*/
 QString QKnxNetIpFrameHeader::toString() const
 {
     return QStringLiteral("Header size { 0x%1 }, Version { 0x%2 }, Code { 0x%3 }, "

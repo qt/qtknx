@@ -23,8 +23,8 @@ QT_BEGIN_NAMESPACE
 class Q_KNX_EXPORT QKnxNetIpFrame
 {
 public:
-    quint8 code() const;
-    void setCode(quint8 code);
+    quint16 code() const;
+    void setCode(quint16 code);
 
     quint16 size() const;
     QKnxNetIpFrameHeader header() const;

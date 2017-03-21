@@ -9,11 +9,11 @@
 
 QT_BEGIN_NAMESPACE
 
-QKnxNetIpDescriptionRequest::QKnxNetIpDescriptionRequest(const QKnxNetIpHPAI &discoveryEndpoint)
+QKnxNetIpDescriptionRequest::QKnxNetIpDescriptionRequest(const QKnxNetIpHPAI & controlEndpoint)
     : QKnxNetIpFrame(quint16(QKnxNetIp::ServiceType::DescriptionRequest))
 {
     QKnxNetIpPayload payload;
-    payload.setBytes(discoveryEndpoint.bytes());
+    payload.setBytes(controlEndpoint.bytes());
     setPayload(payload);
 }
 

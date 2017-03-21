@@ -45,7 +45,7 @@ QVector<QKnxNetIpPayload> QKnxNetIpDescriptionResponse::optionalDibs() const
 
 bool QKnxNetIpDescriptionResponse::isValid() const
 {
-    return QKnxNetIpFrame::isValid() && size() >= 66;
+    return QKnxNetIpFrame::isValid() && size() >= 64;
 }
 
 QT_END_NAMESPACE

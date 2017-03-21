@@ -186,7 +186,10 @@ private slots:
         QCOMPARE(payload.toString(), QString("Bytes {  }"));
 
         payload.setBytes(QVector<quint8>({ 0x00, 0x01, 0x02, 0x03, 0x04, 0x05 }));
-        test = TestStructure(QKnxNetIpStructHeader(0x01), payload);
+        header = QKnxNetIpStructHeader(0x01);
+        header.setPayloadSize(payload.size());
+
+        test = TestStructure(header, payload);
         QCOMPARE(test.isValid(), true);
         QCOMPARE(test.code(), quint8(0x01));
         QCOMPARE(test.size(), quint16(0x08));
@@ -224,7 +227,10 @@ private slots:
         QKnxNetIpPayload payload;
         payload.setBytes(ba);
 
-        TestStructure test(QKnxNetIpStructHeader(0x01), payload);
+        auto header = QKnxNetIpStructHeader(0x01);
+        header.setPayloadSize(payload.size());
+
+        TestStructure test(header, payload);
         QCOMPARE(test.size(), quint16(0xfe));
         QCOMPARE(test.bytes<QByteArray>(), QByteArray::fromHex("fe01") + ba);
 

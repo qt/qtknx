@@ -23,6 +23,7 @@ class Q_KNX_EXPORT QKnxNetIpStructHeader final : private QKnxNetIpByteStore
 {
 public:
     QKnxNetIpStructHeader() = default;
+    ~QKnxNetIpStructHeader() override = default;
 
     explicit QKnxNetIpStructHeader(quint8 code);
     QKnxNetIpStructHeader(quint8 code, quint16 payloadSize);
