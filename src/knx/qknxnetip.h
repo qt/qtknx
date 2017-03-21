@@ -70,9 +70,12 @@ struct Q_KNX_EXPORT QKnxNetIp final
     enum class Error : quint8
     {
         None = 0x00,
+        ConnectionId = 0x21,
         ConnectionType = 0x22,
         ConnectionOption = 0x23,
-        NoMoreConnections = 0x24
+        NoMoreConnections = 0x24,
+        DataConnection = 0x26,
+        KnxConnection = 0x27
     };
 };
 Q_DECLARE_TYPEINFO(QKnxNetIp::HostProtocolCode, Q_PRIMITIVE_TYPE);

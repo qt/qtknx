@@ -7,14 +7,9 @@
 
 #pragma once
 
-#include <QtCore/qbytearray.h>
-#include <QtCore/qdatastream.h>
-#include <QtCore/qdebug.h>
-#include <QtCore/qstring.h>
-#include <QtCore/qvector.h>
 #include <QtKnx/qknxnetipframe.h>
+#include <QtKnx/qknxnetiphpai.h>
 #include <QtKnx/qknxglobal.h>
-#include <QtKnx/qknxtraits.h>
 
 QT_BEGIN_NAMESPACE
 
@@ -22,7 +17,19 @@ class Q_KNX_EXPORT QKnxNetIpConnectionStateRequest final : private QKnxNetIpFram
 {
 public:
     QKnxNetIpConnectionStateRequest() = default;
-    ~QKnxNetIpConnectionStateRequest() = default;
+    ~QKnxNetIpConnectionStateRequest() override = default;
+
+    QKnxNetIpConnectionStateRequest(quint8 channelId, const QKnxNetIpHPAI &controlEndpoint);
+
+    quint8 channelId() const;
+    QKnxNetIpHPAI controlEndpoint() const;
+
+    bool isValid() const override;
+
+    using QKnxNetIpFrame::size;
+    using QKnxNetIpFrame::bytes;
+    using QKnxNetIpFrame::payload;
+    using QKnxNetIpFrame::toString;
 };
 
 QT_END_NAMESPACE

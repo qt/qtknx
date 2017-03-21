@@ -7,14 +7,9 @@
 
 #pragma once
 
-#include <QtCore/qbytearray.h>
-#include <QtCore/qdatastream.h>
-#include <QtCore/qdebug.h>
-#include <QtCore/qstring.h>
-#include <QtCore/qvector.h>
+#include <QtKnx/qknxnetip.h>
 #include <QtKnx/qknxnetipframe.h>
 #include <QtKnx/qknxglobal.h>
-#include <QtKnx/qknxtraits.h>
 
 QT_BEGIN_NAMESPACE
 
@@ -22,7 +17,19 @@ class Q_KNX_EXPORT QKnxNetIpDisconnectResponse final : private QKnxNetIpFrame
 {
 public:
     QKnxNetIpDisconnectResponse() = default;
-    ~QKnxNetIpDisconnectResponse() = default;
+    ~QKnxNetIpDisconnectResponse() override = default;
+
+    QKnxNetIpDisconnectResponse(quint8 channelId, QKnxNetIp::Error status);
+
+    quint8 channelId() const;
+    QKnxNetIp::Error status() const;
+
+    bool isValid() const override;
+
+    using QKnxNetIpFrame::size;
+    using QKnxNetIpFrame::bytes;
+    using QKnxNetIpFrame::payload;
+    using QKnxNetIpFrame::toString;
 };
 
 QT_END_NAMESPACE
