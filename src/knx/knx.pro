@@ -45,7 +45,8 @@ PUBLIC_HEADERS += \
     qknxnetipsearchrequest.h \
     qknxnetipsearchresponse.h \
     qknxnetiptunnelingacknowledge.h \
-    qknxnetiptunnelingrequest.h
+    qknxnetiptunnelingrequest.h \
+    qknxnetippackage.h
 
 PRIVATE_HEADERS +=
 
@@ -84,7 +85,6 @@ SOURCES += \
     qknxnetipsearchresponse.cpp \
     qknxnetiptunnelingacknowledge.cpp \
     qknxnetiptunnelingrequest.cpp
-
 
 HEADERS += $$PUBLIC_HEADERS $$PRIVATE_HEADERS
 
