@@ -22,6 +22,7 @@ class Q_KNX_EXPORT QKnxNetIpManufacturerDIB final : private QKnxNetIpStruct
 {
 public:
     QKnxNetIpManufacturerDIB() = default;
+    ~QKnxNetIpManufacturerDIB() override = default;
 
     explicit QKnxNetIpManufacturerDIB(quint16 manufacturerId);
     QKnxNetIpManufacturerDIB(quint16 manufacturerId, const QByteArray &manufacturerData);

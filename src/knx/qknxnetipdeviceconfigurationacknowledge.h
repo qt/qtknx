@@ -22,7 +22,7 @@ class Q_KNX_EXPORT QKnxNetIpDeviceConfigurationAcknowledge final : private QKnxN
 {
 public:
     QKnxNetIpDeviceConfigurationAcknowledge() = default;
-    ~QKnxNetIpDeviceConfigurationAcknowledge() = default;
+    ~QKnxNetIpDeviceConfigurationAcknowledge() override = default;
 };
 
 QT_END_NAMESPACE

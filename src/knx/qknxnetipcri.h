@@ -22,6 +22,7 @@ class Q_KNX_EXPORT QKnxNetIpCRI : private QKnxNetIpStruct
 {
 public:
     QKnxNetIpCRI() = default;
+    ~QKnxNetIpCRI() override = default;
 
     template <typename T> QKnxNetIpCRI(QKnxNetIp::ConnectionTypeCode type, const T &bytes)
         : QKnxNetIpStruct(quint8(type), bytes)

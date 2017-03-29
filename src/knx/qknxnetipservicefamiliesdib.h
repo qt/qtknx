@@ -34,6 +34,7 @@ public:
     };
 
     QKnxNetIpServiceFamiliesDIB() = default;
+    ~QKnxNetIpServiceFamiliesDIB() override = default;
 
     QKnxNetIpServiceFamiliesDIB(ServiceFamilieId id, quint8 versions);
     QKnxNetIpServiceFamiliesDIB(const QMap<ServiceFamilieId, quint8> &families);

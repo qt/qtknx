@@ -52,8 +52,8 @@ public:
     bool isUnregistered() const;
     bool isCouplerOrRouter() const;
 
-    struct Q_KNX_EXPORT Group { static QKnxAddress Broadcast; };
-    struct Q_KNX_EXPORT Individual { static QKnxAddress Unregistered; };
+    struct Q_KNX_EXPORT Group final { static QKnxAddress Broadcast; };
+    struct Q_KNX_EXPORT Individual final { static QKnxAddress Unregistered; };
 
     quint8 rawSize() const { return 2; }
     template <typename T = std::vector<quint8>> auto rawData() const -> decltype(T())

@@ -19,6 +19,7 @@ class Q_KNX_EXPORT QKnxNetIpSearchResponse final : private QKnxNetIpFrame
 {
 public:
     QKnxNetIpSearchResponse() = default;
+    ~QKnxNetIpSearchResponse() override = default;
 
     QKnxNetIpSearchResponse(const QKnxNetIpHPAI &controlEndpoint,
                             const QKnxNetIpDeviceDIB &deviceHardware,

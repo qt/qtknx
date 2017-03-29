@@ -23,6 +23,7 @@ class Q_KNX_EXPORT QKnxNetIpHPAI final : private QKnxNetIpStruct
 {
 public:
     QKnxNetIpHPAI() = default;
+    ~QKnxNetIpHPAI() override = default;
 
     QKnxNetIpHPAI(const QHostAddress &address, quint16 port);
     QKnxNetIpHPAI(QKnxNetIp::HostProtocolCode hpc, const QHostAddress &address, quint16 port);

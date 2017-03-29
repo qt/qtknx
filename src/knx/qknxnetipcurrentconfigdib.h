@@ -33,6 +33,7 @@ public:
     };
 
     QKnxNetIpCurrentConfigDIB() = default;
+    ~QKnxNetIpCurrentConfigDIB() override = default;
 
     QKnxNetIpCurrentConfigDIB(const QHostAddress &ipAddress,
                               const QHostAddress &subnetMask,

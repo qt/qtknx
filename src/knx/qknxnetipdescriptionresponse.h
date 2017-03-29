@@ -25,6 +25,7 @@ class Q_KNX_EXPORT QKnxNetIpDescriptionResponse final : private QKnxNetIpFrame
 {
 public:
     QKnxNetIpDescriptionResponse() = default;
+    ~QKnxNetIpDescriptionResponse() override = default;
 
     QKnxNetIpDescriptionResponse(const QKnxNetIpDeviceDIB &deviceHardware,
                                  const QKnxNetIpServiceFamiliesDIB &supportedFamilies);

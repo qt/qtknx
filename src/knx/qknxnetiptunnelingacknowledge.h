@@ -22,7 +22,7 @@ class Q_KNX_EXPORT QKnxNetIpTunnelingAcknowledge final : private QKnxNetIpFrame
 {
 public:
     QKnxNetIpTunnelingAcknowledge() = default;
-    ~QKnxNetIpTunnelingAcknowledge() = default;
+    ~QKnxNetIpTunnelingAcknowledge() override = default;
 };
 
 QT_END_NAMESPACE

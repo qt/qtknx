@@ -24,6 +24,7 @@ class Q_KNX_EXPORT QKnxNetIpKnxAddressesDIB final : private QKnxNetIpStruct
 {
 public:
     QKnxNetIpKnxAddressesDIB() = default;
+    ~QKnxNetIpKnxAddressesDIB() override = default;
 
     explicit QKnxNetIpKnxAddressesDIB(const QKnxAddress &address);
     explicit QKnxNetIpKnxAddressesDIB(const QVector<QKnxAddress> &addresses);

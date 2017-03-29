@@ -7,6 +7,7 @@
 
 #pragma once
 
+#include <QtKnx/qknxnetip.h>
 #include <QtKnx/qknxnetipcrd.h>
 #include <QtKnx/qknxnetipframe.h>
 #include <QtKnx/qknxnetiphpai.h>
@@ -18,6 +19,7 @@ class Q_KNX_EXPORT QKnxNetIpConnectResponse final : private QKnxNetIpFrame
 {
 public:
     QKnxNetIpConnectResponse() = default;
+    ~QKnxNetIpConnectResponse() override = default;
 
     QKnxNetIpConnectResponse(quint8 channelId,
                              QKnxNetIp::Error status,

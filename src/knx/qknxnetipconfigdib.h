@@ -43,6 +43,7 @@ public:
     Q_DECLARE_FLAGS(AssignmentMethods, AssignmentMethod)
 
     QKnxNetIpConfigDIB() = default;
+    ~QKnxNetIpConfigDIB() override = default;
 
     QKnxNetIpConfigDIB(const QHostAddress &ipAddress,
                        const QHostAddress &subnetMask,

@@ -18,6 +18,7 @@ class Q_KNX_EXPORT QKnxNetIpConnectRequest final : private QKnxNetIpFrame
 {
 public:
     QKnxNetIpConnectRequest() = default;
+    ~QKnxNetIpConnectRequest() override = default;
 
     QKnxNetIpConnectRequest(const QKnxNetIpHPAI &controlEndpoint,
                             const QKnxNetIpHPAI &dataEndpoint,

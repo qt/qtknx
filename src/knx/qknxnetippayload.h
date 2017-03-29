@@ -22,7 +22,7 @@ class Q_KNX_EXPORT QKnxNetIpPayload final : private QKnxNetIpByteStore
 {
 public:
     QKnxNetIpPayload() = default;
-    ~QKnxNetIpPayload() = default;
+    ~QKnxNetIpPayload() override = default;
 
     using QKnxNetIpByteStore::size;
     using QKnxNetIpByteStore::resize;

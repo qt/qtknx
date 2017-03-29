@@ -22,7 +22,7 @@ class Q_KNX_EXPORT QKnxNetIpRoutingBusy final : private QKnxNetIpFrame
 {
 public:
     QKnxNetIpRoutingBusy() = default;
-    ~QKnxNetIpRoutingBusy() = default;
+    ~QKnxNetIpRoutingBusy() override = default;
 };
 
 QT_END_NAMESPACE

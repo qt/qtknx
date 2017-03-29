@@ -22,7 +22,7 @@ class Q_KNX_EXPORT QKnxNetIpRoutingIndication final : private QKnxNetIpFrame
 {
 public:
     QKnxNetIpRoutingIndication() = default;
-    ~QKnxNetIpRoutingIndication() = default;
+    ~QKnxNetIpRoutingIndication() override = default;
 };
 
 QT_END_NAMESPACE

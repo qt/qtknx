@@ -20,7 +20,7 @@ QT_BEGIN_NAMESPACE
 
 struct QKnxUtils final
 {
-    struct QUint16
+    struct QUint16 final
     {
         template <typename T = std::vector<quint8>>
             static auto bytes(quint16 integer) -> decltype(T())

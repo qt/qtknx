@@ -17,7 +17,7 @@
 
 QT_BEGIN_NAMESPACE
 
-struct QKnxNetIpByteStore
+class QKnxNetIpByteStore
 {
 public:
     quint16 size() const

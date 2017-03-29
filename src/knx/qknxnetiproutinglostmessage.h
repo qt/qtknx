@@ -22,7 +22,7 @@ class Q_KNX_EXPORT QKnxNetIpRoutingLostMessage final : private QKnxNetIpFrame
 {
 public:
     QKnxNetIpRoutingLostMessage() = default;
-    ~QKnxNetIpRoutingLostMessage() = default;
+    ~QKnxNetIpRoutingLostMessage() override = default;
 };
 
 QT_END_NAMESPACE

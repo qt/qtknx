@@ -42,6 +42,7 @@ public:
     QKnxNetIpDeviceDIB::DeviceStatus deviceStatus() const;
 
     QKnxNetIpDeviceDIB() = default;
+    ~QKnxNetIpDeviceDIB() override = default;
 
     QKnxNetIpDeviceDIB(MediumCode mediumCode,
                        DeviceStatus deviceStatus,

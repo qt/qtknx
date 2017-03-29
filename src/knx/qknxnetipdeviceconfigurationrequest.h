@@ -22,7 +22,7 @@ class Q_KNX_EXPORT QKnxNetIpDeviceConfigurationRequest final : private QKnxNetIp
 {
 public:
     QKnxNetIpDeviceConfigurationRequest() = default;
-    ~QKnxNetIpDeviceConfigurationRequest() = default;
+    ~QKnxNetIpDeviceConfigurationRequest() override = default;
 };
 
 QT_END_NAMESPACE
