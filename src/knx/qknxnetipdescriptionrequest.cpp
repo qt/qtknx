@@ -24,7 +24,7 @@ bool QKnxNetIpDescriptionRequest::isValid() const
 
 QKnxNetIpHPAI QKnxNetIpDescriptionRequest::controlEndpoint() const
 {
-    return QKnxNetIpHPAI::fromBytes(payload().bytes(), 0);
+    return QKnxNetIpHPAI::fromBytes(payloadRef(), 0);
 }
 
 QT_END_NAMESPACE

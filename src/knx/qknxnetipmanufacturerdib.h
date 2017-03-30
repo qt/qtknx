@@ -39,7 +39,7 @@ public:
     {
         static_assert(is_type<T, QByteArray, QVector<quint8>, std::deque<quint8>,
             std::vector<quint8>>::value, "Type not supported.");
-        return payload().bytes<T>(2, totalSize() - 2);
+        return payloadRef().bytes<T>(2, totalSize() - 2);
     }
 
     bool isValid() const override;

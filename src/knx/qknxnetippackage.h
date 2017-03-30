@@ -80,6 +80,11 @@ protected:
         , m_payload(payload)
     {}
 
+    QKnxByteStoreRef payloadRef() const
+    {
+        return QKnxByteStoreRef(&m_payload);
+    }
+
     template <typename T = std::vector<quint8>> auto bytes() const -> decltype(T())
     {
         static_assert(is_type<T, QByteArray, QVector<quint8>, std::deque<quint8>,

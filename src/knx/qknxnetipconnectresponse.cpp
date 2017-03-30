@@ -31,26 +31,26 @@ QKnxNetIpConnectResponse::QKnxNetIpConnectResponse(quint8 channelId, QKnxNetIp::
 
 quint8 QKnxNetIpConnectResponse::channelId() const
 {
-    return payload().byte(0);
+    return payloadRef().byte(0);
 }
 
 QKnxNetIp::Error QKnxNetIpConnectResponse::status() const
 {
-    return QKnxNetIp::Error(payload().byte(1));
+    return QKnxNetIp::Error(payloadRef().byte(1));
 }
 
 QKnxNetIpHPAI QKnxNetIpConnectResponse::dataEndpoint() const
 {
     if (status() != QKnxNetIp::Error::None)
         return {};
-    return QKnxNetIpHPAI::fromBytes(payload().bytes(2, 8), 0);
+    return QKnxNetIpHPAI::fromBytes(payloadRef(), 2);
 }
 
 QKnxNetIpCRD QKnxNetIpConnectResponse::responseData() const
 {
     if (status() != QKnxNetIp::Error::None)
         return {};
-    return QKnxNetIpCRD::fromBytes(payload().bytes(), 10);
+    return QKnxNetIpCRD::fromBytes(payloadRef(), 10);
 }
 
 bool QKnxNetIpConnectResponse::isValid() const

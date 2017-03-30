@@ -21,12 +21,12 @@ QKnxNetIpDisconnectResponse::QKnxNetIpDisconnectResponse(quint8 channelId,
 
 quint8 QKnxNetIpDisconnectResponse::channelId() const
 {
-    return payload().byte(0);
+    return payloadRef().byte(0);
 }
 
 QKnxNetIp::Error QKnxNetIpDisconnectResponse::status() const
 {
-    return QKnxNetIp::Error(payload().byte(1));
+    return QKnxNetIp::Error(payloadRef().byte(1));
 }
 
 bool QKnxNetIpDisconnectResponse::isValid() const

@@ -22,12 +22,12 @@ QKnxNetIpConnectionStateRequest::QKnxNetIpConnectionStateRequest(quint8 channelI
 
 quint8 QKnxNetIpConnectionStateRequest::channelId() const
 {
-    return payload().byte(0);
+    return payloadRef().byte(0);
 }
 
 QKnxNetIpHPAI QKnxNetIpConnectionStateRequest::controlEndpoint() const
 {
-    return QKnxNetIpHPAI::fromBytes(payload().bytes(), 1);
+    return QKnxNetIpHPAI::fromBytes(payloadRef(), 1);
 }
 
 bool QKnxNetIpConnectionStateRequest::isValid() const

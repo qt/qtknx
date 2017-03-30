@@ -12,6 +12,7 @@
 #include <QtCore/qdebug.h>
 #include <QtCore/qstring.h>
 #include <QtCore/qvector.h>
+#include <QtKnx/qknxbytestoreref.h>
 #include <QtKnx/qknxglobal.h>
 #include <QtKnx/qknxtraits.h>
 #include <QtNetwork/qhostaddress.h>
@@ -34,12 +35,19 @@ struct QKnxUtils final
             return t;
         }
 
+        static quint16 fromBytes(const QKnxByteStoreRef &data, int index = 0)
+        {
+            if (data.size() - index < 2)
+                return {};
+            return quint16(quint16(data.bytes()[index]) << 8 | data.bytes()[index + 1]);
+        }
+
         template <typename T, std::size_t S = 0> static quint16 fromBytes(const T &data, int index = 0)
         {
             static_assert(is_type<T, QByteArray, QVector<quint8>, std::deque<quint8>,
                 std::vector<quint8>, std::array<quint8, S>>::value, "Type not supported.");
 
-            if (data.size() < 2)
+            if (data.size() - index < 2)
                 return {};
             return quint16(quint16(data[index]) << 8 | data[index + 1]);
         }
@@ -62,14 +70,25 @@ struct QKnxUtils final
             return t;
         }
 
-        template <typename T, std::size_t S = 0> static QHostAddress fromBytes(const T &data)
+        static QHostAddress fromBytes(const QKnxByteStoreRef &data, int index = 0)
+        {
+            if (data.size() - index < 4)
+                return {};
+
+            const auto bytes = data.bytes();
+            return QHostAddress(quint32(bytes[index] << 24 | bytes[index + 1] << 16
+                | bytes[index + 2] << 8 | bytes[index + 3]));
+        }
+
+        template <typename T, std::size_t S = 0> static QHostAddress fromBytes(const T &data, int index = 0)
         {
             static_assert(is_type<T, QByteArray, QVector<quint8>, std::deque<quint8>,
                 std::vector<quint8>, std::array<quint8, S>>::value, "Type not supported.");
 
-            if (data.size() < 4)
+            if (data.size() - index < 4)
                 return {};
-            return QHostAddress(quint32(data[0] << 24 | data[1] << 16 | data[2] << 8 | data[3]));
+            return QHostAddress(quint32(data[index] << 24 | data[index + 1] << 16
+                | data[index + 2] << 8 | data[index + 3]));
         }
     };
 };

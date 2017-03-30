@@ -43,27 +43,27 @@ QKnxNetIp::DescriptionTypeCode QKnxNetIpConfigDIB::descriptionTypeCode() const
 
 QHostAddress QKnxNetIpConfigDIB::ipAddress() const
 {
-    return QKnxUtils::HostAddress::fromBytes(payload().bytes(0, 4));
+    return QKnxUtils::HostAddress::fromBytes(payloadRef());
 }
 
 QHostAddress QKnxNetIpConfigDIB::subnetMask() const
 {
-    return QKnxUtils::HostAddress::fromBytes(payload().bytes(4, 4));
+    return QKnxUtils::HostAddress::fromBytes(payloadRef(), 4);
 }
 
 QHostAddress QKnxNetIpConfigDIB::defaultGateway() const
 {
-    return QKnxUtils::HostAddress::fromBytes(payload().bytes(8, 4));
+    return QKnxUtils::HostAddress::fromBytes(payloadRef(), 8);
 }
 
 QKnxNetIpConfigDIB::Capabilities QKnxNetIpConfigDIB::capabilities() const
 {
-    return QKnxNetIpConfigDIB::Capabilities(payload().bytes(12, 1)[0]);
+    return QKnxNetIpConfigDIB::Capabilities(payloadRef().byte(12));
 }
 
 QKnxNetIpConfigDIB::AssignmentMethods QKnxNetIpConfigDIB::assignmentMethods() const
 {
-    return QKnxNetIpConfigDIB::AssignmentMethods(payload().bytes(13, 1)[0]);
+    return QKnxNetIpConfigDIB::AssignmentMethods(payloadRef().byte(13));
 }
 
 bool QKnxNetIpConfigDIB::isValid() const

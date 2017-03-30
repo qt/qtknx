@@ -22,17 +22,17 @@ QKnxNetIpConnectRequest::QKnxNetIpConnectRequest(const QKnxNetIpHPAI &controlEnd
 
 QKnxNetIpHPAI QKnxNetIpConnectRequest::controlEndpoint() const
 {
-    return QKnxNetIpHPAI::fromBytes(payload().bytes(0, 8), 0);
+    return QKnxNetIpHPAI::fromBytes(payloadRef(), 0);
 }
 
 QKnxNetIpHPAI QKnxNetIpConnectRequest::dataEndpoint() const
 {
-    return QKnxNetIpHPAI::fromBytes(payload().bytes(8, 8), 0);
+    return QKnxNetIpHPAI::fromBytes(payloadRef(), 8);
 }
 
 QKnxNetIpCRI QKnxNetIpConnectRequest::requestInformation() const
 {
-    return QKnxNetIpCRI::fromBytes(payload().bytes(), 16);
+    return QKnxNetIpCRI::fromBytes(payloadRef(), 16);
 }
 
 bool QKnxNetIpConnectRequest::isValid() const

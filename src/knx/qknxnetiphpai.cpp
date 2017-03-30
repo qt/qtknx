@@ -51,12 +51,12 @@ void QKnxNetIpHPAI::setHostProtocolCode(QKnxNetIp::HostProtocolCode code)
 
 QHostAddress QKnxNetIpHPAI::address() const
 {
-    return QKnxUtils::HostAddress::fromBytes(payload().bytes(0, 4));
+    return QKnxUtils::HostAddress::fromBytes(payloadRef());
 }
 
 quint16 QKnxNetIpHPAI::port() const
 {
-    return QKnxUtils::QUint16::fromBytes(payload().bytes(4, 2));
+    return QKnxUtils::QUint16::fromBytes(payloadRef(), 4);
 }
 
 bool QKnxNetIpHPAI::isValid() const

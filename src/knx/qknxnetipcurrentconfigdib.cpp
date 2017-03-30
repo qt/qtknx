@@ -44,27 +44,27 @@ QKnxNetIp::DescriptionTypeCode QKnxNetIpCurrentConfigDIB::descriptionTypeCode() 
 
 QHostAddress QKnxNetIpCurrentConfigDIB::ipAddress() const
 {
-    return QKnxUtils::HostAddress::fromBytes(payload().bytes(0, 4));
+    return QKnxUtils::HostAddress::fromBytes(payloadRef());
 }
 
 QHostAddress QKnxNetIpCurrentConfigDIB::subnetMask() const
 {
-    return QKnxUtils::HostAddress::fromBytes(payload().bytes(4, 4));
+    return QKnxUtils::HostAddress::fromBytes(payloadRef(), 4);
 }
 
 QHostAddress QKnxNetIpCurrentConfigDIB::defaultGateway() const
 {
-    return QKnxUtils::HostAddress::fromBytes(payload().bytes(8, 4));
+    return QKnxUtils::HostAddress::fromBytes(payloadRef(), 8);
 }
 
 QHostAddress QKnxNetIpCurrentConfigDIB::dhcpOrBootP() const
 {
-    return QKnxUtils::HostAddress::fromBytes(payload().bytes(12, 4));
+    return QKnxUtils::HostAddress::fromBytes(payloadRef(), 12);
 }
 
 QKnxNetIpCurrentConfigDIB::AssignmentMethod QKnxNetIpCurrentConfigDIB::assignmentMethod() const
 {
-    return QKnxNetIpCurrentConfigDIB::AssignmentMethod(payload().bytes(16, 1)[0]);
+    return QKnxNetIpCurrentConfigDIB::AssignmentMethod(payloadRef().byte(16));
 }
 
 bool QKnxNetIpCurrentConfigDIB::isValid() const

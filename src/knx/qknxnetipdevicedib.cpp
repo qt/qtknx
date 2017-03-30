@@ -61,42 +61,42 @@ QKnxNetIp::DescriptionTypeCode QKnxNetIpDeviceDIB::descriptionTypeCode() const
 
 QKnxNetIpDeviceDIB::MediumCode QKnxNetIpDeviceDIB::mediumCode() const
 {
-    return QKnxNetIpDeviceDIB::MediumCode(payload().bytes(0, 1)[0]);
+    return QKnxNetIpDeviceDIB::MediumCode(payloadRef().byte(0));
 }
 
 QKnxNetIpDeviceDIB::DeviceStatus QKnxNetIpDeviceDIB::deviceStatus() const
 {
-    return QKnxNetIpDeviceDIB::DeviceStatus(payload().bytes(1, 1)[0]);
+    return QKnxNetIpDeviceDIB::DeviceStatus(payloadRef().byte(1));
 }
 
 QKnxAddress QKnxNetIpDeviceDIB::individualAddress() const
 {
-    return { QKnxAddress::Type::Individual, payload().bytes<QByteArray>(2, 2) };
+    return { QKnxAddress::Type::Individual, payloadRef().bytes<QByteArray>(2, 2) };
 }
 
 quint16 QKnxNetIpDeviceDIB::projectInstallationIdentfier() const
 {
-    return QKnxUtils::QUint16::fromBytes(payload().bytes(4, 2));
+    return QKnxUtils::QUint16::fromBytes(payloadRef(), 4);
 }
 
 QByteArray QKnxNetIpDeviceDIB::serialNumber() const
 {
-    return payload().bytes<QByteArray>(6, 6);
+    return payloadRef().bytes<QByteArray>(6, 6);
 }
 
 QHostAddress QKnxNetIpDeviceDIB::multicastAddress() const
 {
-    return QKnxUtils::HostAddress::fromBytes(payload().bytes(12, 4));
+    return QKnxUtils::HostAddress::fromBytes(payloadRef(), 12);
 }
 
 QByteArray QKnxNetIpDeviceDIB::macAddress() const
 {
-    return payload().bytes<QByteArray>(16, 6);
+    return payloadRef().bytes<QByteArray>(16, 6);
 }
 
 QByteArray QKnxNetIpDeviceDIB::deviceName() const
 {
-    return QByteArray(payload().bytes<QByteArray>(22, 30).constData());
+    return QByteArray(payloadRef().bytes<QByteArray>(22, 30).constData());
 }
 
 bool QKnxNetIpDeviceDIB::isValid() const

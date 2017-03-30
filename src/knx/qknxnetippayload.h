@@ -37,7 +37,7 @@ public:
     template <typename T, std::size_t S = 0>
         static QKnxNetIpPayload fromBytes(const T &bytes, quint16 index, quint16 size)
     {
-        static_assert(is_type<T, QByteArray, QVector<quint8>, std::deque<quint8>,
+        static_assert(is_type<T, QByteArray, QVector<quint8>, QKnxByteStoreRef, std::deque<quint8>,
             std::vector<quint8>, std::array<quint8, S>>::value, "Type not supported.");
 
         QKnxNetIpPayload payload;

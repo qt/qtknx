@@ -21,24 +21,24 @@ QKnxNetIpDescriptionResponse::QKnxNetIpDescriptionResponse(const QKnxNetIpDevice
 
 QKnxNetIpDeviceDIB QKnxNetIpDescriptionResponse::deviceHardware() const
 {
-    return QKnxNetIpDeviceDIB::fromBytes(payload().bytes(0, 54), 0);
+    return QKnxNetIpDeviceDIB::fromBytes(payloadRef(), 0);
 }
 
 QKnxNetIpServiceFamiliesDIB QKnxNetIpDescriptionResponse::supportedFamilies() const
 {
-    return QKnxNetIpServiceFamiliesDIB::fromBytes(payload().bytes(), 54);
+    return QKnxNetIpServiceFamiliesDIB::fromBytes(payloadRef(), 54);
 }
 
 QVector<QKnxNetIpPayload> QKnxNetIpDescriptionResponse::optionalDibs() const
 {
     quint16 index = 54;
-    auto bytes = payload().bytes();
-    auto header = QKnxNetIpStructHeader::fromBytes(bytes, index);
+    const auto &ref = payloadRef();
+    auto header = QKnxNetIpStructHeader::fromBytes(ref, index);
 
     QVector<QKnxNetIpPayload> dibs;
-    while (index < bytes.size()) {
-        header = QKnxNetIpStructHeader::fromBytes(bytes, index += header.totalSize());
-        dibs.push_back(QKnxNetIpPayload::fromBytes(bytes, index, header.totalSize()));
+    while (index < ref.size()) {
+        header = QKnxNetIpStructHeader::fromBytes(ref, index += header.totalSize());
+        dibs.push_back(QKnxNetIpPayload::fromBytes(ref, index, header.totalSize()));
     }
     return dibs;
 }

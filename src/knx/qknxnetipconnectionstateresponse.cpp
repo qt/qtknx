@@ -30,12 +30,12 @@ QKnxNetIpConnectionStateResponse::QKnxNetIpConnectionStateResponse(quint8 channe
 
 quint8 QKnxNetIpConnectionStateResponse::channelId() const
 {
-    return payload().byte(0);
+    return payloadRef().byte(0);
 }
 
 QKnxNetIp::Error QKnxNetIpConnectionStateResponse::status() const
 {
-    return QKnxNetIp::Error(payload().byte(1));
+    return QKnxNetIp::Error(payloadRef().byte(1));
 }
 
 bool QKnxNetIpConnectionStateResponse::isValid() const

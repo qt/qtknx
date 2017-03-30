@@ -22,17 +22,17 @@ QKnxNetIpSearchResponse::QKnxNetIpSearchResponse(const QKnxNetIpHPAI &controlEnd
 
 QKnxNetIpHPAI QKnxNetIpSearchResponse::controlEndpoint() const
 {
-    return QKnxNetIpHPAI::fromBytes(payload().bytes(0, 8), 0);
+    return QKnxNetIpHPAI::fromBytes(payloadRef(), 0);
 }
 
 QKnxNetIpDeviceDIB QKnxNetIpSearchResponse::deviceHardware() const
 {
-    return QKnxNetIpDeviceDIB::fromBytes(payload().bytes(8, 54), 0);
+    return QKnxNetIpDeviceDIB::fromBytes(payloadRef(), 8);
 }
 
 QKnxNetIpServiceFamiliesDIB QKnxNetIpSearchResponse::supportedFamilies() const
 {
-    return QKnxNetIpServiceFamiliesDIB::fromBytes(payload().bytes(), 62);
+    return QKnxNetIpServiceFamiliesDIB::fromBytes(payloadRef(), 62);
 }
 
 bool QKnxNetIpSearchResponse::isValid() const

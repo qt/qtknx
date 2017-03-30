@@ -22,12 +22,12 @@ QKnxNetIpDisconnectRequest::QKnxNetIpDisconnectRequest(quint8 channelId,
 
 quint8 QKnxNetIpDisconnectRequest::channelId() const
 {
-    return payload().byte(0);
+    return payloadRef().byte(0);
 }
 
 QKnxNetIpHPAI QKnxNetIpDisconnectRequest::controlEndpoint() const
 {
-    return QKnxNetIpHPAI::fromBytes(payload().bytes(), 1);
+    return QKnxNetIpHPAI::fromBytes(payloadRef(), 1);
 }
 
 bool QKnxNetIpDisconnectRequest::isValid() const

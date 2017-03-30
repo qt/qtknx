@@ -44,7 +44,7 @@ QKnxNetIp::DescriptionTypeCode QKnxNetIpManufacturerDIB::descriptionTypeCode() c
 
 quint16 QKnxNetIpManufacturerDIB::manufacturerId() const
 {
-    return QKnxUtils::QUint16::fromBytes(payload().bytes(0, 2));
+    return QKnxUtils::QUint16::fromBytes(payloadRef());
 }
 
 bool QKnxNetIpManufacturerDIB::isValid() const
