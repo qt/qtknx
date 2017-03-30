@@ -12,27 +12,27 @@
 #include <QtCore/qdebug.h>
 #include <QtCore/qstring.h>
 #include <QtCore/qvector.h>
+#include <QtKnx/qknxbytestore.h>
 #include <QtKnx/qknxglobal.h>
-#include <QtKnx/qknxnetipbytestore.h>
 #include <QtKnx/qknxtraits.h>
 
 QT_BEGIN_NAMESPACE
 
-class Q_KNX_EXPORT QKnxNetIpPayload final : private QKnxNetIpByteStore
+class Q_KNX_EXPORT QKnxNetIpPayload final : private QKnxByteStore
 {
 public:
     QKnxNetIpPayload() = default;
     ~QKnxNetIpPayload() override = default;
 
-    using QKnxNetIpByteStore::size;
-    using QKnxNetIpByteStore::resize;
-    using QKnxNetIpByteStore::toString;
+    using QKnxByteStore::size;
+    using QKnxByteStore::resize;
+    using QKnxByteStore::toString;
 
-    using QKnxNetIpByteStore::byte;
-    using QKnxNetIpByteStore::bytes;
-    using QKnxNetIpByteStore::setByte;
-    using QKnxNetIpByteStore::setBytes;
-    using QKnxNetIpByteStore::appendBytes;
+    using QKnxByteStore::byte;
+    using QKnxByteStore::bytes;
+    using QKnxByteStore::setByte;
+    using QKnxByteStore::setBytes;
+    using QKnxByteStore::appendBytes;
 
     template <typename T, std::size_t S = 0>
         static QKnxNetIpPayload fromBytes(const T &bytes, quint16 index, quint16 size)

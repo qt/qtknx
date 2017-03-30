@@ -26,7 +26,7 @@ PUBLIC_HEADERS += \
     qknxnetipcri.h \
     qknxnetipcrd.h \
     qknxnetipstruct.h \
-    qknxnetipbytestore.h \
+    qknxbytestore.h \
     qknxnetippayload.h \
     qknxnetipstructheader.h \
     qknxnetipconnectionstaterequest.h \
@@ -46,7 +46,8 @@ PUBLIC_HEADERS += \
     qknxnetipsearchresponse.h \
     qknxnetiptunnelingacknowledge.h \
     qknxnetiptunnelingrequest.h \
-    qknxnetippackage.h
+    qknxnetippackage.h \
+    qknxbytestoreref.h
 
 PRIVATE_HEADERS +=
 
@@ -84,7 +85,8 @@ SOURCES += \
     qknxnetipsearchrequest.cpp \
     qknxnetipsearchresponse.cpp \
     qknxnetiptunnelingacknowledge.cpp \
-    qknxnetiptunnelingrequest.cpp
+    qknxnetiptunnelingrequest.cpp \
+    qknxbytestore.cpp
 
 HEADERS += $$PUBLIC_HEADERS $$PRIVATE_HEADERS
 

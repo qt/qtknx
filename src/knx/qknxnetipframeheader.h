@@ -12,13 +12,13 @@
 #include <QtCore/qdebug.h>
 #include <QtCore/qstring.h>
 #include <QtCore/qvector.h>
+#include <QtKnx/qknxbytestore.h>
 #include <QtKnx/qknxglobal.h>
-#include <QtKnx/qknxnetipbytestore.h>
 #include <QtKnx/qknxtraits.h>
 
 QT_BEGIN_NAMESPACE
 
-class Q_KNX_EXPORT QKnxNetIpFrameHeader final : private QKnxNetIpByteStore
+class Q_KNX_EXPORT QKnxNetIpFrameHeader final : private QKnxByteStore
 {
 public:
     QKnxNetIpFrameHeader() = default;
@@ -38,9 +38,9 @@ public:
 
     QString toString() const override;
 
-    using QKnxNetIpByteStore::size;
-    using QKnxNetIpByteStore::byte;
-    using QKnxNetIpByteStore::bytes;
+    using QKnxByteStore::size;
+    using QKnxByteStore::byte;
+    using QKnxByteStore::bytes;
 
     static const quint8 HeaderSize10 = 0x06;
     static const quint8 KnxNetIpVersion = 0x10;

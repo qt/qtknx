@@ -17,7 +17,8 @@
 
 QT_BEGIN_NAMESPACE
 
-class QKnxNetIpByteStore
+class QKnxByteStoreRef;
+class QKnxByteStore
 {
 public:
     quint16 size() const
@@ -28,6 +29,11 @@ public:
     void resize(quint16 size, const quint8 value = 0)
     {
         m_bytes.resize(size, value);
+    }
+
+    const quint8 *data() const
+    {
+        return m_bytes.data();
     }
 
     quint8 byte(quint16 index) const
@@ -78,6 +84,9 @@ public:
         return t;
     }
 
+    void setBytes(const QKnxByteStoreRef &storeRef);
+    void setBytes(const QKnxByteStoreRef &storeRef, quint16 index, quint16 size);
+
     template <typename T, std::size_t S = 0> void setBytes(const T &bytes)
     {
         static_assert(is_type<T, QByteArray, QVector<quint8>, std::deque<quint8>,
@@ -88,7 +97,11 @@ public:
         std::copy(std::begin(bytes), std::end(bytes), std::begin(m_bytes));
     }
 
-    template <typename T, std::size_t S = 0> void setBytes(const T &bytes, quint16 index, quint16 size)
+    // TODO: The next function signature is misleading, it suggest the function will change
+    // m_bytes starting from 'index' with 'count' elements, though it sets m_bytes to the bytes
+    // stored inside the argument 'bytes', starting from 'index' with 'count' elements.
+    template <typename T, std::size_t S = 0> void setBytes(const T &bytes, quint16 index,
+        quint16 size)
     {
         static_assert(is_type<T, QByteArray, QVector<quint8>, std::deque<quint8>,
             std::vector<quint8>, std::array<quint8, S>>::value, "Type not supported.");
@@ -114,8 +127,8 @@ public:
     }
 
 protected:
-    QKnxNetIpByteStore() = default;
-    virtual ~QKnxNetIpByteStore() = default;
+    QKnxByteStore() = default;
+    virtual ~QKnxByteStore() = default;
 
 private:
     std::vector<quint8> m_bytes;

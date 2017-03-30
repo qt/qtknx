@@ -12,14 +12,14 @@
 #include <QtCore/qdebug.h>
 #include <QtCore/qstring.h>
 #include <QtCore/qvector.h>
+#include <QtKnx/qknxbytestore.h>
 #include <QtKnx/qknxglobal.h>
-#include <QtKnx/qknxnetipbytestore.h>
 #include <QtKnx/qknxtraits.h>
 #include <QtKnx/qknxutils.h>
 
 QT_BEGIN_NAMESPACE
 
-class Q_KNX_EXPORT QKnxNetIpStructHeader final : private QKnxNetIpByteStore
+class Q_KNX_EXPORT QKnxNetIpStructHeader final : private QKnxByteStore
 {
 public:
     QKnxNetIpStructHeader() = default;
@@ -39,9 +39,9 @@ public:
 
     QString toString() const override;
 
-    using QKnxNetIpByteStore::size;
-    using QKnxNetIpByteStore::byte;
-    using QKnxNetIpByteStore::bytes;
+    using QKnxByteStore::size;
+    using QKnxByteStore::byte;
+    using QKnxByteStore::bytes;
 
     template <typename T, std::size_t S = 0>
         static QKnxNetIpStructHeader fromBytes(const T &bytes, quint16 index)
