@@ -47,7 +47,8 @@ PUBLIC_HEADERS += \
     qknxnetiptunnelingacknowledge.h \
     qknxnetiptunnelingrequest.h \
     qknxnetippackage.h \
-    qknxbytestoreref.h
+    qknxbytestoreref.h \
+    qknxnetipstructref.h \
 
 PRIVATE_HEADERS +=
 

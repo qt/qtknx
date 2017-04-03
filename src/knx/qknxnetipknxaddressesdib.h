@@ -29,7 +29,7 @@ public:
     explicit QKnxNetIpKnxAddressesDIB(const QKnxAddress &address);
     explicit QKnxNetIpKnxAddressesDIB(const QVector<QKnxAddress> &addresses);
 
-    template <typename T> QKnxNetIpKnxAddressesDIB fromBytes(const T &bytes, qint32 index)
+    template <typename T> static QKnxNetIpKnxAddressesDIB fromBytes(const T &bytes, qint32 index)
     {
         return QKnxNetIpStruct::fromBytes(bytes, index);
     }

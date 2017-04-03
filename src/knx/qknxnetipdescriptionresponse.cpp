@@ -29,16 +29,42 @@ QKnxNetIpServiceFamiliesDIB QKnxNetIpDescriptionResponse::supportedFamilies() co
     return QKnxNetIpServiceFamiliesDIB::fromBytes(payloadRef(), 54);
 }
 
-QVector<QKnxNetIpPayload> QKnxNetIpDescriptionResponse::optionalDibs() const
+namespace QKnxPrivate
+{
+    static QKnxNetIpStructRef::Type codeToType(quint8 code)
+    {
+        switch (QKnxNetIp::DescriptionTypeCode(code)) {
+        case QKnxNetIp::DescriptionTypeCode::DeviceInfo:
+            return QKnxNetIpStructRef::Type::DeviceDIB;
+        case QKnxNetIp::DescriptionTypeCode::SupportedServiceFamilies:
+            return QKnxNetIpStructRef::Type::ServiceFamiliesDIB;
+        case QKnxNetIp::DescriptionTypeCode::IpConfiguration:
+            return QKnxNetIpStructRef::Type::IpConfigDIB;
+        case QKnxNetIp::DescriptionTypeCode::CurrentIpConfiguration:
+            return QKnxNetIpStructRef::Type::IpCurrentConfigDIB;
+        case QKnxNetIp::DescriptionTypeCode::KnxAddresses:
+            return QKnxNetIpStructRef::Type::KnxAddressesDIB;
+        case QKnxNetIp::DescriptionTypeCode::ManufactorData:
+            return QKnxNetIpStructRef::Type::ManufacturerDIB;
+        default:
+            break;
+        }
+        return QKnxNetIpStructRef::Type::Null;
+    };
+}
+
+QVector<QKnxNetIpStructRef> QKnxNetIpDescriptionResponse::optionalDibs() const
 {
     quint16 index = 54;
     const auto &ref = payloadRef();
     auto header = QKnxNetIpStructHeader::fromBytes(ref, index);
 
-    QVector<QKnxNetIpPayload> dibs;
+    QVector<QKnxNetIpStructRef> dibs;
     while (index < ref.size()) {
         header = QKnxNetIpStructHeader::fromBytes(ref, index += header.totalSize());
-        dibs.push_back(QKnxNetIpPayload::fromBytes(ref, index, header.totalSize()));
+        // Ugly hack to get a pointer to the real byte store data.
+        dibs.push_back(QKnxNetIpStructRef(&(*std::next(ref.bytes(), index)),
+            QKnxPrivate::codeToType(header.code())));
     }
     return dibs;
 }

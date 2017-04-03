@@ -17,6 +17,7 @@
 #include <QtKnx/qknxnetipknxaddressesdib.h>
 #include <QtKnx/qknxnetipmanufacturerdib.h>
 #include <QtKnx/qknxnetipstruct.h>
+#include <QtKnx/qknxnetipstructref.h>
 #include <QtKnx/qknxtraits.h>
 
 QT_BEGIN_NAMESPACE
@@ -33,7 +34,7 @@ public:
     QKnxNetIpDeviceDIB deviceHardware() const;
     QKnxNetIpServiceFamiliesDIB supportedFamilies() const;
 
-    QVector<QKnxNetIpPayload> optionalDibs() const;
+    QVector<QKnxNetIpStructRef> optionalDibs() const;
     template <typename T> void addOptionalDib(const T &dib)
     {
         static_assert(is_type<T, QKnxNetIpDeviceDIB, QKnxNetIpConfigDIB, QKnxNetIpCurrentConfigDIB,

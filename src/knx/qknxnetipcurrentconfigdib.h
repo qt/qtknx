@@ -46,7 +46,7 @@ public:
                               const QHostAddress &dhcp,
                               AssignmentMethod method);
 
-    template <typename T> QKnxNetIpCurrentConfigDIB fromBytes(const T &bytes, qint32 index)
+    template <typename T> static QKnxNetIpCurrentConfigDIB fromBytes(const T &bytes, qint32 index)
     {
         return QKnxNetIpStruct::fromBytes(bytes, index);
     }
