@@ -66,7 +66,7 @@ public:
 
     static QKnxNetIpStructHeader fromBytes(const quint8 *bytes, quint16 index)
     {
-        const qint32 availableSize = strlen((const char*) bytes) - index;
+        const qint32 availableSize = strlen(reinterpret_cast<const char*> (bytes)) - index;
         if (availableSize < 1)
             return {}; // total size missing
 

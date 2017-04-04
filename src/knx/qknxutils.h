@@ -38,7 +38,7 @@ struct QKnxUtils final
 
         static quint16 fromBytes(const quint8 *data, int index = 0)
         {
-            if (strlen((const char*) data) - index < 2)
+            if (strlen(reinterpret_cast<const char*> (data)) - index < 2)
                 return {};
             return quint16(quint16(data[index]) << 8 | data[index + 1]);
         }

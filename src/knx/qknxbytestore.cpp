@@ -12,13 +12,13 @@ QT_BEGIN_NAMESPACE
 
 void QKnxByteStore::setBytes(const quint8 *data)
 {
-    return setBytes(data, 0, quint16(strlen((const char*) data)));
+    return setBytes(data, 0, quint16(strlen(reinterpret_cast<const char*> (data))));
 }
 
 void QKnxByteStore::setBytes(const quint8 *data, quint16 index, quint16 size)
 {
     m_bytes.resize(0);
-    if (quint16(strlen((const char*) data)) < index + size)
+    if (quint16(strlen(reinterpret_cast<const char*> (data))) < index + size)
         return;
 
     m_bytes.resize(size);
