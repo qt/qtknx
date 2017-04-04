@@ -25,10 +25,6 @@ public:
     QKnxNetIpCRD() = default;
     ~QKnxNetIpCRD() override = default;
 
-    template <typename T> QKnxNetIpCRD(QKnxNetIp::ConnectionTypeCode type, const T &bytes)
-        : QKnxNetIpStruct(quint8(type), bytes)
-    {}
-
     template <typename T> static QKnxNetIpCRD fromBytes(const T &bytes, qint32 index)
     {
         return QKnxNetIpStruct::fromBytes(bytes, index);

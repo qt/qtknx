@@ -53,11 +53,11 @@ public:
 
     virtual QString toString() const
     {
-        QString bytes;
+        QString bytesString;
         for (quint8 byte : m_bytes)
-            bytes += QStringLiteral("0x%1, ").arg(byte, 2, 16, QLatin1Char('0'));
-        bytes.chop(2);
-        return QStringLiteral("Bytes { %1 }").arg(bytes);
+            bytesString += QStringLiteral("0x%1, ").arg(byte, 2, 16, QLatin1Char('0'));
+        bytesString.chop(2);
+        return QStringLiteral("Bytes { %1 }").arg(bytesString);
     }
 
     template <typename T = std::vector<quint8>> auto bytes() const -> decltype(T())
@@ -91,43 +91,44 @@ public:
     void setBytes(const QKnxByteStoreRef &storeRef);
     void setBytes(const QKnxByteStoreRef &storeRef, quint16 index, quint16 size);
 
-    template <typename T, std::size_t S = 0> void setBytes(const T &bytes)
+    template <typename T, std::size_t S = 0> void setBytes(const T &sourceBytes)
     {
         static_assert(is_type<T, QByteArray, QVector<quint8>, std::deque<quint8>,
             std::vector<quint8>, std::array<quint8, S>>::value, "Type not supported.");
 
         m_bytes.clear();
-        m_bytes.resize(bytes.size());
-        std::copy(std::begin(bytes), std::end(bytes), std::begin(m_bytes));
+        m_bytes.resize(sourceBytes.size());
+        std::copy(std::begin(sourceBytes), std::end(sourceBytes), std::begin(m_bytes));
     }
 
     // TODO: The next function signature is misleading, it suggest the function will change
     // m_bytes starting from 'index' with 'count' elements, though it sets m_bytes to the bytes
     // stored inside the argument 'bytes', starting from 'index' with 'count' elements.
-    template <typename T, std::size_t S = 0> void setBytes(const T &bytes, quint16 index,
+    template <typename T, std::size_t S = 0> void setBytes(const T &bytesToCopy, quint16 index,
         quint16 size)
     {
         static_assert(is_type<T, QByteArray, QVector<quint8>, std::deque<quint8>,
             std::vector<quint8>, std::array<quint8, S>>::value, "Type not supported.");
 
         m_bytes.resize(0);
-        if (quint16(bytes.size()) < index + size)
+        if (quint16(bytesToCopy.size()) < index + size)
             return;
 
         m_bytes.resize(size);
-        std::copy_n(std::next(std::begin(bytes), index), size, std::begin(m_bytes));
+        std::copy_n(std::next(std::begin(bytesToCopy), index), size, std::begin(m_bytes));
     }
 
-    template <typename T, std::size_t S = 0> void appendBytes(const T &bytes)
+    template <typename T, std::size_t S = 0> void appendBytes(const T &bytesToAppend)
     {
         static_assert(is_type<T, QByteArray, QVector<quint8>, std::deque<quint8>,
             std::vector<quint8>, std::array<quint8, S>>::value, "Type not supported.");
 
-        if (bytes.size() <= 0)
+        if (bytesToAppend.size() <= 0)
             return;
 
-        m_bytes.resize(m_bytes.size() + quint16(bytes.size()));
-        std::copy(std::begin(bytes), std::end(bytes), std::prev(std::end(m_bytes), bytes.size()));
+        m_bytes.resize(m_bytes.size() + quint16(bytesToAppend.size()));
+        std::copy(std::begin(bytesToAppend), std::end(bytesToAppend), std::prev(std::end(m_bytes),
+            bytesToAppend.size()));
     }
 
     QKnxByteStoreRef ref() const;
