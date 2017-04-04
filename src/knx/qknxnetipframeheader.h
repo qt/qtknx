@@ -16,6 +16,7 @@
 #include <QtKnx/qknxbytestore.h>
 #include <QtKnx/qknxglobal.h>
 #include <QtKnx/qknxtraits.h>
+#include <QtKnx/qknxutils.h>
 
 QT_BEGIN_NAMESPACE
 
