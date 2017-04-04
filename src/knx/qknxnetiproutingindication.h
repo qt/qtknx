@@ -5,7 +5,8 @@
 **
 ****************************************************************************/
 
-#pragma once
+#ifndef QKNXNETIPROUTINGINDICATION_H
+#define QKNXNETIPROUTINGINDICATION_H
 
 #include <QtCore/qbytearray.h>
 #include <QtCore/qdatastream.h>
@@ -26,3 +27,5 @@ public:
 };
 
 QT_END_NAMESPACE
+
+#endif

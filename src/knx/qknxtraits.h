@@ -5,7 +5,8 @@
 **
 ****************************************************************************/
 
-#pragma once
+#ifndef QKNXTRAITS_H
+#define QKNXTRAITS_H
 
 #include <QtKnx/qknxglobal.h>
 
@@ -27,3 +28,5 @@ template <typename T, typename T1, typename ... Ts> struct is_type<T, T1, Ts...>
 };
 
 QT_END_NAMESPACE
+
+#endif

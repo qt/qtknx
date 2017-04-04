@@ -5,7 +5,8 @@
 **
 ****************************************************************************/
 
-#pragma once
+#ifndef QKNXNETIPMANUFACTURERDIB_H
+#define QKNXNETIPMANUFACTURERDIB_H
 
 #include <QtCore/qbytearray.h>
 #include <QtCore/qdatastream.h>
@@ -55,3 +56,5 @@ private:
 Q_DECLARE_TYPEINFO(QKnxNetIpManufacturerDIB, Q_MOVABLE_TYPE);
 
 QT_END_NAMESPACE
+
+#endif

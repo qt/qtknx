@@ -5,7 +5,8 @@
 **
 ****************************************************************************/
 
-#pragma once
+#ifndef QKNXADDITIONAL_H
+#define QKNXADDITIONAL_H
 
 #include <QtCore/qbytearray.h>
 #include <QtCore/qdatastream.h>
@@ -115,3 +116,5 @@ Q_DECLARE_TYPEINFO(QKnxAdditionalInfo, Q_MOVABLE_TYPE);
 Q_DECLARE_TYPEINFO(QKnxAdditionalInfo::Type, Q_PRIMITIVE_TYPE);
 
 QT_END_NAMESPACE
+
+#endif

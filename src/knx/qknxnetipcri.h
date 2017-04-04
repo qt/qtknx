@@ -5,7 +5,8 @@
 **
 ****************************************************************************/
 
-#pragma once
+#ifndef QKNXNETIPCRI_H
+#define QKNXNETIPCRI_H
 
 #include <QtCore/qbytearray.h>
 #include <QtCore/qdatastream.h>
@@ -48,3 +49,5 @@ private:
 Q_DECLARE_TYPEINFO(QKnxNetIpCRI, Q_MOVABLE_TYPE);
 
 QT_END_NAMESPACE
+
+#endif

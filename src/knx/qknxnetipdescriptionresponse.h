@@ -5,7 +5,8 @@
 **
 ****************************************************************************/
 
-#pragma once
+#ifndef QKNXNETIPDESCRIPTIONRESPONSE_H
+#define QKNXNETIPDESCRIPTIONRESPONSE_H
 
 #include <QtKnx/qknxnetipdevicedib.h>
 #include <QtKnx/qknxnetipframe.h>
@@ -55,3 +56,5 @@ public:
 };
 
 QT_END_NAMESPACE
+
+#endif

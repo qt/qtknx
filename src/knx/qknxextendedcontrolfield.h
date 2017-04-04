@@ -5,7 +5,8 @@
 **
 ****************************************************************************/
 
-#pragma once
+#ifndef QKNXEXTENDEDCONTROLFIELD_H
+#define QKNXEXTENDEDCONTROLFIELD_H
 
 #include <QtCore/qbytearray.h>
 #include <QtCore/qdatastream.h>
@@ -69,3 +70,5 @@ Q_DECLARE_TYPEINFO(QKnxExtendedControlField::DestinationAddressType, Q_PRIMITIVE
 Q_DECLARE_TYPEINFO(QKnxExtendedControlField::ExtendedFrameFormat, Q_PRIMITIVE_TYPE);
 
 QT_END_NAMESPACE
+
+#endif

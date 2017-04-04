@@ -5,7 +5,8 @@
 **
 ****************************************************************************/
 
-#pragma once
+#ifndef QKNXUTILS_H
+#define QKNXUTILS_H
 
 #include <QtCore/qbytearray.h>
 #include <QtCore/qdatastream.h>
@@ -101,3 +102,5 @@ struct QKnxUtils final
 };
 
 QT_END_NAMESPACE
+
+#endif

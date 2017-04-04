@@ -5,7 +5,8 @@
 **
 ****************************************************************************/
 
-#pragma once
+#ifndef QKNXNETIPKNXADDRESSESDIB_H
+#define QKNXNETIPKNXADDRESSESDIB_H
 
 #include <QtCore/qbytearray.h>
 #include <QtCore/qdatastream.h>
@@ -62,3 +63,5 @@ private:
 Q_DECLARE_TYPEINFO(QKnxNetIpKnxAddressesDIB, Q_MOVABLE_TYPE);
 
 QT_END_NAMESPACE
+
+#endif

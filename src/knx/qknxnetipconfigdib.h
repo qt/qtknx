@@ -5,7 +5,8 @@
 **
 ****************************************************************************/
 
-#pragma once
+#ifndef QKNXNETIPCONFIGDIB_H
+#define QKNXNETIPCONFIGDIB_H
 
 #include <QtCore/qbytearray.h>
 #include <QtCore/qdatastream.h>
@@ -84,3 +85,5 @@ Q_DECLARE_OPERATORS_FOR_FLAGS(QKnxNetIpConfigDIB::AssignmentMethods)
 Q_DECLARE_TYPEINFO(QKnxNetIpConfigDIB, Q_MOVABLE_TYPE);
 
 QT_END_NAMESPACE
+
+#endif

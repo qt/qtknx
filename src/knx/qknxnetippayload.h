@@ -5,7 +5,8 @@
 **
 ****************************************************************************/
 
-#pragma once
+#ifndef QKNXNETIPPAYLOAD_H
+#define QKNXNETIPPAYLOAD_H
 
 #include <QtCore/qbytearray.h>
 #include <QtCore/qdatastream.h>
@@ -47,3 +48,5 @@ public:
 };
 
 QT_END_NAMESPACE
+
+#endif

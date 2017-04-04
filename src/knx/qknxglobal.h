@@ -5,7 +5,8 @@
 **
 ****************************************************************************/
 
-#pragma once
+#ifndef QKNXGLOBAL_H
+#define QKNXGLOBAL_H
 
 #include <QtCore/qglobal.h>
 
@@ -22,3 +23,5 @@ QT_BEGIN_NAMESPACE
 #endif
 
 QT_END_NAMESPACE
+
+#endif

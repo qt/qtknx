@@ -5,7 +5,8 @@
 **
 ****************************************************************************/
 
-#pragma once
+#ifndef QKNXNETIPDISCONNECTRESPONSE_H
+#define QKNXNETIPDISCONNECTRESPONSE_H
 
 #include <QtKnx/qknxnetip.h>
 #include <QtKnx/qknxnetipframe.h>
@@ -33,3 +34,5 @@ public:
 };
 
 QT_END_NAMESPACE
+
+#endif

@@ -5,7 +5,8 @@
 **
 ****************************************************************************/
 
-#pragma once
+#ifndef QKNXNETIP_H
+#define QKNXNETIP_H
 
 #include <QtKnx/qknxglobal.h>
 
@@ -85,3 +86,5 @@ Q_DECLARE_TYPEINFO(QKnxNetIp::ServiceType, Q_PRIMITIVE_TYPE);
 Q_DECLARE_TYPEINFO(QKnxNetIp::Error, Q_PRIMITIVE_TYPE);
 
 QT_END_NAMESPACE
+
+#endif

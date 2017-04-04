@@ -5,7 +5,8 @@
 **
 ****************************************************************************/
 
-#pragma once
+#ifndef QKNXNETIPCONNECTREQUEST_H
+#define QKNXNETIPCONNECTREQUEST_H
 
 #include <QtKnx/qknxnetipcri.h>
 #include <QtKnx/qknxnetipframe.h>
@@ -37,3 +38,5 @@ public:
 };
 
 QT_END_NAMESPACE
+
+#endif

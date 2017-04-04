@@ -5,7 +5,8 @@
 **
 ****************************************************************************/
 
-#pragma once
+#ifndef QKNXNETIPSTRUCTHEADER_H
+#define QKNXNETIPSTRUCTHEADER_H
 
 #include <QtCore/qbytearray.h>
 #include <QtCore/qdatastream.h>
@@ -97,3 +98,5 @@ public:
 };
 
 QT_END_NAMESPACE
+
+#endif

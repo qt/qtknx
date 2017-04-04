@@ -5,7 +5,8 @@
 **
 ****************************************************************************/
 
-#pragma once
+#ifndef QKNXBYTESTOREREF_H
+#define QKNXBYTESTOREREF_H
 
 #include <QtCore/qbytearray.h>
 #include <QtCore/qdatastream.h>
@@ -72,3 +73,5 @@ private:
 };
 
 QT_END_NAMESPACE
+
+#endif

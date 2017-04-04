@@ -5,7 +5,8 @@
 **
 ****************************************************************************/
 
-#pragma once
+#ifndef QKNXNETIPCONNECTIONSTATEREQUEST_H
+#define QKNXNETIPCONNECTIONSTATEREQUEST_H
 
 #include <QtKnx/qknxnetipframe.h>
 #include <QtKnx/qknxnetiphpai.h>
@@ -33,3 +34,5 @@ public:
 };
 
 QT_END_NAMESPACE
+
+#endif

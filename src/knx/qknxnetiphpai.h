@@ -5,7 +5,8 @@
 **
 ****************************************************************************/
 
-#pragma once
+#ifndef QKNXNETIPHPAI_H
+#define QKNXNETIPHPAI_H
 
 #include <QtCore/qbytearray.h>
 #include <QtCore/qdatastream.h>
@@ -52,3 +53,5 @@ private:
 Q_DECLARE_TYPEINFO(QKnxNetIpHPAI, Q_MOVABLE_TYPE);
 
 QT_END_NAMESPACE
+
+#endif

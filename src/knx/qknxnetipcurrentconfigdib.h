@@ -5,7 +5,8 @@
 **
 ****************************************************************************/
 
-#pragma once
+#ifndef QKNXNETIPCURRENTCONFIGDIB_H
+#define QKNXNETIPCURRENTCONFIGDIB_H
 
 #include <QtCore/qbytearray.h>
 #include <QtCore/qdatastream.h>
@@ -71,3 +72,5 @@ private:
 Q_DECLARE_TYPEINFO(QKnxNetIpCurrentConfigDIB, Q_MOVABLE_TYPE);
 
 QT_END_NAMESPACE
+
+#endif
