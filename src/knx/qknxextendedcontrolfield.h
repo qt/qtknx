@@ -51,7 +51,7 @@ public:
         static_assert(is_type<T, QByteArray, QVector<quint8>, std::deque<quint8>,
             std::vector<quint8>>::value, "Type not supported.");
 
-        T t(1, Qt::Uninitialized); t[0] = quint8(m_ctrl2.to_ulong());
+        T t(1, 0); t[0] = quint8(m_ctrl2.to_ulong());
         return t;
     }
     quint8 rawData() const { return quint8(m_ctrl2.to_ulong()); }

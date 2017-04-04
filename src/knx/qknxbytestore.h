@@ -65,7 +65,7 @@ public:
         static_assert(is_type<T, QByteArray, QVector<quint8>, std::deque<quint8>,
             std::vector<quint8>>::value, "Type not supported.");
 
-        T t(m_bytes.size(), Qt::Uninitialized);
+        T t(m_bytes.size(), 0);
         std::copy(std::begin(m_bytes), std::end(m_bytes), std::begin(t));
         return t;
     }
@@ -79,7 +79,7 @@ public:
         if (quint16(m_bytes.size()) < start + size)
             return {};
 
-        T t(size, Qt::Uninitialized);
+        T t(size, 0);
         std::copy(std::next(std::begin(m_bytes), start), std::next(std::begin(m_bytes), start
             + size), std::begin(t));
         return t;

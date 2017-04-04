@@ -49,7 +49,7 @@ public:
         static_assert(is_type<T, QByteArray, QVector<quint8>, std::deque<quint8>,
             std::vector<quint8>>::value, "Type not supported.");
 
-        T t(m_data.size(), Qt::Uninitialized);
+        T t(m_data.size(), 0);
         std::copy(std::begin(m_data), std::end(m_data), std::begin(t));
         return t;
     }
@@ -63,7 +63,7 @@ public:
         if (!isValid())
             return {};
 
-        T t(2, Qt::Uninitialized);
+        T t(2, 0);
         t[0] = quint8(m_type), t[1] = quint8(m_data.size());
         return t + data<T>();
     }

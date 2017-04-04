@@ -43,7 +43,7 @@ public:
 
         const QKnxNetIpPayload &load = payload();
 
-        T addresses(load.size() / 2, Qt::Uninitialized);
+        T addresses(load.size() / 2, 0);
         for (quint16 i = 0; i < load.size(); i += 2)
             addresses.push_back({ QKnxAddress::Type::Individual, load.bytes<QByteArray>(i, 2) });
         return addresses;

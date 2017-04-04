@@ -92,7 +92,7 @@ protected:
             std::vector<quint8>>::value, "Type not supported.");
 
         const auto &headr = header();
-        T t(headr.totalSize(), Qt::Uninitialized);
+        T t(headr.totalSize(), 0);
 
         auto bytes = headr.bytes();
         std::copy(std::begin(bytes), std::end(bytes), std::begin(t));

@@ -30,7 +30,7 @@ struct QKnxUtils final
             static_assert(is_type<T, QByteArray, QVector<quint8>, std::deque<quint8>,
                 std::vector<quint8>>::value, "Type not supported.");
 
-            T t(2, Qt::Uninitialized);
+            T t(2, 0);
             t[0] = quint8(integer >> 8);
             t[1] = quint8(integer);
             return t;
@@ -69,7 +69,7 @@ struct QKnxUtils final
             static_assert(is_type<T, QByteArray, QVector<quint8>, std::deque<quint8>,
                 std::vector<quint8>>::value, "Type not supported.");
 
-            T t(4, Qt::Uninitialized);
+            T t(4, 0);
             auto addr = address.toIPv4Address();
             t[0] = quint8(addr >> 24);
             t[1] = quint8(addr >> 16);
