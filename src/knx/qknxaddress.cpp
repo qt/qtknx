@@ -363,17 +363,15 @@ QKnxAddress::QKnxAddress(QKnxAddress::Type type, quint16 sec1, quint16 *sec2, qu
 {
     const auto checkRange = [type, sec1, sec2, sec3](QKnxAddress::Notation notation) {
         if (type == QKnxAddress::Type::Group) {
-            if ((sec1 < 0) && (sec1 > 31))
+            if (sec1 > 31)
                 return false;
             if (notation == QKnxAddress::Notation::TwoLevel)
-                return (sec3 >= 0) && (sec3 <= 2047);
+                return (sec3 <= 2047);
             if (sec2 && (notation == QKnxAddress::Notation::ThreeLevel))
-                return (*sec2 >= 0) && (*sec2 <= 7) && (sec3 >= 0) && (sec3 <= 255);
+                return (*sec2 <= 7) && (sec3 <= 255);
         }
-        if (sec2 && (type == QKnxAddress::Type::Individual)) {
-            return (sec1 >= 0) && (sec1 <= 15) && (*sec2 >= 0) && (*sec2 <= 15)
-                && (sec3 >= 0) && (sec3 <= 255);
-        }
+        if (sec2 && (type == QKnxAddress::Type::Individual))
+            return (sec1 <= 15) && (*sec2 <= 15) && (sec3 <= 255);
         return false;
     };
 
