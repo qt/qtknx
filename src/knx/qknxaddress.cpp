@@ -203,10 +203,9 @@ QKnxAddress QKnxAddress::createGroup(quint8 mainGroup, quint16 subGroup)
     \a middleGroup in the range \c 0 to \c 7 and the \a subGroup value in the
     range \c 0 to \c 255. Hexadecimal, octal and decimal notation are supported.
 */
-QKnxAddress QKnxAddress::createGroup(quint8 mainGroup, quint8 middleGroup, quint8 subGroup)
+QKnxAddress QKnxAddress::createGroup(quint8 mainGroup, quint16 middleGroup, quint8 subGroup)
 {
-    return QKnxAddress(QKnxAddress::Type::Group, mainGroup,
-        reinterpret_cast<quint16*> (&middleGroup), subGroup);
+    return QKnxAddress(QKnxAddress::Type::Group, mainGroup, &middleGroup, subGroup);
 }
 
 /*!
@@ -215,10 +214,9 @@ QKnxAddress QKnxAddress::createGroup(quint8 mainGroup, quint8 middleGroup, quint
     range \c 0 to \c 15 and the \a sequentialNumber value in the range \c 0 to
     \c 255. Hexadecimal, octal and decimal notation are supported.
 */
-QKnxAddress QKnxAddress::createIndividual(quint8 area, quint8 line, quint8 sequentialNumber)
+QKnxAddress QKnxAddress::createIndividual(quint8 area, quint16 line, quint8 sequentialNumber)
 {
-    return QKnxAddress(QKnxAddress::Type::Individual, area, reinterpret_cast<quint16*> (&line),
-        sequentialNumber);
+    return QKnxAddress(QKnxAddress::Type::Individual, area, &line, sequentialNumber);
 }
 
 /*!
@@ -371,7 +369,7 @@ QKnxAddress::QKnxAddress(QKnxAddress::Type type, quint16 sec1, quint16 *sec2, qu
                 return (*sec2 <= 7) && (sec3 <= 255);
         }
         if (sec2 && (type == QKnxAddress::Type::Individual))
-            return (sec1 <= 15) && (*sec2 <= 15) && (sec3 <= 255);
+            return (sec1 <= 15) && ( *sec2 <= 15) && (sec3 <= 255);
         return false;
     };
 
@@ -390,7 +388,7 @@ QKnxAddress::QKnxAddress(QKnxAddress::Type type, quint16 sec1, quint16 *sec2, qu
         }
     }
     if (type == QKnxAddress::Type::Individual) {
-        if (checkRange(QKnxAddress::Notation::ThreeLevel)) {
+    if (checkRange(QKnxAddress::Notation::ThreeLevel)) {
             m_type = type;
             m_address = quint16(sec1 << 12 | (*sec2) << 8 | sec3);
         }

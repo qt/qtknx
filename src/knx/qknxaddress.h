@@ -43,9 +43,9 @@ public:
     QKnxAddress(QKnxAddress::Type type, const QVector<quint8> &address);
 
     static QKnxAddress createGroup(quint8 mainGroup, quint16 subGroup);
-    static QKnxAddress createGroup(quint8 mainGroup, quint8 middleGroup, quint8 subGroup);
+    static QKnxAddress createGroup(quint8 mainGroup, quint16 middleGroup, quint8 subGroup);
 
-    static QKnxAddress createIndividual(quint8 area, quint8 line, quint8 sequentialNumber);
+    static QKnxAddress createIndividual(quint8 area, quint16 line, quint8 sequentialNumber);
 
     bool isValid() const;
     bool isBroadcast() const;
