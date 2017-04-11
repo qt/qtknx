@@ -19,7 +19,7 @@
 QT_BEGIN_NAMESPACE
 
 class QKnxByteStoreRef;
-class QKnxByteStore
+class Q_KNX_EXPORT QKnxByteStore
 {
 public:
     quint16 size() const
