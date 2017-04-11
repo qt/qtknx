@@ -16,6 +16,7 @@
 #include <QtKnx/qknxbytestore.h>
 #include <QtKnx/qknxglobal.h>
 #include <QtKnx/qknxtraits.h>
+#include <QtKnx/qknxbytestoreref.h>
 
 QT_BEGIN_NAMESPACE
 
@@ -34,6 +35,7 @@ public:
     using QKnxByteStore::setByte;
     using QKnxByteStore::setBytes;
     using QKnxByteStore::appendBytes;
+    using QKnxByteStore::ref;
 
     template <typename T, std::size_t S = 0>
         static QKnxNetIpPayload fromBytes(const T &bytes, quint16 index, quint16 size)

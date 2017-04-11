@@ -83,7 +83,7 @@ protected:
 
     QKnxByteStoreRef payloadRef() const
     {
-        return QKnxByteStoreRef(&m_payload);
+        return m_payload.ref();
     }
 
     template <typename T = std::vector<quint8>> auto bytes() const -> decltype(T())

@@ -13,59 +13,44 @@
 #include <QtCore/qdebug.h>
 #include <QtCore/qstring.h>
 #include <QtCore/qvector.h>
-#include <QtKnx/qknxbytestore.h>
 #include <QtKnx/qknxglobal.h>
 #include <QtKnx/qknxtraits.h>
 
 QT_BEGIN_NAMESPACE
 
+class QKnxByteStore;
 class Q_KNX_EXPORT QKnxByteStoreRef final
 {
 public:
     QKnxByteStoreRef() = default;
     ~QKnxByteStoreRef() = default;
 
-    explicit QKnxByteStoreRef(const QKnxByteStore *store)
-        : m_store(store)
-    {}
+    explicit QKnxByteStoreRef(const QKnxByteStore *store);
 
     QKnxByteStoreRef(const QKnxByteStoreRef &) = default;
     QKnxByteStoreRef &operator=(const QKnxByteStoreRef &) = default;
 
-    quint16 size() const
-    {
-        if (m_store)
-            return m_store->size();
-        return 0;
-    }
-
-    quint8 byte(quint16 index) const
-    {
-        if (m_store)
-            return m_store->byte(index);
-        return {};
-    }
-
-    const quint8 *bytes() const
-    {
-        if (m_store)
-            return m_store->data();
-        return nullptr;
-    }
+    quint16 size() const;
+    quint8 byte(quint16 index) const;
+    const quint8 *bytes() const;
 
     template <typename T = std::vector<quint8>> auto bytes() const -> decltype(T())
     {
-        if (m_store)
-            return m_store->bytes<T>();
-        return {};
+        if (!m_store)
+            return {};
+        T t(size(), 0);
+        std::copy_n(bytes(), size(), std::begin(t));
+        return t;
     }
 
     template <typename T = std::vector<quint8>>
         auto bytes(quint16 start, quint16 size) const -> decltype(T())
     {
-        if (m_store)
-            return m_store->bytes<T>(start, size);
-        return {};
+        if (!m_store)
+            return {};
+        T t(size, 0);
+        std::copy_n(std::next(bytes(), start), size, std::begin(t));
+        return t;
     }
 
 private:

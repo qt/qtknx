@@ -5,10 +5,28 @@
 **
 ****************************************************************************/
 
-#include <QtKnx/qknxbytestore.h>
-#include <QtKnx/qknxbytestoreref.h>
+#include "QtKnx/qknxbytestore.h"
+#include "QtKnx/qknxbytestoreref.h"
 
 QT_BEGIN_NAMESPACE
+
+QKnxByteStore::QKnxByteStore()
+    : m_byteStoreRef(this)
+{}
+
+QKnxByteStore::QKnxByteStore(const QKnxByteStore &other)
+    : m_bytes(other.m_bytes)
+    , m_byteStoreRef(this)
+{}
+
+QKnxByteStore &QKnxByteStore::operator=(const QKnxByteStore &other)
+{
+    if (this != &other) {
+        m_bytes = other.m_bytes;
+        m_byteStoreRef = QKnxByteStoreRef(this);
+    }
+    return *this;
+}
 
 void QKnxByteStore::setBytes(const quint8 *data)
 {
@@ -38,6 +56,11 @@ void QKnxByteStore::setBytes(const QKnxByteStoreRef &storeRef, quint16 index, qu
 
     m_bytes.resize(size);
     std::copy_n(std::next(storeRef.bytes(), index), size, std::begin(m_bytes));
+}
+
+QKnxByteStoreRef QKnxByteStore::ref() const
+{
+    return m_byteStoreRef;
 }
 
 QT_END_NAMESPACE

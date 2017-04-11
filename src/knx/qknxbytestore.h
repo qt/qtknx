@@ -14,11 +14,11 @@
 #include <QtCore/qstring.h>
 #include <QtCore/qvector.h>
 #include <QtKnx/qknxglobal.h>
+#include <QtKnx/qknxbytestoreref.h>
 #include <QtKnx/qknxtraits.h>
 
 QT_BEGIN_NAMESPACE
 
-class QKnxByteStoreRef;
 class Q_KNX_EXPORT QKnxByteStore
 {
 public:
@@ -130,12 +130,18 @@ public:
         std::copy(std::begin(bytes), std::end(bytes), std::prev(std::end(m_bytes), bytes.size()));
     }
 
+    QKnxByteStoreRef ref() const;
+
 protected:
-    QKnxByteStore() = default;
+    QKnxByteStore();
     virtual ~QKnxByteStore() = default;
+
+    QKnxByteStore(const QKnxByteStore &other);
+    QKnxByteStore &operator=(const QKnxByteStore &other);
 
 private:
     std::vector<quint8> m_bytes;
+    QKnxByteStoreRef m_byteStoreRef;
 };
 
 QT_END_NAMESPACE
