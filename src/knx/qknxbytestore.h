@@ -21,6 +21,8 @@ QT_BEGIN_NAMESPACE
 
 class Q_KNX_EXPORT QKnxByteStore
 {
+    friend class QKnxByteStoreRef;
+
 public:
     quint16 size() const
     {
@@ -30,11 +32,6 @@ public:
     void resize(quint16 size, const quint8 value = 0)
     {
         m_bytes.resize(size, value);
-    }
-
-    const quint8 *data() const
-    {
-        return m_bytes.data();
     }
 
     quint8 byte(quint16 index) const
@@ -131,18 +128,17 @@ public:
             bytesToAppend.size()));
     }
 
-    QKnxByteStoreRef ref() const;
+    QKnxByteStoreRef ref(quint16 index = 0) const;
 
 protected:
-    QKnxByteStore();
+    QKnxByteStore() = default;
     virtual ~QKnxByteStore() = default;
 
-    QKnxByteStore(const QKnxByteStore &other);
-    QKnxByteStore &operator=(const QKnxByteStore &other);
+
+    const quint8 *data() const { return m_bytes.data(); }
 
 private:
     std::vector<quint8> m_bytes;
-    QKnxByteStoreRef m_byteStoreRef;
 };
 
 QT_END_NAMESPACE

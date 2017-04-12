@@ -10,24 +10,6 @@
 
 QT_BEGIN_NAMESPACE
 
-QKnxByteStore::QKnxByteStore()
-    : m_byteStoreRef(this)
-{}
-
-QKnxByteStore::QKnxByteStore(const QKnxByteStore &other)
-    : m_bytes(other.m_bytes)
-    , m_byteStoreRef(this)
-{}
-
-QKnxByteStore &QKnxByteStore::operator=(const QKnxByteStore &other)
-{
-    if (this != &other) {
-        m_bytes = other.m_bytes;
-        m_byteStoreRef = QKnxByteStoreRef(this);
-    }
-    return *this;
-}
-
 void QKnxByteStore::setBytes(const quint8 *data)
 {
     return setBytes(data, 0, quint16(strlen(reinterpret_cast<const char*> (data))));
@@ -58,9 +40,9 @@ void QKnxByteStore::setBytes(const QKnxByteStoreRef &storeRef, quint16 index, qu
     std::copy_n(std::next(storeRef.bytes(), index), size, std::begin(m_bytes));
 }
 
-QKnxByteStoreRef QKnxByteStore::ref() const
+QKnxByteStoreRef QKnxByteStore::ref(quint16 index) const
 {
-    return m_byteStoreRef;
+    return QKnxByteStoreRef(const_cast<QKnxByteStore*> (this), index);
 }
 
 QT_END_NAMESPACE

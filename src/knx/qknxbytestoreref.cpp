@@ -9,28 +9,26 @@
 #include "qknxbytestoreref.h"
 
 QT_BEGIN_NAMESPACE
-QKnxByteStoreRef::QKnxByteStoreRef(const QKnxByteStore *store)
-    : m_store(store)
-{}
+
+QKnxByteStoreRef::QKnxByteStoreRef(QKnxByteStore *store, quint16 index)
+{
+    if (store && index < store->size()) {
+        m_index = index;
+        m_store = store;
+    }
+}
 
 quint16 QKnxByteStoreRef::size() const
 {
     if (m_store)
-        return m_store->size();
+        return m_store->size() - m_index;
     return 0;
-}
-
-quint8 QKnxByteStoreRef::byte(quint16 index) const
-{
-    if (m_store)
-        return m_store->byte(index);
-    return {};
 }
 
 const quint8 *QKnxByteStoreRef::bytes() const
 {
     if (m_store)
-        return m_store->data();
+        return &(*std::next(m_store->data(), m_index));
     return nullptr;
 }
 

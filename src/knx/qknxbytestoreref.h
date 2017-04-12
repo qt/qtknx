@@ -21,40 +21,48 @@ QT_BEGIN_NAMESPACE
 class QKnxByteStore;
 class Q_KNX_EXPORT QKnxByteStoreRef final
 {
+    friend class QKnxByteStore;
+
 public:
     QKnxByteStoreRef() = default;
     ~QKnxByteStoreRef() = default;
-
-    explicit QKnxByteStoreRef(const QKnxByteStore *store);
 
     QKnxByteStoreRef(const QKnxByteStoreRef &) = default;
     QKnxByteStoreRef &operator=(const QKnxByteStoreRef &) = default;
 
     quint16 size() const;
-    quint8 byte(quint16 index) const;
     const quint8 *bytes() const;
+
+    quint8 byte(quint16 index) const
+    {
+        if (index < size()) {
+            const quint8 *tmp = bytes();
+            return tmp[index];
+        }
+        return {};
+    }
 
     template <typename T = std::vector<quint8>> auto bytes() const -> decltype(T())
     {
-        if (!m_store)
-            return {};
-        T t(size(), 0);
-        std::copy_n(bytes(), size(), std::begin(t));
-        return t;
+        return bytes<T>(0, size());
     }
 
     template <typename T = std::vector<quint8>>
-        auto bytes(quint16 start, quint16 size) const -> decltype(T())
+        auto bytes(quint16 start, quint16 count) const -> decltype(T())
     {
-        if (!m_store)
-            return {};
-        T t(size, 0);
-        std::copy_n(std::next(bytes(), start), size, std::begin(t));
+        T t(count, 0);
+        if (size() > (start + count))
+            std::copy_n(std::next(bytes(), start), count, std::begin(t));
         return t;
     }
 
 private:
-    const QKnxByteStore *m_store = nullptr;
+    explicit QKnxByteStoreRef(QKnxByteStore *store);
+    QKnxByteStoreRef(QKnxByteStore *store, quint16 index);
+
+private:
+    quint16 m_index = 0;
+    QKnxByteStore *m_store = nullptr;
 };
 
 QT_END_NAMESPACE

@@ -55,16 +55,18 @@ namespace QKnxPrivate
 
 QVector<QKnxNetIpStructRef> QKnxNetIpDescriptionResponse::optionalDibs() const
 {
-    quint16 index = 54;
     const auto &ref = payloadRef();
-    auto header = QKnxNetIpStructHeader::fromBytes(ref, index);
+    auto header = QKnxNetIpStructHeader::fromBytes(ref, 0);
+    quint16 index = header.totalSize(); // total size of device DIB
+
+    header = QKnxNetIpStructHeader::fromBytes(ref, index);
+    index += header.totalSize(); // advance of total size of families DIB
 
     QVector<QKnxNetIpStructRef> dibs;
     while (index < ref.size()) {
-        header = QKnxNetIpStructHeader::fromBytes(ref, index += header.totalSize());
-        // Ugly hack to get a pointer to the real byte store data.
-        dibs.push_back(QKnxNetIpStructRef(&(*std::next(ref.bytes(), index)),
-            QKnxPrivate::codeToType(header.code())));
+        header = QKnxNetIpStructHeader::fromBytes(ref, index);
+        dibs.push_back(QKnxNetIpStructRef(payloadRef(index), QKnxPrivate::codeToType(header.code())));
+        index += header.totalSize(); // advance of total size of last read DIB
     }
     return dibs;
 }

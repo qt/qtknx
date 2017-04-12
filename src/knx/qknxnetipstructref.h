@@ -128,10 +128,10 @@ private:
     explicit QKnxNetIpStructRef(QKnxNetIpStruct *)
     {}
 
-    QKnxNetIpStructRef(const quint8 *ref, QKnxNetIpStructRef::Type type)
-        : byteStoreRef(ref)
-        , m_type(type)
+    QKnxNetIpStructRef(const QKnxByteStoreRef &ref, QKnxNetIpStructRef::Type type)
+        : m_type(type)
         , m_isByteStoreRef(true)
+        , m_byteStoreRef(ref)
     {}
 
 private:
@@ -146,10 +146,10 @@ private:
         QKnxNetIpKnxAddressesDIB *g;
         QKnxNetIpManufacturerDIB *h;
         QKnxNetIpServiceFamiliesDIB *i;
-        const quint8 *byteStoreRef;
     };
     Type m_type = Type::Null;
     bool m_isByteStoreRef = false;
+    QKnxByteStoreRef m_byteStoreRef;
 };
 
 namespace QKnxPrivate
