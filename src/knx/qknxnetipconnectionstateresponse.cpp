@@ -19,8 +19,7 @@ QKnxNetIpConnectionStateResponse::QKnxNetIpConnectionStateResponse(quint8 channe
     case QKnxNetIp::Error::DataConnection:
     case QKnxNetIp::Error::KnxConnection:
     {
-        QKnxNetIpPayload payload;
-        payload.setByte(0, channelId);
+        QKnxNetIpPayload payload(channelId);
         payload.setByte(1, quint8(status));
         setPayload(payload);
     };

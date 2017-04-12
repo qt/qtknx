@@ -131,6 +131,8 @@ protected:
     QKnxByteStore() = default;
     virtual ~QKnxByteStore() = default;
 
+    explicit QKnxByteStore(quint8 byte);
+    QKnxByteStore(const quint8 *bytes, quint16 size);
 
     const quint8 *data() const { return m_bytes.data(); }
 

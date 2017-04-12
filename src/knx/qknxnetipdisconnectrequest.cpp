@@ -13,8 +13,7 @@ QKnxNetIpDisconnectRequest::QKnxNetIpDisconnectRequest(quint8 channelId,
         const QKnxNetIpHPAI &controlEndpoint)
     : QKnxNetIpFrame(quint16(QKnxNetIp::ServiceType::DisconnectRequest))
 {
-    QKnxNetIpPayload payload;
-    payload.setByte(0, channelId);
+    QKnxNetIpPayload payload(channelId);
     payload.setByte(1, 0x00); // reserved
     payload.appendBytes(controlEndpoint.bytes());
     setPayload(payload);

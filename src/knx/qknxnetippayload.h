@@ -26,6 +26,14 @@ public:
     QKnxNetIpPayload() = default;
     ~QKnxNetIpPayload() override = default;
 
+    explicit QKnxNetIpPayload(quint8 byte)
+        : QKnxByteStore(byte)
+    {}
+
+    QKnxNetIpPayload(const quint8 *bytes, quint16 size)
+        : QKnxByteStore(bytes, size)
+    {}
+
     using QKnxByteStore::size;
     using QKnxByteStore::resize;
     using QKnxByteStore::toString;

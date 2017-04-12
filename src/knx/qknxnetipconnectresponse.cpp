@@ -21,8 +21,7 @@ QKnxNetIpConnectResponse::QKnxNetIpConnectResponse(quint8 channelId, QKnxNetIp::
         const QKnxNetIpHPAI &dataEndpoint, const QKnxNetIpCRD &responseData)
     : QKnxNetIpFrame(quint16(QKnxNetIp::ServiceType::ConnectResponse))
 {
-    QKnxNetIpPayload payload;
-    payload.setByte(0, channelId);
+    QKnxNetIpPayload payload(channelId);
     payload.setByte(1, quint8(status));
     payload.appendBytes(dataEndpoint.bytes());
     payload.appendBytes(responseData.bytes());

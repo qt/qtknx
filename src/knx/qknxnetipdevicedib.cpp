@@ -28,8 +28,7 @@ QKnxNetIpDeviceDIB::QKnxNetIpDeviceDIB(MediumCode mediumCode, DeviceStatus devic
         const QHostAddress &multicastAddress, const QByteArray &macAddress, const QByteArray deviceName)
     : QKnxNetIpStruct(quint8(QKnxNetIp::DescriptionTypeCode::DeviceInfo))
 {
-    QKnxNetIpPayload payload;
-    payload.setByte(0, quint8(mediumCode));
+    QKnxNetIpPayload payload((quint8) mediumCode);
 
     if (deviceStatus > DeviceStatus::ActiveProgrammingMode)
         return;
