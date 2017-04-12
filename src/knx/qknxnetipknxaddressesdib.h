@@ -42,8 +42,7 @@ public:
             std::vector<QKnxAddress>>::value, "Type not supported.");
 
         const QKnxNetIpPayload &load = payload();
-
-        T addresses(load.size() / 2, 0);
+        T addresses;
         for (quint16 i = 0; i < load.size(); i += 2)
             addresses.push_back({ QKnxAddress::Type::Individual, load.bytes<QByteArray>(i, 2) });
         return addresses;
