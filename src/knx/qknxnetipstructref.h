@@ -156,10 +156,10 @@ namespace QKnxPrivate
 {
 #define TYPE_CHECK_RETURN_FROM_BYTES(REF_TYPE) \
     do { \
-            if (ref.m_type != QKnxNetIpStructRef::Type::REF_TYPE) \
-                return {}; \
-            if (ref.m_isByteStoreRef) \
-                return REF_TYPE::fromBytes(ref.byteStoreRef, 0); \
+        if (ref.m_type != QKnxNetIpStructRef::Type::REF_TYPE) \
+            return {}; \
+        if (ref.m_isByteStoreRef) \
+            return REF_TYPE::fromBytes(ref.m_byteStoreRef, 0); \
     } while (0)
 
     template<typename T> struct QKnxNetIpStructTypeHelper {};
