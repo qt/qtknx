@@ -82,9 +82,6 @@ public:
         return t;
     }
 
-    void setBytes(const quint8 *data);
-    void setBytes(const quint8 *data, quint16 index, quint16 size);
-
     void setBytes(const QKnxByteStoreRef &storeRef);
     void setBytes(const QKnxByteStoreRef &storeRef, quint16 index, quint16 size);
 

@@ -64,22 +64,6 @@ public:
         return QKnxNetIpStructHeader(quint8(bytes[index + headerSize - 1]), totalSize - headerSize);
     }
 
-    static QKnxNetIpStructHeader fromBytes(const quint8 *bytes, quint16 index)
-    {
-        const qint32 availableSize = strlen(reinterpret_cast<const char*> (bytes)) - index;
-        if (availableSize < 1)
-            return {}; // total size missing
-
-        quint16 totalSize = quint8(bytes[index]);
-        const quint8 headerSize = totalSize == 0xff ? 4 : 2;
-        if (availableSize < headerSize)
-            return {}; // total size and code missing
-
-        if (headerSize == 4)
-            totalSize = QKnxUtils::QUint16::fromBytes(bytes, index + 1);
-        return QKnxNetIpStructHeader(bytes[index + headerSize - 1], totalSize - headerSize);
-    }
-
     static QKnxNetIpStructHeader fromBytes(const QKnxByteStoreRef &store, quint16 index)
     {
         const qint32 availableSize = store.size() - index;

@@ -36,13 +36,6 @@ struct QKnxUtils final
             return t;
         }
 
-        static quint16 fromBytes(const quint8 *data, int index = 0)
-        {
-            if (strlen(reinterpret_cast<const char*> (data)) - index < 2)
-                return {};
-            return quint16(quint16(data[index]) << 8 | data[index + 1]);
-        }
-
         static quint16 fromBytes(const QKnxByteStoreRef &data, int index = 0)
         {
             if (data.size() - index < 2)
