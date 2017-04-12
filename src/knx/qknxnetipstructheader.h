@@ -70,14 +70,14 @@ public:
         if (availableSize < 1)
             return {}; // total size missing
 
-        quint16 totalSize = quint8(bytes[0]);
+        quint16 totalSize = quint8(bytes[index]);
         const quint8 headerSize = totalSize == 0xff ? 4 : 2;
         if (availableSize < headerSize)
             return {}; // total size and code missing
 
         if (headerSize == 4)
             totalSize = QKnxUtils::QUint16::fromBytes(bytes, index + 1);
-        return QKnxNetIpStructHeader(bytes[headerSize - 1], totalSize - headerSize);
+        return QKnxNetIpStructHeader(bytes[index + headerSize - 1], totalSize - headerSize);
     }
 
     static QKnxNetIpStructHeader fromBytes(const QKnxByteStoreRef &store, quint16 index)
@@ -86,14 +86,14 @@ public:
         if (availableSize < 1)
             return {}; // total size missing
 
-        quint16 totalSize = quint8(store.bytes()[0]);
+        quint16 totalSize = quint8(store.bytes()[index]);
         const quint8 headerSize = totalSize == 0xff ? 4 : 2;
         if (availableSize < headerSize)
             return {}; // total size and code missing
 
         if (headerSize == 4)
             totalSize = QKnxUtils::QUint16::fromBytes(store, index + 1);
-        return QKnxNetIpStructHeader(store.bytes()[headerSize - 1], totalSize - headerSize);
+        return QKnxNetIpStructHeader(store.bytes()[index +  headerSize - 1], totalSize - headerSize);
     }
 };
 
