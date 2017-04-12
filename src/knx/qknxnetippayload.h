@@ -30,8 +30,8 @@ public:
         : QKnxByteStore(byte)
     {}
 
-    QKnxNetIpPayload(const quint8 *bytes, quint16 size)
-        : QKnxByteStore(bytes, size)
+    QKnxNetIpPayload(const quint8 *data, quint16 size)
+        : QKnxByteStore(data, size)
     {}
 
     using QKnxByteStore::size;
