@@ -94,11 +94,11 @@ protected:
         const auto &headr = header();
         T t(headr.totalSize(), 0);
 
-        auto bytes = headr.bytes();
-        std::copy(std::begin(bytes), std::end(bytes), std::begin(t));
+        auto bytesGet = headr.bytes();
+        std::copy(std::begin(bytesGet), std::end(bytesGet), std::begin(t));
 
-        bytes = payload().bytes();
-        std::copy(std::begin(bytes), std::end(bytes), std::next(std::begin(t), headr.size()));
+        bytesGet = payload().bytes();
+        std::copy(std::begin(bytesGet), std::end(bytesGet), std::next(std::begin(t), headr.size()));
 
         return t;
     }
