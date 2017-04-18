@@ -50,9 +50,14 @@ public:
     template <typename T = std::vector<quint8>>
         auto bytes(quint16 start, quint16 count) const -> decltype(T())
     {
+        static_assert(is_type<T, QByteArray, QVector<quint8>, std::deque<quint8>,
+            std::vector<quint8>>::value, "Type not supported.");
+
+        if (size() < start + count)
+            return {};
+
         T t(count, 0);
-        if (size() > (start + count))
-            std::copy_n(std::next(bytes(), start), count, std::begin(t));
+        std::copy_n(std::next(bytes(), start), count, std::begin(t));
         return t;
     }
 
