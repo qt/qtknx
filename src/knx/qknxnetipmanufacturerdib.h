@@ -36,7 +36,7 @@ public:
 
     QKnxNetIp::DescriptionType descriptionType() const;
     quint16 manufacturerId() const;
-    template <typename T> auto manufacturerData() const -> decltype(T())
+    template <typename T = std::vector<quint8>> auto manufacturerData() const -> decltype(T())
     {
         static_assert(is_type<T, QByteArray, QVector<quint8>, std::deque<quint8>,
             std::vector<quint8>>::value, "Type not supported.");
