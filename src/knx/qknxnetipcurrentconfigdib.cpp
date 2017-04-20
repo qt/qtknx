@@ -33,7 +33,8 @@ QKnxNetIpCurrentConfigDIB::QKnxNetIpCurrentConfigDIB(const QHostAddress &ip,
     payload.appendBytes(QKnxUtils::HostAddress::bytes(subnetMask));
     payload.appendBytes(QKnxUtils::HostAddress::bytes(gateway));
     payload.appendBytes(QKnxUtils::HostAddress::bytes(dhcp));
-    payload.setByte(17, quint8(method));
+    payload.setByte(16, quint8(method));
+    payload.setByte(17, quint8(0));
     setPayload(payload);
 }
 
