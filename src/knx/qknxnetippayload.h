@@ -38,21 +38,23 @@ public:
     using QKnxByteStore::resize;
     using QKnxByteStore::toString;
 
+    using QKnxByteStore::ref;
     using QKnxByteStore::byte;
     using QKnxByteStore::bytes;
     using QKnxByteStore::setByte;
     using QKnxByteStore::setBytes;
     using QKnxByteStore::appendBytes;
-    using QKnxByteStore::ref;
+    using QKnxByteStore::insertBytes;
 
     template <typename T, std::size_t S = 0>
-        static QKnxNetIpPayload fromBytes(const T &bytes, quint16 index, quint16 size)
+        static QKnxNetIpPayload fromBytes(const T &type, quint16 index, quint16 size)
     {
         static_assert(is_type<T, QByteArray, QVector<quint8>, QKnxByteStoreRef, std::deque<quint8>,
-            std::vector<quint8>, std::array<quint8, S>, const quint8 *>::value, "Type not supported.");
+            std::vector<quint8>, std::array<quint8, S>>::value, "Type not supported.");
 
         QKnxNetIpPayload payload;
-        payload.setBytes(bytes, index, size);
+        auto begin = std::next(std::begin(type), index);
+        payload.setBytes(begin, std::next(begin, size));
         return payload;
     }
 };

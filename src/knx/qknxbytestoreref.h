@@ -61,6 +61,19 @@ public:
         return t;
     }
 
+    typedef const quint8 *const_iterator;
+    const_iterator begin() const
+    {
+        const quint8 *tmp = bytes();
+        return tmp;
+    }
+
+    const_iterator end() const
+    {
+        const quint8 *tmp = bytes();
+        return std::next(tmp, size());
+    }
+
 private:
     explicit QKnxByteStoreRef(QKnxByteStore *store);
     QKnxByteStoreRef(QKnxByteStore *store, quint16 index);

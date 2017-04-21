@@ -36,14 +36,14 @@ public:
 
     quint8 byte(quint16 index) const
     {
-        if (index < m_bytes.size())
+        if (index < size())
             return m_bytes[index];
         return {};
     }
 
     void setByte(quint16 index, quint8 byte)
     {
-        if (m_bytes.size() <= index)
+        if (size() <= index)
             resize(index + 1);
         m_bytes[index] = byte;
     }
@@ -62,67 +62,76 @@ public:
         static_assert(is_type<T, QByteArray, QVector<quint8>, std::deque<quint8>,
             std::vector<quint8>>::value, "Type not supported.");
 
-        T t(m_bytes.size(), 0);
+        T t(size(), 0);
         std::copy(std::begin(m_bytes), std::end(m_bytes), std::begin(t));
         return t;
     }
 
     template <typename T = std::vector<quint8>>
-        auto bytes(quint16 start, quint16 size) const -> decltype(T())
+        auto bytes(quint16 start, quint16 count) const -> decltype(T())
     {
         static_assert(is_type<T, QByteArray, QVector<quint8>, std::deque<quint8>,
             std::vector<quint8>>::value, "Type not supported.");
 
-        if (quint16(m_bytes.size()) < start + size)
+        if (size() < start + count)
             return {};
 
-        T t(size, 0);
+        T t(count, 0);
         std::copy(std::next(std::begin(m_bytes), start), std::next(std::begin(m_bytes), start
-            + size), std::begin(t));
+            + count), std::begin(t));
         return t;
     }
 
     void setBytes(const QKnxByteStoreRef &storeRef);
-    void setBytes(const QKnxByteStoreRef &storeRef, quint16 index, quint16 size);
 
     template <typename T, std::size_t S = 0> void setBytes(const T &sourceBytes)
     {
         static_assert(is_type<T, QByteArray, QVector<quint8>, std::deque<quint8>,
             std::vector<quint8>, std::array<quint8, S>>::value, "Type not supported.");
 
-        m_bytes.clear();
         m_bytes.resize(sourceBytes.size());
         std::copy(std::begin(sourceBytes), std::end(sourceBytes), std::begin(m_bytes));
     }
 
-    // TODO: The next function signature is misleading, it suggest the function will change
-    // m_bytes starting from 'index' with 'count' elements, though it sets m_bytes to the bytes
-    // stored inside the argument 'bytes', starting from 'index' with 'count' elements.
-    template <typename T, std::size_t S = 0> void setBytes(const T &bytesToCopy, quint16 index,
-        quint16 size)
+    void setBytes(QByteArray::const_iterator sourceBegin, QByteArray::const_iterator sourceEnd)
     {
-        static_assert(is_type<T, QByteArray, QVector<quint8>, std::deque<quint8>,
-            std::vector<quint8>, std::array<quint8, S>>::value, "Type not supported.");
+        m_bytes.resize(std::distance(sourceBegin, sourceEnd));
+        std::copy(sourceBegin, sourceEnd, std::begin(m_bytes));
+    }
 
-        m_bytes.resize(0);
-        if (quint16(bytesToCopy.size()) < index + size)
-            return;
+    template <typename Iterator> void setBytes(Iterator sourceBegin, Iterator sourceEnd)
+    {
+        static_assert(is_type<typename std::iterator_traits<Iterator>::value_type, quint8>::value,
+            "Type not supported.");
 
-        m_bytes.resize(size);
-        std::copy_n(std::next(std::begin(bytesToCopy), index), size, std::begin(m_bytes));
+        m_bytes.resize(std::distance(sourceBegin, sourceEnd));
+        std::copy(sourceBegin, sourceEnd, std::begin(m_bytes));
     }
 
     template <typename T, std::size_t S = 0> void appendBytes(const T &bytesToAppend)
     {
+        insertBytes<T, S>(size(), bytesToAppend);
+    }
+
+    template <typename T, std::size_t S = 0> void insertBytes(quint16 pos, const T &bytesToInsert)
+    {
         static_assert(is_type<T, QByteArray, QVector<quint8>, std::deque<quint8>,
             std::vector<quint8>, std::array<quint8, S>>::value, "Type not supported.");
 
-        if (bytesToAppend.size() <= 0)
+        if (bytesToInsert.size() <= 0)
             return;
 
-        m_bytes.resize(m_bytes.size() + quint16(bytesToAppend.size()));
-        std::copy(std::begin(bytesToAppend), std::end(bytesToAppend), std::prev(std::end(m_bytes),
-            bytesToAppend.size()));
+        quint16 tmpSize = size();
+        if (pos < tmpSize) {
+            m_bytes.resize(tmpSize + bytesToInsert.size());
+            std::move_backward(std::next(std::begin(m_bytes), pos),
+                std::prev(std::end(m_bytes), bytesToInsert.size()), std::end(m_bytes));
+        } else {
+            resize(pos + quint16(bytesToInsert.size()));
+        }
+
+        std::copy(std::begin(bytesToInsert), std::end(bytesToInsert),
+            std::next(std::begin(m_bytes), pos));
     }
 
     QKnxByteStoreRef ref(quint16 index = 0) const;
