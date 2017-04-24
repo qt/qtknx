@@ -46,8 +46,10 @@
 
 # Qt-es
 
-/.qmake.cache
-/.qmake.stash
+*_wrapper.sh
+*.qmake.cache
+*.qmake.stash
+*.qmake.conf
 *.pro.user
 *.pro.user.*
 *.qbs.user
