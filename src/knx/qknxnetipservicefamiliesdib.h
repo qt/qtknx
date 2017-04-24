@@ -20,7 +20,7 @@
 
 QT_BEGIN_NAMESPACE
 
-class Q_KNX_EXPORT QKnxNetIpServiceFamiliesDIB final : private QKnxNetIpStruct
+class Q_KNX_EXPORT QKnxNetIpServiceFamiliesDIB final : public QKnxNetIpStruct
 {
 public:
     enum class ServiceFamilieId : quint8
@@ -54,11 +54,6 @@ public:
     void add(const QVector<ServiceFamilieId> &ids, const QVector<quint8> &versions);
 
     bool isValid() const override;
-
-    using QKnxNetIpStruct::size;
-    using QKnxNetIpStruct::bytes;
-    using QKnxNetIpStruct::payload;
-    using QKnxNetIpStruct::toString;
 
 private:
     QKnxNetIpServiceFamiliesDIB(const QKnxNetIpStruct &other);

@@ -7,6 +7,7 @@
 
 #ifndef QKNXNETIPPACKAGE_H
 #define QKNXNETIPPACKAGE_H
+#include <iostream>
 
 #include <QtCore/qbytearray.h>
 #include <QtCore/qdatastream.h>
@@ -25,16 +26,6 @@ QT_BEGIN_NAMESPACE
 template <typename CodeType, typename QKnxNetIpHeader> class Q_KNX_EXPORT QKnxNetIpPackage
 {
 public:
-    CodeType code() const
-    {
-        return header().code();
-    }
-
-    void setCode(CodeType code)
-    {
-        m_header = QKnxNetIpHeader(code, header().size());
-    }
-
     quint16 size() const
     {
         return header().totalSize();
@@ -50,12 +41,6 @@ public:
         return m_payload;
     }
 
-    void setPayload(const QKnxNetIpPayload &payload)
-    {
-        m_payload = payload;
-        m_header = QKnxNetIpHeader(header().code(), payload.size());
-    }
-
     virtual bool isValid() const
     {
         const auto &headr = header();
@@ -66,20 +51,6 @@ public:
     {
         return QStringLiteral("%1, %2").arg(header().toString(), payload().toString());
     }
-
-    virtual ~QKnxNetIpPackage() = default;
-
-protected:
-    QKnxNetIpPackage() = default;
-
-    explicit QKnxNetIpPackage(CodeType code)
-        : m_header({ code })
-    {}
-
-    QKnxNetIpPackage(const QKnxNetIpHeader &header, const QKnxNetIpPayload &payload)
-        : m_header(header)
-        , m_payload(payload)
-    {}
 
     QKnxByteStoreRef payloadRef(quint16 index = 0) const
     {
@@ -112,6 +83,36 @@ protected:
 
         return QKnxNetIpPackage(header, QKnxNetIpPayload::fromBytes(bytes, index + header.size(),
             header.payloadSize()));
+    }
+
+    virtual ~QKnxNetIpPackage() = default;
+
+protected:
+    QKnxNetIpPackage() = default;
+
+    explicit QKnxNetIpPackage(CodeType code)
+        : m_header({ code })
+    {}
+
+    QKnxNetIpPackage(const QKnxNetIpHeader &header, const QKnxNetIpPayload &payload)
+        : m_header(header)
+        , m_payload(payload)
+    {}
+
+    CodeType code() const
+    {
+        return header().code();
+    }
+
+    void setCode(CodeType code)
+    {
+        m_header = QKnxNetIpHeader(code, header().size());
+    }
+
+    void setPayload(const QKnxNetIpPayload &payload)
+    {
+        m_payload = payload;
+        m_header = QKnxNetIpHeader(header().code(), payload.size());
     }
 
 private:

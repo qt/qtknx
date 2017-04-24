@@ -19,7 +19,7 @@
 
 QT_BEGIN_NAMESPACE
 
-class Q_KNX_EXPORT QKnxNetIpManufacturerDIB final : private QKnxNetIpStruct
+class Q_KNX_EXPORT QKnxNetIpManufacturerDIB final : public QKnxNetIpStruct
 {
 public:
     QKnxNetIpManufacturerDIB() = default;
@@ -45,11 +45,6 @@ public:
     }
 
     bool isValid() const override;
-
-    using QKnxNetIpStruct::size;
-    using QKnxNetIpStruct::bytes;
-    using QKnxNetIpStruct::payload;
-    using QKnxNetIpStruct::toString;
 
 private:
     QKnxNetIpManufacturerDIB(const QKnxNetIpStruct &other);

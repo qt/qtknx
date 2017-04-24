@@ -21,7 +21,7 @@
 
 QT_BEGIN_NAMESPACE
 
-class Q_KNX_EXPORT QKnxNetIpConfigDIB final : private QKnxNetIpStruct
+class Q_KNX_EXPORT QKnxNetIpConfigDIB final : public QKnxNetIpStruct
 {
 public:
     // 03_08_03 Management v01.06.02 AS, 2.5.7 PID_IP_CAPABILITIES (PID = 56)
@@ -70,11 +70,6 @@ public:
     AssignmentMethods assignmentMethods() const;
 
     bool isValid() const override;
-
-    using QKnxNetIpStruct::size;
-    using QKnxNetIpStruct::bytes;
-    using QKnxNetIpStruct::payload;
-    using QKnxNetIpStruct::toString;
 
 private:
     QKnxNetIpConfigDIB(const QKnxNetIpStruct &other);

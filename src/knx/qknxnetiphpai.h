@@ -20,7 +20,7 @@
 
 QT_BEGIN_NAMESPACE
 
-class Q_KNX_EXPORT QKnxNetIpHPAI final : private QKnxNetIpStruct
+class Q_KNX_EXPORT QKnxNetIpHPAI final : public QKnxNetIpStruct
 {
 public:
     QKnxNetIpHPAI() = default;
@@ -41,11 +41,6 @@ public:
     quint16 port() const;
 
     bool isValid() const override;
-
-    using QKnxNetIpStruct::size;
-    using QKnxNetIpStruct::bytes;
-    using QKnxNetIpStruct::payload;
-    using QKnxNetIpStruct::toString;
 
 private:
     QKnxNetIpHPAI(const QKnxNetIpStruct &other);

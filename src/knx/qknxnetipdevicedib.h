@@ -21,7 +21,7 @@
 
 QT_BEGIN_NAMESPACE
 
-class Q_KNX_EXPORT QKnxNetIpDeviceDIB final : private QKnxNetIpStruct
+class Q_KNX_EXPORT QKnxNetIpDeviceDIB final : public QKnxNetIpStruct
 {
 public:
     enum class MediumCode : quint8
@@ -68,11 +68,6 @@ public:
     QByteArray deviceName() const;
 
     bool isValid() const override;
-
-    using QKnxNetIpStruct::size;
-    using QKnxNetIpStruct::bytes;
-    using QKnxNetIpStruct::payload;
-    using QKnxNetIpStruct::toString;
 
 private:
     QKnxNetIpDeviceDIB(const QKnxNetIpStruct &other);

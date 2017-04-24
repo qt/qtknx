@@ -21,7 +21,7 @@
 
 QT_BEGIN_NAMESPACE
 
-class Q_KNX_EXPORT QKnxNetIpKnxAddressesDIB final : private QKnxNetIpStruct
+class Q_KNX_EXPORT QKnxNetIpKnxAddressesDIB final : public QKnxNetIpStruct
 {
 public:
     QKnxNetIpKnxAddressesDIB() = default;
@@ -50,11 +50,6 @@ public:
     }
 
     bool isValid() const override;
-
-    using QKnxNetIpStruct::size;
-    using QKnxNetIpStruct::bytes;
-    using QKnxNetIpStruct::payload;
-    using QKnxNetIpStruct::toString;
 
 private:
     QKnxNetIpKnxAddressesDIB(const QKnxNetIpStruct &other);

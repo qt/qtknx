@@ -19,7 +19,7 @@
 
 QT_BEGIN_NAMESPACE
 
-class Q_KNX_EXPORT QKnxNetIpCRD : private QKnxNetIpStruct
+class Q_KNX_EXPORT QKnxNetIpCRD : public QKnxNetIpStruct
 {
 public:
     QKnxNetIpCRD() = default;
@@ -33,11 +33,6 @@ public:
     QKnxNetIp::ConnectionTypeCode connectionTypeCode() const;
 
     bool isValid() const override;
-
-    using QKnxNetIpStruct::size;
-    using QKnxNetIpStruct::bytes;
-    using QKnxNetIpStruct::payload;
-    using QKnxNetIpStruct::toString;
 
 private:
     QKnxNetIpCRD(const QKnxNetIpStruct &other);
