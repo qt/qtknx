@@ -14,7 +14,7 @@
 
 QT_BEGIN_NAMESPACE
 
-class Q_KNX_EXPORT QKnxNetIpDisconnectRequest final : private QKnxNetIpFrame
+class Q_KNX_EXPORT QKnxNetIpDisconnectRequest final : public QKnxNetIpFrame
 {
 public:
     QKnxNetIpDisconnectRequest() = default;
@@ -26,11 +26,6 @@ public:
     QKnxNetIpHPAI controlEndpoint() const;
 
     bool isValid() const override;
-
-    using QKnxNetIpFrame::size;
-    using QKnxNetIpFrame::bytes;
-    using QKnxNetIpFrame::payload;
-    using QKnxNetIpFrame::toString;
 };
 
 QT_END_NAMESPACE

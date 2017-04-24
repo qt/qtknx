@@ -19,7 +19,7 @@
 
 QT_BEGIN_NAMESPACE
 
-class Q_KNX_EXPORT QKnxNetIpDeviceConfigurationAcknowledge final : private QKnxNetIpFrame
+class Q_KNX_EXPORT QKnxNetIpDeviceConfigurationAcknowledge final : public QKnxNetIpFrame
 {
 public:
     QKnxNetIpDeviceConfigurationAcknowledge() = default;

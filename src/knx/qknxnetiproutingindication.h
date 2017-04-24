@@ -19,7 +19,7 @@
 
 QT_BEGIN_NAMESPACE
 
-class Q_KNX_EXPORT QKnxNetIpRoutingIndication final : private QKnxNetIpFrame
+class Q_KNX_EXPORT QKnxNetIpRoutingIndication final : public QKnxNetIpFrame
 {
 public:
     QKnxNetIpRoutingIndication() = default;

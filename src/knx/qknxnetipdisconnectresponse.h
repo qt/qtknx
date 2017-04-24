@@ -14,7 +14,7 @@
 
 QT_BEGIN_NAMESPACE
 
-class Q_KNX_EXPORT QKnxNetIpDisconnectResponse final : private QKnxNetIpFrame
+class Q_KNX_EXPORT QKnxNetIpDisconnectResponse final : public QKnxNetIpFrame
 {
 public:
     QKnxNetIpDisconnectResponse() = default;
@@ -26,11 +26,6 @@ public:
     QKnxNetIp::Error status() const;
 
     bool isValid() const override;
-
-    using QKnxNetIpFrame::size;
-    using QKnxNetIpFrame::bytes;
-    using QKnxNetIpFrame::payload;
-    using QKnxNetIpFrame::toString;
 };
 
 QT_END_NAMESPACE

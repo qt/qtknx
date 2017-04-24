@@ -14,7 +14,7 @@
 
 QT_BEGIN_NAMESPACE
 
-class Q_KNX_EXPORT QKnxNetIpSearchRequest final : private QKnxNetIpFrame
+class Q_KNX_EXPORT QKnxNetIpSearchRequest final : public QKnxNetIpFrame
 {
 public:
     QKnxNetIpSearchRequest() = default;
@@ -24,11 +24,6 @@ public:
 
     bool isValid() const override;
     QKnxNetIpHPAI discoveryEndpoint() const;
-
-    using QKnxNetIpFrame::size;
-    using QKnxNetIpFrame::bytes;
-    using QKnxNetIpFrame::payload;
-    using QKnxNetIpFrame::toString;
 };
 
 QT_END_NAMESPACE

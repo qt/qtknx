@@ -16,7 +16,7 @@
 
 QT_BEGIN_NAMESPACE
 
-class Q_KNX_EXPORT QKnxNetIpSearchResponse final : private QKnxNetIpFrame
+class Q_KNX_EXPORT QKnxNetIpSearchResponse final : public QKnxNetIpFrame
 {
 public:
     QKnxNetIpSearchResponse() = default;
@@ -31,11 +31,6 @@ public:
     QKnxNetIpServiceFamiliesDIB supportedFamilies() const;
 
     bool isValid() const override;
-
-    using QKnxNetIpFrame::size;
-    using QKnxNetIpFrame::bytes;
-    using QKnxNetIpFrame::payload;
-    using QKnxNetIpFrame::toString;
 };
 
 QT_END_NAMESPACE

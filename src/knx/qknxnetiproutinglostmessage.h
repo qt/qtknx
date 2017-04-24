@@ -19,7 +19,7 @@
 
 QT_BEGIN_NAMESPACE
 
-class Q_KNX_EXPORT QKnxNetIpRoutingLostMessage final : private QKnxNetIpFrame
+class Q_KNX_EXPORT QKnxNetIpRoutingLostMessage final : public QKnxNetIpFrame
 {
 public:
     QKnxNetIpRoutingLostMessage() = default;

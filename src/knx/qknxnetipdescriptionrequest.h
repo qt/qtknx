@@ -14,7 +14,7 @@
 
 QT_BEGIN_NAMESPACE
 
-class Q_KNX_EXPORT QKnxNetIpDescriptionRequest final : private QKnxNetIpFrame
+class Q_KNX_EXPORT QKnxNetIpDescriptionRequest final : public QKnxNetIpFrame
 {
 public:
     QKnxNetIpDescriptionRequest() = default;
@@ -24,11 +24,6 @@ public:
 
     bool isValid() const override;
     QKnxNetIpHPAI controlEndpoint() const;
-
-    using QKnxNetIpFrame::size;
-    using QKnxNetIpFrame::bytes;
-    using QKnxNetIpFrame::payload;
-    using QKnxNetIpFrame::toString;
 };
 
 QT_END_NAMESPACE

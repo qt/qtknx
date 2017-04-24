@@ -19,7 +19,7 @@
 
 QT_BEGIN_NAMESPACE
 
-class Q_KNX_EXPORT QKnxNetIpTunnelingRequest final : private QKnxNetIpFrame
+class Q_KNX_EXPORT QKnxNetIpTunnelingRequest final : public QKnxNetIpFrame
 {
 public:
     QKnxNetIpTunnelingRequest() = default;
