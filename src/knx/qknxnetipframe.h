@@ -14,6 +14,9 @@ QT_BEGIN_NAMESPACE
 
 using QKnxNetIpFrame = QKnxNetIpPackage<quint16, QKnxNetIpFrameHeader>;
 
+Q_KNX_EXPORT QDebug operator<<(QDebug debug, const QKnxNetIpFrame &package);
+Q_KNX_EXPORT QDataStream &operator<<(QDataStream &out, const QKnxNetIpFrame &package);
+
 QT_END_NAMESPACE
 
 #endif
