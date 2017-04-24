@@ -57,7 +57,7 @@ public:
                        Capabilities capabilitys,
                        AssignmentMethods methods);
 
-    template<typename T> static QKnxNetIpConfigDIB fromBytes(const T &bytes, qint32 index)
+    template <typename T> static QKnxNetIpConfigDIB fromBytes(const T &bytes, qint32 index)
     {
         return QKnxNetIpStruct::fromBytes(bytes, index);
     }

@@ -29,7 +29,7 @@ public:
     QKnxNetIpHPAI(const QHostAddress &address, quint16 port);
     QKnxNetIpHPAI(QKnxNetIp::HostProtocolCode hpc, const QHostAddress &address, quint16 port);
 
-    template<typename T> static QKnxNetIpHPAI fromBytes(const T &bytes, qint32 index)
+    template <typename T> static QKnxNetIpHPAI fromBytes(const T &bytes, qint32 index)
     {
         return QKnxNetIpStruct::fromBytes(bytes, index);
     }
