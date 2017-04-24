@@ -25,7 +25,7 @@ public:
     QKnxNetIpCRI() = default;
     ~QKnxNetIpCRI() override = default;
 
-    template <typename T> static QKnxNetIpCRI fromBytes(const T &bytes, qint32 index)
+    template <typename T> static QKnxNetIpCRI fromBytes(const T &bytes, quint16 index)
     {
         return QKnxNetIpStruct::fromBytes(bytes, index);
     }

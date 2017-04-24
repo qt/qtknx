@@ -41,7 +41,7 @@ public:
     QKnxNetIpServiceFamiliesDIB(const QMap<ServiceFamilieId, quint8> &families);
     QKnxNetIpServiceFamiliesDIB(const QVector<ServiceFamilieId> &ids, const QVector<quint8> &versions);
 
-    template <typename T> static QKnxNetIpServiceFamiliesDIB fromBytes(const T &bytes, qint32 index)
+    template <typename T> static QKnxNetIpServiceFamiliesDIB fromBytes(const T &bytes, quint16 index)
     {
         return QKnxNetIpStruct::fromBytes(bytes, index);
     }

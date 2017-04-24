@@ -29,7 +29,7 @@ public:
     QKnxNetIpManufacturerDIB(quint16 manufacturerId, const QByteArray &manufacturerData);
     QKnxNetIpManufacturerDIB(quint16 manufacturerId, const QVector<quint8> &manufacturerData);
 
-    template <typename T> static QKnxNetIpManufacturerDIB fromBytes(const T &bytes, qint32 index)
+    template <typename T> static QKnxNetIpManufacturerDIB fromBytes(const T &bytes, quint16 index)
     {
         return QKnxNetIpStruct::fromBytes(bytes, index);
     }
