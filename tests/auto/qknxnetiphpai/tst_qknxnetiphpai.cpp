@@ -41,15 +41,35 @@ private slots:
 
     void testDebugStream()
     {
-        // TODO: Implement.
+        struct DebugHandler
+        {
+            explicit DebugHandler(QtMessageHandler newMessageHandler)
+                : oldMessageHandler(qInstallMessageHandler(newMessageHandler))
+            {}
+            ~DebugHandler()
+            {
+                qInstallMessageHandler(oldMessageHandler);
+            }
+            QtMessageHandler oldMessageHandler;
+        } _(myMessageHandler);
+
+        qDebug() << QKnxNetIpHPAI();
+        QCOMPARE(s_msg, QString::fromLatin1("0x1nv4l1d"));
+
+        qDebug() << QKnxNetIpHPAI(QKnxNetIp::HostProtocolCode::IpV4_Udp,
+                                  QHostAddress::LocalHost, 3671);
+        QCOMPARE(s_msg, QString::fromLatin1("0x08017f0000010e57"));
     }
 
     void testDataStream()
     {
-        // TODO: Implement.
+        QByteArray byteArray;
+        QDataStream out(&byteArray, QIODevice::WriteOnly);
+        out << QKnxNetIpHPAI(QKnxNetIp::HostProtocolCode::IpV4_Udp,
+                             QHostAddress::LocalHost, 3671);
+        QCOMPARE(byteArray, QByteArray::fromHex("08017f0000010e57"));
     }
 };
-
 QTEST_APPLESS_MAIN(tst_QKnxNetIpHPAI)
 
 #include "tst_qknxnetiphpai.moc"

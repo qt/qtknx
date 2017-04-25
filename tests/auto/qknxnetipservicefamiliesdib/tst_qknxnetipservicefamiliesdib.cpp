@@ -9,6 +9,12 @@
 #include <QtKnx/qknxnetipservicefamiliesdib.h>
 #include <QtTest/qtest.h>
 
+static QString s_msg;
+static void myMessageHandler(QtMsgType, const QMessageLogContext &, const QString &msg)
+{
+    s_msg = msg;
+}
+
 class tst_QKnxNetIpServiceFamiliesDIB : public QObject
 {
     Q_OBJECT
@@ -19,14 +25,8 @@ private slots:
     void testConstructorWithTwoArguments();
     void testConstructorWithThreeArguments();
     void testAddFunctions();
-    void testDebugStream()
-    {
-        // TODO: Implement.
-    }
-    void testDataStream()
-    {
-        // TODO: Implement.
-    }
+    void testDebugStream();
+    void testDataStream();
 };
 
 void tst_QKnxNetIpServiceFamiliesDIB::testDefaultConstructor()
@@ -159,6 +159,94 @@ void tst_QKnxNetIpServiceFamiliesDIB::testAddFunctions()
     QCOMPARE(families.descriptionTypeCode(),
         QKnxNetIp::DescriptionTypeCode::SupportedServiceFamilies);
 }
+
+void tst_QKnxNetIpServiceFamiliesDIB::testDebugStream()
+{
+    struct DebugHandler
+    {
+        explicit DebugHandler(QtMessageHandler newMessageHandler)
+            : oldMessageHandler(qInstallMessageHandler(newMessageHandler))
+        {}
+        ~DebugHandler()
+        {
+            qInstallMessageHandler(oldMessageHandler);
+        }
+        QtMessageHandler oldMessageHandler;
+    } _(myMessageHandler);
+
+    qDebug() << QKnxNetIpServiceFamiliesDIB();
+    QCOMPARE(s_msg, QString::fromLatin1("0x0202"));
+
+    QMap<QKnxNetIpServiceFamiliesDIB::ServiceFamilieId, quint8> families;
+    families.insert(QKnxNetIpServiceFamiliesDIB::ServiceFamilieId::Core, 9);
+    families.insert(QKnxNetIpServiceFamiliesDIB::ServiceFamilieId::DeviceManagement, 10);
+    families.insert(QKnxNetIpServiceFamiliesDIB::ServiceFamilieId::IpTunneling, 11);
+    families.insert(QKnxNetIpServiceFamiliesDIB::ServiceFamilieId::IpRouting, 12);
+    families.insert(QKnxNetIpServiceFamiliesDIB::ServiceFamilieId::RemoteLogging, 13);
+    families.insert(QKnxNetIpServiceFamiliesDIB::ServiceFamilieId::RemoteConfigAndDiagnosis, 14);
+    families.insert(QKnxNetIpServiceFamiliesDIB::ServiceFamilieId::ObjectServer, 15);
+
+    qDebug() << QKnxNetIpServiceFamiliesDIB(families);
+    QCOMPARE(s_msg, QString::fromLatin1("0x10020209030a040b050c060d070e080f"));
+
+    qDebug() << QKnxNetIpServiceFamiliesDIB(QKnxNetIpServiceFamiliesDIB::ServiceFamilieId::Core, 10);
+    QCOMPARE(s_msg, QString::fromLatin1("0x0402020a"));
+
+    QVector<QKnxNetIpServiceFamiliesDIB::ServiceFamilieId> ids;
+    ids.append(QKnxNetIpServiceFamiliesDIB::ServiceFamilieId::Core);
+    ids.append(QKnxNetIpServiceFamiliesDIB::ServiceFamilieId::DeviceManagement);
+    ids.append(QKnxNetIpServiceFamiliesDIB::ServiceFamilieId::IpTunneling);
+    ids.append(QKnxNetIpServiceFamiliesDIB::ServiceFamilieId::IpRouting);
+
+    qDebug() << QKnxNetIpServiceFamiliesDIB(ids, { { 9, 10, 11, 12 } });
+    QCOMPARE(s_msg, QString::fromLatin1("0x0a020209030a040b050c"));
+}
+
+void tst_QKnxNetIpServiceFamiliesDIB::testDataStream()
+{
+    {
+        QByteArray byteArray;
+        QDataStream out(&byteArray, QIODevice::WriteOnly);
+        out << QKnxNetIpServiceFamiliesDIB();
+        QCOMPARE(byteArray, QByteArray::fromHex("0202"));
+    }
+
+    {
+        QMap<QKnxNetIpServiceFamiliesDIB::ServiceFamilieId, quint8> families;
+        families.insert(QKnxNetIpServiceFamiliesDIB::ServiceFamilieId::Core, 9);
+        families.insert(QKnxNetIpServiceFamiliesDIB::ServiceFamilieId::DeviceManagement, 10);
+        families.insert(QKnxNetIpServiceFamiliesDIB::ServiceFamilieId::IpTunneling, 11);
+        families.insert(QKnxNetIpServiceFamiliesDIB::ServiceFamilieId::IpRouting, 12);
+        families.insert(QKnxNetIpServiceFamiliesDIB::ServiceFamilieId::RemoteLogging, 13);
+        families.insert(QKnxNetIpServiceFamiliesDIB::ServiceFamilieId::RemoteConfigAndDiagnosis, 14);
+        families.insert(QKnxNetIpServiceFamiliesDIB::ServiceFamilieId::ObjectServer, 15);
+        QByteArray byteArray;
+        QDataStream out(&byteArray, QIODevice::WriteOnly);
+        out << QKnxNetIpServiceFamiliesDIB(families);
+        QCOMPARE(byteArray, QByteArray::fromHex("10020209030A040B050C060D070E080F"));
+    }
+
+    {
+        QByteArray byteArray;
+        QDataStream out(&byteArray, QIODevice::WriteOnly);
+        out << QKnxNetIpServiceFamiliesDIB(QKnxNetIpServiceFamiliesDIB::ServiceFamilieId::Core, 10);
+        QCOMPARE(byteArray, QByteArray::fromHex("0402020A"));
+    }
+
+    {
+        QVector<QKnxNetIpServiceFamiliesDIB::ServiceFamilieId> ids;
+        ids.append(QKnxNetIpServiceFamiliesDIB::ServiceFamilieId::Core);
+        ids.append(QKnxNetIpServiceFamiliesDIB::ServiceFamilieId::DeviceManagement);
+        ids.append(QKnxNetIpServiceFamiliesDIB::ServiceFamilieId::IpTunneling);
+        ids.append(QKnxNetIpServiceFamiliesDIB::ServiceFamilieId::IpRouting);
+
+        QByteArray byteArray;
+        QDataStream out(&byteArray, QIODevice::WriteOnly);
+        out << QKnxNetIpServiceFamiliesDIB(ids, { { 9, 10, 11, 12 } });
+        QCOMPARE(byteArray, QByteArray::fromHex("0A020209030A040B050C"));
+    }
+}
+
 QTEST_APPLESS_MAIN(tst_QKnxNetIpServiceFamiliesDIB)
 
 #include "tst_qknxnetipservicefamiliesdib.moc"

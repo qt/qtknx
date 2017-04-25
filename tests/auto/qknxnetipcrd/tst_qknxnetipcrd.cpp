@@ -9,6 +9,12 @@
 #include <QtKnx/qknxnetipcrd.h>
 #include <QtTest/qtest.h>
 
+static QString s_msg;
+static void myMessageHandler(QtMsgType, const QMessageLogContext &, const QString &msg)
+{
+    s_msg = msg;
+}
+
 class tst_QKnxNetIpCRD : public QObject
 {
     Q_OBJECT
@@ -19,14 +25,8 @@ private slots:
     {
         // TODO: Implement.
     }
-    void testDebugStream()
-    {
-        // TODO: Implement.
-    }
-    void testDataStream()
-    {
-        // TODO: Implement.
-    }
+    void testDebugStream();
+    void testDataStream();
 };
 
 void tst_QKnxNetIpCRD::testDefaultConstructor()
@@ -40,6 +40,29 @@ void tst_QKnxNetIpCRD::testDefaultConstructor()
     QCOMPARE(crd.toString(), QString::fromLatin1("Total size { 0x00 }, Code { 0x00 }, "
         "Bytes {  }"));
     QCOMPARE(quint8(crd.connectionTypeCode()), quint8(0));
+}
+
+void tst_QKnxNetIpCRD::testDebugStream()
+{
+    struct DebugHandler
+    {
+        explicit DebugHandler(QtMessageHandler newMessageHandler)
+            : oldMessageHandler(qInstallMessageHandler(newMessageHandler))
+        {}
+        ~DebugHandler()
+        {
+            qInstallMessageHandler(oldMessageHandler);
+        }
+        QtMessageHandler oldMessageHandler;
+    } _(myMessageHandler);
+
+    qDebug() << QKnxNetIpCRD();
+    QCOMPARE(s_msg, QString::fromLatin1("0x1nv4l1d"));
+}
+
+void tst_QKnxNetIpCRD::testDataStream()
+{
+    // To do for constructor that are not default.
 }
 
 QTEST_APPLESS_MAIN(tst_QKnxNetIpCRD)

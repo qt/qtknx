@@ -9,6 +9,12 @@
 #include <QtKnx/qknxnetipknxaddressesdib.h>
 #include <QtTest/qtest.h>
 
+static QString s_msg;
+static void myMessageHandler(QtMsgType, const QMessageLogContext &, const QString &msg)
+{
+    s_msg = msg;
+}
+
 class tst_QKnxNetIpKnxAddressesDIB : public QObject
 {
     Q_OBJECT
@@ -18,14 +24,8 @@ private slots:
     void testConstructorWithOneArgument();
     void testConstructorWithTwoArguments();
     void testIndividualAddresses();
-    void testDebugStream()
-    {
-        // TODO: Implement.
-    }
-    void testDataStream()
-    {
-        // TODO: Implement.
-    }
+    void testDebugStream();
+    void testDataStream();
 };
 
 void tst_QKnxNetIpKnxAddressesDIB::testDefaultConstructor()
@@ -86,6 +86,56 @@ void tst_QKnxNetIpKnxAddressesDIB::testIndividualAddresses()
     QCOMPARE(retrievedAddresses[0].toString(), qknxAddresses[0].toString());
     QCOMPARE(retrievedAddresses[1].toString(), qknxAddresses[1].toString());
     QCOMPARE(retrievedAddresses[2].toString(), qknxAddresses[2].toString());
+}
+
+void tst_QKnxNetIpKnxAddressesDIB::testDebugStream()
+{
+    struct DebugHandler
+    {
+        explicit DebugHandler(QtMessageHandler newMessageHandler)
+            : oldMessageHandler(qInstallMessageHandler(newMessageHandler))
+        {}
+        ~DebugHandler()
+        {
+            qInstallMessageHandler(oldMessageHandler);
+        }
+        QtMessageHandler oldMessageHandler;
+    } _(myMessageHandler);
+
+    qDebug() << QKnxNetIpKnxAddressesDIB();
+    QCOMPARE(s_msg, QString::fromLatin1("0x1nv4l1d"));
+
+    qDebug() << QKnxNetIpKnxAddressesDIB(QKnxAddress::createIndividual(1, 1, 1));
+    QCOMPARE(s_msg, QString::fromLatin1("0x04051101"));
+
+    QVector<QKnxAddress> qknxAddresses;
+    qknxAddresses.append(QKnxAddress::createIndividual(1, 1, 0));
+    qknxAddresses.append(QKnxAddress::createIndividual(1, 2, 5));
+    qknxAddresses.append(QKnxAddress::createIndividual(2, 3, 8));
+    qDebug() << QKnxNetIpKnxAddressesDIB(qknxAddresses);
+    QCOMPARE(s_msg, QString::fromLatin1("0x0805110012052308"));
+}
+
+void tst_QKnxNetIpKnxAddressesDIB::testDataStream()
+{
+    {
+        QByteArray byteArray;
+        QDataStream out(&byteArray, QIODevice::WriteOnly);
+        out << QKnxNetIpKnxAddressesDIB(QKnxAddress::createIndividual(1, 1, 1));
+        QCOMPARE(byteArray, QByteArray::fromHex("04051101"));
+    }
+
+    {
+        QVector<QKnxAddress> qknxAddresses;
+        qknxAddresses.append(QKnxAddress::createIndividual(1, 1, 0));
+        qknxAddresses.append(QKnxAddress::createIndividual(1, 2, 5));
+        qknxAddresses.append(QKnxAddress::createIndividual(2, 3, 8));
+
+        QByteArray byteArray;
+        QDataStream out(&byteArray, QIODevice::WriteOnly);
+        out << QKnxNetIpKnxAddressesDIB(qknxAddresses);
+        QCOMPARE(byteArray, QByteArray::fromHex("0805110012052308"));
+    }
 }
 
 QTEST_APPLESS_MAIN(tst_QKnxNetIpKnxAddressesDIB)

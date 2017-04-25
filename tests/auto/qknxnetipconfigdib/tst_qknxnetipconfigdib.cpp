@@ -9,6 +9,12 @@
 #include <QtKnx/qknxnetipconfigdib.h>
 #include <QtTest/qtest.h>
 
+static QString s_msg;
+static void myMessageHandler(QtMsgType, const QMessageLogContext &, const QString &msg)
+{
+    s_msg = msg;
+}
+
 class tst_QKnxNetIpConfigDIB : public QObject
 {
     Q_OBJECT
@@ -17,14 +23,8 @@ private slots:
     void testDefaultConstructor();
     void testConstructorWithFourArguments();
     void testConstructorWithFiveArguments();
-    void testDebugStream()
-    {
-        // TODO: Implement.
-    }
-    void testDataStream()
-    {
-        // TODO: Implement.
-    }
+    void testDebugStream();
+    void testDataStream();
 };
 
 void tst_QKnxNetIpConfigDIB::testDefaultConstructor()
@@ -99,6 +99,68 @@ void tst_QKnxNetIpConfigDIB::testConstructorWithFiveArguments()
     QCOMPARE(configDIB.assignmentMethods(), QKnxNetIpConfigDIB::AssignmentMethod::Manual);
 }
 
+void tst_QKnxNetIpConfigDIB::testDebugStream()
+{
+    struct DebugHandler
+    {
+        explicit DebugHandler(QtMessageHandler newMessageHandler)
+            : oldMessageHandler(qInstallMessageHandler(newMessageHandler))
+        {}
+        ~DebugHandler()
+        {
+            qInstallMessageHandler(oldMessageHandler);
+        }
+        QtMessageHandler oldMessageHandler;
+    } _(myMessageHandler);
+
+    qDebug() << QKnxNetIpConfigDIB();
+    QCOMPARE(s_msg, QString::fromLatin1("0x1nv4l1d"));
+
+    QNetworkAddressEntry addressEntry;
+    addressEntry.setIp(QHostAddress("192.168.2.12"));
+    addressEntry.setNetmask(QHostAddress("255.255.255.0"));
+    qDebug() << QKnxNetIpConfigDIB(addressEntry,
+                                   QHostAddress("192.168.2.1"),
+                                   QKnxNetIpConfigDIB::Capability::AutoIp,
+                                   QKnxNetIpConfigDIB::AssignmentMethod::Manual);
+    QCOMPARE(s_msg, QString::fromLatin1("0x1003c0a8020cffffff00c0a802010201"));
+
+    qDebug() << QKnxNetIpConfigDIB(QHostAddress("192.168.2.12"),
+                                   QHostAddress("255.255.255.0"),
+                                   QHostAddress("192.168.2.1"),
+                                   QKnxNetIpConfigDIB::Capability::AutoIp,
+                                   QKnxNetIpConfigDIB::AssignmentMethod::Manual);
+    QCOMPARE(s_msg, QString::fromLatin1("0x1003c0a8020cffffff00c0a802010201"));
+
+}
+
+void tst_QKnxNetIpConfigDIB::testDataStream()
+{
+    {
+        QNetworkAddressEntry addressEntry;
+        addressEntry.setIp(QHostAddress("192.168.2.12"));
+        addressEntry.setNetmask(QHostAddress("255.255.255.0"));
+
+        QByteArray byteArray;
+        QDataStream out(&byteArray, QIODevice::WriteOnly);
+        out << QKnxNetIpConfigDIB(addressEntry,
+                                  QHostAddress("192.168.2.1"),
+                                  QKnxNetIpConfigDIB::Capability::AutoIp,
+                                  QKnxNetIpConfigDIB::AssignmentMethod::Manual);
+        QCOMPARE(byteArray, QByteArray::fromHex("1003C0A8020CFFFFFF00C0A802010201"));
+    }
+
+    {
+        QByteArray byteArray;
+        QDataStream out(&byteArray, QIODevice::WriteOnly);
+        out << QKnxNetIpConfigDIB(QHostAddress("192.168.2.12"),
+                                  QHostAddress("255.255.255.0"),
+                                  QHostAddress("192.168.2.1"),
+                                  QKnxNetIpConfigDIB::Capability::AutoIp,
+                                  QKnxNetIpConfigDIB::AssignmentMethod::Manual);
+        QCOMPARE(byteArray, QByteArray::fromHex("1003C0A8020CFFFFFF00C0A802010201"));
+    }
+}
 QTEST_APPLESS_MAIN(tst_QKnxNetIpConfigDIB)
 
 #include "tst_qknxnetipconfigdib.moc"

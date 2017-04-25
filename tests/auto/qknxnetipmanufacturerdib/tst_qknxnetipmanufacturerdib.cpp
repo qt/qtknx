@@ -9,6 +9,12 @@
 #include <QtKnx/qknxnetipmanufacturerdib.h>
 #include <QtTest/qtest.h>
 
+static QString s_msg;
+static void myMessageHandler(QtMsgType, const QMessageLogContext &, const QString &msg)
+{
+    s_msg = msg;
+}
+
 class tst_QKnxNetIpManufacturerDIB : public QObject
 {
     Q_OBJECT
@@ -18,14 +24,8 @@ private slots:
     void testConstructorWithOneArguments();
     void testConstructorWithByteArrayDataArguments();
     void testConstructorWithVectorDataArguments();
-    void testDebugStream()
-    {
-        // TODO: Implement.
-    }
-    void testDataStream()
-    {
-        // TODO: Implement.
-    }
+    void testDebugStream();
+    void testDataStream();
 };
 
 void tst_QKnxNetIpManufacturerDIB::testDefaultConstructor()
@@ -90,6 +90,57 @@ void tst_QKnxNetIpManufacturerDIB::testConstructorWithVectorDataArguments()
     QCOMPARE(manufacturerDIB.manufacturerData<QByteArray>().size(), data.size());
     QCOMPARE(manufacturerDIB.manufacturerData< QVector<quint8> >().size(), data.size());
     QCOMPARE(manufacturerDIB.manufacturerData< QVector<quint8> >(), data);
+}
+
+void tst_QKnxNetIpManufacturerDIB::testDebugStream()
+{
+    struct DebugHandler
+    {
+        explicit DebugHandler(QtMessageHandler newMessageHandler)
+            : oldMessageHandler(qInstallMessageHandler(newMessageHandler))
+        {}
+        ~DebugHandler()
+        {
+            qInstallMessageHandler(oldMessageHandler);
+        }
+        QtMessageHandler oldMessageHandler;
+    } _(myMessageHandler);
+
+    qDebug() << QKnxNetIpManufacturerDIB();
+    QCOMPARE(s_msg, QString::fromLatin1("0x1nv4l1d"));
+
+    qDebug() << QKnxNetIpManufacturerDIB(65535);
+    QCOMPARE(s_msg, QString::fromLatin1("0x04feffff"));
+
+    qDebug() << QKnxNetIpManufacturerDIB(65535, QByteArray::fromHex("0102030405"));
+    QCOMPARE(s_msg, QString::fromLatin1("0x09feffff0102030405"));
+
+    qDebug() << QKnxNetIpManufacturerDIB(65535, { { 1, 2, 3, 4, 5 } });
+    QCOMPARE(s_msg, QString::fromLatin1("0x09feffff0102030405"));
+}
+
+void tst_QKnxNetIpManufacturerDIB::testDataStream()
+{
+    {
+        QByteArray byteArray;
+        QDataStream out(&byteArray, QIODevice::WriteOnly);
+        out << QKnxNetIpManufacturerDIB(65535);
+        QCOMPARE(byteArray, QByteArray::fromHex("04FEFFFF"));
+    }
+
+    {
+        QByteArray byteArray;
+        QDataStream out(&byteArray, QIODevice::WriteOnly);
+        out << QKnxNetIpManufacturerDIB(65535, QByteArray::fromHex("0102030405"));
+        QCOMPARE(byteArray, QByteArray::fromHex("09FEFFFF0102030405"));
+    }
+
+    {
+        QByteArray byteArray;
+        QDataStream out(&byteArray, QIODevice::WriteOnly);
+        out << QKnxNetIpManufacturerDIB(65535, { { 1, 2, 3, 4, 5 } });
+        QCOMPARE(byteArray, QByteArray::fromHex("09FEFFFF0102030405"));
+    }
 }
 
 QTEST_APPLESS_MAIN(tst_QKnxNetIpManufacturerDIB)
