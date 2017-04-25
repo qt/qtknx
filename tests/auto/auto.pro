@@ -1,3 +1,4 @@
 TEMPLATE = subdirs
 SUBDIRS += cmake qknxaddress qknxadditionalinfo qknxnetipstructure qknxnetipdevicedib qknxnetiphpai \
-    qknxnetipdescriptionresponse
+           qknxnetipconfigdib qknxnetipcurrentconfigdib qknxnetipservicefamiliesdib \
+           qknxnetipknxaddressesdib qknxnetipmanufacturerdib qknxnetipdescriptionresponse

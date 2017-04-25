@@ -34,7 +34,7 @@ public:
         ObjectServer = 0x08
     };
 
-    QKnxNetIpServiceFamiliesDIB() = default;
+    QKnxNetIpServiceFamiliesDIB();
     ~QKnxNetIpServiceFamiliesDIB() override = default;
 
     QKnxNetIpServiceFamiliesDIB(ServiceFamilieId id, quint8 versions);

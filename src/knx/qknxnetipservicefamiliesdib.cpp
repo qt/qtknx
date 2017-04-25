@@ -12,6 +12,10 @@ QT_BEGIN_NAMESPACE
 // 7.5.4.3 Supported service families DIB
 // The service family IDs shall be the high octet of the Service Type ID
 
+QKnxNetIpServiceFamiliesDIB::QKnxNetIpServiceFamiliesDIB()
+    : QKnxNetIpStruct(quint8(QKnxNetIp::DescriptionTypeCode::SupportedServiceFamilies))
+{}
+
 QKnxNetIpServiceFamiliesDIB::QKnxNetIpServiceFamiliesDIB(const QKnxNetIpStruct &other)
     : QKnxNetIpStruct(other)
 {}
@@ -42,9 +46,9 @@ QKnxNetIp::DescriptionTypeCode QKnxNetIpServiceFamiliesDIB::descriptionTypeCode(
 
 void QKnxNetIpServiceFamiliesDIB::add(ServiceFamilieId id, quint8 versions)
 {
-    QKnxNetIpPayload payload;
-    payload.appendBytes<std::array<quint8, 2>, 2>(std::array<quint8, 2>{ { quint8(id), versions } });
-    setPayload(payload);
+    auto load = payload();
+    load.appendBytes<std::array<quint8, 2>, 2>(std::array<quint8, 2>{ { quint8(id), versions } });
+    setPayload(load);
 }
 
 void QKnxNetIpServiceFamiliesDIB::add(const QMap<ServiceFamilieId, quint8> &families)
@@ -52,7 +56,7 @@ void QKnxNetIpServiceFamiliesDIB::add(const QMap<ServiceFamilieId, quint8> &fami
     int i = 0;
     std::vector<quint8> additionalData(families.size() * 2, 0u);
     for (auto it = std::begin(families); it != std::end(families); ++it, ++i)
-        additionalData[i] = quint8(it.key()), additionalData[i + 1] = it.value();
+        additionalData[i] = quint8(it.key()), additionalData[i += 1] = it.value();
 
     auto load = payload();
     load.appendBytes(additionalData);
@@ -65,8 +69,9 @@ void QKnxNetIpServiceFamiliesDIB::add(const QVector<ServiceFamilieId> &ids, cons
         return;
 
     std::vector<quint8> additionalData(ids.size() * 2, 0u);
-    for (int i = 0; i < ids.size(); ++i)
-        additionalData[i] = quint8(ids[i]), additionalData[i + 1] = versions[i];
+    int j = 0;
+    for (int i = 0; i < ids.size(); ++i, ++j)
+        additionalData[j] = quint8(ids[i]), additionalData[j += 1] = versions[i];
 
     auto load = payload();
     load.appendBytes(additionalData);
