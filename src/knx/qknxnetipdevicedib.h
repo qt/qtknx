@@ -59,7 +59,7 @@ public:
         return QKnxNetIpStruct::fromBytes(bytes, index);
     }
 
-    QKnxNetIp::DescriptionTypeCode descriptionTypeCode() const;
+    QKnxNetIp::DescriptionType descriptionType() const;
     QKnxAddress individualAddress() const;
     quint16 projectInstallationIdentfier() const;
     QByteArray serialNumber() const;

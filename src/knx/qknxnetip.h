@@ -14,13 +14,7 @@ QT_BEGIN_NAMESPACE
 
 struct Q_KNX_EXPORT QKnxNetIp final
 {
-    enum class HostProtocolCode : quint8
-    {
-        IpV4_Udp = 0x01,
-        IpV4_Tcp = 0x02
-    };
-
-    enum class ConnectionTypeCode : quint8
+    enum class ConnectionType : quint8
     {
         DeviceManagementConnection = 0x03,
         TunnelConnection = 0x04,
@@ -29,7 +23,7 @@ struct Q_KNX_EXPORT QKnxNetIp final
         ObjectServerConnection = 0x08
     };
 
-    enum class DescriptionTypeCode : quint8
+    enum class DescriptionType : quint8
     {
         DeviceInfo = 0x01,
         SupportedServiceFamilies = 0x02,
@@ -85,9 +79,8 @@ struct Q_KNX_EXPORT QKnxNetIp final
         IpFault = 0x01
     };
 };
-Q_DECLARE_TYPEINFO(QKnxNetIp::HostProtocolCode, Q_PRIMITIVE_TYPE);
-Q_DECLARE_TYPEINFO(QKnxNetIp::ConnectionTypeCode, Q_PRIMITIVE_TYPE);
-Q_DECLARE_TYPEINFO(QKnxNetIp::DescriptionTypeCode, Q_PRIMITIVE_TYPE);
+Q_DECLARE_TYPEINFO(QKnxNetIp::ConnectionType, Q_PRIMITIVE_TYPE);
+Q_DECLARE_TYPEINFO(QKnxNetIp::DescriptionType, Q_PRIMITIVE_TYPE);
 Q_DECLARE_TYPEINFO(QKnxNetIp::ServiceType, Q_PRIMITIVE_TYPE);
 Q_DECLARE_TYPEINFO(QKnxNetIp::Error, Q_PRIMITIVE_TYPE);
 Q_DECLARE_TYPEINFO(QKnxNetIp::DeviceState, Q_PRIMITIVE_TYPE);

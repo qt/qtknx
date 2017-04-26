@@ -21,7 +21,7 @@ QKnxNetIpConfigDIB::QKnxNetIpConfigDIB(const QNetworkAddressEntry &addressEntry,
 
 QKnxNetIpConfigDIB::QKnxNetIpConfigDIB(const QHostAddress &ip, const QHostAddress &subnetMask,
         const QHostAddress &gateway, Capabilities caps, AssignmentMethods methods)
-    : QKnxNetIpStruct(quint8(QKnxNetIp::DescriptionTypeCode::IpConfiguration))
+    : QKnxNetIpStruct(quint8(QKnxNetIp::DescriptionType::IpConfiguration))
 {
     // Capabilities are limited and at least one assignment method shall be enabled.
     if (caps > 0x07 || (methods < 0x01 || methods > 0x15))
@@ -36,9 +36,9 @@ QKnxNetIpConfigDIB::QKnxNetIpConfigDIB(const QHostAddress &ip, const QHostAddres
     setPayload(payload);
 }
 
-QKnxNetIp::DescriptionTypeCode QKnxNetIpConfigDIB::descriptionTypeCode() const
+QKnxNetIp::DescriptionType QKnxNetIpConfigDIB::descriptionType() const
 {
-    return QKnxNetIp::DescriptionTypeCode(code());
+    return QKnxNetIp::DescriptionType(code());
 }
 
 QHostAddress QKnxNetIpConfigDIB::ipAddress() const
@@ -69,7 +69,7 @@ QKnxNetIpConfigDIB::AssignmentMethods QKnxNetIpConfigDIB::assignmentMethods() co
 bool QKnxNetIpConfigDIB::isValid() const
 {
     return QKnxNetIpStruct::isValid() && size() == 16
-        && descriptionTypeCode() == QKnxNetIp::DescriptionTypeCode::IpConfiguration;
+        && descriptionType() == QKnxNetIp::DescriptionType::IpConfiguration;
 }
 
 QT_END_NAMESPACE

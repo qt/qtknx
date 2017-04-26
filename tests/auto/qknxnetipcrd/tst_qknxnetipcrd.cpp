@@ -39,7 +39,7 @@ void tst_QKnxNetIpCRD::testDefaultConstructor()
     QCOMPARE(crd.payload().bytes<QByteArray>(), QByteArray(""));
     QCOMPARE(crd.toString(), QString::fromLatin1("Total size { 0x00 }, Code { 0x00 }, "
         "Bytes {  }"));
-    QCOMPARE(quint8(crd.connectionTypeCode()), quint8(0));
+    QCOMPARE(quint8(crd.connectionType()), quint8(0));
 }
 
 void tst_QKnxNetIpCRD::testDebugStream()

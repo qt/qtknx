@@ -13,7 +13,7 @@ QT_BEGIN_NAMESPACE
 // The service family IDs shall be the high octet of the Service Type ID
 
 QKnxNetIpServiceFamiliesDIB::QKnxNetIpServiceFamiliesDIB()
-    : QKnxNetIpStruct(quint8(QKnxNetIp::DescriptionTypeCode::SupportedServiceFamilies))
+    : QKnxNetIpStruct(quint8(QKnxNetIp::DescriptionType::SupportedServiceFamilies))
 {}
 
 QKnxNetIpServiceFamiliesDIB::QKnxNetIpServiceFamiliesDIB(const QKnxNetIpStruct &other)
@@ -21,27 +21,27 @@ QKnxNetIpServiceFamiliesDIB::QKnxNetIpServiceFamiliesDIB(const QKnxNetIpStruct &
 {}
 
 QKnxNetIpServiceFamiliesDIB::QKnxNetIpServiceFamiliesDIB(ServiceFamilieId id, quint8 versions)
-    : QKnxNetIpStruct(quint8(QKnxNetIp::DescriptionTypeCode::SupportedServiceFamilies))
+    : QKnxNetIpStruct(quint8(QKnxNetIp::DescriptionType::SupportedServiceFamilies))
 {
     add(id, versions);
 }
 
 QKnxNetIpServiceFamiliesDIB::QKnxNetIpServiceFamiliesDIB(const QMap<ServiceFamilieId, quint8> &families)
-    : QKnxNetIpStruct(quint8(QKnxNetIp::DescriptionTypeCode::SupportedServiceFamilies))
+    : QKnxNetIpStruct(quint8(QKnxNetIp::DescriptionType::SupportedServiceFamilies))
 {
     add(families);
 }
 
 QKnxNetIpServiceFamiliesDIB::QKnxNetIpServiceFamiliesDIB(const QVector<ServiceFamilieId> &ids,
         const QVector<quint8> &versions)
-    : QKnxNetIpStruct(quint8(QKnxNetIp::DescriptionTypeCode::SupportedServiceFamilies))
+    : QKnxNetIpStruct(quint8(QKnxNetIp::DescriptionType::SupportedServiceFamilies))
 {
     add(ids, versions);
 }
 
-QKnxNetIp::DescriptionTypeCode QKnxNetIpServiceFamiliesDIB::descriptionTypeCode() const
+QKnxNetIp::DescriptionType QKnxNetIpServiceFamiliesDIB::descriptionType() const
 {
-    return QKnxNetIp::DescriptionTypeCode(code());
+    return QKnxNetIp::DescriptionType(code());
 }
 
 void QKnxNetIpServiceFamiliesDIB::add(ServiceFamilieId id, quint8 versions)
@@ -81,7 +81,7 @@ void QKnxNetIpServiceFamiliesDIB::add(const QVector<ServiceFamilieId> &ids, cons
 bool QKnxNetIpServiceFamiliesDIB::isValid() const
 {
     return QKnxNetIpStruct::isValid() && (size() % 2 == 0) // must be even sized
-        && descriptionTypeCode() == QKnxNetIp::DescriptionTypeCode::SupportedServiceFamilies;
+        && descriptionType() == QKnxNetIp::DescriptionType::SupportedServiceFamilies;
 }
 
 QT_END_NAMESPACE

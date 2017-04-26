@@ -38,7 +38,7 @@ void tst_QKnxNetIpKnxAddressesDIB::testDefaultConstructor()
     QCOMPARE(addresses.payload().bytes<QByteArray>(), QByteArray(""));
     QCOMPARE(addresses.toString(), QString::fromLatin1("Total size { 0x00 }, "
         "Code { 0x00 }, Bytes {  }"));
-    QCOMPARE(quint8(addresses.descriptionTypeCode()), quint8(0));
+    QCOMPARE(quint8(addresses.descriptionType()), quint8(0));
 }
 
 void tst_QKnxNetIpKnxAddressesDIB::testConstructorWithOneArgument()
@@ -51,8 +51,8 @@ void tst_QKnxNetIpKnxAddressesDIB::testConstructorWithOneArgument()
     QCOMPARE(addresses.payload().bytes<QByteArray>(), QByteArray::fromHex("1101"));
     QCOMPARE(addresses.toString(), QString::fromLatin1("Total size { 0x04 }, "
         "Code { 0x05 }, Bytes { 0x11, 0x01 }"));
-    QCOMPARE(addresses.descriptionTypeCode(),
-        QKnxNetIp::DescriptionTypeCode::KnxAddresses);
+    QCOMPARE(addresses.descriptionType(),
+        QKnxNetIp::DescriptionType::KnxAddresses);
 }
 
 void tst_QKnxNetIpKnxAddressesDIB::testConstructorWithTwoArguments()
@@ -69,8 +69,8 @@ void tst_QKnxNetIpKnxAddressesDIB::testConstructorWithTwoArguments()
     QCOMPARE(addresses.payload().bytes<QByteArray>(), QByteArray::fromHex("110012052308"));
     QCOMPARE(addresses.toString(), QString::fromLatin1("Total size { 0x08 }, "
         "Code { 0x05 }, Bytes { 0x11, 0x00, 0x12, 0x05, 0x23, 0x08 }"));
-    QCOMPARE(addresses.descriptionTypeCode(),
-        QKnxNetIp::DescriptionTypeCode::KnxAddresses);
+    QCOMPARE(addresses.descriptionType(),
+        QKnxNetIp::DescriptionType::KnxAddresses);
 }
 
 void tst_QKnxNetIpKnxAddressesDIB::testIndividualAddresses()

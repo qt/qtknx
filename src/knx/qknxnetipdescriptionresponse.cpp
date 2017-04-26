@@ -33,18 +33,18 @@ namespace QKnxPrivate
 {
     static QKnxNetIpStructRef::Type codeToType(quint8 code)
     {
-        switch (QKnxNetIp::DescriptionTypeCode(code)) {
-        case QKnxNetIp::DescriptionTypeCode::DeviceInfo:
+        switch (QKnxNetIp::DescriptionType(code)) {
+        case QKnxNetIp::DescriptionType::DeviceInfo:
             return QKnxNetIpStructRef::Type::QKnxNetIpDeviceDIB;
-        case QKnxNetIp::DescriptionTypeCode::SupportedServiceFamilies:
+        case QKnxNetIp::DescriptionType::SupportedServiceFamilies:
             return QKnxNetIpStructRef::Type::QKnxNetIpServiceFamiliesDIB;
-        case QKnxNetIp::DescriptionTypeCode::IpConfiguration:
+        case QKnxNetIp::DescriptionType::IpConfiguration:
             return QKnxNetIpStructRef::Type::QKnxNetIpConfigDIB;
-        case QKnxNetIp::DescriptionTypeCode::CurrentIpConfiguration:
+        case QKnxNetIp::DescriptionType::CurrentIpConfiguration:
             return QKnxNetIpStructRef::Type::QKnxNetIpCurrentConfigDIB;
-        case QKnxNetIp::DescriptionTypeCode::KnxAddresses:
+        case QKnxNetIp::DescriptionType::KnxAddresses:
             return QKnxNetIpStructRef::Type::QKnxNetIpKnxAddressesDIB;
-        case QKnxNetIp::DescriptionTypeCode::ManufactorData:
+        case QKnxNetIp::DescriptionType::ManufactorData:
             return QKnxNetIpStructRef::Type::QKnxNetIpManufacturerDIB;
         default:
             break;

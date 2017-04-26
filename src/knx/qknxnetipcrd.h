@@ -30,7 +30,7 @@ public:
         return QKnxNetIpStruct::fromBytes(bytes, index);
     }
 
-    QKnxNetIp::ConnectionTypeCode connectionTypeCode() const;
+    QKnxNetIp::ConnectionType connectionType() const;
 
     bool isValid() const override;
 

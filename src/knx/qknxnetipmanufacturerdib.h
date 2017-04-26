@@ -34,7 +34,7 @@ public:
         return QKnxNetIpStruct::fromBytes(bytes, index);
     }
 
-    QKnxNetIp::DescriptionTypeCode descriptionTypeCode() const;
+    QKnxNetIp::DescriptionType descriptionType() const;
     quint16 manufacturerId() const;
     template <typename T> auto manufacturerData() const -> decltype(T())
     {

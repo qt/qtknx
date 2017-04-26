@@ -70,7 +70,7 @@ private slots:
         auto hardware = descriptionResponse.deviceHardware();
         QCOMPARE(hardware.isValid(), m_deviceHardware.isValid());
         QCOMPARE(hardware.mediumCode(), m_deviceHardware.mediumCode());
-        QCOMPARE(hardware.descriptionTypeCode(), m_deviceHardware.descriptionTypeCode());
+        QCOMPARE(hardware.descriptionType(), m_deviceHardware.descriptionType());
         QCOMPARE(hardware.deviceStatus(), m_deviceHardware.deviceStatus());
         QCOMPARE(hardware.individualAddress().toString(), m_deviceHardware.individualAddress().toString());
         QCOMPARE(hardware.projectInstallationIdentfier(), m_deviceHardware.projectInstallationIdentfier());
@@ -92,7 +92,7 @@ private slots:
 
         auto familie = descriptionResponse.supportedFamilies();
         QCOMPARE(familie.isValid(), m_sf.isValid());
-        QCOMPARE(familie.descriptionTypeCode(), m_sf.descriptionTypeCode());
+        QCOMPARE(familie.descriptionType(), m_sf.descriptionType());
 
         QCOMPARE(familie.size(), m_sf.size());
         QCOMPARE(familie.bytes<QByteArray>(), m_sf.bytes<QByteArray>());
@@ -148,7 +148,7 @@ private slots:
         QCOMPARE(tmpConfigDIB.payload().bytes<QByteArray>(), configDIB.payload().bytes<QByteArray>());
         QCOMPARE(tmpConfigDIB.toString(), configDIB.toString());
 
-        QCOMPARE(tmpConfigDIB.descriptionTypeCode(), configDIB.descriptionTypeCode());
+        QCOMPARE(tmpConfigDIB.descriptionType(), configDIB.descriptionType());
         QCOMPARE(tmpConfigDIB.ipAddress().toString(), configDIB.ipAddress().toString());
         QCOMPARE(tmpConfigDIB.subnetMask().toString(), configDIB.subnetMask().toString());
         QCOMPARE(tmpConfigDIB.defaultGateway().toString(), configDIB.defaultGateway().toString());
@@ -166,7 +166,7 @@ private slots:
         QCOMPARE(tmpCurrentConfigDIB.payload().bytes<QByteArray>(), currentConfigDIB.payload().bytes<QByteArray>());
         QCOMPARE(tmpCurrentConfigDIB.toString(), currentConfigDIB.toString());
 
-        QCOMPARE(tmpCurrentConfigDIB.descriptionTypeCode(), currentConfigDIB.descriptionTypeCode());
+        QCOMPARE(tmpCurrentConfigDIB.descriptionType(), currentConfigDIB.descriptionType());
         QCOMPARE(tmpCurrentConfigDIB.ipAddress().toString(), currentConfigDIB.ipAddress().toString());
         QCOMPARE(tmpCurrentConfigDIB.subnetMask().toString(), currentConfigDIB.subnetMask().toString());
         QCOMPARE(tmpCurrentConfigDIB.defaultGateway().toString(), currentConfigDIB.defaultGateway().toString());
@@ -184,7 +184,7 @@ private slots:
         QCOMPARE(tmpKnxAddressDIB.payload().bytes<QByteArray>(), knxAddressDIB.payload().bytes<QByteArray>());
         QCOMPARE(tmpKnxAddressDIB.toString(), knxAddressDIB.toString());
 
-        QCOMPARE(tmpKnxAddressDIB.descriptionTypeCode(), knxAddressDIB.descriptionTypeCode());
+        QCOMPARE(tmpKnxAddressDIB.descriptionType(), knxAddressDIB.descriptionType());
         QCOMPARE(tmpKnxAddressDIB.individualAddresses<QVector<QKnxAddress>>().size(),
             knxAddressDIB.individualAddresses<QVector<QKnxAddress>>().size());
 
@@ -199,7 +199,7 @@ private slots:
         QCOMPARE(tmpManufacturerDIB.payload().bytes<QByteArray>(), manufacturerDIB.payload().bytes<QByteArray>());
         QCOMPARE(tmpManufacturerDIB.toString(), manufacturerDIB.toString());
 
-        QCOMPARE(tmpManufacturerDIB.descriptionTypeCode(), manufacturerDIB.descriptionTypeCode());
+        QCOMPARE(tmpManufacturerDIB.descriptionType(), manufacturerDIB.descriptionType());
         QCOMPARE(tmpManufacturerDIB.manufacturerId(), manufacturerDIB.manufacturerId());
         QCOMPARE(tmpManufacturerDIB.manufacturerData<QByteArray>(), manufacturerDIB.manufacturerData<QByteArray>());
 
@@ -214,7 +214,7 @@ private slots:
         QCOMPARE(tmpSfDIB.payload().bytes<QByteArray>(), sfDIB.payload().bytes<QByteArray>());
         QCOMPARE(tmpSfDIB.toString(), sfDIB.toString());
 
-        QCOMPARE(tmpSfDIB.descriptionTypeCode(), sfDIB.descriptionTypeCode());
+        QCOMPARE(tmpSfDIB.descriptionType(), sfDIB.descriptionType());
     }
 
     void testDebugStream()

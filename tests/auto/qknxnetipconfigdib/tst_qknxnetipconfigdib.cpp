@@ -37,7 +37,7 @@ void tst_QKnxNetIpConfigDIB::testDefaultConstructor()
     QCOMPARE(configDIB.payload().bytes<QByteArray>(), QByteArray(""));
     QCOMPARE(configDIB.toString(), QString::fromLatin1("Total size { 0x00 }, Code { 0x00 }, "
         "Bytes {  }"));
-    QCOMPARE(quint8(configDIB.descriptionTypeCode()), quint8(0));
+    QCOMPARE(quint8(configDIB.descriptionType()), quint8(0));
     QCOMPARE(configDIB.ipAddress(), QHostAddress());
     QCOMPARE(configDIB.subnetMask(), QHostAddress());
     QCOMPARE(configDIB.defaultGateway(), QHostAddress());
@@ -65,7 +65,7 @@ void tst_QKnxNetIpConfigDIB::testConstructorWithFourArguments()
     QCOMPARE(configDIB.toString(), QString::fromLatin1("Total size { 0x10 }, Code { 0x03 }, "
         "Bytes { 0xc0, 0xa8, 0x02, 0x0c, 0xff, 0xff, 0xff, 0x00, 0xc0, 0xa8, 0x02, "
         "0x01, 0x02, 0x01 }"));
-    QCOMPARE(configDIB.descriptionTypeCode(), QKnxNetIp::DescriptionTypeCode::IpConfiguration);
+    QCOMPARE(configDIB.descriptionType(), QKnxNetIp::DescriptionType::IpConfiguration);
     QCOMPARE(configDIB.ipAddress(), QHostAddress("192.168.2.12"));
     QCOMPARE(configDIB.subnetMask(), QHostAddress("255.255.255.0"));
     QCOMPARE(configDIB.defaultGateway(), QHostAddress("192.168.2.1"));
@@ -91,7 +91,7 @@ void tst_QKnxNetIpConfigDIB::testConstructorWithFiveArguments()
     QCOMPARE(configDIB.toString(), QString::fromLatin1("Total size { 0x10 }, Code { 0x03 }, "
         "Bytes { 0xc0, 0xa8, 0x02, 0x0c, 0xff, 0xff, 0xff, 0x00, 0xc0, 0xa8, 0x02, "
         "0x01, 0x02, 0x01 }"));
-    QCOMPARE(configDIB.descriptionTypeCode(), QKnxNetIp::DescriptionTypeCode::IpConfiguration);
+    QCOMPARE(configDIB.descriptionType(), QKnxNetIp::DescriptionType::IpConfiguration);
     QCOMPARE(configDIB.ipAddress(), QHostAddress("192.168.2.12"));
     QCOMPARE(configDIB.subnetMask(), QHostAddress("255.255.255.0"));
     QCOMPARE(configDIB.defaultGateway(), QHostAddress("192.168.2.1"));

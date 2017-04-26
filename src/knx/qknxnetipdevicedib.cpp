@@ -26,7 +26,7 @@ QKnxNetIpDeviceDIB::QKnxNetIpDeviceDIB(const QKnxNetIpStruct &other)
 QKnxNetIpDeviceDIB::QKnxNetIpDeviceDIB(MediumCode mediumCode, DeviceStatus deviceStatus,
         const QKnxAddress &individualAddress, quint16 projectId, const QByteArray &serialNumber,
         const QHostAddress &multicastAddress, const QByteArray &macAddress, const QByteArray deviceName)
-    : QKnxNetIpStruct(quint8(QKnxNetIp::DescriptionTypeCode::DeviceInfo))
+    : QKnxNetIpStruct(quint8(QKnxNetIp::DescriptionType::DeviceInfo))
 {
     QKnxNetIpPayload payload((quint8) mediumCode);
 
@@ -53,9 +53,9 @@ QKnxNetIpDeviceDIB::QKnxNetIpDeviceDIB(MediumCode mediumCode, DeviceStatus devic
     setPayload(payload);
 }
 
-QKnxNetIp::DescriptionTypeCode QKnxNetIpDeviceDIB::descriptionTypeCode() const
+QKnxNetIp::DescriptionType QKnxNetIpDeviceDIB::descriptionType() const
 {
-    return QKnxNetIp::DescriptionTypeCode(code());
+    return QKnxNetIp::DescriptionType(code());
 }
 
 QKnxNetIpDeviceDIB::MediumCode QKnxNetIpDeviceDIB::mediumCode() const
@@ -101,7 +101,7 @@ QByteArray QKnxNetIpDeviceDIB::deviceName() const
 bool QKnxNetIpDeviceDIB::isValid() const
 {
     return QKnxNetIpStruct::isValid() && size() == 54
-        && descriptionTypeCode() == QKnxNetIp::DescriptionTypeCode::DeviceInfo;
+        && descriptionType() == QKnxNetIp::DescriptionType::DeviceInfo;
 }
 
 QT_END_NAMESPACE

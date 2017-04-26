@@ -52,7 +52,7 @@ public:
         return QKnxNetIpStruct::fromBytes(bytes, index);
     }
 
-    QKnxNetIp::DescriptionTypeCode descriptionTypeCode() const;
+    QKnxNetIp::DescriptionType descriptionType() const;
     QHostAddress ipAddress() const;
     QHostAddress subnetMask() const;
     QHostAddress defaultGateway() const;

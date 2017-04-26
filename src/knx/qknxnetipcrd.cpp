@@ -13,19 +13,19 @@ QKnxNetIpCRD::QKnxNetIpCRD(const QKnxNetIpStruct &other)
     : QKnxNetIpStruct(other)
 {}
 
-QKnxNetIp::ConnectionTypeCode QKnxNetIpCRD::connectionTypeCode() const
+QKnxNetIp::ConnectionType QKnxNetIpCRD::connectionType() const
 {
-    return QKnxNetIp::ConnectionTypeCode(code());
+    return QKnxNetIp::ConnectionType(code());
 }
 
 bool QKnxNetIpCRD::isValid() const
 {
-    switch (connectionTypeCode()) {
-        case QKnxNetIp::ConnectionTypeCode::DeviceManagementConnection:
-        case QKnxNetIp::ConnectionTypeCode::TunnelConnection :
-        case QKnxNetIp::ConnectionTypeCode::RemoteLoggingConnection :
-        case QKnxNetIp::ConnectionTypeCode::RemoteConfigurationConnection :
-        case QKnxNetIp::ConnectionTypeCode::ObjectServerConnection :
+    switch (connectionType()) {
+        case QKnxNetIp::ConnectionType::DeviceManagementConnection:
+        case QKnxNetIp::ConnectionType::TunnelConnection :
+        case QKnxNetIp::ConnectionType::RemoteLoggingConnection :
+        case QKnxNetIp::ConnectionType::RemoteConfigurationConnection :
+        case QKnxNetIp::ConnectionType::ObjectServerConnection :
             break;
         default:
             return false;

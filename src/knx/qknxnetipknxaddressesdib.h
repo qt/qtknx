@@ -35,7 +35,7 @@ public:
         return QKnxNetIpStruct::fromBytes(bytes, index);
     }
 
-    QKnxNetIp::DescriptionTypeCode descriptionTypeCode() const;
+    QKnxNetIp::DescriptionType descriptionType() const;
     template <typename T> auto individualAddresses() const -> decltype(T())
     {
         static_assert(is_type<T, QVector<QKnxAddress>, std::deque<QKnxAddress>,

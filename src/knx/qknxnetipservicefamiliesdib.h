@@ -46,7 +46,7 @@ public:
         return QKnxNetIpStruct::fromBytes(bytes, index);
     }
 
-    QKnxNetIp::DescriptionTypeCode descriptionTypeCode() const;
+    QKnxNetIp::DescriptionType descriptionType() const;
     // TODO: add access functions for family and version if needed
 
     void add(ServiceFamilieId id, quint8 versions);

@@ -37,7 +37,7 @@ void tst_QKnxNetIpCurrentConfigDIB::testDefaultConstructor()
     QCOMPARE(currentconfigDIB.payload().bytes<QByteArray>(), QByteArray(""));
     QCOMPARE(currentconfigDIB.toString(), QString::fromLatin1("Total size { 0x00 }, "
         "Code { 0x00 }, Bytes {  }"));
-    QCOMPARE(quint8(currentconfigDIB.descriptionTypeCode()), quint8(0));
+    QCOMPARE(quint8(currentconfigDIB.descriptionType()), quint8(0));
     QCOMPARE(currentconfigDIB.ipAddress(), QHostAddress());
     QCOMPARE(currentconfigDIB.subnetMask(), QHostAddress());
     QCOMPARE(currentconfigDIB.defaultGateway(), QHostAddress());
@@ -65,8 +65,8 @@ void tst_QKnxNetIpCurrentConfigDIB::testConstructorWithFourArguments()
     QCOMPARE(currentconfigDIB.toString(), QString::fromLatin1("Total size { 0x14 }, "
         "Code { 0x04 }, Bytes { 0xc0, 0xa8, 0x02, 0x0c, 0xff, 0xff, 0xff, 0x00, "
         "0xc0, 0xa8, 0x02, 0x01, 0xb4, 0x8a, 0x03, 0x02, 0x01, 0x00 }"));
-    QCOMPARE(currentconfigDIB.descriptionTypeCode(),
-        QKnxNetIp::DescriptionTypeCode::CurrentIpConfiguration);
+    QCOMPARE(currentconfigDIB.descriptionType(),
+        QKnxNetIp::DescriptionType::CurrentIpConfiguration);
     QCOMPARE(currentconfigDIB.ipAddress(), QHostAddress("192.168.2.12"));
     QCOMPARE(currentconfigDIB.subnetMask(), QHostAddress("255.255.255.0"));
     QCOMPARE(currentconfigDIB.defaultGateway(), QHostAddress("192.168.2.1"));
@@ -93,8 +93,8 @@ void tst_QKnxNetIpCurrentConfigDIB::testConstructorWithFiveArguments()
     QCOMPARE(currentconfigDIB.toString(), QString::fromLatin1("Total size { 0x14 }, "
         "Code { 0x04 }, Bytes { 0xc0, 0xa8, 0x02, 0x0c, 0xff, 0xff, 0xff, 0x00, "
         "0xc0, 0xa8, 0x02, 0x01, 0xb4, 0x8a, 0x03, 0x02, 0x01, 0x00 }"));
-    QCOMPARE(currentconfigDIB.descriptionTypeCode(),
-        QKnxNetIp::DescriptionTypeCode::CurrentIpConfiguration);
+    QCOMPARE(currentconfigDIB.descriptionType(),
+        QKnxNetIp::DescriptionType::CurrentIpConfiguration);
     QCOMPARE(currentconfigDIB.ipAddress(), QHostAddress("192.168.2.12"));
     QCOMPARE(currentconfigDIB.subnetMask(), QHostAddress("255.255.255.0"));
     QCOMPARE(currentconfigDIB.defaultGateway(), QHostAddress("192.168.2.1"));

@@ -32,7 +32,7 @@ private slots:
                                      QByteArray("qt.io KNX device"));
 
         QCOMPARE(deviceDIB.mediumCode(), QKnxNetIpDeviceDIB::MediumCode::Ip);
-        QCOMPARE(deviceDIB.descriptionTypeCode(), QKnxNetIp::DescriptionTypeCode::DeviceInfo);
+        QCOMPARE(deviceDIB.descriptionType(), QKnxNetIp::DescriptionType::DeviceInfo);
         QCOMPARE(deviceDIB.deviceStatus(), QKnxNetIpDeviceDIB::DeviceStatus::ActiveProgrammingMode);
         QCOMPARE(deviceDIB.individualAddress().toString(), QKnxAddress::Individual::Unregistered.toString());
         QCOMPARE(deviceDIB.projectInstallationIdentfier(), quint16(0x1111));
