@@ -78,12 +78,19 @@ struct Q_KNX_EXPORT QKnxNetIp final
         DataConnection = 0x26,
         KnxConnection = 0x27
     };
+
+    enum class DeviceState : quint8
+    {
+        KnxFault = 0x00,
+        IpFault = 0x01
+    };
 };
 Q_DECLARE_TYPEINFO(QKnxNetIp::HostProtocolCode, Q_PRIMITIVE_TYPE);
 Q_DECLARE_TYPEINFO(QKnxNetIp::ConnectionTypeCode, Q_PRIMITIVE_TYPE);
 Q_DECLARE_TYPEINFO(QKnxNetIp::DescriptionTypeCode, Q_PRIMITIVE_TYPE);
 Q_DECLARE_TYPEINFO(QKnxNetIp::ServiceType, Q_PRIMITIVE_TYPE);
 Q_DECLARE_TYPEINFO(QKnxNetIp::Error, Q_PRIMITIVE_TYPE);
+Q_DECLARE_TYPEINFO(QKnxNetIp::DeviceState, Q_PRIMITIVE_TYPE);
 
 QT_END_NAMESPACE
 

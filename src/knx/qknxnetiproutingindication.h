@@ -8,14 +8,10 @@
 #ifndef QKNXNETIPROUTINGINDICATION_H
 #define QKNXNETIPROUTINGINDICATION_H
 
-#include <QtCore/qbytearray.h>
-#include <QtCore/qdatastream.h>
-#include <QtCore/qdebug.h>
-#include <QtCore/qstring.h>
-#include <QtCore/qvector.h>
+#include <QtKnx/qknxcemi.h>
+#include <QtKnx/qknxnetip.h>
 #include <QtKnx/qknxnetipframe.h>
 #include <QtKnx/qknxglobal.h>
-#include <QtKnx/qknxtraits.h>
 
 QT_BEGIN_NAMESPACE
 
@@ -24,6 +20,11 @@ class Q_KNX_EXPORT QKnxNetIpRoutingIndication final : public QKnxNetIpFrame
 public:
     QKnxNetIpRoutingIndication() = default;
     ~QKnxNetIpRoutingIndication() override = default;
+
+    explicit QKnxNetIpRoutingIndication(const QKnxCemi &cemi);
+
+    QKnxCemi cemi() const;
+    void setCemi(const QKnxCemi &cemi);
 };
 
 QT_END_NAMESPACE
