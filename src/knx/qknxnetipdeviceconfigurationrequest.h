@@ -8,22 +8,25 @@
 #ifndef QKNXNETIPDEVICECONFIGURATIONREQUEST_H
 #define QKNXNETIPDEVICECONFIGURATIONREQUEST_H
 
-#include <QtCore/qbytearray.h>
-#include <QtCore/qdatastream.h>
-#include <QtCore/qdebug.h>
-#include <QtCore/qstring.h>
-#include <QtCore/qvector.h>
-#include <QtKnx/qknxnetipframe.h>
+#include <QtKnx/qknxcemi.h>
+#include <QtKnx/qknxnetip.h>
+#include <QtKnx/qknxnetipconnectionheaderframe.h>
 #include <QtKnx/qknxglobal.h>
-#include <QtKnx/qknxtraits.h>
 
 QT_BEGIN_NAMESPACE
 
-class Q_KNX_EXPORT QKnxNetIpDeviceConfigurationRequest final : public QKnxNetIpFrame
+class Q_KNX_EXPORT QKnxNetIpDeviceConfigurationRequest final : public QKnxNetIpConnectionHeaderFrame
 {
 public:
     QKnxNetIpDeviceConfigurationRequest() = default;
     ~QKnxNetIpDeviceConfigurationRequest() override = default;
+
+    QKnxNetIpDeviceConfigurationRequest(quint8 communicationChannelId, quint8 sequenceCounter,
+        const QKnxCemi &cemi);
+
+    quint8 communicationChannelId() const;
+    quint8 sequenceCounter() const;
+    QKnxCemi cemi() const;
 };
 
 QT_END_NAMESPACE
