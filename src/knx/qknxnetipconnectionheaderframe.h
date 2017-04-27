@@ -45,7 +45,7 @@ public:
         if (!connectionHeader.isValid())
             return {};
 
-        QKnxNetIpConnectionHeaderFrame frame(header, QKnxNetIpPayload::fromBytes(bytes, index
+        QKnxNetIpConnectionHeaderFrame frame(header, QKnxNetIpPayload::fromBytes(bytes, index,
             connectionHeader.size() + header.size(), header.payloadSize() - connectionHeader.size()));
         frame.setConnectionHeader(connectionHeader);
         return frame;
