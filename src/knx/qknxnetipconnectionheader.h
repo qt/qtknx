@@ -49,12 +49,12 @@ public:
             std::vector<quint8>>::value, "Type not supported.");
         return bytes<T>(4, size() - 4);
     }
-    template <typename T, std::size_t S = 0> void setConnectionTypeSpecificHeaderItems(const T &bytes)
+    template <typename T, std::size_t S = 0> void setConnectionTypeSpecificHeaderItems(const T &items)
     {
         static_assert(is_type<T, QByteArray, QVector<quint8>, std::deque<quint8>,
             std::vector<quint8>, std::array<quint8, S>>::value, "Type not supported.");
-        insertBytes(4, bytes);
-        setByte(0, quint8(bytes.size()) + 4);
+        insertBytes(4, items);
+        setByte(0, quint8(items.size()) + 4);
     }
 
     QString toString() const override;
