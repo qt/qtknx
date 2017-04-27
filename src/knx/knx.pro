@@ -49,7 +49,8 @@ PUBLIC_HEADERS += \
     qknxnetippackage.h \
     qknxbytestoreref.h \
     qknxnetipstructref.h \
-    qknxcemi.h
+    qknxcemi.h \
+    qknxnetipconnectionheader.h
 
 PRIVATE_HEADERS +=
 
@@ -89,7 +90,8 @@ SOURCES += \
     qknxnetiptunnelingacknowledge.cpp \
     qknxnetiptunnelingrequest.cpp \
     qknxbytestoreref.cpp \
-    qknxbytestore.cpp
+    qknxbytestore.cpp \
+    qknxnetipconnectionheader.cpp
 
 HEADERS += $$PUBLIC_HEADERS $$PRIVATE_HEADERS
 
