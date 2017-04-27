@@ -50,7 +50,8 @@ PUBLIC_HEADERS += \
     qknxbytestoreref.h \
     qknxnetipstructref.h \
     qknxcemi.h \
-    qknxnetipconnectionheader.h
+    qknxnetipconnectionheader.h \
+    qknxnetipconnectionheaderframe.h
 
 PRIVATE_HEADERS +=
 
