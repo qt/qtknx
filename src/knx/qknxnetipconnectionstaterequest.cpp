@@ -11,7 +11,7 @@ QT_BEGIN_NAMESPACE
 
 QKnxNetIpConnectionStateRequest::QKnxNetIpConnectionStateRequest(quint8 channelId,
         const QKnxNetIpHPAI &controlEndpoint)
-    : QKnxNetIpFrame(quint16(QKnxNetIp::ServiceType::ConnectionStateRequest))
+    : QKnxNetIpFrame(QKnxNetIp::ServiceType::ConnectionStateRequest)
 {
     QKnxNetIpPayload payload(channelId);
     payload.setByte(1, 0x00); // reserved

@@ -19,7 +19,7 @@
 
 QT_BEGIN_NAMESPACE
 
-class Q_KNX_EXPORT QKnxNetIpCRI : public QKnxNetIpStruct
+class Q_KNX_EXPORT QKnxNetIpCRI : public QKnxNetIpConnectionTypeStruct
 {
 public:
     QKnxNetIpCRI() = default;
@@ -27,7 +27,10 @@ public:
 
     template <typename T> static QKnxNetIpCRI fromBytes(const T &bytes, quint16 index)
     {
-        return QKnxNetIpStruct::fromBytes(bytes, index);
+        auto code = QKnxNetIpStructHeader<QKnxNetIp::ConnectionType>::fromBytes(bytes, index).code();
+        if (!QKnxNetIp::isStructType(code))
+            return {};
+        return QKnxNetIpStructHelper::fromBytes(bytes, index, code);
     }
 
     QKnxNetIp::ConnectionType connectionType() const;
@@ -35,7 +38,7 @@ public:
     bool isValid() const override;
 
 private:
-    QKnxNetIpCRI(const QKnxNetIpStruct &other);
+    QKnxNetIpCRI(const QKnxNetIpConnectionTypeStruct &other);
 };
 Q_DECLARE_TYPEINFO(QKnxNetIpCRI, Q_MOVABLE_TYPE);
 

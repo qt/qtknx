@@ -14,17 +14,26 @@ QT_BEGIN_NAMESPACE
 
 struct Q_KNX_EXPORT QKnxNetIp final
 {
+    enum class HostProtocol : quint8
+    {
+        Unknown = 0x00,
+        IpV4_Udp = 0x01,
+        IpV4_Tcp = 0x02
+    };
+
     enum class ConnectionType : quint8
     {
-        DeviceManagementConnection = 0x03,
-        TunnelConnection = 0x04,
-        RemoteLoggingConnection = 0x06,
-        RemoteConfigurationConnection = 0x07,
-        ObjectServerConnection = 0x08
+        Unknown = 0x00,
+        DeviceManagement = 0x03,
+        Tunnel = 0x04,
+        RemoteLogging = 0x06,
+        RemoteConfiguration = 0x07,
+        ObjectServer = 0x08
     };
 
     enum class DescriptionType : quint8
     {
+        Unknown = 0x00,
         DeviceInfo = 0x01,
         SupportedServiceFamilies = 0x02,
         IpConfiguration = 0x03,
@@ -36,6 +45,8 @@ struct Q_KNX_EXPORT QKnxNetIp final
 
     enum class ServiceType : quint16
     {
+        Unknown = 0x0000,
+
         // KNXnet/IP Core service type identifiers
         SearchRequest = 0x0201,
         SearchResponse = 0x0202,
@@ -78,7 +89,83 @@ struct Q_KNX_EXPORT QKnxNetIp final
         KnxFault = 0x00,
         IpFault = 0x01
     };
+
+    static bool isStructType(QKnxNetIp::HostProtocol type)
+    {
+        switch (type) {
+        case QKnxNetIp::HostProtocol::IpV4_Udp:
+        case QKnxNetIp::HostProtocol::IpV4_Tcp:
+            return true;
+        case QKnxNetIp::HostProtocol::Unknown:
+        default:
+            break;
+        }
+        return false;
+    }
+
+    static bool isStructType(QKnxNetIp::ConnectionType type)
+    {
+        switch (type) {
+        case QKnxNetIp::ConnectionType::DeviceManagement:
+        case QKnxNetIp::ConnectionType::Tunnel:
+        case QKnxNetIp::ConnectionType::RemoteLogging:
+        case QKnxNetIp::ConnectionType::RemoteConfiguration:
+        case QKnxNetIp::ConnectionType::ObjectServer:
+            return true;
+        case QKnxNetIp::ConnectionType::Unknown:
+        default:
+            break;
+        }
+        return false;
+    }
+
+    static bool isStructType(QKnxNetIp::DescriptionType type)
+    {
+        switch (type) {
+        case QKnxNetIp::DescriptionType::DeviceInfo:
+        case QKnxNetIp::DescriptionType::SupportedServiceFamilies:
+        case QKnxNetIp::DescriptionType::IpConfiguration:
+        case QKnxNetIp::DescriptionType::CurrentIpConfiguration:
+        case QKnxNetIp::DescriptionType::KnxAddresses:
+        case QKnxNetIp::DescriptionType::ManufactorData:
+            return true;
+        case QKnxNetIp::DescriptionType::NotUsed:
+        case QKnxNetIp::DescriptionType::Unknown:
+        default:
+            break;
+        }
+        return false;
+    }
+
+    static bool isFrameType(QKnxNetIp::ServiceType type)
+    {
+        switch (type) {
+        case QKnxNetIp::ServiceType::SearchRequest:
+        case QKnxNetIp::ServiceType::SearchResponse:
+        case QKnxNetIp::ServiceType::DescriptionRequest:
+        case QKnxNetIp::ServiceType::DescriptionResponse:
+        case QKnxNetIp::ServiceType::ConnectRequest:
+        case QKnxNetIp::ServiceType::ConnectResponse:
+        case QKnxNetIp::ServiceType::ConnectionStateRequest:
+        case QKnxNetIp::ServiceType::ConnectionStateResponse:
+        case QKnxNetIp::ServiceType::DisconnectRequest:
+        case QKnxNetIp::ServiceType::DisconnectResponse:
+        case QKnxNetIp::ServiceType::DeviceConfigurationRequest:
+        case QKnxNetIp::ServiceType::DeviceConfigurationAcknowledge:
+        case QKnxNetIp::ServiceType::TunnelingRequest:
+        case QKnxNetIp::ServiceType::TunnelingAcknowledge:
+        case QKnxNetIp::ServiceType::RoutingIndication:
+        case QKnxNetIp::ServiceType::RoutingLostMessage:
+        case QKnxNetIp::ServiceType::RoutingBusy:
+            return true;
+        case QKnxNetIp::ServiceType::Unknown:
+        default:
+            break;
+        }
+        return false;
+    }
 };
+Q_DECLARE_TYPEINFO(QKnxNetIp::HostProtocol, Q_PRIMITIVE_TYPE);
 Q_DECLARE_TYPEINFO(QKnxNetIp::ConnectionType, Q_PRIMITIVE_TYPE);
 Q_DECLARE_TYPEINFO(QKnxNetIp::DescriptionType, Q_PRIMITIVE_TYPE);
 Q_DECLARE_TYPEINFO(QKnxNetIp::ServiceType, Q_PRIMITIVE_TYPE);

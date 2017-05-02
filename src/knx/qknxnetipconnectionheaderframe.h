@@ -8,14 +8,29 @@
 #ifndef QKNXNETIPCONNECTIONHEADERFRAME_H
 #define QKNXNETIPCONNECTIONHEADERFRAME_H
 
+#include <QtKnx/qknxnetip.h>
 #include <QtKnx/qknxnetipconnectionheader.h>
 #include <QtKnx/qknxnetipframe.h>
 
 QT_BEGIN_NAMESPACE
 
-class Q_KNX_EXPORT QKnxNetIpConnectionHeaderFrame : public QKnxNetIpFrame
+class Q_KNX_EXPORT QKnxNetIpConnectionHeaderFrame
+    : public QKnxNetIpPackage<QKnxNetIp::ServiceType, QKnxNetIpFrameHeader>
 {
+    using Package = QKnxNetIpPackage<QKnxNetIp::ServiceType, QKnxNetIpFrameHeader>;
+
 public:
+    QKnxNetIpConnectionHeaderFrame() = default;
+    ~QKnxNetIpConnectionHeaderFrame() override = default;
+
+    QKnxNetIpConnectionHeaderFrame(const QKnxNetIpConnectionHeaderFrame &) = default;
+    QKnxNetIpConnectionHeaderFrame &operator=(const QKnxNetIpConnectionHeaderFrame &) = default;
+
+    quint16 size() const override
+    {
+        return Package::size() + m_connectionHeader.size();
+    }
+
     QKnxNetIpConnectionHeader connectionHeader() const
     {
         return m_connectionHeader;
@@ -34,31 +49,14 @@ public:
             .arg(header().toString(), m_connectionHeader.toString(), payload().toString());
     }
 
-    template <typename T, std::size_t S = 0>
-        static QKnxNetIpConnectionHeaderFrame fromBytes(const T &bytes, quint16 index)
-    {
-        auto header = QKnxNetIpFrameHeader::fromBytes(bytes, index);
-        if (!header.isValid())
-            return {};
-
-        auto connectionHeader = QKnxNetIpConnectionHeader::fromBytes(bytes, index + header.size());
-        if (!connectionHeader.isValid())
-            return {};
-
-        QKnxNetIpConnectionHeaderFrame frame(header, QKnxNetIpPayload::fromBytes(bytes, index,
-            connectionHeader.size() + header.size(), header.payloadSize() - connectionHeader.size()));
-        frame.setConnectionHeader(connectionHeader);
-        return frame;
-    }
-
 protected:
-    using QKnxNetIpFrame::QKnxNetIpFrame;
+    using Package::Package;
 
-    void setPayload(const QKnxNetIpPayload &payload) override
-    {
-        QKnxNetIpFrame::setPayload(payload);
-        setPayloadSize(m_connectionHeader.size() + payload.size());
-    }
+    QKnxNetIpConnectionHeaderFrame(const QKnxNetIpFrameHeader &header,
+            const QKnxNetIpConnectionHeader &connHeader, const QKnxNetIpPayload &payload)
+        : Package(header, payload)
+        , m_connectionHeader(connHeader)
+    {}
 
     void setConnectionHeader(const QKnxNetIpConnectionHeader &connHeader)
     {
@@ -66,7 +64,35 @@ protected:
     }
 
 private:
+    const QKnxNetIpConnectionHeader *connectionHeader(bool *ok) const override
+    {
+        if (ok)
+            *ok = true;
+        return &m_connectionHeader;
+    }
+
+private:
     QKnxNetIpConnectionHeader m_connectionHeader;
+};
+
+struct QKnxNetIpConnectionHeaderFrameHelper
+{
+    template <typename T, std::size_t S = 0>
+        static QKnxNetIpConnectionHeaderFrame fromBytes(const T &bytes, quint16 index,
+            QKnxNetIp::ServiceType sType)
+    {
+        auto header = QKnxNetIpFrameHeader::fromBytes(bytes, index);
+        if (!header.isValid() || header.code() != sType)
+            return {};
+
+        auto connectionHeader = QKnxNetIpConnectionHeader::fromBytes(bytes, index + header.size());
+        if (!connectionHeader.isValid())
+            return {};
+
+        return QKnxNetIpConnectionHeaderFrame(header, connectionHeader,
+            QKnxNetIpPayload::fromBytes(bytes, index, connectionHeader.size() + header.size(),
+                header.payloadSize() - connectionHeader.size()));
+    }
 };
 
 QT_END_NAMESPACE

@@ -11,7 +11,7 @@ QT_BEGIN_NAMESPACE
 
 QKnxNetIpSearchResponse::QKnxNetIpSearchResponse(const QKnxNetIpHPAI &controlEndpoint,
     const QKnxNetIpDeviceDIB &deviceHardware, const QKnxNetIpServiceFamiliesDIB &supportedFamilies)
-    : QKnxNetIpFrame(quint16(QKnxNetIp::ServiceType::SearchResponse))
+    : QKnxNetIpFrame(QKnxNetIp::ServiceType::SearchResponse)
 {
     QKnxNetIpPayload payload;
     payload.setBytes(controlEndpoint.bytes());

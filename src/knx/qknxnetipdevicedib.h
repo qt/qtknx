@@ -21,7 +21,7 @@
 
 QT_BEGIN_NAMESPACE
 
-class Q_KNX_EXPORT QKnxNetIpDeviceDIB final : public QKnxNetIpStruct
+class Q_KNX_EXPORT QKnxNetIpDeviceDIB final : public QKnxNetIpDescriptionTypeStruct
 {
 public:
     enum class Medium : quint8
@@ -56,7 +56,8 @@ public:
 
     template <typename T> static QKnxNetIpDeviceDIB fromBytes(const T &bytes, quint16 index)
     {
-        return QKnxNetIpStruct::fromBytes(bytes, index);
+        return QKnxNetIpStructHelper::fromBytes(bytes, index,
+            QKnxNetIp::DescriptionType::DeviceInfo);
     }
 
     QKnxNetIp::DescriptionType descriptionType() const;
@@ -70,7 +71,7 @@ public:
     bool isValid() const override;
 
 private:
-    QKnxNetIpDeviceDIB(const QKnxNetIpStruct &other);
+    QKnxNetIpDeviceDIB(const QKnxNetIpDescriptionTypeStruct &other);
 };
 Q_DECLARE_TYPEINFO(QKnxNetIpDeviceDIB, Q_MOVABLE_TYPE);
 

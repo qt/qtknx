@@ -10,7 +10,7 @@
 QT_BEGIN_NAMESPACE
 
 QKnxNetIpRoutingIndication::QKnxNetIpRoutingIndication(const QKnxCemi &cemi)
-    : QKnxNetIpFrame(quint16(QKnxNetIp::ServiceType::RoutingIndication))
+    : QKnxNetIpFrame(QKnxNetIp::ServiceType::RoutingIndication)
 {
     setPayload({ cemi.ref().bytes(), cemi.ref().size() });
 }

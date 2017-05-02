@@ -15,6 +15,7 @@
 #include <QtCore/qvector.h>
 #include <QtKnx/qknxglobal.h>
 #include <QtKnx/qknxnetip.h>
+#include <QtKnx/qknxnetipconnectionheader.h>
 #include <QtKnx/qknxnetipframeheader.h>
 #include <QtKnx/qknxnetippayload.h>
 #include <QtKnx/qknxnetipstructheader.h>
@@ -24,23 +25,27 @@ QT_BEGIN_NAMESPACE
 
 template <typename CodeType, typename QKnxNetIpHeader> class Q_KNX_EXPORT QKnxNetIpPackage
 {
+    friend struct QKnxNetIpFrameHelper;
+    friend struct QKnxNetIpStructHelper;
+    friend struct QKnxNetIpConnectionHeaderFrameHelper;
+
 public:
-    quint16 size() const
+    virtual quint16 size() const
     {
-        return header().totalSize();
+        return m_header.totalSize();
     }
 
-    QKnxNetIpHeader header() const
+    virtual QKnxNetIpHeader header() const
     {
         return m_header;
     }
 
-    QKnxNetIpPayload payload() const
+    virtual QKnxNetIpPayload payload() const
     {
         return m_payload;
     }
 
-    QKnxByteStoreRef payloadRef(quint16 index = 0) const
+    virtual QKnxByteStoreRef payloadRef(quint16 index = 0) const
     {
         return m_payload.ref(index);
     }
@@ -53,6 +58,29 @@ public:
     virtual QString toString() const
     {
         return QStringLiteral("%1, %2").arg(m_header.toString(), m_payload.toString());
+    }
+
+    template <typename T = std::vector<quint8>> auto bytes() const -> decltype(T())
+    {
+        static_assert(is_type<T, QByteArray, QVector<quint8>, std::deque<quint8>,
+            std::vector<quint8>>::value, "Type not supported.");
+
+        T t(m_header.totalSize(), 0);
+
+        auto bytesGet = m_header.bytes();
+        std::copy(std::begin(bytesGet), std::end(bytesGet), std::begin(t));
+
+        quint16 s = m_header.size();
+        if (auto ch = connectionHeader()) {
+            bytesGet = ch->bytes();
+            std::copy(std::begin(bytesGet), std::end(bytesGet), std::next(std::begin(t), s));
+            s += ch->size();
+        }
+
+        auto loadRef = m_payload.ref();
+        std::copy(std::begin(loadRef), std::end(loadRef), std::next(std::begin(t), s));
+
+        return t;
     }
 
     virtual ~QKnxNetIpPackage() = default;
@@ -89,26 +117,16 @@ protected:
         m_header.setPayloadSize(payloadSize);
     }
 
-    virtual void setPayload(const QKnxNetIpPayload &payload)
+    void setPayload(const QKnxNetIpPayload &payload)
     {
         m_payload = payload;
+        setPayloadSize(payload.size());
     }
 
-    template <typename T = std::vector<quint8>> auto bytes() const -> decltype(T())
+    virtual const QKnxNetIpConnectionHeader *connectionHeader(bool *ok = nullptr) const
     {
-        static_assert(is_type<T, QByteArray, QVector<quint8>, std::deque<quint8>,
-            std::vector<quint8>>::value, "Type not supported.");
-
-        const auto &headr = header();
-        T t(headr.totalSize(), 0);
-
-        auto headrBytes = headr.bytes();
-        std::copy(std::begin(headrBytes), std::end(headrBytes), std::begin(t));
-
-        const auto &ref = payloadRef();
-        std::copy_n(ref.bytes(), ref.size(), std::next(std::begin(t), headr.size()));
-
-        return t;
+        Q_UNUSED(ok)
+        return nullptr;
     }
 
 private:

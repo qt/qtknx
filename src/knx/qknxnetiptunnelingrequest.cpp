@@ -11,7 +11,7 @@ QT_BEGIN_NAMESPACE
 
 QKnxNetIpTunnelingRequest::QKnxNetIpTunnelingRequest(quint8 id,
         quint8 sequenceCounter, const QKnxCemi &cemi)
-    : QKnxNetIpConnectionHeaderFrame(quint16(QKnxNetIp::ServiceType::TunnelingRequest))
+    : QKnxNetIpConnectionHeaderFrame(QKnxNetIp::ServiceType::TunnelingRequest)
 {
     setConnectionHeader({ id, sequenceCounter });
     setPayload({ cemi.ref().bytes(), cemi.ref().size() });

@@ -15,6 +15,7 @@
 #include <QtCore/qvector.h>
 #include <QtKnx/qknxbytestore.h>
 #include <QtKnx/qknxglobal.h>
+#include <QtKnx/qknxnetip.h>
 #include <QtKnx/qknxtraits.h>
 #include <QtKnx/qknxutils.h>
 
@@ -22,12 +23,14 @@ QT_BEGIN_NAMESPACE
 
 class Q_KNX_EXPORT QKnxNetIpFrameHeader final : private QKnxByteStore
 {
+    friend struct QKnxNetIpFrameHelper;
+
 public:
     QKnxNetIpFrameHeader() = default;
     ~QKnxNetIpFrameHeader() override = default;
 
-    explicit QKnxNetIpFrameHeader(quint16 code);
-    QKnxNetIpFrameHeader(quint16 code, quint16 payloadSize);
+    explicit QKnxNetIpFrameHeader(QKnxNetIp::ServiceType code);
+    QKnxNetIpFrameHeader(QKnxNetIp::ServiceType code, quint16 payloadSize);
 
     bool isValid() const;
     quint16 totalSize() const;
@@ -35,8 +38,8 @@ public:
     quint16 payloadSize() const;
     void setPayloadSize(quint16 payloadSize);
 
-    quint16 code() const;
-    void setCode(quint16 code);
+    QKnxNetIp::ServiceType code() const;
+    void setCode(QKnxNetIp::ServiceType code);
 
     QString toString() const override;
 
@@ -58,8 +61,10 @@ public:
             return {};
 
         const quint16 code = QKnxUtils::QUint16::fromBytes(bytes, index + 2);
-        const quint16 size = QKnxUtils::QUint16::fromBytes(bytes, index + 4);
-        return QKnxNetIpFrameHeader(code, size - QKnxNetIpFrameHeader::HeaderSize10);
+        if (!QKnxNetIp::isFrameType(QKnxNetIp::ServiceType(code)))
+            return {};
+        return QKnxNetIpFrameHeader(QKnxNetIp::ServiceType(code),
+            QKnxUtils::QUint16::fromBytes(bytes, index + 4) - QKnxNetIpFrameHeader::HeaderSize10);
     }
 };
 

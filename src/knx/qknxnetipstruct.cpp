@@ -41,41 +41,88 @@ QT_BEGIN_NAMESPACE
     the header and the payload.
 */
 
-/*!
-    \relates QKnxNetIpStruct
-
-    Writes the KNX \a NetIpStruct to the \a debug stream.
-*/
-QDebug operator<<(QDebug debug, const QKnxNetIpStruct &package)
+static QDebug stream(QDebug debug, const QVector<quint8> &bytes)
 {
-    QDebugStateSaver _(debug);
-    if (package.isValid()) {
-        QDebug &dbg = debug.nospace().noquote() << "0x" << hex << qSetFieldWidth(2)
-                                                << qSetPadChar('0');
-        const auto bytes = package.bytes<QVector<quint8>>();
-        for (quint8 byte : qAsConst(bytes))
-            dbg << byte;
-    } else {
-        debug.nospace().noquote() << "0x1nv4l1d";
-    }
+    QDebug &dbg = debug.nospace().noquote() << "0x" << hex << qSetFieldWidth(2) << qSetPadChar('0');
+    for (quint8 byte : qAsConst(bytes))
+        dbg << byte;
     return debug;
 }
 
-/*!
-    \relates QKnxNetIpStruct
-
-    Writes a KNX \a NetIpStruct to the stream \a out and returns a reference to the
-    stream.
-*/
-QDataStream &operator<<(QDataStream &out, const QKnxNetIpStruct &package)
+static QDataStream &stream(QDataStream &out, const QByteArray &bytes)
 {
-    if (!package.isValid())
-        return out;
-
-    const auto bytes = package.bytes<QByteArray>();
     for (quint8 byte : qAsConst(bytes))
         out << byte;
     return out;
+}
+
+/*!
+    \relates QKnxNetIpHostProtocolStruct
+
+    Writes the KNX \a QKnxNetIpHostProtocolStruct to the \a debug stream.
+*/
+QDebug operator<<(QDebug debug, const QKnxNetIpHostProtocolStruct &package)
+{
+    QDebugStateSaver _(debug);
+    return package.isValid() ? stream(debug, package.bytes<QVector<quint8>>())
+        : debug.nospace().noquote() << "0x1nv4l1d";
+}
+
+/*!
+    \relates QKnxNetIpHostProtocolStruct
+
+    Writes a KNX \a QKnxNetIpHostProtocolStruct to the stream \a out and returns a reference to the
+    stream.
+*/
+QDataStream &operator<<(QDataStream &out, const QKnxNetIpHostProtocolStruct &package)
+{
+    return package.isValid() ? stream(out, package.bytes<QByteArray>()) : out;
+}
+
+/*!
+    \relates QKnxNetIpConnectionTypeStruct
+
+    Writes the KNX \a QKnxNetIpConnectionTypeStruct to the \a debug stream.
+*/
+QDebug operator<<(QDebug debug, const QKnxNetIpConnectionTypeStruct &package)
+{
+    QDebugStateSaver _(debug);
+    return package.isValid() ? stream(debug, package.bytes<QVector<quint8>>())
+        : debug.nospace().noquote() << "0x1nv4l1d";
+}
+
+/*!
+    \relates QKnxNetIpConnectionTypeStruct
+
+    Writes a KNX \a QKnxNetIpConnectionTypeStruct to the stream \a out and returns a reference to the
+    stream.
+*/
+QDataStream &operator<<(QDataStream &out, const QKnxNetIpConnectionTypeStruct &package)
+{
+    return package.isValid() ? stream(out, package.bytes<QByteArray>()) : out;
+}
+
+/*!
+    \relates QKnxNetIpDescriptionTypeStruct
+
+    Writes the KNX \a QKnxNetIpDescriptionTypeStruct to the \a debug stream.
+*/
+QDebug operator<<(QDebug debug, const QKnxNetIpDescriptionTypeStruct &package)
+{
+    QDebugStateSaver _(debug);
+    return package.isValid() ? stream(debug, package.bytes<QVector<quint8>>())
+        : debug.nospace().noquote() << "0x1nv4l1d";
+}
+
+/*!
+    \relates QKnxNetIpDescriptionTypeStruct
+
+    Writes a KNX \a QKnxNetIpDescriptionTypeStruct to the stream \a out and returns a reference to the
+    stream.
+*/
+QDataStream &operator<<(QDataStream &out, const QKnxNetIpDescriptionTypeStruct &package)
+{
+    return package.isValid() ? stream(out, package.bytes<QByteArray>()) : out;
 }
 
 QT_END_NAMESPACE

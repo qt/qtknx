@@ -11,7 +11,7 @@ QT_BEGIN_NAMESPACE
 
 QKnxNetIpDeviceConfigurationAcknowledge::QKnxNetIpDeviceConfigurationAcknowledge(quint8 id,
         quint8 sequenceCounter, QKnxNetIp::Error status)
-    : QKnxNetIpConnectionHeaderFrame(quint16(QKnxNetIp::ServiceType::DeviceConfigurationAcknowledge))
+    : QKnxNetIpConnectionHeaderFrame(QKnxNetIp::ServiceType::DeviceConfigurationAcknowledge)
 {
     setConnectionHeader({ id, sequenceCounter, quint8(status) });
 }

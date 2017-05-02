@@ -11,7 +11,7 @@ QT_BEGIN_NAMESPACE
 
 QKnxNetIpDisconnectRequest::QKnxNetIpDisconnectRequest(quint8 channelId,
         const QKnxNetIpHPAI &controlEndpoint)
-    : QKnxNetIpFrame(quint16(QKnxNetIp::ServiceType::DisconnectRequest))
+    : QKnxNetIpFrame(QKnxNetIp::ServiceType::DisconnectRequest)
 {
     QKnxNetIpPayload payload(channelId);
     payload.setByte(1, 0x00); // reserved

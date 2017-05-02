@@ -16,7 +16,7 @@ QKnxNetIpRoutingBusy::QKnxNetIpRoutingBusy(QKnxNetIp::DeviceState state)
 
 QKnxNetIpRoutingBusy::QKnxNetIpRoutingBusy(QKnxNetIp::DeviceState state,
         quint8 routingBusyWaitTime, quint16 routingBusyControl)
-    : QKnxNetIpFrame(quint16(QKnxNetIp::ServiceType::RoutingBusy))
+    : QKnxNetIpFrame(QKnxNetIp::ServiceType::RoutingBusy)
 {
     QKnxNetIpPayload payload((quint8) state);
     payload.setByte(1, routingBusyWaitTime);

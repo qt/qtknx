@@ -15,30 +15,90 @@
 #include <QtCore/qvector.h>
 #include <QtKnx/qknxbytestore.h>
 #include <QtKnx/qknxglobal.h>
+#include <QtKnx/qknxnetip.h>
 #include <QtKnx/qknxtraits.h>
 #include <QtKnx/qknxutils.h>
 
 QT_BEGIN_NAMESPACE
 
-class Q_KNX_EXPORT QKnxNetIpStructHeader final : private QKnxByteStore
+template <typename CodeType> class Q_KNX_EXPORT QKnxNetIpStructHeader final : private QKnxByteStore
 {
+    friend struct QKnxNetIpStructHelper;
+    friend struct QKnxNetIpConnectionHeaderFrameHelper;
+
 public:
     QKnxNetIpStructHeader() = default;
     ~QKnxNetIpStructHeader() override = default;
 
-    explicit QKnxNetIpStructHeader(quint8 code);
-    QKnxNetIpStructHeader(quint8 code, quint16 payloadSize);
+    explicit QKnxNetIpStructHeader(CodeType code)
+        : QKnxNetIpStructHeader(code, 0)
+    {}
 
-    bool isValid() const;
-    quint16 totalSize() const;
+    QKnxNetIpStructHeader(CodeType code, quint16 payloadSize)
+    {
+        setCode(code);
+        setPayloadSize(payloadSize);
+    }
 
-    quint16 payloadSize() const;
-    void setPayloadSize(quint16 payloadSize);
+    bool isValid() const
+    {
+        if (size() != 2 && size() != 4)
+            return false;
+        return QKnxNetIp::isStructType(code());
+    }
 
-    quint8 code() const;
-    void setCode(quint8 code);
+    quint16 totalSize() const
+    {
+        if (size() == 2)
+            return byte(0);
 
-    QString toString() const override;
+        if (size() == 4)
+            return QKnxUtils::QUint16::fromBytes(bytes(1, 2));
+        return 0;
+    }
+
+    quint16 payloadSize() const
+    {
+        return totalSize() - size();
+    }
+
+    void setPayloadSize(quint16 payloadSize)
+    {
+        // 2.1.3 Structures:
+
+        // If the amount of data exceeds 252 octets, the length octet shall be FFh
+        // and the next two octets shall contain the length as a 16 bit value. Then
+        // the structure data shall start at the fifth octet.
+
+        resize(payloadSize > 0xfc ? 4 : 2, quint8(code()));
+        if (payloadSize > 0xfc) {
+            setByte(0, 0xff);
+            setByte(1, quint8((payloadSize + 4) >> 8));
+            setByte(2, quint8(payloadSize + 4));
+        } else {
+            setByte(0, quint8(payloadSize + 2));
+        }
+    }
+
+    CodeType code() const
+    {
+        if (size() == 0)
+            return CodeType::Unknown;
+        return CodeType(byte(size() - 1));
+    }
+
+    void setCode(CodeType code)
+    {
+        if (size() == 0)
+            resize(2, 2);
+        setByte(size() - 1, quint8(code));
+    }
+
+    QString toString() const override
+    {
+        return QStringLiteral("Total size { 0x%1 }, Code { 0x%2 }")
+            .arg(totalSize(), 2, 16, QLatin1Char('0')).arg(quint8(code()), 2, 16, QLatin1Char('0'));
+    }
 
     using QKnxByteStore::size;
     using QKnxByteStore::byte;
@@ -61,7 +121,11 @@ public:
 
         if (headerSize == 4)
             totalSize = QKnxUtils::QUint16::fromBytes(bytes, index + 1);
-        return QKnxNetIpStructHeader(quint8(bytes[index + headerSize - 1]), totalSize - headerSize);
+
+        auto code = CodeType(bytes[index + headerSize - 1]);
+        if (!QKnxNetIp::isStructType(code))
+            return {};
+        return QKnxNetIpStructHeader(code, totalSize - headerSize);
     }
 
     static QKnxNetIpStructHeader fromBytes(const QKnxByteStoreRef &store, quint16 index)
@@ -77,7 +141,11 @@ public:
 
         if (headerSize == 4)
             totalSize = QKnxUtils::QUint16::fromBytes(store, index + 1);
-        return QKnxNetIpStructHeader(store.bytes()[index +  headerSize - 1], totalSize - headerSize);
+
+        auto code = CodeType(store.bytes()[index + headerSize - 1]);
+        if (!QKnxNetIp::isStructType(code))
+            return {};
+        return QKnxNetIpStructHeader(code, totalSize - headerSize);
     }
 };
 

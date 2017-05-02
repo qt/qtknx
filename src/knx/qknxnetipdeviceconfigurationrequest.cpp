@@ -11,7 +11,7 @@ QT_BEGIN_NAMESPACE
 
 QKnxNetIpDeviceConfigurationRequest::QKnxNetIpDeviceConfigurationRequest(quint8 id,
         quint8 sequenceCounter, const QKnxCemi &cemi)
-    : QKnxNetIpConnectionHeaderFrame(quint16(QKnxNetIp::ServiceType::DeviceConfigurationRequest))
+    : QKnxNetIpConnectionHeaderFrame(QKnxNetIp::ServiceType::DeviceConfigurationRequest)
 {
     setConnectionHeader({ id, sequenceCounter });
     setPayload({ cemi.ref().bytes(), cemi.ref().size() });

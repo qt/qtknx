@@ -10,7 +10,7 @@
 QT_BEGIN_NAMESPACE
 
 QKnxNetIpSearchRequest::QKnxNetIpSearchRequest(const QKnxNetIpHPAI &discoveryEndpoint)
-    : QKnxNetIpFrame(quint16(QKnxNetIp::ServiceType::SearchRequest))
+    : QKnxNetIpFrame(QKnxNetIp::ServiceType::SearchRequest)
 {
     QKnxNetIpPayload payload;
     payload.setBytes(discoveryEndpoint.bytes());

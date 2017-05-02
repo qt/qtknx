@@ -21,7 +21,7 @@
 
 QT_BEGIN_NAMESPACE
 
-class Q_KNX_EXPORT QKnxNetIpConfigDIB final : public QKnxNetIpStruct
+class Q_KNX_EXPORT QKnxNetIpConfigDIB final : public QKnxNetIpDescriptionTypeStruct
 {
 public:
     // 03_08_03 Management v01.06.02 AS, 2.5.7 PID_IP_CAPABILITIES (PID = 56)
@@ -59,7 +59,8 @@ public:
 
     template <typename T> static QKnxNetIpConfigDIB fromBytes(const T &bytes, quint16 index)
     {
-        return QKnxNetIpStruct::fromBytes(bytes, index);
+        return QKnxNetIpStructHelper::fromBytes(bytes, index,
+            QKnxNetIp::DescriptionType::IpConfiguration);
     }
 
     QKnxNetIp::DescriptionType descriptionType() const;
@@ -72,7 +73,7 @@ public:
     bool isValid() const override;
 
 private:
-    QKnxNetIpConfigDIB(const QKnxNetIpStruct &other);
+    QKnxNetIpConfigDIB(const QKnxNetIpDescriptionTypeStruct &other);
 };
 Q_DECLARE_OPERATORS_FOR_FLAGS(QKnxNetIpConfigDIB::Capabilities)
 Q_DECLARE_OPERATORS_FOR_FLAGS(QKnxNetIpConfigDIB::AssignmentMethods)

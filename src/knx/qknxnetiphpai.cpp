@@ -20,30 +20,29 @@ QT_BEGIN_NAMESPACE
     the Transport Layer identifier called Port number.
 */
 
-QKnxNetIpHPAI::QKnxNetIpHPAI(const QKnxNetIpStruct &other)
-    : QKnxNetIpStruct(other)
+QKnxNetIpHPAI::QKnxNetIpHPAI(const QKnxNetIpHostProtocolStruct &other)
+    : QKnxNetIpHostProtocolStruct(other)
 {}
 
 QKnxNetIpHPAI::QKnxNetIpHPAI(const QHostAddress &address, quint16 port)
-    : QKnxNetIpHPAI(QKnxNetIpHPAI::HostProtocol::IpV4_Udp, address, port)
+    : QKnxNetIpHPAI(QKnxNetIp::HostProtocol::IpV4_Udp, address, port)
 {}
 
-QKnxNetIpHPAI::QKnxNetIpHPAI(QKnxNetIpHPAI::HostProtocol hpc, const QHostAddress &address,
-        quint16 port)
-    : QKnxNetIpStruct(quint8(hpc))
+QKnxNetIpHPAI::QKnxNetIpHPAI(QKnxNetIp::HostProtocol hpc, const QHostAddress &address, quint16 port)
+    : QKnxNetIpHostProtocolStruct(hpc)
 {
     setHPAI(hpc, address, port);
 }
 
-QKnxNetIpHPAI::HostProtocol QKnxNetIpHPAI::hostProtocol() const
+QKnxNetIp::HostProtocol QKnxNetIpHPAI::hostProtocol() const
 {
-    return QKnxNetIpHPAI::HostProtocol(code());
+    return QKnxNetIp::HostProtocol(code());
 }
 
-void QKnxNetIpHPAI::setHostProtocol(QKnxNetIpHPAI::HostProtocol code)
+void QKnxNetIpHPAI::setHostProtocol(QKnxNetIp::HostProtocol code)
 {
     if (isValid())
-        setCode(quint8(code));
+        setCode(code);
     else
         setHPAI(code, QHostAddress(), 0);
 }
@@ -58,7 +57,7 @@ void QKnxNetIpHPAI::setAddress(QHostAddress hostAddress)
     if (isValid())
         setHPAI(hostProtocol(), hostAddress, port());
     else
-        setHPAI(QKnxNetIpHPAI::HostProtocol::IpV4_Udp, hostAddress, 0);
+        setHPAI(QKnxNetIp::HostProtocol::IpV4_Udp, hostAddress, 0);
 }
 
 quint16 QKnxNetIpHPAI::port() const
@@ -71,12 +70,12 @@ void QKnxNetIpHPAI::setPort(quint16 port)
     if (isValid())
         setHPAI(hostProtocol(), address(), port);
     else
-        setHPAI(QKnxNetIpHPAI::HostProtocol::IpV4_Udp, QHostAddress(), port);
+        setHPAI(QKnxNetIp::HostProtocol::IpV4_Udp, QHostAddress(), port);
 }
 
-void QKnxNetIpHPAI::setHPAI(QKnxNetIpHPAI::HostProtocol code, QHostAddress address, quint16 port)
+void QKnxNetIpHPAI::setHPAI(QKnxNetIp::HostProtocol code, QHostAddress address, quint16 port)
 {
-    setCode(quint8(code));
+    setCode(code);
     QKnxNetIpPayload payload;
     payload.setBytes(QKnxUtils::HostAddress::bytes(address
         .isNull() ? QHostAddress::LocalHost : address));
@@ -86,9 +85,10 @@ void QKnxNetIpHPAI::setHPAI(QKnxNetIpHPAI::HostProtocol code, QHostAddress addre
 
 bool QKnxNetIpHPAI::isValid() const
 {
-    bool validHostProtocolCode = hostProtocol() == QKnxNetIpHPAI::HostProtocol::IpV4_Udp
-        || hostProtocol() == QKnxNetIpHPAI::HostProtocol::IpV4_Tcp;
-    return QKnxNetIpStruct::isValid() && size() == 8 && validHostProtocolCode;
+    bool validHostProtocolCode = hostProtocol() == QKnxNetIp::HostProtocol::IpV4_Udp
+        || hostProtocol() == QKnxNetIp::HostProtocol::IpV4_Tcp;
+    return QKnxNetIpHostProtocolStruct::isValid() && size() == 8
+        && validHostProtocolCode;
 }
 
 QT_END_NAMESPACE

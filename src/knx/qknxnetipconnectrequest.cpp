@@ -11,7 +11,7 @@ QT_BEGIN_NAMESPACE
 
 QKnxNetIpConnectRequest::QKnxNetIpConnectRequest(const QKnxNetIpHPAI &controlEndpoint,
         const QKnxNetIpHPAI &dataEndpoint, const QKnxNetIpCRI &requestInformation)
-    : QKnxNetIpFrame(quint16(QKnxNetIp::ServiceType::ConnectRequest))
+    : QKnxNetIpFrame(QKnxNetIp::ServiceType::ConnectRequest)
 {
     QKnxNetIpPayload payload;
     payload.setBytes(controlEndpoint.bytes());

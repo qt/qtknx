@@ -21,7 +21,7 @@
 
 QT_BEGIN_NAMESPACE
 
-class Q_KNX_EXPORT QKnxNetIpKnxAddressesDIB final : public QKnxNetIpStruct
+class Q_KNX_EXPORT QKnxNetIpKnxAddressesDIB final : public QKnxNetIpDescriptionTypeStruct
 {
 public:
     QKnxNetIpKnxAddressesDIB() = default;
@@ -32,7 +32,8 @@ public:
 
     template <typename T> static QKnxNetIpKnxAddressesDIB fromBytes(const T &bytes, quint16 index)
     {
-        return QKnxNetIpStruct::fromBytes(bytes, index);
+        return QKnxNetIpStructHelper::fromBytes(bytes, index,
+            QKnxNetIp::DescriptionType::KnxAddresses);
     }
 
     QKnxNetIp::DescriptionType descriptionType() const;
@@ -52,7 +53,7 @@ public:
     bool isValid() const override;
 
 private:
-    QKnxNetIpKnxAddressesDIB(const QKnxNetIpStruct &other);
+    QKnxNetIpKnxAddressesDIB(const QKnxNetIpDescriptionTypeStruct &other);
 };
 Q_DECLARE_TYPEINFO(QKnxNetIpKnxAddressesDIB, Q_MOVABLE_TYPE);
 

@@ -11,7 +11,7 @@ QT_BEGIN_NAMESPACE
 
 QKnxNetIpDescriptionResponse::QKnxNetIpDescriptionResponse(const QKnxNetIpDeviceDIB &deviceHardware,
         const QKnxNetIpServiceFamiliesDIB &supportedFamilies)
-    : QKnxNetIpFrame(quint16(QKnxNetIp::ServiceType::DescriptionResponse))
+    : QKnxNetIpFrame(QKnxNetIp::ServiceType::DescriptionResponse)
 {
     QKnxNetIpPayload payload;
     payload.setBytes(deviceHardware.bytes());
@@ -31,7 +31,7 @@ QKnxNetIpServiceFamiliesDIB QKnxNetIpDescriptionResponse::supportedFamilies() co
 
 namespace QKnxPrivate
 {
-    static QKnxNetIpStructRef::Type codeToType(quint8 code)
+    static QKnxNetIpStructRef::Type codeToType(QKnxNetIp::DescriptionType code)
     {
         switch (QKnxNetIp::DescriptionType(code)) {
         case QKnxNetIp::DescriptionType::DeviceInfo:
@@ -56,15 +56,15 @@ namespace QKnxPrivate
 QVector<QKnxNetIpStructRef> QKnxNetIpDescriptionResponse::optionalDibs() const
 {
     const auto &ref = payloadRef();
-    auto header = QKnxNetIpStructHeader::fromBytes(ref, 0);
+    auto header = QKnxNetIpStructHeader<QKnxNetIp::DescriptionType>::fromBytes(ref, 0);
     quint16 index = header.totalSize(); // total size of device DIB
 
-    header = QKnxNetIpStructHeader::fromBytes(ref, index);
+    header = QKnxNetIpStructHeader<QKnxNetIp::DescriptionType>::fromBytes(ref, index);
     index += header.totalSize(); // advance of total size of families DIB
 
     QVector<QKnxNetIpStructRef> dibs;
     while (index < ref.size()) {
-        header = QKnxNetIpStructHeader::fromBytes(ref, index);
+        header = QKnxNetIpStructHeader<QKnxNetIp::DescriptionType>::fromBytes(ref, index);
         dibs.push_back(QKnxNetIpStructRef(payloadRef(index), QKnxPrivate::codeToType(header.code())));
         index += header.totalSize(); // advance of total size of last read DIB
     }

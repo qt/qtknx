@@ -21,7 +21,7 @@
 
 QT_BEGIN_NAMESPACE
 
-class Q_KNX_EXPORT QKnxNetIpCurrentConfigDIB final : public QKnxNetIpStruct
+class Q_KNX_EXPORT QKnxNetIpCurrentConfigDIB final : public QKnxNetIpDescriptionTypeStruct
 {
 public:
     // 03_08_03 Management v01.06.02 AS, 2.5.5 PID_CURRENT_IP_ASSIGNMENT_METHOD (PID = 54)
@@ -49,7 +49,8 @@ public:
 
     template <typename T> static QKnxNetIpCurrentConfigDIB fromBytes(const T &bytes, quint16 index)
     {
-        return QKnxNetIpStruct::fromBytes(bytes, index);
+        return QKnxNetIpStructHelper::fromBytes(bytes, index,
+            QKnxNetIp::DescriptionType::CurrentIpConfiguration);
     }
 
     QKnxNetIp::DescriptionType descriptionType() const;
@@ -62,7 +63,7 @@ public:
     bool isValid() const override;
 
 private:
-    QKnxNetIpCurrentConfigDIB(const QKnxNetIpStruct &other);
+    QKnxNetIpCurrentConfigDIB(const QKnxNetIpDescriptionTypeStruct &other);
 };
 Q_DECLARE_TYPEINFO(QKnxNetIpCurrentConfigDIB, Q_MOVABLE_TYPE);
 

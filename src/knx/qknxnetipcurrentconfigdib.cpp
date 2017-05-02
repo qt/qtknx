@@ -10,8 +10,8 @@
 
 QT_BEGIN_NAMESPACE
 
-QKnxNetIpCurrentConfigDIB::QKnxNetIpCurrentConfigDIB(const QKnxNetIpStruct &other)
-    : QKnxNetIpStruct(other)
+QKnxNetIpCurrentConfigDIB::QKnxNetIpCurrentConfigDIB(const QKnxNetIpDescriptionTypeStruct &other)
+    : QKnxNetIpDescriptionTypeStruct(other)
 {}
 
 QKnxNetIpCurrentConfigDIB::QKnxNetIpCurrentConfigDIB(const QNetworkAddressEntry &addressEntry,
@@ -22,7 +22,7 @@ QKnxNetIpCurrentConfigDIB::QKnxNetIpCurrentConfigDIB(const QNetworkAddressEntry 
 QKnxNetIpCurrentConfigDIB::QKnxNetIpCurrentConfigDIB(const QHostAddress &ip,
     const QHostAddress &subnetMask, const QHostAddress &gateway, const QHostAddress &dhcp,
         AssignmentMethod method)
-    : QKnxNetIpStruct(quint8(QKnxNetIp::DescriptionType::CurrentIpConfiguration))
+    : QKnxNetIpDescriptionTypeStruct(QKnxNetIp::DescriptionType::CurrentIpConfiguration)
 {
     size_t bitcount = std::bitset<8>(quint8(method)).count();
     if (method < AssignmentMethod::Manual || method > AssignmentMethod::AutoIp || bitcount != 1)
@@ -70,7 +70,7 @@ QKnxNetIpCurrentConfigDIB::AssignmentMethod QKnxNetIpCurrentConfigDIB::assignmen
 
 bool QKnxNetIpCurrentConfigDIB::isValid() const
 {
-    return QKnxNetIpStruct::isValid() && size() == 20
+    return QKnxNetIpDescriptionTypeStruct::isValid() && size() == 20
         && descriptionType() == QKnxNetIp::DescriptionType::CurrentIpConfiguration;
 }
 

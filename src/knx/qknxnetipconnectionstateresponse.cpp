@@ -11,7 +11,7 @@ QT_BEGIN_NAMESPACE
 
 QKnxNetIpConnectionStateResponse::QKnxNetIpConnectionStateResponse(quint8 channelId,
         QKnxNetIp::Error status)
-    : QKnxNetIpFrame(quint16(QKnxNetIp::ServiceType::ConnectionStateResponse))
+    : QKnxNetIpFrame(QKnxNetIp::ServiceType::ConnectionStateResponse)
 {
     switch (status) {
     case QKnxNetIp::Error::None:

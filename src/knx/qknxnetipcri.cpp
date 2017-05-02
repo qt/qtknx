@@ -9,8 +9,8 @@
 
 QT_BEGIN_NAMESPACE
 
-QKnxNetIpCRI::QKnxNetIpCRI(const QKnxNetIpStruct &other)
-    : QKnxNetIpStruct(other)
+QKnxNetIpCRI::QKnxNetIpCRI(const QKnxNetIpConnectionTypeStruct &other)
+    : QKnxNetIpConnectionTypeStruct(other)
 {}
 
 QKnxNetIp::ConnectionType QKnxNetIpCRI::connectionType() const
@@ -21,16 +21,16 @@ QKnxNetIp::ConnectionType QKnxNetIpCRI::connectionType() const
 bool QKnxNetIpCRI::isValid() const
 {
     switch (connectionType()) {
-        case QKnxNetIp::ConnectionType::DeviceManagementConnection:
-        case QKnxNetIp::ConnectionType::TunnelConnection :
-        case QKnxNetIp::ConnectionType::RemoteLoggingConnection :
-        case QKnxNetIp::ConnectionType::RemoteConfigurationConnection :
-        case QKnxNetIp::ConnectionType::ObjectServerConnection :
+        case QKnxNetIp::ConnectionType::DeviceManagement:
+        case QKnxNetIp::ConnectionType::Tunnel:
+        case QKnxNetIp::ConnectionType::RemoteLogging:
+        case QKnxNetIp::ConnectionType::RemoteConfiguration:
+        case QKnxNetIp::ConnectionType::ObjectServer:
             break;
         default:
             return false;
     }
-    return QKnxNetIpStruct::isValid();
+    return QKnxNetIpConnectionTypeStruct::isValid();
 }
 
 QT_END_NAMESPACE

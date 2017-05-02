@@ -81,7 +81,7 @@ void tst_QKnxNetIpConnectResponse::testConstructorOneArgumentNoError()
 
 void tst_QKnxNetIpConnectResponse::testConstructorFourArguments()
 {
-    QKnxNetIpHPAI dataEnd(QKnxNetIpHPAI::HostProtocol::IpV4_Udp, QHostAddress::LocalHost, 3671);
+    QKnxNetIpHPAI dataEnd(QKnxNetIp::HostProtocol::IpV4_Udp, QHostAddress::LocalHost, 3671);
     QKnxNetIpCRD responseData;
     QKnxNetIpConnectResponse connectResponse(quint8(200), QKnxNetIp::Error::NoMoreConnections,
         dataEnd, responseData);
@@ -104,7 +104,7 @@ void tst_QKnxNetIpConnectResponse::testConstructorFourArguments()
 
 void tst_QKnxNetIpConnectResponse::testConstructorFourArgumentsNoError()
 {
-    QKnxNetIpHPAI dataEnd(QKnxNetIpHPAI::HostProtocol::IpV4_Udp, QHostAddress::LocalHost, 3671);
+    QKnxNetIpHPAI dataEnd(QKnxNetIp::HostProtocol::IpV4_Udp, QHostAddress::LocalHost, 3671);
     QKnxNetIpCRD responseData;
     QKnxNetIpConnectResponse connectResponse(quint8(200), QKnxNetIp::Error::None,
         dataEnd, responseData);
@@ -149,7 +149,7 @@ void tst_QKnxNetIpConnectResponse::testDebugStream()
     qDebug() << QKnxNetIpConnectResponse(QKnxNetIp::Error::NoMoreConnections);
     QCOMPARE(s_msg, QString::fromLatin1("0x0610020600080024"));
 
-    QKnxNetIpHPAI dataEnd(QKnxNetIpHPAI::HostProtocol::IpV4_Udp, QHostAddress::LocalHost, 3671);
+    QKnxNetIpHPAI dataEnd(QKnxNetIp::HostProtocol::IpV4_Udp, QHostAddress::LocalHost, 3671);
     QKnxNetIpCRD responseData;
     qDebug() <<QKnxNetIpConnectResponse(quint8(200), QKnxNetIp::Error::None, dataEnd, responseData);
     QCOMPARE(s_msg, QString::fromLatin1("0x1nv4l1d"));

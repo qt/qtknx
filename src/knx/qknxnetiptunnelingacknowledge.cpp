@@ -11,7 +11,7 @@ QT_BEGIN_NAMESPACE
 
 QKnxNetIpTunnelingAcknowledge::QKnxNetIpTunnelingAcknowledge(quint8 id,
         quint8 sequenceCounter, QKnxNetIp::Error status)
-    : QKnxNetIpConnectionHeaderFrame(quint16(QKnxNetIp::ServiceType::TunnelingAcknowledge))
+    : QKnxNetIpConnectionHeaderFrame(QKnxNetIp::ServiceType::TunnelingAcknowledge)
 {
     QKnxNetIpConnectionHeader header;
     header.setCommunicationChannelId(id);

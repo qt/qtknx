@@ -10,7 +10,7 @@
 QT_BEGIN_NAMESPACE
 
 QKnxNetIpConnectResponse::QKnxNetIpConnectResponse(QKnxNetIp::Error status)
-    : QKnxNetIpFrame(quint16(QKnxNetIp::ServiceType::ConnectResponse))
+    : QKnxNetIpFrame(QKnxNetIp::ServiceType::ConnectResponse)
 {
     QKnxNetIpPayload payload;
     payload.setByte(1, quint8(status));
@@ -19,7 +19,7 @@ QKnxNetIpConnectResponse::QKnxNetIpConnectResponse(QKnxNetIp::Error status)
 
 QKnxNetIpConnectResponse::QKnxNetIpConnectResponse(quint8 channelId, QKnxNetIp::Error status,
         const QKnxNetIpHPAI &dataEndpoint, const QKnxNetIpCRD &responseData)
-    : QKnxNetIpFrame(quint16(QKnxNetIp::ServiceType::ConnectResponse))
+    : QKnxNetIpFrame(QKnxNetIp::ServiceType::ConnectResponse)
 {
     QKnxNetIpPayload payload(channelId);
     payload.setByte(1, quint8(status));

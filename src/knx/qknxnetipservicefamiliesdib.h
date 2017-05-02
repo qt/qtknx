@@ -20,7 +20,7 @@
 
 QT_BEGIN_NAMESPACE
 
-class Q_KNX_EXPORT QKnxNetIpServiceFamiliesDIB final : public QKnxNetIpStruct
+class Q_KNX_EXPORT QKnxNetIpServiceFamiliesDIB final : public QKnxNetIpDescriptionTypeStruct
 {
 public:
     enum class ServiceFamilieId : quint8
@@ -43,7 +43,8 @@ public:
 
     template <typename T> static QKnxNetIpServiceFamiliesDIB fromBytes(const T &bytes, quint16 index)
     {
-        return QKnxNetIpStruct::fromBytes(bytes, index);
+        return QKnxNetIpStructHelper::fromBytes(bytes, index,
+            QKnxNetIp::DescriptionType::SupportedServiceFamilies);
     }
 
     QKnxNetIp::DescriptionType descriptionType() const;
@@ -56,7 +57,7 @@ public:
     bool isValid() const override;
 
 private:
-    QKnxNetIpServiceFamiliesDIB(const QKnxNetIpStruct &other);
+    QKnxNetIpServiceFamiliesDIB(const QKnxNetIpDescriptionTypeStruct &other);
 };
 Q_DECLARE_TYPEINFO(QKnxNetIpServiceFamiliesDIB, Q_MOVABLE_TYPE);
 

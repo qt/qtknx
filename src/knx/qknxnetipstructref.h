@@ -125,7 +125,11 @@ public:
     QKnxNetIpStructRef::Type type() const { return m_type; }
 
 private:
-    explicit QKnxNetIpStructRef(QKnxNetIpStruct *)
+    explicit QKnxNetIpStructRef(QKnxNetIpHostProtocolStruct *)
+    {}
+    explicit QKnxNetIpStructRef(QKnxNetIpConnectionTypeStruct *)
+    {}
+    explicit QKnxNetIpStructRef(QKnxNetIpDescriptionTypeStruct *)
     {}
 
     QKnxNetIpStructRef(const QKnxByteStoreRef &ref, QKnxNetIpStructRef::Type type)

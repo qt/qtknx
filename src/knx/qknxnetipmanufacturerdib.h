@@ -19,7 +19,7 @@
 
 QT_BEGIN_NAMESPACE
 
-class Q_KNX_EXPORT QKnxNetIpManufacturerDIB final : public QKnxNetIpStruct
+class Q_KNX_EXPORT QKnxNetIpManufacturerDIB final : public QKnxNetIpDescriptionTypeStruct
 {
 public:
     QKnxNetIpManufacturerDIB() = default;
@@ -31,7 +31,8 @@ public:
 
     template <typename T> static QKnxNetIpManufacturerDIB fromBytes(const T &bytes, quint16 index)
     {
-        return QKnxNetIpStruct::fromBytes(bytes, index);
+        return QKnxNetIpStructHelper::fromBytes(bytes, index,
+            QKnxNetIp::DescriptionType::ManufactorData);
     }
 
     QKnxNetIp::DescriptionType descriptionType() const;
@@ -47,7 +48,7 @@ public:
     bool isValid() const override;
 
 private:
-    QKnxNetIpManufacturerDIB(const QKnxNetIpStruct &other);
+    QKnxNetIpManufacturerDIB(const QKnxNetIpDescriptionTypeStruct &other);
 };
 Q_DECLARE_TYPEINFO(QKnxNetIpManufacturerDIB, Q_MOVABLE_TYPE);
 

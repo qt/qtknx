@@ -8,40 +8,24 @@
 #ifndef QKNXNETIPFRAME_H
 #define QKNXNETIPFRAME_H
 
+#include <QtKnx/qknxnetip.h>
 #include <QtKnx/qknxnetippackage.h>
 
 QT_BEGIN_NAMESPACE
 
-class Q_KNX_EXPORT QKnxNetIpFrame : public QKnxNetIpPackage<quint16, QKnxNetIpFrameHeader>
+using QKnxNetIpFrame = QKnxNetIpPackage<QKnxNetIp::ServiceType, QKnxNetIpFrameHeader>;
+
+struct QKnxNetIpFrameHelper
 {
-    using Package = QKnxNetIpPackage<quint16, QKnxNetIpFrameHeader>;
-
-public:
-    QKnxNetIpFrame() = default;
-    ~QKnxNetIpFrame() override = default;
-
-    QKnxNetIpFrame(const QKnxNetIpFrame &) = default;
-    QKnxNetIpFrame &operator=(const QKnxNetIpFrame &) = default;
-
-    using Package::bytes;
     template <typename T, std::size_t S = 0>
-        static QKnxNetIpFrame fromBytes(const T &bytes, quint16 index)
+        static QKnxNetIpFrame fromBytes(const T &bytes, quint16 index, QKnxNetIp::ServiceType sType)
     {
         auto header = QKnxNetIpFrameHeader::fromBytes(bytes, index);
-        if (!header.isValid())
+        if (!header.isValid() || header.code() != sType)
             return {};
 
         return QKnxNetIpFrame(header, QKnxNetIpPayload::fromBytes(bytes, index + header.size(),
             header.payloadSize()));
-    }
-
-protected:
-    using Package::Package;
-
-    void setPayload(const QKnxNetIpPayload &payload) override
-    {
-        Package::setPayload(payload);
-        setPayloadSize(payload.size());
     }
 };
 
