@@ -19,7 +19,7 @@ QKnxNetIpSearchRequest::QKnxNetIpSearchRequest(const QKnxNetIpHPAI &discoveryEnd
 
 bool QKnxNetIpSearchRequest::isValid() const
 {
-    return QKnxNetIpFrame::isValid() && size() == 18;
+    return QKnxNetIpFrame::isValid() && size() == 14;
 }
 
 QKnxNetIpHPAI QKnxNetIpSearchRequest::discoveryEndpoint() const

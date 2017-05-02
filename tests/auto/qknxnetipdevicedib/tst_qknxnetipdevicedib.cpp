@@ -22,7 +22,7 @@ class tst_QKnxNetIpDeviceDIB : public QObject
 private slots:
     void testConstructor()
     {
-        QKnxNetIpDeviceDIB deviceDIB(QKnxNetIpDeviceDIB::MediumCode::Ip,
+        QKnxNetIpDeviceDIB deviceDIB(QKnxNetIpDeviceDIB::Medium::Ip,
                                      QKnxNetIpDeviceDIB::DeviceStatus::ActiveProgrammingMode,
                                      QKnxAddress::Individual::Unregistered,
                                      0x1111,
@@ -31,7 +31,7 @@ private slots:
                                      QByteArray::fromHex("bcaec56690f9"),
                                      QByteArray("qt.io KNX device"));
 
-        QCOMPARE(deviceDIB.mediumCode(), QKnxNetIpDeviceDIB::MediumCode::Ip);
+        QCOMPARE(deviceDIB.medium(), QKnxNetIpDeviceDIB::Medium::Ip);
         QCOMPARE(deviceDIB.descriptionType(), QKnxNetIp::DescriptionType::DeviceInfo);
         QCOMPARE(deviceDIB.deviceStatus(), QKnxNetIpDeviceDIB::DeviceStatus::ActiveProgrammingMode);
         QCOMPARE(deviceDIB.individualAddress().toString(), QKnxAddress::Individual::Unregistered.toString());
@@ -73,7 +73,7 @@ private slots:
     qDebug() << QKnxNetIpDeviceDIB();
     QCOMPARE(s_msg, QString::fromLatin1("0x1nv4l1d"));
 
-    qDebug() << QKnxNetIpDeviceDIB(QKnxNetIpDeviceDIB::MediumCode::Ip,
+    qDebug() << QKnxNetIpDeviceDIB(QKnxNetIpDeviceDIB::Medium::Ip,
                                    QKnxNetIpDeviceDIB::DeviceStatus::ActiveProgrammingMode,
                                    QKnxAddress::Individual::Unregistered,
                                    0x1111,
@@ -89,7 +89,7 @@ private slots:
     {
         QByteArray byteArray;
         QDataStream out(&byteArray, QIODevice::WriteOnly);
-        out << QKnxNetIpDeviceDIB(QKnxNetIpDeviceDIB::MediumCode::Ip,
+        out << QKnxNetIpDeviceDIB(QKnxNetIpDeviceDIB::Medium::Ip,
                                   QKnxNetIpDeviceDIB::DeviceStatus::ActiveProgrammingMode,
                                   QKnxAddress::Individual::Unregistered,
                                   0x1111,

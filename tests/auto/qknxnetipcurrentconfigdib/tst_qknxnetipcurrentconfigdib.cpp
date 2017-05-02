@@ -164,6 +164,7 @@ void tst_QKnxNetIpCurrentConfigDIB::testDataStream()
         QCOMPARE(byteArray, QByteArray::fromHex("1404C0A8020CFFFFFF00C0A80201B48A03020100"));
     }
 }
+
 QTEST_APPLESS_MAIN(tst_QKnxNetIpCurrentConfigDIB)
 
 #include "tst_qknxnetipcurrentconfigdib.moc"

@@ -27,7 +27,6 @@ public:
     quint8 communicationChannelId() const;
     quint8 sequenceCounter() const;
     QKnxCemi cemi() const;
-
 };
 
 QT_END_NAMESPACE

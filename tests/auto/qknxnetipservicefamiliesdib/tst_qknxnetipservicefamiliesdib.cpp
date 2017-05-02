@@ -80,9 +80,7 @@ void tst_QKnxNetIpServiceFamiliesDIB::testConstructorWithTwoArguments()
     QCOMPARE(families.payload().bytes<QByteArray>(), QByteArray::fromHex("020A"));
     QCOMPARE(families.toString(), QString::fromLatin1("Total size { 0x04 }, "
         "Code { 0x02 }, Bytes { 0x02, 0x0a }"));
-    QCOMPARE(families.descriptionType(),
-        QKnxNetIp::DescriptionType::SupportedServiceFamilies);
-
+    QCOMPARE(families.descriptionType(), QKnxNetIp::DescriptionType::SupportedServiceFamilies);
 }
 
 void tst_QKnxNetIpServiceFamiliesDIB::testConstructorWithThreeArguments()

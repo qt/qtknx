@@ -11,7 +11,7 @@ QT_BEGIN_NAMESPACE
 
 QKnxNetIpDisconnectResponse::QKnxNetIpDisconnectResponse(quint8 channelId,
         QKnxNetIp::Error status)
-    : QKnxNetIpFrame(quint16(QKnxNetIp::ServiceType::ConnectionStateResponse))
+    : QKnxNetIpFrame(quint16(QKnxNetIp::ServiceType::DisconnectResponse))
 {
     QKnxNetIpPayload payload(channelId);
     payload.setByte(1, quint8(status));

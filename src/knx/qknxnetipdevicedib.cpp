@@ -23,7 +23,7 @@ QKnxNetIpDeviceDIB::QKnxNetIpDeviceDIB(const QKnxNetIpStruct &other)
     : QKnxNetIpStruct(other)
 {}
 
-QKnxNetIpDeviceDIB::QKnxNetIpDeviceDIB(MediumCode mediumCode, DeviceStatus deviceStatus,
+QKnxNetIpDeviceDIB::QKnxNetIpDeviceDIB(Medium mediumCode, DeviceStatus deviceStatus,
         const QKnxAddress &individualAddress, quint16 projectId, const QByteArray &serialNumber,
         const QHostAddress &multicastAddress, const QByteArray &macAddress, const QByteArray deviceName)
     : QKnxNetIpStruct(quint8(QKnxNetIp::DescriptionType::DeviceInfo))
@@ -58,9 +58,9 @@ QKnxNetIp::DescriptionType QKnxNetIpDeviceDIB::descriptionType() const
     return QKnxNetIp::DescriptionType(code());
 }
 
-QKnxNetIpDeviceDIB::MediumCode QKnxNetIpDeviceDIB::mediumCode() const
+QKnxNetIpDeviceDIB::Medium QKnxNetIpDeviceDIB::medium() const
 {
-    return QKnxNetIpDeviceDIB::MediumCode(payloadRef().byte(0));
+    return QKnxNetIpDeviceDIB::Medium(payloadRef().byte(0));
 }
 
 QKnxNetIpDeviceDIB::DeviceStatus QKnxNetIpDeviceDIB::deviceStatus() const

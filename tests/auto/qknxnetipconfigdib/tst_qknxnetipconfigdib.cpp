@@ -131,7 +131,6 @@ void tst_QKnxNetIpConfigDIB::testDebugStream()
                                    QKnxNetIpConfigDIB::Capability::AutoIp,
                                    QKnxNetIpConfigDIB::AssignmentMethod::Manual);
     QCOMPARE(s_msg, QString::fromLatin1("0x1003c0a8020cffffff00c0a802010201"));
-
 }
 
 void tst_QKnxNetIpConfigDIB::testDataStream()
@@ -161,6 +160,7 @@ void tst_QKnxNetIpConfigDIB::testDataStream()
         QCOMPARE(byteArray, QByteArray::fromHex("1003C0A8020CFFFFFF00C0A802010201"));
     }
 }
+
 QTEST_APPLESS_MAIN(tst_QKnxNetIpConfigDIB)
 
 #include "tst_qknxnetipconfigdib.moc"

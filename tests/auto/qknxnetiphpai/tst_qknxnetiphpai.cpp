@@ -22,10 +22,10 @@ class tst_QKnxNetIpHPAI : public QObject
 private slots:
     void testConstructor()
     {
-        QKnxNetIpHPAI hpai(QKnxNetIpHPAI::HostProtocolCode::IpV4_Udp, QHostAddress::LocalHost,
+        QKnxNetIpHPAI hpai(QKnxNetIpHPAI::HostProtocol::IpV4_Udp, QHostAddress::LocalHost,
             3671);
 
-        QCOMPARE(hpai.hostProtocolCode(), QKnxNetIpHPAI::HostProtocolCode::IpV4_Udp);
+        QCOMPARE(hpai.hostProtocol(), QKnxNetIpHPAI::HostProtocol::IpV4_Udp);
         QCOMPARE(hpai.address(), QHostAddress(QHostAddress::LocalHost));
         QCOMPARE(hpai.port(), quint16(3671));
 
@@ -56,7 +56,7 @@ private slots:
         qDebug() << QKnxNetIpHPAI();
         QCOMPARE(s_msg, QString::fromLatin1("0x1nv4l1d"));
 
-        qDebug() << QKnxNetIpHPAI(QKnxNetIpHPAI::HostProtocolCode::IpV4_Udp,
+        qDebug() << QKnxNetIpHPAI(QKnxNetIpHPAI::HostProtocol::IpV4_Udp,
                                   QHostAddress::LocalHost, 3671);
         QCOMPARE(s_msg, QString::fromLatin1("0x08017f0000010e57"));
     }
@@ -65,7 +65,7 @@ private slots:
     {
         QByteArray byteArray;
         QDataStream out(&byteArray, QIODevice::WriteOnly);
-        out << QKnxNetIpHPAI(QKnxNetIpHPAI::HostProtocolCode::IpV4_Udp,
+        out << QKnxNetIpHPAI(QKnxNetIpHPAI::HostProtocol::IpV4_Udp,
                              QHostAddress::LocalHost, 3671);
         QCOMPARE(byteArray, QByteArray::fromHex("08017f0000010e57"));
     }

@@ -1,0 +1,104 @@
+/****************************************************************************
+**
+** Copyright (C) 2017 The Qt Company Ltd.
+** Contact: http://www.qt.io/licensing/
+**
+****************************************************************************/
+
+#include <QtCore/qdebug.h>
+#include <QtTest/qtest.h>
+#include <QtKnx/qknxnetipdisconnectresponse.h>
+
+static QString s_msg;
+static void myMessageHandler(QtMsgType, const QMessageLogContext &, const QString &msg)
+{
+    s_msg = msg;
+}
+
+class tst_QKnxNetIpDisconnectResponse: public QObject
+{
+    Q_OBJECT
+
+private slots:
+    void testDefaultConstructor();
+    void testConstructor();
+    void testConstructorNoError();
+    void testDebugStream();
+    void testDataStream();
+};
+
+void tst_QKnxNetIpDisconnectResponse::testDefaultConstructor()
+{
+    QKnxNetIpDisconnectResponse response;
+    QCOMPARE(response.isValid(), false);
+    QCOMPARE(response.channelId(), quint8(0));
+    QCOMPARE(response.status(), QKnxNetIp::Error::None);
+}
+
+void tst_QKnxNetIpDisconnectResponse::testConstructor()
+{
+
+    QKnxNetIpDisconnectResponse response(quint8(200), QKnxNetIp::Error::NoMoreConnections);
+    QCOMPARE(response.isValid(), true);
+    QCOMPARE(response.size(), quint16(8));
+    QCOMPARE(response.bytes<QByteArray>(),
+        QByteArray::fromHex("0610020a0008c824"));
+    QCOMPARE(response.payload().size(), quint16(2));
+    QCOMPARE(response.payload().bytes<QByteArray>(),
+        QByteArray::fromHex("c824"));
+    QCOMPARE(response.toString(), QString::fromLatin1("Header size { 0x06 }, "
+            "Version { 0x10 }, Code { 0x20a }, Total size { 0x08 }, Bytes { 0xc8, 0x24 }"));
+
+    QCOMPARE(response.channelId(), quint8(200));
+    QCOMPARE(response.status(), QKnxNetIp::Error::NoMoreConnections);
+}
+
+void tst_QKnxNetIpDisconnectResponse::testConstructorNoError()
+{
+
+    QKnxNetIpDisconnectResponse response(quint8(200), QKnxNetIp::Error::None);
+    QCOMPARE(response.isValid(), true);
+    QCOMPARE(response.size(), quint16(8));
+    QCOMPARE(response.bytes<QByteArray>(),
+        QByteArray::fromHex("0610020a0008c800"));
+    QCOMPARE(response.payload().size(), quint16(2));
+    QCOMPARE(response.payload().bytes<QByteArray>(),
+        QByteArray::fromHex("c800"));
+    QCOMPARE(response.toString(), QString::fromLatin1("Header size { 0x06 }, "
+            "Version { 0x10 }, Code { 0x20a }, Total size { 0x08 }, Bytes { 0xc8, 0x00 }"));
+
+    QCOMPARE(response.channelId(), quint8(200));
+    QCOMPARE(response.status(), QKnxNetIp::Error::None);
+}
+
+void tst_QKnxNetIpDisconnectResponse::testDebugStream()
+{
+    struct DebugHandler
+    {
+        explicit DebugHandler(QtMessageHandler newMessageHandler)
+            : oldMessageHandler(qInstallMessageHandler(newMessageHandler)) {}
+        ~DebugHandler() {
+            qInstallMessageHandler(oldMessageHandler);
+        }
+        QtMessageHandler oldMessageHandler;
+    } _(myMessageHandler);
+
+    qDebug() << QKnxNetIpDisconnectResponse();
+    QCOMPARE(s_msg, QString::fromLatin1("0x1nv4l1d"));
+
+    qDebug() << QKnxNetIpDisconnectResponse(quint8(200), QKnxNetIp::Error::None);
+    QCOMPARE(s_msg, QString::fromLatin1("0x0610020a0008c800"));
+}
+
+void tst_QKnxNetIpDisconnectResponse::testDataStream()
+{
+    QByteArray byteArray;
+    QDataStream out(&byteArray, QIODevice::WriteOnly);
+
+    out << QKnxNetIpDisconnectResponse(quint8(200), QKnxNetIp::Error::None);
+    QCOMPARE(byteArray, QByteArray::fromHex("0610020a0008c800"));
+}
+
+QTEST_APPLESS_MAIN(tst_QKnxNetIpDisconnectResponse)
+
+#include "tst_qknxnetipdisconnectresponse.moc"

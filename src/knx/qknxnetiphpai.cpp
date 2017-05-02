@@ -25,10 +25,10 @@ QKnxNetIpHPAI::QKnxNetIpHPAI(const QKnxNetIpStruct &other)
 {}
 
 QKnxNetIpHPAI::QKnxNetIpHPAI(const QHostAddress &address, quint16 port)
-    : QKnxNetIpHPAI(QKnxNetIpHPAI::HostProtocolCode::IpV4_Udp, address, port)
+    : QKnxNetIpHPAI(QKnxNetIpHPAI::HostProtocol::IpV4_Udp, address, port)
 {}
 
-QKnxNetIpHPAI::QKnxNetIpHPAI(QKnxNetIpHPAI::HostProtocolCode hpc, const QHostAddress &address,
+QKnxNetIpHPAI::QKnxNetIpHPAI(QKnxNetIpHPAI::HostProtocol hpc, const QHostAddress &address,
         quint16 port)
     : QKnxNetIpStruct(quint8(hpc))
 {
@@ -39,12 +39,12 @@ QKnxNetIpHPAI::QKnxNetIpHPAI(QKnxNetIpHPAI::HostProtocolCode hpc, const QHostAdd
     setPayload(payload);
 }
 
-QKnxNetIpHPAI::HostProtocolCode QKnxNetIpHPAI::hostProtocolCode() const
+QKnxNetIpHPAI::HostProtocol QKnxNetIpHPAI::hostProtocol() const
 {
-    return HostProtocolCode(code());
+    return QKnxNetIpHPAI::HostProtocol(code());
 }
 
-void QKnxNetIpHPAI::setHostProtocolCode(QKnxNetIpHPAI::HostProtocolCode code)
+void QKnxNetIpHPAI::setHostProtocol(QKnxNetIpHPAI::HostProtocol code)
 {
     setCode(quint8(code));
 }
@@ -61,8 +61,8 @@ quint16 QKnxNetIpHPAI::port() const
 
 bool QKnxNetIpHPAI::isValid() const
 {
-    bool validHostProtocolCode = hostProtocolCode() == HostProtocolCode::IpV4_Udp
-        || hostProtocolCode() == HostProtocolCode::IpV4_Tcp;
+    bool validHostProtocolCode = hostProtocol() == QKnxNetIpHPAI::HostProtocol::IpV4_Udp
+        || hostProtocol() == QKnxNetIpHPAI::HostProtocol::IpV4_Tcp;
     return QKnxNetIpStruct::isValid() && size() == 8 && validHostProtocolCode;
 }
 

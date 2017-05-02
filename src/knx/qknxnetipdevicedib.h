@@ -24,14 +24,14 @@ QT_BEGIN_NAMESPACE
 class Q_KNX_EXPORT QKnxNetIpDeviceDIB final : public QKnxNetIpStruct
 {
 public:
-    enum class MediumCode : quint8
+    enum class Medium : quint8
     {
         Tp1 = 0x02,
         Pl110 = 0x04,
         Rf = 0x10,
         Ip = 0x20
     };
-    QKnxNetIpDeviceDIB::MediumCode mediumCode() const;
+    QKnxNetIpDeviceDIB::Medium medium() const;
 
     // 4.20 Programming Mode (prog_mode)
     // referred to by 7.5.4.2 Device information DIB device status
@@ -45,7 +45,7 @@ public:
     QKnxNetIpDeviceDIB() = default;
     ~QKnxNetIpDeviceDIB() override = default;
 
-    QKnxNetIpDeviceDIB(MediumCode mediumCode,
+    QKnxNetIpDeviceDIB(Medium mediumCode,
                        DeviceStatus deviceStatus,
                        const QKnxAddress &address,
                        quint16 projectId,
