@@ -44,7 +44,12 @@ public:
     void setHostProtocol(QKnxNetIpHPAI::HostProtocol code);
 
     QHostAddress address() const;
+    void setAddress(QHostAddress hostAddress);
+
     quint16 port() const;
+    void setPort(quint16 port);
+
+    void setHPAI(QKnxNetIpHPAI::HostProtocol code, QHostAddress hostAddress, quint16 port);
 
     bool isValid() const override;
 
