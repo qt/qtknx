@@ -66,37 +66,27 @@ public:
     template <typename T, std::size_t S = 0>
         static QKnxNetIpConnectionHeader fromBytes(const T &bytes, quint16 index)
     {
-        static_assert(is_type<T, QByteArray, QVector<quint8>, std::deque<quint8>,
+        static_assert(is_type<T, QByteArray, QKnxByteStoreRef, QVector<quint8>, std::deque<quint8>,
             std::vector<quint8>, std::array<quint8, S>>::value, "Type not supported.");
 
         const qint32 availableSize = bytes.size() - index;
         if (availableSize < 1)
             return {}; // total size missing
 
-        quint8 totalSize = bytes[index];
+        const quint8 totalSize = QKnxUtils::QUint8::fromBytes(bytes, index);
         if (availableSize < totalSize)
             return {}; // header might be coruppted
 
-        QKnxNetIpConnectionHeader header(bytes[index + 1], bytes[index + 2], bytes[index + 3]);
+        const quint8 channelId = QKnxUtils::QUint8::fromBytes(bytes, index + 1);
+        const quint8 sequenceCounter = QKnxUtils::QUint8::fromBytes(bytes, index + 2);
+        const quint8 serviceTypeSpecificValue = QKnxUtils::QUint8::fromBytes(bytes, index + 3);
+        QKnxNetIpConnectionHeader header(channelId, sequenceCounter, serviceTypeSpecificValue);
         if (totalSize > 4) {
-            T t(totalSize - 4, 0);
-            std::copy_n(std::next(bytes.begin(), index + 4), totalSize - 4, std::begin(t));
-            header.setConnectionTypeSpecificHeaderItems(t);
+            auto begin = std::next(std::begin(bytes), index + 4);
+            header.setConnectionTypeSpecificHeaderItems(std::vector<quint8>(begin, std::next(begin,
+                totalSize - 4)));
         }
         return header;
-    }
-
-    static QKnxNetIpConnectionHeader fromBytes(const QKnxByteStoreRef &store, quint16 index)
-    {
-        const qint32 availableSize = store.size() - index;
-        if (availableSize < 1)
-            return {}; // total size missing
-
-        quint8 totalSize = store.bytes()[index];
-        if (availableSize < totalSize)
-            return {}; // header might be coruppted
-
-        return QKnxNetIpConnectionHeader(&(*std::next(store.bytes(), index)), totalSize);
     }
 
 private:

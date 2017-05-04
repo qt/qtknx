@@ -53,7 +53,7 @@ public:
     template <typename T, std::size_t S = 0>
         static QKnxNetIpFrameHeader fromBytes(const T &bytes, quint16 index)
     {
-        static_assert(is_type<T, QByteArray, QVector<quint8>, std::deque<quint8>,
+        static_assert(is_type<T, QByteArray, QKnxByteStoreRef, QVector<quint8>, std::deque<quint8>,
             std::vector<quint8>, std::array<quint8, S>>::value, "Type not supported.");
 
         const qint32 availableSize = bytes.size() - index;

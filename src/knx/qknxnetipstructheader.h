@@ -107,14 +107,14 @@ public:
     template <typename T, std::size_t S = 0>
         static QKnxNetIpStructHeader fromBytes(const T &bytes, quint16 index)
     {
-        static_assert(is_type<T, QByteArray, QVector<quint8>, std::deque<quint8>,
+        static_assert(is_type<T, QByteArray, QKnxByteStoreRef, QVector<quint8>, std::deque<quint8>,
             std::vector<quint8>, std::array<quint8, S>>::value, "Type not supported.");
 
         const qint32 availableSize = bytes.size() - index;
         if (availableSize < 1)
             return {}; // total size missing
 
-        quint16 totalSize = quint8(bytes[index]);
+        quint16 totalSize = QKnxUtils::QUint8::fromBytes(bytes, index);
         const quint8 headerSize = totalSize == 0xff ? 4 : 2;
         if (availableSize < headerSize)
             return {}; // total size and code missing
@@ -122,27 +122,7 @@ public:
         if (headerSize == 4)
             totalSize = QKnxUtils::QUint16::fromBytes(bytes, index + 1);
 
-        auto code = CodeType(bytes[index + headerSize - 1]);
-        if (!QKnxNetIp::isStructType(code))
-            return {};
-        return QKnxNetIpStructHeader(code, totalSize - headerSize);
-    }
-
-    static QKnxNetIpStructHeader fromBytes(const QKnxByteStoreRef &store, quint16 index)
-    {
-        const qint32 availableSize = store.size() - index;
-        if (availableSize < 1)
-            return {}; // total size missing
-
-        quint16 totalSize = quint8(store.bytes()[index]);
-        const quint8 headerSize = totalSize == 0xff ? 4 : 2;
-        if (availableSize < headerSize)
-            return {}; // total size and code missing
-
-        if (headerSize == 4)
-            totalSize = QKnxUtils::QUint16::fromBytes(store, index + 1);
-
-        auto code = CodeType(store.bytes()[index + headerSize - 1]);
+        auto code = CodeType(QKnxUtils::QUint8::fromBytes(bytes, index + headerSize - 1));
         if (!QKnxNetIp::isStructType(code))
             return {};
         return QKnxNetIpStructHeader(code, totalSize - headerSize);

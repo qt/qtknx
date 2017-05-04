@@ -22,6 +22,27 @@ QT_BEGIN_NAMESPACE
 
 struct QKnxUtils final
 {
+    struct QUint8 final
+    {
+        static quint8 fromBytes(const QKnxByteStoreRef &data, quint16 index = 0)
+        {
+            if (data.size() - index < 1)
+                return {};
+            return data.bytes()[index];
+        }
+
+        template <typename T, std::size_t S = 0>
+            static quint8 fromBytes(const T &data, quint16 index = 0)
+        {
+            static_assert(is_type<T, QByteArray, QVector<quint8>, std::deque<quint8>,
+                std::vector<quint8>, std::array<quint8, S>>::value, "Type not supported.");
+
+            if (data.size() - index < 1)
+                return {};
+            return data[index];
+        }
+    };
+
     struct QUint16 final
     {
         template <typename T = std::vector<quint8>>
@@ -43,7 +64,8 @@ struct QKnxUtils final
             return quint16(quint16(data.bytes()[index]) << 8 | data.bytes()[index + 1]);
         }
 
-        template <typename T, std::size_t S = 0> static quint16 fromBytes(const T &data, quint16 index = 0)
+        template <typename T, std::size_t S = 0>
+            static quint16 fromBytes(const T &data, quint16 index = 0)
         {
             static_assert(is_type<T, QByteArray, QVector<quint8>, std::deque<quint8>,
                 std::vector<quint8>, std::array<quint8, S>>::value, "Type not supported.");
@@ -81,7 +103,8 @@ struct QKnxUtils final
                 | bytes[index + 2] << 8 | bytes[index + 3]));
         }
 
-        template <typename T, std::size_t S = 0> static QHostAddress fromBytes(const T &data, quint16 index = 0)
+        template <typename T, std::size_t S = 0>
+            static QHostAddress fromBytes(const T &data, quint16 index = 0)
         {
             static_assert(is_type<T, QByteArray, QVector<quint8>, std::deque<quint8>,
                 std::vector<quint8>, std::array<quint8, S>>::value, "Type not supported.");
