@@ -25,11 +25,20 @@ public:
                             const QKnxNetIpHPAI &dataEndpoint,
                             const QKnxNetIpCRI &requestInformation);
 
+    template <typename T>
+        static QKnxNetIpConnectRequest fromBytes(const T &bytes, quint16 index)
+    {
+        return QKnxNetIpFrameHelper::fromBytes(bytes, index, QKnxNetIp::ServiceType::ConnectRequest);
+    }
+
     QKnxNetIpHPAI controlEndpoint() const;
     QKnxNetIpHPAI dataEndpoint() const;
     QKnxNetIpCRI requestInformation() const;
 
     bool isValid() const override;
+
+private:
+    QKnxNetIpConnectRequest(const QKnxNetIpFrame &other);
 };
 
 QT_END_NAMESPACE

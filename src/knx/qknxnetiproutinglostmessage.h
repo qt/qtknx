@@ -22,10 +22,20 @@ public:
 
     QKnxNetIpRoutingLostMessage(QKnxNetIp::DeviceState state, quint16 lostMessageCount);
 
+    template <typename T>
+        static QKnxNetIpRoutingLostMessage fromBytes(const T &bytes, quint16 index)
+    {
+        return QKnxNetIpFrameHelper::fromBytes(bytes, index,
+            QKnxNetIp::ServiceType::RoutingLostMessage);
+    }
+
     QKnxNetIp::DeviceState deviceState() const;
     quint16 lostMessageCount() const;
 
     bool isValid() const override;
+
+private:
+    QKnxNetIpRoutingLostMessage(const QKnxNetIpFrame &other);
 };
 
 QT_END_NAMESPACE

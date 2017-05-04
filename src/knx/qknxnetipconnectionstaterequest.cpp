@@ -19,6 +19,10 @@ QKnxNetIpConnectionStateRequest::QKnxNetIpConnectionStateRequest(quint8 channelI
     setPayload(payload);
 }
 
+QKnxNetIpConnectionStateRequest::QKnxNetIpConnectionStateRequest(const QKnxNetIpFrame &other)
+    : QKnxNetIpFrame(other)
+{}
+
 quint8 QKnxNetIpConnectionStateRequest::channelId() const
 {
     return payloadRef().byte(0);

@@ -24,11 +24,19 @@ public:
     QKnxNetIpRoutingBusy(QKnxNetIp::DeviceState state, quint8 routingBusyWaitTime,
         quint16 routingBusyControl);
 
+    template <typename T> static QKnxNetIpRoutingBusy fromBytes(const T &bytes, quint16 index)
+    {
+        return QKnxNetIpFrameHelper::fromBytes(bytes, index, QKnxNetIp::ServiceType::RoutingBusy);
+    }
+
     QKnxNetIp::DeviceState deviceState() const;
     quint8 routingBusyWaitTime() const;
     quint16 routingBusyControl() const;
 
     bool isValid() const override;
+
+private:
+    QKnxNetIpRoutingBusy(const QKnxNetIpFrame &other);
 };
 
 QT_END_NAMESPACE

@@ -24,11 +24,21 @@ public:
     QKnxNetIpDeviceConfigurationRequest(quint8 communicationChannelId, quint8 sequenceCounter,
         const QKnxCemi &cemi);
 
+    template <typename T>
+        static QKnxNetIpDeviceConfigurationRequest fromBytes(const T &bytes, quint16 index)
+    {
+        return QKnxNetIpFrameHelper::fromBytes(bytes, index,
+            QKnxNetIp::ServiceType::DeviceConfigurationRequest);
+    }
+
     quint8 communicationChannelId() const;
     quint8 sequenceCounter() const;
     QKnxCemi cemi() const;
 
     bool isValid() const override;
+
+private:
+    QKnxNetIpDeviceConfigurationRequest(const QKnxNetIpConnectionHeaderFrame &other);
 };
 
 QT_END_NAMESPACE

@@ -16,6 +16,11 @@ QKnxNetIpDeviceConfigurationAcknowledge::QKnxNetIpDeviceConfigurationAcknowledge
     setConnectionHeader({ id, sequenceCounter, quint8(status) });
 }
 
+QKnxNetIpDeviceConfigurationAcknowledge::QKnxNetIpDeviceConfigurationAcknowledge(
+        const QKnxNetIpConnectionHeaderFrame &other)
+    : QKnxNetIpConnectionHeaderFrame(other)
+{}
+
 quint8 QKnxNetIpDeviceConfigurationAcknowledge::communicationChannelId() const
 {
     return connectionHeader().communicationChannelId();

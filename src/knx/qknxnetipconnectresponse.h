@@ -29,12 +29,22 @@ public:
 
     explicit QKnxNetIpConnectResponse(QKnxNetIp::Error status);
 
+    template <typename T>
+        static QKnxNetIpConnectResponse fromBytes(const T &bytes, quint16 index)
+    {
+        return QKnxNetIpFrameHelper::fromBytes(bytes, index,
+            QKnxNetIp::ServiceType::ConnectResponse);
+    }
+
     quint8 channelId() const;
     QKnxNetIp::Error status() const;
     QKnxNetIpHPAI dataEndpoint() const;
     QKnxNetIpCRD responseData() const;
 
     bool isValid() const override;
+
+private:
+    QKnxNetIpConnectResponse(const QKnxNetIpFrame &other);
 };
 
 QT_END_NAMESPACE

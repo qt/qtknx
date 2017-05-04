@@ -22,8 +22,18 @@ public:
 
     explicit QKnxNetIpDescriptionRequest(const QKnxNetIpHPAI &controlEndpoint);
 
+    template <typename T>
+        static QKnxNetIpDescriptionRequest fromBytes(const T &bytes, quint16 index)
+    {
+        return QKnxNetIpFrameHelper::fromBytes(bytes, index,
+            QKnxNetIp::ServiceType::DescriptionRequest);
+    }
+
     bool isValid() const override;
     QKnxNetIpHPAI controlEndpoint() const;
+
+private:
+    QKnxNetIpDescriptionRequest(const QKnxNetIpFrame &other);
 };
 
 QT_END_NAMESPACE

@@ -19,6 +19,10 @@ QKnxNetIpDescriptionResponse::QKnxNetIpDescriptionResponse(const QKnxNetIpDevice
     setPayload(payload);
 }
 
+QKnxNetIpDescriptionResponse::QKnxNetIpDescriptionResponse(const QKnxNetIpFrame &other)
+    : QKnxNetIpFrame(other)
+{}
+
 QKnxNetIpDeviceDIB QKnxNetIpDescriptionResponse::deviceHardware() const
 {
     return QKnxNetIpDeviceDIB::fromBytes(payloadRef(), 0);

@@ -17,6 +17,11 @@ QKnxNetIpDeviceConfigurationRequest::QKnxNetIpDeviceConfigurationRequest(quint8 
     setPayload({ cemi.ref().bytes(), cemi.ref().size() });
 }
 
+QKnxNetIpDeviceConfigurationRequest::QKnxNetIpDeviceConfigurationRequest(
+        const QKnxNetIpConnectionHeaderFrame &other)
+    : QKnxNetIpConnectionHeaderFrame(other)
+{}
+
 quint8 QKnxNetIpDeviceConfigurationRequest::communicationChannelId() const
 {
     return connectionHeader().communicationChannelId();

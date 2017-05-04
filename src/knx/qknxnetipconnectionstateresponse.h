@@ -22,10 +22,20 @@ public:
 
     QKnxNetIpConnectionStateResponse(quint8 channelId, QKnxNetIp::Error status);
 
+    template <typename T>
+        static QKnxNetIpConnectionStateResponse fromBytes(const T &bytes, quint16 index)
+    {
+        return QKnxNetIpFrameHelper::fromBytes(bytes, index,
+            QKnxNetIp::ServiceType::ConnectionStateResponse);
+    }
+
     quint8 channelId() const;
     QKnxNetIp::Error status() const;
 
     bool isValid() const override;
+
+private:
+    QKnxNetIpConnectionStateResponse(const QKnxNetIpFrame &other);
 };
 
 QT_END_NAMESPACE

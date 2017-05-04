@@ -22,10 +22,20 @@ public:
 
     QKnxNetIpDisconnectRequest(quint8 channelId, const QKnxNetIpHPAI &controlEndpoint);
 
+    template <typename T>
+        static QKnxNetIpDisconnectRequest fromBytes(const T &bytes, quint16 index)
+    {
+        return QKnxNetIpFrameHelper::fromBytes(bytes, index,
+            QKnxNetIp::ServiceType::DisconnectRequest);
+    }
+
     quint8 channelId() const;
     QKnxNetIpHPAI controlEndpoint() const;
 
     bool isValid() const override;
+
+private:
+    QKnxNetIpDisconnectRequest(const QKnxNetIpFrame &other);
 };
 
 QT_END_NAMESPACE

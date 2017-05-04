@@ -20,6 +20,10 @@ QKnxNetIpConnectRequest::QKnxNetIpConnectRequest(const QKnxNetIpHPAI &controlEnd
     setPayload(payload);
 }
 
+QKnxNetIpConnectRequest::QKnxNetIpConnectRequest(const QKnxNetIpFrame &other)
+    : QKnxNetIpFrame(other)
+{}
+
 QKnxNetIpHPAI QKnxNetIpConnectRequest::controlEndpoint() const
 {
     return QKnxNetIpHPAI::fromBytes(payloadRef(), 0);

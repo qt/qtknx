@@ -28,6 +28,10 @@ QKnxNetIpConnectResponse::QKnxNetIpConnectResponse(quint8 channelId, QKnxNetIp::
     setPayload(payload);
 }
 
+QKnxNetIpConnectResponse::QKnxNetIpConnectResponse(const QKnxNetIpFrame &other)
+    : QKnxNetIpFrame(other)
+{}
+
 quint8 QKnxNetIpConnectResponse::channelId() const
 {
     return payloadRef().byte(0);

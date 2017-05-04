@@ -17,6 +17,10 @@ QKnxNetIpTunnelingRequest::QKnxNetIpTunnelingRequest(quint8 id,
     setPayload({ cemi.ref().bytes(), cemi.ref().size() });
 }
 
+QKnxNetIpTunnelingRequest::QKnxNetIpTunnelingRequest(const QKnxNetIpConnectionHeaderFrame &other)
+    : QKnxNetIpConnectionHeaderFrame(other)
+{}
+
 quint8 QKnxNetIpTunnelingRequest::communicationChannelId() const
 {
     return connectionHeader().communicationChannelId();

@@ -23,10 +23,20 @@ public:
 
     explicit QKnxNetIpRoutingIndication(const QKnxCemi &cemi);
 
+    template <typename T>
+        static QKnxNetIpRoutingIndication fromBytes(const T &bytes, quint16 index)
+    {
+        return QKnxNetIpFrameHelper::fromBytes(bytes, index,
+            QKnxNetIp::ServiceType::RoutingIndication);
+    }
+
     QKnxCemi cemi() const;
     void setCemi(const QKnxCemi &cemi);
 
     bool isValid() const override;
+
+private:
+    QKnxNetIpRoutingIndication(const QKnxNetIpFrame &other);
 };
 
 QT_END_NAMESPACE

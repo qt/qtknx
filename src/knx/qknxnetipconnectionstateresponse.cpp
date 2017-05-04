@@ -27,6 +27,10 @@ QKnxNetIpConnectionStateResponse::QKnxNetIpConnectionStateResponse(quint8 channe
     };
 }
 
+QKnxNetIpConnectionStateResponse::QKnxNetIpConnectionStateResponse(const QKnxNetIpFrame &other)
+    : QKnxNetIpFrame(other)
+{}
+
 quint8 QKnxNetIpConnectionStateResponse::channelId() const
 {
     return payloadRef().byte(0);

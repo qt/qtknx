@@ -22,10 +22,20 @@ public:
 
     QKnxNetIpConnectionStateRequest(quint8 channelId, const QKnxNetIpHPAI &controlEndpoint);
 
+    template <typename T>
+        static QKnxNetIpConnectionStateRequest fromBytes(const T &bytes, quint16 index)
+    {
+        return QKnxNetIpFrameHelper::fromBytes(bytes, index,
+            QKnxNetIp::ServiceType::ConnectionStateRequest);
+    }
+
     quint8 channelId() const;
     QKnxNetIpHPAI controlEndpoint() const;
 
     bool isValid() const override;
+
+private:
+    QKnxNetIpConnectionStateRequest(const QKnxNetIpFrame &other);
 };
 
 QT_END_NAMESPACE

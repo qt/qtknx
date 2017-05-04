@@ -24,6 +24,10 @@ QKnxNetIpRoutingBusy::QKnxNetIpRoutingBusy(QKnxNetIp::DeviceState state,
     setPayload(payload);
 }
 
+QKnxNetIpRoutingBusy::QKnxNetIpRoutingBusy(const QKnxNetIpFrame &other)
+    : QKnxNetIpFrame(other)
+{}
+
 QKnxNetIp::DeviceState QKnxNetIpRoutingBusy::deviceState() const
 {
     return QKnxNetIp::DeviceState(payloadRef().byte(0));

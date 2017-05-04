@@ -17,6 +17,10 @@ QKnxNetIpSearchRequest::QKnxNetIpSearchRequest(const QKnxNetIpHPAI &discoveryEnd
     setPayload(payload);
 }
 
+QKnxNetIpSearchRequest::QKnxNetIpSearchRequest(const QKnxNetIpFrame &other)
+    : QKnxNetIpFrame(other)
+{}
+
 bool QKnxNetIpSearchRequest::isValid() const
 {
     return QKnxNetIpFrame::isValid() && size() == 14

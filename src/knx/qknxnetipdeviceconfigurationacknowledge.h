@@ -23,11 +23,21 @@ public:
     QKnxNetIpDeviceConfigurationAcknowledge(quint8 communicationChannelId, quint8 sequenceCounter,
         QKnxNetIp::Error status);
 
+    template <typename T>
+        static QKnxNetIpDeviceConfigurationAcknowledge fromBytes(const T &bytes, quint16 index)
+    {
+        return QKnxNetIpFrameHelper::fromBytes(bytes, index,
+            QKnxNetIp::ServiceType::DeviceConfigurationAcknowledge);
+    }
+
     quint8 communicationChannelId() const;
     quint8 sequenceCounter() const;
     QKnxNetIp::Error status() const;
 
     bool isValid() const override;
+
+private:
+    QKnxNetIpDeviceConfigurationAcknowledge(const QKnxNetIpConnectionHeaderFrame &other);
 };
 
 QT_END_NAMESPACE

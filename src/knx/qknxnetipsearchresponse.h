@@ -26,11 +26,19 @@ public:
                             const QKnxNetIpDeviceDIB &deviceHardware,
                             const QKnxNetIpServiceFamiliesDIB &supportedFamilies);
 
+    template <typename T> static QKnxNetIpSearchResponse fromBytes(const T &bytes, quint16 index)
+    {
+        return QKnxNetIpFrameHelper::fromBytes(bytes, index, QKnxNetIp::ServiceType::SearchResponse);
+    }
+
     QKnxNetIpHPAI controlEndpoint() const;
     QKnxNetIpDeviceDIB deviceHardware() const;
     QKnxNetIpServiceFamiliesDIB supportedFamilies() const;
 
     bool isValid() const override;
+
+private:
+    QKnxNetIpSearchResponse(const QKnxNetIpFrame &other);
 };
 
 QT_END_NAMESPACE

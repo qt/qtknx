@@ -22,8 +22,16 @@ public:
 
     explicit QKnxNetIpSearchRequest(const QKnxNetIpHPAI &discoveryEndpoint);
 
+    template <typename T> static QKnxNetIpSearchRequest fromBytes(const T &bytes, quint16 index)
+    {
+        return QKnxNetIpFrameHelper::fromBytes(bytes, index, QKnxNetIp::ServiceType::SearchRequest);
+    }
+
     bool isValid() const override;
     QKnxNetIpHPAI discoveryEndpoint() const;
+
+private:
+    QKnxNetIpSearchRequest(const QKnxNetIpFrame &other);
 };
 
 QT_END_NAMESPACE

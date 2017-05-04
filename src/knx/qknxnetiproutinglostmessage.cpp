@@ -18,6 +18,10 @@ QKnxNetIpRoutingLostMessage::QKnxNetIpRoutingLostMessage(QKnxNetIp::DeviceState 
     setPayload(payload);
 }
 
+QKnxNetIpRoutingLostMessage::QKnxNetIpRoutingLostMessage(const QKnxNetIpFrame &other)
+    : QKnxNetIpFrame(other)
+{}
+
 QKnxNetIp::DeviceState QKnxNetIpRoutingLostMessage::deviceState() const
 {
     return QKnxNetIp::DeviceState(payloadRef().byte(0));

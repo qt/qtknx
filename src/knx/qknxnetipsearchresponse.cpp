@@ -20,6 +20,10 @@ QKnxNetIpSearchResponse::QKnxNetIpSearchResponse(const QKnxNetIpHPAI &controlEnd
     setPayload(payload);
 }
 
+QKnxNetIpSearchResponse::QKnxNetIpSearchResponse(const QKnxNetIpFrame &other)
+    : QKnxNetIpFrame(other)
+{}
+
 QKnxNetIpHPAI QKnxNetIpSearchResponse::controlEndpoint() const
 {
     return QKnxNetIpHPAI::fromBytes(payloadRef(), 0);

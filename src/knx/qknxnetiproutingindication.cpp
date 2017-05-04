@@ -15,6 +15,10 @@ QKnxNetIpRoutingIndication::QKnxNetIpRoutingIndication(const QKnxCemi &cemi)
     setPayload({ cemi.ref().bytes(), cemi.ref().size() });
 }
 
+QKnxNetIpRoutingIndication::QKnxNetIpRoutingIndication(const QKnxNetIpFrame &other)
+    : QKnxNetIpFrame(other)
+{}
+
 QKnxCemi QKnxNetIpRoutingIndication::cemi() const
 {
     return QKnxCemi::fromBytes(payloadRef(), 0, payloadRef().size());

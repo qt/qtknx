@@ -32,6 +32,13 @@ public:
     QKnxNetIpDescriptionResponse(const QKnxNetIpDeviceDIB &deviceHardware,
                                  const QKnxNetIpServiceFamiliesDIB &supportedFamilies);
 
+    template <typename T>
+        static QKnxNetIpDescriptionResponse fromBytes(const T &bytes, quint16 index)
+    {
+        return QKnxNetIpFrameHelper::fromBytes(bytes, index,
+            QKnxNetIp::ServiceType::DescriptionResponse);
+    }
+
     QKnxNetIpDeviceDIB deviceHardware() const;
     QKnxNetIpServiceFamiliesDIB supportedFamilies() const;
 
@@ -48,6 +55,9 @@ public:
     }
 
     bool isValid() const override;
+
+private:
+    QKnxNetIpDescriptionResponse(const QKnxNetIpFrame &other);
 };
 
 QT_END_NAMESPACE

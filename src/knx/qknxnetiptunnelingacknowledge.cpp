@@ -20,6 +20,11 @@ QKnxNetIpTunnelingAcknowledge::QKnxNetIpTunnelingAcknowledge(quint8 id,
     setConnectionHeader(header);
 }
 
+QKnxNetIpTunnelingAcknowledge::QKnxNetIpTunnelingAcknowledge(
+        const QKnxNetIpConnectionHeaderFrame &other)
+    : QKnxNetIpConnectionHeaderFrame(other)
+{}
+
 quint8 QKnxNetIpTunnelingAcknowledge::communicationChannelId() const
 {
     return connectionHeader().communicationChannelId();

@@ -19,6 +19,10 @@ QKnxNetIpDisconnectRequest::QKnxNetIpDisconnectRequest(quint8 channelId,
     setPayload(payload);
 }
 
+QKnxNetIpDisconnectRequest::QKnxNetIpDisconnectRequest(const QKnxNetIpFrame &other)
+    : QKnxNetIpFrame(other)
+{}
+
 quint8 QKnxNetIpDisconnectRequest::channelId() const
 {
     return payloadRef().byte(0);

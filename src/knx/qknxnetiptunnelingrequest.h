@@ -24,11 +24,20 @@ public:
     QKnxNetIpTunnelingRequest(quint8 communicationChannelId, quint8 sequenceCounter,
         const QKnxCemi &cemi);
 
+    template <typename T> static QKnxNetIpTunnelingRequest fromBytes(const T &bytes, quint16 index)
+    {
+        return QKnxNetIpFrameHelper::fromBytes(bytes, index,
+            QKnxNetIp::ServiceType::TunnelingRequest);
+    }
+
     quint8 communicationChannelId() const;
     quint8 sequenceCounter() const;
     QKnxCemi cemi() const;
 
     bool isValid() const override;
+
+private:
+    QKnxNetIpTunnelingRequest(const QKnxNetIpConnectionHeaderFrame &other);
 };
 
 QT_END_NAMESPACE
