@@ -19,7 +19,8 @@ QKnxNetIpDescriptionRequest::QKnxNetIpDescriptionRequest(const QKnxNetIpHPAI & c
 
 bool QKnxNetIpDescriptionRequest::isValid() const
 {
-    return QKnxNetIpFrame::isValid() && size() == 14;
+    return QKnxNetIpFrame::isValid() && size() == 14
+        && code() == QKnxNetIp::ServiceType::DescriptionRequest;
 }
 
 QKnxNetIpHPAI QKnxNetIpDescriptionRequest::controlEndpoint() const

@@ -32,4 +32,11 @@ QKnxCemi QKnxNetIpDeviceConfigurationRequest::cemi() const
     return QKnxCemi::fromBytes(payloadRef(), 0, payloadRef().size());
 }
 
+bool QKnxNetIpDeviceConfigurationRequest::isValid() const
+{
+    // TODO: fix size check once the minimum CEMI frame size is known
+    return QKnxNetIpConnectionHeaderFrame::isValid() && size() >= 12
+        && code() == QKnxNetIp::ServiceType::DeviceConfigurationRequest;
+}
+
 QT_END_NAMESPACE

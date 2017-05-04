@@ -73,7 +73,8 @@ QVector<QKnxNetIpStructRef> QKnxNetIpDescriptionResponse::optionalDibs() const
 
 bool QKnxNetIpDescriptionResponse::isValid() const
 {
-    return QKnxNetIpFrame::isValid() && size() >= 64;
+    return QKnxNetIpFrame::isValid() && size() >= 64
+        && code() == QKnxNetIp::ServiceType::DescriptionResponse;
 }
 
 QT_END_NAMESPACE

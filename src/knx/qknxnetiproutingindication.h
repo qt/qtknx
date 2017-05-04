@@ -25,6 +25,8 @@ public:
 
     QKnxCemi cemi() const;
     void setCemi(const QKnxCemi &cemi);
+
+    bool isValid() const override;
 };
 
 QT_END_NAMESPACE

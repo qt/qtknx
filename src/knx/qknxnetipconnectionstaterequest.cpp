@@ -31,7 +31,8 @@ QKnxNetIpHPAI QKnxNetIpConnectionStateRequest::controlEndpoint() const
 
 bool QKnxNetIpConnectionStateRequest::isValid() const
 {
-    return QKnxNetIpFrame::isValid() && size() == 16;
+    return QKnxNetIpFrame::isValid() && size() == 16
+        && code() == QKnxNetIp::ServiceType::ConnectionStateRequest;
 }
 
 QT_END_NAMESPACE

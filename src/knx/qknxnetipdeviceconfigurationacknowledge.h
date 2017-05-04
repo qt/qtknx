@@ -26,6 +26,8 @@ public:
     quint8 communicationChannelId() const;
     quint8 sequenceCounter() const;
     QKnxNetIp::Error status() const;
+
+    bool isValid() const override;
 };
 
 QT_END_NAMESPACE

@@ -35,4 +35,10 @@ QKnxNetIp::Error QKnxNetIpTunnelingAcknowledge::status() const
     return QKnxNetIp::Error(connectionHeader().serviceTypeSpecificValue());
 }
 
+bool QKnxNetIpTunnelingAcknowledge::isValid() const
+{
+    return QKnxNetIpConnectionHeaderFrame::isValid() && size() == 10
+        && code() == QKnxNetIp::ServiceType::TunnelingAcknowledge;
+}
+
 QT_END_NAMESPACE

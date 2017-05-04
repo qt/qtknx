@@ -29,7 +29,8 @@ QKnxNetIp::Error QKnxNetIpDisconnectResponse::status() const
 
 bool QKnxNetIpDisconnectResponse::isValid() const
 {
-    return QKnxNetIpFrame::isValid() && size() == 8;
+    return QKnxNetIpFrame::isValid() && size() == 8
+        && code() == QKnxNetIp::ServiceType::DisconnectResponse;
 }
 
 QT_END_NAMESPACE

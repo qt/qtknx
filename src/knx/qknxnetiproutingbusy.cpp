@@ -44,7 +44,7 @@ bool QKnxNetIpRoutingBusy::isValid() const
     quint8 time = routingBusyWaitTime();
     if (time < 20 || time > 100)
         return false;
-    return QKnxNetIpFrame::isValid() && size() == 12;
+    return QKnxNetIpFrame::isValid() && size() == 12 && code() == QKnxNetIp::ServiceType::RoutingBusy;
 }
 
 QT_END_NAMESPACE

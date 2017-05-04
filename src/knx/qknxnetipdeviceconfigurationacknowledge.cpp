@@ -31,4 +31,10 @@ QKnxNetIp::Error QKnxNetIpDeviceConfigurationAcknowledge::status() const
     return QKnxNetIp::Error(connectionHeader().serviceTypeSpecificValue());
 }
 
+bool QKnxNetIpDeviceConfigurationAcknowledge::isValid() const
+{
+    return QKnxNetIpConnectionHeaderFrame::isValid() && size() == 10
+        && code() == QKnxNetIp::ServiceType::DeviceConfigurationAcknowledge;
+}
+
 QT_END_NAMESPACE

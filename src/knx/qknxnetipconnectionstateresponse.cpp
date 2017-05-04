@@ -39,7 +39,8 @@ QKnxNetIp::Error QKnxNetIpConnectionStateResponse::status() const
 
 bool QKnxNetIpConnectionStateResponse::isValid() const
 {
-    return QKnxNetIpFrame::isValid() && size() == 8;
+    return QKnxNetIpFrame::isValid() && size() == 8
+        && code() == QKnxNetIp::ServiceType::ConnectionStateResponse;
 }
 
 QT_END_NAMESPACE

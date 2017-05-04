@@ -11,6 +11,7 @@ QT_BEGIN_NAMESPACE
 
 QKnxNetIpRoutingLostMessage::QKnxNetIpRoutingLostMessage(QKnxNetIp::DeviceState state,
         quint16 lostMessageCount)
+    : QKnxNetIpFrame(QKnxNetIp::ServiceType::RoutingLostMessage)
 {
     QKnxNetIpPayload payload((quint8) state);
     payload.appendBytes(QKnxUtils::QUint16::bytes(lostMessageCount));
@@ -29,7 +30,8 @@ quint16 QKnxNetIpRoutingLostMessage::lostMessageCount() const
 
 bool QKnxNetIpRoutingLostMessage::isValid() const
 {
-    return QKnxNetIpFrame::isValid() && size() == 10;
+    return QKnxNetIpFrame::isValid() && size() == 10
+        && code() == QKnxNetIp::ServiceType::RoutingLostMessage;
 }
 
 QT_END_NAMESPACE

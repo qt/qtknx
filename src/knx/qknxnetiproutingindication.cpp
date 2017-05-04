@@ -25,4 +25,11 @@ void QKnxNetIpRoutingIndication::setCemi(const QKnxCemi &cemi)
     setPayload({ cemi.ref().bytes(), cemi.ref().size() });
 }
 
+bool QKnxNetIpRoutingIndication::isValid() const
+{
+    // TODO: fix size check once the minimum CEMI frame size is known
+    return QKnxNetIpFrame::isValid() && size() >= 8
+        && code() == QKnxNetIp::ServiceType::RoutingIndication;
+}
+
 QT_END_NAMESPACE

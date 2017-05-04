@@ -37,7 +37,8 @@ QKnxNetIpServiceFamiliesDIB QKnxNetIpSearchResponse::supportedFamilies() const
 
 bool QKnxNetIpSearchResponse::isValid() const
 {
-    return QKnxNetIpFrame::isValid() && size() >= 70;
+    return QKnxNetIpFrame::isValid() && size() >= 70
+        && code() == QKnxNetIp::ServiceType::SearchResponse;
 }
 
 QT_END_NAMESPACE

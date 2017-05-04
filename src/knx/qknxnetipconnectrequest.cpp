@@ -37,7 +37,8 @@ QKnxNetIpCRI QKnxNetIpConnectRequest::requestInformation() const
 
 bool QKnxNetIpConnectRequest::isValid() const
 {
-    return QKnxNetIpFrame::isValid() && size() >= 28;
+    return QKnxNetIpFrame::isValid() && size() >= 28
+        && code() == QKnxNetIp::ServiceType::ConnectRequest;
 }
 
 QT_END_NAMESPACE
