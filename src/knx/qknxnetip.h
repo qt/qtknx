@@ -81,7 +81,8 @@ struct Q_KNX_EXPORT QKnxNetIp final
         ConnectionOption = 0x23,
         NoMoreConnections = 0x24,
         DataConnection = 0x26,
-        KnxConnection = 0x27
+        KnxConnection = 0x27,
+        TunnelingLayer = 0x29
     };
 
     enum class DeviceState : quint8
