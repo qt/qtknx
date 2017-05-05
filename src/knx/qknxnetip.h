@@ -83,6 +83,7 @@ struct Q_KNX_EXPORT QKnxNetIp final
         ConnectionType = 0x22,
         ConnectionOption = 0x23,
         NoMoreConnections = 0x24,
+        NoMoreUniqueConnections = 0x25,
         DataConnection = 0x26,
         KnxConnection = 0x27,
         TunnelingLayer = 0x29
