@@ -41,7 +41,7 @@ QKnxNetIpCRI QKnxNetIpConnectRequest::requestInformation() const
 
 bool QKnxNetIpConnectRequest::isValid() const
 {
-    return QKnxNetIpFrame::isValid() && size() >= 28
+    return QKnxNetIpFrame::isValid() && size() >= 24
         && code() == QKnxNetIp::ServiceType::ConnectRequest;
 }
 
