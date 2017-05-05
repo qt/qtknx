@@ -13,24 +13,37 @@ QKnxNetIpCRD::QKnxNetIpCRD(const QKnxNetIpConnectionTypeStruct &other)
     : QKnxNetIpConnectionTypeStruct(other)
 {}
 
+QKnxNetIpCRD::QKnxNetIpCRD(QKnxNetIp::ConnectionType connectionType)
+    : QKnxNetIpConnectionTypeStruct(connectionType)
+{}
+
 QKnxNetIp::ConnectionType QKnxNetIpCRD::connectionType() const
 {
     return QKnxNetIp::ConnectionType(code());
+}
+
+void QKnxNetIpCRD::setConnectionType(QKnxNetIp::ConnectionType connectionType)
+{
+    setCode(connectionType);
 }
 
 bool QKnxNetIpCRD::isValid() const
 {
     switch (connectionType()) {
         case QKnxNetIp::ConnectionType::DeviceManagement:
+            return QKnxNetIpConnectionTypeStruct::isValid() && size() == 2;
         case QKnxNetIp::ConnectionType::Tunnel:
+            return QKnxNetIpConnectionTypeStruct::isValid() && size() == 4;
         case QKnxNetIp::ConnectionType::RemoteLogging:
+            return QKnxNetIpConnectionTypeStruct::isValid() && size() == 2;
         case QKnxNetIp::ConnectionType::RemoteConfiguration:
+            return QKnxNetIpConnectionTypeStruct::isValid() && size() == 2;
         case QKnxNetIp::ConnectionType::ObjectServer:
-            break;
+            return QKnxNetIpConnectionTypeStruct::isValid() && size() == 2;
         default:
-            return false;
+            break;
     }
-    return QKnxNetIpConnectionTypeStruct::isValid();
+    return false;
 }
 
 QT_END_NAMESPACE

@@ -25,6 +25,8 @@ public:
     QKnxNetIpCRI() = default;
     ~QKnxNetIpCRI() override = default;
 
+    explicit QKnxNetIpCRI(QKnxNetIp::ConnectionType connectionType);
+
     template <typename T> static QKnxNetIpCRI fromBytes(const T &bytes, quint16 index)
     {
         auto code = QKnxNetIpStructHeader<QKnxNetIp::ConnectionType>::fromBytes(bytes, index).code();
@@ -34,6 +36,7 @@ public:
     }
 
     QKnxNetIp::ConnectionType connectionType() const;
+    void setConnectionType(QKnxNetIp::ConnectionType connectionType);
 
     bool isValid() const override;
 
