@@ -26,7 +26,7 @@ public:
     template <typename T>
         static QKnxNetIpDeviceConfigurationAcknowledge fromBytes(const T &bytes, quint16 index)
     {
-        return QKnxNetIpFrameHelper::fromBytes(bytes, index,
+        return QKnxNetIpConnectionHeaderFrameHelper::fromBytes(bytes, index,
             QKnxNetIp::ServiceType::DeviceConfigurationAcknowledge);
     }
 

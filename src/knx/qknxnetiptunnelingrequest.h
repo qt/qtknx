@@ -26,7 +26,7 @@ public:
 
     template <typename T> static QKnxNetIpTunnelingRequest fromBytes(const T &bytes, quint16 index)
     {
-        return QKnxNetIpFrameHelper::fromBytes(bytes, index,
+        return QKnxNetIpConnectionHeaderFrameHelper::fromBytes(bytes, index,
             QKnxNetIp::ServiceType::TunnelingRequest);
     }
 

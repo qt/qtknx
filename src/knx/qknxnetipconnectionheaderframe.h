@@ -17,6 +17,7 @@ QT_BEGIN_NAMESPACE
 class Q_KNX_EXPORT QKnxNetIpConnectionHeaderFrame
     : public QKnxNetIpPackage<QKnxNetIp::ServiceType, QKnxNetIpFrameHeader>
 {
+    friend struct QKnxNetIpConnectionHeaderFrameHelper;
     using Package = QKnxNetIpPackage<QKnxNetIp::ServiceType, QKnxNetIpFrameHeader>;
 
 public:
@@ -90,7 +91,7 @@ struct QKnxNetIpConnectionHeaderFrameHelper
             return {};
 
         return QKnxNetIpConnectionHeaderFrame(header, connectionHeader,
-            QKnxNetIpPayload::fromBytes(bytes, index, connectionHeader.size() + header.size(),
+            QKnxNetIpPayload::fromBytes(bytes, index + connectionHeader.size() + header.size(),
                 header.payloadSize() - connectionHeader.size()));
     }
 };
