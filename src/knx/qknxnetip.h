@@ -165,6 +165,20 @@ struct Q_KNX_EXPORT QKnxNetIp final
         }
         return false;
     }
+    enum Timeout
+    {
+        // KNXnet/IP Core service time out in ms
+        SearchTimeout = 33000,
+        DescriptionTimeout = 33000,
+        ConnectTimeout = 10000,
+        ConnectionStateTimeout = 10000,
+
+        // KNXnet/IP Device Management service time out in ms
+        DeviceConfigurationTimeout = 10000,
+
+        // KNXnet/IP Tunneling service time out in ms
+        TunnelingTimeout = 1000
+    };
 };
 Q_DECLARE_TYPEINFO(QKnxNetIp::HostProtocol, Q_PRIMITIVE_TYPE);
 Q_DECLARE_TYPEINFO(QKnxNetIp::ConnectionType, Q_PRIMITIVE_TYPE);
@@ -172,6 +186,7 @@ Q_DECLARE_TYPEINFO(QKnxNetIp::DescriptionType, Q_PRIMITIVE_TYPE);
 Q_DECLARE_TYPEINFO(QKnxNetIp::ServiceType, Q_PRIMITIVE_TYPE);
 Q_DECLARE_TYPEINFO(QKnxNetIp::Error, Q_PRIMITIVE_TYPE);
 Q_DECLARE_TYPEINFO(QKnxNetIp::DeviceState, Q_PRIMITIVE_TYPE);
+Q_DECLARE_TYPEINFO(QKnxNetIp::Timeout, Q_PRIMITIVE_TYPE);
 
 QT_END_NAMESPACE
 
