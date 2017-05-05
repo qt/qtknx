@@ -15,7 +15,7 @@ QT_BEGIN_NAMESPACE
 struct Q_KNX_EXPORT QKnxNetIp final
 {
     static constexpr const quint16 DefaultPort = 3671;
-    static constexpr const char MulticastAddress[12] = "224.0.23.12";
+    static constexpr const char *MulticastAddress = "224.0.23.12";
 
     enum class HostProtocol : quint8
     {
