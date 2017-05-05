@@ -59,7 +59,7 @@ QKnxNetIpCRD QKnxNetIpConnectResponse::responseData() const
 bool QKnxNetIpConnectResponse::isValid() const
 {
     return QKnxNetIpFrame::isValid() && code() == QKnxNetIp::ServiceType::ConnectResponse
-        && (status() == QKnxNetIp::Error::None ? size() >= 22 : true);
+        && (status() == QKnxNetIp::Error::None ? size() >= 18 : true);
 }
 
 QT_END_NAMESPACE
