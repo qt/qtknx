@@ -92,6 +92,29 @@ QMap<QKnxNetIpServiceFamiliesDIB::ServiceFamilieId, quint8> QKnxNetIpServiceFami
     return serviceTypesAndVersions;
 }
 
+QKnxNetIp::ConnectionType
+    QKnxNetIpServiceFamiliesDIB::connectionTypeFromServiceType(ServiceFamilieId serviceType)
+{
+    switch (serviceType) {
+        case ServiceFamilieId::Core:
+            return QKnxNetIp::ConnectionType::Unknown;
+        case ServiceFamilieId::DeviceManagement:
+            return QKnxNetIp::ConnectionType::DeviceManagement;
+        case ServiceFamilieId::IpTunneling:
+            return QKnxNetIp::ConnectionType::Tunnel;
+        case ServiceFamilieId::IpRouting:
+            return QKnxNetIp::ConnectionType::Tunnel;
+        case ServiceFamilieId::RemoteLogging:
+            return QKnxNetIp::ConnectionType::RemoteLogging;
+        case ServiceFamilieId::RemoteConfigAndDiagnosis:
+            return QKnxNetIp::ConnectionType::RemoteConfiguration;
+        case ServiceFamilieId::ObjectServer:
+            return QKnxNetIp::ConnectionType::ObjectServer;
+        default:
+            break;
+    }
+    return QKnxNetIp::ConnectionType::Unknown;
+}
 
 bool QKnxNetIpServiceFamiliesDIB::isValid() const
 {

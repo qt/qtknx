@@ -34,6 +34,8 @@ public:
         ObjectServer = 0x08
     };
 
+    static QKnxNetIp::ConnectionType connectionTypeFromServiceType(ServiceFamilieId serviceType);
+
     QKnxNetIpServiceFamiliesDIB();
     ~QKnxNetIpServiceFamiliesDIB() override = default;
 
