@@ -16,6 +16,7 @@
 #include <QtKnx/qknxglobal.h>
 #include <QtKnx/qknxnetipstruct.h>
 #include <QtKnx/qknxtraits.h>
+#include <QtKnx/qknxnetipservicefamiliesdib.h>
 
 QT_BEGIN_NAMESPACE
 
@@ -26,6 +27,7 @@ public:
     ~QKnxNetIpCRI() override = default;
 
     explicit QKnxNetIpCRI(QKnxNetIp::ConnectionType connectionType);
+    explicit QKnxNetIpCRI(QKnxNetIpServiceFamiliesDIB::ServiceFamilieId serviceType);
 
     template <typename T> static QKnxNetIpCRI fromBytes(const T &bytes, quint16 index)
     {

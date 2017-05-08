@@ -13,6 +13,10 @@ QKnxNetIpCRI::QKnxNetIpCRI(QKnxNetIp::ConnectionType connectionType)
     : QKnxNetIpConnectionTypeStruct(connectionType)
 {}
 
+QKnxNetIpCRI::QKnxNetIpCRI(QKnxNetIpServiceFamiliesDIB::ServiceFamilieId serviceType)
+    : QKnxNetIpCRI(QKnxNetIpServiceFamiliesDIB::connectionTypeFromServiceType(serviceType))
+{}
+
 QKnxNetIpCRI::QKnxNetIpCRI(const QKnxNetIpConnectionTypeStruct &other)
     : QKnxNetIpConnectionTypeStruct(other)
 {}
