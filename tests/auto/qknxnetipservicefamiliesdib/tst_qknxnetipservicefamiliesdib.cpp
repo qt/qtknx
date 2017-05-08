@@ -25,6 +25,7 @@ private slots:
     void testConstructorWithTwoArguments();
     void testConstructorWithThreeArguments();
     void testAddFunctions();
+    void testGetFunction();
     void testDebugStream();
     void testDataStream();
 };
@@ -156,6 +157,42 @@ void tst_QKnxNetIpServiceFamiliesDIB::testAddFunctions()
         "Code { 0x02 }, Bytes { 0x02, 0x09, 0x03, 0x0a, 0x04, 0x0b, 0x05, 0x0c }"));
     QCOMPARE(families.descriptionType(),
         QKnxNetIp::DescriptionType::SupportedServiceFamilies);
+}
+
+void tst_QKnxNetIpServiceFamiliesDIB::testGetFunction()
+{
+    QMap<QKnxNetIpServiceFamiliesDIB::ServiceFamilieId, quint8> families;
+    families.insert(QKnxNetIpServiceFamiliesDIB::ServiceFamilieId::ObjectServer, 15);
+    families.insert(QKnxNetIpServiceFamiliesDIB::ServiceFamilieId::Core, 9);
+    families.insert(QKnxNetIpServiceFamiliesDIB::ServiceFamilieId::DeviceManagement, 10);
+    families.insert(QKnxNetIpServiceFamiliesDIB::ServiceFamilieId::IpTunneling, 11);
+    families.insert(QKnxNetIpServiceFamiliesDIB::ServiceFamilieId::IpRouting, 12);
+    families.insert(QKnxNetIpServiceFamiliesDIB::ServiceFamilieId::RemoteLogging, 13);
+    families.insert(QKnxNetIpServiceFamiliesDIB::ServiceFamilieId::RemoteConfigAndDiagnosis, 14);
+    QKnxNetIpServiceFamiliesDIB serviceFamiliesDIB(families);
+
+    QMap<QKnxNetIpServiceFamiliesDIB::ServiceFamilieId, quint8> map = serviceFamiliesDIB.availableServiceFamilieId();
+    auto it = std::begin(map);
+    QCOMPARE(it.key(),QKnxNetIpServiceFamiliesDIB::ServiceFamilieId::Core);
+    QCOMPARE(it.value(),quint8(9));
+    ++it;
+    QCOMPARE(it.key(),QKnxNetIpServiceFamiliesDIB::ServiceFamilieId::DeviceManagement);
+    QCOMPARE(it.value(),quint8(10));
+    ++it;
+    QCOMPARE(it.key(),QKnxNetIpServiceFamiliesDIB::ServiceFamilieId::IpTunneling);
+    QCOMPARE(it.value(),quint8(11));
+    ++it;
+    QCOMPARE(it.key(),QKnxNetIpServiceFamiliesDIB::ServiceFamilieId::IpRouting);
+    QCOMPARE(it.value(),quint8(12));
+    ++it;
+    QCOMPARE(it.key(),QKnxNetIpServiceFamiliesDIB::ServiceFamilieId::RemoteLogging);
+    QCOMPARE(it.value(),quint8(13));
+    ++it;
+    QCOMPARE(it.key(),QKnxNetIpServiceFamiliesDIB::ServiceFamilieId::RemoteConfigAndDiagnosis);
+    QCOMPARE(it.value(),quint8(14));
+    ++it;
+    QCOMPARE(it.key(),QKnxNetIpServiceFamiliesDIB::ServiceFamilieId::ObjectServer);
+    QCOMPARE(it.value(),quint8(15));
 }
 
 void tst_QKnxNetIpServiceFamiliesDIB::testDebugStream()

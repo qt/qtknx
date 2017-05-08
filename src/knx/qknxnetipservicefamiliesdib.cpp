@@ -78,6 +78,21 @@ void QKnxNetIpServiceFamiliesDIB::add(const QVector<ServiceFamilieId> &ids, cons
     setPayload(load);
 }
 
+QMap<QKnxNetIpServiceFamiliesDIB::ServiceFamilieId, quint8> QKnxNetIpServiceFamiliesDIB::availableServiceFamilieId() const
+{
+    QMap<QKnxNetIpServiceFamiliesDIB::ServiceFamilieId, quint8> serviceTypesAndVersions;
+    for (int i = 0 ; i < payload().size() ; ++i) {
+        auto payloadBytes = payload().bytes(i, 2);
+        QKnxNetIpServiceFamiliesDIB::ServiceFamilieId service =
+            QKnxNetIpServiceFamiliesDIB::ServiceFamilieId(payloadBytes[0]);
+        quint8 version = payloadBytes[1];
+        serviceTypesAndVersions.insert(service, version);
+        ++i;
+    }
+    return serviceTypesAndVersions;
+}
+
+
 bool QKnxNetIpServiceFamiliesDIB::isValid() const
 {
     return QKnxNetIpDescriptionTypeStruct::isValid() && (size() % 2 == 0) // must be even sized

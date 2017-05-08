@@ -48,7 +48,7 @@ public:
     }
 
     QKnxNetIp::DescriptionType descriptionType() const;
-    // TODO: add access functions for family and version if needed
+    QMap<QKnxNetIpServiceFamiliesDIB::ServiceFamilieId, quint8> availableServiceFamilieId() const;
 
     void add(ServiceFamilieId id, quint8 versions);
     void add(const QMap<ServiceFamilieId, quint8> &families);
@@ -59,6 +59,7 @@ public:
 private:
     QKnxNetIpServiceFamiliesDIB(const QKnxNetIpDescriptionTypeStruct &other);
 };
+
 Q_DECLARE_TYPEINFO(QKnxNetIpServiceFamiliesDIB, Q_MOVABLE_TYPE);
 
 QT_END_NAMESPACE
