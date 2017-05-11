@@ -10,6 +10,9 @@
 
 QT_BEGIN_NAMESPACE
 
+constexpr const quint8 QKnxNetIpFrameHeader::HeaderSize10;
+constexpr const quint8 QKnxNetIpFrameHeader::KnxNetIpVersion;
+
 QKnxNetIpFrameHeader::QKnxNetIpFrameHeader(QKnxNetIp::ServiceType code)
     : QKnxNetIpFrameHeader(code, 0)
 {}

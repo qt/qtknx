@@ -47,8 +47,8 @@ public:
     using QKnxByteStore::byte;
     using QKnxByteStore::bytes;
 
-    static const quint8 HeaderSize10 = 0x06;
-    static const quint8 KnxNetIpVersion = 0x10;
+    static constexpr const quint8 HeaderSize10 = 0x06;
+    static constexpr const quint8 KnxNetIpVersion = 0x10;
 
     template <typename T, std::size_t S = 0>
         static QKnxNetIpFrameHeader fromBytes(const T &bytes, quint16 index)

@@ -25,6 +25,7 @@ private slots:
     void testConstructorOneArgumentNoError();
     void testConstructorFourArguments();
     void testConstructorFourArgumentsNoError();
+    void testFromBytes();
     void testDebugStream();
     void testDataStream();
 };
@@ -129,6 +130,55 @@ void tst_QKnxNetIpConnectResponse::testConstructorFourArgumentsNoError()
     QCOMPARE(connectResponse.responseData().isValid(), false);
     // For when crd is implemented.
     //QCOMPARE(connectResponse.responseData().isValid(), true);
+}
+
+void tst_QKnxNetIpConnectResponse::testFromBytes()
+{
+    auto response = QKnxNetIpConnectResponse::fromBytes(
+        QByteArray::fromHex("06100206001415000801c0a8c814c3b404040200"), 0);
+
+    auto header = response.header();
+    QCOMPARE(header.size(), quint16(QKnxNetIpFrameHeader::HeaderSize10));
+    QCOMPARE(header.byte(1), QKnxNetIpFrameHeader::KnxNetIpVersion);
+    QCOMPARE(header.code(), QKnxNetIp::ServiceType::ConnectResponse);
+    QCOMPARE(header.totalSize(), quint16(20));
+
+    QCOMPARE(response.channelId(), quint8(21));
+    QCOMPARE(response.status(), QKnxNetIp::Error::None);
+
+    auto hpai = response.dataEndpoint();
+    QCOMPARE(hpai.hostProtocol(), QKnxNetIp::HostProtocol::IpV4_Udp);
+    QCOMPARE(hpai.address(), QHostAddress("192.168.200.20"));
+    QCOMPARE(hpai.port(), quint16(50100));
+
+    auto crd = response.responseData().bytes();
+    QCOMPARE(crd[0], quint8(0x04));
+    QCOMPARE(crd[1], quint8(0x04));
+    QCOMPARE(crd[2], quint8(0x02));
+    QCOMPARE(crd[3], quint8(0x00));
+
+    response = QKnxNetIpConnectResponse::fromBytes(
+        QByteArray::fromHex("061002060014010008010A094E1F0E5704041105"), 0);
+
+    header = response.header();
+    QCOMPARE(header.size(), quint16(QKnxNetIpFrameHeader::HeaderSize10));
+    QCOMPARE(header.byte(1), QKnxNetIpFrameHeader::KnxNetIpVersion);
+    QCOMPARE(header.code(), QKnxNetIp::ServiceType::ConnectResponse);
+    QCOMPARE(header.totalSize(), quint16(20));
+
+    QCOMPARE(response.channelId(), quint8(1));
+    QCOMPARE(response.status(), QKnxNetIp::Error::None);
+
+    hpai = response.dataEndpoint();
+    QCOMPARE(hpai.hostProtocol(), QKnxNetIp::HostProtocol::IpV4_Udp);
+    QCOMPARE(hpai.address(), QHostAddress("10.9.78.31"));
+    QCOMPARE(hpai.port(), quint16(3671));
+
+    crd = response.responseData().bytes();
+    QCOMPARE(crd[0], quint8(0x04));
+    QCOMPARE(crd[1], quint8(0x04));
+    QCOMPARE(crd[2], quint8(0x11));
+    QCOMPARE(crd[3], quint8(0x05));
 }
 
 void tst_QKnxNetIpConnectResponse::testDebugStream()
