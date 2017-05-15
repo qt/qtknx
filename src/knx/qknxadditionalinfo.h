@@ -13,12 +13,15 @@
 #include <QtCore/qdebug.h>
 #include <QtCore/qstring.h>
 #include <QtCore/qvector.h>
+#include <QtKnx/qknxbytestore.h>
 #include <QtKnx/qknxglobal.h>
 #include <QtKnx/qknxtraits.h>
 
 QT_BEGIN_NAMESPACE
 
-class Q_KNX_EXPORT QKnxAdditionalInfo final
+using QKnxAdditionalInfoRef = QKnxByteStoreRef;
+
+class Q_KNX_EXPORT QKnxAdditionalInfo final : private QKnxByteStore
 {
 public:
     enum class Type : quint8
@@ -42,71 +45,30 @@ public:
     QKnxAdditionalInfo() = default;
     QKnxAdditionalInfo(QKnxAdditionalInfo::Type type, const QByteArray &data);
     QKnxAdditionalInfo(QKnxAdditionalInfo::Type type, const QVector<quint8> &data);
+    QKnxAdditionalInfo(QKnxAdditionalInfo::Type type, const std::deque<quint8> &data);
+    QKnxAdditionalInfo(QKnxAdditionalInfo::Type type, const std::vector<quint8> &data);
 
-    qint32 dataSize() const;
+    bool isValid() const;
+    QString toString() const override;
+
+    QKnxAdditionalInfoRef ref(quint16 index) const;
+    static qint32 expectedDataSize(QKnxAdditionalInfo::Type type, bool *isFixedSize = nullptr);
+
+    quint8 dataSize() const;
     template <typename T = std::vector<quint8>> auto data() const -> decltype(T())
     {
         static_assert(is_type<T, QByteArray, QVector<quint8>, std::deque<quint8>,
             std::vector<quint8>>::value, "Type not supported.");
 
-        T t(m_data.size(), 0);
-        std::copy(std::begin(m_data), std::end(m_data), std::begin(t));
+        const auto &store = ref(2);
+        T t(store.size(), 0);
+        std::copy(std::begin(store), std::end(store), std::begin(t));
         return t;
     }
 
-    qint32 rawSize() const;
-    template <typename T = std::vector<quint8>> auto rawData() const -> decltype(T())
-    {
-        static_assert(is_type<T, QByteArray, QVector<quint8>, std::deque<quint8>,
-            std::vector<quint8>>::value, "Type not supported.");
-
-        if (!isValid())
-            return {};
-
-        T t(2, 0);
-        t[0] = quint8(m_type), t[1] = quint8(m_data.size());
-        return t + data<T>();
-    }
-
-    bool isValid() const;
-
-    template<typename T, std::size_t S = 0>
-        static bool isValid(QKnxAdditionalInfo::Type type, const T &data)
-    {
-        static_assert(is_type<T, QByteArray, QVector<quint8>, std::deque<quint8>,
-            std::vector<quint8>, std::array<quint8, S>>::value, "Type not supported.");
-
-        const int size = data.size();
-        if (size > 252)
-            return false;
-
-        switch (type) {
-        case QKnxAdditionalInfo::Type::PlMediumInformation:
-        case QKnxAdditionalInfo::Type::RfMediumInformation:
-        case QKnxAdditionalInfo::Type::BusmonitorStatusInfo:
-        case QKnxAdditionalInfo::Type::TimestampRelative:
-        case QKnxAdditionalInfo::Type::TimeDelayUntilSending:
-        case QKnxAdditionalInfo::Type::ExtendedRelativeTimestamp:
-        case QKnxAdditionalInfo::Type::BiBatInformation:
-        case QKnxAdditionalInfo::Type::RfMultiInformation:
-        case QKnxAdditionalInfo::Type::PreambleAndPostamble:
-            return size == expectedDataSize(type);
-        case QKnxAdditionalInfo::Type::RfFastAckInformation:
-            return (size >= expectedDataSize(type)) && ((size % 2) == 0);
-        case QKnxAdditionalInfo::Type::ManufactorSpecificData:
-            return size >= expectedDataSize(type);
-        default:
-            break;
-        }
-        return false;
-    }
-    static qint32 expectedDataSize(QKnxAdditionalInfo::Type type, bool *isFixedSize = nullptr);
-
-    QString toString() const;
-
-private:
-    QVector<quint8> m_data;
-    QKnxAdditionalInfo::Type m_type = QKnxAdditionalInfo::Type::EscCode;
+    using QKnxByteStore::size;
+    using QKnxByteStore::byte;
+    using QKnxByteStore::bytes;
 };
 Q_KNX_EXPORT QDebug operator<<(QDebug debug, const QKnxAdditionalInfo &info);
 Q_KNX_EXPORT QDataStream &operator>>(QDataStream &stream, QKnxAdditionalInfo &info);

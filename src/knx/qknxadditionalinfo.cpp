@@ -50,7 +50,7 @@ QT_BEGIN_NAMESPACE
 */
 QKnxAdditionalInfo::Type QKnxAdditionalInfo::type() const
 {
-    return m_type;
+    return QKnxAdditionalInfo::Type(byte(0));
 }
 
 /*!
@@ -65,11 +65,10 @@ QKnxAdditionalInfo::Type QKnxAdditionalInfo::type() const
 */
 QKnxAdditionalInfo::QKnxAdditionalInfo(QKnxAdditionalInfo::Type type, const QByteArray &data)
 {
-    if (isValid(type, data)) {
-        m_type = type;
-        m_data.resize(data.size());
-        std::copy(std::begin(data), std::end(data), std::begin(m_data));
-    }
+    setByte(0, quint8(type));
+    setByte(1, quint8(data.size()));
+    appendBytes(data);
+    if (!isValid()) resize(0);
 }
 
 /*!
@@ -78,10 +77,26 @@ QKnxAdditionalInfo::QKnxAdditionalInfo(QKnxAdditionalInfo::Type type, const QByt
 */
 QKnxAdditionalInfo::QKnxAdditionalInfo(QKnxAdditionalInfo::Type type, const QVector<quint8> &data)
 {
-    if (isValid(type, data)) {
-        m_type = type;
-        m_data = data;
-    }
+    setByte(0, quint8(type));
+    setByte(1, quint8(data.size()));
+    appendBytes(data);
+    if (!isValid()) resize(0);
+}
+
+QKnxAdditionalInfo::QKnxAdditionalInfo(QKnxAdditionalInfo::Type type, const std::deque<quint8>& data)
+{
+    setByte(0, quint8(type));
+    setByte(1, quint8(data.size()));
+    appendBytes(data);
+    if (!isValid()) resize(0);
+}
+
+QKnxAdditionalInfo::QKnxAdditionalInfo(QKnxAdditionalInfo::Type type, const std::vector<quint8>& data)
+{
+    setByte(0, quint8(type));
+    setByte(1, quint8(data.size()));
+    appendBytes(data);
+    if (!isValid()) resize(0);
 }
 
 /*!
@@ -92,7 +107,29 @@ QKnxAdditionalInfo::QKnxAdditionalInfo(QKnxAdditionalInfo::Type type, const QVec
 */
 bool QKnxAdditionalInfo::isValid() const
 {
-    return isValid(m_type, m_data);
+    if (size() > 254)
+        return false;
+
+    const auto type = QKnxAdditionalInfo::Type(byte(0));
+    switch (type) {
+    case QKnxAdditionalInfo::Type::PlMediumInformation:
+    case QKnxAdditionalInfo::Type::RfMediumInformation:
+    case QKnxAdditionalInfo::Type::BusmonitorStatusInfo:
+    case QKnxAdditionalInfo::Type::TimestampRelative:
+    case QKnxAdditionalInfo::Type::TimeDelayUntilSending:
+    case QKnxAdditionalInfo::Type::ExtendedRelativeTimestamp:
+    case QKnxAdditionalInfo::Type::BiBatInformation:
+    case QKnxAdditionalInfo::Type::RfMultiInformation:
+    case QKnxAdditionalInfo::Type::PreambleAndPostamble:
+        return qint16(dataSize()) == expectedDataSize(type);
+    case QKnxAdditionalInfo::Type::RfFastAckInformation:
+        return (qint16(dataSize()) >= expectedDataSize(type)) && ((qint16(dataSize()) % 2) == 0);
+    case QKnxAdditionalInfo::Type::ManufactorSpecificData:
+        return qint16(dataSize()) >= expectedDataSize(type);
+    default:
+        break;
+    }
+    return false;
 }
 
 /*!
@@ -110,23 +147,26 @@ bool QKnxAdditionalInfo::isValid() const
 */
 
 /*!
+    \fn quint16 QKnxAdditionalInfo::size() const
+
     Returns the number of bytes representing the additional info, including the
     byte for \l Type id and the byte for length information.
 */
-qint32 QKnxAdditionalInfo::rawSize() const
-{
-    if (m_data.isEmpty())
-        return 0;
-    return m_data.size() + 2;
-}
 
 /*!
     Returns the number of bytes representing the additional info, excluding the
     byte for \l Type id and the byte for length information.
 */
-qint32 QKnxAdditionalInfo::dataSize() const
+quint8 QKnxAdditionalInfo::dataSize() const
 {
-    return m_data.size();
+    if (size() >= 2)
+        return size() - 2;
+    return 0;
+}
+
+QKnxAdditionalInfoRef QKnxAdditionalInfo::ref(quint16 index) const
+{
+    return QKnxByteStore::ref(index);
 }
 
 /*!
@@ -175,13 +215,13 @@ QString QKnxAdditionalInfo::toString() const
         return QString();
 
     QString data;
-    for (quint8 byte : qAsConst(m_data))
+    for (quint8 byte : ref(2))
         data += QStringLiteral("0x%1, ").arg(byte, 2, 16, QLatin1Char('0'));
     data.chop(2);
 
     return QStringLiteral("Type { 0x%1 }, Size { 0x%2 }, Data { %3 }")
-        .arg(static_cast<quint8> (m_type), 2, 16, QLatin1Char('0'))
-        .arg(m_data.size(), 2, 16, QLatin1Char('0')).arg(data);
+        .arg(static_cast<quint8> (byte(0)), 2, 16, QLatin1Char('0'))
+        .arg(byte(1), 2, 16, QLatin1Char('0')).arg(data);
 }
 
 /*!
@@ -205,7 +245,7 @@ QDebug operator<<(QDebug debug, const QKnxAdditionalInfo &info)
     if (info.isValid()) {
         QDebug &dbg = debug.nospace().noquote() << "0x" << hex << qSetFieldWidth(2)
             << qSetPadChar('0');
-        const auto rawData = info.rawData<QVector<quint8>>();
+        const auto rawData = info.bytes<QVector<quint8>>();
         for (quint8 byte : qAsConst(rawData))
             dbg << byte;
     } else {
@@ -241,7 +281,7 @@ QDataStream &operator<<(QDataStream &stream, const QKnxAdditionalInfo &info)
 {
     if (!info.isValid())
         return stream;
-    for (quint8 byte : info.rawData<QByteArray>())
+    for (quint8 byte : info.bytes<QByteArray>())
         stream << static_cast<quint8> (byte);
     return stream;
 }

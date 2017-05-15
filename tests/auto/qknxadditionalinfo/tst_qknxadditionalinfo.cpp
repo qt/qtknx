@@ -23,28 +23,31 @@ private slots:
     void testConstructors()
     {
         QKnxAdditionalInfo info;
-        QCOMPARE(info.type(), QKnxAdditionalInfo::Type::EscCode);
+        QCOMPARE(info.type(), QKnxAdditionalInfo::Type::Reserved);
         QCOMPARE(info.isValid(), false);
         QCOMPARE(info.toString(), QStringLiteral(""));
-        QCOMPARE(info.rawData<QVector<quint8>>(), QVector<quint8> {});
+        QCOMPARE(info.bytes<QVector<quint8>>(), QVector<quint8> {});
 
-        info = QKnxAdditionalInfo(QKnxAdditionalInfo::Type::BiBatInformation, QByteArray::fromHex("1020"));
+        info = QKnxAdditionalInfo(QKnxAdditionalInfo::Type::BiBatInformation,
+            QByteArray::fromHex("1020"));
         QCOMPARE(info.type(), QKnxAdditionalInfo::Type::BiBatInformation);
         QCOMPARE(info.isValid(), true);
         QCOMPARE(info.toString(), QStringLiteral("Type { 0x07 }, Size { 0x02 }, Data { 0x10, 0x20 }"));
-        QCOMPARE(info.rawData<QByteArray>(), QByteArray::fromHex("07021020"));
+        QCOMPARE(info.bytes<QByteArray>(), QByteArray::fromHex("07021020"));
 
-        info = QKnxAdditionalInfo(QKnxAdditionalInfo::Type::BiBatInformation, { 0x10, 0x20, 0x30 });
-        QCOMPARE(info.type(), QKnxAdditionalInfo::Type::EscCode);
+        info = QKnxAdditionalInfo(QKnxAdditionalInfo::Type::BiBatInformation,
+            QVector<quint8>({ 0x10, 0x20, 0x30 }));
+        QCOMPARE(info.type(), QKnxAdditionalInfo::Type::Reserved);
         QCOMPARE(info.isValid(), false);
         QCOMPARE(info.toString(), QStringLiteral(""));
-        QCOMPARE(info.rawData<QVector<quint8>>(), QVector<quint8> {});
+        QCOMPARE(info.bytes<QVector<quint8>>(), QVector<quint8> {});
 
-        info = QKnxAdditionalInfo(QKnxAdditionalInfo::Type(0xaa), { 0x10, 0x20, 0x30 });
-        QCOMPARE(info.type(), QKnxAdditionalInfo::Type::EscCode);
+        info = QKnxAdditionalInfo(QKnxAdditionalInfo::Type(0xaa),
+            std::vector<quint8>{ 0x10, 0x20, 0x30 });
+        QCOMPARE(info.type(), QKnxAdditionalInfo::Type::Reserved);
         QCOMPARE(info.isValid(), false);
         QCOMPARE(info.toString(), QStringLiteral(""));
-        QCOMPARE(info.rawData<QVector<quint8>>(), QVector<quint8> {});
+        QCOMPARE(info.bytes<QVector<quint8>>(), QVector<quint8> {});
     }
 
     void testIsValid()
@@ -52,27 +55,32 @@ private slots:
         QKnxAdditionalInfo info;
         QCOMPARE(info.isValid(), false);
 
-        info = { QKnxAdditionalInfo::Type::RfFastAckInformation, { 0x10, 0x20, 0x30 } };
+        info = { QKnxAdditionalInfo::Type::RfFastAckInformation,
+            std::deque<quint8>{ 0x10, 0x20, 0x30 } };
         QCOMPARE(info.isValid(), false);
 
-        info = { QKnxAdditionalInfo::Type::RfFastAckInformation, { 0x10, 0x20, 0x30, 0x40 } };
+        info = { QKnxAdditionalInfo::Type::RfFastAckInformation,
+            std::vector<quint8>({ 0x10, 0x20, 0x30, 0x40 }) };
         QCOMPARE(info.isValid(), true);
 
         QByteArray data(2, Qt::Uninitialized); data[0] = 0x10, data[1] = 0x20;
         info = { QKnxAdditionalInfo::Type::ManufactorSpecificData, data };
         QCOMPARE(info.isValid(), false);
 
-        info = { QKnxAdditionalInfo::Type::ManufactorSpecificData, { 0x10, 0x20, 0x30 } };
+        info = { QKnxAdditionalInfo::Type::ManufactorSpecificData,
+            QVector<quint8>({ 0x10, 0x20, 0x30 }) };
         QCOMPARE(info.isValid(), true);
 
-        info = { QKnxAdditionalInfo::Type::RfMediumInformation, QByteArray::fromHex("1020303040506070") };
+        info = { QKnxAdditionalInfo::Type::RfMediumInformation,
+            QByteArray::fromHex("1020303040506070") };
         QCOMPARE(info.isValid(), true);
-        QCOMPARE(info.rawData<QVector<quint8>>(), QVector<quint8> ({ 0x02, 0x08, 0x10, 0x20, 0x30, 0x30, 0x40, 0x50, 0x60, 0x70 }));
+        QCOMPARE(info.bytes<QVector<quint8>>(),
+            QVector<quint8> ({ 0x02, 0x08, 0x10, 0x20, 0x30, 0x30, 0x40, 0x50, 0x60, 0x70 }));
 
         // the passed data container has not a valid length
         info = { QKnxAdditionalInfo::Type::RfMediumInformation, QVector<quint8>(0x100, 0xff) };
         QCOMPARE(info.isValid(), false);
-        QCOMPARE(info.rawData<QVector<quint8>>(), {});
+        QCOMPARE(info.bytes<QVector<quint8>>(), {});
     }
 
     void testExpectedDataSize()
@@ -80,37 +88,48 @@ private slots:
         QCOMPARE(QKnxAdditionalInfo::expectedDataSize(QKnxAdditionalInfo::Type::Reserved), -1);
 
         bool fixed = false;
-        QCOMPARE(QKnxAdditionalInfo::expectedDataSize(QKnxAdditionalInfo::Type::PlMediumInformation, &fixed), 2);
+        QCOMPARE(QKnxAdditionalInfo::expectedDataSize(QKnxAdditionalInfo::Type::PlMediumInformation,
+            &fixed), 2);
         QCOMPARE(fixed, true);
 
-        QCOMPARE(QKnxAdditionalInfo::expectedDataSize(QKnxAdditionalInfo::Type::RfMediumInformation, &fixed), 8);
+        QCOMPARE(QKnxAdditionalInfo::expectedDataSize(QKnxAdditionalInfo::Type::RfMediumInformation,
+            &fixed), 8);
         QCOMPARE(fixed, true);
 
-        QCOMPARE(QKnxAdditionalInfo::expectedDataSize(QKnxAdditionalInfo::Type::BusmonitorStatusInfo, &fixed), 1);
+        QCOMPARE(QKnxAdditionalInfo::expectedDataSize(QKnxAdditionalInfo::Type::BusmonitorStatusInfo,
+            &fixed), 1);
         QCOMPARE(fixed, true);
 
-        QCOMPARE(QKnxAdditionalInfo::expectedDataSize(QKnxAdditionalInfo::Type::TimestampRelative, &fixed), 2);
+        QCOMPARE(QKnxAdditionalInfo::expectedDataSize(QKnxAdditionalInfo::Type::TimestampRelative,
+            &fixed), 2);
         QCOMPARE(fixed, true);
 
-        QCOMPARE(QKnxAdditionalInfo::expectedDataSize(QKnxAdditionalInfo::Type::TimeDelayUntilSending, &fixed), 4);
+        QCOMPARE(QKnxAdditionalInfo::expectedDataSize(QKnxAdditionalInfo::Type::TimeDelayUntilSending,
+            &fixed), 4);
         QCOMPARE(fixed, true);
 
-        QCOMPARE(QKnxAdditionalInfo::expectedDataSize(QKnxAdditionalInfo::Type::ExtendedRelativeTimestamp, &fixed), 4);
+        QCOMPARE(QKnxAdditionalInfo::expectedDataSize(QKnxAdditionalInfo::Type::ExtendedRelativeTimestamp,
+            &fixed), 4);
         QCOMPARE(fixed, true);
 
-        QCOMPARE(QKnxAdditionalInfo::expectedDataSize(QKnxAdditionalInfo::Type::BiBatInformation, &fixed), 2);
+        QCOMPARE(QKnxAdditionalInfo::expectedDataSize(QKnxAdditionalInfo::Type::BiBatInformation,
+            &fixed), 2);
         QCOMPARE(fixed, true);
 
-        QCOMPARE(QKnxAdditionalInfo::expectedDataSize(QKnxAdditionalInfo::Type::RfMultiInformation, &fixed), 4);
+        QCOMPARE(QKnxAdditionalInfo::expectedDataSize(QKnxAdditionalInfo::Type::RfMultiInformation,
+            &fixed), 4);
         QCOMPARE(fixed, true);
 
-        QCOMPARE(QKnxAdditionalInfo::expectedDataSize(QKnxAdditionalInfo::Type::PreambleAndPostamble, &fixed), 3);
+        QCOMPARE(QKnxAdditionalInfo::expectedDataSize(QKnxAdditionalInfo::Type::PreambleAndPostamble,
+            &fixed), 3);
         QCOMPARE(fixed, true);
 
-        QCOMPARE(QKnxAdditionalInfo::expectedDataSize(QKnxAdditionalInfo::Type::RfFastAckInformation, &fixed), 2);
+        QCOMPARE(QKnxAdditionalInfo::expectedDataSize(QKnxAdditionalInfo::Type::RfFastAckInformation,
+            &fixed), 2);
         QCOMPARE(fixed, false);
 
-        QCOMPARE(QKnxAdditionalInfo::expectedDataSize(QKnxAdditionalInfo::Type::ManufactorSpecificData, &fixed), 3);
+        QCOMPARE(QKnxAdditionalInfo::expectedDataSize(QKnxAdditionalInfo::Type::ManufactorSpecificData,
+            &fixed), 3);
         QCOMPARE(fixed, false);
 
         QCOMPARE(QKnxAdditionalInfo::expectedDataSize(QKnxAdditionalInfo::Type::EscCode), -1);
@@ -120,6 +139,16 @@ private slots:
         QCOMPARE(QKnxAdditionalInfo::expectedDataSize(static_cast<QKnxAdditionalInfo::Type>(-3)), -1);
         QCOMPARE(QKnxAdditionalInfo::expectedDataSize(static_cast<QKnxAdditionalInfo::Type>(0xa0)), -1);
         QCOMPARE(QKnxAdditionalInfo::expectedDataSize(QKnxAdditionalInfo::Type(0x100)), -1);
+    }
+
+    void testData()
+    {
+        QKnxAdditionalInfo info = { QKnxAdditionalInfo::Type::RfMediumInformation,
+            QByteArray::fromHex("1020303040506070") };
+        QCOMPARE(info.isValid(), true);
+        QCOMPARE(info.bytes<QVector<quint8>>(),
+            QVector<quint8> ({ 0x02, 0x08, 0x10, 0x20, 0x30, 0x30, 0x40, 0x50, 0x60, 0x70 }));
+        QCOMPARE(info.data<QByteArray>(), QByteArray::fromHex("1020303040506070"));
     }
 
     void testDebugStream()
@@ -157,7 +186,7 @@ private slots:
         QCOMPARE(info.type(), QKnxAdditionalInfo::Type::BiBatInformation);
         QCOMPARE(info.isValid(), true);
         QCOMPARE(info.toString(), QStringLiteral("Type { 0x07 }, Size { 0x02 }, Data { 0x10, 0x20 }"));
-        QCOMPARE(info.rawData<QVector<quint8>>(), QVector<quint8> ({ 0x07, 0x02, 0x10, 0x20 }));
+        QCOMPARE(info.bytes<QVector<quint8>>(), QVector<quint8> ({ 0x07, 0x02, 0x10, 0x20 }));
     }
 };
 
