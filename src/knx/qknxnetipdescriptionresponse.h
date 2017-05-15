@@ -23,6 +23,30 @@
 
 QT_BEGIN_NAMESPACE
 
+namespace QKnxPrivate
+{
+    static QKnxNetIpStructRef::Type codeToType(QKnxNetIp::DescriptionType code)
+    {
+        switch (QKnxNetIp::DescriptionType(code)) {
+        case QKnxNetIp::DescriptionType::DeviceInfo:
+            return QKnxNetIpStructRef::Type::QKnxNetIpDeviceDIB;
+        case QKnxNetIp::DescriptionType::SupportedServiceFamilies:
+            return QKnxNetIpStructRef::Type::QKnxNetIpServiceFamiliesDIB;
+        case QKnxNetIp::DescriptionType::IpConfiguration:
+            return QKnxNetIpStructRef::Type::QKnxNetIpConfigDIB;
+        case QKnxNetIp::DescriptionType::CurrentIpConfiguration:
+            return QKnxNetIpStructRef::Type::QKnxNetIpCurrentConfigDIB;
+        case QKnxNetIp::DescriptionType::KnxAddresses:
+            return QKnxNetIpStructRef::Type::QKnxNetIpKnxAddressesDIB;
+        case QKnxNetIp::DescriptionType::ManufactorData:
+            return QKnxNetIpStructRef::Type::QKnxNetIpManufacturerDIB;
+        default:
+            break;
+        }
+        return QKnxNetIpStructRef::Type::Null;
+    }
+}
+
 class Q_KNX_EXPORT QKnxNetIpDescriptionResponse final : public QKnxNetIpFrame
 {
 public:
@@ -42,7 +66,28 @@ public:
     QKnxNetIpDeviceDIB deviceHardware() const;
     QKnxNetIpServiceFamiliesDIB supportedFamilies() const;
 
-    QVector<QKnxNetIpStructRef> optionalDibs() const;
+    template <typename T = std::vector<QKnxNetIpStructRef>>
+        auto optionalDibs() const -> decltype(T())
+    {
+        static_assert(is_type<T, QVector<QKnxNetIpStructRef>, std::deque<QKnxNetIpStructRef>,
+            std::vector<QKnxNetIpStructRef>>::value, "Type not supported.");
+
+        const auto &ref = payloadRef();
+        auto header = QKnxNetIpStructHeader<QKnxNetIp::DescriptionType>::fromBytes(ref, 0);
+        quint16 index = header.totalSize(); // total size of device DIB
+
+        header = QKnxNetIpStructHeader<QKnxNetIp::DescriptionType>::fromBytes(ref, index);
+        index += header.totalSize(); // advance of total size of families DIB
+
+        T dibs;
+        while (index < ref.size()) {
+            header = QKnxNetIpStructHeader<QKnxNetIp::DescriptionType>::fromBytes(ref, index);
+            dibs.push_back(QKnxNetIpStructRef(payloadRef(index), QKnxPrivate::codeToType(header.code())));
+            index += header.totalSize(); // advance of total size of last read DIB
+        }
+        return dibs;
+    }
+
     template <typename T> void addOptionalDib(const T &dib)
     {
         static_assert(is_type<T, QKnxNetIpDeviceDIB, QKnxNetIpConfigDIB, QKnxNetIpCurrentConfigDIB,
