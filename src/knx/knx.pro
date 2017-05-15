@@ -92,7 +92,8 @@ SOURCES += \
     qknxnetiptunnelingrequest.cpp \
     qknxbytestoreref.cpp \
     qknxbytestore.cpp \
-    qknxnetipconnectionheader.cpp
+    qknxnetipconnectionheader.cpp \
+    qknxnetippayload.cpp
 
 HEADERS += $$PUBLIC_HEADERS $$PRIVATE_HEADERS
 

@@ -16,9 +16,11 @@
 #include <QtKnx/qknxbytestore.h>
 #include <QtKnx/qknxglobal.h>
 #include <QtKnx/qknxtraits.h>
-#include <QtKnx/qknxbytestoreref.h>
+#include <QtKnx/qknxbytestore.h>
 
 QT_BEGIN_NAMESPACE
+
+using QKnxNetIpPayloadRef = QKnxByteStoreRef;
 
 class Q_KNX_EXPORT QKnxNetIpPayload final : private QKnxByteStore
 {
@@ -26,19 +28,15 @@ public:
     QKnxNetIpPayload() = default;
     ~QKnxNetIpPayload() override = default;
 
-    explicit QKnxNetIpPayload(quint8 byte)
-        : QKnxByteStore(byte)
-    {}
+    explicit QKnxNetIpPayload(quint8 byte);
+    QKnxNetIpPayload(const quint8 *data, quint16 size);
 
-    QKnxNetIpPayload(const quint8 *data, quint16 size)
-        : QKnxByteStore(data, size)
-    {}
+    QKnxNetIpPayloadRef ref(quint16 index = 0) const;
 
     using QKnxByteStore::size;
     using QKnxByteStore::resize;
     using QKnxByteStore::toString;
 
-    using QKnxByteStore::ref;
     using QKnxByteStore::byte;
     using QKnxByteStore::bytes;
     using QKnxByteStore::setByte;

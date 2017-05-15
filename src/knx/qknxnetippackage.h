@@ -45,7 +45,7 @@ public:
         return m_payload;
     }
 
-    virtual QKnxByteStoreRef payloadRef(quint16 index = 0) const
+    virtual QKnxNetIpPayloadRef payloadRef(quint16 index = 0) const
     {
         return m_payload.ref(index);
     }
