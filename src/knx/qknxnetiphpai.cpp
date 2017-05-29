@@ -77,8 +77,12 @@ void QKnxNetIpHPAI::setHPAI(QKnxNetIp::HostProtocol code, QHostAddress address, 
 {
     setCode(code);
     QKnxNetIpPayload payload;
+
+    // TODO: Review this part - It might make more sense to set the address to AnyIPv4
+    // to indicate NAT traversal, see for example 8.6.3.5 Network Address Translation (NAT)
     payload.setBytes(QKnxUtils::HostAddress::bytes(address
         .isNull() ? QHostAddress::LocalHost : address));
+
     payload.appendBytes(QKnxUtils::QUint16::bytes(port));
     setPayload(payload);
 }

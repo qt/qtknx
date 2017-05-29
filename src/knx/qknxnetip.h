@@ -194,8 +194,8 @@ struct Q_KNX_EXPORT QKnxNetIp final
     enum Timeout
     {
         // KNXnet/IP Core service time out in ms
-        SearchTimeout = 33000,
-        DescriptionTimeout = 33000,
+        SearchTimeout = 3000,
+        DescriptionTimeout = 3000,
         ConnectTimeout = 10000,
         ConnectionStateTimeout = 10000,
 

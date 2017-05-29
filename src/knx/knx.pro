@@ -1,6 +1,7 @@
 TARGET = QtKnx
 
 CONFIG += c++11
+QT = core-private
 QT_FOR_PRIVATE = network
 
 QMAKE_DOCS = $$PWD/doc/qtknx.qdocconf
@@ -51,9 +52,13 @@ PUBLIC_HEADERS += \
     qknxnetipstructref.h \
     qknxcemi.h \
     qknxnetipconnectionheader.h \
-    qknxnetipconnectionheaderframe.h
+    qknxnetipconnectionheaderframe.h \
+    qknxnetipserverdiscoveryagent.h \
+    qknxnetipserverdiscoveryinfo.h
 
-PRIVATE_HEADERS +=
+PRIVATE_HEADERS += \
+    qknxnetipserverdiscoveryagent_p.h \
+    qknxnetipserverdiscoveryinfo_p.h
 
 SOURCES += \
     qknxaddress.cpp \
@@ -93,7 +98,9 @@ SOURCES += \
     qknxbytestoreref.cpp \
     qknxbytestore.cpp \
     qknxnetipconnectionheader.cpp \
-    qknxnetippayload.cpp
+    qknxnetippayload.cpp \
+    qknxnetipserverdiscoveryagent.cpp \
+    qknxnetipserverdiscoveryinfo.cpp
 
 HEADERS += $$PUBLIC_HEADERS $$PRIVATE_HEADERS
 
