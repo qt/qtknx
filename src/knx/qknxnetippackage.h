@@ -67,18 +67,11 @@ public:
 
         T t(m_header.totalSize(), 0);
 
-        auto bytesGet = m_header.bytes();
-        std::copy(std::begin(bytesGet), std::end(bytesGet), std::begin(t));
-
-        quint16 s = m_header.size();
-        if (auto ch = connectionHeader()) {
-            bytesGet = ch->bytes();
-            std::copy(std::begin(bytesGet), std::end(bytesGet), std::next(std::begin(t), s));
-            s += ch->size();
-        }
+        auto headr = m_header.bytes();
+        std::copy(std::begin(headr), std::end(headr), std::begin(t));
 
         auto loadRef = m_payload.ref();
-        std::copy(std::begin(loadRef), std::end(loadRef), std::next(std::begin(t), s));
+        std::copy(std::begin(loadRef), std::end(loadRef), std::next(std::begin(t), m_header.size()));
 
         return t;
     }
@@ -117,16 +110,10 @@ protected:
         m_header.setPayloadSize(payloadSize);
     }
 
-    void setPayload(const QKnxNetIpPayload &payload)
+    virtual void setPayload(const QKnxNetIpPayload &payload)
     {
         m_payload = payload;
         setPayloadSize(payload.size());
-    }
-
-    virtual const QKnxNetIpConnectionHeader *connectionHeader(bool *ok = nullptr) const
-    {
-        Q_UNUSED(ok)
-        return nullptr;
     }
 
 private:

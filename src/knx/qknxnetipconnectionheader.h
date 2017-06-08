@@ -20,6 +20,8 @@
 
 QT_BEGIN_NAMESPACE
 
+using QKnxNetIpQKnxNetIpConnectionHeaderRef = QKnxByteStoreRef;
+
 class Q_KNX_EXPORT QKnxNetIpConnectionHeader final : private QKnxByteStore
 {
     using QKnxByteStore::QKnxByteStore;
@@ -58,6 +60,7 @@ public:
     }
 
     QString toString() const override;
+    QKnxNetIpQKnxNetIpConnectionHeaderRef ref() const;
 
     using QKnxByteStore::size;
     using QKnxByteStore::byte;

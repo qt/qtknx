@@ -93,4 +93,9 @@ QString QKnxNetIpConnectionHeader::toString() const
         .arg(serviceTypeSpecificValue(), 2, 16, QLatin1Char('0')).arg(tmp);
 }
 
+QKnxNetIpQKnxNetIpConnectionHeaderRef QKnxNetIpConnectionHeader::ref() const
+{
+    return QKnxByteStore::ref(0);
+}
+
 QT_END_NAMESPACE

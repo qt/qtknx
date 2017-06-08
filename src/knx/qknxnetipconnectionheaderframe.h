@@ -27,21 +27,14 @@ public:
     QKnxNetIpConnectionHeaderFrame(const QKnxNetIpConnectionHeaderFrame &) = default;
     QKnxNetIpConnectionHeaderFrame &operator=(const QKnxNetIpConnectionHeaderFrame &) = default;
 
-    quint16 size() const override
+    quint8 connectionHeaderSize() const
     {
-        return Package::size() + m_connectionHeader.size();
+        return m_connectionHeader.ref().byte(0);
     }
 
     QKnxNetIpConnectionHeader connectionHeader() const
     {
         return m_connectionHeader;
-    }
-
-    bool isValid() const override
-    {
-        const auto &headr = header();
-        return headr.isValid() && size() == (headr.size() + m_connectionHeader.size()
-            + payloadRef().size());
     }
 
     virtual QString toString() const override
@@ -61,15 +54,18 @@ protected:
 
     void setConnectionHeader(const QKnxNetIpConnectionHeader &connHeader)
     {
+        QKnxNetIpPayload payload(connHeader.ref().bytes(), connHeader.ref().size());
+        payload.appendBytes(payloadRef(m_connectionHeader.size()).bytes<std::vector<quint8>>());
+        Package::setPayload(payload);
+
         m_connectionHeader = connHeader;
     }
 
-private:
-    const QKnxNetIpConnectionHeader *connectionHeader(bool *ok) const override
+    void setPayload(const QKnxNetIpPayload &payload) override
     {
-        if (ok)
-            *ok = true;
-        return &m_connectionHeader;
+        auto load = payload;
+        load.insertBytes(0, m_connectionHeader.ref().bytes<std::vector<quint8>>());
+        Package::setPayload(load);
     }
 
 private:
@@ -91,8 +87,7 @@ struct QKnxNetIpConnectionHeaderFrameHelper
             return {};
 
         return QKnxNetIpConnectionHeaderFrame(header, connectionHeader,
-            QKnxNetIpPayload::fromBytes(bytes, index + connectionHeader.size() + header.size(),
-                header.payloadSize() - connectionHeader.size()));
+            QKnxNetIpPayload::fromBytes(bytes, index + header.size(), header.payloadSize()));
     }
 };
 
