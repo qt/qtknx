@@ -60,6 +60,9 @@ public:
         if (availableSize < QKnxNetIpFrameHeader::HeaderSize10)
             return {};
 
+        if (QKnxUtils::QUint8::fromBytes(bytes, index + 1) != QKnxNetIpFrameHeader::KnxNetIpVersion)
+            return {};
+
         const quint16 code = QKnxUtils::QUint16::fromBytes(bytes, index + 2);
         if (!QKnxNetIp::isFrameType(QKnxNetIp::ServiceType(code)))
             return {};

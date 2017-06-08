@@ -27,6 +27,8 @@ bool QKnxNetIpFrameHeader::isValid() const
 {
     if (size() != QKnxNetIpFrameHeader::HeaderSize10)
         return false;
+    if (byte(1) != QKnxNetIpFrameHeader::KnxNetIpVersion)
+        return false;
     return QKnxNetIp::isFrameType(code());
 }
 
