@@ -169,6 +169,7 @@ struct Q_KNX_EXPORT QKnxNetIp final
         }
         return false;
     }
+
     enum Timeout
     {
         // KNXnet/IP Core service time out in ms
