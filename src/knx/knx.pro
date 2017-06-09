@@ -1,7 +1,7 @@
 TARGET = QtKnx
 
 CONFIG += c++11
-QT = core-private
+QT = core core-private
 QT_FOR_PRIVATE = network
 
 QMAKE_DOCS = $$PWD/doc/qtknx.qdocconf

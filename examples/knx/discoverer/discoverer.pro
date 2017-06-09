@@ -2,7 +2,7 @@ TEMPLATE = app
 TARGET = discoverer
 
 INCLUDEPATH += .
-QT += knx network
+QT = core knx network
 CONFIG += c++11 console
 
 SOURCES += main.cpp
