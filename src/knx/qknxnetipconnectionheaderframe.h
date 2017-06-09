@@ -29,7 +29,7 @@ public:
 
     quint8 connectionHeaderSize() const
     {
-        return m_connectionHeader.ref().byte(0);
+        return m_connectionHeader.size();
     }
 
     QKnxNetIpConnectionHeader connectionHeader() const
@@ -54,7 +54,7 @@ protected:
 
     void setConnectionHeader(const QKnxNetIpConnectionHeader &connHeader)
     {
-        QKnxNetIpPayload payload(connHeader.ref().bytes(), connHeader.ref().size());
+        QKnxNetIpPayload payload(connHeader.ref().bytes(), connHeader.size());
         payload.appendBytes(payloadRef(m_connectionHeader.size()).bytes<std::vector<quint8>>());
         Package::setPayload(payload);
 
@@ -64,7 +64,7 @@ protected:
     void setPayload(const QKnxNetIpPayload &payload) override
     {
         auto load = payload;
-        load.insertBytes(0, m_connectionHeader.ref().bytes<std::vector<quint8>>());
+        load.insertBytes(0, m_connectionHeader.bytes());
         Package::setPayload(load);
     }
 
