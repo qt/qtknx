@@ -80,6 +80,13 @@ void tst_QKnxNetIpSearchResponse::testConstructor()
             "qt.io KNX device" + QByteArray::fromHex("0000000000000000000000000000"));
     QCOMPARE(search.supportedFamilies().isValid(), true);
     QCOMPARE(search.supportedFamilies().bytes<QByteArray>(), QByteArray::fromHex("0402020A"));
+
+    QCOMPARE(QKnxNetIpSearchResponse::fromBytes<QByteArray>(search.bytes<QByteArray>(), 0).isValid(),
+        true);
+    QCOMPARE(QKnxNetIpSearchResponse::fromBytes<QByteArray>(search.bytes<QByteArray>(), 56).isValid(),
+        false);
+    QCOMPARE(QKnxNetIpSearchResponse::fromBytes<QByteArray>(search.bytes<QByteArray>(), 2).isValid(),
+        false);
 }
 
 void tst_QKnxNetIpSearchResponse::testDebugStream()
