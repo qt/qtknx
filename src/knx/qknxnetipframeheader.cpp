@@ -27,7 +27,7 @@ bool QKnxNetIpFrameHeader::isValid() const
 {
     if (size() != QKnxNetIpFrameHeader::HeaderSize10)
         return false;
-    if (byte(1) != QKnxNetIpFrameHeader::KnxNetIpVersion)
+    if (protocolVersion() != QKnxNetIpFrameHeader::KnxNetIpVersion)
         return false;
     return QKnxNetIp::isFrameType(code());
 }
@@ -37,6 +37,13 @@ quint16 QKnxNetIpFrameHeader::totalSize() const
     if (size() != QKnxNetIpFrameHeader::HeaderSize10)
         return 0;
     return QKnxUtils::QUint16::fromBytes(bytes(4, 2));
+}
+
+quint8 QKnxNetIpFrameHeader::protocolVersion() const
+{
+    if (size() != QKnxNetIpFrameHeader::HeaderSize10)
+        return 0;
+    return byte(1);
 }
 
 quint16 QKnxNetIpFrameHeader::payloadSize() const

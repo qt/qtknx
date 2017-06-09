@@ -35,6 +35,8 @@ public:
     bool isValid() const;
     quint16 totalSize() const;
 
+    quint8 protocolVersion() const;
+
     quint16 payloadSize() const;
     void setPayloadSize(quint16 payloadSize);
 
