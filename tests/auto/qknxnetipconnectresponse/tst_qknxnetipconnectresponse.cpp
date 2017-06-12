@@ -105,31 +105,28 @@ void tst_QKnxNetIpConnectResponse::testConstructorFourArguments()
 
 void tst_QKnxNetIpConnectResponse::testConstructorFourArgumentsNoError()
 {
-    QKnxNetIpHPAI dataEnd(QKnxNetIp::HostProtocol::IpV4_Udp, QHostAddress::LocalHost, 3671);
-    QKnxNetIpCRD responseData;
-    QKnxNetIpConnectResponse connectResponse(quint8(200), QKnxNetIp::Error::None,
-        dataEnd, responseData);
-    QCOMPARE(connectResponse.isValid(), false);
-    // For when crd is implemented
-    //QCOMPARE(connectResponse.isValid(), true);
-    QCOMPARE(connectResponse.size(), quint16(16));
+    QKnxNetIpConnectResponse connectResponse(200u, QKnxNetIp::Error::None,
+        QKnxNetIpHPAI { QKnxNetIp::HostProtocol::IpV4_Udp, QHostAddress::LocalHost, 3671 },
+        QKnxNetIpCRD { QKnxAddress { QKnxAddress::Type::Individual, QStringLiteral("1.1.10") } });
+
+    QCOMPARE(connectResponse.isValid(), true);
+    QCOMPARE(connectResponse.size(), quint16(20));
     QCOMPARE(connectResponse.bytes<QByteArray>(),
-        QByteArray::fromHex("061002060010c80008017f0000010e57"));
-    QCOMPARE(connectResponse.payload().size(), quint16(10));
+        QByteArray::fromHex("061002060014c80008017f0000010e570404110a"));
+    QCOMPARE(connectResponse.payload().size(), quint16(14));
     QCOMPARE(connectResponse.payload().bytes<QByteArray>(),
-        QByteArray::fromHex("c80008017f0000010e57"));
+        QByteArray::fromHex("c80008017f0000010e570404110a"));
     QCOMPARE(connectResponse.toString(), QString::fromLatin1("Header size { 0x06 }, "
-            "Version { 0x10 }, Code { 0x206 }, Total size { 0x10 }, "
-            "Bytes { 0xc8, 0x00, 0x08, 0x01, 0x7f, 0x00, 0x00, 0x01, 0x0e, 0x57 }"));
+        "Version { 0x10 }, Code { 0x206 }, Total size { 0x14 }, "
+        "Bytes { 0xc8, 0x00, 0x08, 0x01, 0x7f, 0x00, 0x00, 0x01, 0x0e, 0x57, 0x04, 0x04, 0x11, 0x0a }"));
 
     QCOMPARE(connectResponse.channelId(), quint8(200));
     QCOMPARE(connectResponse.status(), QKnxNetIp::Error::None);
     QCOMPARE(connectResponse.dataEndpoint().isValid(), true);
     QCOMPARE(connectResponse.dataEndpoint().bytes<QByteArray>(),
         QByteArray::fromHex("08017f0000010e57"));
-    QCOMPARE(connectResponse.responseData().isValid(), false);
-    // For when crd is implemented.
-    //QCOMPARE(connectResponse.responseData().isValid(), true);
+    QCOMPARE(connectResponse.responseData().isValid(), true);
+    QCOMPARE(connectResponse.responseData().individualAddress().toString(), QStringLiteral("1.1.10"));
 }
 
 void tst_QKnxNetIpConnectResponse::testFromBytes()
@@ -203,8 +200,12 @@ void tst_QKnxNetIpConnectResponse::testDebugStream()
     QKnxNetIpCRD responseData;
     qDebug() <<QKnxNetIpConnectResponse(quint8(200), QKnxNetIp::Error::None, dataEnd, responseData);
     QCOMPARE(s_msg, QString::fromLatin1("0x1nv4l1d"));
-    // for when cri is implemented
-    //QCOMPARE(s_msg, QString::fromLatin1("0x061002060010c80008017f0000010e57"));
+
+    responseData.setConnectionType(QKnxNetIp::ConnectionType::Tunnel);
+    responseData.setIndividualAddress({ QKnxAddress::Type::Individual, QStringLiteral("1.1.10") });
+
+    qDebug() <<QKnxNetIpConnectResponse(quint8(200), QKnxNetIp::Error::None, dataEnd, responseData);
+    QCOMPARE(s_msg, QString::fromLatin1("0x061002060014c80008017f0000010e570404110a"));
 }
 
 void tst_QKnxNetIpConnectResponse::testDataStream()
@@ -218,7 +219,13 @@ void tst_QKnxNetIpConnectResponse::testDataStream()
     }
 
     {
-        // Check with other constructors when crd is implemented
+        QByteArray byteArray;
+        QDataStream out(&byteArray, QIODevice::WriteOnly);
+
+        out << QKnxNetIpConnectResponse(21u, QKnxNetIp::Error::None,
+            QKnxNetIpHPAI { QHostAddress("192.168.200.20"), 50100 },
+            QKnxNetIpCRD { { QKnxAddress::Type::Individual, QStringLiteral("1.1.10") } });
+        QCOMPARE(byteArray, QByteArray::fromHex("06100206001415000801c0a8c814c3b40404110a"));
     }
 }
 

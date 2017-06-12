@@ -95,6 +95,27 @@ struct Q_KNX_EXPORT QKnxNetIp final
         IpFault = 0x01
     };
 
+    enum class TunnelingLayer : quint8
+    {
+        Unknown = 0x00,
+        Link = 0x02,
+        Raw = 0x04,
+        Busmonitor = 0x80
+    };
+
+    static bool isTunnelingLayer(TunnelingLayer layer)
+    {
+        switch (layer) {
+        case QKnxNetIp::TunnelingLayer::Link:
+        case QKnxNetIp::TunnelingLayer::Raw:
+        case QKnxNetIp::TunnelingLayer::Busmonitor:
+            return true;
+        default:
+            break;
+        }
+        return false;
+    }
+
     static bool isStructType(QKnxNetIp::HostProtocol type)
     {
         switch (type) {

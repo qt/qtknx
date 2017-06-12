@@ -13,6 +13,7 @@
 #include <QtCore/qdebug.h>
 #include <QtCore/qstring.h>
 #include <QtCore/qvector.h>
+#include <QtKnx/qknxaddress.h>
 #include <QtKnx/qknxglobal.h>
 #include <QtKnx/qknxnetipstruct.h>
 #include <QtKnx/qknxtraits.h>
@@ -25,6 +26,7 @@ public:
     QKnxNetIpCRD() = default;
     ~QKnxNetIpCRD() override = default;
 
+    explicit QKnxNetIpCRD(const QKnxAddress &individualAddress);
     explicit QKnxNetIpCRD(QKnxNetIp::ConnectionType connectionType);
 
     template <typename T> static QKnxNetIpCRD fromBytes(const T &bytes, quint16 index)
@@ -39,6 +41,9 @@ public:
     void setConnectionType(QKnxNetIp::ConnectionType connectionType);
 
     bool isValid() const override;
+
+    QKnxAddress individualAddress() const;
+    bool setIndividualAddress(const QKnxAddress &address);
 
 private:
     QKnxNetIpCRD(const QKnxNetIpConnectionTypeStruct &other);

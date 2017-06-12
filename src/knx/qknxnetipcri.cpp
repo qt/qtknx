@@ -13,6 +13,12 @@ QKnxNetIpCRI::QKnxNetIpCRI(QKnxNetIp::ConnectionType connectionType)
     : QKnxNetIpConnectionTypeStruct(connectionType)
 {}
 
+QKnxNetIpCRI::QKnxNetIpCRI(QKnxNetIp::TunnelingLayer layer)
+    : QKnxNetIpConnectionTypeStruct(QKnxNetIp::ConnectionType::Tunnel)
+{
+    setTunnelingLayer(layer);
+}
+
 QKnxNetIpCRI::QKnxNetIpCRI(QKnxNetIpServiceFamiliesDIB::ServiceFamilieId serviceType)
     : QKnxNetIpCRI(QKnxNetIpServiceFamiliesDIB::connectionTypeFromServiceType(serviceType))
 {}
@@ -37,7 +43,8 @@ bool QKnxNetIpCRI::isValid() const
         case QKnxNetIp::ConnectionType::DeviceManagement:
             return QKnxNetIpConnectionTypeStruct::isValid() && size() == 2;
         case QKnxNetIp::ConnectionType::Tunnel:
-            return QKnxNetIpConnectionTypeStruct::isValid() && size() == 4;
+            return QKnxNetIpConnectionTypeStruct::isValid() && size() == 4
+                && QKnxNetIp::isTunnelingLayer(tunnelingLayer());
         case QKnxNetIp::ConnectionType::RemoteLogging:
             return QKnxNetIpConnectionTypeStruct::isValid() && size() == 2;
         case QKnxNetIp::ConnectionType::RemoteConfiguration:
@@ -48,6 +55,22 @@ bool QKnxNetIpCRI::isValid() const
             break;
     }
     return false;
+}
+
+QKnxNetIp::TunnelingLayer QKnxNetIpCRI::tunnelingLayer() const
+{
+    return QKnxNetIp::TunnelingLayer(payloadRef().byte(0));
+}
+
+bool QKnxNetIpCRI::setTunnelingLayer(QKnxNetIp::TunnelingLayer layer)
+{
+    if (connectionType() != QKnxNetIp::ConnectionType::Tunnel
+        || (!QKnxNetIp::isTunnelingLayer(layer)))
+        return false;
+
+    quint8 payload[2] = { quint8(layer), 0x00 };
+    setPayload({ payload, 2 });
+    return true;
 }
 
 QT_END_NAMESPACE
