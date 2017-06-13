@@ -33,28 +33,27 @@ public:
         RemoteConfigAndDiagnosis = 0x07,
         ObjectServer = 0x08
     };
-
-    static QKnxNetIp::ConnectionType connectionTypeFromServiceType(ServiceFamilieId serviceType);
+    using ServiceFamilyIdVersions = QMultiMap<ServiceFamilieId, quint8>;
 
     QKnxNetIpServiceFamiliesDIB();
     ~QKnxNetIpServiceFamiliesDIB() override = default;
 
-    QKnxNetIpServiceFamiliesDIB(ServiceFamilieId id, quint8 versions);
-    QKnxNetIpServiceFamiliesDIB(const QMap<ServiceFamilieId, quint8> &families);
-    QKnxNetIpServiceFamiliesDIB(const QVector<ServiceFamilieId> &ids, const QVector<quint8> &versions);
+    QKnxNetIpServiceFamiliesDIB(ServiceFamilieId id, quint8 version);
+    QKnxNetIpServiceFamiliesDIB(const ServiceFamilyIdVersions &families);
 
     template <typename T> static QKnxNetIpServiceFamiliesDIB fromBytes(const T &bytes, quint16 index)
     {
         return QKnxNetIpStructHelper::fromBytes(bytes, index,
             QKnxNetIp::DescriptionType::SupportedServiceFamilies);
     }
+    // TODO: review
+    static QKnxNetIp::ConnectionType connectionTypeFromServiceType(ServiceFamilieId serviceType);
 
     QKnxNetIp::DescriptionType descriptionType() const;
-    QMap<QKnxNetIpServiceFamiliesDIB::ServiceFamilieId, quint8> availableServiceFamilieId() const;
+    ServiceFamilyIdVersions serviceFamilyIdVersions() const;
 
-    void add(ServiceFamilieId id, quint8 versions);
-    void add(const QMap<ServiceFamilieId, quint8> &families);
-    void add(const QVector<ServiceFamilieId> &ids, const QVector<quint8> &versions);
+    void add(ServiceFamilieId id, quint8 version);
+    void add(const ServiceFamilyIdVersions &families);
 
     bool isValid() const override;
 

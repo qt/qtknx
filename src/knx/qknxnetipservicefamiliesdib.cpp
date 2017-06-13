@@ -7,6 +7,8 @@
 
 #include "qknxnetipservicefamiliesdib.h"
 
+#include <algorithm>
+
 QT_BEGIN_NAMESPACE
 
 // 7.5.4.3 Supported service families DIB
@@ -20,23 +22,16 @@ QKnxNetIpServiceFamiliesDIB::QKnxNetIpServiceFamiliesDIB(const QKnxNetIpDescript
     : QKnxNetIpDescriptionTypeStruct(other)
 {}
 
-QKnxNetIpServiceFamiliesDIB::QKnxNetIpServiceFamiliesDIB(ServiceFamilieId id, quint8 versions)
+QKnxNetIpServiceFamiliesDIB::QKnxNetIpServiceFamiliesDIB(ServiceFamilieId id, quint8 version)
     : QKnxNetIpDescriptionTypeStruct(QKnxNetIp::DescriptionType::SupportedServiceFamilies)
 {
-    add(id, versions);
+    add(id, version);
 }
 
-QKnxNetIpServiceFamiliesDIB::QKnxNetIpServiceFamiliesDIB(const QMap<ServiceFamilieId, quint8> &families)
+QKnxNetIpServiceFamiliesDIB::QKnxNetIpServiceFamiliesDIB(const ServiceFamilyIdVersions &families)
     : QKnxNetIpDescriptionTypeStruct(QKnxNetIp::DescriptionType::SupportedServiceFamilies)
 {
     add(families);
-}
-
-QKnxNetIpServiceFamiliesDIB::QKnxNetIpServiceFamiliesDIB(const QVector<ServiceFamilieId> &ids,
-        const QVector<quint8> &versions)
-    : QKnxNetIpDescriptionTypeStruct(QKnxNetIp::DescriptionType::SupportedServiceFamilies)
-{
-    add(ids, versions);
 }
 
 QKnxNetIp::DescriptionType QKnxNetIpServiceFamiliesDIB::descriptionType() const
@@ -44,51 +39,40 @@ QKnxNetIp::DescriptionType QKnxNetIpServiceFamiliesDIB::descriptionType() const
     return QKnxNetIp::DescriptionType(code());
 }
 
-void QKnxNetIpServiceFamiliesDIB::add(ServiceFamilieId id, quint8 versions)
+void QKnxNetIpServiceFamiliesDIB::add(ServiceFamilieId id, quint8 version)
 {
     auto load = payload();
-    load.appendBytes<std::array<quint8, 2>, 2>(std::array<quint8, 2>{ { quint8(id), versions } });
+    load.appendBytes<std::array<quint8, 2>, 2>(std::array<quint8, 2>{ { quint8(id), version } });
     setPayload(load);
 }
 
-void QKnxNetIpServiceFamiliesDIB::add(const QMap<ServiceFamilieId, quint8> &families)
+void QKnxNetIpServiceFamiliesDIB::add(const ServiceFamilyIdVersions &families)
 {
+    QByteArray additionalData;
+
     int i = 0;
-    std::vector<quint8> additionalData(families.size() * 2, 0u);
-    for (auto it = std::begin(families); it != std::end(families); ++it, ++i)
-        additionalData[i] = quint8(it.key()), additionalData[i += 1] = it.value();
-
-    auto load = payload();
-    load.appendBytes(additionalData);
-    setPayload(load);
-}
-
-void QKnxNetIpServiceFamiliesDIB::add(const QVector<ServiceFamilieId> &ids, const QVector<quint8> &versions)
-{
-    if (ids.size() != versions.size())
-        return;
-
-    std::vector<quint8> additionalData(ids.size() * 2, 0u);
-    int j = 0;
-    for (int i = 0; i < ids.size(); ++i, ++j)
-        additionalData[j] = quint8(ids[i]), additionalData[j += 1] = versions[i];
-
-    auto load = payload();
-    load.appendBytes(additionalData);
-    setPayload(load);
-}
-
-QMap<QKnxNetIpServiceFamiliesDIB::ServiceFamilieId, quint8> QKnxNetIpServiceFamiliesDIB::availableServiceFamilieId() const
-{
-    QMap<QKnxNetIpServiceFamiliesDIB::ServiceFamilieId, quint8> serviceTypesAndVersions;
-    for (int i = 0 ; i < payload().size() ; ++i) {
-        auto payloadBytes = payload().bytes(i, 2);
-        QKnxNetIpServiceFamiliesDIB::ServiceFamilieId service =
-            QKnxNetIpServiceFamiliesDIB::ServiceFamilieId(payloadBytes[0]);
-        quint8 version = payloadBytes[1];
-        serviceTypesAndVersions.insert(service, version);
-        ++i;
+    auto keys = families.uniqueKeys();
+    for (auto key : qAsConst(keys)) {
+        auto values = families.values(key);
+        std::sort(std::begin(values), std::end(values));
+        for (auto value : values)
+            additionalData[i++] = quint8(key), additionalData[i++] = value;
     }
+
+    auto load = payload();
+    load.appendBytes(additionalData);
+    setPayload(load);
+}
+
+QKnxNetIpServiceFamiliesDIB::ServiceFamilyIdVersions
+    QKnxNetIpServiceFamiliesDIB::serviceFamilyIdVersions() const
+{
+    ServiceFamilyIdVersions serviceTypesAndVersions;
+
+    const auto &ref = payloadRef();
+    for (int i = 0 ; i < ref.size() ; i += 2)
+        serviceTypesAndVersions.insertMulti(ServiceFamilieId(ref.byte(i)), ref.byte(i+1));
+
     return serviceTypesAndVersions;
 }
 
