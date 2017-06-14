@@ -50,7 +50,7 @@ public:
     using QKnxByteStore::bytes;
 
     static constexpr const quint8 HeaderSize10 = 0x06;
-    static constexpr const quint8 KnxNetIpVersion = 0x10;
+    static constexpr const quint8 KnxNetIpVersion10 = 0x10;
 
     template <typename T, std::size_t S = 0>
         static QKnxNetIpFrameHeader fromBytes(const T &bytes, quint16 index)
@@ -62,7 +62,7 @@ public:
         if (availableSize < QKnxNetIpFrameHeader::HeaderSize10)
             return {};
 
-        if (QKnxUtils::QUint8::fromBytes(bytes, index + 1) != QKnxNetIpFrameHeader::KnxNetIpVersion)
+        if (QKnxUtils::QUint8::fromBytes(bytes, index + 1) != QKnxNetIpFrameHeader::KnxNetIpVersion10)
             return {};
 
         const quint16 code = QKnxUtils::QUint16::fromBytes(bytes, index + 2);

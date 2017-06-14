@@ -136,7 +136,7 @@ void tst_QKnxNetIpConnectResponse::testFromBytes()
 
     auto header = response.header();
     QCOMPARE(header.size(), quint16(QKnxNetIpFrameHeader::HeaderSize10));
-    QCOMPARE(header.byte(1), QKnxNetIpFrameHeader::KnxNetIpVersion);
+    QCOMPARE(header.byte(1), QKnxNetIpFrameHeader::KnxNetIpVersion10);
     QCOMPARE(header.code(), QKnxNetIp::ServiceType::ConnectResponse);
     QCOMPARE(header.totalSize(), quint16(20));
 
@@ -159,7 +159,7 @@ void tst_QKnxNetIpConnectResponse::testFromBytes()
 
     header = response.header();
     QCOMPARE(header.size(), quint16(QKnxNetIpFrameHeader::HeaderSize10));
-    QCOMPARE(header.byte(1), QKnxNetIpFrameHeader::KnxNetIpVersion);
+    QCOMPARE(header.byte(1), QKnxNetIpFrameHeader::KnxNetIpVersion10);
     QCOMPARE(header.code(), QKnxNetIp::ServiceType::ConnectResponse);
     QCOMPARE(header.totalSize(), quint16(20));
 

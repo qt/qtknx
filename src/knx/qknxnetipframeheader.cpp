@@ -11,7 +11,7 @@
 QT_BEGIN_NAMESPACE
 
 constexpr const quint8 QKnxNetIpFrameHeader::HeaderSize10;
-constexpr const quint8 QKnxNetIpFrameHeader::KnxNetIpVersion;
+constexpr const quint8 QKnxNetIpFrameHeader::KnxNetIpVersion10;
 
 QKnxNetIpFrameHeader::QKnxNetIpFrameHeader(QKnxNetIp::ServiceType code)
     : QKnxNetIpFrameHeader(code, 0)
@@ -27,7 +27,7 @@ bool QKnxNetIpFrameHeader::isValid() const
 {
     if (size() != QKnxNetIpFrameHeader::HeaderSize10)
         return false;
-    if (protocolVersion() != QKnxNetIpFrameHeader::KnxNetIpVersion)
+    if (protocolVersion() != QKnxNetIpFrameHeader::KnxNetIpVersion10)
         return false;
     return QKnxNetIp::isFrameType(code());
 }
@@ -56,7 +56,7 @@ void QKnxNetIpFrameHeader::setPayloadSize(quint16 payloadSize)
     if (size() != QKnxNetIpFrameHeader::HeaderSize10) {
         resize(QKnxNetIpFrameHeader::HeaderSize10, 0);
         setByte(0, QKnxNetIpFrameHeader::HeaderSize10);
-        setByte(1, QKnxNetIpFrameHeader::KnxNetIpVersion);
+        setByte(1, QKnxNetIpFrameHeader::KnxNetIpVersion10);
     }
     auto bytes = QKnxUtils::QUint16::bytes(payloadSize + QKnxNetIpFrameHeader::HeaderSize10);
     setByte(4, bytes[0]);
@@ -75,7 +75,7 @@ void QKnxNetIpFrameHeader::setCode(QKnxNetIp::ServiceType code)
     if (size() != QKnxNetIpFrameHeader::HeaderSize10) {
         resize(QKnxNetIpFrameHeader::HeaderSize10, 0);
         setByte(0, QKnxNetIpFrameHeader::HeaderSize10);
-        setByte(1, QKnxNetIpFrameHeader::KnxNetIpVersion);
+        setByte(1, QKnxNetIpFrameHeader::KnxNetIpVersion10);
     }
     auto bytes = QKnxUtils::QUint16::bytes(quint16(code));
     setByte(2, bytes[0]);
@@ -92,7 +92,7 @@ QString QKnxNetIpFrameHeader::toString() const
     return QStringLiteral("Header size { 0x%1 }, Version { 0x%2 }, Code { 0x%3 }, "
         "Total size { 0x%4 }")
         .arg(QKnxNetIpFrameHeader::HeaderSize10, 2, 16, QLatin1Char('0'))
-        .arg(QKnxNetIpFrameHeader::KnxNetIpVersion, 2, 16, QLatin1Char('0'))
+        .arg(QKnxNetIpFrameHeader::KnxNetIpVersion10, 2, 16, QLatin1Char('0'))
         .arg(quint16(code()), 2, 16, QLatin1Char('0'))
         .arg(totalSize(), 2, 16, QLatin1Char('0'));
 }
