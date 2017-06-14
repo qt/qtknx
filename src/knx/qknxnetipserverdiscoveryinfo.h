@@ -35,7 +35,7 @@ public:
     quint16 controlEndpointPort() const;
     QHostAddress controlEndpointAddress() const;
 
-    QMap<QKnxNetIpServiceFamiliesDIB::ServiceFamilieId, quint8> supportedServices() const;
+    QKnxNetIpServiceFamiliesDIB::ServiceFamilyIdVersions supportedServices() const;
 
     QKnxNetIpHPAI endpoint() const;
     QKnxNetIpDeviceDIB hardware() const;

@@ -37,9 +37,9 @@ QHostAddress QKnxNetIpServerDiscoveryInfo::controlEndpointAddress() const
     return d_ptr->hpai.address();
 }
 
-QMap<QKnxNetIpServiceFamiliesDIB::ServiceFamilieId, quint8> QKnxNetIpServerDiscoveryInfo::supportedServices() const
+QKnxNetIpServiceFamiliesDIB::ServiceFamilyIdVersions QKnxNetIpServerDiscoveryInfo::supportedServices() const
 {
-    return d_ptr->services.availableServiceFamilieId();
+    return d_ptr->services.serviceFamilyIdVersions();
 }
 
 QKnxNetIpHPAI QKnxNetIpServerDiscoveryInfo::endpoint() const
