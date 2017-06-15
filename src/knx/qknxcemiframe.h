@@ -5,19 +5,19 @@
 **
 ****************************************************************************/
 
-#ifndef QKNXCEMI_H
-#define QKNXCEMI_H
+#ifndef QKNXCEMIFRAME_H
+#define QKNXCEMIFRAME_H
 
 #include <QtKnx/qknxbytestore.h>
 #include <QtKnx/qknxglobal.h>
 
 QT_BEGIN_NAMESPACE
 
-class Q_KNX_EXPORT QKnxCemi final : private QKnxByteStore
+class Q_KNX_EXPORT QKnxCemiFrame final : private QKnxByteStore
 {
 public:
-    QKnxCemi() = default;
-    ~QKnxCemi() override = default;
+    QKnxCemiFrame() = default;
+    ~QKnxCemiFrame() override = default;
 
     using QKnxByteStore::size;
     using QKnxByteStore::toString;
@@ -27,12 +27,12 @@ public:
     using QKnxByteStore::bytes;
 
     template <typename T, std::size_t S = 0>
-        static QKnxCemi fromBytes(const T &type, quint16 index, quint16 size)
+        static QKnxCemiFrame fromBytes(const T &type, quint16 index, quint16 size)
     {
         static_assert(is_type<T, QByteArray, QVector<quint8>, QKnxByteStoreRef, std::deque<quint8>,
             std::vector<quint8>, std::array<quint8, S>>::value, "Type not supported.");
 
-        QKnxCemi cemi;
+        QKnxCemiFrame cemi;
         auto begin = std::next(std::begin(type), index);
         cemi.setBytes(begin, std::next(begin, size));
         return cemi;

@@ -35,7 +35,7 @@ void tst_QKnxNetIpDeviceConfigurationRequest::testDefaultConstructor()
 void tst_QKnxNetIpDeviceConfigurationRequest::testConstructor()
 {
     auto ba = QByteArray::fromHex("fc000001531001");
-    QKnxNetIpDeviceConfigurationRequest request(1, 1, QKnxCemi::fromBytes(ba, 0, ba.size()));
+    QKnxNetIpDeviceConfigurationRequest request(1, 1, QKnxCemiFrame::fromBytes(ba, 0, ba.size()));
     QCOMPARE(request.isValid(), true);
     QCOMPARE(request.size(), quint16(17));
 

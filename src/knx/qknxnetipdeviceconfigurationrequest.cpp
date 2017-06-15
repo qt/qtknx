@@ -10,7 +10,7 @@
 QT_BEGIN_NAMESPACE
 
 QKnxNetIpDeviceConfigurationRequest::QKnxNetIpDeviceConfigurationRequest(quint8 id,
-        quint8 sequenceCounter, const QKnxCemi &cemi)
+        quint8 sequenceCounter, const QKnxCemiFrame &cemi)
     : QKnxNetIpConnectionHeaderFrame(QKnxNetIp::ServiceType::DeviceConfigurationRequest)
 {
     setConnectionHeader({ id, sequenceCounter });
@@ -32,10 +32,10 @@ quint8 QKnxNetIpDeviceConfigurationRequest::sequenceCounter() const
     return connectionHeader().sequenceCounter();
 }
 
-QKnxCemi QKnxNetIpDeviceConfigurationRequest::cemi() const
+QKnxCemiFrame QKnxNetIpDeviceConfigurationRequest::cemi() const
 {
     auto ref = payloadRef(connectionHeaderSize());
-    return QKnxCemi::fromBytes(ref.bytes<std::vector<quint8>>(), 0, ref.size());
+    return QKnxCemiFrame::fromBytes(ref.bytes<std::vector<quint8>>(), 0, ref.size());
 }
 
 bool QKnxNetIpDeviceConfigurationRequest::isValid() const

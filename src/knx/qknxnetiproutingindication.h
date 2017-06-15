@@ -21,7 +21,7 @@ public:
     QKnxNetIpRoutingIndication() = default;
     ~QKnxNetIpRoutingIndication() override = default;
 
-    explicit QKnxNetIpRoutingIndication(const QKnxCemi &cemi);
+    explicit QKnxNetIpRoutingIndication(const QKnxCemiFrame &cemi);
 
     template <typename T>
         static QKnxNetIpRoutingIndication fromBytes(const T &bytes, quint16 index)
@@ -30,8 +30,8 @@ public:
             QKnxNetIp::ServiceType::RoutingIndication);
     }
 
-    QKnxCemi cemi() const;
-    void setCemi(const QKnxCemi &cemi);
+    QKnxCemiFrame cemi() const;
+    void setCemi(const QKnxCemiFrame &cemi);
 
     bool isValid() const override;
 

@@ -22,7 +22,7 @@ public:
     ~QKnxNetIpDeviceConfigurationRequest() override = default;
 
     QKnxNetIpDeviceConfigurationRequest(quint8 communicationChannelId, quint8 sequenceCounter,
-        const QKnxCemi &cemi);
+        const QKnxCemiFrame &cemi);
 
     template <typename T>
         static QKnxNetIpDeviceConfigurationRequest fromBytes(const T &bytes, quint16 index)
@@ -33,7 +33,7 @@ public:
 
     quint8 communicationChannelId() const;
     quint8 sequenceCounter() const;
-    QKnxCemi cemi() const;
+    QKnxCemiFrame cemi() const;
 
     bool isValid() const override;
 
