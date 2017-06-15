@@ -50,7 +50,7 @@ PUBLIC_HEADERS += \
     qknxnetippackage.h \
     qknxbytestoreref.h \
     qknxnetipstructref.h \
-    qknxcemi.h \
+    qknxcemiframe.h \
     qknxnetipconnectionheader.h \
     qknxnetipconnectionheaderframe.h \
     qknxnetipserverdiscoveryagent.h \

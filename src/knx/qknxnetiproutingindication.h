@@ -8,7 +8,7 @@
 #ifndef QKNXNETIPROUTINGINDICATION_H
 #define QKNXNETIPROUTINGINDICATION_H
 
-#include <QtKnx/qknxcemi.h>
+#include <QtKnx/qknxcemiframe.h>
 #include <QtKnx/qknxnetip.h>
 #include <QtKnx/qknxnetipframe.h>
 #include <QtKnx/qknxglobal.h>
