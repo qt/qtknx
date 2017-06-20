@@ -5,12 +5,12 @@
 **
 ****************************************************************************/
 
-#include <QCommandLineParser>
-#include <QCoreApplication>
-#include <QDebug>
-#include <QKnxNetIpServerDiscoveryAgent>
-#include <QNetworkInterface>
-#include <QTimer>
+#include <QtCore/QDebug>
+#include <QtCore/QCommandLineParser>
+#include <QtCore/QCoreApplication>
+#include <QtCore/QTimer>
+#include <QtKnx/QKnxNetIpServerDiscoveryAgent>
+#include <QtNetwork/QNetworkInterface>
 
 static QString familieToString(QKnxNetIpServiceFamiliesDIB::ServiceFamilieId id)
 {
@@ -54,13 +54,13 @@ int main(int argc, char *argv[])
     parser.addHelpOption();
 
     parser.addOptions({
-        { { "t", "timeout" }, "Discovery response timeout in seconds.", "seconds", "3" },
+        { { "t", "timeout" }, "Discovery response timeout in seconds.", "timeout", "3" },
         { { "n", "nat" }, "Use Network Address Translation to traverse across network routers." },
         { { "u", "unicast" }, "Force unicast response. (defaults to multicast response)" },
         { { "a", "localAddress" }, "The local IP address a response shall be sent to. "
-             "Implies <unicast>", "address", "127.0.0.1" },
+             "Implies <unicast>", "localAddress", "127.0.0.1" },
         { { "p", "localPort" }, "The local UDP port a response shall be sent to (defaults to "
-            "system assigned). Implies <unicast>", "port", "0"}
+            "system assigned). Implies <unicast>", "localPort", "0"}
     });
     parser.process(discoverer);
 

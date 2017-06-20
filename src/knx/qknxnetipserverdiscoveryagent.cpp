@@ -18,12 +18,21 @@ QKnxNetIpServerDiscoveryAgentPrivate::QKnxNetIpServerDiscoveryAgentPrivate(const
     , address(addr)
 {}
 
+namespace QKnxPrivate
+{
+    static void clearSocket(QUdpSocket **socket)
+    {
+        if (*socket) {
+            (*socket)->disconnect();
+            (*socket)->deleteLater();
+            (*socket) = nullptr;
+        }
+    }
+}
+
 void QKnxNetIpServerDiscoveryAgentPrivate::setupSocket()
 {
-    if (socket) {
-        socket->disconnect();
-        socket->deleteLater();
-    }
+    QKnxPrivate::clearSocket(&socket);
 
     Q_Q(QKnxNetIpServerDiscoveryAgent);
     socket = new QUdpSocket(q);
@@ -98,12 +107,13 @@ void QKnxNetIpServerDiscoveryAgentPrivate::setupSocket()
 
 namespace QKnxPrivate
 {
-    static void clearTimer(QTimer *timer)
+    static void clearTimer(QTimer **timer)
     {
-        if (timer) {
-            timer->disconnect();
-            timer->deleteLater();
-            timer = nullptr;
+        if (*timer) {
+            (*timer)->stop();
+            (*timer)->disconnect();
+            (*timer)->deleteLater();
+            (*timer) = nullptr;
         }
     }
 }
@@ -112,7 +122,7 @@ void QKnxNetIpServerDiscoveryAgentPrivate::setupAndStartReceiveTimer()
 {
     Q_Q(QKnxNetIpServerDiscoveryAgent);
 
-    QKnxPrivate::clearTimer(receiveTimer);
+    QKnxPrivate::clearTimer(&receiveTimer);
     if (timeout >= 0) {
         receiveTimer = new QTimer(q);
         receiveTimer->setSingleShot(true);
@@ -125,7 +135,7 @@ void QKnxNetIpServerDiscoveryAgentPrivate::setupAndStartFrequencyTimer()
 {
     Q_Q(QKnxNetIpServerDiscoveryAgent);
 
-    QKnxPrivate::clearTimer(frequencyTimer);
+    QKnxPrivate::clearTimer(&frequencyTimer);
     if (frequency > 0) {
         frequencyTimer = new QTimer(q);
         frequencyTimer->setSingleShot(false);
@@ -181,8 +191,13 @@ void QKnxNetIpServerDiscoveryAgentPrivate::setAndEmitErrorOccurred(
 // -- QKnxNetIpServerDiscoveryAgent
 
 QKnxNetIpServerDiscoveryAgent::QKnxNetIpServerDiscoveryAgent(QObject *parent)
-    : QKnxNetIpServerDiscoveryAgent(QHostAddress(), 0u, parent)
+    : QKnxNetIpServerDiscoveryAgent(QHostAddress(QHostAddress::AnyIPv4), 0u, parent)
 {}
+
+QKnxNetIpServerDiscoveryAgent::~QKnxNetIpServerDiscoveryAgent()
+{
+    stop();
+}
 
 QKnxNetIpServerDiscoveryAgent::QKnxNetIpServerDiscoveryAgent(const QHostAddress &localAddress,
         QObject *parent)
@@ -228,7 +243,8 @@ quint16 QKnxNetIpServerDiscoveryAgent::localPort() const
 void QKnxNetIpServerDiscoveryAgent::setLocalPort(quint16 port)
 {
     Q_D(QKnxNetIpServerDiscoveryAgent);
-    d->port = port;
+    if (d->state == QKnxNetIpServerDiscoveryAgent::State::NotRunning)
+        d->port = port;
 }
 
 QHostAddress QKnxNetIpServerDiscoveryAgent::localAddress() const
@@ -240,7 +256,8 @@ QHostAddress QKnxNetIpServerDiscoveryAgent::localAddress() const
 void QKnxNetIpServerDiscoveryAgent::setLocalAddress(const QHostAddress &address)
 {
     Q_D(QKnxNetIpServerDiscoveryAgent);
-    d->address = address;
+    if (d->state == QKnxNetIpServerDiscoveryAgent::State::NotRunning)
+        d->address = address;
 }
 
 /*!
@@ -268,6 +285,7 @@ void QKnxNetIpServerDiscoveryAgent::setTimeout(int msec)
 {
     Q_D(QKnxNetIpServerDiscoveryAgent);
     d->timeout = msec;
+    d->setupAndStartReceiveTimer();
 }
 
 /*!
@@ -294,6 +312,8 @@ void QKnxNetIpServerDiscoveryAgent::setSearchFrequency(int timesPerMinute)
 {
     Q_D(QKnxNetIpServerDiscoveryAgent);
     d->frequency = timesPerMinute;
+    if (d->frequencyTimer)
+        d->frequencyTimer->setInterval(60000 / timesPerMinute);
 }
 
 bool QKnxNetIpServerDiscoveryAgent::natAware() const
@@ -305,7 +325,8 @@ bool QKnxNetIpServerDiscoveryAgent::natAware() const
 void QKnxNetIpServerDiscoveryAgent::setNatAware(bool isAware)
 {
     Q_D(QKnxNetIpServerDiscoveryAgent);
-    d->nat = isAware;
+    if (d->state == QKnxNetIpServerDiscoveryAgent::State::NotRunning)
+        d->nat = isAware;
 }
 
 quint8 QKnxNetIpServerDiscoveryAgent::multicastTtl() const
@@ -318,6 +339,8 @@ void QKnxNetIpServerDiscoveryAgent::setMulticastTtl(quint8 ttl)
 {
     Q_D(QKnxNetIpServerDiscoveryAgent);
     d->ttl = ttl;
+    if (d->socket)
+        d->socket->setSocketOption(QUdpSocket::SocketOption::MulticastTtlOption, ttl);
 }
 
 QKnxNetIpServerDiscoveryAgent::ResponseType QKnxNetIpServerDiscoveryAgent::responseType() const
@@ -329,31 +352,31 @@ QKnxNetIpServerDiscoveryAgent::ResponseType QKnxNetIpServerDiscoveryAgent::respo
 void QKnxNetIpServerDiscoveryAgent::setResponseType(QKnxNetIpServerDiscoveryAgent::ResponseType type)
 {
     Q_D(QKnxNetIpServerDiscoveryAgent);
-    d->type = type;
+    if (d->state == QKnxNetIpServerDiscoveryAgent::State::NotRunning)
+        d->type = type;
 }
 
 void QKnxNetIpServerDiscoveryAgent::start()
 {
     Q_D(QKnxNetIpServerDiscoveryAgent);
 
-    if (d->state == QKnxNetIpServerDiscoveryAgent::State::NotRunning) {
-        auto isIPv4 = true;
-        d->address.toIPv4Address(&isIPv4);
-        if (isIPv4) {
-            d->setAndEmitStateChanged(QKnxNetIpServerDiscoveryAgent::State::Starting);
+    if (d->state != QKnxNetIpServerDiscoveryAgent::State::NotRunning)
+        return;
 
-            d->setupSocket();
-            if (d->type == QKnxNetIpServerDiscoveryAgent::ResponseType::Multicast) {
-                d->socket->bind(QHostAddress::AnyIPv4, d->multicastPort, QUdpSocket::ShareAddress
-                    | QAbstractSocket::ReuseAddressHint);
-            } else {
-                d->socket->bind(d->address, d->port);
-            }
+    auto isIPv4 = true;
+    d->address.toIPv4Address(&isIPv4);
+    if (isIPv4) {
+        d->setAndEmitStateChanged(QKnxNetIpServerDiscoveryAgent::State::Starting);
+
+        d->setupSocket();
+        if (d->type == QKnxNetIpServerDiscoveryAgent::ResponseType::Multicast) {
+            d->socket->bind(QHostAddress::AnyIPv4, d->multicastPort, QUdpSocket::ShareAddress
+                | QAbstractSocket::ReuseAddressHint);
         } else {
-            d->setAndEmitErrorOccurred(Error::NotIPv4, tr("Only IPv4 local address supported."));
+            d->socket->bind(d->address, d->port);
         }
     } else {
-        d->setAndEmitErrorOccurred(Error::State, tr("Agent already running."));
+        d->setAndEmitErrorOccurred(Error::NotIPv4, tr("Only IPv4 local address supported."));
     }
 }
 
@@ -367,10 +390,8 @@ void QKnxNetIpServerDiscoveryAgent::stop()
 {
     Q_D(QKnxNetIpServerDiscoveryAgent);
 
-    if (d->state != QKnxNetIpServerDiscoveryAgent::State::Starting
-        && d->state != QKnxNetIpServerDiscoveryAgent::State::Running) {
-            return;
-    }
+    if (d->state == State::Stopping || d->state == State::NotRunning)
+        return;
 
     d->setAndEmitStateChanged(QKnxNetIpServerDiscoveryAgent::State::Stopping);
 
@@ -379,6 +400,10 @@ void QKnxNetIpServerDiscoveryAgent::stop()
             d->socket->leaveMulticastGroup(d->multicastAddress);
     }
     d->socket->close();
+
+    QKnxPrivate::clearSocket(&(d->socket));
+    QKnxPrivate::clearTimer(&(d->receiveTimer));
+    QKnxPrivate::clearTimer(&(d->frequencyTimer));
 
     d->setAndEmitStateChanged(QKnxNetIpServerDiscoveryAgent::State::NotRunning);
 }

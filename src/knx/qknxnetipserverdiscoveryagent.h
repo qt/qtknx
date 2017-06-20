@@ -21,6 +21,7 @@ class QKnxNetIpServerDiscoveryAgentPrivate;
 class Q_KNX_EXPORT QKnxNetIpServerDiscoveryAgent final : public QObject
 {
     Q_OBJECT
+    Q_DISABLE_COPY(QKnxNetIpServerDiscoveryAgent)
     Q_DECLARE_PRIVATE(QKnxNetIpServerDiscoveryAgent)
 
 public:
@@ -36,7 +37,6 @@ public:
     enum class Error : quint8
     {
         None,
-        State,
         Network,
         NotIPv4,
         Unknown = 0x80
@@ -51,6 +51,8 @@ public:
     Q_ENUM(ResponseType)
 
     QKnxNetIpServerDiscoveryAgent(QObject *parent = nullptr);
+    ~QKnxNetIpServerDiscoveryAgent();
+
     explicit QKnxNetIpServerDiscoveryAgent(const QHostAddress &localAddress,
         QObject *parent = nullptr);
     QKnxNetIpServerDiscoveryAgent(const QHostAddress &localAddress, quint16 localPort,
