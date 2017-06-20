@@ -193,17 +193,22 @@ struct Q_KNX_EXPORT QKnxNetIp final
 
     enum Timeout
     {
+        HeartbeatTimeout = 60000,
+        ConnectionAliveTimeout = 120000,
+
         // KNXnet/IP Core service time out in ms
         SearchTimeout = 3000,
         DescriptionTimeout = 3000,
-        ConnectTimeout = 10000,
-        ConnectionStateTimeout = 10000,
+
+        ConnectRequestTimeout = 10000,
+        ConnectionStateRequestTimeout = 10000,
+        DisconnectRequestTimeout = 10000,
 
         // KNXnet/IP Device Management service time out in ms
-        DeviceConfigurationTimeout = 10000,
+        DeviceConfigurationRequestTimeout = 10000,
 
         // KNXnet/IP Tunneling service time out in ms
-        TunnelingTimeout = 1000
+        TunnelingRequestTimeout = 1000
     };
 };
 Q_DECLARE_TYPEINFO(QKnxNetIp::HostProtocol, Q_PRIMITIVE_TYPE);
