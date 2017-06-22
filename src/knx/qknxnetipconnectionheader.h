@@ -30,16 +30,15 @@ public:
     QKnxNetIpConnectionHeader() = default;
     ~QKnxNetIpConnectionHeader() override = default;
 
-    QKnxNetIpConnectionHeader(quint8 channelId, quint8 sequenceCounter,
-                              quint8 serviceTypeSpecificValue = 0);
+    QKnxNetIpConnectionHeader(quint8 channelId, quint8 sequenceCount, quint8 serviceTypeSpecificValue = 0);
 
     bool isValid() const;
 
     quint8 channelId() const;
     void setChannelId(quint8 id);
 
-    quint8 sequenceCounter() const;
-    void setSequenceCounter(quint8 counter);
+    quint8 sequenceCount() const;
+    void setSequenceCount(quint8 count);
 
     quint8 serviceTypeSpecificValue() const;
     void setServiceTypeSpecificValue(quint8 value);
@@ -81,9 +80,9 @@ public:
             return {}; // header might be coruppted
 
         const quint8 channelId = QKnxUtils::QUint8::fromBytes(bytes, index + 1);
-        const quint8 sequenceCounter = QKnxUtils::QUint8::fromBytes(bytes, index + 2);
+        const quint8 sequenceCount = QKnxUtils::QUint8::fromBytes(bytes, index + 2);
         const quint8 serviceTypeSpecificValue = QKnxUtils::QUint8::fromBytes(bytes, index + 3);
-        QKnxNetIpConnectionHeader header(channelId, sequenceCounter, serviceTypeSpecificValue);
+        QKnxNetIpConnectionHeader header(channelId, sequenceCount, serviceTypeSpecificValue);
         if (totalSize > 4) {
             auto begin = std::next(std::begin(bytes), index + 4);
             header.setConnectionTypeSpecificHeaderItems(std::vector<quint8>(begin, std::next(begin,

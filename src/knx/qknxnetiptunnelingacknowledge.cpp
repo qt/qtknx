@@ -9,13 +9,13 @@
 
 QT_BEGIN_NAMESPACE
 
-QKnxNetIpTunnelingAcknowledge::QKnxNetIpTunnelingAcknowledge(quint8 id,
-        quint8 sequenceCounter, QKnxNetIp::Error status)
+QKnxNetIpTunnelingAcknowledge::QKnxNetIpTunnelingAcknowledge(quint8 id, quint8 sequenceCount,
+        QKnxNetIp::Error status)
     : QKnxNetIpConnectionHeaderFrame(QKnxNetIp::ServiceType::TunnelingAcknowledge)
 {
     QKnxNetIpConnectionHeader header;
     header.setChannelId(id);
-    header.setSequenceCounter(sequenceCounter);
+    header.setSequenceCount(sequenceCount);
     header.setServiceTypeSpecificValue(quint8(status));
     setConnectionHeader(header);
 }
@@ -30,9 +30,9 @@ quint8 QKnxNetIpTunnelingAcknowledge::channelId() const
     return connectionHeader().channelId();
 }
 
-quint8 QKnxNetIpTunnelingAcknowledge::sequenceCounter() const
+quint8 QKnxNetIpTunnelingAcknowledge::sequenceCount() const
 {
-    return connectionHeader().sequenceCounter();
+    return connectionHeader().sequenceCount();
 }
 
 QKnxNetIp::Error QKnxNetIpTunnelingAcknowledge::status() const

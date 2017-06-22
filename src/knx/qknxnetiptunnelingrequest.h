@@ -21,8 +21,7 @@ public:
     QKnxNetIpTunnelingRequest() = default;
     ~QKnxNetIpTunnelingRequest() override = default;
 
-    QKnxNetIpTunnelingRequest(quint8 channelId, quint8 sequenceCounter,
-        const QKnxCemiFrame &cemi);
+    QKnxNetIpTunnelingRequest(quint8 channelId, quint8 sequenceCount, const QKnxCemiFrame &cemi);
 
     template <typename T> static QKnxNetIpTunnelingRequest fromBytes(const T &bytes, quint16 index)
     {
@@ -31,7 +30,7 @@ public:
     }
 
     quint8 channelId() const;
-    quint8 sequenceCounter() const;
+    quint8 sequenceCount() const;
     QKnxCemiFrame cemi() const;
 
     bool isValid() const override;

@@ -9,11 +9,11 @@
 
 QT_BEGIN_NAMESPACE
 
-QKnxNetIpTunnelingRequest::QKnxNetIpTunnelingRequest(quint8 id,
-        quint8 sequenceCounter, const QKnxCemiFrame &cemi)
+QKnxNetIpTunnelingRequest::QKnxNetIpTunnelingRequest(quint8 id, quint8 sequenceCount,
+        const QKnxCemiFrame &cemi)
     : QKnxNetIpConnectionHeaderFrame(QKnxNetIp::ServiceType::TunnelingRequest)
 {
-    setConnectionHeader({ id, sequenceCounter });
+    setConnectionHeader({ id, sequenceCount });
     setPayload({ cemi.ref().bytes(), cemi.ref().size() });
 }
 
@@ -26,9 +26,9 @@ quint8 QKnxNetIpTunnelingRequest::channelId() const
     return connectionHeader().channelId();
 }
 
-quint8 QKnxNetIpTunnelingRequest::sequenceCounter() const
+quint8 QKnxNetIpTunnelingRequest::sequenceCount() const
 {
-    return connectionHeader().sequenceCounter();
+    return connectionHeader().sequenceCount();
 }
 
 QKnxCemiFrame QKnxNetIpTunnelingRequest::cemi() const

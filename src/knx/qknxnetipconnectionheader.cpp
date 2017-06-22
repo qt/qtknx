@@ -24,13 +24,13 @@ QT_BEGIN_NAMESPACE
     the connection header is fixed.
 */
 
-QKnxNetIpConnectionHeader::QKnxNetIpConnectionHeader(quint8 channelId,
-        quint8 sequenceCounter, quint8 serviceTypeSpecificValue)
+QKnxNetIpConnectionHeader::QKnxNetIpConnectionHeader(quint8 channelId, quint8 sequenceCount,
+        quint8 serviceTypeSpecificValue)
     : m_isValid(0x07)
 {
     setByte(0, 4);
     setByte(1, channelId);
-    setByte(2, sequenceCounter);
+    setByte(2, sequenceCount);
     setByte(3, serviceTypeSpecificValue);
 }
 
@@ -51,14 +51,14 @@ void QKnxNetIpConnectionHeader::setChannelId(quint8 id)
     setByte(0, byte(0) == 0 ? 4 : byte(0));
 }
 
-quint8 QKnxNetIpConnectionHeader::sequenceCounter() const
+quint8 QKnxNetIpConnectionHeader::sequenceCount() const
 {
     return byte(2);
 }
 
-void QKnxNetIpConnectionHeader::setSequenceCounter(quint8 counter)
+void QKnxNetIpConnectionHeader::setSequenceCount(quint8 count)
 {
-    setByte(2, counter);
+    setByte(2, count);
     m_isValid |= 1 << 1;
     setByte(0, byte(0) == 0 ? 4 : byte(0));
 }
@@ -89,7 +89,7 @@ QString QKnxNetIpConnectionHeader::toString() const
         ", Connection type specific header items { %5 }")
         .arg(size(), 2, 16, QLatin1Char('0'))
         .arg(channelId(), 2, 16, QLatin1Char('0'))
-        .arg(sequenceCounter(), 2, 16, QLatin1Char('0'))
+        .arg(sequenceCount(), 2, 16, QLatin1Char('0'))
         .arg(serviceTypeSpecificValue(), 2, 16, QLatin1Char('0')).arg(tmp);
 }
 

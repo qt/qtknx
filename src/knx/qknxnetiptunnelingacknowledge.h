@@ -20,8 +20,7 @@ public:
     QKnxNetIpTunnelingAcknowledge() = default;
     ~QKnxNetIpTunnelingAcknowledge() override = default;
 
-    QKnxNetIpTunnelingAcknowledge(quint8 channelId, quint8 sequenceCounter,
-        QKnxNetIp::Error status);
+    QKnxNetIpTunnelingAcknowledge(quint8 channelId, quint8 sequenceCount, QKnxNetIp::Error status);
 
     template <typename T>
         static QKnxNetIpTunnelingAcknowledge fromBytes(const T &bytes, quint16 index)
@@ -31,7 +30,7 @@ public:
     }
 
     quint8 channelId() const;
-    quint8 sequenceCounter() const;
+    quint8 sequenceCount() const;
     QKnxNetIp::Error status() const;
 
     bool isValid() const override;

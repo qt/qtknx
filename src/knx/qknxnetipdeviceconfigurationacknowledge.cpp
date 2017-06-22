@@ -10,10 +10,10 @@
 QT_BEGIN_NAMESPACE
 
 QKnxNetIpDeviceConfigurationAcknowledge::QKnxNetIpDeviceConfigurationAcknowledge(quint8 id,
-        quint8 sequenceCounter, QKnxNetIp::Error status)
+        quint8 sequenceCount, QKnxNetIp::Error status)
     : QKnxNetIpConnectionHeaderFrame(QKnxNetIp::ServiceType::DeviceConfigurationAcknowledge)
 {
-    setConnectionHeader({ id, sequenceCounter, quint8(status) });
+    setConnectionHeader({ id, sequenceCount, quint8(status) });
 }
 
 QKnxNetIpDeviceConfigurationAcknowledge::QKnxNetIpDeviceConfigurationAcknowledge(
@@ -26,9 +26,9 @@ quint8 QKnxNetIpDeviceConfigurationAcknowledge::channelId() const
     return connectionHeader().channelId();
 }
 
-quint8 QKnxNetIpDeviceConfigurationAcknowledge::sequenceCounter() const
+quint8 QKnxNetIpDeviceConfigurationAcknowledge::sequenceCount() const
 {
-    return connectionHeader().sequenceCounter();
+    return connectionHeader().sequenceCount();
 }
 
 QKnxNetIp::Error QKnxNetIpDeviceConfigurationAcknowledge::status() const
