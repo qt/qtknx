@@ -8,7 +8,6 @@
 #include <QtCore/QDebug>
 #include <QtCore/QCommandLineParser>
 #include <QtCore/QCoreApplication>
-#include <QtCore/QTimer>
 #include <QtKnx/QKnxNetIpServerDiscoveryAgent>
 #include <QtNetwork/QNetworkInterface>
 

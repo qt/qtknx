@@ -69,8 +69,8 @@ QKnxNetIpServerDiscoveryInfo::operator=(const QKnxNetIpServerDiscoveryInfo &othe
 
 }
 
-QKnxNetIpServerDiscoveryInfo::QKnxNetIpServerDiscoveryInfo(const QKnxNetIpHPAI & hpai,
-    const QKnxNetIpDeviceDIB & hardware, QKnxNetIpServiceFamiliesDIB services)
+QKnxNetIpServerDiscoveryInfo::QKnxNetIpServerDiscoveryInfo(const QKnxNetIpHPAI &hpai,
+    const QKnxNetIpDeviceDIB &hardware, QKnxNetIpServiceFamiliesDIB services)
     : QKnxNetIpServerDiscoveryInfo()
 {
     d_ptr->hpai = hpai;
