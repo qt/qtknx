@@ -17,7 +17,7 @@ private slots:
     {
         QKnxNetIpConnectionHeader header;
         QCOMPARE(header.isValid(), false);
-        QCOMPARE(header.communicationChannelId(), quint8(0));
+        QCOMPARE(header.channelId(), quint8(0));
         QCOMPARE(header.sequenceCounter(), quint8(0));
         QCOMPARE(header.serviceTypeSpecificValue(), quint8(0));
         QCOMPARE(header.connectionTypeSpecificHeaderItems(), std::vector<quint8> {});
@@ -32,7 +32,7 @@ private slots:
     {
         QKnxNetIpConnectionHeader header(1, 2, 3);
         QCOMPARE(header.isValid(), true);
-        QCOMPARE(header.communicationChannelId(), quint8(1));
+        QCOMPARE(header.channelId(), quint8(1));
         QCOMPARE(header.sequenceCounter(), quint8(2));
         QCOMPARE(header.serviceTypeSpecificValue(), quint8(3));
         QCOMPARE(header.connectionTypeSpecificHeaderItems(), std::vector<quint8> {});
@@ -48,8 +48,8 @@ private slots:
         QKnxNetIpConnectionHeader header;
         QCOMPARE(header.isValid(), false);
 
-        header.setCommunicationChannelId(1);
-        QCOMPARE(header.communicationChannelId(), quint8(1));
+        header.setChannelId(1);
+        QCOMPARE(header.channelId(), quint8(1));
         QCOMPARE(header.isValid(), false);
 
         header.setSequenceCounter(2);
@@ -75,8 +75,8 @@ private slots:
         QCOMPARE(header.sequenceCounter(), quint8(2));
         QCOMPARE(header.isValid(), false);
 
-        header.setCommunicationChannelId(1);
-        QCOMPARE(header.communicationChannelId(), quint8(1));
+        header.setChannelId(1);
+        QCOMPARE(header.channelId(), quint8(1));
         QCOMPARE(header.isValid(), true);
     }
 
@@ -89,7 +89,7 @@ private slots:
         auto headerFromBytes = QKnxNetIpConnectionHeader::fromBytes(headerBytes, 0);
 
         QCOMPARE(headerFromBytes.isValid(), true);
-        QCOMPARE(headerFromBytes.communicationChannelId(), quint8(1));
+        QCOMPARE(headerFromBytes.channelId(), quint8(1));
         QCOMPARE(headerFromBytes.sequenceCounter(), quint8(2));
         QCOMPARE(headerFromBytes.serviceTypeSpecificValue(), quint8(0));
         QCOMPARE(headerFromBytes.connectionTypeSpecificHeaderItems(),
@@ -101,7 +101,7 @@ private slots:
         headerFromBytes = QKnxNetIpConnectionHeader::fromBytes(headerBytesStream, 5);
 
         QCOMPARE(headerFromBytes.isValid(), true);
-        QCOMPARE(headerFromBytes.communicationChannelId(), quint8(1));
+        QCOMPARE(headerFromBytes.channelId(), quint8(1));
         QCOMPARE(headerFromBytes.sequenceCounter(), quint8(2));
         QCOMPARE(headerFromBytes.serviceTypeSpecificValue(), quint8(0));
         QCOMPARE(headerFromBytes.connectionTypeSpecificHeaderItems(),

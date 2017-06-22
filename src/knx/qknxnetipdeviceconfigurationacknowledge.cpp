@@ -21,9 +21,9 @@ QKnxNetIpDeviceConfigurationAcknowledge::QKnxNetIpDeviceConfigurationAcknowledge
     : QKnxNetIpConnectionHeaderFrame(other)
 {}
 
-quint8 QKnxNetIpDeviceConfigurationAcknowledge::communicationChannelId() const
+quint8 QKnxNetIpDeviceConfigurationAcknowledge::channelId() const
 {
-    return connectionHeader().communicationChannelId();
+    return connectionHeader().channelId();
 }
 
 quint8 QKnxNetIpDeviceConfigurationAcknowledge::sequenceCounter() const

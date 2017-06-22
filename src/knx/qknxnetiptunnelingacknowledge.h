@@ -20,7 +20,7 @@ public:
     QKnxNetIpTunnelingAcknowledge() = default;
     ~QKnxNetIpTunnelingAcknowledge() override = default;
 
-    QKnxNetIpTunnelingAcknowledge(quint8 communicationChannelId, quint8 sequenceCounter,
+    QKnxNetIpTunnelingAcknowledge(quint8 channelId, quint8 sequenceCounter,
         QKnxNetIp::Error status);
 
     template <typename T>
@@ -30,7 +30,7 @@ public:
             QKnxNetIp::ServiceType::TunnelingAcknowledge);
     }
 
-    quint8 communicationChannelId() const;
+    quint8 channelId() const;
     quint8 sequenceCounter() const;
     QKnxNetIp::Error status() const;
 

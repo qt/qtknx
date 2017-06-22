@@ -30,13 +30,13 @@ public:
     QKnxNetIpConnectionHeader() = default;
     ~QKnxNetIpConnectionHeader() override = default;
 
-    QKnxNetIpConnectionHeader(quint8 communicationChannelId, quint8 sequenceCounter,
+    QKnxNetIpConnectionHeader(quint8 channelId, quint8 sequenceCounter,
                               quint8 serviceTypeSpecificValue = 0);
 
     bool isValid() const;
 
-    quint8 communicationChannelId() const;
-    void setCommunicationChannelId(quint8 id);
+    quint8 channelId() const;
+    void setChannelId(quint8 id);
 
     quint8 sequenceCounter() const;
     void setSequenceCounter(quint8 counter);

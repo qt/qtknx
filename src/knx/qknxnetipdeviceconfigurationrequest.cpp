@@ -22,9 +22,9 @@ QKnxNetIpDeviceConfigurationRequest::QKnxNetIpDeviceConfigurationRequest(
     : QKnxNetIpConnectionHeaderFrame(other)
 {}
 
-quint8 QKnxNetIpDeviceConfigurationRequest::communicationChannelId() const
+quint8 QKnxNetIpDeviceConfigurationRequest::channelId() const
 {
-    return connectionHeader().communicationChannelId();
+    return connectionHeader().channelId();
 }
 
 quint8 QKnxNetIpDeviceConfigurationRequest::sequenceCounter() const

@@ -39,7 +39,7 @@ void tst_QKnxNetIpDeviceConfigurationRequest::testConstructor()
     QCOMPARE(request.isValid(), true);
     QCOMPARE(request.size(), quint16(17));
 
-    QCOMPARE(request.communicationChannelId(), quint8(1));
+    QCOMPARE(request.channelId(), quint8(1));
     QCOMPARE(request.sequenceCounter(), quint8(1));
     QCOMPARE(request.cemi().bytes<QByteArray>(), ba);
 }

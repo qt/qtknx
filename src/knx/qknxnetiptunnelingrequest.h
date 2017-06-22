@@ -21,7 +21,7 @@ public:
     QKnxNetIpTunnelingRequest() = default;
     ~QKnxNetIpTunnelingRequest() override = default;
 
-    QKnxNetIpTunnelingRequest(quint8 communicationChannelId, quint8 sequenceCounter,
+    QKnxNetIpTunnelingRequest(quint8 channelId, quint8 sequenceCounter,
         const QKnxCemiFrame &cemi);
 
     template <typename T> static QKnxNetIpTunnelingRequest fromBytes(const T &bytes, quint16 index)
@@ -30,7 +30,7 @@ public:
             QKnxNetIp::ServiceType::TunnelingRequest);
     }
 
-    quint8 communicationChannelId() const;
+    quint8 channelId() const;
     quint8 sequenceCounter() const;
     QKnxCemiFrame cemi() const;
 

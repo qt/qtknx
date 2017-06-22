@@ -20,7 +20,7 @@ public:
     QKnxNetIpDeviceConfigurationAcknowledge() = default;
     ~QKnxNetIpDeviceConfigurationAcknowledge() override = default;
 
-    QKnxNetIpDeviceConfigurationAcknowledge(quint8 communicationChannelId, quint8 sequenceCounter,
+    QKnxNetIpDeviceConfigurationAcknowledge(quint8 channelId, quint8 sequenceCounter,
         QKnxNetIp::Error status);
 
     template <typename T>
@@ -30,7 +30,7 @@ public:
             QKnxNetIp::ServiceType::DeviceConfigurationAcknowledge);
     }
 
-    quint8 communicationChannelId() const;
+    quint8 channelId() const;
     quint8 sequenceCounter() const;
     QKnxNetIp::Error status() const;
 

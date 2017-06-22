@@ -21,9 +21,9 @@ QKnxNetIpTunnelingRequest::QKnxNetIpTunnelingRequest(const QKnxNetIpConnectionHe
     : QKnxNetIpConnectionHeaderFrame(other)
 {}
 
-quint8 QKnxNetIpTunnelingRequest::communicationChannelId() const
+quint8 QKnxNetIpTunnelingRequest::channelId() const
 {
-    return connectionHeader().communicationChannelId();
+    return connectionHeader().channelId();
 }
 
 quint8 QKnxNetIpTunnelingRequest::sequenceCounter() const

@@ -14,7 +14,7 @@ QKnxNetIpTunnelingAcknowledge::QKnxNetIpTunnelingAcknowledge(quint8 id,
     : QKnxNetIpConnectionHeaderFrame(QKnxNetIp::ServiceType::TunnelingAcknowledge)
 {
     QKnxNetIpConnectionHeader header;
-    header.setCommunicationChannelId(id);
+    header.setChannelId(id);
     header.setSequenceCounter(sequenceCounter);
     header.setServiceTypeSpecificValue(quint8(status));
     setConnectionHeader(header);
@@ -25,9 +25,9 @@ QKnxNetIpTunnelingAcknowledge::QKnxNetIpTunnelingAcknowledge(
     : QKnxNetIpConnectionHeaderFrame(other)
 {}
 
-quint8 QKnxNetIpTunnelingAcknowledge::communicationChannelId() const
+quint8 QKnxNetIpTunnelingAcknowledge::channelId() const
 {
-    return connectionHeader().communicationChannelId();
+    return connectionHeader().channelId();
 }
 
 quint8 QKnxNetIpTunnelingAcknowledge::sequenceCounter() const

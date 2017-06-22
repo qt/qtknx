@@ -21,7 +21,7 @@ public:
     QKnxNetIpDeviceConfigurationRequest() = default;
     ~QKnxNetIpDeviceConfigurationRequest() override = default;
 
-    QKnxNetIpDeviceConfigurationRequest(quint8 communicationChannelId, quint8 sequenceCounter,
+    QKnxNetIpDeviceConfigurationRequest(quint8 channelId, quint8 sequenceCounter,
         const QKnxCemiFrame &cemi);
 
     template <typename T>
@@ -31,7 +31,7 @@ public:
             QKnxNetIp::ServiceType::DeviceConfigurationRequest);
     }
 
-    quint8 communicationChannelId() const;
+    quint8 channelId() const;
     quint8 sequenceCounter() const;
     QKnxCemiFrame cemi() const;
 
