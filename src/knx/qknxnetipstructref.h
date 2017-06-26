@@ -24,14 +24,14 @@
 
 #include <QtKnx/qknxnetippackage.h>
 #include <QtKnx/qknxnetipconfigdib.h>
-#include <QtKnx/QKnxNetIpCrd.h>
-#include <QtKnx/QKnxNetIpCri.h>
-#include <QtKnx/QKnxNetIpCurrentConfigDib.h>
-#include <QtKnx/QKnxNetIpDeviceDib.h>
-#include <QtKnx/QKnxNetIpHpai.h>
-#include <QtKnx/QKnxNetIpKnxAddressesDib.h>
-#include <QtKnx/QKnxNetIpManufacturerDib.h>
-#include <QtKnx/QKnxNetIpServiceFamiliesDib.h>
+#include <QtKnx/qknxnetipcrd.h>
+#include <QtKnx/qknxnetipcri.h>
+#include <QtKnx/qknxnetipcurrentconfigdib.h>
+#include <QtKnx/qknxnetipdevicedib.h>
+#include <QtKnx/qknxnetiphpai.h>
+#include <QtKnx/qknxnetipknxaddressesdib.h>
+#include <QtKnx/qknxnetipmanufacturerdib.h>
+#include <QtKnx/qknxnetipservicefamiliesdib.h>
 
 QT_BEGIN_NAMESPACE
 
