@@ -32,7 +32,7 @@ QKnxNetIpConnectResponse::QKnxNetIpConnectResponse(QKnxNetIp::Error status)
 }
 
 QKnxNetIpConnectResponse::QKnxNetIpConnectResponse(quint8 channelId, QKnxNetIp::Error status,
-        const QKnxNetIpHPAI &dataEndpoint, const QKnxNetIpCRD &responseData)
+        const QKnxNetIpHpai &dataEndpoint, const QKnxNetIpCrd &responseData)
     : QKnxNetIpFrame(QKnxNetIp::ServiceType::ConnectResponse)
 {
     QKnxNetIpPayload payload(channelId);
@@ -56,18 +56,18 @@ QKnxNetIp::Error QKnxNetIpConnectResponse::status() const
     return QKnxNetIp::Error(payloadRef().byte(1));
 }
 
-QKnxNetIpHPAI QKnxNetIpConnectResponse::dataEndpoint() const
+QKnxNetIpHpai QKnxNetIpConnectResponse::dataEndpoint() const
 {
     if (status() != QKnxNetIp::Error::None)
         return {};
-    return QKnxNetIpHPAI::fromBytes(payloadRef(), 2);
+    return QKnxNetIpHpai::fromBytes(payloadRef(), 2);
 }
 
-QKnxNetIpCRD QKnxNetIpConnectResponse::responseData() const
+QKnxNetIpCrd QKnxNetIpConnectResponse::responseData() const
 {
     if (status() != QKnxNetIp::Error::None)
         return {};
-    return QKnxNetIpCRD::fromBytes(payloadRef(), 10);
+    return QKnxNetIpCrd::fromBytes(payloadRef(), 10);
 }
 
 bool QKnxNetIpConnectResponse::isValid() const

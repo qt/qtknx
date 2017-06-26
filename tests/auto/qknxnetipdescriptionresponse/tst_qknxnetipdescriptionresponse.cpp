@@ -44,15 +44,15 @@ private slots:
     void testDataStream();
 
 private:
-    QKnxNetIpServiceFamiliesDIB m_sf;
-    QKnxNetIpDeviceDIB m_deviceHardware;
+    QKnxNetIpServiceFamiliesDib m_sf;
+    QKnxNetIpDeviceDib m_deviceHardware;
 };
 
 void tst_QKnxNetIpDescriptionResponse::initTestCase()
 {
-    m_sf = { QKnxNetIpServiceFamiliesDIB::ServiceFamilieId::IpTunneling, 0x04 };
-    m_deviceHardware = { QKnxNetIpDeviceDIB::Medium::Ip,
-                         QKnxNetIpDeviceDIB::DeviceStatus::ActiveProgrammingMode,
+    m_sf = { QKnxNetIpServiceFamiliesDib::ServiceFamilieId::IpTunneling, 0x04 };
+    m_deviceHardware = { QKnxNetIpDeviceDib::Medium::Ip,
+                         QKnxNetIpDeviceDib::DeviceStatus::ActiveProgrammingMode,
                          QKnxAddress::Individual::Unregistered,
                          0x1111,
                          QByteArray::fromHex("123456123456"),
@@ -143,121 +143,121 @@ void tst_QKnxNetIpDescriptionResponse::testOptionalDibs()
 
     QCOMPARE(descriptionResponse.isValid(), true);
 
-    QKnxNetIpConfigDIB configDIB(QHostAddress("192.168.2.12"),
+    QKnxNetIpConfigDib configDib(QHostAddress("192.168.2.12"),
         QHostAddress("255.255.255.0"),
         QHostAddress("192.168.2.1"),
-        QKnxNetIpConfigDIB::Capability::AutoIp,
-        QKnxNetIpConfigDIB::AssignmentMethod::Manual);
-    descriptionResponse.addOptionalDib<QKnxNetIpConfigDIB>(configDIB);
+        QKnxNetIpConfigDib::Capability::AutoIp,
+        QKnxNetIpConfigDib::AssignmentMethod::Manual);
+    descriptionResponse.addOptionalDib<QKnxNetIpConfigDib>(configDib);
 
-    QKnxNetIpCurrentConfigDIB currentConfigDIB(QHostAddress("192.168.2.13"),
+    QKnxNetIpCurrentConfigDib currentConfigDib(QHostAddress("192.168.2.13"),
         QHostAddress("255.255.255.1"),
         QHostAddress("192.168.2.1"),
         QHostAddress("192.168.2.2"),
-        QKnxNetIpCurrentConfigDIB::AssignmentMethod::BootP);
-    descriptionResponse.addOptionalDib<QKnxNetIpCurrentConfigDIB>(currentConfigDIB);
+        QKnxNetIpCurrentConfigDib::AssignmentMethod::BootP);
+    descriptionResponse.addOptionalDib<QKnxNetIpCurrentConfigDib>(currentConfigDib);
 
     QVector<QKnxAddress> qknxAdresses;
     qknxAdresses.append(QKnxAddress::createIndividual(1, 1, 0));
     qknxAdresses.append(QKnxAddress::createIndividual(1, 2, 5));
     qknxAdresses.append(QKnxAddress::createIndividual(2, 3, 8));
-    QKnxNetIpKnxAddressesDIB knxAddressDIB(qknxAdresses);
-    descriptionResponse.addOptionalDib<QKnxNetIpKnxAddressesDIB>(knxAddressDIB);
+    QKnxNetIpKnxAddressesDib knxAddressDib(qknxAdresses);
+    descriptionResponse.addOptionalDib<QKnxNetIpKnxAddressesDib>(knxAddressDib);
 
     QByteArray byteArray(5, 8);
-    QKnxNetIpManufacturerDIB manufacturerDIB(256, byteArray);
-    descriptionResponse.addOptionalDib<QKnxNetIpManufacturerDIB>(manufacturerDIB);
+    QKnxNetIpManufacturerDib manufacturerDib(256, byteArray);
+    descriptionResponse.addOptionalDib<QKnxNetIpManufacturerDib>(manufacturerDib);
 
-    QKnxNetIpServiceFamiliesDIB sfDIB(
-        QKnxNetIpServiceFamiliesDIB::ServiceFamilieId::RemoteConfigAndDiagnosis, 3);
-    descriptionResponse.addOptionalDib<QKnxNetIpServiceFamiliesDIB>(sfDIB);
+    QKnxNetIpServiceFamiliesDib sfDib(
+        QKnxNetIpServiceFamiliesDib::ServiceFamilieId::RemoteConfigAndDiagnosis, 3);
+    descriptionResponse.addOptionalDib<QKnxNetIpServiceFamiliesDib>(sfDib);
 
     auto optionalDib = descriptionResponse.optionalDibs();
 
-    auto ref = optionalDib[0]; // Checking optional DIB 1: QKnxNetIpConfigDIB
-    QCOMPARE(ref.type(), QKnxNetIpStructRef::Type::QKnxNetIpConfigDIB);
+    auto ref = optionalDib[0]; // Checking optional Dib 1: QKnxNetIpConfigDib
+    QCOMPARE(ref.type(), QKnxNetIpStructRef::Type::QKnxNetIpConfigDib);
 
-    auto tmpConfigDIB = ref.toType<QKnxNetIpConfigDIB>();
-    QCOMPARE(tmpConfigDIB.isValid(), configDIB.isValid());
-    QCOMPARE(tmpConfigDIB.size(), configDIB.size());
-    QCOMPARE(tmpConfigDIB.bytes<QByteArray>(), configDIB.bytes<QByteArray>());
-    QCOMPARE(tmpConfigDIB.payload().size(), configDIB.payload().size());
-    QCOMPARE(tmpConfigDIB.payload().bytes<QByteArray>(), configDIB.payload().bytes<QByteArray>());
-    QCOMPARE(tmpConfigDIB.toString(), configDIB.toString());
+    auto tmpConfigDib = ref.toType<QKnxNetIpConfigDib>();
+    QCOMPARE(tmpConfigDib.isValid(), configDib.isValid());
+    QCOMPARE(tmpConfigDib.size(), configDib.size());
+    QCOMPARE(tmpConfigDib.bytes<QByteArray>(), configDib.bytes<QByteArray>());
+    QCOMPARE(tmpConfigDib.payload().size(), configDib.payload().size());
+    QCOMPARE(tmpConfigDib.payload().bytes<QByteArray>(), configDib.payload().bytes<QByteArray>());
+    QCOMPARE(tmpConfigDib.toString(), configDib.toString());
 
-    QCOMPARE(tmpConfigDIB.descriptionType(), configDIB.descriptionType());
-    QCOMPARE(tmpConfigDIB.ipAddress().toString(), configDIB.ipAddress().toString());
-    QCOMPARE(tmpConfigDIB.subnetMask().toString(), configDIB.subnetMask().toString());
-    QCOMPARE(tmpConfigDIB.defaultGateway().toString(), configDIB.defaultGateway().toString());
-    QCOMPARE(tmpConfigDIB.capabilities(), configDIB.capabilities());
-    QCOMPARE(tmpConfigDIB.assignmentMethods(), configDIB.assignmentMethods());
+    QCOMPARE(tmpConfigDib.descriptionType(), configDib.descriptionType());
+    QCOMPARE(tmpConfigDib.ipAddress().toString(), configDib.ipAddress().toString());
+    QCOMPARE(tmpConfigDib.subnetMask().toString(), configDib.subnetMask().toString());
+    QCOMPARE(tmpConfigDib.defaultGateway().toString(), configDib.defaultGateway().toString());
+    QCOMPARE(tmpConfigDib.capabilities(), configDib.capabilities());
+    QCOMPARE(tmpConfigDib.assignmentMethods(), configDib.assignmentMethods());
 
-    ref = optionalDib[1]; // Checking optional DIB 2: QKnxNetIpCurrentConfigDIB
-    QCOMPARE(ref.type(), QKnxNetIpStructRef::Type::QKnxNetIpCurrentConfigDIB);
+    ref = optionalDib[1]; // Checking optional Dib 2: QKnxNetIpCurrentConfigDib
+    QCOMPARE(ref.type(), QKnxNetIpStructRef::Type::QKnxNetIpCurrentConfigDib);
 
-    auto tmpCurrentConfigDIB = ref.toType<QKnxNetIpCurrentConfigDIB>();
-    QCOMPARE(tmpCurrentConfigDIB.isValid(), currentConfigDIB.isValid());
-    QCOMPARE(tmpCurrentConfigDIB.size(), currentConfigDIB.size());
-    QCOMPARE(tmpCurrentConfigDIB.bytes<QByteArray>(), currentConfigDIB.bytes<QByteArray>());
-    QCOMPARE(tmpCurrentConfigDIB.payload().size(), currentConfigDIB.payload().size());
-    QCOMPARE(tmpCurrentConfigDIB.payload().bytes<QByteArray>(),
-        currentConfigDIB.payload().bytes<QByteArray>());
-    QCOMPARE(tmpCurrentConfigDIB.toString(), currentConfigDIB.toString());
+    auto tmpCurrentConfigDib = ref.toType<QKnxNetIpCurrentConfigDib>();
+    QCOMPARE(tmpCurrentConfigDib.isValid(), currentConfigDib.isValid());
+    QCOMPARE(tmpCurrentConfigDib.size(), currentConfigDib.size());
+    QCOMPARE(tmpCurrentConfigDib.bytes<QByteArray>(), currentConfigDib.bytes<QByteArray>());
+    QCOMPARE(tmpCurrentConfigDib.payload().size(), currentConfigDib.payload().size());
+    QCOMPARE(tmpCurrentConfigDib.payload().bytes<QByteArray>(),
+        currentConfigDib.payload().bytes<QByteArray>());
+    QCOMPARE(tmpCurrentConfigDib.toString(), currentConfigDib.toString());
 
-    QCOMPARE(tmpCurrentConfigDIB.descriptionType(), currentConfigDIB.descriptionType());
-    QCOMPARE(tmpCurrentConfigDIB.ipAddress().toString(), currentConfigDIB.ipAddress().toString());
-    QCOMPARE(tmpCurrentConfigDIB.subnetMask().toString(), currentConfigDIB.subnetMask().toString());
-    QCOMPARE(tmpCurrentConfigDIB.defaultGateway().toString(),
-        currentConfigDIB.defaultGateway().toString());
-    QCOMPARE(tmpCurrentConfigDIB.dhcpOrBootP().toString(),
-        currentConfigDIB.dhcpOrBootP().toString());
-    QCOMPARE(tmpCurrentConfigDIB.assignmentMethod(), currentConfigDIB.assignmentMethod());
+    QCOMPARE(tmpCurrentConfigDib.descriptionType(), currentConfigDib.descriptionType());
+    QCOMPARE(tmpCurrentConfigDib.ipAddress().toString(), currentConfigDib.ipAddress().toString());
+    QCOMPARE(tmpCurrentConfigDib.subnetMask().toString(), currentConfigDib.subnetMask().toString());
+    QCOMPARE(tmpCurrentConfigDib.defaultGateway().toString(),
+        currentConfigDib.defaultGateway().toString());
+    QCOMPARE(tmpCurrentConfigDib.dhcpOrBootP().toString(),
+        currentConfigDib.dhcpOrBootP().toString());
+    QCOMPARE(tmpCurrentConfigDib.assignmentMethod(), currentConfigDib.assignmentMethod());
 
-    ref = optionalDib[2]; // Checking optional DIB 3: QKnxNetIpKnxAddressesDIB
-    QCOMPARE(ref.type(), QKnxNetIpStructRef::Type::QKnxNetIpKnxAddressesDIB);
+    ref = optionalDib[2]; // Checking optional Dib 3: QKnxNetIpKnxAddressesDib
+    QCOMPARE(ref.type(), QKnxNetIpStructRef::Type::QKnxNetIpKnxAddressesDib);
 
-    auto tmpKnxAddressDIB = ref.toType<QKnxNetIpKnxAddressesDIB>();
-    QCOMPARE(tmpKnxAddressDIB.isValid(), knxAddressDIB.isValid());
-    QCOMPARE(tmpKnxAddressDIB.size(), knxAddressDIB.size());
-    QCOMPARE(tmpKnxAddressDIB.bytes<QByteArray>(), knxAddressDIB.bytes<QByteArray>());
-    QCOMPARE(tmpKnxAddressDIB.payload().size(), knxAddressDIB.payload().size());
-    QCOMPARE(tmpKnxAddressDIB.payload().bytes<QByteArray>(),
-        knxAddressDIB.payload().bytes<QByteArray>());
-    QCOMPARE(tmpKnxAddressDIB.toString(), knxAddressDIB.toString());
+    auto tmpKnxAddressDib = ref.toType<QKnxNetIpKnxAddressesDib>();
+    QCOMPARE(tmpKnxAddressDib.isValid(), knxAddressDib.isValid());
+    QCOMPARE(tmpKnxAddressDib.size(), knxAddressDib.size());
+    QCOMPARE(tmpKnxAddressDib.bytes<QByteArray>(), knxAddressDib.bytes<QByteArray>());
+    QCOMPARE(tmpKnxAddressDib.payload().size(), knxAddressDib.payload().size());
+    QCOMPARE(tmpKnxAddressDib.payload().bytes<QByteArray>(),
+        knxAddressDib.payload().bytes<QByteArray>());
+    QCOMPARE(tmpKnxAddressDib.toString(), knxAddressDib.toString());
 
-    QCOMPARE(tmpKnxAddressDIB.descriptionType(), knxAddressDIB.descriptionType());
-    QCOMPARE(tmpKnxAddressDIB.individualAddresses<QVector<QKnxAddress>>().size(),
-        knxAddressDIB.individualAddresses<QVector<QKnxAddress>>().size());
+    QCOMPARE(tmpKnxAddressDib.descriptionType(), knxAddressDib.descriptionType());
+    QCOMPARE(tmpKnxAddressDib.individualAddresses<QVector<QKnxAddress>>().size(),
+        knxAddressDib.individualAddresses<QVector<QKnxAddress>>().size());
 
-    ref = optionalDib[3]; // Checking optional DIB 4: QKnxNetIpManufacturerDIB
-    QCOMPARE(ref.type(), QKnxNetIpStructRef::Type::QKnxNetIpManufacturerDIB);
+    ref = optionalDib[3]; // Checking optional Dib 4: QKnxNetIpManufacturerDib
+    QCOMPARE(ref.type(), QKnxNetIpStructRef::Type::QKnxNetIpManufacturerDib);
 
-    auto tmpManufacturerDIB = ref.toType<QKnxNetIpManufacturerDIB>();
-    QCOMPARE(tmpManufacturerDIB.isValid(), manufacturerDIB.isValid());
-    QCOMPARE(tmpManufacturerDIB.size(), manufacturerDIB.size());
-    QCOMPARE(tmpManufacturerDIB.bytes<QByteArray>(), manufacturerDIB.bytes<QByteArray>());
-    QCOMPARE(tmpManufacturerDIB.payload().size(), manufacturerDIB.payload().size());
-    QCOMPARE(tmpManufacturerDIB.payload().bytes<QByteArray>(),
-        manufacturerDIB.payload().bytes<QByteArray>());
-    QCOMPARE(tmpManufacturerDIB.toString(), manufacturerDIB.toString());
+    auto tmpManufacturerDib = ref.toType<QKnxNetIpManufacturerDib>();
+    QCOMPARE(tmpManufacturerDib.isValid(), manufacturerDib.isValid());
+    QCOMPARE(tmpManufacturerDib.size(), manufacturerDib.size());
+    QCOMPARE(tmpManufacturerDib.bytes<QByteArray>(), manufacturerDib.bytes<QByteArray>());
+    QCOMPARE(tmpManufacturerDib.payload().size(), manufacturerDib.payload().size());
+    QCOMPARE(tmpManufacturerDib.payload().bytes<QByteArray>(),
+        manufacturerDib.payload().bytes<QByteArray>());
+    QCOMPARE(tmpManufacturerDib.toString(), manufacturerDib.toString());
 
-    QCOMPARE(tmpManufacturerDIB.descriptionType(), manufacturerDIB.descriptionType());
-    QCOMPARE(tmpManufacturerDIB.manufacturerId(), manufacturerDIB.manufacturerId());
-    QCOMPARE(tmpManufacturerDIB.manufacturerData<QByteArray>(),
-        manufacturerDIB.manufacturerData<QByteArray>());
+    QCOMPARE(tmpManufacturerDib.descriptionType(), manufacturerDib.descriptionType());
+    QCOMPARE(tmpManufacturerDib.manufacturerId(), manufacturerDib.manufacturerId());
+    QCOMPARE(tmpManufacturerDib.manufacturerData<QByteArray>(),
+        manufacturerDib.manufacturerData<QByteArray>());
 
-    ref = optionalDib[4]; // Checking optional DIB 5: QKnxNetIpServiceFamiliesDIB
-    QCOMPARE(ref.type(), QKnxNetIpStructRef::Type::QKnxNetIpServiceFamiliesDIB);
+    ref = optionalDib[4]; // Checking optional Dib 5: QKnxNetIpServiceFamiliesDib
+    QCOMPARE(ref.type(), QKnxNetIpStructRef::Type::QKnxNetIpServiceFamiliesDib);
 
-    auto tmpSfDIB = ref.toType<QKnxNetIpServiceFamiliesDIB>();
-    QCOMPARE(tmpSfDIB.isValid(), sfDIB.isValid());
-    QCOMPARE(tmpSfDIB.size(), sfDIB.size());
-    QCOMPARE(tmpSfDIB.bytes<QByteArray>(), sfDIB.bytes<QByteArray>());
-    QCOMPARE(tmpSfDIB.payload().size(), sfDIB.payload().size());
-    QCOMPARE(tmpSfDIB.payload().bytes<QByteArray>(), sfDIB.payload().bytes<QByteArray>());
-    QCOMPARE(tmpSfDIB.toString(), sfDIB.toString());
+    auto tmpSfDib = ref.toType<QKnxNetIpServiceFamiliesDib>();
+    QCOMPARE(tmpSfDib.isValid(), sfDib.isValid());
+    QCOMPARE(tmpSfDib.size(), sfDib.size());
+    QCOMPARE(tmpSfDib.bytes<QByteArray>(), sfDib.bytes<QByteArray>());
+    QCOMPARE(tmpSfDib.payload().size(), sfDib.payload().size());
+    QCOMPARE(tmpSfDib.payload().bytes<QByteArray>(), sfDib.payload().bytes<QByteArray>());
+    QCOMPARE(tmpSfDib.toString(), sfDib.toString());
 
-    QCOMPARE(tmpSfDIB.descriptionType(), sfDIB.descriptionType());
+    QCOMPARE(tmpSfDib.descriptionType(), sfDib.descriptionType());
 }
 
 void tst_QKnxNetIpDescriptionResponse::testDebugStream()
@@ -275,16 +275,16 @@ void tst_QKnxNetIpDescriptionResponse::testDebugStream()
     qDebug() << QKnxNetIpDescriptionResponse();
     QCOMPARE(s_msg, QString::fromLatin1("0x1nv4l1d"));
 
-    QKnxNetIpDeviceDIB hardware(QKnxNetIpDeviceDIB::Medium::Ip,
-        QKnxNetIpDeviceDIB::DeviceStatus::ActiveProgrammingMode,
+    QKnxNetIpDeviceDib hardware(QKnxNetIpDeviceDib::Medium::Ip,
+        QKnxNetIpDeviceDib::DeviceStatus::ActiveProgrammingMode,
         QKnxAddress::Individual::Unregistered,
         0x1111,
         QByteArray::fromHex("123456123456"),
         QHostAddress::AnyIPv4,
         QByteArray::fromHex("bcaec56690f9"),
         QByteArray("qt.io KNX device"));
-    const QKnxNetIpServiceFamiliesDIB supportedFamilies(
-        QKnxNetIpServiceFamiliesDIB::ServiceFamilieId::IpTunneling, 0x04);
+    const QKnxNetIpServiceFamiliesDib supportedFamilies(
+        QKnxNetIpServiceFamiliesDib::ServiceFamilieId::IpTunneling, 0x04);
     qDebug() << QKnxNetIpDescriptionResponse(hardware, supportedFamilies);
     QCOMPARE(s_msg, QString::fromLatin1("0x06100204004036012001ffff111112345612345600000000bc"
             "aec56690f971742e696f204b4e5820646576696365000000000000000000000000000004020404"));
@@ -295,16 +295,16 @@ void tst_QKnxNetIpDescriptionResponse::testDataStream()
     QByteArray byteArray;
     QDataStream out(&byteArray, QIODevice::WriteOnly);
 
-    QKnxNetIpDeviceDIB hardware(QKnxNetIpDeviceDIB::Medium::Ip,
-        QKnxNetIpDeviceDIB::DeviceStatus::ActiveProgrammingMode,
+    QKnxNetIpDeviceDib hardware(QKnxNetIpDeviceDib::Medium::Ip,
+        QKnxNetIpDeviceDib::DeviceStatus::ActiveProgrammingMode,
         QKnxAddress::Individual::Unregistered,
         0x1111,
         QByteArray::fromHex("123456123456"),
         QHostAddress::AnyIPv4,
         QByteArray::fromHex("bcaec56690f9"),
         QByteArray("qt.io KNX device"));
-    const QKnxNetIpServiceFamiliesDIB supportedFamilies(
-        QKnxNetIpServiceFamiliesDIB::ServiceFamilieId::IpTunneling, 0x04);
+    const QKnxNetIpServiceFamiliesDib supportedFamilies(
+        QKnxNetIpServiceFamiliesDib::ServiceFamilieId::IpTunneling, 0x04);
     out << QKnxNetIpDescriptionResponse(hardware, supportedFamilies);
     QCOMPARE(byteArray, QByteArray::fromHex("06100204004036012001ffff111112345612345600000000bc"
             "aec56690f971742e696f204b4e5820646576696365000000000000000000000000000004020404"));

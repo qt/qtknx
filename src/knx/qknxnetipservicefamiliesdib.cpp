@@ -28,39 +28,39 @@ QT_BEGIN_NAMESPACE
 // 7.5.4.3 Supported service families DIB
 // The service family IDs shall be the high octet of the Service Type ID
 
-QKnxNetIpServiceFamiliesDIB::QKnxNetIpServiceFamiliesDIB()
+QKnxNetIpServiceFamiliesDib::QKnxNetIpServiceFamiliesDib()
     : QKnxNetIpDescriptionTypeStruct(QKnxNetIp::DescriptionType::SupportedServiceFamilies)
 {}
 
-QKnxNetIpServiceFamiliesDIB::QKnxNetIpServiceFamiliesDIB(const QKnxNetIpDescriptionTypeStruct &other)
+QKnxNetIpServiceFamiliesDib::QKnxNetIpServiceFamiliesDib(const QKnxNetIpDescriptionTypeStruct &other)
     : QKnxNetIpDescriptionTypeStruct(other)
 {}
 
-QKnxNetIpServiceFamiliesDIB::QKnxNetIpServiceFamiliesDIB(ServiceFamilieId id, quint8 version)
+QKnxNetIpServiceFamiliesDib::QKnxNetIpServiceFamiliesDib(ServiceFamilieId id, quint8 version)
     : QKnxNetIpDescriptionTypeStruct(QKnxNetIp::DescriptionType::SupportedServiceFamilies)
 {
     add(id, version);
 }
 
-QKnxNetIpServiceFamiliesDIB::QKnxNetIpServiceFamiliesDIB(const ServiceFamilyIdVersions &families)
+QKnxNetIpServiceFamiliesDib::QKnxNetIpServiceFamiliesDib(const ServiceFamilyIdVersions &families)
     : QKnxNetIpDescriptionTypeStruct(QKnxNetIp::DescriptionType::SupportedServiceFamilies)
 {
     add(families);
 }
 
-QKnxNetIp::DescriptionType QKnxNetIpServiceFamiliesDIB::descriptionType() const
+QKnxNetIp::DescriptionType QKnxNetIpServiceFamiliesDib::descriptionType() const
 {
     return QKnxNetIp::DescriptionType(code());
 }
 
-void QKnxNetIpServiceFamiliesDIB::add(ServiceFamilieId id, quint8 version)
+void QKnxNetIpServiceFamiliesDib::add(ServiceFamilieId id, quint8 version)
 {
     auto load = payload();
     load.appendBytes<std::array<quint8, 2>, 2>(std::array<quint8, 2>{ { quint8(id), version } });
     setPayload(load);
 }
 
-void QKnxNetIpServiceFamiliesDIB::add(const ServiceFamilyIdVersions &families)
+void QKnxNetIpServiceFamiliesDib::add(const ServiceFamilyIdVersions &families)
 {
     QByteArray additionalData;
 
@@ -78,8 +78,8 @@ void QKnxNetIpServiceFamiliesDIB::add(const ServiceFamilyIdVersions &families)
     setPayload(load);
 }
 
-QKnxNetIpServiceFamiliesDIB::ServiceFamilyIdVersions
-    QKnxNetIpServiceFamiliesDIB::serviceFamilyIdVersions() const
+QKnxNetIpServiceFamiliesDib::ServiceFamilyIdVersions
+    QKnxNetIpServiceFamiliesDib::serviceFamilyIdVersions() const
 {
     ServiceFamilyIdVersions serviceTypesAndVersions;
 
@@ -91,7 +91,7 @@ QKnxNetIpServiceFamiliesDIB::ServiceFamilyIdVersions
 }
 
 QKnxNetIp::ConnectionType
-    QKnxNetIpServiceFamiliesDIB::connectionTypeFromServiceType(ServiceFamilieId serviceType)
+    QKnxNetIpServiceFamiliesDib::connectionTypeFromServiceType(ServiceFamilieId serviceType)
 {
     switch (serviceType) {
         case ServiceFamilieId::Core:
@@ -114,7 +114,7 @@ QKnxNetIp::ConnectionType
     return QKnxNetIp::ConnectionType::Unknown;
 }
 
-bool QKnxNetIpServiceFamiliesDIB::isValid() const
+bool QKnxNetIpServiceFamiliesDib::isValid() const
 {
     return QKnxNetIpDescriptionTypeStruct::isValid() && (size() % 2 == 0) // must be even sized
         && descriptionType() == QKnxNetIp::DescriptionType::SupportedServiceFamilies;

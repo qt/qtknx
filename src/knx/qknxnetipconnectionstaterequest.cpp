@@ -24,7 +24,7 @@
 QT_BEGIN_NAMESPACE
 
 QKnxNetIpConnectionStateRequest::QKnxNetIpConnectionStateRequest(quint8 channelId,
-        const QKnxNetIpHPAI &controlEndpoint)
+        const QKnxNetIpHpai &controlEndpoint)
     : QKnxNetIpFrame(QKnxNetIp::ServiceType::ConnectionStateRequest)
 {
     QKnxNetIpPayload payload(channelId);
@@ -42,9 +42,9 @@ quint8 QKnxNetIpConnectionStateRequest::channelId() const
     return payloadRef().byte(0);
 }
 
-QKnxNetIpHPAI QKnxNetIpConnectionStateRequest::controlEndpoint() const
+QKnxNetIpHpai QKnxNetIpConnectionStateRequest::controlEndpoint() const
 {
-    return QKnxNetIpHPAI::fromBytes(payloadRef(), 2);
+    return QKnxNetIpHpai::fromBytes(payloadRef(), 2);
 }
 
 bool QKnxNetIpConnectionStateRequest::isValid() const

@@ -34,17 +34,17 @@
 
 QT_BEGIN_NAMESPACE
 
-class Q_KNX_EXPORT QKnxNetIpCRI : public QKnxNetIpConnectionTypeStruct
+class Q_KNX_EXPORT QKnxNetIpCri : public QKnxNetIpConnectionTypeStruct
 {
 public:
-    QKnxNetIpCRI() = default;
-    ~QKnxNetIpCRI() override = default;
+    QKnxNetIpCri() = default;
+    ~QKnxNetIpCri() override = default;
 
-    explicit QKnxNetIpCRI(QKnxNetIp::TunnelingLayer layer);
-    explicit QKnxNetIpCRI(QKnxNetIp::ConnectionType connectionType); // TODO: review
-    explicit QKnxNetIpCRI(QKnxNetIpServiceFamiliesDIB::ServiceFamilieId serviceType);
+    explicit QKnxNetIpCri(QKnxNetIp::TunnelingLayer layer);
+    explicit QKnxNetIpCri(QKnxNetIp::ConnectionType connectionType); // TODO: review
+    explicit QKnxNetIpCri(QKnxNetIpServiceFamiliesDib::ServiceFamilieId serviceType);
 
-    template <typename T> static QKnxNetIpCRI fromBytes(const T &bytes, quint16 index)
+    template <typename T> static QKnxNetIpCri fromBytes(const T &bytes, quint16 index)
     {
         auto code = QKnxNetIpStructHeader<QKnxNetIp::ConnectionType>::fromBytes(bytes, index).code();
         if (!QKnxNetIp::isStructType(code))
@@ -61,9 +61,9 @@ public:
     bool setTunnelingLayer(QKnxNetIp::TunnelingLayer layer);
 
 private:
-    QKnxNetIpCRI(const QKnxNetIpConnectionTypeStruct &other);
+    QKnxNetIpCri(const QKnxNetIpConnectionTypeStruct &other);
 };
-Q_DECLARE_TYPEINFO(QKnxNetIpCRI, Q_MOVABLE_TYPE);
+Q_DECLARE_TYPEINFO(QKnxNetIpCri, Q_MOVABLE_TYPE);
 
 QT_END_NAMESPACE
 

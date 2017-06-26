@@ -38,8 +38,8 @@ public:
 
     QKnxNetIpConnectResponse(quint8 channelId,
                              QKnxNetIp::Error status,
-                             const QKnxNetIpHPAI &dataEndpoint,
-                             const QKnxNetIpCRD &responseData);
+                             const QKnxNetIpHpai &dataEndpoint,
+                             const QKnxNetIpCrd &responseData);
 
     explicit QKnxNetIpConnectResponse(QKnxNetIp::Error status);
 
@@ -52,8 +52,8 @@ public:
 
     quint8 channelId() const;
     QKnxNetIp::Error status() const;
-    QKnxNetIpHPAI dataEndpoint() const;
-    QKnxNetIpCRD responseData() const;
+    QKnxNetIpHpai dataEndpoint() const;
+    QKnxNetIpCrd responseData() const;
 
     bool isValid() const override;
 

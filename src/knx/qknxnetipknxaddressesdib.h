@@ -35,16 +35,16 @@
 
 QT_BEGIN_NAMESPACE
 
-class Q_KNX_EXPORT QKnxNetIpKnxAddressesDIB final : public QKnxNetIpDescriptionTypeStruct
+class Q_KNX_EXPORT QKnxNetIpKnxAddressesDib final : public QKnxNetIpDescriptionTypeStruct
 {
 public:
-    QKnxNetIpKnxAddressesDIB() = default;
-    ~QKnxNetIpKnxAddressesDIB() override = default;
+    QKnxNetIpKnxAddressesDib() = default;
+    ~QKnxNetIpKnxAddressesDib() override = default;
 
-    explicit QKnxNetIpKnxAddressesDIB(const QKnxAddress &address);
-    explicit QKnxNetIpKnxAddressesDIB(const QVector<QKnxAddress> &addresses);
+    explicit QKnxNetIpKnxAddressesDib(const QKnxAddress &address);
+    explicit QKnxNetIpKnxAddressesDib(const QVector<QKnxAddress> &addresses);
 
-    template <typename T> static QKnxNetIpKnxAddressesDIB fromBytes(const T &bytes, quint16 index)
+    template <typename T> static QKnxNetIpKnxAddressesDib fromBytes(const T &bytes, quint16 index)
     {
         return QKnxNetIpStructHelper::fromBytes(bytes, index,
             QKnxNetIp::DescriptionType::KnxAddresses);
@@ -67,9 +67,9 @@ public:
     bool isValid() const override;
 
 private:
-    QKnxNetIpKnxAddressesDIB(const QKnxNetIpDescriptionTypeStruct &other);
+    QKnxNetIpKnxAddressesDib(const QKnxNetIpDescriptionTypeStruct &other);
 };
-Q_DECLARE_TYPEINFO(QKnxNetIpKnxAddressesDIB, Q_MOVABLE_TYPE);
+Q_DECLARE_TYPEINFO(QKnxNetIpKnxAddressesDib, Q_MOVABLE_TYPE);
 
 QT_END_NAMESPACE
 

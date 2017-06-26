@@ -34,16 +34,16 @@
 
 QT_BEGIN_NAMESPACE
 
-class Q_KNX_EXPORT QKnxNetIpCRD : public QKnxNetIpConnectionTypeStruct
+class Q_KNX_EXPORT QKnxNetIpCrd : public QKnxNetIpConnectionTypeStruct
 {
 public:
-    QKnxNetIpCRD() = default;
-    ~QKnxNetIpCRD() override = default;
+    QKnxNetIpCrd() = default;
+    ~QKnxNetIpCrd() override = default;
 
-    explicit QKnxNetIpCRD(const QKnxAddress &individualAddress);
-    explicit QKnxNetIpCRD(QKnxNetIp::ConnectionType connectionType);
+    explicit QKnxNetIpCrd(const QKnxAddress &individualAddress);
+    explicit QKnxNetIpCrd(QKnxNetIp::ConnectionType connectionType);
 
-    template <typename T> static QKnxNetIpCRD fromBytes(const T &bytes, quint16 index)
+    template <typename T> static QKnxNetIpCrd fromBytes(const T &bytes, quint16 index)
     {
         auto code = QKnxNetIpStructHeader<QKnxNetIp::ConnectionType>::fromBytes(bytes, index).code();
         if (!QKnxNetIp::isStructType(code))
@@ -60,9 +60,9 @@ public:
     bool setIndividualAddress(const QKnxAddress &address);
 
 private:
-    QKnxNetIpCRD(const QKnxNetIpConnectionTypeStruct &other);
+    QKnxNetIpCrd(const QKnxNetIpConnectionTypeStruct &other);
 };
-Q_DECLARE_TYPEINFO(QKnxNetIpCRD, Q_MOVABLE_TYPE);
+Q_DECLARE_TYPEINFO(QKnxNetIpCrd, Q_MOVABLE_TYPE);
 
 QT_END_NAMESPACE
 

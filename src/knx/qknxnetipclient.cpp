@@ -576,7 +576,7 @@ void QKnxNetIpClient::setSupportedProtocolVersions(const QVector<quint8> &versio
         d->m_supportedVersions = versions;
 }
 
-void QKnxNetIpClient::connectToHost(const QKnxNetIpHPAI &controlEndpoint)
+void QKnxNetIpClient::connectToHost(const QKnxNetIpHpai &controlEndpoint)
 {
     connectToHost(controlEndpoint.address(), controlEndpoint.port());
 }

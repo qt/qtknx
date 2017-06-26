@@ -31,7 +31,7 @@ class QKnxNetIpManagementClientPrivate : public QKnxNetIpClientPrivate
 
 public:
     QKnxNetIpManagementClientPrivate(const QHostAddress &a, quint16 p)
-        : QKnxNetIpClientPrivate(a, p, QKnxNetIpCRI(QKnxNetIp::ConnectionType::DeviceManagement),
+        : QKnxNetIpClientPrivate(a, p, QKnxNetIpCri(QKnxNetIp::ConnectionType::DeviceManagement),
             3, QKnxNetIp::DeviceConfigurationRequestTimeout)
     {}
 

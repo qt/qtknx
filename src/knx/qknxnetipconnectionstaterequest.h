@@ -34,7 +34,7 @@ public:
     QKnxNetIpConnectionStateRequest() = default;
     ~QKnxNetIpConnectionStateRequest() override = default;
 
-    QKnxNetIpConnectionStateRequest(quint8 channelId, const QKnxNetIpHPAI &controlEndpoint);
+    QKnxNetIpConnectionStateRequest(quint8 channelId, const QKnxNetIpHpai &controlEndpoint);
 
     template <typename T>
         static QKnxNetIpConnectionStateRequest fromBytes(const T &bytes, quint16 index)
@@ -44,7 +44,7 @@ public:
     }
 
     quint8 channelId() const;
-    QKnxNetIpHPAI controlEndpoint() const;
+    QKnxNetIpHpai controlEndpoint() const;
 
     bool isValid() const override;
 

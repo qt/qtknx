@@ -36,18 +36,18 @@ public:
     QKnxNetIpSearchResponse() = default;
     ~QKnxNetIpSearchResponse() override = default;
 
-    QKnxNetIpSearchResponse(const QKnxNetIpHPAI &controlEndpoint,
-                            const QKnxNetIpDeviceDIB &deviceHardware,
-                            const QKnxNetIpServiceFamiliesDIB &supportedFamilies);
+    QKnxNetIpSearchResponse(const QKnxNetIpHpai &controlEndpoint,
+                            const QKnxNetIpDeviceDib &deviceHardware,
+                            const QKnxNetIpServiceFamiliesDib &supportedFamilies);
 
     template <typename T> static QKnxNetIpSearchResponse fromBytes(const T &bytes, quint16 index)
     {
         return QKnxNetIpFrameHelper::fromBytes(bytes, index, QKnxNetIp::ServiceType::SearchResponse);
     }
 
-    QKnxNetIpHPAI controlEndpoint() const;
-    QKnxNetIpDeviceDIB deviceHardware() const;
-    QKnxNetIpServiceFamiliesDIB supportedFamilies() const;
+    QKnxNetIpHpai controlEndpoint() const;
+    QKnxNetIpDeviceDib deviceHardware() const;
+    QKnxNetIpServiceFamiliesDib supportedFamilies() const;
 
     bool isValid() const override;
 

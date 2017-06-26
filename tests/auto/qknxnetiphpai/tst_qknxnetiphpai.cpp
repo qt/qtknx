@@ -29,7 +29,7 @@ static void myMessageHandler(QtMsgType, const QMessageLogContext &, const QStrin
     s_msg = msg;
 }
 
-class tst_QKnxNetIpHPAI : public QObject
+class tst_QKnxNetIpHpai : public QObject
 {
     Q_OBJECT
 
@@ -40,9 +40,9 @@ private slots:
     void testDataStream();
 };
 
-void tst_QKnxNetIpHPAI::testConstructor()
+void tst_QKnxNetIpHpai::testConstructor()
 {
-    QKnxNetIpHPAI hpai(QKnxNetIp::HostProtocol::IpV4_Udp, QHostAddress::LocalHost, 3671);
+    QKnxNetIpHpai hpai(QKnxNetIp::HostProtocol::IpV4_Udp, QHostAddress::LocalHost, 3671);
 
     QCOMPARE(hpai.hostProtocol(), QKnxNetIp::HostProtocol::IpV4_Udp);
     QCOMPARE(hpai.address(), QHostAddress(QHostAddress::LocalHost));
@@ -58,14 +58,14 @@ void tst_QKnxNetIpHPAI::testConstructor()
             "Bytes { 0x7f, 0x00, 0x00, 0x01, 0x0e, 0x57 }"));
 }
 
-void tst_QKnxNetIpHPAI::testSetFunctions()
+void tst_QKnxNetIpHpai::testSetFunctions()
 {
-    // SetAll on an unvalid HPAI
+    // SetAll on an unvalid Hpai
     {
-        QKnxNetIpHPAI hpai;
+        QKnxNetIpHpai hpai;
         QCOMPARE(hpai.isValid(), false);
 
-        hpai.setHPAI(QKnxNetIp::HostProtocol::IpV4_Udp, QHostAddress::LocalHost, 3671);
+        hpai.setHpai(QKnxNetIp::HostProtocol::IpV4_Udp, QHostAddress::LocalHost, 3671);
         QCOMPARE(hpai.hostProtocol(), QKnxNetIp::HostProtocol::IpV4_Udp);
         QCOMPARE(hpai.address(), QHostAddress(QHostAddress::LocalHost));
         QCOMPARE(hpai.port(), quint16(3671));
@@ -81,9 +81,9 @@ void tst_QKnxNetIpHPAI::testSetFunctions()
         QCOMPARE(hpai.isValid(), true);
     }
 
-    // Set All on a valid HPAI
+    // Set All on a valid Hpai
     {
-        QKnxNetIpHPAI hpai(QKnxNetIp::HostProtocol::IpV4_Udp, QHostAddress::LocalHost, 3333);
+        QKnxNetIpHpai hpai(QKnxNetIp::HostProtocol::IpV4_Udp, QHostAddress::LocalHost, 3333);
         QCOMPARE(hpai.hostProtocol(), QKnxNetIp::HostProtocol::IpV4_Udp);
         QCOMPARE(hpai.address(), QHostAddress(QHostAddress::LocalHost));
         QCOMPARE(hpai.port(), quint16(3333));
@@ -91,7 +91,7 @@ void tst_QKnxNetIpHPAI::testSetFunctions()
                 "Bytes { 0x7f, 0x00, 0x00, 0x01, 0x0d, 0x05 }"));
         QCOMPARE(hpai.isValid(), true);
 
-        hpai.setHPAI(QKnxNetIp::HostProtocol::IpV4_Tcp, QHostAddress::Broadcast, 3671);
+        hpai.setHpai(QKnxNetIp::HostProtocol::IpV4_Tcp, QHostAddress::Broadcast, 3671);
         QCOMPARE(hpai.hostProtocol(), QKnxNetIp::HostProtocol::IpV4_Tcp);
         QCOMPARE(hpai.address(), QHostAddress(QHostAddress::Broadcast));
         QCOMPARE(hpai.port(), quint16(3671));
@@ -100,9 +100,9 @@ void tst_QKnxNetIpHPAI::testSetFunctions()
         QCOMPARE(hpai.isValid(), true);
     }
 
-    // Set individual on an unvalid HPAI
+    // Set individual on an unvalid Hpai
     {
-        QKnxNetIpHPAI hpai;
+        QKnxNetIpHpai hpai;
         // Original values
         QCOMPARE(hpai.toString(), QString::fromLatin1("Total size { 0x00 }, Code { 0x00 }, "
                 "Bytes {  }"));
@@ -136,9 +136,9 @@ void tst_QKnxNetIpHPAI::testSetFunctions()
         QCOMPARE(hpai.isValid(), true);
     }
 
-    // Set individual on an unvalid HPAI, starting with code
+    // Set individual on an unvalid Hpai, starting with code
     {
-        QKnxNetIpHPAI hpai;
+        QKnxNetIpHpai hpai;
         // Original values
         QCOMPARE(hpai.toString(), QString::fromLatin1("Total size { 0x00 }, Code { 0x00 }, "
                 "Bytes {  }"));
@@ -172,9 +172,9 @@ void tst_QKnxNetIpHPAI::testSetFunctions()
         QCOMPARE(hpai.isValid(), true);
     }
 
-    // Set individual on a valid HPAI
+    // Set individual on a valid Hpai
     {
-        QKnxNetIpHPAI hpai(QKnxNetIp::HostProtocol::IpV4_Udp,
+        QKnxNetIpHpai hpai(QKnxNetIp::HostProtocol::IpV4_Udp,
             QHostAddress(QHostAddress::AnyIPv4), 3333);
         // Original values
         QCOMPARE(hpai.hostProtocol(), QKnxNetIp::HostProtocol::IpV4_Udp);
@@ -213,7 +213,7 @@ void tst_QKnxNetIpHPAI::testSetFunctions()
     }
 }
 
-void tst_QKnxNetIpHPAI::testDebugStream()
+void tst_QKnxNetIpHpai::testDebugStream()
 {
     struct DebugHandler
     {
@@ -227,21 +227,21 @@ void tst_QKnxNetIpHPAI::testDebugStream()
         QtMessageHandler oldMessageHandler;
     } _(myMessageHandler);
 
-    qDebug() << QKnxNetIpHPAI();
+    qDebug() << QKnxNetIpHpai();
     QCOMPARE(s_msg, QString::fromLatin1("0x1nv4l1d"));
 
-    qDebug() << QKnxNetIpHPAI(QKnxNetIp::HostProtocol::IpV4_Udp, QHostAddress::LocalHost, 3671);
+    qDebug() << QKnxNetIpHpai(QKnxNetIp::HostProtocol::IpV4_Udp, QHostAddress::LocalHost, 3671);
     QCOMPARE(s_msg, QString::fromLatin1("0x08017f0000010e57"));
 }
 
-void tst_QKnxNetIpHPAI::testDataStream()
+void tst_QKnxNetIpHpai::testDataStream()
 {
     QByteArray byteArray;
     QDataStream out(&byteArray, QIODevice::WriteOnly);
-    out << QKnxNetIpHPAI(QKnxNetIp::HostProtocol::IpV4_Udp, QHostAddress::LocalHost, 3671);
+    out << QKnxNetIpHpai(QKnxNetIp::HostProtocol::IpV4_Udp, QHostAddress::LocalHost, 3671);
     QCOMPARE(byteArray, QByteArray::fromHex("08017f0000010e57"));
 }
 
-QTEST_APPLESS_MAIN(tst_QKnxNetIpHPAI)
+QTEST_APPLESS_MAIN(tst_QKnxNetIpHpai)
 
 #include "tst_qknxnetiphpai.moc"

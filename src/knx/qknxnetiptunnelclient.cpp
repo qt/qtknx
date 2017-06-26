@@ -32,7 +32,7 @@ class QKnxNetIpTunnelClientPrivate : public QKnxNetIpClientPrivate
 
 public:
     QKnxNetIpTunnelClientPrivate(const QHostAddress &a, quint16 p, QKnxNetIp::TunnelingLayer layer)
-        : QKnxNetIpClientPrivate(a, p, QKnxNetIpCRI(layer), 1, QKnxNetIp::TunnelingRequestTimeout)
+        : QKnxNetIpClientPrivate(a, p, QKnxNetIpCri(layer), 1, QKnxNetIp::TunnelingRequestTimeout)
         , m_layer(layer)
     {}
 

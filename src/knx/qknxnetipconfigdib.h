@@ -35,7 +35,7 @@
 
 QT_BEGIN_NAMESPACE
 
-class Q_KNX_EXPORT QKnxNetIpConfigDIB final : public QKnxNetIpDescriptionTypeStruct
+class Q_KNX_EXPORT QKnxNetIpConfigDib final : public QKnxNetIpDescriptionTypeStruct
 {
 public:
     // 03_08_03 Management v01.06.02 AS, 2.5.7 PID_IP_CAPABILITIES (PID = 56)
@@ -57,21 +57,21 @@ public:
     };
     Q_DECLARE_FLAGS(AssignmentMethods, AssignmentMethod)
 
-    QKnxNetIpConfigDIB() = default;
-    ~QKnxNetIpConfigDIB() override = default;
+    QKnxNetIpConfigDib() = default;
+    ~QKnxNetIpConfigDib() override = default;
 
-    QKnxNetIpConfigDIB(const QHostAddress &ipAddress,
+    QKnxNetIpConfigDib(const QHostAddress &ipAddress,
                        const QHostAddress &subnetMask,
                        const QHostAddress &gateway,
                        Capabilities capabilitys,
                        AssignmentMethods methods);
 
-    QKnxNetIpConfigDIB(const QNetworkAddressEntry &addressEntry,
+    QKnxNetIpConfigDib(const QNetworkAddressEntry &addressEntry,
                        const QHostAddress &gateway,
                        Capabilities capabilitys,
                        AssignmentMethods methods);
 
-    template <typename T> static QKnxNetIpConfigDIB fromBytes(const T &bytes, quint16 index)
+    template <typename T> static QKnxNetIpConfigDib fromBytes(const T &bytes, quint16 index)
     {
         return QKnxNetIpStructHelper::fromBytes(bytes, index,
             QKnxNetIp::DescriptionType::IpConfiguration);
@@ -87,12 +87,12 @@ public:
     bool isValid() const override;
 
 private:
-    QKnxNetIpConfigDIB(const QKnxNetIpDescriptionTypeStruct &other);
+    QKnxNetIpConfigDib(const QKnxNetIpDescriptionTypeStruct &other);
 };
-Q_DECLARE_OPERATORS_FOR_FLAGS(QKnxNetIpConfigDIB::Capabilities)
-Q_DECLARE_OPERATORS_FOR_FLAGS(QKnxNetIpConfigDIB::AssignmentMethods)
+Q_DECLARE_OPERATORS_FOR_FLAGS(QKnxNetIpConfigDib::Capabilities)
+Q_DECLARE_OPERATORS_FOR_FLAGS(QKnxNetIpConfigDib::AssignmentMethods)
 
-Q_DECLARE_TYPEINFO(QKnxNetIpConfigDIB, Q_MOVABLE_TYPE);
+Q_DECLARE_TYPEINFO(QKnxNetIpConfigDib, Q_MOVABLE_TYPE);
 
 QT_END_NAMESPACE
 

@@ -43,17 +43,17 @@ namespace QKnxPrivate
     {
         switch (QKnxNetIp::DescriptionType(code)) {
         case QKnxNetIp::DescriptionType::DeviceInfo:
-            return QKnxNetIpStructRef::Type::QKnxNetIpDeviceDIB;
+            return QKnxNetIpStructRef::Type::QKnxNetIpDeviceDib;
         case QKnxNetIp::DescriptionType::SupportedServiceFamilies:
-            return QKnxNetIpStructRef::Type::QKnxNetIpServiceFamiliesDIB;
+            return QKnxNetIpStructRef::Type::QKnxNetIpServiceFamiliesDib;
         case QKnxNetIp::DescriptionType::IpConfiguration:
-            return QKnxNetIpStructRef::Type::QKnxNetIpConfigDIB;
+            return QKnxNetIpStructRef::Type::QKnxNetIpConfigDib;
         case QKnxNetIp::DescriptionType::CurrentIpConfiguration:
-            return QKnxNetIpStructRef::Type::QKnxNetIpCurrentConfigDIB;
+            return QKnxNetIpStructRef::Type::QKnxNetIpCurrentConfigDib;
         case QKnxNetIp::DescriptionType::KnxAddresses:
-            return QKnxNetIpStructRef::Type::QKnxNetIpKnxAddressesDIB;
+            return QKnxNetIpStructRef::Type::QKnxNetIpKnxAddressesDib;
         case QKnxNetIp::DescriptionType::ManufactorData:
-            return QKnxNetIpStructRef::Type::QKnxNetIpManufacturerDIB;
+            return QKnxNetIpStructRef::Type::QKnxNetIpManufacturerDib;
         default:
             break;
         }
@@ -67,8 +67,8 @@ public:
     QKnxNetIpDescriptionResponse() = default;
     ~QKnxNetIpDescriptionResponse() override = default;
 
-    QKnxNetIpDescriptionResponse(const QKnxNetIpDeviceDIB &deviceHardware,
-                                 const QKnxNetIpServiceFamiliesDIB &supportedFamilies);
+    QKnxNetIpDescriptionResponse(const QKnxNetIpDeviceDib &deviceHardware,
+                                 const QKnxNetIpServiceFamiliesDib &supportedFamilies);
 
     template <typename T>
         static QKnxNetIpDescriptionResponse fromBytes(const T &bytes, quint16 index)
@@ -77,8 +77,8 @@ public:
             QKnxNetIp::ServiceType::DescriptionResponse);
     }
 
-    QKnxNetIpDeviceDIB deviceHardware() const;
-    QKnxNetIpServiceFamiliesDIB supportedFamilies() const;
+    QKnxNetIpDeviceDib deviceHardware() const;
+    QKnxNetIpServiceFamiliesDib supportedFamilies() const;
 
     template <typename T = std::vector<QKnxNetIpStructRef>>
         auto optionalDibs() const -> decltype(T())
@@ -104,8 +104,8 @@ public:
 
     template <typename T> void addOptionalDib(const T &dib)
     {
-        static_assert(is_type<T, QKnxNetIpDeviceDIB, QKnxNetIpConfigDIB, QKnxNetIpCurrentConfigDIB,
-            QKnxNetIpKnxAddressesDIB, QKnxNetIpManufacturerDIB, QKnxNetIpServiceFamiliesDIB>::value,
+        static_assert(is_type<T, QKnxNetIpDeviceDib, QKnxNetIpConfigDib, QKnxNetIpCurrentConfigDib,
+            QKnxNetIpKnxAddressesDib, QKnxNetIpManufacturerDib, QKnxNetIpServiceFamiliesDib>::value,
             "Type not supported.");
 
         auto load = payload();

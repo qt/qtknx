@@ -34,7 +34,7 @@ public:
     QKnxNetIpSearchRequest() = default;
     ~QKnxNetIpSearchRequest() override = default;
 
-    explicit QKnxNetIpSearchRequest(const QKnxNetIpHPAI &discoveryEndpoint);
+    explicit QKnxNetIpSearchRequest(const QKnxNetIpHpai &discoveryEndpoint);
 
     template <typename T> static QKnxNetIpSearchRequest fromBytes(const T &bytes, quint16 index)
     {
@@ -42,7 +42,7 @@ public:
     }
 
     bool isValid() const override;
-    QKnxNetIpHPAI discoveryEndpoint() const;
+    QKnxNetIpHpai discoveryEndpoint() const;
 
 private:
     QKnxNetIpSearchRequest(const QKnxNetIpFrame &other);

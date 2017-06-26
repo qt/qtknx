@@ -24,16 +24,16 @@
 
 QT_BEGIN_NAMESPACE
 
-QKnxNetIpConfigDIB::QKnxNetIpConfigDIB(const QKnxNetIpDescriptionTypeStruct &other)
+QKnxNetIpConfigDib::QKnxNetIpConfigDib(const QKnxNetIpDescriptionTypeStruct &other)
     : QKnxNetIpDescriptionTypeStruct(other)
 {}
 
-QKnxNetIpConfigDIB::QKnxNetIpConfigDIB(const QNetworkAddressEntry &addressEntry,
+QKnxNetIpConfigDib::QKnxNetIpConfigDib(const QNetworkAddressEntry &addressEntry,
         const QHostAddress &gateway, Capabilities caps, AssignmentMethods methods)
-    : QKnxNetIpConfigDIB(addressEntry.ip(), addressEntry.netmask(), gateway, caps, methods)
+    : QKnxNetIpConfigDib(addressEntry.ip(), addressEntry.netmask(), gateway, caps, methods)
 {}
 
-QKnxNetIpConfigDIB::QKnxNetIpConfigDIB(const QHostAddress &ip, const QHostAddress &subnetMask,
+QKnxNetIpConfigDib::QKnxNetIpConfigDib(const QHostAddress &ip, const QHostAddress &subnetMask,
         const QHostAddress &gateway, Capabilities caps, AssignmentMethods methods)
     : QKnxNetIpDescriptionTypeStruct(QKnxNetIp::DescriptionType::IpConfiguration)
 {
@@ -50,37 +50,37 @@ QKnxNetIpConfigDIB::QKnxNetIpConfigDIB(const QHostAddress &ip, const QHostAddres
     setPayload(payload);
 }
 
-QKnxNetIp::DescriptionType QKnxNetIpConfigDIB::descriptionType() const
+QKnxNetIp::DescriptionType QKnxNetIpConfigDib::descriptionType() const
 {
     return QKnxNetIp::DescriptionType(code());
 }
 
-QHostAddress QKnxNetIpConfigDIB::ipAddress() const
+QHostAddress QKnxNetIpConfigDib::ipAddress() const
 {
     return QKnxUtils::HostAddress::fromBytes(payloadRef());
 }
 
-QHostAddress QKnxNetIpConfigDIB::subnetMask() const
+QHostAddress QKnxNetIpConfigDib::subnetMask() const
 {
     return QKnxUtils::HostAddress::fromBytes(payloadRef(), 4);
 }
 
-QHostAddress QKnxNetIpConfigDIB::defaultGateway() const
+QHostAddress QKnxNetIpConfigDib::defaultGateway() const
 {
     return QKnxUtils::HostAddress::fromBytes(payloadRef(), 8);
 }
 
-QKnxNetIpConfigDIB::Capabilities QKnxNetIpConfigDIB::capabilities() const
+QKnxNetIpConfigDib::Capabilities QKnxNetIpConfigDib::capabilities() const
 {
-    return QKnxNetIpConfigDIB::Capabilities(payloadRef().byte(12));
+    return QKnxNetIpConfigDib::Capabilities(payloadRef().byte(12));
 }
 
-QKnxNetIpConfigDIB::AssignmentMethods QKnxNetIpConfigDIB::assignmentMethods() const
+QKnxNetIpConfigDib::AssignmentMethods QKnxNetIpConfigDib::assignmentMethods() const
 {
-    return QKnxNetIpConfigDIB::AssignmentMethods(payloadRef().byte(13));
+    return QKnxNetIpConfigDib::AssignmentMethods(payloadRef().byte(13));
 }
 
-bool QKnxNetIpConfigDIB::isValid() const
+bool QKnxNetIpConfigDib::isValid() const
 {
     return QKnxNetIpDescriptionTypeStruct::isValid() && size() == 16
         && descriptionType() == QKnxNetIp::DescriptionType::IpConfiguration;

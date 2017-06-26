@@ -50,7 +50,7 @@ void tst_QKnxNetIpConnectionStateRequest::testDefaultConstructor()
 
 void tst_QKnxNetIpConnectionStateRequest::testConstructor()
 {
-    QKnxNetIpHPAI hpai(QKnxNetIp::HostProtocol::IpV4_Udp, QHostAddress::LocalHost,
+    QKnxNetIpHpai hpai(QKnxNetIp::HostProtocol::IpV4_Udp, QHostAddress::LocalHost,
             3671);
     quint8 channelID= 255;
     QKnxNetIpConnectionStateRequest connectionStateRequest(channelID, hpai);
@@ -85,7 +85,7 @@ void tst_QKnxNetIpConnectionStateRequest::testDebugStream()
     qDebug() << QKnxNetIpConnectionStateRequest();
     QCOMPARE(s_msg, QString::fromLatin1("0x1nv4l1d"));
 
-    QKnxNetIpHPAI hpai(QKnxNetIp::HostProtocol::IpV4_Udp, QHostAddress::LocalHost, 3671);
+    QKnxNetIpHpai hpai(QKnxNetIp::HostProtocol::IpV4_Udp, QHostAddress::LocalHost, 3671);
     quint8 channelID= 255;
     qDebug() << QKnxNetIpConnectionStateRequest(channelID, hpai);
     QCOMPARE(s_msg, QString::fromLatin1("0x061002070010ff0008017f0000010e57"));
@@ -93,7 +93,7 @@ void tst_QKnxNetIpConnectionStateRequest::testDebugStream()
 
 void tst_QKnxNetIpConnectionStateRequest::testDataStream()
 {
-    QKnxNetIpHPAI hpai(QKnxNetIp::HostProtocol::IpV4_Udp, QHostAddress::LocalHost, 3671);
+    QKnxNetIpHpai hpai(QKnxNetIp::HostProtocol::IpV4_Udp, QHostAddress::LocalHost, 3671);
     quint8 channelID= 255;
     QByteArray byteArray;
     QDataStream out(&byteArray, QIODevice::WriteOnly);

@@ -24,16 +24,16 @@
 
 QT_BEGIN_NAMESPACE
 
-QKnxNetIpCurrentConfigDIB::QKnxNetIpCurrentConfigDIB(const QKnxNetIpDescriptionTypeStruct &other)
+QKnxNetIpCurrentConfigDib::QKnxNetIpCurrentConfigDib(const QKnxNetIpDescriptionTypeStruct &other)
     : QKnxNetIpDescriptionTypeStruct(other)
 {}
 
-QKnxNetIpCurrentConfigDIB::QKnxNetIpCurrentConfigDIB(const QNetworkAddressEntry &addressEntry,
+QKnxNetIpCurrentConfigDib::QKnxNetIpCurrentConfigDib(const QNetworkAddressEntry &addressEntry,
         const QHostAddress &gateway, const QHostAddress &dhcp, AssignmentMethod method)
-    : QKnxNetIpCurrentConfigDIB(addressEntry.ip(), addressEntry.netmask(), gateway, dhcp, method)
+    : QKnxNetIpCurrentConfigDib(addressEntry.ip(), addressEntry.netmask(), gateway, dhcp, method)
 {}
 
-QKnxNetIpCurrentConfigDIB::QKnxNetIpCurrentConfigDIB(const QHostAddress &ip,
+QKnxNetIpCurrentConfigDib::QKnxNetIpCurrentConfigDib(const QHostAddress &ip,
     const QHostAddress &subnetMask, const QHostAddress &gateway, const QHostAddress &dhcp,
         AssignmentMethod method)
     : QKnxNetIpDescriptionTypeStruct(QKnxNetIp::DescriptionType::CurrentIpConfiguration)
@@ -52,37 +52,37 @@ QKnxNetIpCurrentConfigDIB::QKnxNetIpCurrentConfigDIB(const QHostAddress &ip,
     setPayload(payload);
 }
 
-QKnxNetIp::DescriptionType QKnxNetIpCurrentConfigDIB::descriptionType() const
+QKnxNetIp::DescriptionType QKnxNetIpCurrentConfigDib::descriptionType() const
 {
     return QKnxNetIp::DescriptionType(code());
 }
 
-QHostAddress QKnxNetIpCurrentConfigDIB::ipAddress() const
+QHostAddress QKnxNetIpCurrentConfigDib::ipAddress() const
 {
     return QKnxUtils::HostAddress::fromBytes(payloadRef());
 }
 
-QHostAddress QKnxNetIpCurrentConfigDIB::subnetMask() const
+QHostAddress QKnxNetIpCurrentConfigDib::subnetMask() const
 {
     return QKnxUtils::HostAddress::fromBytes(payloadRef(), 4);
 }
 
-QHostAddress QKnxNetIpCurrentConfigDIB::defaultGateway() const
+QHostAddress QKnxNetIpCurrentConfigDib::defaultGateway() const
 {
     return QKnxUtils::HostAddress::fromBytes(payloadRef(), 8);
 }
 
-QHostAddress QKnxNetIpCurrentConfigDIB::dhcpOrBootP() const
+QHostAddress QKnxNetIpCurrentConfigDib::dhcpOrBootP() const
 {
     return QKnxUtils::HostAddress::fromBytes(payloadRef(), 12);
 }
 
-QKnxNetIpCurrentConfigDIB::AssignmentMethod QKnxNetIpCurrentConfigDIB::assignmentMethod() const
+QKnxNetIpCurrentConfigDib::AssignmentMethod QKnxNetIpCurrentConfigDib::assignmentMethod() const
 {
-    return QKnxNetIpCurrentConfigDIB::AssignmentMethod(payloadRef().byte(16));
+    return QKnxNetIpCurrentConfigDib::AssignmentMethod(payloadRef().byte(16));
 }
 
-bool QKnxNetIpCurrentConfigDIB::isValid() const
+bool QKnxNetIpCurrentConfigDib::isValid() const
 {
     return QKnxNetIpDescriptionTypeStruct::isValid() && size() == 20
         && descriptionType() == QKnxNetIp::DescriptionType::CurrentIpConfiguration;

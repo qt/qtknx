@@ -35,7 +35,7 @@
 
 QT_BEGIN_NAMESPACE
 
-class Q_KNX_EXPORT QKnxNetIpCurrentConfigDIB final : public QKnxNetIpDescriptionTypeStruct
+class Q_KNX_EXPORT QKnxNetIpCurrentConfigDib final : public QKnxNetIpDescriptionTypeStruct
 {
 public:
     // 03_08_03 Management v01.06.02 AS, 2.5.5 PID_CURRENT_IP_ASSIGNMENT_METHOD (PID = 54)
@@ -47,21 +47,21 @@ public:
         AutoIp = 0x08
     };
 
-    QKnxNetIpCurrentConfigDIB() = default;
-    ~QKnxNetIpCurrentConfigDIB() override = default;
+    QKnxNetIpCurrentConfigDib() = default;
+    ~QKnxNetIpCurrentConfigDib() override = default;
 
-    QKnxNetIpCurrentConfigDIB(const QHostAddress &ipAddress,
+    QKnxNetIpCurrentConfigDib(const QHostAddress &ipAddress,
                               const QHostAddress &subnetMask,
                               const QHostAddress &gateway,
                               const QHostAddress &dhcp,
                               AssignmentMethod method);
 
-    QKnxNetIpCurrentConfigDIB(const QNetworkAddressEntry &addressEntry,
+    QKnxNetIpCurrentConfigDib(const QNetworkAddressEntry &addressEntry,
                               const QHostAddress &gateway,
                               const QHostAddress &dhcp,
                               AssignmentMethod method);
 
-    template <typename T> static QKnxNetIpCurrentConfigDIB fromBytes(const T &bytes, quint16 index)
+    template <typename T> static QKnxNetIpCurrentConfigDib fromBytes(const T &bytes, quint16 index)
     {
         return QKnxNetIpStructHelper::fromBytes(bytes, index,
             QKnxNetIp::DescriptionType::CurrentIpConfiguration);
@@ -77,9 +77,9 @@ public:
     bool isValid() const override;
 
 private:
-    QKnxNetIpCurrentConfigDIB(const QKnxNetIpDescriptionTypeStruct &other);
+    QKnxNetIpCurrentConfigDib(const QKnxNetIpDescriptionTypeStruct &other);
 };
-Q_DECLARE_TYPEINFO(QKnxNetIpCurrentConfigDIB, Q_MOVABLE_TYPE);
+Q_DECLARE_TYPEINFO(QKnxNetIpCurrentConfigDib, Q_MOVABLE_TYPE);
 
 QT_END_NAMESPACE
 

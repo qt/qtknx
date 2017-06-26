@@ -35,7 +35,7 @@
 
 QT_BEGIN_NAMESPACE
 
-class Q_KNX_EXPORT QKnxNetIpDeviceDIB final : public QKnxNetIpDescriptionTypeStruct
+class Q_KNX_EXPORT QKnxNetIpDeviceDib final : public QKnxNetIpDescriptionTypeStruct
 {
 public:
     enum class Medium : quint8
@@ -45,7 +45,7 @@ public:
         Rf = 0x10,
         Ip = 0x20
     };
-    QKnxNetIpDeviceDIB::Medium medium() const;
+    QKnxNetIpDeviceDib::Medium medium() const;
 
     // 4.20 Programming Mode (prog_mode)
     // referred to by 7.5.4.2 Device information DIB device status
@@ -54,12 +54,12 @@ public:
         InactiveProgrammingMode = 0x00,
         ActiveProgrammingMode = 0x01
     };
-    QKnxNetIpDeviceDIB::DeviceStatus deviceStatus() const;
+    QKnxNetIpDeviceDib::DeviceStatus deviceStatus() const;
 
-    QKnxNetIpDeviceDIB() = default;
-    ~QKnxNetIpDeviceDIB() override = default;
+    QKnxNetIpDeviceDib() = default;
+    ~QKnxNetIpDeviceDib() override = default;
 
-    QKnxNetIpDeviceDIB(Medium mediumCode,
+    QKnxNetIpDeviceDib(Medium mediumCode,
                        DeviceStatus deviceStatus,
                        const QKnxAddress &address,
                        quint16 projectId,
@@ -68,7 +68,7 @@ public:
                        const QByteArray &macAddress,
                        const QByteArray deviceName);
 
-    template <typename T> static QKnxNetIpDeviceDIB fromBytes(const T &bytes, quint16 index)
+    template <typename T> static QKnxNetIpDeviceDib fromBytes(const T &bytes, quint16 index)
     {
         return QKnxNetIpStructHelper::fromBytes(bytes, index,
             QKnxNetIp::DescriptionType::DeviceInfo);
@@ -85,9 +85,9 @@ public:
     bool isValid() const override;
 
 private:
-    QKnxNetIpDeviceDIB(const QKnxNetIpDescriptionTypeStruct &other);
+    QKnxNetIpDeviceDib(const QKnxNetIpDescriptionTypeStruct &other);
 };
-Q_DECLARE_TYPEINFO(QKnxNetIpDeviceDIB, Q_MOVABLE_TYPE);
+Q_DECLARE_TYPEINFO(QKnxNetIpDeviceDib, Q_MOVABLE_TYPE);
 
 QT_END_NAMESPACE
 

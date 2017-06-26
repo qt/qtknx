@@ -24,14 +24,14 @@
 
 #include <QtKnx/qknxnetippackage.h>
 #include <QtKnx/qknxnetipconfigdib.h>
-#include <QtKnx/qknxnetipcrd.h>
-#include <QtKnx/qknxnetipcri.h>
-#include <QtKnx/qknxnetipcurrentconfigdib.h>
-#include <QtKnx/qknxnetipdevicedib.h>
-#include <QtKnx/qknxnetiphpai.h>
-#include <QtKnx/qknxnetipknxaddressesdib.h>
-#include <QtKnx/qknxnetipmanufacturerdib.h>
-#include <QtKnx/qknxnetipservicefamiliesdib.h>
+#include <QtKnx/QKnxNetIpCrd.h>
+#include <QtKnx/QKnxNetIpCri.h>
+#include <QtKnx/QKnxNetIpCurrentConfigDib.h>
+#include <QtKnx/QKnxNetIpDeviceDib.h>
+#include <QtKnx/QKnxNetIpHpai.h>
+#include <QtKnx/QKnxNetIpKnxAddressesDib.h>
+#include <QtKnx/QKnxNetIpManufacturerDib.h>
+#include <QtKnx/QKnxNetIpServiceFamiliesDib.h>
 
 QT_BEGIN_NAMESPACE
 
@@ -50,71 +50,71 @@ public:
     enum class Type : quint8
     {
         Null,
-        QKnxNetIpConfigDIB,
-        QKnxNetIpCRD,
-        QKnxNetIpCRI,
-        QKnxNetIpCurrentConfigDIB,
-        QKnxNetIpDeviceDIB,
-        QKnxNetIpHPAI,
-        QKnxNetIpKnxAddressesDIB,
-        QKnxNetIpManufacturerDIB,
-        QKnxNetIpServiceFamiliesDIB
+        QKnxNetIpConfigDib,
+        QKnxNetIpCrd,
+        QKnxNetIpCri,
+        QKnxNetIpCurrentConfigDib,
+        QKnxNetIpDeviceDib,
+        QKnxNetIpHpai,
+        QKnxNetIpKnxAddressesDib,
+        QKnxNetIpManufacturerDib,
+        QKnxNetIpServiceFamiliesDib
     };
 
     QKnxNetIpStructRef() = default;
     ~QKnxNetIpStructRef() = default;
 
-    explicit QKnxNetIpStructRef(QKnxNetIpConfigDIB *ipConfigDIB)
-        : a(ipConfigDIB)
-        , m_type(Type::QKnxNetIpConfigDIB)
+    explicit QKnxNetIpStructRef(QKnxNetIpConfigDib *ipConfigDib)
+        : a(ipConfigDib)
+        , m_type(Type::QKnxNetIpConfigDib)
         , m_isByteStoreRef(false)
     {}
 
-    explicit QKnxNetIpStructRef(QKnxNetIpCRD *crd)
+    explicit QKnxNetIpStructRef(QKnxNetIpCrd *crd)
         : b(crd)
-        , m_type(Type::QKnxNetIpCRD)
+        , m_type(Type::QKnxNetIpCrd)
         , m_isByteStoreRef(false)
     {}
 
-    explicit QKnxNetIpStructRef(QKnxNetIpCRI *cri)
+    explicit QKnxNetIpStructRef(QKnxNetIpCri *cri)
         : c(cri)
-        , m_type(Type::QKnxNetIpCRI)
+        , m_type(Type::QKnxNetIpCri)
         , m_isByteStoreRef(false)
     {}
 
-    explicit QKnxNetIpStructRef(QKnxNetIpCurrentConfigDIB *ipCurrentConfigDIB)
-        : d(ipCurrentConfigDIB)
-        , m_type(Type::QKnxNetIpCurrentConfigDIB)
+    explicit QKnxNetIpStructRef(QKnxNetIpCurrentConfigDib *ipCurrentConfigDib)
+        : d(ipCurrentConfigDib)
+        , m_type(Type::QKnxNetIpCurrentConfigDib)
         , m_isByteStoreRef(false)
     {}
 
-    explicit QKnxNetIpStructRef(QKnxNetIpDeviceDIB *deviceDIB)
-        : e(deviceDIB)
-        , m_type(Type::QKnxNetIpDeviceDIB)
+    explicit QKnxNetIpStructRef(QKnxNetIpDeviceDib *deviceDib)
+        : e(deviceDib)
+        , m_type(Type::QKnxNetIpDeviceDib)
         , m_isByteStoreRef(false)
     {}
 
-    explicit QKnxNetIpStructRef(QKnxNetIpHPAI *hpai)
+    explicit QKnxNetIpStructRef(QKnxNetIpHpai *hpai)
         : f(hpai)
-        , m_type(Type::QKnxNetIpHPAI)
+        , m_type(Type::QKnxNetIpHpai)
         , m_isByteStoreRef(false)
     {}
 
-    explicit QKnxNetIpStructRef(QKnxNetIpKnxAddressesDIB *knxAddressesDIB)
-        : g(knxAddressesDIB)
-        , m_type(Type::QKnxNetIpKnxAddressesDIB)
+    explicit QKnxNetIpStructRef(QKnxNetIpKnxAddressesDib *knxAddressesDib)
+        : g(knxAddressesDib)
+        , m_type(Type::QKnxNetIpKnxAddressesDib)
         , m_isByteStoreRef(false)
     {}
 
-    explicit QKnxNetIpStructRef(QKnxNetIpManufacturerDIB *manufacturerDIB)
-        : h(manufacturerDIB)
-        , m_type(Type::QKnxNetIpManufacturerDIB)
+    explicit QKnxNetIpStructRef(QKnxNetIpManufacturerDib *manufacturerDib)
+        : h(manufacturerDib)
+        , m_type(Type::QKnxNetIpManufacturerDib)
         , m_isByteStoreRef(false)
     {}
 
-    explicit QKnxNetIpStructRef(QKnxNetIpServiceFamiliesDIB *serviceFamiliesDIB)
-        : i(serviceFamiliesDIB)
-        , m_type(Type::QKnxNetIpServiceFamiliesDIB)
+    explicit QKnxNetIpStructRef(QKnxNetIpServiceFamiliesDib *serviceFamiliesDib)
+        : i(serviceFamiliesDib)
+        , m_type(Type::QKnxNetIpServiceFamiliesDib)
         , m_isByteStoreRef(false)
     {}
 
@@ -122,15 +122,15 @@ public:
     QKnxNetIpStructRef &operator=(const QKnxNetIpStructRef &) = default;
 
     bool isNull() const { return m_type == Type::Null; }
-    bool isIpConfigDIB() const { return m_type == Type::QKnxNetIpConfigDIB; }
-    bool isCrd() const { return m_type == Type::QKnxNetIpCRD; }
-    bool isCri() const { return m_type == Type::QKnxNetIpCRI; }
-    bool isIpCurrentConfigDIB() const { return m_type == Type::QKnxNetIpCurrentConfigDIB; }
-    bool isDeviceDIB() const { return m_type == Type::QKnxNetIpDeviceDIB; }
-    bool isHpai() const { return m_type == Type::QKnxNetIpHPAI; }
-    bool isKnxAddressesDIB() const { return m_type == Type::QKnxNetIpKnxAddressesDIB; }
-    bool isManufacturerDIB() const { return m_type == Type::QKnxNetIpManufacturerDIB; }
-    bool isServiceFamiliesDIB() const { return m_type == Type::QKnxNetIpServiceFamiliesDIB; }
+    bool isIpConfigDib() const { return m_type == Type::QKnxNetIpConfigDib; }
+    bool isCrd() const { return m_type == Type::QKnxNetIpCrd; }
+    bool isCri() const { return m_type == Type::QKnxNetIpCri; }
+    bool isIpCurrentConfigDib() const { return m_type == Type::QKnxNetIpCurrentConfigDib; }
+    bool isDeviceDib() const { return m_type == Type::QKnxNetIpDeviceDib; }
+    bool isHpai() const { return m_type == Type::QKnxNetIpHpai; }
+    bool isKnxAddressesDib() const { return m_type == Type::QKnxNetIpKnxAddressesDib; }
+    bool isManufacturerDib() const { return m_type == Type::QKnxNetIpManufacturerDib; }
+    bool isServiceFamiliesDib() const { return m_type == Type::QKnxNetIpServiceFamiliesDib; }
 
     template <typename T> T toType() const
     {
@@ -155,15 +155,15 @@ private:
 private:
     union
     {
-        QKnxNetIpConfigDIB *a;
-        QKnxNetIpCRD *b;
-        QKnxNetIpCRI *c;
-        QKnxNetIpCurrentConfigDIB *d;
-        QKnxNetIpDeviceDIB *e;
-        QKnxNetIpHPAI *f;
-        QKnxNetIpKnxAddressesDIB *g;
-        QKnxNetIpManufacturerDIB *h;
-        QKnxNetIpServiceFamiliesDIB *i;
+        QKnxNetIpConfigDib *a;
+        QKnxNetIpCrd *b;
+        QKnxNetIpCri *c;
+        QKnxNetIpCurrentConfigDib *d;
+        QKnxNetIpDeviceDib *e;
+        QKnxNetIpHpai *f;
+        QKnxNetIpKnxAddressesDib *g;
+        QKnxNetIpManufacturerDib *h;
+        QKnxNetIpServiceFamiliesDib *i;
     };
     Type m_type = Type::Null;
     bool m_isByteStoreRef = false;
@@ -182,84 +182,84 @@ namespace QKnxPrivate
 
     template<typename T> struct QKnxNetIpStructTypeHelper {};
 
-    template<> struct QKnxNetIpStructTypeHelper<QKnxNetIpConfigDIB>
+    template<> struct QKnxNetIpStructTypeHelper<QKnxNetIpConfigDib>
     {
-        static QKnxNetIpConfigDIB invoke(const QKnxNetIpStructRef &ref)
+        static QKnxNetIpConfigDib invoke(const QKnxNetIpStructRef &ref)
         {
-            TYPE_CHECK_RETURN_FROM_BYTES(QKnxNetIpConfigDIB);
-            return QKnxNetIpConfigDIB(*(ref.a));
+            TYPE_CHECK_RETURN_FROM_BYTES(QKnxNetIpConfigDib);
+            return QKnxNetIpConfigDib(*(ref.a));
         }
     };
 
-    template<> struct QKnxNetIpStructTypeHelper<QKnxNetIpCRD>
+    template<> struct QKnxNetIpStructTypeHelper<QKnxNetIpCrd>
     {
-        static QKnxNetIpCRD invoke(const QKnxNetIpStructRef &ref)
+        static QKnxNetIpCrd invoke(const QKnxNetIpStructRef &ref)
         {
-            TYPE_CHECK_RETURN_FROM_BYTES(QKnxNetIpCRD);
-            return QKnxNetIpCRD(*(ref.b));
+            TYPE_CHECK_RETURN_FROM_BYTES(QKnxNetIpCrd);
+            return QKnxNetIpCrd(*(ref.b));
         }
     };
 
-    template<> struct QKnxNetIpStructTypeHelper<QKnxNetIpCRI>
+    template<> struct QKnxNetIpStructTypeHelper<QKnxNetIpCri>
     {
-        static QKnxNetIpCRI invoke(const QKnxNetIpStructRef &ref)
+        static QKnxNetIpCri invoke(const QKnxNetIpStructRef &ref)
         {
-            TYPE_CHECK_RETURN_FROM_BYTES(QKnxNetIpCRI);
-            return QKnxNetIpCRI(*(ref.c));
+            TYPE_CHECK_RETURN_FROM_BYTES(QKnxNetIpCri);
+            return QKnxNetIpCri(*(ref.c));
         }
     };
 
-    template<> struct QKnxNetIpStructTypeHelper<QKnxNetIpCurrentConfigDIB>
+    template<> struct QKnxNetIpStructTypeHelper<QKnxNetIpCurrentConfigDib>
     {
-        static QKnxNetIpCurrentConfigDIB invoke(const QKnxNetIpStructRef &ref)
+        static QKnxNetIpCurrentConfigDib invoke(const QKnxNetIpStructRef &ref)
         {
-            TYPE_CHECK_RETURN_FROM_BYTES(QKnxNetIpCurrentConfigDIB);
-            return QKnxNetIpCurrentConfigDIB(*(ref.d));
+            TYPE_CHECK_RETURN_FROM_BYTES(QKnxNetIpCurrentConfigDib);
+            return QKnxNetIpCurrentConfigDib(*(ref.d));
         }
     };
 
-    template<> struct QKnxNetIpStructTypeHelper<QKnxNetIpDeviceDIB>
+    template<> struct QKnxNetIpStructTypeHelper<QKnxNetIpDeviceDib>
     {
-        static QKnxNetIpDeviceDIB invoke(const QKnxNetIpStructRef &ref)
+        static QKnxNetIpDeviceDib invoke(const QKnxNetIpStructRef &ref)
         {
-            TYPE_CHECK_RETURN_FROM_BYTES(QKnxNetIpDeviceDIB);
-            return QKnxNetIpDeviceDIB(*(ref.e));
+            TYPE_CHECK_RETURN_FROM_BYTES(QKnxNetIpDeviceDib);
+            return QKnxNetIpDeviceDib(*(ref.e));
         }
     };
 
-    template<> struct QKnxNetIpStructTypeHelper<QKnxNetIpHPAI>
+    template<> struct QKnxNetIpStructTypeHelper<QKnxNetIpHpai>
     {
-        static QKnxNetIpHPAI invoke(const QKnxNetIpStructRef &ref)
+        static QKnxNetIpHpai invoke(const QKnxNetIpStructRef &ref)
         {
-            TYPE_CHECK_RETURN_FROM_BYTES(QKnxNetIpHPAI);
-            return QKnxNetIpHPAI(*(ref.f));
+            TYPE_CHECK_RETURN_FROM_BYTES(QKnxNetIpHpai);
+            return QKnxNetIpHpai(*(ref.f));
         }
     };
 
-    template<> struct QKnxNetIpStructTypeHelper<QKnxNetIpKnxAddressesDIB>
+    template<> struct QKnxNetIpStructTypeHelper<QKnxNetIpKnxAddressesDib>
     {
-        static QKnxNetIpKnxAddressesDIB invoke(const QKnxNetIpStructRef &ref)
+        static QKnxNetIpKnxAddressesDib invoke(const QKnxNetIpStructRef &ref)
         {
-            TYPE_CHECK_RETURN_FROM_BYTES(QKnxNetIpKnxAddressesDIB);
-            return QKnxNetIpKnxAddressesDIB(*(ref.g));
+            TYPE_CHECK_RETURN_FROM_BYTES(QKnxNetIpKnxAddressesDib);
+            return QKnxNetIpKnxAddressesDib(*(ref.g));
         }
     };
 
-    template<> struct QKnxNetIpStructTypeHelper<QKnxNetIpManufacturerDIB>
+    template<> struct QKnxNetIpStructTypeHelper<QKnxNetIpManufacturerDib>
     {
-        static QKnxNetIpManufacturerDIB invoke(const QKnxNetIpStructRef &ref)
+        static QKnxNetIpManufacturerDib invoke(const QKnxNetIpStructRef &ref)
         {
-            TYPE_CHECK_RETURN_FROM_BYTES(QKnxNetIpManufacturerDIB);
-            return QKnxNetIpManufacturerDIB(*(ref.h));
+            TYPE_CHECK_RETURN_FROM_BYTES(QKnxNetIpManufacturerDib);
+            return QKnxNetIpManufacturerDib(*(ref.h));
         }
     };
 
-    template<> struct QKnxNetIpStructTypeHelper<QKnxNetIpServiceFamiliesDIB>
+    template<> struct QKnxNetIpStructTypeHelper<QKnxNetIpServiceFamiliesDib>
     {
-        static QKnxNetIpServiceFamiliesDIB invoke(const QKnxNetIpStructRef &ref)
+        static QKnxNetIpServiceFamiliesDib invoke(const QKnxNetIpStructRef &ref)
         {
-            TYPE_CHECK_RETURN_FROM_BYTES(QKnxNetIpServiceFamiliesDIB);
-            return QKnxNetIpServiceFamiliesDIB(*(ref.i));
+            TYPE_CHECK_RETURN_FROM_BYTES(QKnxNetIpServiceFamiliesDib);
+            return QKnxNetIpServiceFamiliesDib(*(ref.i));
         }
     };
 #undef TYPE_CHECK_RETURN_FROM_BYTES

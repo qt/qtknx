@@ -23,8 +23,8 @@
 
 QT_BEGIN_NAMESPACE
 
-QKnxNetIpDescriptionResponse::QKnxNetIpDescriptionResponse(const QKnxNetIpDeviceDIB &deviceHardware,
-        const QKnxNetIpServiceFamiliesDIB &supportedFamilies)
+QKnxNetIpDescriptionResponse::QKnxNetIpDescriptionResponse(const QKnxNetIpDeviceDib &deviceHardware,
+        const QKnxNetIpServiceFamiliesDib &supportedFamilies)
     : QKnxNetIpFrame(QKnxNetIp::ServiceType::DescriptionResponse)
 {
     QKnxNetIpPayload payload;
@@ -37,14 +37,14 @@ QKnxNetIpDescriptionResponse::QKnxNetIpDescriptionResponse(const QKnxNetIpFrame 
     : QKnxNetIpFrame(other)
 {}
 
-QKnxNetIpDeviceDIB QKnxNetIpDescriptionResponse::deviceHardware() const
+QKnxNetIpDeviceDib QKnxNetIpDescriptionResponse::deviceHardware() const
 {
-    return QKnxNetIpDeviceDIB::fromBytes(payloadRef(), 0);
+    return QKnxNetIpDeviceDib::fromBytes(payloadRef(), 0);
 }
 
-QKnxNetIpServiceFamiliesDIB QKnxNetIpDescriptionResponse::supportedFamilies() const
+QKnxNetIpServiceFamiliesDib QKnxNetIpDescriptionResponse::supportedFamilies() const
 {
-    return QKnxNetIpServiceFamiliesDIB::fromBytes(payloadRef(), 54);
+    return QKnxNetIpServiceFamiliesDib::fromBytes(payloadRef(), 54);
 }
 
 bool QKnxNetIpDescriptionResponse::isValid() const

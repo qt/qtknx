@@ -51,9 +51,9 @@ void tst_QKnxNetIpConnectRequest::testDefaultConstructor()
 
 void tst_QKnxNetIpConnectRequest::testConstructor()
 {
-    QKnxNetIpHPAI control(QKnxNetIp::HostProtocol::IpV4_Udp, QHostAddress::LocalHost, 3671);
-    QKnxNetIpHPAI data(QKnxNetIp::HostProtocol::IpV4_Udp, QHostAddress::LocalHost, 3671);
-    QKnxNetIpCRI request;
+    QKnxNetIpHpai control(QKnxNetIp::HostProtocol::IpV4_Udp, QHostAddress::LocalHost, 3671);
+    QKnxNetIpHpai data(QKnxNetIp::HostProtocol::IpV4_Udp, QHostAddress::LocalHost, 3671);
+    QKnxNetIpCri request;
 
     QKnxNetIpConnectRequest connectRequest(control, data, request);
 
@@ -123,9 +123,9 @@ void tst_QKnxNetIpConnectRequest::testDataStream()
         QByteArray byteArray;
         QDataStream out(&byteArray, QIODevice::WriteOnly);
 
-        QKnxNetIpHPAI control(QKnxNetIp::HostProtocol::IpV4_Udp, QHostAddress::LocalHost, 3671);
-        QKnxNetIpHPAI data(QKnxNetIp::HostProtocol::IpV4_Udp, QHostAddress::LocalHost, 3671);
-        QKnxNetIpCRI request;
+        QKnxNetIpHpai control(QKnxNetIp::HostProtocol::IpV4_Udp, QHostAddress::LocalHost, 3671);
+        QKnxNetIpHpai data(QKnxNetIp::HostProtocol::IpV4_Udp, QHostAddress::LocalHost, 3671);
+        QKnxNetIpCri request;
         out << QKnxNetIpConnectRequest(control, data, request);
         QCOMPARE(byteArray, QByteArray(""));
     }
@@ -134,9 +134,9 @@ void tst_QKnxNetIpConnectRequest::testDataStream()
         QByteArray byteArray;
         QDataStream out(&byteArray, QIODevice::WriteOnly);
 
-        QKnxNetIpHPAI control(QKnxNetIp::HostProtocol::IpV4_Udp, QHostAddress::LocalHost, 3671);
-        QKnxNetIpHPAI data(QKnxNetIp::HostProtocol::IpV4_Udp, QHostAddress::LocalHost, 3671);
-        QKnxNetIpCRI request(QKnxNetIp::TunnelingLayer::Link);
+        QKnxNetIpHpai control(QKnxNetIp::HostProtocol::IpV4_Udp, QHostAddress::LocalHost, 3671);
+        QKnxNetIpHpai data(QKnxNetIp::HostProtocol::IpV4_Udp, QHostAddress::LocalHost, 3671);
+        QKnxNetIpCri request(QKnxNetIp::TunnelingLayer::Link);
         out << QKnxNetIpConnectRequest(control, data, request);
         QCOMPARE(byteArray, QByteArray::fromHex("06100205001a08017f0000010e5708017f0000010e5704040200"));
     }

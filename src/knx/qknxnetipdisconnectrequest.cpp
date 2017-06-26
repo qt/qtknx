@@ -24,7 +24,7 @@
 QT_BEGIN_NAMESPACE
 
 QKnxNetIpDisconnectRequest::QKnxNetIpDisconnectRequest(quint8 channelId,
-        const QKnxNetIpHPAI &controlEndpoint)
+        const QKnxNetIpHpai &controlEndpoint)
     : QKnxNetIpFrame(QKnxNetIp::ServiceType::DisconnectRequest)
 {
     QKnxNetIpPayload payload(channelId);
@@ -42,9 +42,9 @@ quint8 QKnxNetIpDisconnectRequest::channelId() const
     return payloadRef().byte(0);
 }
 
-QKnxNetIpHPAI QKnxNetIpDisconnectRequest::controlEndpoint() const
+QKnxNetIpHpai QKnxNetIpDisconnectRequest::controlEndpoint() const
 {
-    return QKnxNetIpHPAI::fromBytes(payloadRef(), 2);
+    return QKnxNetIpHpai::fromBytes(payloadRef(), 2);
 }
 
 bool QKnxNetIpDisconnectRequest::isValid() const

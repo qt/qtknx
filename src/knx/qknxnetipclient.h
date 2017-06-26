@@ -102,7 +102,7 @@ public:
     QVector<quint8> supportedProtocolVersions() const;
     void setSupportedProtocolVersions(const QVector<quint8> &versions);
 
-    void connectToHost(const QKnxNetIpHPAI &controlEndpoint);
+    void connectToHost(const QKnxNetIpHpai &controlEndpoint);
     void connectToHost(const QHostAddress &address, quint16 port);
 
     void disconnectFromHost();

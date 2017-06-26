@@ -23,31 +23,31 @@
 
 QT_BEGIN_NAMESPACE
 
-QKnxNetIpCRD::QKnxNetIpCRD(const QKnxNetIpConnectionTypeStruct &other)
+QKnxNetIpCrd::QKnxNetIpCrd(const QKnxNetIpConnectionTypeStruct &other)
     : QKnxNetIpConnectionTypeStruct(other)
 {}
 
-QKnxNetIpCRD::QKnxNetIpCRD(QKnxNetIp::ConnectionType connectionType)
+QKnxNetIpCrd::QKnxNetIpCrd(QKnxNetIp::ConnectionType connectionType)
     : QKnxNetIpConnectionTypeStruct(connectionType)
 {}
 
-QKnxNetIpCRD::QKnxNetIpCRD(const QKnxAddress &individualAddress)
+QKnxNetIpCrd::QKnxNetIpCrd(const QKnxAddress &individualAddress)
     : QKnxNetIpConnectionTypeStruct(QKnxNetIp::ConnectionType::Tunnel)
 {
     setIndividualAddress(individualAddress);
 }
 
-QKnxNetIp::ConnectionType QKnxNetIpCRD::connectionType() const
+QKnxNetIp::ConnectionType QKnxNetIpCrd::connectionType() const
 {
     return QKnxNetIp::ConnectionType(code());
 }
 
-void QKnxNetIpCRD::setConnectionType(QKnxNetIp::ConnectionType connectionType)
+void QKnxNetIpCrd::setConnectionType(QKnxNetIp::ConnectionType connectionType)
 {
     setCode(connectionType);
 }
 
-bool QKnxNetIpCRD::isValid() const
+bool QKnxNetIpCrd::isValid() const
 {
     switch (connectionType()) {
         case QKnxNetIp::ConnectionType::DeviceManagement:
@@ -69,12 +69,12 @@ bool QKnxNetIpCRD::isValid() const
     return false;
 }
 
-QKnxAddress QKnxNetIpCRD::individualAddress() const
+QKnxAddress QKnxNetIpCrd::individualAddress() const
 {
     return QKnxAddress(QKnxAddress::Type::Individual, QKnxUtils::QUint16::fromBytes(payloadRef()));
 }
 
-bool QKnxNetIpCRD::setIndividualAddress(const QKnxAddress &address)
+bool QKnxNetIpCrd::setIndividualAddress(const QKnxAddress &address)
 {
     if (connectionType() != QKnxNetIp::ConnectionType::Tunnel
         || (!address.isValid()) || (address.type() != QKnxAddress::Type::Individual))

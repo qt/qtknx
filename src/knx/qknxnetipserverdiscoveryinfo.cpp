@@ -51,22 +51,22 @@ QHostAddress QKnxNetIpServerDiscoveryInfo::controlEndpointAddress() const
     return d_ptr->hpai.address();
 }
 
-QKnxNetIpServiceFamiliesDIB::ServiceFamilyIdVersions QKnxNetIpServerDiscoveryInfo::supportedServices() const
+QKnxNetIpServiceFamiliesDib::ServiceFamilyIdVersions QKnxNetIpServerDiscoveryInfo::supportedServices() const
 {
     return d_ptr->services.serviceFamilyIdVersions();
 }
 
-QKnxNetIpHPAI QKnxNetIpServerDiscoveryInfo::endpoint() const
+QKnxNetIpHpai QKnxNetIpServerDiscoveryInfo::endpoint() const
 {
     return d_ptr->hpai;
 }
 
-QKnxNetIpDeviceDIB QKnxNetIpServerDiscoveryInfo::hardware() const
+QKnxNetIpDeviceDib QKnxNetIpServerDiscoveryInfo::hardware() const
 {
     return d_ptr->hardware;
 }
 
-QKnxNetIpServiceFamiliesDIB QKnxNetIpServerDiscoveryInfo::services() const
+QKnxNetIpServiceFamiliesDib QKnxNetIpServerDiscoveryInfo::services() const
 {
     return d_ptr->services;
 }
@@ -83,8 +83,8 @@ QKnxNetIpServerDiscoveryInfo::operator=(const QKnxNetIpServerDiscoveryInfo &othe
 
 }
 
-QKnxNetIpServerDiscoveryInfo::QKnxNetIpServerDiscoveryInfo(const QKnxNetIpHPAI &hpai,
-    const QKnxNetIpDeviceDIB &hardware, QKnxNetIpServiceFamiliesDIB services)
+QKnxNetIpServerDiscoveryInfo::QKnxNetIpServerDiscoveryInfo(const QKnxNetIpHpai &hpai,
+    const QKnxNetIpDeviceDib &hardware, QKnxNetIpServiceFamiliesDib services)
     : QKnxNetIpServerDiscoveryInfo()
 {
     d_ptr->hpai = hpai;

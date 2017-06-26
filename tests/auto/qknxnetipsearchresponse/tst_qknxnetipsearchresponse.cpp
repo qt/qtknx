@@ -51,16 +51,16 @@ void tst_QKnxNetIpSearchResponse::testDefaultConstructor()
 
 void tst_QKnxNetIpSearchResponse::testConstructor()
 {
-    QKnxNetIpHPAI endpoint(QKnxNetIp::HostProtocol::IpV4_Udp, QHostAddress::LocalHost, 3671);
-    QKnxNetIpDeviceDIB hardware(QKnxNetIpDeviceDIB::Medium::Ip,
-                                QKnxNetIpDeviceDIB::DeviceStatus::ActiveProgrammingMode,
+    QKnxNetIpHpai endpoint(QKnxNetIp::HostProtocol::IpV4_Udp, QHostAddress::LocalHost, 3671);
+    QKnxNetIpDeviceDib hardware(QKnxNetIpDeviceDib::Medium::Ip,
+                                QKnxNetIpDeviceDib::DeviceStatus::ActiveProgrammingMode,
                                 QKnxAddress::Individual::Unregistered,
                                 0x1111,
                                 QByteArray::fromHex("123456123456"),
                                 QHostAddress::AnyIPv4,
                                 QByteArray::fromHex("bcaec56690f9"),
                                 QByteArray("qt.io KNX device"));
-    QKnxNetIpServiceFamiliesDIB families(QKnxNetIpServiceFamiliesDIB::ServiceFamilieId::Core, 10);
+    QKnxNetIpServiceFamiliesDib families(QKnxNetIpServiceFamiliesDib::ServiceFamilieId::Core, 10);
 
     QKnxNetIpSearchResponse search(endpoint, hardware, families);
 
@@ -118,16 +118,16 @@ void tst_QKnxNetIpSearchResponse::testDebugStream()
     qDebug() << QKnxNetIpSearchResponse();
     QCOMPARE(s_msg, QString::fromLatin1("0x1nv4l1d"));
 
-    QKnxNetIpHPAI endpoint(QKnxNetIp::HostProtocol::IpV4_Udp, QHostAddress::LocalHost, 3671);
-    QKnxNetIpDeviceDIB hardware(QKnxNetIpDeviceDIB::Medium::Ip,
-                                QKnxNetIpDeviceDIB::DeviceStatus::ActiveProgrammingMode,
+    QKnxNetIpHpai endpoint(QKnxNetIp::HostProtocol::IpV4_Udp, QHostAddress::LocalHost, 3671);
+    QKnxNetIpDeviceDib hardware(QKnxNetIpDeviceDib::Medium::Ip,
+                                QKnxNetIpDeviceDib::DeviceStatus::ActiveProgrammingMode,
                                 QKnxAddress::Individual::Unregistered,
                                 0x1111,
                                 QByteArray::fromHex("123456123456"),
                                 QHostAddress::AnyIPv4,
                                 QByteArray::fromHex("bcaec56690f9"),
                                 QByteArray("qt.io KNX device"));
-    QKnxNetIpServiceFamiliesDIB families(QKnxNetIpServiceFamiliesDIB::ServiceFamilieId::Core, 10);
+    QKnxNetIpServiceFamiliesDib families(QKnxNetIpServiceFamiliesDib::ServiceFamilieId::Core, 10);
     qDebug() << QKnxNetIpSearchResponse(endpoint, hardware, families);
     QCOMPARE(s_msg, QString::fromLatin1("0x06100202004808017f0000010e5736012001ffff1111123456123456"
             "00000000bcaec56690f971742e696f204b4e582064657669636500000000000000000000000000000"
@@ -139,16 +139,16 @@ void tst_QKnxNetIpSearchResponse::testDataStream()
     QByteArray byteArray;
     QDataStream out(&byteArray, QIODevice::WriteOnly);
 
-    QKnxNetIpHPAI endpoint(QKnxNetIp::HostProtocol::IpV4_Udp, QHostAddress::LocalHost, 3671);
-    QKnxNetIpDeviceDIB hardware(QKnxNetIpDeviceDIB::Medium::Ip,
-                                QKnxNetIpDeviceDIB::DeviceStatus::ActiveProgrammingMode,
+    QKnxNetIpHpai endpoint(QKnxNetIp::HostProtocol::IpV4_Udp, QHostAddress::LocalHost, 3671);
+    QKnxNetIpDeviceDib hardware(QKnxNetIpDeviceDib::Medium::Ip,
+                                QKnxNetIpDeviceDib::DeviceStatus::ActiveProgrammingMode,
                                 QKnxAddress::Individual::Unregistered,
                                 0x1111,
                                 QByteArray::fromHex("123456123456"),
                                 QHostAddress::AnyIPv4,
                                 QByteArray::fromHex("bcaec56690f9"),
                                 QByteArray("qt.io KNX device"));
-    QKnxNetIpServiceFamiliesDIB families(QKnxNetIpServiceFamiliesDIB::ServiceFamilieId::Core, 10);
+    QKnxNetIpServiceFamiliesDib families(QKnxNetIpServiceFamiliesDib::ServiceFamilieId::Core, 10);
     out << QKnxNetIpSearchResponse(endpoint, hardware, families);
     QCOMPARE(byteArray, QByteArray::fromHex("06100202004808017f0000010e5736012001ffff111112345612"
             "345600000000bcaec56690f971742e696f204b4e582064657669636500000000000000000000000000000"

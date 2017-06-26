@@ -59,7 +59,7 @@ struct Endpoint final
         : address(addr)
         , port(p)
     {}
-    explicit Endpoint(const QKnxNetIpHPAI &hpai)
+    explicit Endpoint(const QKnxNetIpHpai &hpai)
         : address(hpai.address())
         , port(hpai.port())
     {}
@@ -67,12 +67,12 @@ struct Endpoint final
         : address(addr)
     {}
 
-    Endpoint &operator=(const QKnxNetIpHPAI &hpai)
+    Endpoint &operator=(const QKnxNetIpHpai &hpai)
     {
         address = hpai.address(); port = hpai.port();
         return *this;
     }
-    operator QKnxNetIpHPAI() const { return { address, port }; }
+    operator QKnxNetIpHpai() const { return { address, port }; }
 
     QHostAddress address { QHostAddress::LocalHost };
     quint16 port { 0 };
@@ -83,7 +83,7 @@ class Q_KNX_EXPORT QKnxNetIpClientPrivate : public QObjectPrivate
     Q_DECLARE_PUBLIC(QKnxNetIpClient)
 
 public:
-    QKnxNetIpClientPrivate(const QHostAddress &address, quint16 port, const QKnxNetIpCRI &cri, int
+    QKnxNetIpClientPrivate(const QHostAddress &address, quint16 port, const QKnxNetIpCri &cri, int
             sendAttempts, QKnxNetIp::Timeout ackTimeout)
         : m_cri(cri)
         , m_localControlEndpoint { address, port }
@@ -121,7 +121,7 @@ public:
     void setAndEmitErrorOccurred(QKnxNetIpClient::Error newError, const QString &message);
 
 private:
-    QKnxNetIpCRI m_cri;
+    QKnxNetIpCri m_cri;
     Endpoint m_remoteDataEndpoint;
     Endpoint m_remoteControlEndpoint;
 

@@ -49,18 +49,18 @@ public:
     quint16 controlEndpointPort() const;
     QHostAddress controlEndpointAddress() const;
 
-    QKnxNetIpServiceFamiliesDIB::ServiceFamilyIdVersions supportedServices() const;
+    QKnxNetIpServiceFamiliesDib::ServiceFamilyIdVersions supportedServices() const;
 
-    QKnxNetIpHPAI endpoint() const;
-    QKnxNetIpDeviceDIB hardware() const;
-    QKnxNetIpServiceFamiliesDIB services() const;
+    QKnxNetIpHpai endpoint() const;
+    QKnxNetIpDeviceDib hardware() const;
+    QKnxNetIpServiceFamiliesDib services() const;
 
     QKnxNetIpServerDiscoveryInfo(const QKnxNetIpServerDiscoveryInfo &o);
     QKnxNetIpServerDiscoveryInfo &operator=(const QKnxNetIpServerDiscoveryInfo &o);
 
 private:
-    QKnxNetIpServerDiscoveryInfo(const QKnxNetIpHPAI &hpai, const QKnxNetIpDeviceDIB &hardware,
-        QKnxNetIpServiceFamiliesDIB services);
+    QKnxNetIpServerDiscoveryInfo(const QKnxNetIpHpai &hpai, const QKnxNetIpDeviceDib &hardware,
+        QKnxNetIpServiceFamiliesDib services);
     explicit QKnxNetIpServerDiscoveryInfo(QKnxNetIpServerDiscoveryInfoPrivate &dd);
 
     void swap(QKnxNetIpServerDiscoveryInfo other);

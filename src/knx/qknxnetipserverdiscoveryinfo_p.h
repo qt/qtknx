@@ -46,9 +46,9 @@ struct Q_KNX_EXPORT QKnxNetIpServerDiscoveryInfoPrivate final : public QSharedDa
     QKnxNetIpServerDiscoveryInfoPrivate() = default;
     ~QKnxNetIpServerDiscoveryInfoPrivate() = default;
 
-    QKnxNetIpHPAI hpai;
-    QKnxNetIpDeviceDIB hardware;
-    QKnxNetIpServiceFamiliesDIB services;
+    QKnxNetIpHpai hpai;
+    QKnxNetIpDeviceDib hardware;
+    QKnxNetIpServiceFamiliesDib services;
 };
 
 QT_END_NAMESPACE

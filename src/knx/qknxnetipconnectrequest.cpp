@@ -23,8 +23,8 @@
 
 QT_BEGIN_NAMESPACE
 
-QKnxNetIpConnectRequest::QKnxNetIpConnectRequest(const QKnxNetIpHPAI &controlEndpoint,
-        const QKnxNetIpHPAI &dataEndpoint, const QKnxNetIpCRI &requestInformation)
+QKnxNetIpConnectRequest::QKnxNetIpConnectRequest(const QKnxNetIpHpai &controlEndpoint,
+        const QKnxNetIpHpai &dataEndpoint, const QKnxNetIpCri &requestInformation)
     : QKnxNetIpFrame(QKnxNetIp::ServiceType::ConnectRequest)
 {
     QKnxNetIpPayload payload;
@@ -38,19 +38,19 @@ QKnxNetIpConnectRequest::QKnxNetIpConnectRequest(const QKnxNetIpFrame &other)
     : QKnxNetIpFrame(other)
 {}
 
-QKnxNetIpHPAI QKnxNetIpConnectRequest::controlEndpoint() const
+QKnxNetIpHpai QKnxNetIpConnectRequest::controlEndpoint() const
 {
-    return QKnxNetIpHPAI::fromBytes(payloadRef(), 0);
+    return QKnxNetIpHpai::fromBytes(payloadRef(), 0);
 }
 
-QKnxNetIpHPAI QKnxNetIpConnectRequest::dataEndpoint() const
+QKnxNetIpHpai QKnxNetIpConnectRequest::dataEndpoint() const
 {
-    return QKnxNetIpHPAI::fromBytes(payloadRef(), 8);
+    return QKnxNetIpHpai::fromBytes(payloadRef(), 8);
 }
 
-QKnxNetIpCRI QKnxNetIpConnectRequest::requestInformation() const
+QKnxNetIpCri QKnxNetIpConnectRequest::requestInformation() const
 {
-    return QKnxNetIpCRI::fromBytes(payloadRef(), 16);
+    return QKnxNetIpCri::fromBytes(payloadRef(), 16);
 }
 
 bool QKnxNetIpConnectRequest::isValid() const

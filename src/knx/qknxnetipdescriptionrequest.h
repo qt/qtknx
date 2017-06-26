@@ -34,7 +34,7 @@ public:
     QKnxNetIpDescriptionRequest() = default;
     ~QKnxNetIpDescriptionRequest() override = default;
 
-    explicit QKnxNetIpDescriptionRequest(const QKnxNetIpHPAI &controlEndpoint);
+    explicit QKnxNetIpDescriptionRequest(const QKnxNetIpHpai &controlEndpoint);
 
     template <typename T>
         static QKnxNetIpDescriptionRequest fromBytes(const T &bytes, quint16 index)
@@ -44,7 +44,7 @@ public:
     }
 
     bool isValid() const override;
-    QKnxNetIpHPAI controlEndpoint() const;
+    QKnxNetIpHpai controlEndpoint() const;
 
 private:
     QKnxNetIpDescriptionRequest(const QKnxNetIpFrame &other);

@@ -29,7 +29,7 @@ static void myMessageHandler(QtMsgType, const QMessageLogContext &, const QStrin
     s_msg = msg;
 }
 
-class tst_QKnxNetIpCRI : public QObject
+class tst_QKnxNetIpCri : public QObject
 {
     Q_OBJECT
 
@@ -41,9 +41,9 @@ private slots:
     void testDataStream();
 };
 
-void tst_QKnxNetIpCRI::testDefaultConstructor()
+void tst_QKnxNetIpCri::testDefaultConstructor()
 {
-    QKnxNetIpCRI cri;
+    QKnxNetIpCri cri;
     QCOMPARE(cri.isValid(), false);
     QCOMPARE(cri.size(), quint16(0));
     QCOMPARE(cri.bytes<QByteArray>(), QByteArray(""));
@@ -54,10 +54,10 @@ void tst_QKnxNetIpCRI::testDefaultConstructor()
     QCOMPARE(quint8(cri.connectionType()), quint8(0));
 }
 
-void tst_QKnxNetIpCRI::testConstructorTunnelingLayer()
+void tst_QKnxNetIpCri::testConstructorTunnelingLayer()
 {
     {
-        QKnxNetIpCRI cri(QKnxNetIp::TunnelingLayer::Unknown);
+        QKnxNetIpCri cri(QKnxNetIp::TunnelingLayer::Unknown);
         QCOMPARE(cri.isValid(), false);
         QCOMPARE(cri.size(), quint16(2));
         QCOMPARE(cri.bytes<QByteArray>(), QByteArray::fromHex("0204"));
@@ -68,7 +68,7 @@ void tst_QKnxNetIpCRI::testConstructorTunnelingLayer()
         QCOMPARE(cri.connectionType(), QKnxNetIp::ConnectionType::Tunnel);
         QCOMPARE(cri.tunnelingLayer(), QKnxNetIp::TunnelingLayer::Unknown);
 
-        // make the CRI valid by setting the QKnxNetIp::TunnelingLayer
+        // make the Cri valid by setting the QKnxNetIp::TunnelingLayer
 
         cri.setTunnelingLayer(QKnxNetIp::TunnelingLayer::Busmonitor);
         QCOMPARE(cri.isValid(), true);
@@ -83,7 +83,7 @@ void tst_QKnxNetIpCRI::testConstructorTunnelingLayer()
     }
 
     {
-        QKnxNetIpCRI cri(QKnxNetIp::TunnelingLayer::Raw);
+        QKnxNetIpCri cri(QKnxNetIp::TunnelingLayer::Raw);
         QCOMPARE(cri.isValid(), true);
         QCOMPARE(cri.size(), quint16(4));
         QCOMPARE(cri.bytes<QByteArray>(), QByteArray::fromHex("04040400"));
@@ -96,9 +96,9 @@ void tst_QKnxNetIpCRI::testConstructorTunnelingLayer()
     }
 }
 
-void tst_QKnxNetIpCRI::testConstructorConnectionType()
+void tst_QKnxNetIpCri::testConstructorConnectionType()
 {
-    QKnxNetIpCRI cri(QKnxNetIp::ConnectionType::Unknown);
+    QKnxNetIpCri cri(QKnxNetIp::ConnectionType::Unknown);
     QCOMPARE(cri.isValid(), false);
     QCOMPARE(cri.size(), quint16(2));
     QCOMPARE(cri.bytes<QByteArray>(), QByteArray::fromHex("0200"));
@@ -108,7 +108,7 @@ void tst_QKnxNetIpCRI::testConstructorConnectionType()
         "Bytes {  }"));
     QCOMPARE(cri.connectionType(), QKnxNetIp::ConnectionType::Unknown);
 
-    cri = QKnxNetIpCRI(QKnxNetIp::ConnectionType::DeviceManagement);
+    cri = QKnxNetIpCri(QKnxNetIp::ConnectionType::DeviceManagement);
     QCOMPARE(cri.isValid(), true);
     QCOMPARE(cri.size(), quint16(2));
     QCOMPARE(cri.bytes<QByteArray>(), QByteArray::fromHex("0203"));
@@ -118,7 +118,7 @@ void tst_QKnxNetIpCRI::testConstructorConnectionType()
         "Bytes {  }"));
     QCOMPARE(cri.connectionType(), QKnxNetIp::ConnectionType::DeviceManagement);
 
-    cri = QKnxNetIpCRI(QKnxNetIp::ConnectionType::Tunnel);
+    cri = QKnxNetIpCri(QKnxNetIp::ConnectionType::Tunnel);
     QCOMPARE(cri.isValid(), false);
     QCOMPARE(cri.size(), quint16(2));
     QCOMPARE(cri.bytes<QByteArray>(), QByteArray::fromHex("0204"));
@@ -128,7 +128,7 @@ void tst_QKnxNetIpCRI::testConstructorConnectionType()
         "Bytes {  }"));
     QCOMPARE(cri.connectionType(), QKnxNetIp::ConnectionType::Tunnel);
 
-    cri = QKnxNetIpCRI(QKnxNetIp::ConnectionType::RemoteLogging);
+    cri = QKnxNetIpCri(QKnxNetIp::ConnectionType::RemoteLogging);
     QCOMPARE(cri.isValid(), true);
     QCOMPARE(cri.size(), quint16(2));
     QCOMPARE(cri.bytes<QByteArray>(), QByteArray::fromHex("0206"));
@@ -138,7 +138,7 @@ void tst_QKnxNetIpCRI::testConstructorConnectionType()
         "Bytes {  }"));
     QCOMPARE(cri.connectionType(), QKnxNetIp::ConnectionType::RemoteLogging);
 
-    cri = QKnxNetIpCRI(QKnxNetIp::ConnectionType::RemoteConfiguration);
+    cri = QKnxNetIpCri(QKnxNetIp::ConnectionType::RemoteConfiguration);
     QCOMPARE(cri.isValid(), true);
     QCOMPARE(cri.size(), quint16(2));
     QCOMPARE(cri.bytes<QByteArray>(), QByteArray::fromHex("0207"));
@@ -148,7 +148,7 @@ void tst_QKnxNetIpCRI::testConstructorConnectionType()
         "Bytes {  }"));
     QCOMPARE(cri.connectionType(), QKnxNetIp::ConnectionType::RemoteConfiguration);
 
-    cri = QKnxNetIpCRI(QKnxNetIp::ConnectionType::ObjectServer);
+    cri = QKnxNetIpCri(QKnxNetIp::ConnectionType::ObjectServer);
     QCOMPARE(cri.isValid(), true);
     QCOMPARE(cri.size(), quint16(2));
     QCOMPARE(cri.bytes<QByteArray>(), QByteArray::fromHex("0208"));
@@ -159,7 +159,7 @@ void tst_QKnxNetIpCRI::testConstructorConnectionType()
     QCOMPARE(cri.connectionType(), QKnxNetIp::ConnectionType::ObjectServer);
 }
 
-void tst_QKnxNetIpCRI::testDebugStream()
+void tst_QKnxNetIpCri::testDebugStream()
 {
     struct DebugHandler
     {
@@ -173,31 +173,31 @@ void tst_QKnxNetIpCRI::testDebugStream()
         QtMessageHandler oldMessageHandler;
     } _(myMessageHandler);
 
-    qDebug() << QKnxNetIpCRI();
+    qDebug() << QKnxNetIpCri();
     QCOMPARE(s_msg, QString::fromLatin1("0x1nv4l1d"));
 
-    qDebug() << QKnxNetIpCRI::fromBytes(QByteArray::fromHex("04048000"), 0);
+    qDebug() << QKnxNetIpCri::fromBytes(QByteArray::fromHex("04048000"), 0);
     QCOMPARE(s_msg, QString::fromLatin1("0x04048000"));
 
 }
 
-void tst_QKnxNetIpCRI::testDataStream()
+void tst_QKnxNetIpCri::testDataStream()
 {
     {
         QByteArray byteArray;
         QDataStream out(&byteArray, QIODevice::WriteOnly);
-        out << QKnxNetIpCRI(QKnxNetIp::ConnectionType::DeviceManagement);
+        out << QKnxNetIpCri(QKnxNetIp::ConnectionType::DeviceManagement);
         QCOMPARE(byteArray, QByteArray::fromHex("0203"));
     }
 
     {
         QByteArray byteArray;
         QDataStream out(&byteArray, QIODevice::WriteOnly);
-        out << QKnxNetIpCRI(QKnxNetIp::TunnelingLayer::Busmonitor);
+        out << QKnxNetIpCri(QKnxNetIp::TunnelingLayer::Busmonitor);
         QCOMPARE(byteArray, QByteArray::fromHex("04048000"));
     }
 }
 
-QTEST_APPLESS_MAIN(tst_QKnxNetIpCRI)
+QTEST_APPLESS_MAIN(tst_QKnxNetIpCri)
 
 #include "tst_qknxnetipcri.moc"

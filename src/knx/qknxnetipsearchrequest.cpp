@@ -23,7 +23,7 @@
 
 QT_BEGIN_NAMESPACE
 
-QKnxNetIpSearchRequest::QKnxNetIpSearchRequest(const QKnxNetIpHPAI &discoveryEndpoint)
+QKnxNetIpSearchRequest::QKnxNetIpSearchRequest(const QKnxNetIpHpai &discoveryEndpoint)
     : QKnxNetIpFrame(QKnxNetIp::ServiceType::SearchRequest)
 {
     QKnxNetIpPayload payload;
@@ -41,9 +41,9 @@ bool QKnxNetIpSearchRequest::isValid() const
         && code() == QKnxNetIp::ServiceType::SearchRequest;
 }
 
-QKnxNetIpHPAI QKnxNetIpSearchRequest::discoveryEndpoint() const
+QKnxNetIpHpai QKnxNetIpSearchRequest::discoveryEndpoint() const
 {
-    return QKnxNetIpHPAI::fromBytes(payloadRef(), 0);
+    return QKnxNetIpHpai::fromBytes(payloadRef(), 0);
 }
 
 QT_END_NAMESPACE

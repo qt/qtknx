@@ -35,9 +35,9 @@ public:
     QKnxNetIpConnectRequest() = default;
     ~QKnxNetIpConnectRequest() override = default;
 
-    QKnxNetIpConnectRequest(const QKnxNetIpHPAI &controlEndpoint,
-                            const QKnxNetIpHPAI &dataEndpoint,
-                            const QKnxNetIpCRI &requestInformation);
+    QKnxNetIpConnectRequest(const QKnxNetIpHpai &controlEndpoint,
+                            const QKnxNetIpHpai &dataEndpoint,
+                            const QKnxNetIpCri &requestInformation);
 
     template <typename T>
         static QKnxNetIpConnectRequest fromBytes(const T &bytes, quint16 index)
@@ -45,9 +45,9 @@ public:
         return QKnxNetIpFrameHelper::fromBytes(bytes, index, QKnxNetIp::ServiceType::ConnectRequest);
     }
 
-    QKnxNetIpHPAI controlEndpoint() const;
-    QKnxNetIpHPAI dataEndpoint() const;
-    QKnxNetIpCRI requestInformation() const;
+    QKnxNetIpHpai controlEndpoint() const;
+    QKnxNetIpHpai dataEndpoint() const;
+    QKnxNetIpCri requestInformation() const;
 
     bool isValid() const override;
 

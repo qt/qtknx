@@ -33,17 +33,17 @@
 
 QT_BEGIN_NAMESPACE
 
-class Q_KNX_EXPORT QKnxNetIpManufacturerDIB final : public QKnxNetIpDescriptionTypeStruct
+class Q_KNX_EXPORT QKnxNetIpManufacturerDib final : public QKnxNetIpDescriptionTypeStruct
 {
 public:
-    QKnxNetIpManufacturerDIB() = default;
-    ~QKnxNetIpManufacturerDIB() override = default;
+    QKnxNetIpManufacturerDib() = default;
+    ~QKnxNetIpManufacturerDib() override = default;
 
-    explicit QKnxNetIpManufacturerDIB(quint16 manufacturerId);
-    QKnxNetIpManufacturerDIB(quint16 manufacturerId, const QByteArray &manufacturerData);
-    QKnxNetIpManufacturerDIB(quint16 manufacturerId, const QVector<quint8> &manufacturerData);
+    explicit QKnxNetIpManufacturerDib(quint16 manufacturerId);
+    QKnxNetIpManufacturerDib(quint16 manufacturerId, const QByteArray &manufacturerData);
+    QKnxNetIpManufacturerDib(quint16 manufacturerId, const QVector<quint8> &manufacturerData);
 
-    template <typename T> static QKnxNetIpManufacturerDIB fromBytes(const T &bytes, quint16 index)
+    template <typename T> static QKnxNetIpManufacturerDib fromBytes(const T &bytes, quint16 index)
     {
         return QKnxNetIpStructHelper::fromBytes(bytes, index,
             QKnxNetIp::DescriptionType::ManufactorData);
@@ -62,9 +62,9 @@ public:
     bool isValid() const override;
 
 private:
-    QKnxNetIpManufacturerDIB(const QKnxNetIpDescriptionTypeStruct &other);
+    QKnxNetIpManufacturerDib(const QKnxNetIpDescriptionTypeStruct &other);
 };
-Q_DECLARE_TYPEINFO(QKnxNetIpManufacturerDIB, Q_MOVABLE_TYPE);
+Q_DECLARE_TYPEINFO(QKnxNetIpManufacturerDib, Q_MOVABLE_TYPE);
 
 QT_END_NAMESPACE
 

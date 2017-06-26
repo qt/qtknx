@@ -96,8 +96,8 @@ void tst_QKnxNetIpConnectResponse::testConstructorOneArgumentNoError()
 
 void tst_QKnxNetIpConnectResponse::testConstructorFourArguments()
 {
-    QKnxNetIpHPAI dataEnd(QKnxNetIp::HostProtocol::IpV4_Udp, QHostAddress::LocalHost, 3671);
-    QKnxNetIpCRD responseData;
+    QKnxNetIpHpai dataEnd(QKnxNetIp::HostProtocol::IpV4_Udp, QHostAddress::LocalHost, 3671);
+    QKnxNetIpCrd responseData;
     QKnxNetIpConnectResponse connectResponse(quint8(200), QKnxNetIp::Error::NoMoreConnections,
         dataEnd, responseData);
     QCOMPARE(connectResponse.isValid(), true);
@@ -120,8 +120,8 @@ void tst_QKnxNetIpConnectResponse::testConstructorFourArguments()
 void tst_QKnxNetIpConnectResponse::testConstructorFourArgumentsNoError()
 {
     QKnxNetIpConnectResponse connectResponse(200u, QKnxNetIp::Error::None,
-        QKnxNetIpHPAI { QKnxNetIp::HostProtocol::IpV4_Udp, QHostAddress::LocalHost, 3671 },
-        QKnxNetIpCRD { QKnxAddress { QKnxAddress::Type::Individual, QStringLiteral("1.1.10") } });
+        QKnxNetIpHpai { QKnxNetIp::HostProtocol::IpV4_Udp, QHostAddress::LocalHost, 3671 },
+        QKnxNetIpCrd { QKnxAddress { QKnxAddress::Type::Individual, QStringLiteral("1.1.10") } });
 
     QCOMPARE(connectResponse.isValid(), true);
     QCOMPARE(connectResponse.size(), quint16(20));
@@ -210,8 +210,8 @@ void tst_QKnxNetIpConnectResponse::testDebugStream()
     qDebug() << QKnxNetIpConnectResponse(QKnxNetIp::Error::NoMoreConnections);
     QCOMPARE(s_msg, QString::fromLatin1("0x0610020600080024"));
 
-    QKnxNetIpHPAI dataEnd(QKnxNetIp::HostProtocol::IpV4_Udp, QHostAddress::LocalHost, 3671);
-    QKnxNetIpCRD responseData;
+    QKnxNetIpHpai dataEnd(QKnxNetIp::HostProtocol::IpV4_Udp, QHostAddress::LocalHost, 3671);
+    QKnxNetIpCrd responseData;
     qDebug() <<QKnxNetIpConnectResponse(quint8(200), QKnxNetIp::Error::None, dataEnd, responseData);
     QCOMPARE(s_msg, QString::fromLatin1("0x1nv4l1d"));
 
@@ -237,8 +237,8 @@ void tst_QKnxNetIpConnectResponse::testDataStream()
         QDataStream out(&byteArray, QIODevice::WriteOnly);
 
         out << QKnxNetIpConnectResponse(21u, QKnxNetIp::Error::None,
-            QKnxNetIpHPAI { QHostAddress("192.168.200.20"), 50100 },
-            QKnxNetIpCRD { { QKnxAddress::Type::Individual, QStringLiteral("1.1.10") } });
+            QKnxNetIpHpai { QHostAddress("192.168.200.20"), 50100 },
+            QKnxNetIpCrd { { QKnxAddress::Type::Individual, QStringLiteral("1.1.10") } });
         QCOMPARE(byteArray, QByteArray::fromHex("06100206001415000801c0a8c814c3b40404110a"));
     }
 }

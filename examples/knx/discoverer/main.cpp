@@ -54,22 +54,22 @@
 #include <QtKnx/QKnxNetIpServerDiscoveryAgent>
 #include <QtNetwork/QNetworkInterface>
 
-static QString familieToString(QKnxNetIpServiceFamiliesDIB::ServiceFamilieId id)
+static QString familieToString(QKnxNetIpServiceFamiliesDib::ServiceFamilieId id)
 {
     switch (id) {
-        case QKnxNetIpServiceFamiliesDIB::ServiceFamilieId::Core:
+        case QKnxNetIpServiceFamiliesDib::ServiceFamilieId::Core:
             return "Core";
-        case QKnxNetIpServiceFamiliesDIB::ServiceFamilieId::DeviceManagement:
+        case QKnxNetIpServiceFamiliesDib::ServiceFamilieId::DeviceManagement:
             return "Device Management";
-        case QKnxNetIpServiceFamiliesDIB::ServiceFamilieId::IpTunneling:
+        case QKnxNetIpServiceFamiliesDib::ServiceFamilieId::IpTunneling:
             return "Tunnel";
-        case QKnxNetIpServiceFamiliesDIB::ServiceFamilieId::IpRouting:
+        case QKnxNetIpServiceFamiliesDib::ServiceFamilieId::IpRouting:
             return "Routing";
-        case QKnxNetIpServiceFamiliesDIB::ServiceFamilieId::RemoteLogging:
+        case QKnxNetIpServiceFamiliesDib::ServiceFamilieId::RemoteLogging:
             return "Remote Logging";
-        case QKnxNetIpServiceFamiliesDIB::ServiceFamilieId::RemoteConfigAndDiagnosis:
+        case QKnxNetIpServiceFamiliesDib::ServiceFamilieId::RemoteConfigAndDiagnosis:
             return "Remote Configuration";
-        case QKnxNetIpServiceFamiliesDIB::ServiceFamilieId::ObjectServer:
+        case QKnxNetIpServiceFamiliesDib::ServiceFamilieId::ObjectServer:
             return "Object Server";
         default:
             break;

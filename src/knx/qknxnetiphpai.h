@@ -34,16 +34,16 @@
 
 QT_BEGIN_NAMESPACE
 
-class Q_KNX_EXPORT QKnxNetIpHPAI final : public QKnxNetIpHostProtocolStruct
+class Q_KNX_EXPORT QKnxNetIpHpai final : public QKnxNetIpHostProtocolStruct
 {
 public:
-    QKnxNetIpHPAI() = default;
-    ~QKnxNetIpHPAI() override = default;
+    QKnxNetIpHpai() = default;
+    ~QKnxNetIpHpai() override = default;
 
-    QKnxNetIpHPAI(const QHostAddress &address, quint16 port);
-    QKnxNetIpHPAI(QKnxNetIp::HostProtocol hpc, const QHostAddress &address, quint16 port);
+    QKnxNetIpHpai(const QHostAddress &address, quint16 port);
+    QKnxNetIpHpai(QKnxNetIp::HostProtocol hpc, const QHostAddress &address, quint16 port);
 
-    template <typename T> static QKnxNetIpHPAI fromBytes(const T &bytes, quint16 index)
+    template <typename T> static QKnxNetIpHpai fromBytes(const T &bytes, quint16 index)
     {
         auto code = QKnxNetIpStructHeader<QKnxNetIp::HostProtocol>::fromBytes(bytes, index).code();
         if (!QKnxNetIp::isStructType(code))
@@ -60,14 +60,14 @@ public:
     quint16 port() const;
     void setPort(quint16 port);
 
-    void setHPAI(QKnxNetIp::HostProtocol code, QHostAddress hostAddress, quint16 port);
+    void setHpai(QKnxNetIp::HostProtocol code, QHostAddress hostAddress, quint16 port);
 
     bool isValid() const override;
 
 private:
-    QKnxNetIpHPAI(const QKnxNetIpHostProtocolStruct &other);
+    QKnxNetIpHpai(const QKnxNetIpHostProtocolStruct &other);
 };
-Q_DECLARE_TYPEINFO(QKnxNetIpHPAI, Q_MOVABLE_TYPE);
+Q_DECLARE_TYPEINFO(QKnxNetIpHpai, Q_MOVABLE_TYPE);
 
 QT_END_NAMESPACE
 

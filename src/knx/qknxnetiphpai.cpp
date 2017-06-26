@@ -25,69 +25,69 @@
 QT_BEGIN_NAMESPACE
 
 /*!
-    \class QKnxNetIpHPAI
+    \class QKnxNetIpHpai
 
     \inmodule QtKnx
-    \brief The QKnxNetIpHPAI class represents the structure containing the
+    \brief The QKnxNetIpHpai class represents the structure containing the
     information that is necessary to uniquely identify an Internet Protocol
     transport connection endpoint. It includes the Network Layer address and
     the Transport Layer identifier called Port number.
 */
 
-QKnxNetIpHPAI::QKnxNetIpHPAI(const QKnxNetIpHostProtocolStruct &other)
+QKnxNetIpHpai::QKnxNetIpHpai(const QKnxNetIpHostProtocolStruct &other)
     : QKnxNetIpHostProtocolStruct(other)
 {}
 
-QKnxNetIpHPAI::QKnxNetIpHPAI(const QHostAddress &address, quint16 port)
-    : QKnxNetIpHPAI(QKnxNetIp::HostProtocol::IpV4_Udp, address, port)
+QKnxNetIpHpai::QKnxNetIpHpai(const QHostAddress &address, quint16 port)
+    : QKnxNetIpHpai(QKnxNetIp::HostProtocol::IpV4_Udp, address, port)
 {}
 
-QKnxNetIpHPAI::QKnxNetIpHPAI(QKnxNetIp::HostProtocol hpc, const QHostAddress &address, quint16 port)
+QKnxNetIpHpai::QKnxNetIpHpai(QKnxNetIp::HostProtocol hpc, const QHostAddress &address, quint16 port)
     : QKnxNetIpHostProtocolStruct(hpc)
 {
-    setHPAI(hpc, address, port);
+    setHpai(hpc, address, port);
 }
 
-QKnxNetIp::HostProtocol QKnxNetIpHPAI::hostProtocol() const
+QKnxNetIp::HostProtocol QKnxNetIpHpai::hostProtocol() const
 {
     return QKnxNetIp::HostProtocol(code());
 }
 
-void QKnxNetIpHPAI::setHostProtocol(QKnxNetIp::HostProtocol code)
+void QKnxNetIpHpai::setHostProtocol(QKnxNetIp::HostProtocol code)
 {
     if (isValid())
         setCode(code);
     else
-        setHPAI(code, QHostAddress(), 0);
+        setHpai(code, QHostAddress(), 0);
 }
 
-QHostAddress QKnxNetIpHPAI::address() const
+QHostAddress QKnxNetIpHpai::address() const
 {
     return QKnxUtils::HostAddress::fromBytes(payloadRef());
 }
 
-void QKnxNetIpHPAI::setAddress(QHostAddress hostAddress)
+void QKnxNetIpHpai::setAddress(QHostAddress hostAddress)
 {
     if (isValid())
-        setHPAI(hostProtocol(), hostAddress, port());
+        setHpai(hostProtocol(), hostAddress, port());
     else
-        setHPAI(QKnxNetIp::HostProtocol::IpV4_Udp, hostAddress, 0);
+        setHpai(QKnxNetIp::HostProtocol::IpV4_Udp, hostAddress, 0);
 }
 
-quint16 QKnxNetIpHPAI::port() const
+quint16 QKnxNetIpHpai::port() const
 {
     return QKnxUtils::QUint16::fromBytes(payloadRef(), 4);
 }
 
-void QKnxNetIpHPAI::setPort(quint16 port)
+void QKnxNetIpHpai::setPort(quint16 port)
 {
     if (isValid())
-        setHPAI(hostProtocol(), address(), port);
+        setHpai(hostProtocol(), address(), port);
     else
-        setHPAI(QKnxNetIp::HostProtocol::IpV4_Udp, QHostAddress(), port);
+        setHpai(QKnxNetIp::HostProtocol::IpV4_Udp, QHostAddress(), port);
 }
 
-void QKnxNetIpHPAI::setHPAI(QKnxNetIp::HostProtocol code, QHostAddress address, quint16 port)
+void QKnxNetIpHpai::setHpai(QKnxNetIp::HostProtocol code, QHostAddress address, quint16 port)
 {
     setCode(code);
     QKnxNetIpPayload payload;
@@ -101,7 +101,7 @@ void QKnxNetIpHPAI::setHPAI(QKnxNetIp::HostProtocol code, QHostAddress address, 
     setPayload(payload);
 }
 
-bool QKnxNetIpHPAI::isValid() const
+bool QKnxNetIpHpai::isValid() const
 {
     bool validHostProtocolCode = hostProtocol() == QKnxNetIp::HostProtocol::IpV4_Udp
         || hostProtocol() == QKnxNetIp::HostProtocol::IpV4_Tcp;

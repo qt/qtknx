@@ -23,7 +23,7 @@
 
 QT_BEGIN_NAMESPACE
 
-QKnxNetIpDescriptionRequest::QKnxNetIpDescriptionRequest(const QKnxNetIpHPAI &controlEndpoint)
+QKnxNetIpDescriptionRequest::QKnxNetIpDescriptionRequest(const QKnxNetIpHpai &controlEndpoint)
     : QKnxNetIpFrame(QKnxNetIp::ServiceType::DescriptionRequest)
 {
     QKnxNetIpPayload payload;
@@ -41,9 +41,9 @@ bool QKnxNetIpDescriptionRequest::isValid() const
         && code() == QKnxNetIp::ServiceType::DescriptionRequest;
 }
 
-QKnxNetIpHPAI QKnxNetIpDescriptionRequest::controlEndpoint() const
+QKnxNetIpHpai QKnxNetIpDescriptionRequest::controlEndpoint() const
 {
-    return QKnxNetIpHPAI::fromBytes(payloadRef(), 0);
+    return QKnxNetIpHpai::fromBytes(payloadRef(), 0);
 }
 
 QT_END_NAMESPACE

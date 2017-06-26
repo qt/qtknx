@@ -23,35 +23,35 @@
 
 QT_BEGIN_NAMESPACE
 
-QKnxNetIpCRI::QKnxNetIpCRI(QKnxNetIp::ConnectionType connectionType)
+QKnxNetIpCri::QKnxNetIpCri(QKnxNetIp::ConnectionType connectionType)
     : QKnxNetIpConnectionTypeStruct(connectionType)
 {}
 
-QKnxNetIpCRI::QKnxNetIpCRI(QKnxNetIp::TunnelingLayer layer)
+QKnxNetIpCri::QKnxNetIpCri(QKnxNetIp::TunnelingLayer layer)
     : QKnxNetIpConnectionTypeStruct(QKnxNetIp::ConnectionType::Tunnel)
 {
     setTunnelingLayer(layer);
 }
 
-QKnxNetIpCRI::QKnxNetIpCRI(QKnxNetIpServiceFamiliesDIB::ServiceFamilieId serviceType)
-    : QKnxNetIpCRI(QKnxNetIpServiceFamiliesDIB::connectionTypeFromServiceType(serviceType))
+QKnxNetIpCri::QKnxNetIpCri(QKnxNetIpServiceFamiliesDib::ServiceFamilieId serviceType)
+    : QKnxNetIpCri(QKnxNetIpServiceFamiliesDib::connectionTypeFromServiceType(serviceType))
 {}
 
-QKnxNetIpCRI::QKnxNetIpCRI(const QKnxNetIpConnectionTypeStruct &other)
+QKnxNetIpCri::QKnxNetIpCri(const QKnxNetIpConnectionTypeStruct &other)
     : QKnxNetIpConnectionTypeStruct(other)
 {}
 
-QKnxNetIp::ConnectionType QKnxNetIpCRI::connectionType() const
+QKnxNetIp::ConnectionType QKnxNetIpCri::connectionType() const
 {
     return QKnxNetIp::ConnectionType(code());
 }
 
-void QKnxNetIpCRI::setConnectionType(QKnxNetIp::ConnectionType connectionType)
+void QKnxNetIpCri::setConnectionType(QKnxNetIp::ConnectionType connectionType)
 {
     setCode(connectionType);
 }
 
-bool QKnxNetIpCRI::isValid() const
+bool QKnxNetIpCri::isValid() const
 {
     switch (connectionType()) {
         case QKnxNetIp::ConnectionType::DeviceManagement:
@@ -71,12 +71,12 @@ bool QKnxNetIpCRI::isValid() const
     return false;
 }
 
-QKnxNetIp::TunnelingLayer QKnxNetIpCRI::tunnelingLayer() const
+QKnxNetIp::TunnelingLayer QKnxNetIpCri::tunnelingLayer() const
 {
     return QKnxNetIp::TunnelingLayer(payloadRef().byte(0));
 }
 
-bool QKnxNetIpCRI::setTunnelingLayer(QKnxNetIp::TunnelingLayer layer)
+bool QKnxNetIpCri::setTunnelingLayer(QKnxNetIp::TunnelingLayer layer)
 {
     if (connectionType() != QKnxNetIp::ConnectionType::Tunnel
         || (!QKnxNetIp::isTunnelingLayer(layer)))

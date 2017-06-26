@@ -29,15 +29,15 @@ static void myMessageHandler(QtMsgType, const QMessageLogContext &, const QStrin
     s_msg = msg;
 }
 
-class tst_QKnxNetIpDeviceDIB : public QObject
+class tst_QKnxNetIpDeviceDib : public QObject
 {
     Q_OBJECT
 
 private slots:
     void testConstructor()
     {
-        QKnxNetIpDeviceDIB deviceDIB(QKnxNetIpDeviceDIB::Medium::Ip,
-                                     QKnxNetIpDeviceDIB::DeviceStatus::ActiveProgrammingMode,
+        QKnxNetIpDeviceDib deviceDib(QKnxNetIpDeviceDib::Medium::Ip,
+                                     QKnxNetIpDeviceDib::DeviceStatus::ActiveProgrammingMode,
                                      QKnxAddress::Individual::Unregistered,
                                      0x1111,
                                      QByteArray::fromHex("123456123456"),
@@ -45,27 +45,27 @@ private slots:
                                      QByteArray::fromHex("bcaec56690f9"),
                                      QByteArray("qt.io KNX device"));
 
-        QCOMPARE(deviceDIB.medium(), QKnxNetIpDeviceDIB::Medium::Ip);
-        QCOMPARE(deviceDIB.descriptionType(), QKnxNetIp::DescriptionType::DeviceInfo);
-        QCOMPARE(deviceDIB.deviceStatus(), QKnxNetIpDeviceDIB::DeviceStatus::ActiveProgrammingMode);
-        QCOMPARE(deviceDIB.individualAddress().toString(), QKnxAddress::Individual::Unregistered.toString());
-        QCOMPARE(deviceDIB.projectInstallationIdentfier(), quint16(0x1111));
-        QCOMPARE(deviceDIB.serialNumber(), QByteArray::fromHex("123456123456"));
-        QCOMPARE(deviceDIB.multicastAddress(), QHostAddress(QHostAddress::AnyIPv4));
-        QCOMPARE(deviceDIB.macAddress(), QByteArray::fromHex("bcaec56690f9"));
-        QCOMPARE(deviceDIB.deviceName(), QByteArray("qt.io KNX device"));
+        QCOMPARE(deviceDib.medium(), QKnxNetIpDeviceDib::Medium::Ip);
+        QCOMPARE(deviceDib.descriptionType(), QKnxNetIp::DescriptionType::DeviceInfo);
+        QCOMPARE(deviceDib.deviceStatus(), QKnxNetIpDeviceDib::DeviceStatus::ActiveProgrammingMode);
+        QCOMPARE(deviceDib.individualAddress().toString(), QKnxAddress::Individual::Unregistered.toString());
+        QCOMPARE(deviceDib.projectInstallationIdentfier(), quint16(0x1111));
+        QCOMPARE(deviceDib.serialNumber(), QByteArray::fromHex("123456123456"));
+        QCOMPARE(deviceDib.multicastAddress(), QHostAddress(QHostAddress::AnyIPv4));
+        QCOMPARE(deviceDib.macAddress(), QByteArray::fromHex("bcaec56690f9"));
+        QCOMPARE(deviceDib.deviceName(), QByteArray("qt.io KNX device"));
 
-        QCOMPARE(deviceDIB.payload().size(), quint16(52));
-        QCOMPARE(deviceDIB.payload().bytes<QByteArray>(),
+        QCOMPARE(deviceDib.payload().size(), quint16(52));
+        QCOMPARE(deviceDib.payload().bytes<QByteArray>(),
             QByteArray::fromHex("2001ffff111112345612345600000000bcaec56690f9")
             + "qt.io KNX device" + QByteArray::fromHex("0000000000000000000000000000"));
 
-        QCOMPARE(deviceDIB.size(), quint16(54));
-        QCOMPARE(deviceDIB.bytes<QByteArray>(),
+        QCOMPARE(deviceDib.size(), quint16(54));
+        QCOMPARE(deviceDib.bytes<QByteArray>(),
             QByteArray::fromHex("36012001ffff111112345612345600000000bcaec56690f9")
             + "qt.io KNX device" + QByteArray::fromHex("0000000000000000000000000000"));
 
-        QCOMPARE(deviceDIB.toString(), QString::fromLatin1("Total size { 0x36 }, Code { 0x01 }, "
+        QCOMPARE(deviceDib.toString(), QString::fromLatin1("Total size { 0x36 }, Code { 0x01 }, "
             "Bytes { 0x20, 0x01, 0xff, 0xff, 0x11, 0x11, 0x12, 0x34, 0x56, 0x12, 0x34, 0x56, 0x00, "
             "0x00, 0x00, 0x00, 0xbc, 0xae, 0xc5, 0x66, 0x90, 0xf9, 0x71, 0x74, 0x2e, 0x69, 0x6f, "
             "0x20, 0x4b, 0x4e, 0x58, 0x20, 0x64, 0x65, 0x76, 0x69, 0x63, 0x65, 0x00, 0x00, 0x00, "
@@ -84,11 +84,11 @@ private slots:
         QtMessageHandler oldMessageHandler;
     } _(myMessageHandler);
 
-    qDebug() << QKnxNetIpDeviceDIB();
+    qDebug() << QKnxNetIpDeviceDib();
     QCOMPARE(s_msg, QString::fromLatin1("0x1nv4l1d"));
 
-    qDebug() << QKnxNetIpDeviceDIB(QKnxNetIpDeviceDIB::Medium::Ip,
-                                   QKnxNetIpDeviceDIB::DeviceStatus::ActiveProgrammingMode,
+    qDebug() << QKnxNetIpDeviceDib(QKnxNetIpDeviceDib::Medium::Ip,
+                                   QKnxNetIpDeviceDib::DeviceStatus::ActiveProgrammingMode,
                                    QKnxAddress::Individual::Unregistered,
                                    0x1111,
                                    QByteArray::fromHex("123456123456"),
@@ -103,8 +103,8 @@ private slots:
     {
         QByteArray byteArray;
         QDataStream out(&byteArray, QIODevice::WriteOnly);
-        out << QKnxNetIpDeviceDIB(QKnxNetIpDeviceDIB::Medium::Ip,
-                                  QKnxNetIpDeviceDIB::DeviceStatus::ActiveProgrammingMode,
+        out << QKnxNetIpDeviceDib(QKnxNetIpDeviceDib::Medium::Ip,
+                                  QKnxNetIpDeviceDib::DeviceStatus::ActiveProgrammingMode,
                                   QKnxAddress::Individual::Unregistered,
                                   0x1111,
                                   QByteArray::fromHex("123456123456"),
@@ -115,6 +115,6 @@ private slots:
             "qt.io KNX device" + QByteArray::fromHex("0000000000000000000000000000"));
     }
 };
-QTEST_APPLESS_MAIN(tst_QKnxNetIpDeviceDIB)
+QTEST_APPLESS_MAIN(tst_QKnxNetIpDeviceDib)
 
 #include "tst_qknxnetipdevicedib.moc"

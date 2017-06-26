@@ -29,7 +29,7 @@ static void myMessageHandler(QtMsgType, const QMessageLogContext &, const QStrin
     s_msg = msg;
 }
 
-class tst_QKnxNetIpCRD : public QObject
+class tst_QKnxNetIpCrd : public QObject
 {
     Q_OBJECT
 
@@ -41,9 +41,9 @@ private slots:
     void testDataStream();
 };
 
-void tst_QKnxNetIpCRD::testDefaultConstructor()
+void tst_QKnxNetIpCrd::testDefaultConstructor()
 {
-    QKnxNetIpCRD crd;
+    QKnxNetIpCrd crd;
     QCOMPARE(crd.isValid(), false);
     QCOMPARE(crd.size(), quint16(0));
     QCOMPARE(crd.bytes<QByteArray>(), QByteArray(""));
@@ -54,10 +54,10 @@ void tst_QKnxNetIpCRD::testDefaultConstructor()
     QCOMPARE(quint8(crd.connectionType()), quint8(0));
 }
 
-void tst_QKnxNetIpCRD::testConstructorKnxAddress()
+void tst_QKnxNetIpCrd::testConstructorKnxAddress()
 {
     {
-        QKnxNetIpCRD crd(QKnxAddress {});
+        QKnxNetIpCrd crd(QKnxAddress {});
         QCOMPARE(crd.isValid(), false);
         QCOMPARE(crd.size(), quint16(2));
         QCOMPARE(crd.bytes<QByteArray>(), QByteArray::fromHex("0204"));
@@ -83,7 +83,7 @@ void tst_QKnxNetIpCRD::testConstructorKnxAddress()
     }
 
     {
-        QKnxNetIpCRD crd({ QKnxAddress::Type::Individual, QVector<quint8> { 0x11, 0x01 } });
+        QKnxNetIpCrd crd({ QKnxAddress::Type::Individual, QVector<quint8> { 0x11, 0x01 } });
         QCOMPARE(crd.isValid(), true);
         QCOMPARE(crd.size(), quint16(4));
         QCOMPARE(crd.bytes<QByteArray>(), QByteArray::fromHex("04041101"));
@@ -96,9 +96,9 @@ void tst_QKnxNetIpCRD::testConstructorKnxAddress()
     }
 }
 
-void tst_QKnxNetIpCRD::testConstructorConnectionType()
+void tst_QKnxNetIpCrd::testConstructorConnectionType()
 {
-    QKnxNetIpCRD crd(QKnxNetIp::ConnectionType::Unknown);
+    QKnxNetIpCrd crd(QKnxNetIp::ConnectionType::Unknown);
     QCOMPARE(crd.isValid(), false);
     QCOMPARE(crd.size(), quint16(2));
     QCOMPARE(crd.bytes<QByteArray>(), QByteArray::fromHex("0200"));
@@ -108,7 +108,7 @@ void tst_QKnxNetIpCRD::testConstructorConnectionType()
         "Bytes {  }"));
     QCOMPARE(crd.connectionType(), QKnxNetIp::ConnectionType::Unknown);
 
-    crd = QKnxNetIpCRD(QKnxNetIp::ConnectionType::DeviceManagement);
+    crd = QKnxNetIpCrd(QKnxNetIp::ConnectionType::DeviceManagement);
     QCOMPARE(crd.isValid(), true);
     QCOMPARE(crd.size(), quint16(2));
     QCOMPARE(crd.bytes<QByteArray>(), QByteArray::fromHex("0203"));
@@ -118,7 +118,7 @@ void tst_QKnxNetIpCRD::testConstructorConnectionType()
         "Bytes {  }"));
     QCOMPARE(crd.connectionType(), QKnxNetIp::ConnectionType::DeviceManagement);
 
-    crd = QKnxNetIpCRD(QKnxNetIp::ConnectionType::Tunnel);
+    crd = QKnxNetIpCrd(QKnxNetIp::ConnectionType::Tunnel);
     QCOMPARE(crd.isValid(), false);
     QCOMPARE(crd.size(), quint16(2));
     QCOMPARE(crd.bytes<QByteArray>(), QByteArray::fromHex("0204"));
@@ -128,7 +128,7 @@ void tst_QKnxNetIpCRD::testConstructorConnectionType()
         "Bytes {  }"));
     QCOMPARE(crd.connectionType(), QKnxNetIp::ConnectionType::Tunnel);
 
-    crd = QKnxNetIpCRD(QKnxNetIp::ConnectionType::RemoteLogging);
+    crd = QKnxNetIpCrd(QKnxNetIp::ConnectionType::RemoteLogging);
     QCOMPARE(crd.isValid(), true);
     QCOMPARE(crd.size(), quint16(2));
     QCOMPARE(crd.bytes<QByteArray>(), QByteArray::fromHex("0206"));
@@ -138,7 +138,7 @@ void tst_QKnxNetIpCRD::testConstructorConnectionType()
         "Bytes {  }"));
     QCOMPARE(crd.connectionType(), QKnxNetIp::ConnectionType::RemoteLogging);
 
-    crd = QKnxNetIpCRD(QKnxNetIp::ConnectionType::RemoteConfiguration);
+    crd = QKnxNetIpCrd(QKnxNetIp::ConnectionType::RemoteConfiguration);
     QCOMPARE(crd.isValid(), true);
     QCOMPARE(crd.size(), quint16(2));
     QCOMPARE(crd.bytes<QByteArray>(), QByteArray::fromHex("0207"));
@@ -148,7 +148,7 @@ void tst_QKnxNetIpCRD::testConstructorConnectionType()
         "Bytes {  }"));
     QCOMPARE(crd.connectionType(), QKnxNetIp::ConnectionType::RemoteConfiguration);
 
-    crd = QKnxNetIpCRD(QKnxNetIp::ConnectionType::ObjectServer);
+    crd = QKnxNetIpCrd(QKnxNetIp::ConnectionType::ObjectServer);
     QCOMPARE(crd.isValid(), true);
     QCOMPARE(crd.size(), quint16(2));
     QCOMPARE(crd.bytes<QByteArray>(), QByteArray::fromHex("0208"));
@@ -159,7 +159,7 @@ void tst_QKnxNetIpCRD::testConstructorConnectionType()
     QCOMPARE(crd.connectionType(), QKnxNetIp::ConnectionType::ObjectServer);
 }
 
-void tst_QKnxNetIpCRD::testDebugStream()
+void tst_QKnxNetIpCrd::testDebugStream()
 {
     struct DebugHandler
     {
@@ -173,30 +173,30 @@ void tst_QKnxNetIpCRD::testDebugStream()
         QtMessageHandler oldMessageHandler;
     } _(myMessageHandler);
 
-    qDebug() << QKnxNetIpCRD();
+    qDebug() << QKnxNetIpCrd();
     QCOMPARE(s_msg, QString::fromLatin1("0x1nv4l1d"));
 
-    qDebug() << QKnxNetIpCRD::fromBytes(QByteArray::fromHex("04041101"), 0);
+    qDebug() << QKnxNetIpCrd::fromBytes(QByteArray::fromHex("04041101"), 0);
     QCOMPARE(s_msg, QString::fromLatin1("0x04041101"));
 }
 
-void tst_QKnxNetIpCRD::testDataStream()
+void tst_QKnxNetIpCrd::testDataStream()
 {
     {
         QByteArray byteArray;
         QDataStream out(&byteArray, QIODevice::WriteOnly);
-        out << QKnxNetIpCRD(QKnxNetIp::ConnectionType::DeviceManagement);
+        out << QKnxNetIpCrd(QKnxNetIp::ConnectionType::DeviceManagement);
         QCOMPARE(byteArray, QByteArray::fromHex("0203"));
     }
 
     {
         QByteArray byteArray;
         QDataStream out(&byteArray, QIODevice::WriteOnly);
-        out << QKnxNetIpCRD({ QKnxAddress::Type::Individual, QVector<quint8> { 0x11, 0x01 } });
+        out << QKnxNetIpCrd({ QKnxAddress::Type::Individual, QVector<quint8> { 0x11, 0x01 } });
         QCOMPARE(byteArray, QByteArray::fromHex("04041101"));
     }
 }
 
-QTEST_APPLESS_MAIN(tst_QKnxNetIpCRD)
+QTEST_APPLESS_MAIN(tst_QKnxNetIpCrd)
 
 #include "tst_qknxnetipcrd.moc"

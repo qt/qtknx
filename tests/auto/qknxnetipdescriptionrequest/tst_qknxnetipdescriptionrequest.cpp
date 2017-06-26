@@ -49,7 +49,7 @@ void tst_QKnxNetIpDescriptionRequest::testDefaultConstructor()
 
 void tst_QKnxNetIpDescriptionRequest::testConstructor()
 {
-    QKnxNetIpHPAI endpoint(QKnxNetIp::HostProtocol::IpV4_Udp, QHostAddress::LocalHost, 3671);
+    QKnxNetIpHpai endpoint(QKnxNetIp::HostProtocol::IpV4_Udp, QHostAddress::LocalHost, 3671);
     QKnxNetIpDescriptionRequest descriptionRequest(endpoint);
     QCOMPARE(descriptionRequest.isValid(), true);
     QCOMPARE(descriptionRequest.size(), quint16(14));
@@ -82,7 +82,7 @@ void tst_QKnxNetIpDescriptionRequest::testDebugStream()
     qDebug() << QKnxNetIpDescriptionRequest();
     QCOMPARE(s_msg, QString::fromLatin1("0x1nv4l1d"));
 
-    QKnxNetIpHPAI endpoint(QKnxNetIp::HostProtocol::IpV4_Udp, QHostAddress::LocalHost, 3671);
+    QKnxNetIpHpai endpoint(QKnxNetIp::HostProtocol::IpV4_Udp, QHostAddress::LocalHost, 3671);
     qDebug() << QKnxNetIpDescriptionRequest(endpoint);
     QCOMPARE(s_msg, QString::fromLatin1("0x06100203000e08017f0000010e57"));
 }
@@ -92,7 +92,7 @@ void tst_QKnxNetIpDescriptionRequest::testDataStream()
     QByteArray byteArray;
     QDataStream out(&byteArray, QIODevice::WriteOnly);
 
-    QKnxNetIpHPAI endpoint(QKnxNetIp::HostProtocol::IpV4_Udp, QHostAddress::LocalHost, 3671);
+    QKnxNetIpHpai endpoint(QKnxNetIp::HostProtocol::IpV4_Udp, QHostAddress::LocalHost, 3671);
     out << QKnxNetIpDescriptionRequest(endpoint);
     QCOMPARE(byteArray, QByteArray::fromHex("06100203000e08017f0000010e57"));
 }

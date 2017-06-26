@@ -34,7 +34,7 @@ public:
     QKnxNetIpDisconnectRequest() = default;
     ~QKnxNetIpDisconnectRequest() override = default;
 
-    QKnxNetIpDisconnectRequest(quint8 channelId, const QKnxNetIpHPAI &controlEndpoint);
+    QKnxNetIpDisconnectRequest(quint8 channelId, const QKnxNetIpHpai &controlEndpoint);
 
     template <typename T>
         static QKnxNetIpDisconnectRequest fromBytes(const T &bytes, quint16 index)
@@ -44,7 +44,7 @@ public:
     }
 
     quint8 channelId() const;
-    QKnxNetIpHPAI controlEndpoint() const;
+    QKnxNetIpHpai controlEndpoint() const;
 
     bool isValid() const override;
 

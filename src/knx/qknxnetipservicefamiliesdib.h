@@ -34,7 +34,7 @@
 
 QT_BEGIN_NAMESPACE
 
-class Q_KNX_EXPORT QKnxNetIpServiceFamiliesDIB final : public QKnxNetIpDescriptionTypeStruct
+class Q_KNX_EXPORT QKnxNetIpServiceFamiliesDib final : public QKnxNetIpDescriptionTypeStruct
 {
 public:
     enum class ServiceFamilieId : quint8
@@ -49,13 +49,13 @@ public:
     };
     using ServiceFamilyIdVersions = QMultiMap<ServiceFamilieId, quint8>;
 
-    QKnxNetIpServiceFamiliesDIB();
-    ~QKnxNetIpServiceFamiliesDIB() override = default;
+    QKnxNetIpServiceFamiliesDib();
+    ~QKnxNetIpServiceFamiliesDib() override = default;
 
-    QKnxNetIpServiceFamiliesDIB(ServiceFamilieId id, quint8 version);
-    QKnxNetIpServiceFamiliesDIB(const ServiceFamilyIdVersions &families);
+    QKnxNetIpServiceFamiliesDib(ServiceFamilieId id, quint8 version);
+    QKnxNetIpServiceFamiliesDib(const ServiceFamilyIdVersions &families);
 
-    template <typename T> static QKnxNetIpServiceFamiliesDIB fromBytes(const T &bytes, quint16 index)
+    template <typename T> static QKnxNetIpServiceFamiliesDib fromBytes(const T &bytes, quint16 index)
     {
         return QKnxNetIpStructHelper::fromBytes(bytes, index,
             QKnxNetIp::DescriptionType::SupportedServiceFamilies);
@@ -72,10 +72,10 @@ public:
     bool isValid() const override;
 
 private:
-    QKnxNetIpServiceFamiliesDIB(const QKnxNetIpDescriptionTypeStruct &other);
+    QKnxNetIpServiceFamiliesDib(const QKnxNetIpDescriptionTypeStruct &other);
 };
 
-Q_DECLARE_TYPEINFO(QKnxNetIpServiceFamiliesDIB, Q_MOVABLE_TYPE);
+Q_DECLARE_TYPEINFO(QKnxNetIpServiceFamiliesDib, Q_MOVABLE_TYPE);
 
 QT_END_NAMESPACE
 
