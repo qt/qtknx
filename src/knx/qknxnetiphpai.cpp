@@ -66,7 +66,7 @@ QHostAddress QKnxNetIpHpai::address() const
     return QKnxUtils::HostAddress::fromBytes(payloadRef());
 }
 
-void QKnxNetIpHpai::setAddress(QHostAddress hostAddress)
+void QKnxNetIpHpai::setAddress(const QHostAddress &hostAddress)
 {
     if (isValid())
         setHpai(hostProtocol(), hostAddress, port());
@@ -87,7 +87,7 @@ void QKnxNetIpHpai::setPort(quint16 port)
         setHpai(QKnxNetIp::HostProtocol::IpV4_Udp, QHostAddress(), port);
 }
 
-void QKnxNetIpHpai::setHpai(QKnxNetIp::HostProtocol code, QHostAddress address, quint16 port)
+void QKnxNetIpHpai::setHpai(QKnxNetIp::HostProtocol code, const QHostAddress &address, quint16 port)
 {
     setCode(code);
     QKnxNetIpPayload payload;
@@ -105,8 +105,7 @@ bool QKnxNetIpHpai::isValid() const
 {
     bool validHostProtocolCode = hostProtocol() == QKnxNetIp::HostProtocol::IpV4_Udp
         || hostProtocol() == QKnxNetIp::HostProtocol::IpV4_Tcp;
-    return QKnxNetIpHostProtocolStruct::isValid() && size() == 8
-        && validHostProtocolCode;
+    return QKnxNetIpHostProtocolStruct::isValid() && size() == 8 && validHostProtocolCode;
 }
 
 QT_END_NAMESPACE

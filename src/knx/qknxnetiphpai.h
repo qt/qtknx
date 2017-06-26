@@ -55,12 +55,12 @@ public:
     void setHostProtocol(QKnxNetIp::HostProtocol code);
 
     QHostAddress address() const;
-    void setAddress(QHostAddress hostAddress);
+    void setAddress(const QHostAddress &hostAddress);
 
     quint16 port() const;
     void setPort(quint16 port);
 
-    void setHpai(QKnxNetIp::HostProtocol code, QHostAddress hostAddress, quint16 port);
+    void setHpai(QKnxNetIp::HostProtocol code, const QHostAddress &hostAddress, quint16 port);
 
     bool isValid() const override;
 
