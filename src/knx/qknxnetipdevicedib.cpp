@@ -48,7 +48,7 @@ QKnxNetIpDeviceDib::QKnxNetIpDeviceDib(Medium mediumCode, DeviceStatus deviceSta
         return;
     payload.setByte(1, quint8(deviceStatus));
 
-    payload.appendBytes(individualAddress.rawData<std::vector<quint8>>());
+    payload.appendBytes(individualAddress.bytes());
     payload.appendBytes(QKnxUtils::QUint16::bytes(projectId));
 
     if (serialNumber.size() != 6)

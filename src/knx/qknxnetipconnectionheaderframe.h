@@ -69,7 +69,7 @@ protected:
     void setConnectionHeader(const QKnxNetIpConnectionHeader &connHeader)
     {
         QKnxNetIpPayload payload(connHeader.ref().bytes(), connHeader.size());
-        payload.appendBytes(payloadRef(m_connectionHeader.size()).bytes<std::vector<quint8>>());
+        payload.appendBytes(payloadRef(m_connectionHeader.size()).bytes<QByteArray>());
         Package::setPayload(payload);
 
         m_connectionHeader = connHeader;

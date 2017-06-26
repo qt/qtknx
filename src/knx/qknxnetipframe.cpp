@@ -66,7 +66,7 @@ QDebug operator<<(QDebug debug, const QKnxNetIpFrame &package)
     if (package.isValid()) {
         QDebug &dbg = debug.nospace().noquote() << "0x" << hex << qSetFieldWidth(2)
                                                 << qSetPadChar('0');
-        const auto bytes = package.bytes<QVector<quint8>>();
+        const auto bytes = package.bytes();
         for (quint8 byte : qAsConst(bytes))
             dbg << byte;
     } else {
@@ -86,7 +86,7 @@ QDataStream &operator<<(QDataStream &out, const QKnxNetIpFrame &package)
     if (!package.isValid())
         return out;
 
-    const auto bytes = package.bytes<QByteArray>();
+    const auto bytes = package.bytes();
     for (quint8 byte : qAsConst(bytes))
         out << byte;
     return out;

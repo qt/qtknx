@@ -56,13 +56,12 @@ public:
         return {};
     }
 
-    template <typename T = std::vector<quint8>> auto bytes() const -> decltype(T())
+    template <typename T = QByteArray> auto bytes() const -> decltype(T())
     {
         return bytes<T>(0, size());
     }
 
-    template <typename T = std::vector<quint8>>
-        auto bytes(quint16 start, quint16 count) const -> decltype(T())
+    template <typename T = QByteArray> auto bytes(quint16 start, quint16 count) const -> decltype(T())
     {
         static_assert(is_type<T, QByteArray, QVector<quint8>, std::deque<quint8>,
             std::vector<quint8>>::value, "Type not supported.");

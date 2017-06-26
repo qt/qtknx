@@ -54,14 +54,14 @@ private slots:
         QCOMPARE(address.notation(), QKnxAddress::Notation::ThreeLevel);
         QCOMPARE(address.isValid(), false);
         QCOMPARE(address.toString(), QStringLiteral(""));
-        QCOMPARE(address.rawData<QByteArray>(), QByteArray {});
-        QCOMPARE(address.rawData<QVector<quint8>>(), QVector<quint8> {});
+        QCOMPARE(address.bytes<QByteArray>(), QByteArray {});
+        QCOMPARE(address.bytes<QVector<quint8>>(), QVector<quint8> {});
     }
 
     void testConstructorFromQuint16_data()
     {
         QTEST_COLUMNS
-        QTest::addColumn<QVector<quint8>>("rawData");
+        QTest::addColumn<QVector<quint8>>("bytes");
 
         QByteArray raw(2, Qt::Uninitialized);
         QTest::newRow("QKnxAddress(QKnxAddress::Type::Group, 2305)")
@@ -96,13 +96,13 @@ private slots:
         QTEST(address.notation(), "notation");
         QTEST(address.isValid(), "isValid");
         QTEST(address.toString(), "toString");
-        QTEST(address.rawData<QVector<quint8>>(), "rawData");
+        QTEST(address.bytes<QVector<quint8>>(), "bytes");
     }
 
     void testConstructorFromQString_data()
     {
         QTEST_COLUMNS
-        QTest::addColumn<QVector<quint8>>("rawData");
+        QTest::addColumn<QVector<quint8>>("bytes");
 
         // invalid separators
 
@@ -372,13 +372,13 @@ private slots:
         QTEST(address.notation(), "notation");
         QTEST(address.isValid(), "isValid");
         QTEST(address.toString(), "toString");
-        QTEST(address.rawData<QVector<quint8>>(), "rawData");
+        QTEST(address.bytes<QVector<quint8>>(), "bytes");
     }
 
     void testConstructorFromQByteArray_data()
     {
         QTEST_COLUMNS
-        QTest::addColumn<QByteArray>("rawData");
+        QTest::addColumn<QByteArray>("bytes");
 
         QByteArray address(3, Qt::Uninitialized);
         QTest::newRow("QKnxAddress(QKnxAddress::Type::Group, QByteArray {})")
@@ -483,13 +483,13 @@ private slots:
         QTEST(address.notation(), "notation");
         QTEST(address.isValid(), "isValid");
         QTEST(address.toString(), "toString");
-        QTEST(address.rawData<QByteArray>(), "rawData");
+        QTEST(address.bytes<QByteArray>(), "bytes");
     }
 
     void testConstructorFromQVector_data()
     {
         QTEST_COLUMNS
-        QTest::addColumn<QVector<quint8>>("rawData");
+        QTest::addColumn<QVector<quint8>>("bytes");
 
         QTest::newRow("QKnxAddress(QKnxAddress::Type::Group, QVector<quint8> {})")
             << QKnxAddress(QKnxAddress::Type::Group, QVector<quint8> {})
@@ -586,7 +586,7 @@ private slots:
         QTEST(address.notation(), "notation");
         QTEST(address.isValid(), "isValid");
         QTEST(address.toString(), "toString");
-        QTEST(address.rawData<QVector<quint8>>(), "rawData");
+        QTEST(address.bytes<QVector<quint8>>(), "bytes");
     }
 
     void testCreateGroup()
@@ -598,7 +598,7 @@ private slots:
         QCOMPARE(address.notation(), QKnxAddress::Notation::ThreeLevel);
         QCOMPARE(address.isValid(), false);
         QCOMPARE(address.toString(), QStringLiteral(""));
-        QCOMPARE(address.rawData<QVector<quint8>>(), QVector<quint8> {});
+        QCOMPARE(address.bytes<QVector<quint8>>(), QVector<quint8> {});
 
         // valid 2-level group address
 
@@ -607,7 +607,7 @@ private slots:
         QCOMPARE(address.notation(), QKnxAddress::Notation::TwoLevel);
         QCOMPARE(address.isValid(), true);
         QCOMPARE(address.toString(), QStringLiteral("1/515"));
-        QCOMPARE(address.rawData<QVector<quint8>>(), QVector<quint8> ({ 0x0a, 0x03 }));
+        QCOMPARE(address.bytes<QVector<quint8>>(), QVector<quint8> ({ 0x0a, 0x03 }));
 
         // valid 3-level group address
 
@@ -616,7 +616,7 @@ private slots:
         QCOMPARE(address.notation(), QKnxAddress::Notation::ThreeLevel);
         QCOMPARE(address.isValid(), true);
         QCOMPARE(address.toString(), QStringLiteral("1/0/1"));
-        QCOMPARE(address.rawData<QVector<quint8>>(), QVector<quint8> ({ 0x08, 0x01 }));
+        QCOMPARE(address.bytes<QVector<quint8>>(), QVector<quint8> ({ 0x08, 0x01 }));
     }
 
     void testCreateIndividual()
@@ -626,7 +626,7 @@ private slots:
         QCOMPARE(address.notation(), QKnxAddress::Notation::ThreeLevel);
         QCOMPARE(address.isValid(), true);
         QCOMPARE(address.toString(), QStringLiteral("1.0.1"));
-        QCOMPARE(address.rawData<QVector<quint8>>(), QVector<quint8> ({ 0x10, 0x01 }));
+        QCOMPARE(address.bytes<QVector<quint8>>(), QVector<quint8> ({ 0x10, 0x01 }));
     }
 
     void testGroupBroadcast()
@@ -637,7 +637,7 @@ private slots:
         QCOMPARE(address.isValid(), true);
         QCOMPARE(address.isBroadcast(), true);
         QCOMPARE(address.toString(), QStringLiteral("0/0/0"));
-        QCOMPARE(address.rawData<QVector<quint8>>(), QVector<quint8> ({ 0x00, 0x00 }));
+        QCOMPARE(address.bytes<QVector<quint8>>(), QVector<quint8> ({ 0x00, 0x00 }));
 
         address = { QKnxAddress::Type::Group, 0x0000 };
         QCOMPARE(address.type(), QKnxAddress::Type::Group);
@@ -645,7 +645,7 @@ private slots:
         QCOMPARE(address.isValid(), true);
         QCOMPARE(address.isBroadcast(), true);
         QCOMPARE(address.toString(), QStringLiteral("0/0/0"));
-        QCOMPARE(address.rawData<QVector<quint8>>(), QVector<quint8> ({ 0x00, 0x00 }));
+        QCOMPARE(address.bytes<QVector<quint8>>(), QVector<quint8> ({ 0x00, 0x00 }));
     }
 
     void testIndividualUnregistered()
@@ -657,7 +657,7 @@ private slots:
         QCOMPARE(address.isBroadcast(), false);
         QCOMPARE(address.isUnregistered(), true);
         QCOMPARE(address.toString(), QStringLiteral("15.15.255"));
-        QCOMPARE(address.rawData<QVector<quint8>>(), QVector<quint8> ({ 0xff, 0xff }));
+        QCOMPARE(address.bytes<QVector<quint8>>(), QVector<quint8> ({ 0xff, 0xff }));
 
         address = { QKnxAddress::Type::Individual, 0x0000 };
         QCOMPARE(address.type(), QKnxAddress::Type::Individual);
@@ -666,7 +666,7 @@ private slots:
         QCOMPARE(address.isBroadcast(), false);
         QCOMPARE(address.isUnregistered(), false);
         QCOMPARE(address.toString(), QStringLiteral("0.0.0"));
-        QCOMPARE(address.rawData<QVector<quint8>>(), QVector<quint8> ({ 0x00, 0x00 }));
+        QCOMPARE(address.bytes<QVector<quint8>>(), QVector<quint8> ({ 0x00, 0x00 }));
 
         address = { QKnxAddress::Type::Individual, 0x01ff };
         QCOMPARE(address.type(), QKnxAddress::Type::Individual);
@@ -674,7 +674,7 @@ private slots:
         QCOMPARE(address.isValid(), true);
         QCOMPARE(address.isUnregistered(), true);
         QCOMPARE(address.toString(), QStringLiteral("0.1.255"));
-        QCOMPARE(address.rawData<QVector<quint8>>(), QVector<quint8> ({ 0x01, 0xff }));
+        QCOMPARE(address.bytes<QVector<quint8>>(), QVector<quint8> ({ 0x01, 0xff }));
     }
 
     void testIndividualIsCouplerOrRouter()

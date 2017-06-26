@@ -69,7 +69,7 @@ public:
     static qint32 expectedDataSize(QKnxAdditionalInfo::Type type, bool *isFixedSize = nullptr);
 
     quint8 dataSize() const;
-    template <typename T = std::vector<quint8>> auto data() const -> decltype(T())
+    template <typename T = QByteArray> auto data() const -> decltype(T())
     {
         static_assert(is_type<T, QByteArray, QVector<quint8>, std::deque<quint8>,
             std::vector<quint8>>::value, "Type not supported.");

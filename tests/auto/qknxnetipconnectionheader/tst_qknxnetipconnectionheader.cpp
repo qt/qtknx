@@ -34,12 +34,13 @@ private slots:
         QCOMPARE(header.channelId(), quint8(0));
         QCOMPARE(header.sequenceCount(), quint8(0));
         QCOMPARE(header.serviceTypeSpecificValue(), quint8(0));
-        QCOMPARE(header.connectionTypeSpecificHeaderItems(), std::vector<quint8> {});
+        QCOMPARE(header.connectionTypeSpecificHeaderItems<std::vector<quint8>>(),
+            std::vector<quint8> {});
         QCOMPARE(header.toString(), QStringLiteral("Size { 0x00 }"
             ", Communication channel ID { 0x00 }, Sequence counter { 0x00 }"
             ", Service type specific value { 0x00 }, Connection type specific header items {  }"));
         QCOMPARE(header.size(), quint16(0));
-        QCOMPARE(header.bytes(), std::vector<quint8> {});
+        QCOMPARE(header.bytes<std::vector<quint8>>(), std::vector<quint8> {});
     }
 
     void testConstructorWithArguments()
@@ -49,12 +50,13 @@ private slots:
         QCOMPARE(header.channelId(), quint8(1));
         QCOMPARE(header.sequenceCount(), quint8(2));
         QCOMPARE(header.serviceTypeSpecificValue(), quint8(3));
-        QCOMPARE(header.connectionTypeSpecificHeaderItems(), std::vector<quint8> {});
+        QCOMPARE(header.connectionTypeSpecificHeaderItems<std::vector<quint8>>(),
+            std::vector<quint8> {});
         QCOMPARE(header.toString(), QStringLiteral("Size { 0x04 }"
             ", Communication channel ID { 0x01 }, Sequence counter { 0x02 }"
             ", Service type specific value { 0x03 }, Connection type specific header items {  }"));
         QCOMPARE(header.size(), quint16(4));
-        QCOMPARE(header.bytes(), std::vector<quint8> ({ 4, 1, 2, 3}));
+        QCOMPARE(header.bytes<std::vector<quint8>>(), std::vector<quint8> ({ 4, 1, 2, 3}));
     }
 
     void testSetterGetter()
@@ -106,7 +108,7 @@ private slots:
         QCOMPARE(headerFromBytes.channelId(), quint8(1));
         QCOMPARE(headerFromBytes.sequenceCount(), quint8(2));
         QCOMPARE(headerFromBytes.serviceTypeSpecificValue(), quint8(0));
-        QCOMPARE(headerFromBytes.connectionTypeSpecificHeaderItems(),
+        QCOMPARE(headerFromBytes.connectionTypeSpecificHeaderItems<std::vector<quint8>>(),
             std::vector<quint8> ({ 1, 2, 3, 4, 5 }));
         QCOMPARE(headerFromBytes.bytes(), headerBytes);
 
@@ -118,7 +120,7 @@ private slots:
         QCOMPARE(headerFromBytes.channelId(), quint8(1));
         QCOMPARE(headerFromBytes.sequenceCount(), quint8(2));
         QCOMPARE(headerFromBytes.serviceTypeSpecificValue(), quint8(0));
-        QCOMPARE(headerFromBytes.connectionTypeSpecificHeaderItems(),
+        QCOMPARE(headerFromBytes.connectionTypeSpecificHeaderItems<std::vector<quint8>>(),
             std::vector<quint8> ({ 1, 2, 3, 4, 5 }));
         QCOMPARE(headerFromBytes.bytes(), headerBytes);
     }

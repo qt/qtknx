@@ -90,7 +90,7 @@ QDebug operator<<(QDebug debug, const QKnxNetIpHostProtocolStruct &package)
 */
 QDataStream &operator<<(QDataStream &out, const QKnxNetIpHostProtocolStruct &package)
 {
-    return package.isValid() ? stream(out, package.bytes<QByteArray>()) : out;
+    return package.isValid() ? stream(out, package.bytes()) : out;
 }
 
 /*!
@@ -113,7 +113,7 @@ QDebug operator<<(QDebug debug, const QKnxNetIpConnectionTypeStruct &package)
 */
 QDataStream &operator<<(QDataStream &out, const QKnxNetIpConnectionTypeStruct &package)
 {
-    return package.isValid() ? stream(out, package.bytes<QByteArray>()) : out;
+    return package.isValid() ? stream(out, package.bytes()) : out;
 }
 
 /*!
@@ -136,7 +136,7 @@ QDebug operator<<(QDebug debug, const QKnxNetIpDescriptionTypeStruct &package)
 */
 QDataStream &operator<<(QDataStream &out, const QKnxNetIpDescriptionTypeStruct &package)
 {
-    return package.isValid() ? stream(out, package.bytes<QByteArray>()) : out;
+    return package.isValid() ? stream(out, package.bytes()) : out;
 }
 
 QT_END_NAMESPACE

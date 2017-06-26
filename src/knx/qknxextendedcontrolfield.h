@@ -59,8 +59,8 @@ public:
     QKnxExtendedControlField::ExtendedFrameFormat format() const;
     void setFormat(QKnxExtendedControlField::ExtendedFrameFormat format);
 
-    quint8 rawSize() const { return 1; }
-    template <typename T = std::vector<quint8>> auto rawData() const -> decltype(T())
+    quint8 size() const { return 1; }
+    template <typename T = QByteArray> auto bytes() const -> decltype(T())
     {
         static_assert(is_type<T, QByteArray, QVector<quint8>, std::deque<quint8>,
             std::vector<quint8>>::value, "Type not supported.");
@@ -68,7 +68,7 @@ public:
         T t(1, 0); t[0] = quint8(m_ctrl2.to_ulong());
         return t;
     }
-    quint8 rawData() const { return quint8(m_ctrl2.to_ulong()); }
+    quint8 bytes() const { return quint8(m_ctrl2.to_ulong()); }
 
     QString toString() const;
 

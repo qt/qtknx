@@ -163,10 +163,10 @@ void tst_QKnxNetIpConnectResponse::testFromBytes()
     QCOMPARE(hpai.port(), quint16(50100));
 
     auto crd = response.responseData().bytes();
-    QCOMPARE(crd[0], quint8(0x04));
-    QCOMPARE(crd[1], quint8(0x04));
-    QCOMPARE(crd[2], quint8(0x02));
-    QCOMPARE(crd[3], quint8(0x00));
+    QCOMPARE(quint8(crd[0]), quint8(0x04));
+    QCOMPARE(quint8(crd[1]), quint8(0x04));
+    QCOMPARE(quint8(crd[2]), quint8(0x02));
+    QCOMPARE(quint8(crd[3]), quint8(0x00));
 
     response = QKnxNetIpConnectResponse::fromBytes(
         QByteArray::fromHex("061002060014010008010A094E1F0E5704041105"), 0);
@@ -186,10 +186,10 @@ void tst_QKnxNetIpConnectResponse::testFromBytes()
     QCOMPARE(hpai.port(), quint16(3671));
 
     crd = response.responseData().bytes();
-    QCOMPARE(crd[0], quint8(0x04));
-    QCOMPARE(crd[1], quint8(0x04));
-    QCOMPARE(crd[2], quint8(0x11));
-    QCOMPARE(crd[3], quint8(0x05));
+    QCOMPARE(quint8(crd[0]), quint8(0x04));
+    QCOMPARE(quint8(crd[1]), quint8(0x04));
+    QCOMPARE(quint8(crd[2]), quint8(0x11));
+    QCOMPARE(quint8(crd[3]), quint8(0x05));
 }
 
 void tst_QKnxNetIpConnectResponse::testDebugStream()

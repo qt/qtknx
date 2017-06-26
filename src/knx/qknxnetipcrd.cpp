@@ -80,9 +80,7 @@ bool QKnxNetIpCrd::setIndividualAddress(const QKnxAddress &address)
         || (!address.isValid()) || (address.type() != QKnxAddress::Type::Individual))
         return false;
 
-    QKnxNetIpPayload load;
-    load.setBytes(address.rawData());
-    setPayload(load);
+    setPayload(QKnxNetIpPayload::fromBytes(address.bytes(), 0, address.size()));
     return true;
 }
 

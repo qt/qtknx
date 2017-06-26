@@ -70,8 +70,8 @@ public:
     struct Q_KNX_EXPORT Group final { static QKnxAddress Broadcast; };
     struct Q_KNX_EXPORT Individual final { static QKnxAddress Unregistered; };
 
-    quint8 rawSize() const { return 2; }
-    template <typename T = std::vector<quint8>> auto rawData() const -> decltype(T())
+    quint8 size() const { return 2; }
+    template <typename T = QByteArray> auto bytes() const -> decltype(T())
     {
         static_assert(is_type<T, QByteArray, QVector<quint8>, std::deque<quint8>,
             std::vector<quint8>>::value, "Type not supported.");

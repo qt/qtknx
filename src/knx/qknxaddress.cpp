@@ -321,7 +321,7 @@ QString QKnxAddress::toString() const
 }
 
 /*!
-    \fn auto QKnxAddress::rawData() const
+    \fn auto QKnxAddress::bytes() const
 
     Returns a KNX address as a range of bytes if the address is valid;
     otherwise the return value is empty. Only the first two bytes of the return
@@ -339,7 +339,7 @@ QDebug operator<<(QDebug debug, const QKnxAddress &address)
 {
     QDebugStateSaver _(debug);
     if (address.isValid()) {
-        const auto rawData = address.rawData<QVector<quint8>>();
+        const auto rawData = address.bytes<QVector<quint8>>();
         debug.nospace().noquote() << "0x" << hex << qSetFieldWidth(2) << qSetPadChar('0')
             << rawData[0] << hex << rawData[1];
     } else {
@@ -358,7 +358,7 @@ QDataStream &operator<<(QDataStream &out, const QKnxAddress &address)
 {
     if (!address.isValid())
         return out;
-    const auto rawData = address.rawData<QByteArray>();
+    const auto rawData = address.bytes();
     return out << quint8(rawData[0]) << quint8(rawData[1]);
 }
 

@@ -239,7 +239,7 @@ QString QKnxAdditionalInfo::toString() const
 }
 
 /*!
-    \fn auto QKnxAdditionalInfo::rawData() const
+    \fn auto QKnxAdditionalInfo::bytes() const
 
     Returns the additional info as range of bytes if the information is valid;
     otherwise an empty vector. The vector includes the type id, the size of the
@@ -259,7 +259,7 @@ QDebug operator<<(QDebug debug, const QKnxAdditionalInfo &info)
     if (info.isValid()) {
         QDebug &dbg = debug.nospace().noquote() << "0x" << hex << qSetFieldWidth(2)
             << qSetPadChar('0');
-        const auto rawData = info.bytes<QVector<quint8>>();
+        const auto rawData = info.bytes();
         for (quint8 byte : qAsConst(rawData))
             dbg << byte;
     } else {
@@ -295,7 +295,7 @@ QDataStream &operator<<(QDataStream &stream, const QKnxAdditionalInfo &info)
 {
     if (!info.isValid())
         return stream;
-    for (quint8 byte : info.bytes<QByteArray>())
+    for (quint8 byte : info.bytes())
         stream << static_cast<quint8> (byte);
     return stream;
 }

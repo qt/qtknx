@@ -57,13 +57,13 @@ public:
     quint8 serviceTypeSpecificValue() const;
     void setServiceTypeSpecificValue(quint8 value);
 
-    template <typename T = std::vector<quint8>>
-        auto connectionTypeSpecificHeaderItems() const -> decltype(T())
+    template <typename T = QByteArray> auto connectionTypeSpecificHeaderItems() const -> decltype(T())
     {
         static_assert(is_type<T, QByteArray, QVector<quint8>, std::deque<quint8>,
             std::vector<quint8>>::value, "Type not supported.");
         return bytes<T>(4, size() - 4);
     }
+
     template <typename T, std::size_t S = 0> void setConnectionTypeSpecificHeaderItems(const T &items)
     {
         static_assert(is_type<T, QByteArray, QVector<quint8>, std::deque<quint8>,

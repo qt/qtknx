@@ -38,7 +38,7 @@ QKnxNetIpKnxAddressesDib::QKnxNetIpKnxAddressesDib(const QVector<QKnxAddress> &a
     QKnxNetIpPayload payload;
     for (auto address : qAsConst(addresses)) {
         if (address.isValid() && address.type() == QKnxAddress::Type::Individual)
-            payload.appendBytes(address.rawData<std::vector<quint8>>());
+            payload.appendBytes(address.bytes());
     }
     setPayload(payload);
 }

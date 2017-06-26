@@ -77,7 +77,7 @@ void QKnxNetIpServerDiscoveryAgentPrivate::setupSocket()
                 socket->writeDatagram(QKnxNetIpSearchRequest({
                     (nat ? QHostAddress::AnyIPv4 : address),
                     (nat ? quint16(0u) : port)
-                }).bytes<QByteArray>(), multicastAddress, multicastPort);
+                }).bytes(), multicastAddress, multicastPort);
 
                 setupAndStartReceiveTimer();
                 setupAndStartFrequencyTimer();
@@ -162,7 +162,7 @@ void QKnxNetIpServerDiscoveryAgentPrivate::setupAndStartFrequencyTimer()
                 socket->writeDatagram(QKnxNetIpSearchRequest({
                     (nat ? QHostAddress::AnyIPv4 : address),
                     (nat ? quint16(0u) : port)
-                }).bytes<QByteArray>(), multicastAddress, multicastPort);
+                }).bytes(), multicastAddress, multicastPort);
             }
         });
     }

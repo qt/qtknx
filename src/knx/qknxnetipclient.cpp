@@ -246,8 +246,8 @@ void QKnxNetIpClientPrivate::process(const QKnxNetIpTunnelingRequest &request)
                     QKnxNetIp::Error::None);
 
                 qDebug() << "Sending tunneling acknowledge:" << ack;
-                m_dataEndpoint->writeDatagram(ack.bytes<QByteArray>(), m_remoteDataEndpoint
-                    .address, m_remoteDataEndpoint.port);
+                m_dataEndpoint->writeDatagram(ack.bytes(), m_remoteDataEndpoint.address,
+                    m_remoteDataEndpoint.port);
 
                 if (!counterEquals)
                     return;
@@ -281,8 +281,7 @@ void QKnxNetIpClientPrivate::process(const QKnxNetIpTunnelingAcknowledge &acknow
 
 void QKnxNetIpClientPrivate::sendTunnelingRequest(const QKnxCemiFrame &frame)
 {
-    m_lastCemiRequest = QKnxNetIpTunnelingRequest(m_channelId, m_sendCount, frame)
-        .bytes<QByteArray>();
+    m_lastCemiRequest = QKnxNetIpTunnelingRequest(m_channelId, m_sendCount, frame).bytes();
     qDebug().noquote().nospace() << "Sending tunneling request: 0x" << m_lastCemiRequest.toHex();
 
     sendCemiRequest();
@@ -298,8 +297,8 @@ void QKnxNetIpClientPrivate::process(const QKnxNetIpDeviceConfigurationRequest &
                     QKnxNetIp::Error::None);
 
                 qDebug() << "Sending device configuration acknowledge:" << ack;
-                m_dataEndpoint->writeDatagram(ack.bytes<QByteArray>(), m_remoteDataEndpoint
-                    .address, m_remoteDataEndpoint.port);
+                m_dataEndpoint->writeDatagram(ack.bytes(), m_remoteDataEndpoint.address,
+                    m_remoteDataEndpoint.port);
 
                 m_receiveCount++;
                 process(request.cemi());
@@ -331,8 +330,7 @@ void QKnxNetIpClientPrivate::process(const QKnxNetIpDeviceConfigurationAcknowled
 
 void QKnxNetIpClientPrivate::sendDeviceConfigurationRequest(const QKnxCemiFrame &frame)
 {
-    m_lastCemiRequest = QKnxNetIpDeviceConfigurationRequest(m_channelId, m_sendCount, frame)
-        .bytes<QByteArray>();
+    m_lastCemiRequest = QKnxNetIpDeviceConfigurationRequest(m_channelId, m_sendCount, frame).bytes();
     qDebug().noquote().nospace() << "Sending device configuration request: 0x" << m_lastCemiRequest
         .toHex();
     sendCemiRequest();
@@ -367,7 +365,7 @@ void QKnxNetIpClientPrivate::process(const QKnxNetIpConnectResponse &response,
             }
 
             m_lastStateRequest = QKnxNetIpConnectionStateRequest(m_channelId,
-                m_nat ? m_natEndpoint : m_localControlEndpoint).bytes<QByteArray>();
+                m_nat ? m_natEndpoint : m_localControlEndpoint).bytes();
 
             QTimer::singleShot(0, [&]() { sendStateRequest(); });
             setAndEmitStateChanged(QKnxNetIpClient::State::Connected);
@@ -410,8 +408,8 @@ void QKnxNetIpClientPrivate::process(const QKnxNetIpDisconnectRequest &request)
     if (request.channelId() == m_channelId) {
         auto response = QKnxNetIpDisconnectResponse(m_channelId, QKnxNetIp::Error::None);
         qDebug() << "Sending disconnect response:" << response;
-        m_controlEndpoint->writeDatagram(response.bytes<QByteArray>(),
-            m_remoteControlEndpoint.address, m_remoteControlEndpoint.port);
+        m_controlEndpoint->writeDatagram(response.bytes(), m_remoteControlEndpoint.address,
+            m_remoteControlEndpoint.port);
 
         Q_Q(QKnxNetIpClient);
         q->disconnectFromHost();
@@ -644,8 +642,8 @@ void QKnxNetIpClient::connectToHost(const QHostAddress &address, quint16 port)
     d->m_controlEndpointVersion = request.header().protocolVersion();
 
     qDebug() << "Sending connect request:" << request;
-    d->m_controlEndpoint->writeDatagram(request.bytes<QByteArray>(),
-        d->m_remoteControlEndpoint.address, d->m_remoteControlEndpoint.port);
+    d->m_controlEndpoint->writeDatagram(request.bytes(), d->m_remoteControlEndpoint.address,
+        d->m_remoteControlEndpoint.port);
 
     d->m_connectRequestTimer->start(QKnxNetIp::ConnectRequestTimeout);
 }
@@ -679,8 +677,8 @@ void QKnxNetIpClient::disconnectFromHost()
             });
 
         qDebug() << "Sending disconnect request:" << request;
-        d->m_controlEndpoint->writeDatagram(request.bytes<QByteArray>(), d->m_remoteControlEndpoint
-            .address, d->m_remoteControlEndpoint.port);
+        d->m_controlEndpoint->writeDatagram(request.bytes(), d->m_remoteControlEndpoint.address,
+            d->m_remoteControlEndpoint.port);
 
         QTimer::singleShot(QKnxNetIp::DisconnectRequestTimeout, this, [&] () {
              Q_D(QKnxNetIpClient);

@@ -71,7 +71,7 @@ public:
         return QStringLiteral("Bytes { %1 }").arg(bytesString);
     }
 
-    template <typename T = std::vector<quint8>> auto bytes() const -> decltype(T())
+    template <typename T = QByteArray> auto bytes() const -> decltype(T())
     {
         static_assert(is_type<T, QByteArray, QVector<quint8>, std::deque<quint8>,
             std::vector<quint8>>::value, "Type not supported.");
@@ -81,8 +81,7 @@ public:
         return t;
     }
 
-    template <typename T = std::vector<quint8>>
-        auto bytes(quint16 start, quint16 count) const -> decltype(T())
+    template <typename T = QByteArray> auto bytes(quint16 start, quint16 count) const -> decltype(T())
     {
         static_assert(is_type<T, QByteArray, QVector<quint8>, std::deque<quint8>,
             std::vector<quint8>>::value, "Type not supported.");

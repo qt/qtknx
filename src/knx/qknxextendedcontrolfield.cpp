@@ -118,19 +118,19 @@ QString QKnxExtendedControlField::toString() const
 }
 
 /*!
-    \fn auto QKnxExtendedControlField::rawData() const
+    \fn auto QKnxExtendedControlField::bytes() const
 
     Returns the extended control field as byte or range of bytes.
 
-    \note Only \c quint8, \c QByteArray and \c QVector<quint8> are supported as
-    return type.
+    \note \c quint8, \c QByteArray and \c QVector<quint8> as well as
+    std::vector<quint8> and std::deque<quint8> are supported as return type.
 
     \code
         QKnxExtendedControlField ectrl;
 
-        quint8 byte = ectrl.rawData();
-        auto byteArray = ectrl.rawData<QByteArray>();
-        auto vector = ectrl.rawData<QVector<quint8>>();
+        quint8 byte = ectrl.bytes();
+        auto byteArray = ectrl.bytes<QByteArray>();
+        auto vector = ectrl.bytes<QVector<quint8>>();
     \endcode
 */
 
@@ -143,7 +143,7 @@ QDebug operator<<(QDebug debug, const QKnxExtendedControlField &field)
 {
     QDebugStateSaver _(debug);
     debug.nospace().noquote() << "0x" << hex << qSetFieldWidth(2) << qSetPadChar('0')
-        << field.rawData();
+        << field.bytes();
     return debug;
 }
 
@@ -170,7 +170,7 @@ QDataStream &operator>>(QDataStream &stream, QKnxExtendedControlField &field)
 */
 QDataStream &operator<<(QDataStream &stream, const QKnxExtendedControlField &field)
 {
-    return stream << field.rawData();
+    return stream << field.bytes();
 }
 
 QT_END_NAMESPACE

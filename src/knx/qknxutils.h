@@ -59,8 +59,7 @@ struct QKnxUtils final
 
     struct QUint16 final
     {
-        template <typename T = std::vector<quint8>>
-            static auto bytes(quint16 integer) -> decltype(T())
+        template <typename T = QByteArray> static auto bytes(quint16 integer) -> decltype(T())
         {
             static_assert(is_type<T, QByteArray, QVector<quint8>, std::deque<quint8>,
                 std::vector<quint8>>::value, "Type not supported.");
@@ -92,8 +91,7 @@ struct QKnxUtils final
 
     struct HostAddress final
     {
-        template <typename T = std::vector<quint8>>
-            static auto bytes(const QHostAddress &address) -> decltype(T())
+        template <typename T = QByteArray> static auto bytes(const QHostAddress &address) -> decltype(T())
         {
             static_assert(is_type<T, QByteArray, QVector<quint8>, std::deque<quint8>,
                 std::vector<quint8>>::value, "Type not supported.");

@@ -49,7 +49,7 @@ quint8 QKnxNetIpDeviceConfigurationRequest::sequenceCount() const
 QKnxCemiFrame QKnxNetIpDeviceConfigurationRequest::cemi() const
 {
     auto ref = payloadRef(connectionHeaderSize());
-    return QKnxCemiFrame::fromBytes(ref.bytes<std::vector<quint8>>(), 0, ref.size());
+    return QKnxCemiFrame::fromBytes(ref.bytes<QByteArray>(), 0, ref.size());
 }
 
 bool QKnxNetIpDeviceConfigurationRequest::isValid() const
