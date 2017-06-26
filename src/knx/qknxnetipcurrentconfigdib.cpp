@@ -54,7 +54,7 @@ QKnxNetIpCurrentConfigDib::QKnxNetIpCurrentConfigDib(const QHostAddress &ip,
 
 QKnxNetIp::DescriptionType QKnxNetIpCurrentConfigDib::descriptionType() const
 {
-    return QKnxNetIp::DescriptionType(code());
+    return code();
 }
 
 QHostAddress QKnxNetIpCurrentConfigDib::ipAddress() const

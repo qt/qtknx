@@ -53,7 +53,7 @@ QKnxNetIpManufacturerDib::QKnxNetIpManufacturerDib(quint16 manufacturerId, const
 
 QKnxNetIp::DescriptionType QKnxNetIpManufacturerDib::descriptionType() const
 {
-    return QKnxNetIp::DescriptionType(code());
+    return code();
 }
 
 quint16 QKnxNetIpManufacturerDib::manufacturerId() const

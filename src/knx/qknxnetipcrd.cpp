@@ -39,7 +39,7 @@ QKnxNetIpCrd::QKnxNetIpCrd(const QKnxAddress &individualAddress)
 
 QKnxNetIp::ConnectionType QKnxNetIpCrd::connectionType() const
 {
-    return QKnxNetIp::ConnectionType(code());
+    return code();
 }
 
 void QKnxNetIpCrd::setConnectionType(QKnxNetIp::ConnectionType connectionType)

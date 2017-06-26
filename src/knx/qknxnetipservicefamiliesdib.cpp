@@ -50,7 +50,7 @@ QKnxNetIpServiceFamiliesDib::QKnxNetIpServiceFamiliesDib(const ServiceFamilyIdVe
 
 QKnxNetIp::DescriptionType QKnxNetIpServiceFamiliesDib::descriptionType() const
 {
-    return QKnxNetIp::DescriptionType(code());
+    return code();
 }
 
 void QKnxNetIpServiceFamiliesDib::add(ServiceFamilieId id, quint8 version)

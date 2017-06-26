@@ -69,7 +69,7 @@ QKnxNetIpDeviceDib::QKnxNetIpDeviceDib(Medium mediumCode, DeviceStatus deviceSta
 
 QKnxNetIp::DescriptionType QKnxNetIpDeviceDib::descriptionType() const
 {
-    return QKnxNetIp::DescriptionType(code());
+    return code();
 }
 
 QKnxNetIpDeviceDib::Medium QKnxNetIpDeviceDib::medium() const

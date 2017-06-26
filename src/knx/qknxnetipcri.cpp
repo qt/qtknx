@@ -43,7 +43,7 @@ QKnxNetIpCri::QKnxNetIpCri(const QKnxNetIpConnectionTypeStruct &other)
 
 QKnxNetIp::ConnectionType QKnxNetIpCri::connectionType() const
 {
-    return QKnxNetIp::ConnectionType(code());
+    return code();
 }
 
 void QKnxNetIpCri::setConnectionType(QKnxNetIp::ConnectionType connectionType)

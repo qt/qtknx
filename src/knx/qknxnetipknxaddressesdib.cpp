@@ -45,7 +45,7 @@ QKnxNetIpKnxAddressesDib::QKnxNetIpKnxAddressesDib(const QVector<QKnxAddress> &a
 
 QKnxNetIp::DescriptionType QKnxNetIpKnxAddressesDib::descriptionType() const
 {
-    return QKnxNetIp::DescriptionType(code());
+    return code();
 }
 
 bool QKnxNetIpKnxAddressesDib::isValid() const

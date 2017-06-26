@@ -52,7 +52,7 @@ QKnxNetIpConfigDib::QKnxNetIpConfigDib(const QHostAddress &ip, const QHostAddres
 
 QKnxNetIp::DescriptionType QKnxNetIpConfigDib::descriptionType() const
 {
-    return QKnxNetIp::DescriptionType(code());
+    return code();
 }
 
 QHostAddress QKnxNetIpConfigDib::ipAddress() const

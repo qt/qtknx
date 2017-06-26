@@ -50,7 +50,7 @@ QKnxNetIpHpai::QKnxNetIpHpai(QKnxNetIp::HostProtocol hpc, const QHostAddress &ad
 
 QKnxNetIp::HostProtocol QKnxNetIpHpai::hostProtocol() const
 {
-    return QKnxNetIp::HostProtocol(code());
+    return code();
 }
 
 void QKnxNetIpHpai::setHostProtocol(QKnxNetIp::HostProtocol code)
