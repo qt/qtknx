@@ -63,6 +63,7 @@ void QKnxNetIpEndpointConnectionPrivate::setupTimer()
     QKnxPrivate::clearTimer(&m_heartbeatTimer);
     QKnxPrivate::clearTimer(&m_connectRequestTimer);
     QKnxPrivate::clearTimer(&m_connectionStateTimer);
+    QKnxPrivate::clearTimer(&m_disconnectRequestTimer);
     QKnxPrivate::clearTimer(&m_acknowledgeTimer);
 
     Q_Q(QKnxNetIpEndpointConnection);
@@ -99,6 +100,14 @@ void QKnxNetIpEndpointConnectionPrivate::setupTimer()
         }
     });
 
+    m_disconnectRequestTimer = new QTimer(q);
+    m_disconnectRequestTimer->setSingleShot(true);
+    QObject::connect(m_disconnectRequestTimer, &QTimer::timeout, [&] () {
+        setAndEmitErrorOccurred(QKnxNetIpEndpointConnection::Error::Acknowledge,
+            QKnxNetIpEndpointConnection::tr("Disconnect request timeout."));
+        process(QKnxNetIpDisconnectResponse(m_channelId, QKnxNetIp::Error::None));
+    });
+
     m_acknowledgeTimer = new QTimer(q);
     m_acknowledgeTimer->setSingleShot(true);
     QObject::connect(m_acknowledgeTimer, &QTimer::timeout, [&]() {
@@ -114,8 +123,10 @@ void QKnxNetIpEndpointConnectionPrivate::setupTimer()
     });
 }
 
-void QKnxNetIpEndpointConnectionPrivate::setupSockets()
+void QKnxNetIpEndpointConnectionPrivate::setup()
 {
+    setupTimer();
+
     QObject::connect(m_dataEndpoint, &QUdpSocket::readyRead, [&]() {
         while (m_dataEndpoint && m_dataEndpoint->state() == QUdpSocket::BoundState
             && m_dataEndpoint->hasPendingDatagrams()) {
@@ -210,6 +221,23 @@ void QKnxNetIpEndpointConnectionPrivate::setupSockets()
             Q_Q(QKnxNetIpEndpointConnection);
             q->disconnectFromHost();
     });
+}
+
+void QKnxNetIpEndpointConnectionPrivate::cleanup()
+{
+    QKnxPrivate::clearTimer(&m_heartbeatTimer);
+    QKnxPrivate::clearTimer(&m_connectRequestTimer);
+    QKnxPrivate::clearTimer(&m_connectionStateTimer);
+    QKnxPrivate::clearTimer(&m_disconnectRequestTimer);
+    QKnxPrivate::clearTimer(&m_acknowledgeTimer);
+
+    if (m_dataEndpoint) m_dataEndpoint->close();
+    if (m_controlEndpoint) m_controlEndpoint->close();
+
+    QKnxPrivate::clearSocket(&m_dataEndpoint);
+    QKnxPrivate::clearSocket(&m_controlEndpoint);
+
+    setAndEmitStateChanged(QKnxNetIpEndpointConnection::State::Disconnected);
 }
 
 void QKnxNetIpEndpointConnectionPrivate::sendCemiRequest()
@@ -354,7 +382,6 @@ void QKnxNetIpEndpointConnectionPrivate::process(const QKnxNetIpConnectResponse 
 
     if (m_state == QKnxNetIpEndpointConnection::State::Connecting) {
         if (response.status() == QKnxNetIp::Error::None) {
-            m_connectRequestTimer->stop();
             QKnxPrivate::clearTimer(&m_connectRequestTimer);
 
             m_channelId = response.channelId();
@@ -427,17 +454,7 @@ void QKnxNetIpEndpointConnectionPrivate::process(const QKnxNetIpDisconnectRespon
     qDebug() << "Received disconnect response:" << response;
 
     if (response.channelId() == m_channelId) {
-        m_dataEndpoint->close();
-        m_controlEndpoint->close();
-
-        QKnxPrivate::clearSocket(&m_dataEndpoint);
-        QKnxPrivate::clearSocket(&m_controlEndpoint);
-        QKnxPrivate::clearTimer(&m_heartbeatTimer);
-        QKnxPrivate::clearTimer(&m_connectRequestTimer);
-        QKnxPrivate::clearTimer(&m_connectionStateTimer);
-        QKnxPrivate::clearTimer(&m_acknowledgeTimer);
-
-        setAndEmitStateChanged(QKnxNetIpEndpointConnection::State::Disconnected);
+        cleanup();
     } else {
         qDebug() << "Response was ignored due to wrong channel ID. Expected:" << m_channelId
             << "Current:" << response.channelId();
@@ -639,8 +656,7 @@ void QKnxNetIpEndpointConnection::connectToHost(const QHostAddress &address, qui
 
     d->setAndEmitStateChanged(QKnxNetIpEndpointConnection::State::Bound);
 
-    d->setupTimer();
-    d->setupSockets();
+    d->setup();
 
     d->setAndEmitStateChanged(QKnxNetIpEndpointConnection::State::Connecting);
 
@@ -666,18 +682,7 @@ void QKnxNetIpEndpointConnection::disconnectFromHost()
     d->setAndEmitStateChanged(QKnxNetIpEndpointConnection::State::Disconnecting);
 
     if (oldState != State::Connected) {
-        d->m_dataEndpoint->close();
-        d->m_controlEndpoint->close();
-
-        QKnxPrivate::clearSocket(&(d->m_dataEndpoint));
-        QKnxPrivate::clearSocket(&(d->m_controlEndpoint));
-
-        QKnxPrivate::clearTimer(&(d->m_heartbeatTimer));
-        QKnxPrivate::clearTimer(&(d->m_connectRequestTimer));
-        QKnxPrivate::clearTimer(&(d->m_connectionStateTimer));
-        QKnxPrivate::clearTimer(&(d->m_acknowledgeTimer));
-
-        d->setAndEmitStateChanged(QKnxNetIpEndpointConnection::State::Disconnected);
+        d->cleanup();
     } else {
         auto request = QKnxNetIpDisconnectRequest(d->m_channelId, {
                 (d->m_nat ? d->m_natEndpoint : d->m_localControlEndpoint)
@@ -687,11 +692,8 @@ void QKnxNetIpEndpointConnection::disconnectFromHost()
         d->m_controlEndpoint->writeDatagram(request.bytes(), d->m_remoteControlEndpoint.address,
             d->m_remoteControlEndpoint.port);
 
-        QTimer::singleShot(QKnxNetIp::DisconnectRequestTimeout, this, [&] () {
-             Q_D(QKnxNetIpEndpointConnection);
-             d->process(QKnxNetIpDisconnectResponse(d->m_channelId, QKnxNetIp::Error::None));
-        });
-        // Fully disconnected will be handled inside the process disconnect response function.
+        d->m_disconnectRequestTimer->start(QKnxNetIp::DisconnectRequestTimeout);
+        // Fully disconnected will be handled inside the private cleanup function.
     }
 }
 

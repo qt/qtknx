@@ -92,8 +92,9 @@ public:
     {}
     ~QKnxNetIpEndpointConnectionPrivate() override = default;
 
-    void setupSockets();
+    void setup();
     void setupTimer();
+    void cleanup();
 
     void sendCemiRequest();
     void sendStateRequest();
@@ -157,6 +158,7 @@ private:
     QTimer *m_heartbeatTimer { nullptr };
     QTimer *m_connectRequestTimer { nullptr };
     QTimer *m_connectionStateTimer { nullptr };
+    QTimer *m_disconnectRequestTimer { nullptr };
     QTimer *m_acknowledgeTimer { nullptr };
 
     QUdpSocket *m_dataEndpoint { nullptr };
