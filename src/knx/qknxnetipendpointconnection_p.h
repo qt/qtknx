@@ -35,7 +35,7 @@
 
 #include <QtKnx/qknxaddress.h>
 #include <QtKnx/qknxglobal.h>
-#include <QtKnx/qknxnetipclient.h>
+#include <QtKnx/qknxnetipendpointconnection.h>
 #include <QtNetwork/qhostaddress.h>
 
 #include <private/qobject_p.h>

@@ -19,9 +19,9 @@
 **
 ******************************************************************************/
 
-#include "qknxnetipclient_p.h"
+#include "qknxnetipendpointconnection_p.h"
 #include "qknxnetipdeviceconfigurationrequest.h"
-#include "qknxnetipmanagementclient.h"
+#include "qknxnetipdevicemanagementconnection.h"
 
 QT_BEGIN_NAMESPACE
 

@@ -24,7 +24,7 @@
 
 #include <QtKnx/qknxcemiframe.h>
 #include <QtKnx/qknxglobal.h>
-#include <QtKnx/qknxnetipclient.h>
+#include <QtKnx/qknxnetipendpointconnection.h>
 
 QT_BEGIN_NAMESPACE
 

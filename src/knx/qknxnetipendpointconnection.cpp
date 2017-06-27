@@ -19,8 +19,6 @@
 **
 ******************************************************************************/
 
-#include "qknxnetipclient.h"
-#include "qknxnetipclient_p.h"
 #include "qknxnetipconnectrequest.h"
 #include "qknxnetipconnectresponse.h"
 #include "qknxnetipconnectionstaterequest.h"
@@ -29,6 +27,8 @@
 #include "qknxnetipdeviceconfigurationrequest.h"
 #include "qknxnetipdisconnectrequest.h"
 #include "qknxnetipdisconnectresponse.h"
+#include "qknxnetipendpointconnection.h"
+#include "qknxnetipendpointconnection_p.h"
 #include "qknxnetiptunnelingacknowledge.h"
 #include "qknxnetiptunnelingrequest.h"
 #include "qnetworkdatagram.h"

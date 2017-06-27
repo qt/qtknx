@@ -55,14 +55,14 @@ PUBLIC_HEADERS += \
     qknxnetipconnectionheaderframe.h \
     qknxnetipserverdiscoveryagent.h \
     qknxnetipserverdiscoveryinfo.h \
-    qknxnetipclient.h \
-    qknxnetiptunnelclient.h \
-    qknxnetipmanagementclient.h
+    qknxnetipendpointconnection.h \
+    qknxnetiptunnelconnection.h \
+    qknxnetipdevicemanagementconnection.h
 
 PRIVATE_HEADERS += \
     qknxnetipserverdiscoveryagent_p.h \
     qknxnetipserverdiscoveryinfo_p.h \
-    qknxnetipclient_p.h
+    qknxnetipendpointconnection_p.h
 
 SOURCES += \
     qknxaddress.cpp \
@@ -105,9 +105,9 @@ SOURCES += \
     qknxnetippayload.cpp \
     qknxnetipserverdiscoveryagent.cpp \
     qknxnetipserverdiscoveryinfo.cpp \
-    qknxnetipclient.cpp \
-    qknxnetiptunnelclient.cpp \
-    qknxnetipmanagementclient.cpp
+    qknxnetipendpointconnection.cpp \
+    qknxnetiptunnelconnection.cpp \
+    qknxnetipdevicemanagementconnection.cpp
 
 HEADERS += $$PUBLIC_HEADERS $$PRIVATE_HEADERS
 
