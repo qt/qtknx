@@ -51,7 +51,7 @@
 #include <QtCore/QDebug>
 #include <QtCore/QCommandLineParser>
 #include <QtCore/QCoreApplication>
-#include <QtKnx/QKnxNetIpTunnelClient>
+#include <QtKnx/QKnxNetIpTunnelConnection>
 #include <QtNetwork/QNetworkInterface>
 
 #ifdef Q_OS_WIN
@@ -83,15 +83,15 @@ int main(int argc, char *argv[])
     });
     parser.process(app);
 
-    QKnxNetIpTunnelClient client;
-    client.setNatAware(parser.isSet("nat"));
-    client.setLocalPort(parser.value("localPort").toUInt());
-    client.setHeartbeatTimeout(parser.value("timeout").toInt() * 1000);
-    client.setLocalAddress(QHostAddress(parser.value("localAddress")));
+    QKnxNetIpTunnelConnection tunnel;
+    tunnel.setNatAware(parser.isSet("nat"));
+    tunnel.setLocalPort(parser.value("localPort").toUInt());
+    tunnel.setHeartbeatTimeout(parser.value("timeout").toInt() * 1000);
+    tunnel.setLocalAddress(QHostAddress(parser.value("localAddress")));
 
-    QObject::connect(&client, &QKnxNetIpClient::disconnected, &app, &QCoreApplication::quit);
+    QObject::connect(&tunnel, &QKnxNetIpTunnelConnection::disconnected, &app, &QCoreApplication::quit);
 
-    client.connectToHost(QHostAddress(parser.value("remoteAddress")),
+    tunnel.connectToHost(QHostAddress(parser.value("remoteAddress")),
         parser.value("remotePort").toUInt());
 
     QTextStream input(stdin, QIODevice::ReadOnly);
@@ -105,13 +105,13 @@ int main(int argc, char *argv[])
         auto bytes = input.readLine().toLatin1();
         if (bytes != "quit") {
             bytes = QByteArray::fromHex(bytes);
-            client.sendTunnelingFrame(QKnxCemiFrame::fromBytes(bytes, 0, bytes.size()));
+            tunnel.sendTunnelingFrame(QKnxCemiFrame::fromBytes(bytes, 0, bytes.size()));
         } else {
-            client.disconnectFromHost();
+            tunnel.disconnectFromHost();
         }
     });
 
-    if (client.error() == QKnxNetIpTunnelClient::Error::None) {
+    if (tunnel.error() == QKnxNetIpTunnelConnection::Error::None) {
         qInfo().noquote() << "Type 'quit' to stop the application.";
         app.exec();
     }

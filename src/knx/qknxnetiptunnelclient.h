@@ -19,8 +19,8 @@
 **
 ******************************************************************************/
 
-#ifndef QKNXNETIPTUNNELCLIENT_H
-#define QKNXNETIPTUNNELCLIENT_H
+#ifndef QKNXNETIPTUNNELCONNECTION_H
+#define QKNXNETIPTUNNELCONNECTION_H
 
 #include <QtKnx/qknxaddress.h>
 #include <QtKnx/qknxglobal.h>
@@ -28,23 +28,23 @@
 
 QT_BEGIN_NAMESPACE
 
-class QKnxNetIpTunnelClientPrivate;
+class QKnxNetIpTunnelConnectionPrivate;
 using QKnxTunnelingFrame = QKnxCemiFrame;
 
-class Q_KNX_EXPORT QKnxNetIpTunnelClient final : public QKnxNetIpClient
+class Q_KNX_EXPORT QKnxNetIpTunnelConnection final : public QKnxNetIpEndpointConnection
 {
     Q_OBJECT
-    Q_DISABLE_COPY(QKnxNetIpTunnelClient)
-    Q_DECLARE_PRIVATE(QKnxNetIpTunnelClient)
+    Q_DISABLE_COPY(QKnxNetIpTunnelConnection)
+    Q_DECLARE_PRIVATE(QKnxNetIpTunnelConnection)
 
 public:
-    QKnxNetIpTunnelClient(QObject *parent = nullptr);
-    ~QKnxNetIpTunnelClient() override = default;
+    QKnxNetIpTunnelConnection(QObject *parent = nullptr);
+    ~QKnxNetIpTunnelConnection() override = default;
 
-    QKnxNetIpTunnelClient(const QHostAddress &localAddress, QObject *parent = nullptr);
-    QKnxNetIpTunnelClient(const QHostAddress &localAddress, quint16 localPort,
+    QKnxNetIpTunnelConnection(const QHostAddress &localAddress, QObject *parent = nullptr);
+    QKnxNetIpTunnelConnection(const QHostAddress &localAddress, quint16 localPort,
         QObject *parent = nullptr);
-    QKnxNetIpTunnelClient(const QHostAddress &localAddress, quint16 localPort,
+    QKnxNetIpTunnelConnection(const QHostAddress &localAddress, quint16 localPort,
         QKnxNetIp::TunnelingLayer layer, QObject *parent = nullptr);
 
     QKnxAddress individualAddress() const;

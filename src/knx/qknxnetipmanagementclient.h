@@ -19,8 +19,8 @@
 **
 ******************************************************************************/
 
-#ifndef QKNXNETIPMANAGEMENTCLIENT_H
-#define QKNXNETIPMANAGEMENTCLIENT_H
+#ifndef QKNXNETIPDEVICEMANAGEMENTCONNECTION_H
+#define QKNXNETIPDEVICEMANAGEMENTCONNECTION_H
 
 #include <QtKnx/qknxcemiframe.h>
 #include <QtKnx/qknxglobal.h>
@@ -28,21 +28,21 @@
 
 QT_BEGIN_NAMESPACE
 
-class QKnxNetIpManagementClientPrivate;
+class QKnxNetIpDeviceManagementConnectionPrivate;
 using QKnxDeviceManagementFrame = QKnxCemiFrame;
 
-class Q_KNX_EXPORT QKnxNetIpManagementClient final : public QKnxNetIpClient
+class Q_KNX_EXPORT QKnxNetIpDeviceManagementConnection final : public QKnxNetIpEndpointConnection
 {
     Q_OBJECT
-    Q_DISABLE_COPY(QKnxNetIpManagementClient)
-    Q_DECLARE_PRIVATE(QKnxNetIpManagementClient)
+    Q_DISABLE_COPY(QKnxNetIpDeviceManagementConnection)
+    Q_DECLARE_PRIVATE(QKnxNetIpDeviceManagementConnection)
 
 public:
-    QKnxNetIpManagementClient(QObject *parent = nullptr);
-    ~QKnxNetIpManagementClient() override = default;
+    QKnxNetIpDeviceManagementConnection(QObject *parent = nullptr);
+    ~QKnxNetIpDeviceManagementConnection() override = default;
 
-    QKnxNetIpManagementClient(const QHostAddress &localAddress, QObject *parent = nullptr);
-    QKnxNetIpManagementClient(const QHostAddress &localAddress, quint16 localPort,
+    QKnxNetIpDeviceManagementConnection(const QHostAddress &localAddress, QObject *parent = nullptr);
+    QKnxNetIpDeviceManagementConnection(const QHostAddress &localAddress, quint16 localPort,
         QObject *parent = nullptr);
 
     void sendDeviceManagementFrame(const QKnxDeviceManagementFrame &frame);

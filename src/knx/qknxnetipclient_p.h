@@ -19,8 +19,8 @@
 **
 ******************************************************************************/
 
-#ifndef QKNXNETIPCLIENT_P_H
-#define QKNXNETIPCLIENT_P_H
+#ifndef QKNXNETIPENDPOINTCONNECTION_P_H
+#define QKNXNETIPENDPOINTCONNECTION_P_H
 
 //
 //  W A R N I N G
@@ -78,19 +78,19 @@ struct Endpoint final
     quint16 port { 0 };
 };
 
-class Q_KNX_EXPORT QKnxNetIpClientPrivate : public QObjectPrivate
+class Q_KNX_EXPORT QKnxNetIpEndpointConnectionPrivate : public QObjectPrivate
 {
-    Q_DECLARE_PUBLIC(QKnxNetIpClient)
+    Q_DECLARE_PUBLIC(QKnxNetIpEndpointConnection)
 
 public:
-    QKnxNetIpClientPrivate(const QHostAddress &address, quint16 port, const QKnxNetIpCri &cri, int
-            sendAttempts, QKnxNetIp::Timeout ackTimeout)
+    QKnxNetIpEndpointConnectionPrivate(const QHostAddress &address, quint16 port,
+            const QKnxNetIpCri &cri, int sendAttempts, QKnxNetIp::Timeout ackTimeout)
         : m_cri(cri)
         , m_localControlEndpoint { address, port }
         , m_maxCemiRequest(sendAttempts)
         , m_acknowledgeTimeout(ackTimeout)
     {}
-    ~QKnxNetIpClientPrivate() override = default;
+    ~QKnxNetIpEndpointConnectionPrivate() override = default;
 
     void setupSockets();
     void setupTimer();
@@ -115,10 +115,10 @@ public:
     virtual void process(const QKnxNetIpDisconnectRequest &request);
     virtual void process(const QKnxNetIpDisconnectResponse &response);
 
-    virtual void processDatagram(QKnxNetIpClient::EndpointType, const QNetworkDatagram &);
+    virtual void processDatagram(QKnxNetIpEndpointConnection::EndpointType, const QNetworkDatagram &);
 
-    void setAndEmitStateChanged(QKnxNetIpClient::State newState);
-    void setAndEmitErrorOccurred(QKnxNetIpClient::Error newError, const QString &message);
+    void setAndEmitStateChanged(QKnxNetIpEndpointConnection::State newState);
+    void setAndEmitErrorOccurred(QKnxNetIpEndpointConnection::Error newError, const QString &message);
 
 private:
     QKnxNetIpCri m_cri;
@@ -151,8 +151,8 @@ private:
     quint8 m_dataEndpointVersion = QKnxNetIpFrameHeader::KnxNetIpVersion10;
     quint8 m_controlEndpointVersion = QKnxNetIpFrameHeader::KnxNetIpVersion10;
 
-    QKnxNetIpClient::Error m_error = QKnxNetIpClient::Error::None;
-    QKnxNetIpClient::State m_state = QKnxNetIpClient::State::Disconnected;
+    QKnxNetIpEndpointConnection::Error m_error = QKnxNetIpEndpointConnection::Error::None;
+    QKnxNetIpEndpointConnection::State m_state = QKnxNetIpEndpointConnection::State::Disconnected;
 
     QTimer *m_heartbeatTimer { nullptr };
     QTimer *m_connectRequestTimer { nullptr };

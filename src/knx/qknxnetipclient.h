@@ -19,8 +19,8 @@
 **
 ******************************************************************************/
 
-#ifndef QKNXNETIPCLIENT_H
-#define QKNXNETIPCLIENT_H
+#ifndef QKNXNETIPENDPOINTCONNECTION_H
+#define QKNXNETIPENDPOINTCONNECTION_H
 
 #include <QtKnx/qknxcemiframe.h>
 #include <QtKnx/qknxglobal.h>
@@ -32,13 +32,13 @@
 
 QT_BEGIN_NAMESPACE
 
-class QKnxNetIpClientPrivate;
+class QKnxNetIpEndpointConnectionPrivate;
 
-class Q_KNX_EXPORT QKnxNetIpClient : public QObject
+class Q_KNX_EXPORT QKnxNetIpEndpointConnection : public QObject
 {
     Q_OBJECT
-    Q_DISABLE_COPY(QKnxNetIpClient)
-    Q_DECLARE_PRIVATE(QKnxNetIpClient)
+    Q_DISABLE_COPY(QKnxNetIpEndpointConnection)
+    Q_DECLARE_PRIVATE(QKnxNetIpEndpointConnection)
 
 public:
     enum State : quint8
@@ -51,7 +51,7 @@ public:
         Disconnecting
     };
     Q_ENUM(State)
-    QKnxNetIpClient::State state() const;
+    QKnxNetIpEndpointConnection::State state() const;
 
     enum class Error : quint8
     {
@@ -67,7 +67,7 @@ public:
     Q_ENUM(Error)
 
     QString errorString() const;
-    QKnxNetIpClient::Error error() const;
+    QKnxNetIpEndpointConnection::Error error() const;
 
     enum SequenceType : quint8
     {
@@ -84,8 +84,8 @@ public:
     };
     quint8 netIpHeaderVersion(EndpointType endpoint) const;
 
-    QKnxNetIpClient() = delete;
-    virtual ~QKnxNetIpClient() = 0;
+    QKnxNetIpEndpointConnection() = delete;
+    virtual ~QKnxNetIpEndpointConnection() = 0;
 
     quint16 localPort() const;
     void setLocalPort(quint16 port);
@@ -108,14 +108,14 @@ public:
     void disconnectFromHost();
 
 protected:
-    QKnxNetIpClient(QKnxNetIpClientPrivate &dd, QObject *parent);
+    QKnxNetIpEndpointConnection(QKnxNetIpEndpointConnectionPrivate &dd, QObject *parent);
 
 Q_SIGNALS:
     void connected();
     void disconnected();
 
-    void stateChanged(QKnxNetIpClient::State state);
-    void errorOccurred(QKnxNetIpClient::Error error, QString errorString);
+    void stateChanged(QKnxNetIpEndpointConnection::State state);
+    void errorOccurred(QKnxNetIpEndpointConnection::Error error, QString errorString);
 };
 
 QT_END_NAMESPACE

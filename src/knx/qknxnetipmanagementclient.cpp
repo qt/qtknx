@@ -25,41 +25,44 @@
 
 QT_BEGIN_NAMESPACE
 
-class QKnxNetIpManagementClientPrivate : public QKnxNetIpClientPrivate
+class QKnxNetIpDeviceManagementConnectionPrivate : public QKnxNetIpEndpointConnectionPrivate
 {
-    Q_DECLARE_PUBLIC(QKnxNetIpManagementClient)
+    Q_DECLARE_PUBLIC(QKnxNetIpDeviceManagementConnection)
 
 public:
-    QKnxNetIpManagementClientPrivate(const QHostAddress &a, quint16 p)
-        : QKnxNetIpClientPrivate(a, p, QKnxNetIpCri(QKnxNetIp::ConnectionType::DeviceManagement),
-            3, QKnxNetIp::DeviceConfigurationRequestTimeout)
+    QKnxNetIpDeviceManagementConnectionPrivate(const QHostAddress &address, quint16 port)
+        : QKnxNetIpEndpointConnectionPrivate(address, port,
+            QKnxNetIpCri(QKnxNetIp::ConnectionType::DeviceManagement), 3,
+            QKnxNetIp::DeviceConfigurationRequestTimeout)
     {}
 
     void process(const QKnxDeviceManagementFrame &frame) override
     {
-        Q_Q(QKnxNetIpManagementClient);
+        Q_Q(QKnxNetIpDeviceManagementConnection);
         emit q->receivedDeviceManagementFrame(frame);
     }
 };
 
-QKnxNetIpManagementClient::QKnxNetIpManagementClient(QObject *parent)
-    : QKnxNetIpManagementClient({ QHostAddress::LocalHost }, 0, parent)
+QKnxNetIpDeviceManagementConnection::QKnxNetIpDeviceManagementConnection(QObject *parent)
+    : QKnxNetIpDeviceManagementConnection({ QHostAddress::LocalHost }, 0, parent)
 {}
 
-QKnxNetIpManagementClient::QKnxNetIpManagementClient(const QHostAddress &localAddress, QObject *o)
-    : QKnxNetIpManagementClient(localAddress, 0, o)
+QKnxNetIpDeviceManagementConnection::QKnxNetIpDeviceManagementConnection(const QHostAddress &addr,
+        QObject *o)
+    : QKnxNetIpDeviceManagementConnection(addr, 0, o)
 {}
 
-QKnxNetIpManagementClient::QKnxNetIpManagementClient(const QHostAddress &a, quint16 p, QObject *o)
-    : QKnxNetIpClient(*new QKnxNetIpManagementClientPrivate(a, p), o)
+QKnxNetIpDeviceManagementConnection::QKnxNetIpDeviceManagementConnection(const QHostAddress &addr,
+        quint16 port, QObject *obj)
+    : QKnxNetIpEndpointConnection(*new QKnxNetIpDeviceManagementConnectionPrivate(addr, port), obj)
 {}
 
-void QKnxNetIpManagementClient::sendDeviceManagementFrame(const QKnxDeviceManagementFrame &frame)
+void QKnxNetIpDeviceManagementConnection::sendDeviceManagementFrame(const QKnxDeviceManagementFrame &frame)
 {
     if (state() != State::Connected)
         return;
 
-    Q_D(QKnxNetIpManagementClient);
+    Q_D(QKnxNetIpDeviceManagementConnection);
     d->sendDeviceConfigurationRequest(frame);
 }
 
