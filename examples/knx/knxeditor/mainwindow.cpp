@@ -27,20 +27,27 @@ MainWindow::MainWindow(QWidget *parent)
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-    tabPageInit();
+    ui->tunneling->setEnabled(false);
+    ui->deviceManagement->setEnabled(false);
+
     ui->serverBox->addItem(QString("Scan to discover KNX server(s)"));
     ui->serverBox->setItemData(0, QBrush(Qt::red), Qt::TextColorRole);
 
-    connect(&m_tunneling, &QKnxNetIpTunnelConnection::connected, [&] {
-        successfulConnection(QKnxNetIpServiceFamiliesDib::ServiceFamilieId::IpTunneling);});
-    connect(&m_management, &QKnxNetIpDeviceManagementConnection::connected, [&] {
-        successfulConnection(QKnxNetIpServiceFamiliesDib::ServiceFamilieId::DeviceManagement);});
-    connect(&m_tunneling, &QKnxNetIpTunnelConnection::disconnected, [&] {
-        successfulDisconnection(QKnxNetIpServiceFamiliesDib::ServiceFamilieId::IpTunneling);});
-    connect(&m_management, &QKnxNetIpDeviceManagementConnection::disconnected, [&] {
-        successfulDisconnection(QKnxNetIpServiceFamiliesDib::ServiceFamilieId::DeviceManagement);});
-    connect(&m_discoveryCommunication, &QKnxNetIpServerDiscoveryAgent::finished,[&] {
-        ui->scanButton->setEnabled(true);});
+    connect(&m_tunneling, &QKnxNetIpTunnelConnection::connected, this, [&] {
+        successfulConnection(QKnxNetIpServiceFamiliesDib::ServiceFamilieId::IpTunneling);
+    });
+    connect(&m_management, &QKnxNetIpDeviceManagementConnection::connected, this, [&] {
+        successfulConnection(QKnxNetIpServiceFamiliesDib::ServiceFamilieId::DeviceManagement);
+    });
+    connect(&m_tunneling, &QKnxNetIpTunnelConnection::disconnected, this, [&] {
+        successfulDisconnection(QKnxNetIpServiceFamiliesDib::ServiceFamilieId::IpTunneling);
+    });
+    connect(&m_management, &QKnxNetIpDeviceManagementConnection::disconnected, this, [&] {
+        successfulDisconnection(QKnxNetIpServiceFamiliesDib::ServiceFamilieId::DeviceManagement);
+    });
+    connect(&m_discoveryCommunication, &QKnxNetIpServerDiscoveryAgent::finished, this, [&] {
+        ui->scanButton->setEnabled(true);
+    });
     connect(&m_discoveryCommunication, &QKnxNetIpServerDiscoveryAgent::deviceDiscovered, this,
         &MainWindow::showServerAndServices);
 
@@ -48,12 +55,14 @@ MainWindow::MainWindow(QWidget *parent)
 
     fillLocalIpBox();
 
-    connect(ui->localIpBox, SIGNAL(activated(int)),this, SLOT(newIPAddressSelected(int)));
-    connect(ui->serverBox, SIGNAL(activated(int)),this, SLOT(newServerSelected(int)));
+    connect(ui->localIpBox, QOverload<int>::of(&QComboBox::activated), this,
+        &MainWindow::newIPAddressSelected);
+    connect(ui->serverBox, QOverload<int>::of(&QComboBox::activated), this,
+        &MainWindow::newServerSelected);
 
-    connect(ui->actionExit, &QAction::triggered, qApp, &QApplication::quit);
-    connect(ui->actionClear_Output,&QAction::triggered, ui->outputEdit, &QTextEdit::clear);
-    connect(ui->actionClear_All, &QAction::triggered, [&] {
+    connect(ui->actionExit, &QAction::triggered, this, &QApplication::quit);
+    connect(ui->actionClear_Output, &QAction::triggered, ui->outputEdit, &QTextEdit::clear);
+    connect(ui->actionClear_All, &QAction::triggered, this, [&] {
         ui->textOuputDeviceManagement->clear();
         ui->textOuputTunneling->clear();
         ui->outputEdit->clear();
@@ -67,13 +76,8 @@ MainWindow::~MainWindow()
 
 void MainWindow::showServerAndServices(const QKnxNetIpServerDiscoveryInfo info)
 {
-    QKnxNetIpHpai serverControlEndpoint;
-    serverControlEndpoint.setHpai(info.endpoint().hostProtocol(),
-                        info.controlEndpointAddress(),
-                        info.controlEndpointPort());
-
     ui->outputEdit->append("Server Endpoint found");
-    ui->outputEdit->append(serverControlEndpoint.toString());
+    ui->outputEdit->append(info.endpoint().toString());
     ui->outputEdit->append("Server's Multicast Address");
     ui->outputEdit->append(info.controlEndpointAddress().toString());
     ui->outputEdit->append("Server's Port");
@@ -83,35 +87,25 @@ void MainWindow::showServerAndServices(const QKnxNetIpServerDiscoveryInfo info)
     for (auto it = std::begin(services); it != std::end(services); ++it)
         ui->outputEdit->append(QString::number(quint8(it.key())));
 
-    ui->serverBox->addItem(QString(info.controlEndpointAddress().toString()+": "+
-        QString::number(info.controlEndpointPort())),
-        QVariant(QVariant::fromValue(info)));
-}
-
-void MainWindow::tabPageInit()
-{
-    ui->deviceManagement->setEnabled(false);
-    ui->tunneling->setEnabled(false);
+    ui->serverBox->addItem(QString(info.controlEndpointAddress().toString() + ": "
+        + QString::number(info.controlEndpointPort())), QVariant::fromValue(info));
 }
 
 void MainWindow::fillLocalIpBox()
 {
-    ui->localIpBox->addItem(QString("Interface: IPAddress --Select One--"));
-    ui->localIpBox->setItemData(0, QBrush(Qt::red), Qt::TextColorRole);
-    QStandardItemModel* model =
-            qobject_cast<QStandardItemModel*>(ui->localIpBox->model());
-    QModelIndex firstIndex = model->index(0, ui->localIpBox->modelColumn(),
-            ui->localIpBox->rootModelIndex());
-    QStandardItem* firstItem = model->itemFromIndex(firstIndex);
-    if (!firstItem)
-        return;
+    auto firstItem = new QStandardItem("Interface: IP address --Select One--");
+    qobject_cast<QStandardItemModel*>(ui->localIpBox->model())->appendRow(firstItem);
     firstItem->setSelectable(false);
+    firstItem->setData(QBrush(Qt::red), Qt::TextColorRole);
 
     auto networkInterfaces = QNetworkInterface::allInterfaces();
-    for (int i=0; i < networkInterfaces.size(); i++) {
+    for (int i = 0; i < networkInterfaces.size(); i++) {
         auto addressList = networkInterfaces[i].addressEntries();
         for (int j = 0; j < addressList.size(); j++) {
-            auto ipAddress = addressList[j].ip().toString();
+            auto ip = addressList[j].ip();
+            if (ip.toIPv4Address() == 0)
+                continue;
+            auto ipAddress = ip.toString();
             ui->localIpBox->addItem(networkInterfaces[i].name() + ": " + ipAddress, ipAddress);
         }
     }
@@ -122,16 +116,14 @@ void MainWindow::newServerSelected(int serverBoxIndex)
     if (serverBoxIndex < 1)
         return;
 
-    QKnxNetIpServerDiscoveryInfo info =
-        ui->serverBox->itemData(serverBoxIndex).value<QKnxNetIpServerDiscoveryInfo>();
-
+    auto info = ui->serverBox->itemData(serverBoxIndex).value<QKnxNetIpServerDiscoveryInfo>();
     if (m_serverControlEndpoint.address().toString() == info.controlEndpointAddress().toString()
-    && m_serverControlEndpoint.port() == info.controlEndpointPort()) {
+        && m_serverControlEndpoint.port() == info.controlEndpointPort()) {
         return;
     }
 
     if (info.endpoint().hostProtocol() != QKnxNetIp::HostProtocol::IpV4_Udp) {
-        qDebug()<<"Host Protocol not supported. This Server can't be selected";
+        qDebug() << "Host Protocol not supported. This Server can't be selected";
         return;
     }
 
@@ -139,55 +131,47 @@ void MainWindow::newServerSelected(int serverBoxIndex)
 
     if (m_serverControlEndpoint.isValid()) {
         if (!(m_tunneling.state() == QKnxNetIpEndpointConnection::State::Disconnected
-        || m_tunneling.state() == QKnxNetIpEndpointConnection::State::Disconnecting)) {
+            || m_tunneling.state() == QKnxNetIpEndpointConnection::State::Disconnecting)) {
             m_tunneling.disconnectFromHost();
         }
         if (!(m_management.state() == QKnxNetIpEndpointConnection::State::Disconnected
-        || m_management.state() == QKnxNetIpEndpointConnection::State::Disconnecting)) {
+            || m_management.state() == QKnxNetIpEndpointConnection::State::Disconnecting)) {
             m_management.disconnectFromHost();
         }
         enablingTab();
     }
-
 }
 
 void MainWindow::newIPAddressSelected(int localIpBoxIndex)
 {
-    bool firstTime = false;
+    if (localIpBoxIndex < 1)
+        return;
 
-    if (m_hostAddress == QHostAddress::Null)
-        firstTime = true;
+    auto newAddress = QHostAddress(ui->localIpBox->itemData(localIpBoxIndex).toString());
+    if (m_hostAddress == newAddress)
+        return;
 
-    if (localIpBoxIndex > 0) {
-        QString hostAddressName = ui->localIpBox->itemData(localIpBoxIndex).toString();
-        QString hostAddressOld = m_hostAddress.toString();
-        m_hostAddress.setAddress(hostAddressName);
-        if (m_hostAddress.isNull()) {
-            m_hostAddress.setAddress(hostAddressOld);
-            ui->outputEdit->append("Selected Ip Address is not valid");
-            return;
-        }
-        if (firstTime) {
-            ui->scanButton->setEnabled(true);
-        } else {
-            if ( hostAddressOld != hostAddressName) {
-                if (!(m_tunneling.state() == QKnxNetIpEndpointConnection::State::Disconnected ||
-                m_tunneling.state() == QKnxNetIpEndpointConnection::State::Disconnecting)) {
-                    m_tunneling.disconnectFromHost();
-                }
-                if (!(m_management.state() == QKnxNetIpEndpointConnection::State::Disconnected ||
-                m_management.state() == QKnxNetIpEndpointConnection::State::Disconnecting)) {
-                    m_management.disconnectFromHost();
-                }
-            }
-        }
-        ui->outputEdit->append("Selected IP Address: " + hostAddressName);
-        m_discoveryCommunication.setLocalAddress(m_hostAddress);
+    if (newAddress.isNull()) {
+        ui->outputEdit->append("Selected IP address is not valid");
+        return;
     }
+
+    m_hostAddress = newAddress;
+    ui->scanButton->setEnabled(true);
+
+    if (!(m_tunneling.state() == QKnxNetIpEndpointConnection::State::Disconnected
+        || m_tunneling.state() == QKnxNetIpEndpointConnection::State::Disconnecting)) {
+        m_tunneling.disconnectFromHost();
+    }
+    if (!(m_management.state() == QKnxNetIpEndpointConnection::State::Disconnected
+        || m_management.state() == QKnxNetIpEndpointConnection::State::Disconnecting)) {
+        m_management.disconnectFromHost();
+    }
+
+    m_discoveryCommunication.setLocalAddress(m_hostAddress);
+    ui->outputEdit->append("Selected IP address: " + m_hostAddress.toString());
 }
 
-//************************************************************
-// BUTTON SLOTs
 void MainWindow::on_scanButton_clicked()
 {
     ui->scanButton->setEnabled(false);
@@ -212,10 +196,8 @@ void MainWindow::on_disconnectRequestDeviceManagement_clicked()
 
 void MainWindow::on_deviceManagementSendRequest_clicked()
 {
-    QString textRequest = ui->deviceManagementRequestLine->text();
-    QByteArray data = QByteArray::fromHex(textRequest.toUtf8());
-    QKnxCemiFrame cemi = QKnxCemiFrame::fromBytes(data, 0, data.size());
-    m_management.sendDeviceManagementFrame(cemi);
+    auto data = QByteArray::fromHex(ui->deviceManagementRequestLine->text().toUtf8());
+    m_management.sendDeviceManagementFrame(QKnxCemiFrame::fromBytes(data, 0, data.size()));
 }
 
 void MainWindow::on_connectRequestTunneling_clicked()
@@ -232,88 +214,64 @@ void MainWindow::on_disconnectRequestTunneling_clicked()
 
 void MainWindow::on_tunnelingSendRequest_clicked()
 {
-    QString textRequest = ui->tunnelingRequestLine->text();
-    QByteArray data = QByteArray::fromHex(textRequest.toUtf8());
-    QKnxCemiFrame cemi = QKnxCemiFrame::fromBytes(data, 0, data.size());
-    m_tunneling.sendTunnelingFrame(cemi);
+    auto data = QByteArray::fromHex(ui->tunnelingRequestLine->text().toUtf8());
+    m_tunneling.sendTunnelingFrame(QKnxCemiFrame::fromBytes(data, 0, data.size()));
 }
 
 void MainWindow::linkToService(QKnxNetIpServiceFamiliesDib::ServiceFamilieId service,
-    QPushButton **connectButton, QPushButton **disconnectButton, QTextEdit **output)
+    QPushButton **connect, QPushButton **disconnect, QPushButton **send, QTextEdit **output)
 {
     switch (service) {
-        case QKnxNetIpServiceFamiliesDib::ServiceFamilieId::DeviceManagement:
-            *connectButton = ui->connectRequestDeviceManagement;
-            *disconnectButton = ui->disconnectRequestDeviceManagement;
-            ui->deviceManagementSendRequest->setEnabled(true);
-            *output = ui->textOuputDeviceManagement;
-            break;
-        case QKnxNetIpServiceFamiliesDib::ServiceFamilieId::IpTunneling:
-            *connectButton = ui->connectRequestTunneling;
-            *disconnectButton = ui->disconnectRequestTunneling;
-            ui->tunnelingSendRequest->setEnabled(true);
-            *output = ui->textOuputTunneling;
-            break;
-        default:
-            return;
+    case QKnxNetIpServiceFamiliesDib::ServiceFamilieId::DeviceManagement:
+        *connect = ui->connectRequestDeviceManagement;
+        *disconnect = ui->disconnectRequestDeviceManagement;
+        *send = ui->deviceManagementSendRequest;
+        *output = ui->textOuputDeviceManagement;
+        break;
+    case QKnxNetIpServiceFamiliesDib::ServiceFamilieId::IpTunneling:
+        *connect = ui->connectRequestTunneling;
+        *disconnect = ui->disconnectRequestTunneling;
+        *send = ui->tunnelingSendRequest;
+        *output = ui->textOuputTunneling;
+        break;
+    default:
+        break;
     }
-    qDebug()<<"connectButton"<<connectButton;
-    return;
 }
-
 
 void MainWindow::successfulConnection(QKnxNetIpServiceFamiliesDib::ServiceFamilieId service)
 {
-    QPushButton *connectButton = nullptr;
-    QPushButton *disconnectButton = nullptr;
+    QPushButton *connectButton, *disconnectButton, *sendButton;
     QTextEdit *output = nullptr;
 
-    linkToService(service, &connectButton, &disconnectButton, &output);
+    linkToService(service, &connectButton, &disconnectButton, &sendButton, &output);
 
     output->append("Successful connection");
     connectButton->setEnabled(false);
     connectButton->setMouseTracking(true);
     connectButton->setToolTip("Connected to " + m_serverControlEndpoint.address().toString()
-    + " on port: " + QString::number(m_serverControlEndpoint.port()));
+        + " on port: " + QString::number(m_serverControlEndpoint.port()));
     connectButton->setText("Connected");
     QPalette pal = connectButton->palette();
-    pal.setColor(QPalette::Button, QColor::fromRgb(143,207,22));
-    pal.setColor(QPalette::ButtonText, QColor::fromRgb(50,68,52));
+    pal.setColor(QPalette::Button, QColor::fromRgb(143, 207, 22));
+    pal.setColor(QPalette::ButtonText, QColor::fromRgb(50, 68, 52));
     connectButton->setAutoFillBackground(true);
     connectButton->setPalette(pal);
     connectButton->update();
-    // Disconnect Button is enabled
+    sendButton->setEnabled(true);
     disconnectButton->setEnabled(true);
 }
 
 void MainWindow::successfulDisconnection(QKnxNetIpServiceFamiliesDib::ServiceFamilieId service)
 {
-    QPushButton *connectButton;
-    QPushButton *disconnectButton;
-    QTextEdit *output;
+    QPushButton *connectButton, *disconnectButton, *sendButton;
+    QTextEdit *output = nullptr;
 
-    switch (service) {
-        case QKnxNetIpServiceFamiliesDib::ServiceFamilieId::DeviceManagement:
-            connectButton = ui->connectRequestDeviceManagement;
-            disconnectButton = ui->disconnectRequestDeviceManagement;
-            ui->deviceManagementSendRequest->setEnabled(false);
-            output = ui->textOuputDeviceManagement;
-            break;
-        case QKnxNetIpServiceFamiliesDib::ServiceFamilieId::IpTunneling:
-            connectButton = ui->connectRequestTunneling;
-            disconnectButton = ui->disconnectRequestTunneling;
-            ui->tunnelingSendRequest->setEnabled(false);
-            output = ui->textOuputTunneling;
-            break;
-        default:
-            return;
-     }
+    linkToService(service, &connectButton, &disconnectButton, &sendButton, &output);
 
     output->append("Successful disconnection");
     output->append("--------------------------------------------------");
-    // Disconnect Button cannot be pushed
     disconnectButton->setEnabled(false);
-    // Connect Button ready to be pushed
     connectButton->setEnabled(true);
     connectButton->setToolTip("");
     QPalette pal = disconnectButton->palette();
@@ -322,6 +280,7 @@ void MainWindow::successfulDisconnection(QKnxNetIpServiceFamiliesDib::ServiceFam
     connectButton->setAutoFillBackground(true);
     connectButton->setPalette(pal);
     connectButton->update();
+    sendButton->setEnabled(false);
 }
 
 void MainWindow::enablingTab()

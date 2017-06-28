@@ -74,11 +74,10 @@ private slots:
     void on_tunnelingSendRequest_clicked();
 
 private:
-    void tabPageInit();
     void fillLocalIpBox();
     void enablingTab();
     void linkToService(QKnxNetIpServiceFamiliesDib::ServiceFamilieId service,
-        QPushButton **connectButton, QPushButton **disconnectButton, QTextEdit **output);
+        QPushButton **connect, QPushButton **disconnect, QPushButton **send, QTextEdit **output);
 
 private:
     Ui::MainWindow *ui;
