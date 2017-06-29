@@ -62,7 +62,6 @@ public:
 private:
     QKnxNetIpCrd(const QKnxNetIpConnectionTypeStruct &other);
 };
-Q_DECLARE_TYPEINFO(QKnxNetIpCrd, Q_MOVABLE_TYPE);
 
 QT_END_NAMESPACE
 

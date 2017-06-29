@@ -79,7 +79,6 @@ public:
 private:
     QKnxNetIpCurrentConfigDib(const QKnxNetIpDescriptionTypeStruct &other);
 };
-Q_DECLARE_TYPEINFO(QKnxNetIpCurrentConfigDib, Q_MOVABLE_TYPE);
 
 QT_END_NAMESPACE
 

@@ -64,7 +64,6 @@ public:
 private:
     QKnxNetIpManufacturerDib(const QKnxNetIpDescriptionTypeStruct &other);
 };
-Q_DECLARE_TYPEINFO(QKnxNetIpManufacturerDib, Q_MOVABLE_TYPE);
 
 QT_END_NAMESPACE
 

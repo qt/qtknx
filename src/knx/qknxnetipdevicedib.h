@@ -87,7 +87,6 @@ public:
 private:
     QKnxNetIpDeviceDib(const QKnxNetIpDescriptionTypeStruct &other);
 };
-Q_DECLARE_TYPEINFO(QKnxNetIpDeviceDib, Q_MOVABLE_TYPE);
 
 QT_END_NAMESPACE
 

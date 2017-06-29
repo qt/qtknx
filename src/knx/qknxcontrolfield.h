@@ -110,7 +110,6 @@ Q_KNX_EXPORT QDebug operator<<(QDebug debug, const QKnxControlField &ctrl);
 Q_KNX_EXPORT QDataStream &operator>>(QDataStream &stream, QKnxControlField &ctrl);
 Q_KNX_EXPORT QDataStream &operator<<(QDataStream &stream, const QKnxControlField &ctrl);
 
-Q_DECLARE_TYPEINFO(QKnxControlField, Q_MOVABLE_TYPE);
 Q_DECLARE_TYPEINFO(QKnxControlField::FrameType, Q_PRIMITIVE_TYPE);
 Q_DECLARE_TYPEINFO(QKnxControlField::Repeat, Q_PRIMITIVE_TYPE);
 Q_DECLARE_TYPEINFO(QKnxControlField::Broadcast, Q_PRIMITIVE_TYPE);

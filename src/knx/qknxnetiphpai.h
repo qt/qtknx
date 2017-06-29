@@ -67,7 +67,6 @@ public:
 private:
     QKnxNetIpHpai(const QKnxNetIpHostProtocolStruct &other);
 };
-Q_DECLARE_TYPEINFO(QKnxNetIpHpai, Q_MOVABLE_TYPE);
 
 QT_END_NAMESPACE
 

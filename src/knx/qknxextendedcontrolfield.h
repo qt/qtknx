@@ -79,7 +79,6 @@ Q_KNX_EXPORT QDebug operator<<(QDebug debug, const QKnxExtendedControlField &ctr
 Q_KNX_EXPORT QDataStream &operator>>(QDataStream &stream, QKnxExtendedControlField &ctrl);
 Q_KNX_EXPORT QDataStream &operator<<(QDataStream &stream, const QKnxExtendedControlField &ctrl);
 
-Q_DECLARE_TYPEINFO(QKnxExtendedControlField, Q_MOVABLE_TYPE);
 Q_DECLARE_TYPEINFO(QKnxExtendedControlField::DestinationAddressType, Q_PRIMITIVE_TYPE);
 Q_DECLARE_TYPEINFO(QKnxExtendedControlField::ExtendedFrameFormat, Q_PRIMITIVE_TYPE);
 

@@ -69,7 +69,6 @@ public:
 private:
     QKnxNetIpKnxAddressesDib(const QKnxNetIpDescriptionTypeStruct &other);
 };
-Q_DECLARE_TYPEINFO(QKnxNetIpKnxAddressesDib, Q_MOVABLE_TYPE);
 
 QT_END_NAMESPACE
 

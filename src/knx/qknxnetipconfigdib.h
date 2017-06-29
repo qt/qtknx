@@ -92,8 +92,6 @@ private:
 Q_DECLARE_OPERATORS_FOR_FLAGS(QKnxNetIpConfigDib::Capabilities)
 Q_DECLARE_OPERATORS_FOR_FLAGS(QKnxNetIpConfigDib::AssignmentMethods)
 
-Q_DECLARE_TYPEINFO(QKnxNetIpConfigDib, Q_MOVABLE_TYPE);
-
 QT_END_NAMESPACE
 
 #endif
