@@ -165,6 +165,15 @@ private slots:
         QCOMPARE(info.data<QByteArray>(), QByteArray::fromHex("1020303040506070"));
     }
 
+    void testFromBytes()
+    {
+        auto info = QKnxAdditionalInfo::fromBytes(QByteArray::fromHex("07021020"), 0);
+        QCOMPARE(info.type(), QKnxAdditionalInfo::Type::BiBatInformation);
+        QCOMPARE(info.isValid(), true);
+        QCOMPARE(info.toString(), QStringLiteral("Type { 0x07 }, Size { 0x02 }, Data { 0x10, 0x20 }"));
+        QCOMPARE(info.bytes<QByteArray>(), QByteArray::fromHex("07021020"));
+    }
+
     void testDebugStream()
     {
         struct DebugHandler

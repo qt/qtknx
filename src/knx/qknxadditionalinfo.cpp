@@ -21,8 +21,6 @@
 
 #include "qknxadditionalinfo.h"
 
-#include <array>
-
 QT_BEGIN_NAMESPACE
 
 /*!
@@ -176,11 +174,6 @@ quint8 QKnxAdditionalInfo::dataSize() const
     if (size() >= 2)
         return size() - 2;
     return 0;
-}
-
-QKnxAdditionalInfoRef QKnxAdditionalInfo::ref(quint16 index) const
-{
-    return QKnxByteStore::ref(index);
 }
 
 /*!

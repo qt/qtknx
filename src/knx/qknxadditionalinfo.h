@@ -30,10 +30,9 @@
 #include <QtKnx/qknxbytestore.h>
 #include <QtKnx/qknxglobal.h>
 #include <QtKnx/qknxtraits.h>
+#include <QtKnx/qknxutils.h>
 
 QT_BEGIN_NAMESPACE
-
-using QKnxAdditionalInfoRef = QKnxByteStoreRef;
 
 class Q_KNX_EXPORT QKnxAdditionalInfo final : private QKnxByteStore
 {
@@ -57,6 +56,8 @@ public:
     QKnxAdditionalInfo::Type type() const;
 
     QKnxAdditionalInfo() = default;
+    ~QKnxAdditionalInfo() override = default;
+
     QKnxAdditionalInfo(QKnxAdditionalInfo::Type type, const QByteArray &data);
     QKnxAdditionalInfo(QKnxAdditionalInfo::Type type, const QVector<quint8> &data);
     QKnxAdditionalInfo(QKnxAdditionalInfo::Type type, const std::deque<quint8> &data);
@@ -64,9 +65,6 @@ public:
 
     bool isValid() const;
     QString toString() const override;
-
-    QKnxAdditionalInfoRef ref(quint16 index) const;
-    static qint32 expectedDataSize(QKnxAdditionalInfo::Type type, bool *isFixedSize = nullptr);
 
     quint8 dataSize() const;
     template <typename T = QByteArray> auto data() const -> decltype(T())
@@ -78,6 +76,26 @@ public:
         T t(store.size(), 0);
         std::copy(std::begin(store), std::end(store), std::begin(t));
         return t;
+    }
+    static qint32 expectedDataSize(QKnxAdditionalInfo::Type type, bool *isFixedSize = nullptr);
+
+    template <typename T, std::size_t S = 0>
+        static QKnxAdditionalInfo fromBytes(const T &bytes, quint16 index)
+    {
+        static_assert(is_type<T, QByteArray, QKnxByteStoreRef, QVector<quint8>, std::deque<quint8>,
+            std::vector<quint8>, std::array<quint8, S>>::value, "Type not supported.");
+
+        const qint32 availableSize = bytes.size() - index;
+        if (availableSize < 2)
+            return {}; // size missing
+
+        quint16 size = QKnxUtils::QUint8::fromBytes(bytes, index + 1) + 2; // type + size => 2
+        if (availableSize < size)
+            return {};
+
+        QKnxAdditionalInfo info;
+        info.setBytes(std::next(std::begin(bytes), index), std::next(std::begin(bytes), index + size));
+        return info;
     }
 
     using QKnxByteStore::size;
