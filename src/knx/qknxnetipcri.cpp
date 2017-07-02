@@ -33,10 +33,6 @@ QKnxNetIpCri::QKnxNetIpCri(QKnxNetIp::TunnelingLayer layer)
     setTunnelingLayer(layer);
 }
 
-QKnxNetIpCri::QKnxNetIpCri(QKnxNetIpServiceFamiliesDib::ServiceFamilieId serviceType)
-    : QKnxNetIpCri(QKnxNetIpServiceFamiliesDib::connectionTypeFromServiceType(serviceType))
-{}
-
 QKnxNetIpCri::QKnxNetIpCri(const QKnxNetIpConnectionTypeStruct &other)
     : QKnxNetIpConnectionTypeStruct(other)
 {}

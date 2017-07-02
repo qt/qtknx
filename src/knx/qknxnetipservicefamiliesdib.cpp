@@ -90,30 +90,6 @@ QKnxNetIpServiceFamiliesDib::ServiceFamilyIdVersions
     return serviceTypesAndVersions;
 }
 
-QKnxNetIp::ConnectionType
-    QKnxNetIpServiceFamiliesDib::connectionTypeFromServiceType(ServiceFamilieId serviceType)
-{
-    switch (serviceType) {
-        case ServiceFamilieId::Core:
-            return QKnxNetIp::ConnectionType::Unknown;
-        case ServiceFamilieId::DeviceManagement:
-            return QKnxNetIp::ConnectionType::DeviceManagement;
-        case ServiceFamilieId::IpTunneling:
-            return QKnxNetIp::ConnectionType::Tunnel;
-        case ServiceFamilieId::IpRouting:
-            return QKnxNetIp::ConnectionType::Tunnel;
-        case ServiceFamilieId::RemoteLogging:
-            return QKnxNetIp::ConnectionType::RemoteLogging;
-        case ServiceFamilieId::RemoteConfigAndDiagnosis:
-            return QKnxNetIp::ConnectionType::RemoteConfiguration;
-        case ServiceFamilieId::ObjectServer:
-            return QKnxNetIp::ConnectionType::ObjectServer;
-        default:
-            break;
-    }
-    return QKnxNetIp::ConnectionType::Unknown;
-}
-
 bool QKnxNetIpServiceFamiliesDib::isValid() const
 {
     return QKnxNetIpDescriptionTypeStruct::isValid() && (size() % 2 == 0) // must be even sized

@@ -60,8 +60,6 @@ public:
         return QKnxNetIpStructHelper::fromBytes(bytes, index,
             QKnxNetIp::DescriptionType::SupportedServiceFamilies);
     }
-    // TODO: review
-    static QKnxNetIp::ConnectionType connectionTypeFromServiceType(ServiceFamilieId serviceType);
 
     QKnxNetIp::DescriptionType descriptionType() const;
     ServiceFamilyIdVersions serviceFamilyIdVersions() const;

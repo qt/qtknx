@@ -41,8 +41,7 @@ public:
     ~QKnxNetIpCri() override = default;
 
     explicit QKnxNetIpCri(QKnxNetIp::TunnelingLayer layer);
-    explicit QKnxNetIpCri(QKnxNetIp::ConnectionType connectionType); // TODO: review
-    explicit QKnxNetIpCri(QKnxNetIpServiceFamiliesDib::ServiceFamilieId serviceType);
+    explicit QKnxNetIpCri(QKnxNetIp::ConnectionType connectionType);
 
     template <typename T> static QKnxNetIpCri fromBytes(const T &bytes, quint16 index)
     {
