@@ -80,8 +80,7 @@ public:
     QKnxNetIpDeviceDib deviceHardware() const;
     QKnxNetIpServiceFamiliesDib supportedFamilies() const;
 
-    template <typename T = std::vector<QKnxNetIpStructRef>>
-        auto optionalDibs() const -> decltype(T())
+    template <typename T = QVector<QKnxNetIpStructRef>> auto optionalDibs() const -> decltype(T())
     {
         static_assert(is_type<T, QVector<QKnxNetIpStructRef>, std::deque<QKnxNetIpStructRef>,
             std::vector<QKnxNetIpStructRef>>::value, "Type not supported.");
