@@ -55,7 +55,7 @@
              <item>
               <widget class="QComboBox" name="localIpBox">
                <property name="editable">
-                <bool>true</bool>
+                <bool>false</bool>
                </property>
                <property name="currentText">
                 <string/>
@@ -73,6 +73,19 @@
               <widget class="QComboBox" name="serverBox"/>
              </item>
              <item>
+              <widget class="QLabel" name="serverDescription">
+               <property name="text">
+                <string/>
+               </property>
+               <property name="wordWrap">
+                <bool>true</bool>
+               </property>
+               <property name="textInteractionFlags">
+                <set>Qt::NoTextInteraction</set>
+               </property>
+              </widget>
+             </item>
+             <item>
               <spacer name="verticalSpacer">
                <property name="orientation">
                 <enum>Qt::Vertical</enum>
@@ -84,6 +97,13 @@
                 </size>
                </property>
               </spacer>
+             </item>
+             <item>
+              <widget class="QCheckBox" name="checkboxNat">
+               <property name="text">
+                <string>Use NAT for KNXnet/IP communication</string>
+               </property>
+              </widget>
              </item>
             </layout>
            </item>
@@ -275,7 +295,7 @@
      <x>0</x>
      <y>0</y>
      <width>899</width>
-     <height>25</height>
+     <height>21</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
