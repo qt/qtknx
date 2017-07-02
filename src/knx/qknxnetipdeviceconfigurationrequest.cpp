@@ -28,7 +28,7 @@ QKnxNetIpDeviceConfigurationRequest::QKnxNetIpDeviceConfigurationRequest(quint8 
     : QKnxNetIpConnectionHeaderFrame(QKnxNetIp::ServiceType::DeviceConfigurationRequest)
 {
     setConnectionHeader({ id, sequenceCount });
-    setPayload({ cemi.ref().bytes(), cemi.ref().size() });
+    setPayload(QKnxNetIpPayload::fromBytes(cemi.bytes(), 0, cemi.size()));
 }
 
 QKnxNetIpDeviceConfigurationRequest::QKnxNetIpDeviceConfigurationRequest(

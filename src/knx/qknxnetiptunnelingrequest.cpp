@@ -28,7 +28,7 @@ QKnxNetIpTunnelingRequest::QKnxNetIpTunnelingRequest(quint8 id, quint8 sequenceC
     : QKnxNetIpConnectionHeaderFrame(QKnxNetIp::ServiceType::TunnelingRequest)
 {
     setConnectionHeader({ id, sequenceCount });
-    setPayload({ cemi.ref().bytes(), cemi.ref().size() });
+    setPayload(QKnxNetIpPayload::fromBytes(cemi.bytes(), 0, cemi.size()));
 }
 
 QKnxNetIpTunnelingRequest::QKnxNetIpTunnelingRequest(const QKnxNetIpConnectionHeaderFrame &other)

@@ -107,7 +107,8 @@ SOURCES += \
     qknxnetipserverdiscoveryinfo.cpp \
     qknxnetipendpointconnection.cpp \
     qknxnetiptunnelconnection.cpp \
-    qknxnetipdevicemanagementconnection.cpp
+    qknxnetipdevicemanagementconnection.cpp \
+    qknxcemiframe.cpp
 
 HEADERS += $$PUBLIC_HEADERS $$PRIVATE_HEADERS
 
