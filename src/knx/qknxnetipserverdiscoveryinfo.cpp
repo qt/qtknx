@@ -78,9 +78,35 @@ QKnxNetIpServerDiscoveryInfo::QKnxNetIpServerDiscoveryInfo(const QKnxNetIpServer
 QKnxNetIpServerDiscoveryInfo &
 QKnxNetIpServerDiscoveryInfo::operator=(const QKnxNetIpServerDiscoveryInfo &other)
 {
-    QKnxNetIpServerDiscoveryInfo(other).swap(*this);
+    d_ptr = other.d_ptr;
     return *this;
+}
 
+QKnxNetIpServerDiscoveryInfo &
+QKnxNetIpServerDiscoveryInfo::operator=(QKnxNetIpServerDiscoveryInfo &&other) Q_DECL_NOTHROW
+{
+    swap(other);
+    return *this;
+}
+
+bool QKnxNetIpServerDiscoveryInfo::operator==(const QKnxNetIpServerDiscoveryInfo &other) const
+{
+    return d_ptr == other.d_ptr || [&]() -> bool {
+        // TODO: Implement operator== in QKnxNetIpStruct classes and revisit this code.
+        return d_ptr->hpai.bytes() == other.d_ptr->hpai.bytes()
+            && d_ptr->hardware.bytes() == other.d_ptr->hardware.bytes()
+            && d_ptr->services.bytes() == other.d_ptr->services.bytes();
+    }();
+}
+
+bool QKnxNetIpServerDiscoveryInfo::operator!=(const QKnxNetIpServerDiscoveryInfo &other) const
+{
+    return !operator==(other);
+}
+
+void QKnxNetIpServerDiscoveryInfo::swap(QKnxNetIpServerDiscoveryInfo &other) Q_DECL_NOTHROW
+{
+    d_ptr.swap(other.d_ptr);
 }
 
 QKnxNetIpServerDiscoveryInfo::QKnxNetIpServerDiscoveryInfo(const QKnxNetIpHpai &hpai,
@@ -95,10 +121,5 @@ QKnxNetIpServerDiscoveryInfo::QKnxNetIpServerDiscoveryInfo(const QKnxNetIpHpai &
 QKnxNetIpServerDiscoveryInfo::QKnxNetIpServerDiscoveryInfo(QKnxNetIpServerDiscoveryInfoPrivate &dd)
     : d_ptr(new QKnxNetIpServerDiscoveryInfoPrivate(dd))
 {}
-
-void QKnxNetIpServerDiscoveryInfo::swap(QKnxNetIpServerDiscoveryInfo other)
-{
-    d_ptr.swap(other.d_ptr);
-}
 
 QT_END_NAMESPACE

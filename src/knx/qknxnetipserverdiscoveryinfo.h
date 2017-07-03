@@ -58,15 +58,22 @@ public:
     QKnxNetIpServerDiscoveryInfo(const QKnxNetIpServerDiscoveryInfo &o);
     QKnxNetIpServerDiscoveryInfo &operator=(const QKnxNetIpServerDiscoveryInfo &o);
 
+#ifdef Q_COMPILER_RVALUE_REFS
+    QKnxNetIpServerDiscoveryInfo &operator=(QKnxNetIpServerDiscoveryInfo &&other) Q_DECL_NOTHROW;
+#endif
+
+    bool operator==(const QKnxNetIpServerDiscoveryInfo &other) const;
+    bool operator!=(const QKnxNetIpServerDiscoveryInfo &other) const;
+
+    void swap(QKnxNetIpServerDiscoveryInfo &other) Q_DECL_NOTHROW;
+
 private:
     QKnxNetIpServerDiscoveryInfo(const QKnxNetIpHpai &hpai, const QKnxNetIpDeviceDib &hardware,
         QKnxNetIpServiceFamiliesDib services);
     explicit QKnxNetIpServerDiscoveryInfo(QKnxNetIpServerDiscoveryInfoPrivate &dd);
 
-    void swap(QKnxNetIpServerDiscoveryInfo other);
-
 private:
-    QSharedDataPointer<QKnxNetIpServerDiscoveryInfoPrivate> d_ptr;
+    QExplicitlySharedDataPointer<QKnxNetIpServerDiscoveryInfoPrivate> d_ptr;
 };
 
 QT_END_NAMESPACE
