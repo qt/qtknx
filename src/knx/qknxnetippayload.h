@@ -57,6 +57,7 @@ public:
     using QKnxByteStore::setBytes;
     using QKnxByteStore::appendBytes;
     using QKnxByteStore::insertBytes;
+    using QKnxByteStore::replaceBytes;
 
     template <typename T, std::size_t S = 0>
         static QKnxNetIpPayload fromBytes(const T &type, quint16 index, quint16 size)

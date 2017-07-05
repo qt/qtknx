@@ -27,6 +27,7 @@
 #include <QtCore/qdebug.h>
 #include <QtCore/qstring.h>
 #include <QtCore/qvector.h>
+#include <QtKnx/qknxaddress.h>
 #include <QtKnx/qknxglobal.h>
 #include <QtKnx/qknxtraits.h>
 
@@ -40,13 +41,8 @@ public:
     explicit QKnxExtendedControlField(const QByteArray &data);
     explicit QKnxExtendedControlField(const QVector<quint8> &data);
 
-    enum class DestinationAddressType : quint8
-    {
-        Individual = 0x00,
-        Group = 0x01
-    };
-    QKnxExtendedControlField::DestinationAddressType destinationAddressType() const;
-    void setDestinationAddressType(QKnxExtendedControlField::DestinationAddressType address);
+    QKnxAddress::Type destinationAddressType() const;
+    void setDestinationAddressType(QKnxAddress::Type address);
 
     quint8 hopCount() const;
     void setHopCount(quint8 hopCount);
@@ -79,7 +75,6 @@ Q_KNX_EXPORT QDebug operator<<(QDebug debug, const QKnxExtendedControlField &ctr
 Q_KNX_EXPORT QDataStream &operator>>(QDataStream &stream, QKnxExtendedControlField &ctrl);
 Q_KNX_EXPORT QDataStream &operator<<(QDataStream &stream, const QKnxExtendedControlField &ctrl);
 
-Q_DECLARE_TYPEINFO(QKnxExtendedControlField::DestinationAddressType, Q_PRIMITIVE_TYPE);
 Q_DECLARE_TYPEINFO(QKnxExtendedControlField::ExtendedFrameFormat, Q_PRIMITIVE_TYPE);
 
 QT_END_NAMESPACE

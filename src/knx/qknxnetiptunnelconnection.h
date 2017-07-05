@@ -25,11 +25,11 @@
 #include <QtKnx/qknxaddress.h>
 #include <QtKnx/qknxglobal.h>
 #include <QtKnx/qknxnetipendpointconnection.h>
+#include <QtKnx/qknxtunnelframe.h>
 
 QT_BEGIN_NAMESPACE
 
 class QKnxNetIpTunnelConnectionPrivate;
-using QKnxTunnelingFrame = QKnxCemiFrame;
 
 class Q_KNX_EXPORT QKnxNetIpTunnelConnection final : public QKnxNetIpEndpointConnection
 {
@@ -50,10 +50,10 @@ public:
     QKnxAddress individualAddress() const;
     void setIndividualAddress(const QKnxAddress &address);
 
-    void sendTunnelingFrame(const QKnxTunnelingFrame &frame);
+    void sendTunnelFrame(const QKnxTunnelFrame &frame);
 
 Q_SIGNALS:
-    void receivedTunnelingFrame(QKnxTunnelingFrame frame);
+    void receivedTunnelFrame(QKnxTunnelFrame frame);
 };
 
 QT_END_NAMESPACE

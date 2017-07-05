@@ -29,4 +29,5 @@ SUBDIRS += cmake \
     qknxnetipservicefamiliesdib \
     qknxnetipstructure \
     qknxnetiptunnelingacknowledge \
-    qknxnetiptunnelingrequest
+    qknxnetiptunnelingrequest \
+    qknxtunnelframe

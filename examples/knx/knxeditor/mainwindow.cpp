@@ -268,7 +268,7 @@ void MainWindow::on_disconnectRequestTunneling_clicked()
 void MainWindow::on_tunnelingSendRequest_clicked()
 {
     auto data = QByteArray::fromHex(ui->tunnelingRequestLine->text().toUtf8());
-    m_tunneling.sendTunnelingFrame(QKnxCemiFrame::fromBytes(data, 0, data.size()));
+    m_tunneling.sendTunnelFrame(QKnxCemiFrame::fromBytes(data, 0, data.size()));
 }
 
 void MainWindow::linkToService(QKnxNetIpServiceFamiliesDib::ServiceFamilieId service,

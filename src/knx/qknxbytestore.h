@@ -147,6 +147,21 @@ public:
             std::next(std::begin(m_bytes), pos));
     }
 
+    template <typename T, std::size_t S = 0> void replaceBytes(quint16 pos, const T &replacement)
+    {
+        static_assert(is_type<T, QByteArray, QVector<quint8>, std::deque<quint8>,
+            std::vector<quint8>, std::array<quint8, S>>::value, "Type not supported.");
+
+        if (replacement.size() <= 0)
+            return;
+
+        if (pos >= size())
+            resize(pos + quint16(replacement.size()));
+
+        std::copy(std::begin(replacement), std::end(replacement),
+            std::next(std::begin(m_bytes), pos));
+    }
+
     QKnxByteStoreRef ref(quint16 index = 0) const;
 
 protected:

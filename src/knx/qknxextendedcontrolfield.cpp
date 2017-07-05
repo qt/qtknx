@@ -70,12 +70,12 @@ QKnxExtendedControlField::QKnxExtendedControlField(const QVector<quint8> &data)
         m_ctrl2 = quint8(data[0]);
 }
 
-QKnxExtendedControlField::DestinationAddressType QKnxExtendedControlField::destinationAddressType() const
+QKnxAddress::Type QKnxExtendedControlField::destinationAddressType() const
 {
-    return static_cast<QKnxExtendedControlField::DestinationAddressType> (m_ctrl2[7]);
+    return static_cast<QKnxAddress::Type> (m_ctrl2[7]);
 }
 
-void QKnxExtendedControlField::setDestinationAddressType(DestinationAddressType address)
+void QKnxExtendedControlField::setDestinationAddressType(QKnxAddress::Type address)
 {
     m_ctrl2[7] = static_cast<int> (address);
 }

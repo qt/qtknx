@@ -36,10 +36,10 @@ public:
         , m_layer(l)
     {}
 
-    void process(const QKnxTunnelingFrame &frame) override
+    void process(const QKnxCemiFrame &frame) override
     {
         Q_Q(QKnxNetIpTunnelConnection);
-        emit q->receivedTunnelingFrame(frame);
+        emit q->receivedTunnelFrame(frame);
     }
 
     void process(const QKnxNetIpConnectResponse &response, const QNetworkDatagram &dg) override
@@ -95,7 +95,7 @@ void QKnxNetIpTunnelConnection::setIndividualAddress(const QKnxAddress &address)
     Q_UNUSED(address) // TODO: Maybe implement 03_08_04 Tunnelling v01.05.03 AS.pdf, paragraph 3.2
 }
 
-void QKnxNetIpTunnelConnection::sendTunnelingFrame(const QKnxTunnelingFrame &frame)
+void QKnxNetIpTunnelConnection::sendTunnelFrame(const QKnxTunnelFrame &frame)
 {
     if (state() != State::Connected)
         return;
