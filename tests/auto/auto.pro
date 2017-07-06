@@ -30,4 +30,5 @@ SUBDIRS += cmake \
     qknxnetipstructure \
     qknxnetiptunnelingacknowledge \
     qknxnetiptunnelingrequest \
-    qknxtunnelframe
+    qknxtunnelframe \
+    qknxnpdufactory

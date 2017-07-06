@@ -28,14 +28,9 @@
 #include <QtKnx/qknxcontrolfield.h>
 #include <QtKnx/qknxextendedcontrolfield.h>
 #include <QtKnx/qknxglobal.h>
+#include <QtKnx/qknxnpdu.h>
 
 QT_BEGIN_NAMESPACE
-
-struct QKnxNpdu
-{
-    QByteArray bytes() const { return {}; }
-    template <typename T> static QKnxNpdu fromBytes(const T &, quint16) { return {}; }
-};
 
 class Q_KNX_EXPORT QKnxTunnelFrame final : public QKnxCemiFrame
 {
