@@ -61,6 +61,9 @@ ui_*.h
 Makefile*
 *build-*
 *_plugin_import.cpp
+config.summary
+src/knx/qtknx-config.*
+src/knx/qtknx-config_p.*
 
 ## QtCreator
 *.autosave
