@@ -39,7 +39,7 @@ QT_BEGIN_NAMESPACE
 
 namespace QKnxPrivate
 {
-    static QKnxNetIpStructRef::Type codeToType(QKnxNetIp::DescriptionType code)
+    static inline QKnxNetIpStructRef::Type codeToType(QKnxNetIp::DescriptionType code)
     {
         switch (QKnxNetIp::DescriptionType(code)) {
         case QKnxNetIp::DescriptionType::DeviceInfo:

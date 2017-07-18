@@ -72,7 +72,7 @@ QKnxExtendedControlField::QKnxExtendedControlField(const QVector<quint8> &data)
 
 QKnxAddress::Type QKnxExtendedControlField::destinationAddressType() const
 {
-    return static_cast<QKnxAddress::Type> (m_ctrl2[7]);
+    return static_cast<QKnxAddress::Type> (quint8(m_ctrl2[7]));
 }
 
 void QKnxExtendedControlField::setDestinationAddressType(QKnxAddress::Type address)

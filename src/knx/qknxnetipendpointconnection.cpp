@@ -685,8 +685,9 @@ void QKnxNetIpEndpointConnection::disconnectFromHost()
         d->cleanup();
     } else {
         auto request = QKnxNetIpDisconnectRequest(d->m_channelId, {
-                (d->m_nat ? d->m_natEndpoint : d->m_localControlEndpoint)
-            });
+                (d->m_nat ? d->m_natEndpoint : d->m_localControlEndpoint).operator QKnxNetIpHpai()
+            }
+        );
 
         qDebug() << "Sending disconnect request:" << request;
         d->m_controlEndpoint->writeDatagram(request.bytes(), d->m_remoteControlEndpoint.address,

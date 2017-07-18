@@ -33,6 +33,7 @@
 // We mean it.
 //
 
+#include <QtCore/qtimer.h>
 #include <QtKnx/qknxglobal.h>
 #include <QtKnx/qknxnetip.h>
 #include <QtKnx/qknxnetipsearchrequest.h>

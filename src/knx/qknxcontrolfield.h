@@ -45,7 +45,7 @@ public:
         Extended = 0x00,
         Standard = 0x01
     };
-    QKnxControlField::FrameType frameType() const { return static_cast<FrameType> (m_ctrl1[7]); }
+    QKnxControlField::FrameType frameType() const { return static_cast<FrameType> (quint8(m_ctrl1[7])); }
     void setFrameType(QKnxControlField::FrameType type) { m_ctrl1[7] = static_cast<int> (type); }
 
     enum class Repeat : quint8
@@ -53,7 +53,7 @@ public:
         Repeat = 0x00,
         DoNotRepeat = 0x01
     };
-    QKnxControlField::Repeat repeat() const { return static_cast<Repeat> (m_ctrl1[6]); }
+    QKnxControlField::Repeat repeat() const { return static_cast<Repeat> (quint8(m_ctrl1[6])); }
     void setRepeat(QKnxControlField::Repeat repeat) { m_ctrl1[6] = static_cast<int> (repeat); }
 
     enum class Broadcast : quint8
@@ -61,7 +61,7 @@ public:
         System = 0x00,
         Domain = 0x01
     };
-    QKnxControlField::Broadcast broadcast() const { return static_cast<Broadcast> (m_ctrl1[5]); }
+    QKnxControlField::Broadcast broadcast() const { return static_cast<Broadcast> (quint8(m_ctrl1[5])); }
     void setBroadcast(QKnxControlField::Broadcast bcst) { m_ctrl1[5] = static_cast<int> (bcst); }
 
     enum class Priority : quint8
@@ -79,7 +79,7 @@ public:
         NotRequested = 0x00,
         Requested = 0x01
     };
-    QKnxControlField::Acknowledge acknowledge() const { return Acknowledge(m_ctrl1[1]); }
+    QKnxControlField::Acknowledge acknowledge() const { return Acknowledge(quint8(m_ctrl1[1])); }
     void setAcknowledge(QKnxControlField::Acknowledge ack) { m_ctrl1[1] = static_cast<int> (ack); }
 
     enum class Confirm : quint8
@@ -87,7 +87,7 @@ public:
         NoError = 0x00,
         Error = 0x01
     };
-    QKnxControlField::Confirm confirm() const { return static_cast<Confirm> (m_ctrl1[0]); }
+    QKnxControlField::Confirm confirm() const { return static_cast<Confirm> (quint8(m_ctrl1[0])); }
     void setConfirm(QKnxControlField::Confirm confirm) { m_ctrl1[0] = static_cast<int> (confirm); }
 
     quint8 size() const { return 1; }
