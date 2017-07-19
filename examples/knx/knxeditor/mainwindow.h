@@ -23,7 +23,7 @@
 #define MAINWINDOW_H
 
 #include <QKnxNetIpDeviceManagementConnection>
-#include <QKnxNetIpServiceFamiliesDIB>
+#include <QKnxNetIpServiceFamiliesDib>
 #include <QKnxNetIpServerDiscoveryAgent>
 #include <QKnxNetIpTunnelConnection>
 #include <QMainWindow>

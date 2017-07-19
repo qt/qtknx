@@ -22,7 +22,7 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
-#include <QKnxNetIpHPAI>
+#include <QKnxNetIpHpai>
 #include <QKnxNetIpServerDiscoveryInfo>
 #include <QNetworkInterface>
 #include <QPushButton>
