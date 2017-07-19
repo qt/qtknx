@@ -4,3 +4,8 @@ lessThan(QT_MAJOR_VERSION, 5) {
 
 load(configure)
 load(qt_parts)
+
+include($$OUT_PWD/src/knx/qtknx-config.pri)
+QT_FOR_CONFIG += knx-private
+
+requires(qtConfig(compilerdetection))

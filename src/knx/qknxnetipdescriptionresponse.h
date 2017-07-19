@@ -37,30 +37,6 @@
 
 QT_BEGIN_NAMESPACE
 
-namespace QKnxPrivate
-{
-    static inline QKnxNetIpStructRef::Type codeToType(QKnxNetIp::DescriptionType code)
-    {
-        switch (QKnxNetIp::DescriptionType(code)) {
-        case QKnxNetIp::DescriptionType::DeviceInfo:
-            return QKnxNetIpStructRef::Type::QKnxNetIpDeviceDib;
-        case QKnxNetIp::DescriptionType::SupportedServiceFamilies:
-            return QKnxNetIpStructRef::Type::QKnxNetIpServiceFamiliesDib;
-        case QKnxNetIp::DescriptionType::IpConfiguration:
-            return QKnxNetIpStructRef::Type::QKnxNetIpConfigDib;
-        case QKnxNetIp::DescriptionType::CurrentIpConfiguration:
-            return QKnxNetIpStructRef::Type::QKnxNetIpCurrentConfigDib;
-        case QKnxNetIp::DescriptionType::KnxAddresses:
-            return QKnxNetIpStructRef::Type::QKnxNetIpKnxAddressesDib;
-        case QKnxNetIp::DescriptionType::ManufactorData:
-            return QKnxNetIpStructRef::Type::QKnxNetIpManufacturerDib;
-        default:
-            break;
-        }
-        return QKnxNetIpStructRef::Type::Null;
-    }
-}
-
 class Q_KNX_EXPORT QKnxNetIpDescriptionResponse final : public QKnxNetIpFrame
 {
 public:
@@ -85,6 +61,27 @@ public:
         static_assert(is_type<T, QVector<QKnxNetIpStructRef>, std::deque<QKnxNetIpStructRef>,
             std::vector<QKnxNetIpStructRef>>::value, "Type not supported.");
 
+        const auto codeToType = [] (QKnxNetIp::DescriptionType code) -> QKnxNetIpStructRef::Type
+        {
+            switch (QKnxNetIp::DescriptionType(code)) {
+            case QKnxNetIp::DescriptionType::DeviceInfo:
+                return QKnxNetIpStructRef::Type::QKnxNetIpDeviceDib;
+            case QKnxNetIp::DescriptionType::SupportedServiceFamilies:
+                return QKnxNetIpStructRef::Type::QKnxNetIpServiceFamiliesDib;
+            case QKnxNetIp::DescriptionType::IpConfiguration:
+                return QKnxNetIpStructRef::Type::QKnxNetIpConfigDib;
+            case QKnxNetIp::DescriptionType::CurrentIpConfiguration:
+                return QKnxNetIpStructRef::Type::QKnxNetIpCurrentConfigDib;
+            case QKnxNetIp::DescriptionType::KnxAddresses:
+                return QKnxNetIpStructRef::Type::QKnxNetIpKnxAddressesDib;
+            case QKnxNetIp::DescriptionType::ManufactorData:
+                return QKnxNetIpStructRef::Type::QKnxNetIpManufacturerDib;
+            default:
+                break;
+            }
+            return QKnxNetIpStructRef::Type::Null;
+        };
+
         const auto &ref = payloadRef();
         auto header = QKnxNetIpStructHeader<QKnxNetIp::DescriptionType>::fromBytes(ref, 0);
         quint16 index = header.totalSize(); // total size of device DIB
@@ -95,7 +92,7 @@ public:
         T dibs;
         while (index < ref.size()) {
             header = QKnxNetIpStructHeader<QKnxNetIp::DescriptionType>::fromBytes(ref, index);
-            dibs.push_back(QKnxNetIpStructRef(payloadRef(index), QKnxPrivate::codeToType(header.code())));
+            dibs.push_back(QKnxNetIpStructRef(payloadRef(index), codeToType(header.code())));
             index += header.totalSize(); // advance of total size of last read DIB
         }
         return dibs;
