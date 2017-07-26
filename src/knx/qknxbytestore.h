@@ -155,7 +155,7 @@ public:
         if (replacement.size() <= 0)
             return;
 
-        if (pos >= size())
+        if ((pos + replacement.size()) >= size())
             resize(pos + quint16(replacement.size()));
 
         std::copy(std::begin(replacement), std::end(replacement),
