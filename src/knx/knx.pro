@@ -115,7 +115,8 @@ SOURCES += \
     qknxcemiframe.cpp \
     qknxtunnelframe.cpp \
     qknxnpdu.cpp \
-    qknxnpdufactory.cpp
+    qknxnpdufactory.cpp \
+    qknxcemi.cpp
 
 HEADERS += $$PUBLIC_HEADERS $$PRIVATE_HEADERS
 
