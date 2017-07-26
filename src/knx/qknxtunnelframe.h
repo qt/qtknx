@@ -40,10 +40,6 @@ public:
 
     explicit QKnxTunnelFrame(QKnxTunnelFrame::MessageCode messageCode);
 
-    QKnxTunnelFrame (const QKnxCemiFrame &other)
-        : QKnxCemiFrame(other)
-    {}
-
     bool isValid() const override;
 
     QKnxControlField controlField() const;
@@ -86,6 +82,8 @@ public:
 
     QKnxNpdu networkLayerProtocolDataUnit() const;
     void setNetworkLayerProtocolDataUnit(const QKnxNpdu &npdu);
+
+    QKnxTunnelFrame(const QKnxCemiFrame &other);
 };
 
 QT_END_NAMESPACE

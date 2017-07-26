@@ -156,4 +156,8 @@ void QKnxTunnelFrame::setNetworkLayerProtocolDataUnit(const QKnxNpdu & npdu)
     setServiceInformation(info);
 }
 
+QKnxTunnelFrame::QKnxTunnelFrame(const QKnxCemiFrame &other)
+    : QKnxCemiFrame(other)
+{}
+
 QT_END_NAMESPACE
