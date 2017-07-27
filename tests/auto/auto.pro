@@ -31,4 +31,5 @@ SUBDIRS += cmake \
     qknxnetiptunnelingacknowledge \
     qknxnetiptunnelingrequest \
     qknxtunnelframe \
-    qknxnpdufactory
+    qknxnpdufactory \
+    qknxdevicemanagementframe

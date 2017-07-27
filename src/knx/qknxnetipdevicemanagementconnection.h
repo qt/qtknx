@@ -22,14 +22,13 @@
 #ifndef QKNXNETIPDEVICEMANAGEMENTCONNECTION_H
 #define QKNXNETIPDEVICEMANAGEMENTCONNECTION_H
 
-#include <QtKnx/qknxcemiframe.h>
+#include <QtKnx/qknxdevicemanagementframe.h>
 #include <QtKnx/qknxglobal.h>
 #include <QtKnx/qknxnetipendpointconnection.h>
 
 QT_BEGIN_NAMESPACE
 
 class QKnxNetIpDeviceManagementConnectionPrivate;
-using QKnxDeviceManagementFrame = QKnxCemiFrame;
 
 class Q_KNX_EXPORT QKnxNetIpDeviceManagementConnection final : public QKnxNetIpEndpointConnection
 {

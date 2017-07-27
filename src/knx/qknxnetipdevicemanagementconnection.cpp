@@ -36,7 +36,7 @@ public:
             QKnxNetIp::DeviceConfigurationRequestTimeout)
     {}
 
-    void process(const QKnxDeviceManagementFrame &frame) override
+    void process(const QKnxCemiFrame &frame) override
     {
         Q_Q(QKnxNetIpDeviceManagementConnection);
         emit q->receivedDeviceManagementFrame(frame);
