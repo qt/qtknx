@@ -24,6 +24,7 @@
 
 #include <QtKnx/qknxaddress.h>
 #include <QtKnx/qknxcemi.h>
+#include <QtKnx/qknxinterfaceobject.h>
 #include <QtKnx/qknxnetip.h>
 #include <QtKnx/qknxnpdu.h>
 #include <QtKnx/qknxutils.h>

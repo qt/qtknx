@@ -19,7 +19,7 @@
 **
 ******************************************************************************/
 
-#include "qknxcemi.h"
+#include "qknxinterfaceobject.h"
 
 QT_BEGIN_NAMESPACE
 
@@ -237,6 +237,7 @@ bool QKnxInterfaceObject::Property::isRouterProperty(Property property)
     case Property::Router::CouplerServerControl:
     case Property::Router::MaxApduLengthRouter:
     case Property::Router::L2CouplerType:
+        return true;
     default:
         break;
     };
@@ -417,6 +418,43 @@ bool QKnxInterfaceObject::Property::isRfMediumProperty(Property property)
     return Property::isIndependentProperty(property);
 }
 
+QKnxInterfaceObject::Type::Type(Type::System type)
+    : m_objectType(type)
+{}
+
+QKnxInterfaceObject::Type &QKnxInterfaceObject::Type::operator=(Type::System type)
+{
+    return operator=(quint16(type));
+}
+
+QKnxInterfaceObject::Type::Type(Type::Application type)
+    : m_objectType(type)
+{}
+
+QKnxInterfaceObject::Type &QKnxInterfaceObject::Type::operator=(Type::Application type)
+{
+    return operator=(quint16(type));
+}
+
+QKnxInterfaceObject::Type::Type(Type::NonStandardized type)
+    : m_objectType(type)
+{}
+
+QKnxInterfaceObject::Type &QKnxInterfaceObject::Type::operator=(Type::NonStandardized type)
+{
+    return operator=(quint16(type));
+}
+
+QKnxInterfaceObject::Type::Type(quint16 objectType)
+    : m_objectType(objectType)
+{}
+
+QKnxInterfaceObject::Type &QKnxInterfaceObject::Type::operator=(quint16 objectType)
+{
+    m_objectType = objectType;
+    return *this;
+}
+
 /*!
     Returns true if the \a objectType is of type \l System, \l Application or
     l\ NonStandardized; false otherwise.
@@ -425,7 +463,7 @@ bool QKnxInterfaceObject::Property::isRfMediumProperty(Property property)
 */
 bool QKnxInterfaceObject::Type::isObjectType(QKnxInterfaceObject::Type type)
 {
-    if (type == System::ReservedType)
+    if (type == System::Reserved)
         return false;
 
     if ((type >= Application::ApplicationReserved && type < Application::WhiteGoods))
@@ -448,7 +486,7 @@ bool QKnxInterfaceObject::Type::isObjectType(QKnxInterfaceObject::Type type)
     \note For all valid object types except \l System object types the function
     returns true always.
 */
-bool QKnxInterfaceObject::Type::isMatch(Type type, Property property)
+bool QKnxInterfaceObject::Type::isMatch(QKnxInterfaceObject::Type type, Property property)
 {
     if (!isObjectType(type))
         return false;
@@ -456,36 +494,51 @@ bool QKnxInterfaceObject::Type::isMatch(Type type, Property property)
     switch (type) {
     case System::Device:
         return Property::isDeviceProperty(property);
-    case System::GroupAddressTableType:
+    case System::GroupAddressTable:
         return Property::isGroupAddressTableProperty(property);
-    case System::AssociationTableType:
+    case System::AssociationTable:
         return Property::isAssociationTableProperty(property);
-    case System::ApplicationProgramType:
+    case System::ApplicationProgram:
         return Property::isApplicationProgramProperty(property);
-    case System::InterfaceProgramType:
+    case System::InterfaceProgram:
         return Property::isInterfaceProgramProperty(property);
-    case System::KnxObjectAssociationTableType:
+    case System::KnxObjectAssociationTable:
         return Property::isKnxObjectAssociationTableProperty(property);
-    case System::RouterType:
+    case System::Router:
         return Property::isRouterProperty(property);
-    case System::LteAddressRoutingTableType:
+    case System::LteAddressRoutingTable:
         return Property::isLteAddressRoutingTableProperty(property);
-    case System::CemiServerType:
+    case System::CemiServer:
         return Property::isCemiServerProperty(property);
-    case System::GroupObjectTableType:
+    case System::GroupObjectTable:
         return Property::isGroupObjectTableProperty(property);
-    case System::PollingMasterType:
+    case System::PollingMaster:
         return Property::isPollingMasterProperty(property);
-    case System::KnxNetIpParameterType:
+    case System::KnxNetIpParameter:
         return Property::isKnxNetIpParameterProperty(property);
-    case System::FileServerType:
+    case System::FileServer:
         return Property::isFileServerProperty(property);
-    case System::RfMediumType:
+    case System::RfMedium:
         return Property::isRfMediumProperty(property);
     default:
         break;
     }
     return false;
+}
+
+bool QKnxInterfaceObject::Type::operator==(Type::System type) const
+{
+    return m_objectType == int(type);
+}
+
+bool QKnxInterfaceObject::Type::operator==(Type::Application type) const
+{
+    return m_objectType == int(type);
+}
+
+bool QKnxInterfaceObject::Type::operator==(Type::NonStandardized type) const
+{
+    return m_objectType == int(type);
 }
 
 QT_END_NAMESPACE
