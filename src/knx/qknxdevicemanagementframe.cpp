@@ -71,13 +71,13 @@ bool QKnxDeviceManagementFrame::isValid() const
     }
 
     auto type = objectType();
-    if (!QKnxInterfaceObject::Type::isObjectType(type))
+    if (!QKnxInterfaceObjectType::isObjectType(type))
         return false;
 
     if (objectInstance() < 1)
         return false;
 
-    if (!QKnxInterfaceObject::Type::isMatch(type, property()))
+    if (!QKnxInterfaceObjectType::isMatch(type, property()))
         return false;
     return true; // TODO: Find other definitions of validity.
 }
@@ -92,14 +92,14 @@ bool QKnxDeviceManagementFrame::isNegativeConfirmation() const
         && numberOfElements() == 0;
 }
 
-QKnxInterfaceObject::Type QKnxDeviceManagementFrame::objectType() const
+QKnxInterfaceObjectType QKnxDeviceManagementFrame::objectType() const
 {
-    return QKnxInterfaceObject::Type(QKnxUtils::QUint16::fromBytes(serviceInformationRef()));
+    return QKnxInterfaceObjectType(QKnxUtils::QUint16::fromBytes(serviceInformationRef()));
 }
 
-void QKnxDeviceManagementFrame::setObjectType(QKnxInterfaceObject::Type type)
+void QKnxDeviceManagementFrame::setObjectType(QKnxInterfaceObjectType type)
 {
-    if (!QKnxInterfaceObject::Type::isObjectType(type))
+    if (!QKnxInterfaceObjectType::isObjectType(type))
         return;
 
     auto si = serviceInformation();
@@ -115,19 +115,19 @@ quint8 QKnxDeviceManagementFrame::objectInstance() const
 void QKnxDeviceManagementFrame::setObjectInstance(quint8 instance)
 {
     auto si = serviceInformation();
-    si.replaceBytes<std::array<quint8, 1>, 1>(2, { instance });
+    si.replaceBytes<std::array<quint8, 1>, 1>(2, { { instance } });
     setServiceInformation(si);
 }
 
-QKnxInterfaceObject::Property QKnxDeviceManagementFrame::property() const
+QKnxInterfaceObjectProperty QKnxDeviceManagementFrame::property() const
 {
     return serviceInformationRef().byte(3);
 }
 
-void QKnxDeviceManagementFrame::setProperty(QKnxInterfaceObject::Property pid)
+void QKnxDeviceManagementFrame::setProperty(QKnxInterfaceObjectProperty pid)
 {
     auto si = serviceInformation();
-    si.replaceBytes<std::array<quint8, 1>, 1>(3, { pid });
+    si.replaceBytes<std::array<quint8, 1>, 1>(3, { { quint8(pid) } });
     setServiceInformation(si);
 }
 

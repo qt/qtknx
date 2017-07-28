@@ -121,8 +121,8 @@ void tst_QKnxNpduFactory::testGroupValueWrite()
 
 void tst_QKnxNpduFactory::testGroupPropValueRead()
 {
-    QKnxNpdu npdu = QKnxNpduFactory::createGroupPropValueReadNpdu(QKnxInterfaceObject::Type::System::Device,
-        5, QKnxInterfaceObject::Property::Independent::ManufacturerData);
+    QKnxNpdu npdu = QKnxNpduFactory::createGroupPropValueReadNpdu(QKnxInterfaceObjectType::System::Device,
+        5, QKnxInterfaceObjectProperty::General::ManufacturerData);
 
     QCOMPARE(quint8(npdu.size()), quint8(7));
     QCOMPARE(QKnxNpduFactory::transportLayerControlFied(npdu),
@@ -134,8 +134,8 @@ void tst_QKnxNpduFactory::testGroupPropValueRead()
 void tst_QKnxNpduFactory::testGroupPropValueWrite()
 {
     QByteArray data = QByteArray::fromHex("010203");
-    QKnxNpdu npdu = QKnxNpduFactory::createGroupPropValueWriteNpdu(QKnxInterfaceObject::Type::System::Device,
-        5, QKnxInterfaceObject::Property::Independent::ManufacturerData, data);
+    QKnxNpdu npdu = QKnxNpduFactory::createGroupPropValueWriteNpdu(QKnxInterfaceObjectType::System::Device,
+        5, QKnxInterfaceObjectProperty::General::ManufacturerData, data);
 
     QCOMPARE(quint8(npdu.size()), quint8(10));
     QCOMPARE(QKnxNpduFactory::transportLayerControlFied(npdu),
@@ -270,7 +270,7 @@ void tst_QKnxNpduFactory::testSystemNetworkParameterRead()
 {
     QByteArray testInfo = QByteArray::fromHex("01020304");
     QKnxNpdu npdu = QKnxNpduFactory::createNetworkParameterReadNpdu(QKnxNpduFactory::Network::System,
-        QKnxInterfaceObject::Type::System::Device, QKnxInterfaceObject::Property::Device::ErrorFlags, testInfo);
+        QKnxInterfaceObjectType::System::Device, QKnxInterfaceObjectProperty::Device::ErrorFlags, testInfo);
 
     QCOMPARE(quint8(npdu.size()), quint8(11));
     QCOMPARE(QKnxNpduFactory::transportLayerControlFied(npdu),
@@ -283,7 +283,7 @@ void tst_QKnxNpduFactory::testSystemNetworkParameterWrite()
 {
     QByteArray value = QByteArray::fromHex("01020304");
     QKnxNpdu npdu = QKnxNpduFactory::createNetworkParameterWriteNpdu(QKnxNpduFactory::Network::System,
-        QKnxInterfaceObject::Type::System::Device, QKnxInterfaceObject::Property::Device::ErrorFlags, value);
+        QKnxInterfaceObjectType::System::Device, QKnxInterfaceObjectProperty::Device::ErrorFlags, value);
 
     QCOMPARE(quint8(npdu.size()), quint8(11));
     QCOMPARE(QKnxNpduFactory::transportLayerControlFied(npdu),
@@ -296,7 +296,7 @@ void tst_QKnxNpduFactory::testNetworkParameterRead()
 {
     QByteArray testInfo = QByteArray::fromHex("01020304");
     QKnxNpdu npdu = QKnxNpduFactory::createNetworkParameterReadNpdu(QKnxNpduFactory::Network::Local,
-        QKnxInterfaceObject::Type::System::Device, QKnxInterfaceObject::Property::Device::ErrorFlags, testInfo);
+        QKnxInterfaceObjectType::System::Device, QKnxInterfaceObjectProperty::Device::ErrorFlags, testInfo);
 
     QCOMPARE(quint8(npdu.size()), quint8(10));
     QCOMPARE(QKnxNpduFactory::transportLayerControlFied(npdu),
@@ -309,7 +309,7 @@ void tst_QKnxNpduFactory::testNetworkParameterWrite()
 {
     QByteArray value = QByteArray::fromHex("01020304");
     QKnxNpdu npdu = QKnxNpduFactory::createNetworkParameterWriteNpdu(QKnxNpduFactory::Network::Local,
-        QKnxInterfaceObject::Type::System::Device, QKnxInterfaceObject::Property::Device::ErrorFlags, value);
+        QKnxInterfaceObjectType::System::Device, QKnxInterfaceObjectProperty::Device::ErrorFlags, value);
 
     QCOMPARE(quint8(npdu.size()), quint8(10));
     QCOMPARE(QKnxNpduFactory::transportLayerControlFied(npdu),
@@ -320,7 +320,7 @@ void tst_QKnxNpduFactory::testNetworkParameterWrite()
 
 void tst_QKnxNpduFactory::testPropertyValueRead()
 {
-    QKnxNpdu npdu = QKnxNpduFactory::createPropertyValueReadNpdu(0, QKnxInterfaceObject::Property::Device::ErrorFlags,
+    QKnxNpdu npdu = QKnxNpduFactory::createPropertyValueReadNpdu(0, QKnxInterfaceObjectProperty::Device::ErrorFlags,
         1, 1);
 
     QCOMPARE(quint8(npdu.size()), quint8(7));
@@ -332,7 +332,7 @@ void tst_QKnxNpduFactory::testPropertyValueRead()
     //connection oriented
     quint8 sequenceNumber = 2;
     npdu = QKnxNpduFactory::createPropertyValueReadNpdu(0,
-        QKnxInterfaceObject::Property::Device::ErrorFlags, 1, 1, sequenceNumber);
+        QKnxInterfaceObjectProperty::Device::ErrorFlags, 1, 1, sequenceNumber);
 
     QCOMPARE(quint8(npdu.size()), quint8(7));
     // check the TPCI
@@ -354,7 +354,7 @@ void tst_QKnxNpduFactory::testPropertyValueWrite()
 {
     QByteArray data = QByteArray::fromHex("01020304");
     QKnxNpdu npdu = QKnxNpduFactory::createPropertyValueWriteNpdu(0,
-        QKnxInterfaceObject::Property::Device::ErrorFlags, 1, 1, data);
+        QKnxInterfaceObjectProperty::Device::ErrorFlags, 1, 1, data);
 
     QCOMPARE(quint8(npdu.size()), quint8(11));
     QCOMPARE(QKnxNpduFactory::transportLayerControlFied(npdu),
@@ -364,7 +364,7 @@ void tst_QKnxNpduFactory::testPropertyValueWrite()
 
     //connection oriented
     quint8 sequenceNumber = 2;
-    npdu = QKnxNpduFactory::createPropertyValueWriteNpdu(0, QKnxInterfaceObject::Property::Device::ErrorFlags,
+    npdu = QKnxNpduFactory::createPropertyValueWriteNpdu(0, QKnxInterfaceObjectProperty::Device::ErrorFlags,
         1, 1, data, sequenceNumber);
 
     QCOMPARE(quint8(npdu.size()), quint8(11));
@@ -384,7 +384,7 @@ void tst_QKnxNpduFactory::testPropertyValueWrite()
 void tst_QKnxNpduFactory::testPropertyDescriptionRead()
 {
     QKnxNpdu npdu = QKnxNpduFactory::createPropertyDescriptionReadNpdu(0,
-        QKnxInterfaceObject::Property::Device::ErrorFlags, 1);
+        QKnxInterfaceObjectProperty::Device::ErrorFlags, 1);
 
     QCOMPARE(quint8(npdu.size()), quint8(6));
     QCOMPARE(QKnxNpduFactory::transportLayerControlFied(npdu),
@@ -395,7 +395,7 @@ void tst_QKnxNpduFactory::testPropertyDescriptionRead()
     //connection oriented
     quint8 sequenceNumber = 2;
     npdu = QKnxNpduFactory::createPropertyDescriptionReadNpdu(0,
-        QKnxInterfaceObject::Property::Device::ErrorFlags, 1, sequenceNumber);
+        QKnxInterfaceObjectProperty::Device::ErrorFlags, 1, sequenceNumber);
 
     QCOMPARE(quint8(npdu.size()), quint8(6));
     // check the TPCI
@@ -417,7 +417,7 @@ void tst_QKnxNpduFactory::testFunctionPropertyCommand()
 {
     QByteArray data = QByteArray::fromHex("0102030405");
     QKnxNpdu npdu = QKnxNpduFactory::createFunctionPropertyCommandNpdu(0,
-        QKnxInterfaceObject::Property::Device::ErrorFlags, data);
+        QKnxInterfaceObjectProperty::Device::ErrorFlags, data);
 
     QCOMPARE(quint8(npdu.size()), quint8(10));
     QCOMPARE(QKnxNpduFactory::transportLayerControlFied(npdu),
@@ -428,7 +428,7 @@ void tst_QKnxNpduFactory::testFunctionPropertyCommand()
     //connection oriented
     quint8 sequenceNumber = 2;
     npdu = npdu = QKnxNpduFactory::createFunctionPropertyCommandNpdu(0,
-        QKnxInterfaceObject::Property::Device::ErrorFlags, data, sequenceNumber);
+        QKnxInterfaceObjectProperty::Device::ErrorFlags, data, sequenceNumber);
 
     QCOMPARE(quint8(npdu.size()), quint8(10));
     std::bitset<8> tpci = quint8(QKnxCemi::TransportLayerControlField::DataConnected);
@@ -448,7 +448,7 @@ void tst_QKnxNpduFactory::testFunctionPropertyStateRead()
 {
     QByteArray data = QByteArray::fromHex("0102030405");
     QKnxNpdu npdu = QKnxNpduFactory::createFunctionPropertyStateReadNpdu(0,
-        QKnxInterfaceObject::Property::Device::ErrorFlags, data);
+        QKnxInterfaceObjectProperty::Device::ErrorFlags, data);
 
     QCOMPARE(quint8(npdu.size()), quint8(10));
     QCOMPARE(QKnxNpduFactory::transportLayerControlFied(npdu),
@@ -459,7 +459,7 @@ void tst_QKnxNpduFactory::testFunctionPropertyStateRead()
     //connection oriented
     quint8 sequenceNumber = 2;
     npdu = npdu = QKnxNpduFactory::createFunctionPropertyStateReadNpdu(0,
-        QKnxInterfaceObject::Property::Device::ErrorFlags, data, sequenceNumber);
+        QKnxInterfaceObjectProperty::Device::ErrorFlags, data, sequenceNumber);
 
     QCOMPARE(quint8(npdu.size()), quint8(10));
     std::bitset<8> tpci = quint8(QKnxCemi::TransportLayerControlField::DataConnected);

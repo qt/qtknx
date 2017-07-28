@@ -62,7 +62,8 @@ PUBLIC_HEADERS += \
     qknxcemi.h \
     qknxnpdu.h \
     qknxnpdufactory.h \
-    qknxinterfaceobject.h \
+    qknxinterfaceobjecttype.h \
+    qknxinterfaceobjectproperty.h \
     qknxdevicemanagementframe.h
 
 PRIVATE_HEADERS += \
@@ -118,7 +119,8 @@ SOURCES += \
     qknxtunnelframe.cpp \
     qknxnpdu.cpp \
     qknxnpdufactory.cpp \
-    qknxinterfaceobject.cpp \
+    qknxinterfaceobjecttype.cpp \
+    qknxinterfaceobjectproperty.cpp \
     qknxdevicemanagementframe.cpp
 
 HEADERS += $$PUBLIC_HEADERS $$PRIVATE_HEADERS

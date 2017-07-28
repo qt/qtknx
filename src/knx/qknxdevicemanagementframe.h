@@ -22,9 +22,11 @@
 #ifndef QKNXDEVICEMANAGEMENTFRAME_H
 #define QKNXDEVICEMANAGEMENTFRAME_H
 
+#include <QtKnx/qknxcemi.h>
 #include <QtKnx/qknxcemiframe.h>
 #include <QtKnx/qknxglobal.h>
-#include <QtKnx/qknxinterfaceobject.h>
+#include <QtKnx/qknxinterfaceobjectproperty.h>
+#include <QtKnx/qknxinterfaceobjecttype.h>
 
 QT_BEGIN_NAMESPACE
 
@@ -58,14 +60,14 @@ public:
     bool isValid() const override;
     bool isNegativeConfirmation() const;
 
-    QKnxInterfaceObject::Type objectType() const;
-    void setObjectType(QKnxInterfaceObject::Type type);
+    QKnxInterfaceObjectType objectType() const;
+    void setObjectType(QKnxInterfaceObjectType type);
 
     quint8 objectInstance() const;
     void setObjectInstance(quint8 instance);
 
-    QKnxInterfaceObject::Property property() const;
-    void setProperty(QKnxInterfaceObject::Property pid);
+    QKnxInterfaceObjectProperty property() const;
+    void setProperty(QKnxInterfaceObjectProperty pid);
 
     quint8 numberOfElements() const;
     void setNumberOfElements(quint8 count);
@@ -100,7 +102,7 @@ public:
 
 private:
     template <typename T = QByteArray> QKnxDeviceManagementFrame(QKnxCemiFrame::MessageCode code,
-            QKnxInterfaceObject::Type type, quint8 instance, QKnxInterfaceObject::Property pid,
+            QKnxInterfaceObjectType type, quint8 instance, QKnxInterfaceObjectProperty pid,
             quint8 noe, quint16 index, const T &payload = {})
         : QKnxDeviceManagementFrame(code)
     {

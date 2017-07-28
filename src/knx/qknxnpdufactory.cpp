@@ -136,15 +136,15 @@ QKnxNpdu QKnxNpduFactory::createGroupValueWriteNpdu(const QByteArray &data)
     return npdu;
 }
 
-QKnxNpdu QKnxNpduFactory::createGroupPropValueReadNpdu(QKnxInterfaceObject::Type objectType,
-    quint8 objectInstance, QKnxInterfaceObject::Property property)
+QKnxNpdu QKnxNpduFactory::createGroupPropValueReadNpdu(QKnxInterfaceObjectType objectType,
+    quint8 objectInstance, QKnxInterfaceObjectProperty property)
 {
     return createGroupPropValueNpdu(QKnxCemi::ApplicationLayerControlField::GroupPropValueRead,
         objectType, objectInstance, property);
 }
 
-QKnxNpdu QKnxNpduFactory::createGroupPropValueWriteNpdu(QKnxInterfaceObject::Type objectType,
-    quint8 objectInstance, QKnxInterfaceObject::Property property, const QByteArray &data)
+QKnxNpdu QKnxNpduFactory::createGroupPropValueWriteNpdu(QKnxInterfaceObjectType objectType,
+    quint8 objectInstance, QKnxInterfaceObjectProperty property, const QByteArray &data)
 {
     return createGroupPropValueNpdu(QKnxCemi::ApplicationLayerControlField::GroupPropValueWrite,
         objectType, objectInstance, property, data);
@@ -327,7 +327,7 @@ QKnxNpdu QKnxNpduFactory::createDomainAddressSerialNumberWriteNpdu(const QByteAr
 }
 
 QKnxNpdu QKnxNpduFactory::createNetworkParameterWriteNpdu(Network type,
-    QKnxInterfaceObject::Type objectType, QKnxInterfaceObject::Property property,
+    QKnxInterfaceObjectType objectType, QKnxInterfaceObjectProperty property,
     const QByteArray &value)
 {
     auto field = (type == Network::System
@@ -337,14 +337,14 @@ QKnxNpdu QKnxNpduFactory::createNetworkParameterWriteNpdu(Network type,
 }
 
 QKnxNpdu QKnxNpduFactory::createPropertyValueReadNpdu(quint8 objectIndex,
-    QKnxInterfaceObject::Property property, quint8 nbElement, quint16 startIndex, quint8 seqNumber)
+    QKnxInterfaceObjectProperty property, quint8 nbElement, quint16 startIndex, quint8 seqNumber)
 {
     return createPropertyValueReadWriteNpdu(objectIndex, property, nbElement, startIndex,
         seqNumber, QKnxCemi::ApplicationLayerControlField::PropertyValueRead);
 }
 
 QKnxNpdu QKnxNpduFactory::createPropertyValueWriteNpdu(quint8 objectIndex,
-    QKnxInterfaceObject::Property property, quint8 nbElement, quint16 startIndex,
+    QKnxInterfaceObjectProperty property, quint8 nbElement, quint16 startIndex,
     const QByteArray &data, quint8 seqNumber)
 {
     return createPropertyValueReadWriteNpdu(objectIndex, property, nbElement, startIndex,
@@ -352,7 +352,7 @@ QKnxNpdu QKnxNpduFactory::createPropertyValueWriteNpdu(quint8 objectIndex,
 }
 
 QKnxNpdu QKnxNpduFactory::createPropertyDescriptionReadNpdu(quint8 objectIndex,
-    QKnxInterfaceObject::Property property, quint8 propertyIndex, quint8 seqNumber)
+    QKnxInterfaceObjectProperty property, quint8 propertyIndex, quint8 seqNumber)
 {
     // TODO: Check if the property belongs to an interface object.
 
@@ -370,7 +370,7 @@ QKnxNpdu QKnxNpduFactory::createPropertyDescriptionReadNpdu(quint8 objectIndex,
 }
 
 QKnxNpdu QKnxNpduFactory::createFunctionPropertyStateReadNpdu(quint8 objectIndex,
-    QKnxInterfaceObject::Property property, const QByteArray &data, quint8 seqNumber)
+    QKnxInterfaceObjectProperty property, const QByteArray &data, quint8 seqNumber)
 {
     return createFunctionPropertyNpdu(
         QKnxCemi::ApplicationLayerControlField::FunctionPropertyStateRead,
@@ -378,7 +378,7 @@ QKnxNpdu QKnxNpduFactory::createFunctionPropertyStateReadNpdu(quint8 objectIndex
 }
 
 QKnxNpdu QKnxNpduFactory::createFunctionPropertyCommandNpdu(quint8 objectIndex,
-    QKnxInterfaceObject::Property property, const QByteArray &data, quint8 seqNumber)
+    QKnxInterfaceObjectProperty property, const QByteArray &data, quint8 seqNumber)
 {
     return createFunctionPropertyNpdu(
         QKnxCemi::ApplicationLayerControlField::FunctionPropertyCommand, objectIndex,
@@ -432,7 +432,7 @@ QKnxNpdu QKnxNpduFactory::createDeviceDescriptorReadNpdu(quint8 descriptorType, 
 }
 
 QKnxNpdu QKnxNpduFactory::createNetworkParameterReadNpdu(Network type,
-    QKnxInterfaceObject::Type objectType, QKnxInterfaceObject::Property property,
+    QKnxInterfaceObjectType objectType, QKnxInterfaceObjectProperty property,
     const QByteArray &testInfo)
 {
     auto field = (type == Network::System
@@ -685,10 +685,10 @@ QKnxNpdu QKnxNpduFactory::createAdcReadNpdu(quint8 seqNumber, quint8 channelNumb
 // -- private
 
 
-QByteArray QKnxNpduFactory::parameterType(QKnxInterfaceObject::Type objectType,
-    QKnxInterfaceObject::Property property)
+QByteArray QKnxNpduFactory::parameterType(QKnxInterfaceObjectType objectType,
+    QKnxInterfaceObjectProperty property)
 {
-    if (!QKnxInterfaceObject::Type::isMatch(objectType, property))
+    if (!QKnxInterfaceObjectType::isMatch(objectType, property))
         return {};
     return QKnxUtils::QUint16::bytes<QByteArray>(quint16(objectType)).append(quint8(property));
 }
@@ -709,7 +709,7 @@ QKnxCemi::TransportLayerControlField QKnxNpduFactory::buildTransportControlField
 }
 
 QKnxNpdu QKnxNpduFactory::createGroupPropValueNpdu(QKnxCemi::ApplicationLayerControlField apci,
-    QKnxInterfaceObject::Type objectType, quint8 objectInstance, QKnxInterfaceObject::Property property,
+    QKnxInterfaceObjectType objectType, quint8 objectInstance, QKnxInterfaceObjectProperty property,
     const QByteArray &data)
 {
     QByteArray bytes = parameterType(objectType, property);
@@ -729,7 +729,7 @@ QKnxNpdu QKnxNpduFactory::createGroupPropValueNpdu(QKnxCemi::ApplicationLayerCon
 }
 
 QKnxNpdu QKnxNpduFactory::createNetworkParameterNpdu(QKnxCemi::ApplicationLayerControlField apci,
-    QKnxInterfaceObject::Type objectType, QKnxInterfaceObject::Property property,
+    QKnxInterfaceObjectType objectType, QKnxInterfaceObjectProperty property,
     const QByteArray &testInfoValue, Network type)
 {
     // testInfo: Value against which the resource indicated by parameterType is tested
@@ -750,7 +750,7 @@ QKnxNpdu QKnxNpduFactory::createNetworkParameterNpdu(QKnxCemi::ApplicationLayerC
 }
 
 QKnxNpdu QKnxNpduFactory::createPropertyValueReadWriteNpdu(quint8 objectIndex,
-    QKnxInterfaceObject::Property property, quint8 nbElement, quint16 startIndex,
+    QKnxInterfaceObjectProperty property, quint8 nbElement, quint16 startIndex,
     quint8 seqNumber, QKnxCemi::ApplicationLayerControlField apci, const QByteArray &data)
 {
     // This is for Interface Object (reduced one: 3/4/1 p16)
@@ -785,7 +785,7 @@ QKnxNpdu QKnxNpduFactory::createPropertyValueReadWriteNpdu(quint8 objectIndex,
 }
 
 QKnxNpdu QKnxNpduFactory::createFunctionPropertyNpdu(QKnxCemi::ApplicationLayerControlField apci,
-    quint8 objectIndex, QKnxInterfaceObject::Property property, const QByteArray &data,
+    quint8 objectIndex, QKnxInterfaceObjectProperty property, const QByteArray &data,
     quint8 seqNumber)
 {
     // TODO: Figure out what is data

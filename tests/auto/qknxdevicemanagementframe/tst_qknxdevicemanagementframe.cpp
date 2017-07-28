@@ -34,22 +34,23 @@ class tst_QKnxDeviceManagementFrame : public QObject
     Q_OBJECT
 
 private slots:
-    void testConstructors()
+    void testClass()
     {
         QKnxDeviceManagementFrame frame(QKnxDeviceManagementFrame::MessageCode::PropertyReadRequest);
-        frame.setObjectType(QKnxInterfaceObject::Type::System::KnxNetIpParameter);
+        frame.setObjectType(QKnxInterfaceObjectType::System::KnxNetIpParameter);
         frame.setObjectInstance(1);
-        frame.setProperty(QKnxInterfaceObject::Property::KnxNetIpParameter::CurrentIpAddress);
+        frame.setProperty(QKnxInterfaceObjectProperty::KnxNetIpParameter::CurrentIpAddress);
         frame.setNumberOfElements(14);
         frame.setStartIndex(25);
         frame.setData(QByteArray::fromHex("0102030405"));
 
         QCOMPARE(frame.messageCode(), QKnxDeviceManagementFrame::MessageCode::PropertyReadRequest);
-        QCOMPARE(quint16(frame.objectType()), quint16(QKnxInterfaceObject::Type::KnxNetIpParameter));
+        QCOMPARE(quint16(frame.objectType()), quint16(QKnxInterfaceObjectType::KnxNetIpParameter));
         QCOMPARE(frame.objectInstance(), quint8(1));
-        QCOMPARE(quint8(frame.property()), quint8(QKnxInterfaceObject::Property::CurrentIpAddress));
+        QCOMPARE(quint8(frame.property()), quint8(QKnxInterfaceObjectProperty::CurrentIpAddress));
         QCOMPARE(frame.numberOfElements(), quint8(14));
         QCOMPARE(frame.startIndex(), quint16(25));
+        QCOMPARE(frame.data(), QByteArray::fromHex("0102030405"));
 
         // TODO: Extend the auto-test.
     }
