@@ -118,6 +118,7 @@ void QKnxNetIpEndpointConnectionPrivate::setupTimer()
             Q_Q(QKnxNetIpEndpointConnection);
             q->disconnectFromHost();
         } else {
+            m_waitForAcknowledgement = false;
             sendCemiRequest();
         }
     });
@@ -242,9 +243,11 @@ void QKnxNetIpEndpointConnectionPrivate::cleanup()
 
 void QKnxNetIpEndpointConnectionPrivate::sendCemiRequest()
 {
+    if (m_waitForAcknowledgement)
+        return;
     m_dataEndpoint->writeDatagram(m_lastCemiRequest, m_remoteDataEndpoint.address,
         m_remoteDataEndpoint.port);
-
+    m_waitForAcknowledgement = true;
     m_cemiRequests++;
     m_acknowledgeTimer->start(m_acknowledgeTimeout);
 }
@@ -297,6 +300,7 @@ void QKnxNetIpEndpointConnectionPrivate::process(const QKnxNetIpTunnelingAcknowl
 
     if (acknowledge.channelId() == m_channelId) {
         m_acknowledgeTimer->stop();
+        m_waitForAcknowledgement = false;
         if (acknowledge.status() == QKnxNetIp::Error::None
             && acknowledge.sequenceCount() == m_sendCount) {
                 m_sendCount++;

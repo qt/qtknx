@@ -161,6 +161,7 @@ private:
     QTimer *m_connectionStateTimer { nullptr };
     QTimer *m_disconnectRequestTimer { nullptr };
     QTimer *m_acknowledgeTimer { nullptr };
+    bool m_waitForAcknowledgement { false };
 
     QUdpSocket *m_dataEndpoint { nullptr };
     QUdpSocket *m_controlEndpoint { nullptr };
