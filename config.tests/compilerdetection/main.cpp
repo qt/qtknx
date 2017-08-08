@@ -35,7 +35,7 @@
 # endif
 #else
 # if defined(Q_CC_MSVC)
-#  if Q_CC_MSVC >= 1900
+#  if Q_CC_MSVC < 1900
 #   error "Visual C++ compiler less than version 19."
 #  endif
 # endif
