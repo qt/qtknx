@@ -350,6 +350,7 @@ void QKnxNetIpEndpointConnectionPrivate::process(const QKnxNetIpDeviceConfigurat
 
     if (ack.channelId() == m_channelId) {
         m_acknowledgeTimer->stop();
+        m_waitForAcknowledgement = false;
         if (ack.status() == QKnxNetIp::Error::None
             && ack.sequenceCount() == m_sendCount) {
                 m_sendCount++;
