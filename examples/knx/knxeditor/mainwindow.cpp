@@ -66,14 +66,25 @@ MainWindow::MainWindow(QWidget *parent)
     connect(&m_tunneling, &QKnxNetIpTunnelConnection::connected, this, [&] {
         onConnected(QKnxNetIpServiceFamiliesDib::ServiceFamilieId::IpTunneling);
     });
-    connect(&m_management, &QKnxNetIpDeviceManagementConnection::connected, this, [&] {
-        onConnected(QKnxNetIpServiceFamiliesDib::ServiceFamilieId::DeviceManagement);
-    });
     connect(&m_tunneling, &QKnxNetIpTunnelConnection::disconnected, this, [&] {
         onDisconnected(QKnxNetIpServiceFamiliesDib::ServiceFamilieId::IpTunneling);
     });
+    connect(&m_tunneling, &QKnxNetIpTunnelConnection::receivedTunnelFrame, this,
+        [&] (QKnxTunnelFrame frame) {
+        ui->textOuputTunneling->append(QString::fromUtf8("Received tunneling frame with cEMI "
+            "payload: " + frame.bytes().toHex()));
+    });
+
+    connect(&m_management, &QKnxNetIpDeviceManagementConnection::connected, this, [&] {
+        onConnected(QKnxNetIpServiceFamiliesDib::ServiceFamilieId::DeviceManagement);
+    });
     connect(&m_management, &QKnxNetIpDeviceManagementConnection::disconnected, this, [&] {
         onDisconnected(QKnxNetIpServiceFamiliesDib::ServiceFamilieId::DeviceManagement);
+    });
+    connect(&m_management, &QKnxNetIpDeviceManagementConnection::receivedDeviceManagementFrame,
+        this, [&] (QKnxDeviceManagementFrame frame) {
+        ui->textOuputDeviceManagement->append(QString::fromUtf8("Received device management "
+            "frame with cEMI payload: " + frame.bytes().toHex()));
     });
 
     m_discoveryAgent.setTimeout(5000);
@@ -141,7 +152,7 @@ void MainWindow::showServerAndServices(const QKnxNetIpServerDiscoveryInfo &info)
            .arg(it.value()));
     }
 
-    ui->serverBox->addItem(tr("%1 (%2:%3").arg(info.deviceName(), info.controlEndpointAddress()
+    ui->serverBox->addItem(tr("%1 (%2:%3)").arg(info.deviceName(), info.controlEndpointAddress()
         .toString()).arg(info.controlEndpointPort()), QVariant::fromValue(info));
 }
 
@@ -250,7 +261,9 @@ void MainWindow::on_disconnectRequestDeviceManagement_clicked()
 
 void MainWindow::on_deviceManagementSendRequest_clicked()
 {
-    auto data = QByteArray::fromHex(ui->deviceManagementRequestLine->text().toUtf8());
+    auto text = ui->deviceManagementRequestLine->text();
+    ui->textOuputDeviceManagement->append("Send device management frame with cEMI payload: " + text);
+    auto data = QByteArray::fromHex(text.toUtf8());
     m_management.sendDeviceManagementFrame(QKnxCemiFrame::fromBytes(data, 0, data.size()));
 }
 
@@ -267,7 +280,9 @@ void MainWindow::on_disconnectRequestTunneling_clicked()
 
 void MainWindow::on_tunnelingSendRequest_clicked()
 {
-    auto data = QByteArray::fromHex(ui->tunnelingRequestLine->text().toUtf8());
+    auto text = ui->tunnelingRequestLine->text();
+    ui->textOuputTunneling->append("Send tunneling frame with cEMI payload: " + text);
+    auto data = QByteArray::fromHex(text.toUtf8());
     m_tunneling.sendTunnelFrame(QKnxCemiFrame::fromBytes(data, 0, data.size()));
 }
 
