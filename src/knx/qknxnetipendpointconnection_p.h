@@ -53,6 +53,14 @@ class QKnxNetIpTunnelingAcknowledge;
 class QKnxNetIpTunnelingRequest;
 class QUdpSocket;
 
+struct UserProperties
+{
+    quint16 port { 0 };
+    bool natAware { false };
+    QHostAddress address { QHostAddress::LocalHost };
+    QVector<quint8> supportedVersions  { QKnxNetIpFrameHeader::KnxNetIpVersion10 };
+};
+
 struct Endpoint final
 {
     Endpoint() = default;
@@ -137,8 +145,8 @@ private:
     quint8 m_receiveCount { 0 };
 
     int m_cemiRequests { 0 };
-    int m_maxCemiRequest { 0 };
-    int m_acknowledgeTimeout { 0 };
+    const int m_maxCemiRequest { 0 };
+    const int m_acknowledgeTimeout { 0 };
     QByteArray m_lastCemiRequest {};
 
     int m_stateRequests { 0 };
@@ -165,6 +173,8 @@ private:
 
     QUdpSocket *m_dataEndpoint { nullptr };
     QUdpSocket *m_controlEndpoint { nullptr };
+
+    UserProperties m_user;
 };
 
 QT_END_NAMESPACE

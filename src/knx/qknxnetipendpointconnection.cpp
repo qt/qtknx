@@ -128,6 +128,22 @@ void QKnxNetIpEndpointConnectionPrivate::setup()
 {
     setupTimer();
 
+    m_channelId = -1;
+
+    m_sendCount = 0;
+    m_receiveCount = 0;
+    m_cemiRequests = 0;
+    m_lastCemiRequest = {};
+
+    m_stateRequests = 0;
+    m_lastStateRequest = {};
+
+    m_nat = m_user.natAware;
+    m_supportedVersions = m_user.supportedVersions;
+
+    m_errorString = QString();
+    m_error = QKnxNetIpEndpointConnection::Error::None;
+
     QObject::connect(m_dataEndpoint, &QUdpSocket::readyRead, [&]() {
         while (m_dataEndpoint && m_dataEndpoint->state() == QUdpSocket::BoundState
             && m_dataEndpoint->hasPendingDatagrams()) {
@@ -276,7 +292,7 @@ void QKnxNetIpEndpointConnectionPrivate::process(const QKnxNetIpTunnelingRequest
             || (request.sequenceCount() + 1 == m_receiveCount)) {
                 // sequence equals -> acknowledge -> process frame
                 // sequence -1 -> acknowledge -> drop frame
-                auto ack = QKnxNetIpTunnelingAcknowledge(m_channelId, request.channelId(),
+                auto ack = QKnxNetIpTunnelingAcknowledge(m_channelId, m_receiveCount,
                     QKnxNetIp::Error::None);
 
                 qDebug() << "Sending tunneling acknowledge:" << ack;
@@ -328,7 +344,7 @@ void QKnxNetIpEndpointConnectionPrivate::process(const QKnxNetIpDeviceConfigurat
 
     if (request.channelId() == m_channelId) {
         if (request.sequenceCount() == m_receiveCount) {
-                auto ack = QKnxNetIpDeviceConfigurationAcknowledge(m_channelId, request.channelId(),
+                auto ack = QKnxNetIpDeviceConfigurationAcknowledge(m_channelId, m_receiveCount,
                     QKnxNetIp::Error::None);
 
                 qDebug() << "Sending device configuration acknowledge:" << ack;
@@ -541,34 +557,35 @@ quint16 QKnxNetIpEndpointConnection::localPort() const
 void QKnxNetIpEndpointConnection::setLocalPort(quint16 port)
 {
     Q_D(QKnxNetIpEndpointConnection);
-    if (d->m_state == QKnxNetIpEndpointConnection::Disconnected)
-        d->m_localControlEndpoint.port = port;
+    d->m_user.port = port;
 }
 
 QHostAddress QKnxNetIpEndpointConnection::localAddress() const
 {
     Q_D(const QKnxNetIpEndpointConnection);
+    if (d->m_state == QKnxNetIpEndpointConnection::Disconnected)
+        return d->m_user.address;
     return d->m_localControlEndpoint.address;
 }
 
 void QKnxNetIpEndpointConnection::setLocalAddress(const QHostAddress &address)
 {
     Q_D(QKnxNetIpEndpointConnection);
-    if (d->m_state == QKnxNetIpEndpointConnection::Disconnected)
-        d->m_localControlEndpoint.address = address;
+    d->m_user.address = address;
 }
 
 bool QKnxNetIpEndpointConnection::natAware() const
 {
     Q_D(const QKnxNetIpEndpointConnection);
+    if (d->m_state == QKnxNetIpEndpointConnection::Disconnected)
+        return d->m_user.natAware;
     return d->m_nat;
 }
 
 void QKnxNetIpEndpointConnection::setNatAware(bool isAware)
 {
     Q_D(QKnxNetIpEndpointConnection);
-    if (d->m_state == QKnxNetIpEndpointConnection::Disconnected)
-        d->m_nat = isAware;
+    d->m_user.natAware = isAware;
 }
 
 quint32 QKnxNetIpEndpointConnection::heartbeatTimeout() const
@@ -591,14 +608,15 @@ void QKnxNetIpEndpointConnection::setHeartbeatTimeout(quint32 msec)
 QVector<quint8> QKnxNetIpEndpointConnection::supportedProtocolVersions() const
 {
     Q_D(const QKnxNetIpEndpointConnection);
+    if (d->m_state == QKnxNetIpEndpointConnection::Disconnected)
+        return d->m_user.supportedVersions;
     return d->m_supportedVersions;
 }
 
 void QKnxNetIpEndpointConnection::setSupportedProtocolVersions(const QVector<quint8> &versions)
 {
     Q_D(QKnxNetIpEndpointConnection);
-    if (d->m_state == QKnxNetIpEndpointConnection::Disconnected)
-        d->m_supportedVersions = versions;
+    d->m_user.supportedVersions = versions;
 }
 
 void QKnxNetIpEndpointConnection::connectToHost(const QKnxNetIpHpai &controlEndpoint)
@@ -623,7 +641,7 @@ void QKnxNetIpEndpointConnection::connectToHost(const QHostAddress &address, qui
     d->m_remoteControlEndpoint = Endpoint(address, port);
 
     isIPv4 = false;
-    d->m_localControlEndpoint.address.toIPv4Address(&isIPv4);
+    d->m_user.address.toIPv4Address(&isIPv4);
     if (!isIPv4) {
         d->setAndEmitErrorOccurred(Error::NotIPv4, tr("Only IPv4 addresses as local control "
             "endpoint supported."));
@@ -634,7 +652,7 @@ void QKnxNetIpEndpointConnection::connectToHost(const QHostAddress &address, qui
 
     auto socket = new QUdpSocket(this);
     QKnxPrivate::clearSocket(&(d->m_controlEndpoint));
-    if (!socket->bind(d->m_localControlEndpoint.address, d->m_localControlEndpoint.port)) {
+    if (!socket->bind(d->m_user.address, d->m_user.port)) {
         d->setAndEmitErrorOccurred(QKnxNetIpEndpointConnection::Error::Network,
             QKnxNetIpEndpointConnection::tr("Could not bind local control endpoint: %1")
                 .arg(socket->errorString()));
@@ -666,14 +684,17 @@ void QKnxNetIpEndpointConnection::connectToHost(const QHostAddress &address, qui
     d->setAndEmitStateChanged(QKnxNetIpEndpointConnection::State::Connecting);
 
     auto request = QKnxNetIpConnectRequest(d->m_nat ? d->m_natEndpoint : d->m_localControlEndpoint,
+        // TODO: Fix this. It cannot work in NAT mode, because the sever does not know the data
+        // endpoint address if we pass a NAT endpoint. The most likely solution will be to use a
+        // single socket for control and data endpoint...
         d->m_nat ? d->m_natEndpoint : d->m_localDataEndpoint, d->m_cri);
     d->m_controlEndpointVersion = request.header().protocolVersion();
 
     qDebug() << "Sending connect request:" << request;
-    d->m_controlEndpoint->writeDatagram(request.bytes(), d->m_remoteControlEndpoint.address,
-        d->m_remoteControlEndpoint.port);
 
     d->m_connectRequestTimer->start(QKnxNetIp::ConnectRequestTimeout);
+    d->m_controlEndpoint->writeDatagram(request.bytes(), d->m_remoteControlEndpoint.address,
+        d->m_remoteControlEndpoint.port);
 }
 
 void QKnxNetIpEndpointConnection::disconnectFromHost()
