@@ -38,19 +38,31 @@ bool QKnxDeviceManagementFrame::isValid() const
 {
     switch (messageCode()) {
     case QKnxCemiFrame::MessageCode::PropertyReadRequest:
-        if (size() > 7) // 4.1.7.3.2 The request shall not contain any further data
-        return false;
-    case QKnxCemiFrame::MessageCode::PropertyReadConfirmation:
-    case QKnxCemiFrame::MessageCode::PropertyWriteRequest:
+        if (size() != 7) // 4.1.7.3.2 The request shall not contain any further data.
+            return false;
+        break;
+    case QKnxCemiFrame::MessageCode::PropertyReadConfirmation:  // 4.1.7.3.3
+    case QKnxCemiFrame::MessageCode::PropertyWriteRequest:      // 4.1.7.3.4
+        if (size() < 8)     // The frame shall contain further data, at minimum one quint8.
+            return false;   // For 4.1.7.3.3 it shall be (NoE) or error code (negative response).
+        break;
     case QKnxCemiFrame::MessageCode::PropertyWriteConfirmation:
+        if ((numberOfElements() >= 1 && size() != 7) || (numberOfElements() == 0 && size() != 8))
+            return false; // 4.1.7.3.5 size == (write request - data) or negative confirmation
+        break;
     case QKnxCemiFrame::MessageCode::PropertyInfoIndication:
-    case QKnxCemiFrame::MessageCode::FunctionPropertyCommandRequest:
-    case QKnxCemiFrame::MessageCode::FunctionPropertyStateReadRequest:
-    case QKnxCemiFrame::MessageCode::FunctionPropertyCommandConfirmation:
-    // same as the one above
-    //case QKnxCemiFrame::MessageCode::FunctionPropertyStateReadConfirmation:
         if (size() < 7)
             return false;
+        break;
+    case QKnxCemiFrame::MessageCode::FunctionPropertyCommandRequest:
+    case QKnxCemiFrame::MessageCode::FunctionPropertyStateReadRequest:
+        if (size() < 6)
+            return false;
+        break;
+    case QKnxCemiFrame::MessageCode::FunctionPropertyCommandConfirmation:
+//  case QKnxCemiFrame::MessageCode::FunctionPropertyStateReadConfirmation: (same value as above)
+        if (size() < 5)     // 4.1.7.4.5 Error and exception handling for cEMI Function Properties
+            return false;   // return code and data are omitted on error.
         break;
     case QKnxCemiFrame::MessageCode::ResetRequest:
     case QKnxCemiFrame::MessageCode::ResetIndication:
@@ -73,12 +85,21 @@ bool QKnxDeviceManagementFrame::isValid() const
 
 bool QKnxDeviceManagementFrame::isNegativeConfirmation() const
 {
-    // 4.1.7.3.3 Property read confirmation
-    // 4.1.7.3.5 Property write confirmation
-    // The response indicates an error with number of elements == 0.
-    return (messageCode() == QKnxCemiFrame::MessageCode::PropertyReadConfirmation
-        || messageCode() == QKnxCemiFrame::MessageCode::PropertyWriteConfirmation)
-        && numberOfElements() == 0;
+    switch (messageCode()) {
+    case QKnxCemiFrame::MessageCode::PropertyReadConfirmation:
+    case QKnxCemiFrame::MessageCode::PropertyWriteConfirmation:
+        // 4.1.7.3.3 Property read / 4.1.7.3.5 Property write confirmation
+        // The confirmation indicates an error with number of elements == 0.
+        return numberOfElements() == 0;
+
+    //case QKnxCemiFrame::MessageCode::FunctionPropertyStateReadConfirmation:
+    case QKnxCemiFrame::MessageCode::FunctionPropertyCommandConfirmation:
+        // 4.1.7.4.5 The confirmation indicates error by omitting return code
+        return size() == 5; // and data
+    default:
+        break;
+    }
+    return false;
 }
 
 QKnxInterfaceObjectType QKnxDeviceManagementFrame::objectType() const
