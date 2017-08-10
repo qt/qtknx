@@ -34,17 +34,6 @@ QKnxDeviceManagementFrame::QKnxDeviceManagementFrame(QKnxDeviceManagementFrame::
     }
 }
 
-QKnxDeviceManagementFrame::Error QKnxDeviceManagementFrame::errorCode() const
-{
-    if (!isNegativeConfirmation())
-        return QKnxDeviceManagementFrame::Error::None;
-
-    auto err = data();
-    if (err.size() < 1)
-        return QKnxDeviceManagementFrame::Error::Data;
-    return QKnxDeviceManagementFrame::Error(quint8(err[0]));
-}
-
 bool QKnxDeviceManagementFrame::isValid() const
 {
     switch (messageCode()) {
@@ -160,6 +149,70 @@ void QKnxDeviceManagementFrame::setStartIndex(quint16 index)
     auto startIndex = QKnxUtils::QUint16::fromBytes(serviceInformationRef(4));
     si.replaceBytes(4, QKnxUtils::QUint16::bytes((startIndex & 0xf000) | index));
     setServiceInformation(si);
+}
+
+QKnxCemi::Server::Error QKnxDeviceManagementFrame::error() const
+{
+    switch (messageCode()) {
+    case QKnxCemiFrame::MessageCode::PropertyReadConfirmation:
+    case QKnxCemiFrame::MessageCode::PropertyWriteConfirmation:
+        if (numberOfElements() == 0) {
+            auto err = data();
+            if (err.size() < 1)
+                return QKnxCemi::Server::Error::Unspecified;
+            return QKnxCemi::Server::Error(quint8(err[0]));
+        }
+    default:
+        break;
+    }
+    return QKnxCemi::Server::Error::None;
+}
+
+void QKnxDeviceManagementFrame::setError(QKnxCemi::Server::Error error)
+{
+    // Set error code on confirmed messages only. See paragraph 4.1.7.3.7.1
+    switch (messageCode()) {
+    case QKnxCemiFrame::MessageCode::PropertyReadConfirmation:
+    case QKnxCemiFrame::MessageCode::PropertyWriteConfirmation: {
+        auto sf = serviceInformation();
+        if (sf.size() < 7)
+            sf.resize(7);
+        sf.setByte(6, quint8(error));
+        setServiceInformation(sf);
+    }
+    default:
+        break;
+    }
+}
+
+QKnxCemi::Server::ReturnCode QKnxDeviceManagementFrame::returnCode() const
+{
+    switch (messageCode()) {
+    //case QKnxCemiFrame::MessageCode::FunctionPropertyStateReadConfirmation:
+    case QKnxCemiFrame::MessageCode::FunctionPropertyCommandConfirmation:
+        if (size() >= 6)
+            return QKnxCemi::Server::ReturnCode(serviceInformationRef().byte(5));
+    default:
+        break;
+    }
+    return QKnxCemi::Server::ReturnCode::Error;
+}
+
+void QKnxDeviceManagementFrame::setReturnCode(QKnxCemi::Server::ReturnCode code)
+{
+    switch (messageCode()) {
+    //case QKnxCemiFrame::MessageCode::FunctionPropertyStateReadConfirmation:
+    case QKnxCemiFrame::MessageCode::FunctionPropertyCommandConfirmation:
+        break;
+    default:
+        return;
+    }
+
+    auto sf = serviceInformation();
+    if (sf.size() < 6)
+        sf.resize(6);
+    sf.setByte(5, quint8(code));
+    setServiceInformation(sf);
 }
 
 QKnxDeviceManagementFrame::QKnxDeviceManagementFrame(const QKnxCemiFrame &other)

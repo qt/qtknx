@@ -33,24 +33,6 @@ QT_BEGIN_NAMESPACE
 class Q_KNX_EXPORT QKnxDeviceManagementFrame final : public QKnxCemiFrame
 {
 public:
-    enum class Error : quint8
-    {
-        Unspecified = 0x00,
-        OutOfRange = 0x01,
-        OutOfMaxRange = 0x02,
-        OutOfMinRange = 0x03,
-        Memory = 0x04,
-        ReadOnly = 0x05,
-        IllegalCommand = 0x06,
-        NonExistingProperty = 0x07,
-        TypeConflict = 0x08,
-        PropertyIndexRangeError = 0x09,
-        TemporaryNotWritable = 0x0a,
-
-        Data = 0xfe, // Qt extension
-        None = 0xff  // Qt extension
-    };
-    Error errorCode() const;
 
     QKnxDeviceManagementFrame() = default;
     ~QKnxDeviceManagementFrame() override = default;
@@ -74,6 +56,12 @@ public:
 
     quint16 startIndex() const;
     void setStartIndex(quint16 index);
+
+    QKnxCemi::Server::Error error() const;
+    void setError(QKnxCemi::Server::Error error);
+
+    QKnxCemi::Server::ReturnCode returnCode() const;
+    void setReturnCode(QKnxCemi::Server::ReturnCode code);
 
     template <typename T = QByteArray> auto data() const -> decltype(T())
     {
