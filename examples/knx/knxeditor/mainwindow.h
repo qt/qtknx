@@ -22,9 +22,8 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
-#include <QKnxNetIpDeviceManagementConnection>
-#include <QKnxNetIpServiceFamiliesDib>
 #include <QKnxNetIpServerDiscoveryAgent>
+#include <QKnxNetIpServerDiscoveryInfo>
 #include <QKnxNetIpTunnelConnection>
 #include <QMainWindow>
 
@@ -35,7 +34,6 @@ namespace Ui {
 
 class QPushButton;
 class QTextEdit;
-class QKnxNetIpServerDiscoveryInfo;
 QT_END_NAMESPACE
 
 class MainWindow : public QMainWindow
@@ -47,38 +45,25 @@ public:
     ~MainWindow();
 
 private slots:
-    void on_connectRequestDeviceManagement_clicked();
-    void on_disconnectRequestDeviceManagement_clicked();
-
-    void newIPAddressSelected(int localIpBoxIndex);
     void newServerSelected(int serverBoxIndex);
+    void newIPAddressSelected(int localIpBoxIndex);
 
     void showServerAndServices(const QKnxNetIpServerDiscoveryInfo &info);
-    void onConnected(QKnxNetIpServiceFamiliesDib::ServiceFamilieId service);
-    void onDisconnected(QKnxNetIpServiceFamiliesDib::ServiceFamilieId service);
-
-    void on_deviceManagementSendRequest_clicked();
-
-    void on_connectRequestTunneling_clicked();
-
-    void on_disconnectRequestTunneling_clicked();
 
     void on_tunnelingSendRequest_clicked();
+    void on_connectRequestTunneling_clicked();
+    void on_disconnectRequestTunneling_clicked();
 
 private:
     void fillLocalIpBox();
-    void enablingTab();
-    void linkToService(QKnxNetIpServiceFamiliesDib::ServiceFamilieId service,
-        QPushButton **connect, QPushButton **disconnect, QPushButton **send, QTextEdit **output);
+    void enablingTunnelingTab();
 
 private:
     Ui::MainWindow *ui { nullptr };
+    QKnxNetIpTunnelConnection m_tunneling;
 
     QKnxNetIpServerDiscoveryInfo m_server;
-
     QKnxNetIpServerDiscoveryAgent m_discoveryAgent;
-    QKnxNetIpTunnelConnection m_tunneling;
-    QKnxNetIpDeviceManagementConnection m_management;
 };
 
 #endif // MAINWINDOW_H

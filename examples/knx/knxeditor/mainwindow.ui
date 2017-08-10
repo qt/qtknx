@@ -14,8 +14,8 @@
    <string>MainWindow</string>
   </property>
   <widget class="QWidget" name="controlWidget">
-   <layout class="QVBoxLayout" name="verticalLayout_5">
-    <item>
+   <layout class="QGridLayout" name="gridLayout">
+    <item row="0" column="0">
      <widget class="QSplitter" name="splitter">
       <property name="orientation">
        <enum>Qt::Vertical</enum>
@@ -65,7 +65,7 @@
              <item>
               <widget class="QLabel" name="ServerLabel">
                <property name="text">
-                <string> Discovered Server                                                     </string>
+                <string> Discovered Server</string>
                </property>
               </widget>
              </item>
@@ -153,55 +153,13 @@
           <property name="tabsClosable">
            <bool>false</bool>
           </property>
-          <widget class="QWidget" name="deviceManagement">
+          <widget class="LocalDeviceManagement" name="deviceManagement">
            <property name="enabled">
             <bool>true</bool>
            </property>
            <attribute name="title">
-            <string>Property Manag.</string>
+            <string>Local device management</string>
            </attribute>
-           <layout class="QVBoxLayout" name="verticalLayout_6">
-            <item>
-             <layout class="QHBoxLayout" name="horizontalLayout_3">
-              <item>
-               <widget class="QPushButton" name="connectRequestDeviceManagement">
-                <property name="text">
-                 <string>Connect</string>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QPushButton" name="disconnectRequestDeviceManagement">
-                <property name="text">
-                 <string>Disconnect</string>
-                </property>
-               </widget>
-              </item>
-             </layout>
-            </item>
-            <item>
-             <widget class="QGroupBox" name="groupBox">
-              <property name="title">
-               <string/>
-              </property>
-              <layout class="QHBoxLayout" name="horizontalLayout_4">
-               <item>
-                <widget class="QTextEdit" name="textOuputDeviceManagement"/>
-               </item>
-              </layout>
-             </widget>
-            </item>
-            <item>
-             <widget class="QLineEdit" name="deviceManagementRequestLine"/>
-            </item>
-            <item>
-             <widget class="QPushButton" name="deviceManagementSendRequest">
-              <property name="text">
-               <string>Send Request</string>
-              </property>
-             </widget>
-            </item>
-           </layout>
           </widget>
           <widget class="QWidget" name="tunneling">
            <property name="enabled">
@@ -295,7 +253,7 @@
      <x>0</x>
      <y>0</y>
      <width>899</width>
-     <height>21</height>
+     <height>25</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -366,6 +324,14 @@
    </property>
   </action>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>LocalDeviceManagement</class>
+   <extends>QWidget</extends>
+   <header>localdevicemanagement.h</header>
+   <container>1</container>
+  </customwidget>
+ </customwidgets>
  <resources/>
  <connections/>
 </ui>
