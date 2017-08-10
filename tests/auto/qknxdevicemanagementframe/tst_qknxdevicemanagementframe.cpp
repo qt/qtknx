@@ -51,8 +51,25 @@ private slots:
         QCOMPARE(frame.numberOfElements(), quint8(14));
         QCOMPARE(frame.startIndex(), quint16(25));
         QCOMPARE(frame.data(), QByteArray::fromHex("0102030405"));
+    }
 
-        // TODO: Extend the auto-test.
+    void testFactory()
+    {
+        auto objectTypeProperty = QByteArray::fromHex("fc000801011001");
+        QKnxDeviceManagementFrame frame = QKnxDeviceManagementFrame::fromBytes(objectTypeProperty,
+            0, objectTypeProperty.size());
+
+        QCOMPARE(frame.messageCode(), QKnxCemiFrame::MessageCode::PropertyReadRequest);
+        QCOMPARE(quint16(frame.objectType()), quint16(QKnxInterfaceObjectType::CemiServer));
+        QCOMPARE(frame.objectInstance(), quint8(1));
+        QCOMPARE(quint8(frame.property()), quint8(QKnxInterfaceObjectProperty::ObjectType));
+        QCOMPARE(frame.numberOfElements(), quint8(1));
+        QCOMPARE(frame.startIndex(), quint16(1));
+
+        auto bytes = QByteArray::fromHex("fc000b014c1000");
+        frame = QKnxDeviceManagementFrame::fromBytes(bytes, 0, objectTypeProperty.size());
+        frame.setNumberOfElements(15);
+        bytes = frame.bytes().toHex();
     }
 
     void testDebugStream()
@@ -66,10 +83,13 @@ private slots:
             }
             QtMessageHandler oldMessageHandler;
         } _(myMessageHandler);
+
+        // TODO: Implement.
     }
 
     void testDataStream()
     {
+        // TODO: Implement.
     }
 };
 

@@ -32,8 +32,9 @@ QT_BEGIN_NAMESPACE
 
 class Q_KNX_EXPORT QKnxDeviceManagementFrame final : public QKnxCemiFrame
 {
-public:
+    friend class QKnxDeviceManagementFrameFactory;
 
+public:
     QKnxDeviceManagementFrame() = default;
     ~QKnxDeviceManagementFrame() override = default;
 
@@ -102,6 +103,22 @@ private:
         si.setByte(2, instance);
         si.setByte(3, pid);
         si.replaceBytes(4, QKnxUtils::QUint16::bytes((quint16(noe) << 12) | index));
+        si.appendBytes(payload);
+        setServiceInformation(si);
+    }
+
+    template <typename T = QByteArray> QKnxDeviceManagementFrame(QKnxCemiFrame::MessageCode code,
+            QKnxInterfaceObjectType type, quint8 instance, QKnxInterfaceObjectProperty pid,
+            const T &payload = {})
+        : QKnxDeviceManagementFrame(code)
+    {
+        static_assert(is_type<T, QByteArray, QVector<quint8>, QKnxByteStoreRef, std::deque<quint8>,
+            std::vector<quint8>>::value, "Type not supported.");
+
+        auto si = serviceInformation();
+        si.setBytes(QKnxUtils::QUint16::bytes(quint16(type)));
+        si.setByte(2, instance);
+        si.setByte(3, pid);
         si.appendBytes(payload);
         setServiceInformation(si);
     }
