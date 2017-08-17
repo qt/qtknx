@@ -19,8 +19,8 @@
 **
 ******************************************************************************/
 
-#include "QtKnx/qknxbytestore.h"
-#include "QtKnx/qknxbytestoreref.h"
+#include "qknxbytestore.h"
+#include "qknxbytestoreref.h"
 
 QT_BEGIN_NAMESPACE
 

@@ -24,7 +24,7 @@
 
 #include <QtCore/qobject.h>
 #include <QtKnx/qknxglobal.h>
-#include "QtKnx/qknxinterfaceobjectproperty.h"
+#include <QtKnx/qknxinterfaceobjectproperty.h>
 
 QT_BEGIN_NAMESPACE
 
