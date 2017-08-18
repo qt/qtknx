@@ -60,13 +60,16 @@ private slots:
 
 private:
     void setupMessageCodeComboBox();
-    void setupComboBox(const QMetaObject &object, QComboBox *comboBox);
+    void handleIoListResponse(const QKnxDeviceManagementFrame &frame);
     int keyToValue(const QMetaObject &object, const QString &key, bool *ok);
+    void setupComboBox(const QMetaObject &object, QComboBox *comboBox, const QSet<int> &values = {});
 
 private:
     Ui::LocalDeviceManagement *ui { nullptr };
 
     QString m_fullCemiFrame;
+    bool m_awaitIoListResponse { true };
+
     QKnxNetIpServerDiscoveryInfo m_server;
     QKnxNetIpDeviceManagementConnection m_management;
 };

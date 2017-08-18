@@ -22,6 +22,8 @@
 #include "localdevicemanagement.h"
 #include "ui_localdevicemanagement.h"
 
+#include <QKnxDeviceManagementFrameFactory>
+#include <QKnxInterfaceObjectPropertyDataType>
 #include <QMetaEnum>
 #include <QMetaType>
 #include <QStandardItemModel>
@@ -49,6 +51,10 @@ LocalDeviceManagement::LocalDeviceManagement(QWidget* parent)
         ui->textOuputDeviceManagement->append("Successful connected to: " + m_server
             .controlEndpointAddress().toString() + " on port: " + QString::number(m_server
                 .controlEndpointPort()));
+
+        m_management.sendDeviceManagementFrame(QKnxDeviceManagementFrameFactory::PropertyRead
+            ::createRequest(QKnxInterfaceObjectType::System::Device, 1,
+                QKnxInterfaceObjectProperty::Device::IoList, 1, 0));
     });
 
     connect(ui->disconnectRequestDeviceManagement, &QPushButton::clicked, this, [&]() {
@@ -56,6 +62,7 @@ LocalDeviceManagement::LocalDeviceManagement(QWidget* parent)
     });
 
     connect(&m_management, &QKnxNetIpDeviceManagementConnection::disconnected, this, [&] {
+        m_awaitIoListResponse = true;
         ui->deviceManagementSendRequest->setEnabled(false);
         ui->connectRequestDeviceManagement->setEnabled(true);
         ui->disconnectRequestDeviceManagement->setEnabled(false);
@@ -78,6 +85,9 @@ LocalDeviceManagement::LocalDeviceManagement(QWidget* parent)
         this, [&](QKnxDeviceManagementFrame frame) {
         ui->textOuputDeviceManagement->append(QString::fromUtf8("Received device management "
             "frame with cEMI payload: " + frame.bytes().toHex()));
+
+        if (m_awaitIoListResponse)
+            handleIoListResponse(frame);
     });
 
     ui->m_cemiData->setValidator(new QRegExpValidator(QRegExp("[0-9a-fA-F]+")));
@@ -219,25 +229,36 @@ void LocalDeviceManagement::setupMessageCodeComboBox()
         quint8(QKnxDeviceManagementFrame::MessageCode::ResetRequest));
 }
 
-void LocalDeviceManagement::setupComboBox(const QMetaObject &object, QComboBox *comboBox)
+void LocalDeviceManagement::handleIoListResponse(const QKnxDeviceManagementFrame &frame)
 {
-    auto model = new QStandardItemModel;
-    auto enumCount = object.enumeratorCount();
-    for (auto i = 0; i < enumCount; ++i) {
-        auto typeEnum = object.enumerator(i);
-        auto topLevelItem = new QStandardItem(typeEnum.name());
-        for (auto a = 0; a < typeEnum.keyCount(); ++a)
-            topLevelItem->insertRow(a, new QStandardItem(typeEnum.key(a)));
-        model->setItem(i, topLevelItem);
-        topLevelItem->setSelectable(false);
-    }
-    comboBox->setModel(model);
+    if (frame.objectType() != QKnxInterfaceObjectType::System::Device
+        || frame.property() != QKnxInterfaceObjectProperty::Device::IoList)
+        return;
 
-    auto treeView = new QTreeView;
-    treeView->setHeaderHidden(true);
-    treeView->setUniformRowHeights(true);
-    comboBox->setView(treeView);
-    treeView->expand(model->index(0, 0));
+    m_awaitIoListResponse = true;
+
+    auto dataTypes = QKnxInterfaceObjectPropertyDataType::fromProperty(QKnxInterfaceObjectProperty::Device::IoList);
+    if (!dataTypes.value(0).isValid())
+        return;
+
+    auto data = frame.data();
+    quint8 expectedDataSize = dataTypes[0].size();
+    if (frame.startIndex() == 0) {
+        if (data.size() == expectedDataSize) {
+            m_management.sendDeviceManagementFrame(QKnxDeviceManagementFrameFactory::PropertyRead
+                ::createRequest(QKnxInterfaceObjectType::System::Device, 1,
+                    QKnxInterfaceObjectProperty::Device::IoList, data.toHex().toUShort(nullptr,
+                        16), 1));
+        }
+    } else {
+        if ((data.size() % expectedDataSize) == 0) {
+            QSet<int> values;
+            for (int i = 0; i < data.size(); i += expectedDataSize)
+                values.insert(data.mid(i, expectedDataSize).toHex().toUShort(nullptr, 16));
+            ui->objectType->clear();
+            setupComboBox(QKnxInterfaceObjectType::staticMetaObject, ui->objectType, values);
+        }
+    }
 }
 
 int LocalDeviceManagement::keyToValue(const QMetaObject &object, const QString &key, bool *ok)
@@ -249,4 +270,29 @@ int LocalDeviceManagement::keyToValue(const QMetaObject &object, const QString &
             return value;
     }
     return -1;
+}
+
+void LocalDeviceManagement::setupComboBox(const QMetaObject &object, QComboBox *comboBox,
+    const QSet<int> &values)
+{
+    auto model = new QStandardItemModel;
+    auto enumCount = object.enumeratorCount();
+    for (auto i = 0; i < enumCount; ++i) {
+        auto typeEnum = object.enumerator(i);
+        auto topLevelItem = new QStandardItem(typeEnum.name());
+        for (auto a = 0; a < typeEnum.keyCount(); ++a) {
+            auto subItem = new QStandardItem(typeEnum.key(a));
+            subItem->setEnabled(values.isEmpty() ? true : values.contains(typeEnum.value(a)));
+            topLevelItem->insertRow(a, subItem);
+        }
+        model->setItem(i, topLevelItem);
+        topLevelItem->setSelectable(false);
+    }
+    comboBox->setModel(model);
+
+    auto treeView = new QTreeView;
+    treeView->setHeaderHidden(true);
+    treeView->setUniformRowHeights(true);
+    comboBox->setView(treeView);
+    treeView->expand(model->index(0, 0));
 }
