@@ -105,17 +105,17 @@ public:
     void setupTimer();
     void cleanup();
 
-    void sendCemiRequest();
+    bool sendCemiRequest();
     void sendStateRequest();
 
     virtual void process(const QKnxCemiFrame &frame);
 
     // datapoint related processing
-    void sendTunnelingRequest(const QKnxCemiFrame &frame);
+    bool sendTunnelingRequest(const QKnxCemiFrame &frame);
     virtual void process(const QKnxNetIpTunnelingRequest &);
     virtual void process(const QKnxNetIpTunnelingAcknowledge &);
 
-    void sendDeviceConfigurationRequest(const QKnxCemiFrame &frame);
+    bool sendDeviceConfigurationRequest(const QKnxCemiFrame &frame);
     virtual void process(const QKnxNetIpDeviceConfigurationRequest &);
     virtual void process(const QKnxNetIpDeviceConfigurationAcknowledge &);
 
@@ -147,7 +147,8 @@ private:
     int m_cemiRequests { 0 };
     const int m_maxCemiRequest { 0 };
     const int m_acknowledgeTimeout { 0 };
-    QByteArray m_lastCemiRequest {};
+
+    QByteArray m_lastSendCemiRequest {};
 
     int m_stateRequests { 0 };
     const int m_maxStateRequests = { 3 };

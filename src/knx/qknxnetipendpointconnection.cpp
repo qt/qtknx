@@ -133,7 +133,7 @@ void QKnxNetIpEndpointConnectionPrivate::setup()
     m_sendCount = 0;
     m_receiveCount = 0;
     m_cemiRequests = 0;
-    m_lastCemiRequest = {};
+    m_lastSendCemiRequest = {};
 
     m_stateRequests = 0;
     m_lastStateRequest = {};
@@ -257,15 +257,16 @@ void QKnxNetIpEndpointConnectionPrivate::cleanup()
     setAndEmitStateChanged(QKnxNetIpEndpointConnection::State::Disconnected);
 }
 
-void QKnxNetIpEndpointConnectionPrivate::sendCemiRequest()
+bool QKnxNetIpEndpointConnectionPrivate::sendCemiRequest()
 {
-    if (m_waitForAcknowledgement)
-        return;
-    m_dataEndpoint->writeDatagram(m_lastCemiRequest, m_remoteDataEndpoint.address,
-        m_remoteDataEndpoint.port);
-    m_waitForAcknowledgement = true;
-    m_cemiRequests++;
-    m_acknowledgeTimer->start(m_acknowledgeTimeout);
+    if (!m_waitForAcknowledgement) {
+        m_waitForAcknowledgement = true;
+        m_dataEndpoint->writeDatagram(m_lastSendCemiRequest, m_remoteDataEndpoint.address,
+            m_remoteDataEndpoint.port);
+        m_cemiRequests++;
+        m_acknowledgeTimer->start(m_acknowledgeTimeout);
+    }
+    return !m_waitForAcknowledgement;
 }
 
 void QKnxNetIpEndpointConnectionPrivate::sendStateRequest()
@@ -330,12 +331,12 @@ void QKnxNetIpEndpointConnectionPrivate::process(const QKnxNetIpTunnelingAcknowl
     }
 }
 
-void QKnxNetIpEndpointConnectionPrivate::sendTunnelingRequest(const QKnxCemiFrame &frame)
+bool QKnxNetIpEndpointConnectionPrivate::sendTunnelingRequest(const QKnxCemiFrame &frame)
 {
-    m_lastCemiRequest = QKnxNetIpTunnelingRequest(m_channelId, m_sendCount, frame).bytes();
-    qDebug().noquote().nospace() << "Sending tunneling request: 0x" << m_lastCemiRequest.toHex();
+    m_lastSendCemiRequest = QKnxNetIpTunnelingRequest(m_channelId, m_sendCount, frame).bytes();
+    qDebug().noquote().nospace() << "Sending tunneling request: 0x" << m_lastSendCemiRequest.toHex();
 
-    sendCemiRequest();
+    return sendCemiRequest();
 }
 
 void QKnxNetIpEndpointConnectionPrivate::process(const QKnxNetIpDeviceConfigurationRequest &request)
@@ -380,12 +381,12 @@ void QKnxNetIpEndpointConnectionPrivate::process(const QKnxNetIpDeviceConfigurat
     }
 }
 
-void QKnxNetIpEndpointConnectionPrivate::sendDeviceConfigurationRequest(const QKnxCemiFrame &frame)
+bool QKnxNetIpEndpointConnectionPrivate::sendDeviceConfigurationRequest(const QKnxCemiFrame &frame)
 {
-    m_lastCemiRequest = QKnxNetIpDeviceConfigurationRequest(m_channelId, m_sendCount, frame).bytes();
-    qDebug().noquote().nospace() << "Sending device configuration request: 0x" << m_lastCemiRequest
+    m_lastSendCemiRequest = QKnxNetIpDeviceConfigurationRequest(m_channelId, m_sendCount, frame).bytes();
+    qDebug().noquote().nospace() << "Sending device configuration request: 0x" << m_lastSendCemiRequest
         .toHex();
-    sendCemiRequest();
+    return sendCemiRequest();
 }
 
 namespace QKnxPrivate

@@ -50,7 +50,7 @@ public:
     QKnxAddress individualAddress() const;
     void setIndividualAddress(const QKnxAddress &address);
 
-    void sendTunnelFrame(const QKnxTunnelFrame &frame);
+    bool sendTunnelFrame(const QKnxTunnelFrame &frame);
 
 Q_SIGNALS:
     void receivedTunnelFrame(QKnxTunnelFrame frame);

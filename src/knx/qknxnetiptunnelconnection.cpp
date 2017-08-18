@@ -95,16 +95,16 @@ void QKnxNetIpTunnelConnection::setIndividualAddress(const QKnxAddress &address)
     Q_UNUSED(address) // TODO: Maybe implement 03_08_04 Tunnelling v01.05.03 AS.pdf, paragraph 3.2
 }
 
-void QKnxNetIpTunnelConnection::sendTunnelFrame(const QKnxTunnelFrame &frame)
+bool QKnxNetIpTunnelConnection::sendTunnelFrame(const QKnxTunnelFrame &frame)
 {
     if (state() != State::Connected)
-        return;
+        return false;
 
     Q_D(QKnxNetIpTunnelConnection);
     if (d->m_layer == QKnxNetIp::TunnelingLayer::Busmonitor)
-        return; // 03_08_04 Tunnelling v01.05.03, paragraph 2.4
+        return false; // 03_08_04 Tunnelling v01.05.03, paragraph 2.4
 
-    d->sendTunnelingRequest(frame);
+    return d->sendTunnelingRequest(frame);
 }
 
 QT_END_NAMESPACE

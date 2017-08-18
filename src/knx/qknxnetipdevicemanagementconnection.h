@@ -44,7 +44,7 @@ public:
     QKnxNetIpDeviceManagementConnection(const QHostAddress &localAddress, quint16 localPort,
         QObject *parent = nullptr);
 
-    void sendDeviceManagementFrame(const QKnxDeviceManagementFrame &frame);
+    bool sendDeviceManagementFrame(const QKnxDeviceManagementFrame &frame);
 
 Q_SIGNALS:
     void receivedDeviceManagementFrame(QKnxDeviceManagementFrame frame);

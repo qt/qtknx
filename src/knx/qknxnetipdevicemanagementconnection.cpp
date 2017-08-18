@@ -57,13 +57,13 @@ QKnxNetIpDeviceManagementConnection::QKnxNetIpDeviceManagementConnection(const Q
     : QKnxNetIpEndpointConnection(*new QKnxNetIpDeviceManagementConnectionPrivate(addr, port), obj)
 {}
 
-void QKnxNetIpDeviceManagementConnection::sendDeviceManagementFrame(const QKnxDeviceManagementFrame &frame)
+bool QKnxNetIpDeviceManagementConnection::sendDeviceManagementFrame(const QKnxDeviceManagementFrame &frame)
 {
     if (state() != State::Connected)
-        return;
+        return false;
 
     Q_D(QKnxNetIpDeviceManagementConnection);
-    d->sendDeviceConfigurationRequest(frame);
+    return d->sendDeviceConfigurationRequest(frame);
 }
 
 QT_END_NAMESPACE
