@@ -29,7 +29,7 @@ QKnxDeviceManagementFrame::QKnxDeviceManagementFrame(QKnxDeviceManagementFrame::
 {
     if (code != QKnxCemiFrame::MessageCode::ResetRequest
         && code != QKnxCemiFrame::MessageCode::ResetIndication) {
-        static const  constexpr quint8 data[6] = { 0xff, 0xff, 0x00, 0x00, 0x00, 0x00 };
+        static const constexpr quint8 data[6] = { 0xff, 0xff, 0x00, 0x00, 0x00, 0x00 };
         setServiceInformation({ data, 6 });
     }
 }
