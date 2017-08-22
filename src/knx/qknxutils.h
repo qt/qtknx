@@ -53,7 +53,7 @@ struct QKnxUtils final
 
             if (data.size() - index < 1)
                 return {};
-            return data[index];
+            return quint8(data[index]);
         }
     };
 
@@ -85,7 +85,7 @@ struct QKnxUtils final
 
             if (data.size() - index < 2)
                 return {};
-            return quint16(quint16(data[index]) << 8 | data[index + 1]);
+            return quint16(quint16(quint8(data[index])) << 8 | quint8(data[index + 1]));
         }
     };
 
@@ -123,8 +123,8 @@ struct QKnxUtils final
 
             if (data.size() - index < 4)
                 return {};
-            return QHostAddress(quint32(data[index] << 24 | data[index + 1] << 16
-                | data[index + 2] << 8 | data[index + 3]));
+            return QHostAddress(quint32(quint8(data[index]) << 24 | quint8(data[index + 1]) << 16
+                | quint8(data[index + 2]) << 8 | quint8(data[index + 3])));
         }
     };
 };
