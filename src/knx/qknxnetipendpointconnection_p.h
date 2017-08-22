@@ -149,6 +149,7 @@ private:
     const int m_acknowledgeTimeout { 0 };
 
     QByteArray m_lastSendCemiRequest {};
+    QByteArray m_lastReceivedCemiRequest {};
 
     int m_stateRequests { 0 };
     const int m_maxStateRequests = { 3 };

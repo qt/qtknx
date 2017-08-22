@@ -353,7 +353,10 @@ void QKnxNetIpEndpointConnectionPrivate::process(const QKnxNetIpDeviceConfigurat
                     m_remoteDataEndpoint.port);
 
                 m_receiveCount++;
-                process(request.cemi());
+                if (m_waitForAcknowledgement)
+                    m_lastReceivedCemiRequest = request.cemi().bytes();
+                else
+                    process(request.cemi());
         }
     } else {
         qDebug() << "Request was ignored due to wrong channel ID. Expected:" << m_channelId
@@ -372,6 +375,11 @@ void QKnxNetIpEndpointConnectionPrivate::process(const QKnxNetIpDeviceConfigurat
             && ack.sequenceCount() == m_sendCount) {
                 m_sendCount++;
                 m_cemiRequests = 0;
+                if (!m_lastReceivedCemiRequest.isEmpty()) {
+                     process(QKnxCemiFrame::fromBytes(m_lastReceivedCemiRequest, 0,
+                         m_lastReceivedCemiRequest.size()));
+                     m_lastReceivedCemiRequest.clear();
+                }
         } else {
             sendCemiRequest();
         }
