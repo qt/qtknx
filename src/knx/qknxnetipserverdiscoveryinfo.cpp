@@ -82,12 +82,14 @@ QKnxNetIpServerDiscoveryInfo::operator=(const QKnxNetIpServerDiscoveryInfo &othe
     return *this;
 }
 
+#ifdef Q_COMPILER_RVALUE_REFS
 QKnxNetIpServerDiscoveryInfo &
 QKnxNetIpServerDiscoveryInfo::operator=(QKnxNetIpServerDiscoveryInfo &&other) Q_DECL_NOTHROW
 {
     swap(other);
     return *this;
 }
+#endif
 
 bool QKnxNetIpServerDiscoveryInfo::operator==(const QKnxNetIpServerDiscoveryInfo &other) const
 {
