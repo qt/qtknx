@@ -33,4 +33,5 @@ SUBDIRS += cmake \
     qknxtunnelframe \
     qknxnpdufactory \
     qknxdevicemanagementframe \
-    qknxcontrolfield
+    qknxcontrolfield \
+    qknxdpt

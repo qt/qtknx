@@ -156,7 +156,6 @@ public:
         static QKnxDeviceManagementFrame createRequest();
         static QKnxDeviceManagementFrame createIndication();
     };
-
 };
 
 QT_END_NAMESPACE

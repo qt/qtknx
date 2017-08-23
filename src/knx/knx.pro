@@ -66,7 +66,10 @@ PUBLIC_HEADERS += \
     qknxinterfaceobjectproperty.h \
     qknxdevicemanagementframe.h \
     qknxdevicemanagementframefactory.h \
-    qknxinterfaceobjectpropertydatatype.h
+    qknxinterfaceobjectpropertydatatype.h \
+    qknxdpt.h \
+    qknxdatapoint.h \
+    qknxdptfactory.h
 
 PRIVATE_HEADERS += \
     qknxnetipserverdiscoveryagent_p.h \
@@ -125,7 +128,9 @@ SOURCES += \
     qknxinterfaceobjectproperty.cpp \
     qknxdevicemanagementframe.cpp \
     qknxdevicemanagementframefactory.cpp \
-    qknxinterfaceobjectpropertydatatype.cpp
+    qknxinterfaceobjectpropertydatatype.cpp \
+    qknxdptfactory.cpp \
+    qknxdatapoint.cpp
 
 HEADERS += $$PUBLIC_HEADERS $$PRIVATE_HEADERS
 
