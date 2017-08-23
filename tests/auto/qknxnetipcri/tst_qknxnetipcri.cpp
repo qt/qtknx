@@ -178,6 +178,7 @@ void tst_QKnxNetIpCri::testDebugStream()
 
     qDebug() << QKnxNetIpCri::fromBytes(QByteArray::fromHex("04048000"), 0);
     QCOMPARE(s_msg, QString::fromLatin1("0x04048000"));
+
 }
 
 void tst_QKnxNetIpCri::testDataStream()
