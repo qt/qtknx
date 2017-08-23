@@ -89,42 +89,60 @@ struct QKnxUtils final
         }
     };
 
-    struct HostAddress final
+    struct QUint32 final
     {
-        template <typename T = QByteArray> static auto bytes(const QHostAddress &address) -> decltype(T())
+        template <typename T = QByteArray> static auto bytes(quint32 integer) -> decltype(T())
         {
             static_assert(is_type<T, QByteArray, QVector<quint8>, std::deque<quint8>,
                 std::vector<quint8>>::value, "Type not supported.");
 
             T t(4, 0);
-            auto addr = address.toIPv4Address();
-            t[0] = quint8(addr >> 24);
-            t[1] = quint8(addr >> 16);
-            t[2] = quint8(addr >> 8);
-            t[3] = quint8(addr);
+            t[0] = quint8(integer >> 24);
+            t[1] = quint8(integer >> 16);
+            t[2] = quint8(integer >> 8);
+            t[3] = quint8(integer);
             return t;
         }
-
-        static QHostAddress fromBytes(const QKnxByteStoreRef &data, quint16 index = 0)
+        static quint32 fromBytes(const QKnxByteStoreRef &data, quint16 index = 0)
         {
             if (data.size() - index < 4)
                 return {};
-
             const auto bytes = data.bytes();
-            return QHostAddress(quint32(bytes[index] << 24 | bytes[index + 1] << 16
-                | bytes[index + 2] << 8 | bytes[index + 3]));
+            return quint32(bytes[index]) << 24 | quint32(bytes[index + 1]) << 16
+                | quint32(bytes[index + 2]) << 8 | bytes[index + 3];
         }
 
         template <typename T, std::size_t S = 0>
-            static QHostAddress fromBytes(const T &data, quint16 index = 0)
+            static quint32 fromBytes(const T &data, quint16 index = 0)
         {
             static_assert(is_type<T, QByteArray, QVector<quint8>, std::deque<quint8>,
                 std::vector<quint8>, std::array<quint8, S>>::value, "Type not supported.");
 
             if (data.size() - index < 4)
                 return {};
-            return QHostAddress(quint32(quint8(data[index]) << 24 | quint8(data[index + 1]) << 16
-                | quint8(data[index + 2]) << 8 | quint8(data[index + 3])));
+            return quint32(quint32(quint8(data[index])) << 24
+                | quint32(quint8(data[index + 1])) << 16
+                | quint32(quint8(data[index + 2])) << 8
+                | quint8(data[index + 3]));
+        }
+    };
+
+    struct HostAddress final
+    {
+        template <typename T = QByteArray>
+            static auto bytes(const QHostAddress &address) -> decltype(T())
+        {
+            static_assert(is_type<T, QByteArray, QVector<quint8>, std::deque<quint8>,
+                std::vector<quint8>>::value, "Type not supported.");
+            return QUint32::bytes(address.toIPv4Address());
+        }
+
+        template <typename T, std::size_t S = 0>
+            static QHostAddress fromBytes(const T &data, quint16 index = 0)
+        {
+            if (data.size() - index < 4)
+                return {};
+            return QHostAddress(QUint32::fromBytes(data, index));
         }
     };
 };
