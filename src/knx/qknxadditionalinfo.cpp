@@ -95,22 +95,6 @@ QKnxAdditionalInfo::QKnxAdditionalInfo(QKnxAdditionalInfo::Type type, const QVec
     if (!isValid()) resize(0);
 }
 
-QKnxAdditionalInfo::QKnxAdditionalInfo(QKnxAdditionalInfo::Type type, const std::deque<quint8>& data)
-{
-    setByte(0, quint8(type));
-    setByte(1, quint8(data.size()));
-    appendBytes(data);
-    if (!isValid()) resize(0);
-}
-
-QKnxAdditionalInfo::QKnxAdditionalInfo(QKnxAdditionalInfo::Type type, const std::vector<quint8>& data)
-{
-    setByte(0, quint8(type));
-    setByte(1, quint8(data.size()));
-    appendBytes(data);
-    if (!isValid()) resize(0);
-}
-
 /*!
     \overload
 

@@ -57,7 +57,7 @@ private slots:
         QCOMPARE(info.bytes<QVector<quint8>>(), QVector<quint8> {});
 
         info = QKnxAdditionalInfo(QKnxAdditionalInfo::Type(0xaa),
-            std::vector<quint8>{ 0x10, 0x20, 0x30 });
+            QVector<quint8>({ 0x10, 0x20, 0x30 }));
         QCOMPARE(info.type(), QKnxAdditionalInfo::Type::Reserved);
         QCOMPARE(info.isValid(), false);
         QCOMPARE(info.toString(), QStringLiteral(""));
@@ -70,11 +70,11 @@ private slots:
         QCOMPARE(info.isValid(), false);
 
         info = { QKnxAdditionalInfo::Type::RfFastAckInformation,
-            std::deque<quint8>{ 0x10, 0x20, 0x30 } };
+            QVector<quint8>({ 0x10, 0x20, 0x30 }) };
         QCOMPARE(info.isValid(), false);
 
         info = { QKnxAdditionalInfo::Type::RfFastAckInformation,
-            std::vector<quint8>({ 0x10, 0x20, 0x30, 0x40 }) };
+            QVector<quint8>({ 0x10, 0x20, 0x30, 0x40 }) };
         QCOMPARE(info.isValid(), true);
 
         QByteArray data(2, Qt::Uninitialized); data[0] = 0x10, data[1] = 0x20;

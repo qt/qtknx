@@ -60,8 +60,6 @@ public:
 
     QKnxAdditionalInfo(QKnxAdditionalInfo::Type type, const QByteArray &data);
     QKnxAdditionalInfo(QKnxAdditionalInfo::Type type, const QVector<quint8> &data);
-    QKnxAdditionalInfo(QKnxAdditionalInfo::Type type, const std::deque<quint8> &data);
-    QKnxAdditionalInfo(QKnxAdditionalInfo::Type type, const std::vector<quint8> &data);
 
     bool isValid() const;
     QString toString() const override;
