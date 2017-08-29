@@ -53,16 +53,16 @@ public:
         Repeat = 0x00,
         DoNotRepeat = 0x01
     };
-    QKnxControlField::Repeat repeat() const { return static_cast<Repeat> (quint8(m_ctrl1[6])); }
-    void setRepeat(QKnxControlField::Repeat repeat) { m_ctrl1[6] = static_cast<int> (repeat); }
+    QKnxControlField::Repeat repeat() const { return static_cast<Repeat> (quint8(m_ctrl1[5])); }
+    void setRepeat(QKnxControlField::Repeat repeat) { m_ctrl1[5] = static_cast<int> (repeat); }
 
     enum class Broadcast : quint8
     {
         System = 0x00,
         Domain = 0x01
     };
-    QKnxControlField::Broadcast broadcast() const { return static_cast<Broadcast> (quint8(m_ctrl1[5])); }
-    void setBroadcast(QKnxControlField::Broadcast bcst) { m_ctrl1[5] = static_cast<int> (bcst); }
+    QKnxControlField::Broadcast broadcast() const { return static_cast<Broadcast> (quint8(m_ctrl1[4])); }
+    void setBroadcast(QKnxControlField::Broadcast bcst) { m_ctrl1[4] = static_cast<int> (bcst); }
 
     enum class Priority : quint8
     {
