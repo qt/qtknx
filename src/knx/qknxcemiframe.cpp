@@ -37,6 +37,11 @@ QKnxCemiFrame::MessageCode QKnxCemiFrame::messageCode() const
     return m_code;
 }
 
+void QKnxCemiFrame::setMessageCode(QKnxCemiFrame::MessageCode code)
+{
+    m_code = code;
+}
+
 quint16 QKnxCemiFrame::size() const
 {
     return m_serviceInformation.size() + 1 /* message code */;

@@ -76,6 +76,7 @@ public:
         ResetIndication = 0xf0,                         // M_Reset.ind
     };
     QKnxCemiFrame::MessageCode messageCode() const;
+    void setMessageCode(QKnxCemiFrame::MessageCode code);
 
     virtual ~QKnxCemiFrame() = default;
     quint16 size() const;
