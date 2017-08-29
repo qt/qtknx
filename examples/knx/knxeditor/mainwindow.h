@@ -24,16 +24,12 @@
 
 #include <QKnxNetIpServerDiscoveryAgent>
 #include <QKnxNetIpServerDiscoveryInfo>
-#include <QKnxNetIpTunnelConnection>
 #include <QMainWindow>
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
     class MainWindow;
 }
-
-class QPushButton;
-class QTextEdit;
 QT_END_NAMESPACE
 
 class MainWindow : public QMainWindow
@@ -47,20 +43,13 @@ public:
 private slots:
     void newServerSelected(int serverBoxIndex);
     void newIPAddressSelected(int localIpBoxIndex);
-
     void showServerAndServices(const QKnxNetIpServerDiscoveryInfo &info);
-
-    void on_tunnelingSendRequest_clicked();
-    void on_connectRequestTunneling_clicked();
-    void on_disconnectRequestTunneling_clicked();
 
 private:
     void fillLocalIpBox();
-    void enablingTunnelingTab();
 
 private:
     Ui::MainWindow *ui { nullptr };
-    QKnxNetIpTunnelConnection m_tunneling;
 
     QKnxNetIpServerDiscoveryInfo m_server;
     QKnxNetIpServerDiscoveryAgent m_discoveryAgent;

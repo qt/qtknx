@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>788</width>
-    <height>380</height>
+    <width>830</width>
+    <height>385</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -244,7 +244,11 @@
     </layout>
    </item>
    <item>
-    <widget class="QTextEdit" name="textOuputDeviceManagement"/>
+    <widget class="QTextEdit" name="textOuputDeviceManagement">
+     <property name="focusPolicy">
+      <enum>Qt::NoFocus</enum>
+     </property>
+    </widget>
    </item>
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout_3">
@@ -279,6 +283,21 @@
    </item>
   </layout>
  </widget>
+ <tabstops>
+  <tabstop>mc</tabstop>
+  <tabstop>objectType</tabstop>
+  <tabstop>objectInstance</tabstop>
+  <tabstop>property</tabstop>
+  <tabstop>noe</tabstop>
+  <tabstop>startIndex</tabstop>
+  <tabstop>manualInput</tabstop>
+  <tabstop>m_cemiFrame</tabstop>
+  <tabstop>m_cemiData</tabstop>
+  <tabstop>deviceManagementSendRequest</tabstop>
+  <tabstop>textOuputDeviceManagement</tabstop>
+  <tabstop>connectRequestDeviceManagement</tabstop>
+  <tabstop>disconnectRequestDeviceManagement</tabstop>
+ </tabstops>
  <resources/>
  <connections>
   <connection>

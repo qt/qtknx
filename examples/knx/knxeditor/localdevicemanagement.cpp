@@ -36,8 +36,8 @@ LocalDeviceManagement::LocalDeviceManagement(QWidget* parent)
     ui->setupUi(this);
 
     setupMessageCodeComboBox();
-    setupComboBox(QKnxInterfaceObjectType::staticMetaObject, ui->objectType);
-    setupComboBox(QKnxInterfaceObjectProperty::staticMetaObject, ui->property);
+    setupMessageCodeComboBox(QKnxInterfaceObjectType::staticMetaObject, ui->objectType);
+    setupMessageCodeComboBox(QKnxInterfaceObjectProperty::staticMetaObject, ui->property);
 
     connect(ui->connectRequestDeviceManagement, &QPushButton::clicked, this, [&]() {
         m_management.setLocalPort(0);
@@ -66,7 +66,7 @@ LocalDeviceManagement::LocalDeviceManagement(QWidget* parent)
         ui->deviceManagementSendRequest->setEnabled(false);
         ui->connectRequestDeviceManagement->setEnabled(true);
         ui->disconnectRequestDeviceManagement->setEnabled(false);
-        setupComboBox(QKnxInterfaceObjectType::staticMetaObject, ui->objectType);
+        setupMessageCodeComboBox(QKnxInterfaceObjectType::staticMetaObject, ui->objectType);
         ui->textOuputDeviceManagement->append(QStringLiteral("Successfully disconnected from: %1"
             " on port: %2\n").arg(m_server.controlEndpointAddress().toString())
             .arg(m_server.controlEndpointPort()));
@@ -120,6 +120,11 @@ void LocalDeviceManagement::setKnxNetIpServer(const QKnxNetIpServerDiscoveryInfo
         ui->disconnectRequestDeviceManagement->setEnabled(false);
     }
     ui->deviceManagementSendRequest->setEnabled(false);
+}
+
+void LocalDeviceManagement::clearLogging()
+{
+    ui->textOuputDeviceManagement->clear();
 }
 
 void LocalDeviceManagement::on_mc_currentIndexChanged(int index)
@@ -205,6 +210,7 @@ void LocalDeviceManagement::on_manualInput_clicked(bool checked)
     ui->m_cemiData->setEnabled(checked);
     ui->m_cemiFrame->setReadOnly(!checked);
     ui->m_cemiFrame->setMaxLength(SHRT_MAX);
+    ui->m_cemiFrame->setFocus();
 
     if (checked) {
         if (ui->mc->currentIndex() != ui->mc->count() -1)
@@ -256,7 +262,7 @@ void LocalDeviceManagement::handleIoListResponse(const QKnxDeviceManagementFrame
             for (int i = 0; i < data.size(); i += expectedDataSize)
                 values.insert(data.mid(i, expectedDataSize).toHex().toUShort(nullptr, 16));
             ui->objectType->clear();
-            setupComboBox(QKnxInterfaceObjectType::staticMetaObject, ui->objectType, values);
+            setupMessageCodeComboBox(QKnxInterfaceObjectType::staticMetaObject, ui->objectType, values);
         }
     }
 }
@@ -272,7 +278,7 @@ int LocalDeviceManagement::keyToValue(const QMetaObject &object, const QString &
     return -1;
 }
 
-void LocalDeviceManagement::setupComboBox(const QMetaObject &object, QComboBox *comboBox,
+void LocalDeviceManagement::setupMessageCodeComboBox(const QMetaObject &object, QComboBox *comboBox,
     const QSet<int> &values)
 {
     auto model = new QStandardItemModel;

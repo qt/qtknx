@@ -59,24 +59,6 @@ MainWindow::MainWindow(QWidget *parent)
 
     ui->serverBox->addItem(tr("Press Scan button to discover KNX server(s)"));
 
-    connect(&m_tunneling, &QKnxNetIpTunnelConnection::connected, this, [&] {
-        ui->textOuputTunneling->append("Successful connect to: " + m_server.controlEndpointAddress()
-            .toString() + " on port: " + QString::number(m_server.controlEndpointPort()));
-        ui->tunnelingSendRequest->setEnabled(true);
-        ui->disconnectRequestTunneling->setEnabled(true);
-    });
-    connect(&m_tunneling, &QKnxNetIpTunnelConnection::disconnected, this, [&] {
-        ui->tunnelingSendRequest->setEnabled(false);
-        ui->connectRequestTunneling->setEnabled(true);
-        ui->disconnectRequestTunneling->setEnabled(false);
-        ui->textOuputTunneling->append("Disconnected successfully...\n");
-    });
-    connect(&m_tunneling, &QKnxNetIpTunnelConnection::receivedTunnelFrame, this,
-        [&](QKnxTunnelFrame frame) {
-        ui->textOuputTunneling->append(QString::fromUtf8("Received tunneling frame with cEMI "
-            "payload: " + frame.bytes().toHex()));
-    });
-
     m_discoveryAgent.setTimeout(5000);
     connect(&m_discoveryAgent, &QKnxNetIpServerDiscoveryAgent::started, this, [&] {
         ui->scanButton->setEnabled(false);
@@ -103,7 +85,7 @@ MainWindow::MainWindow(QWidget *parent)
         QOverload<>::of(&QKnxNetIpServerDiscoveryAgent::start));
 
     connect(ui->checkboxNat, &QCheckBox::toggled, this, [&](bool checked) {
-        m_tunneling.setNatAware(checked);
+        ui->tunneling->setNatAware(checked);
         m_discoveryAgent.setNatAware(checked);
         ui->deviceManagement->setNatAware(checked);
     });
@@ -115,11 +97,11 @@ MainWindow::MainWindow(QWidget *parent)
 
     connect(ui->actionExit, &QAction::triggered, this, &QApplication::quit);
     connect(ui->actionClear_Output, &QAction::triggered, ui->outputEdit, &QTextEdit::clear);
-    connect(ui->actionClear_All, &QAction::triggered, this, [&] {
-        // ui->textOuputDeviceManagement->clear();
-        ui->textOuputTunneling->clear();
-        ui->outputEdit->clear();
-    });
+
+    connect(ui->actionClear_All, &QAction::triggered, ui->deviceManagement,
+        &LocalDeviceManagement::clearLogging);
+    connect(ui->actionClear_All, &QAction::triggered, ui->outputEdit, &QTextEdit::clear);
+    connect(ui->actionClear_All, &QAction::triggered, ui->tunneling, &Tunneling::clearLogging);
 }
 
 MainWindow::~MainWindow()
@@ -168,8 +150,9 @@ void MainWindow::newServerSelected(int serverBoxIndex)
 
     if (info.endpoint().isValid() && m_server != info) {
         m_server = info;
-        m_tunneling.disconnectFromHost();
-        enablingTunnelingTab();
+
+        ui->tunneling->setEnabled(true);
+        ui->tunneling->setKnxNetIpServer(m_server);
 
         ui->deviceManagement->setEnabled(true);
         ui->deviceManagement->setKnxNetIpServer(m_server);
@@ -187,18 +170,17 @@ void MainWindow::newIPAddressSelected(int localIpBoxIndex)
         return;
     }
 
-    if (m_tunneling.localAddress() == newAddress)
+    if (m_discoveryAgent.localAddress() == newAddress)
         return;
 
     ui->scanButton->setEnabled(true);
+    ui->outputEdit->append("Selected IP address: " + newAddress.toString());
 
     m_discoveryAgent.stop();
-    m_tunneling.disconnectFromHost();
-
-    m_tunneling.setLocalAddress(newAddress);
     m_discoveryAgent.setLocalAddress(newAddress);
+
+    ui->tunneling->setLocalAddress(newAddress);
     ui->deviceManagement->setLocalAddress(newAddress);
-    ui->outputEdit->append("Selected IP address: " + newAddress.toString());
 }
 
 void MainWindow::showServerAndServices(const QKnxNetIpServerDiscoveryInfo &info)
@@ -220,25 +202,6 @@ void MainWindow::showServerAndServices(const QKnxNetIpServerDiscoveryInfo &info)
         .toString()).arg(info.controlEndpointPort()), QVariant::fromValue(info));
 }
 
-void MainWindow::on_tunnelingSendRequest_clicked()
-{
-    auto text = ui->tunnelingRequestLine->text();
-    ui->textOuputTunneling->append("Send tunneling frame with cEMI payload: " + text);
-    auto data = QByteArray::fromHex(text.toUtf8());
-    m_tunneling.sendTunnelFrame(QKnxCemiFrame::fromBytes(data, 0, data.size()));
-}
-
-void MainWindow::on_connectRequestTunneling_clicked()
-{
-    m_tunneling.setLocalPort(0);
-    m_tunneling.connectToHost(m_server.controlEndpointAddress(), m_server.controlEndpointPort());
-}
-
-void MainWindow::on_disconnectRequestTunneling_clicked()
-{
-    m_tunneling.disconnectFromHost();
-}
-
 void MainWindow::fillLocalIpBox()
 {
     auto firstItem = new QStandardItem("Interface: IP address --Select One--");
@@ -256,14 +219,4 @@ void MainWindow::fillLocalIpBox()
             ui->localIpBox->addItem(networkInterfaces[i].name() + ": " + ipAddress, ipAddress);
         }
     }
-}
-
-void MainWindow::enablingTunnelingTab()
-{
-    ui->tunneling->setEnabled(true);
-    if (m_tunneling.state() == QKnxNetIpEndpointConnection::State::Disconnected) {
-        ui->connectRequestTunneling->setEnabled(true);
-        ui->disconnectRequestTunneling->setEnabled(false);
-    }
-    ui->tunnelingSendRequest->setEnabled(false);
 }

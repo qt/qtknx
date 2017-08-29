@@ -47,6 +47,9 @@ public:
     void setLocalAddress(const QHostAddress &address);
     void setKnxNetIpServer(const QKnxNetIpServerDiscoveryInfo &server);
 
+public slots:
+    void clearLogging();
+
 private slots:
     void on_mc_currentIndexChanged(int index);
     void on_objectType_currentTextChanged(const QString &type);
@@ -62,7 +65,7 @@ private:
     void setupMessageCodeComboBox();
     void handleIoListResponse(const QKnxDeviceManagementFrame &frame);
     int keyToValue(const QMetaObject &object, const QString &key, bool *ok);
-    void setupComboBox(const QMetaObject &object, QComboBox *comboBox, const QSet<int> &values = {});
+    void setupMessageCodeComboBox(const QMetaObject &object, QComboBox *comboBox, const QSet<int> &values = {});
 
 private:
     Ui::LocalDeviceManagement *ui { nullptr };
