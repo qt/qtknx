@@ -49,6 +49,8 @@ public:
     void setExtendedControlField(const QKnxExtendedControlField &field);
 
     quint8 additionalInfosSize() const;
+
+    void addAdditionalInfo(const QKnxAdditionalInfo &info);
     template <typename T = QVector<QKnxAdditionalInfo>> auto additionalInfos() const -> decltype(T())
     {
         static_assert(is_type<T, QVector<QKnxAdditionalInfo>, std::deque<QKnxAdditionalInfo>,
@@ -71,8 +73,10 @@ public:
         return infos;
     }
 
-    void addAdditionalInfo(const QKnxAdditionalInfo &info);
     void removeAdditionalInfo(QKnxAdditionalInfo::Type type);
+    void removeAdditionalInfo(const QKnxAdditionalInfo &info);
+
+    void clearAdditionalInfos();
 
     const QKnxAddress sourceAddress() const;
     void setSourceAddress(const QKnxAddress &address);

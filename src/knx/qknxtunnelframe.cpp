@@ -115,6 +115,40 @@ void QKnxTunnelFrame::removeAdditionalInfo(QKnxAdditionalInfo::Type type)
     setServiceInformation(payload);
 }
 
+void QKnxTunnelFrame::removeAdditionalInfo(const QKnxAdditionalInfo &info)
+{
+    quint8 oldSize = additionalInfosSize();
+    if (oldSize == 0)
+        return;
+
+    QKnxCemiPayload payload(oldSize);
+
+    auto infos = additionalInfos();
+    for (auto &tmp : qAsConst(infos)) {
+        if (tmp.type() == info.type()) {
+            if (tmp.bytes() == info.bytes())
+                continue;
+        }
+        payload.appendBytes(tmp.bytes());
+    }
+
+    payload.setByte(0, payload.size() - 1);
+    payload.appendBytes(serviceInformationRef(oldSize + 1).bytes<QByteArray>());
+
+    setServiceInformation(payload);
+}
+
+void QKnxTunnelFrame::clearAdditionalInfos()
+{
+    quint8 oldSize = additionalInfosSize();
+    if (oldSize == 0)
+        return;
+
+    QKnxCemiPayload payload(0x00);
+    payload.appendBytes(serviceInformationRef(oldSize + 1).bytes<QByteArray>());
+    setServiceInformation(payload);
+}
+
 const QKnxAddress QKnxTunnelFrame::sourceAddress() const
 {
     return { QKnxAddress::Type::Individual, serviceInformationRef(additionalInfosSize() + 1)
