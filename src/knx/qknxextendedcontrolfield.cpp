@@ -87,6 +87,9 @@ quint8 QKnxExtendedControlField::hopCount() const
 
 void QKnxExtendedControlField::setHopCount(quint8 hopCount)
 {
+    if (hopCount > 7)
+        return;
+
     m_ctrl2 &= ~gHopCountMask; // clear
     m_ctrl2 |= (hopCount << 4); // set
 }
