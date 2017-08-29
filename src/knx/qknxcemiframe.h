@@ -34,6 +34,8 @@ using QKnxCemiPayloadRef = QKnxByteStoreRef;
 
 class Q_KNX_EXPORT QKnxCemiFrame
 {
+    Q_GADGET
+
 public:
     // Table 1 - Overview EMI message codes and default destination (v01.03.03 AS.pdf)
     enum class MessageCode : quint8
@@ -75,6 +77,7 @@ public:
         ResetRequest = 0xf1,                            // M_Reset.req
         ResetIndication = 0xf0,                         // M_Reset.ind
     };
+    Q_ENUMS(MessageCode)
     QKnxCemiFrame::MessageCode messageCode() const;
     void setMessageCode(QKnxCemiFrame::MessageCode code);
 

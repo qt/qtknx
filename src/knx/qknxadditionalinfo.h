@@ -36,6 +36,8 @@ QT_BEGIN_NAMESPACE
 
 class Q_KNX_EXPORT QKnxAdditionalInfo final : private QKnxByteStore
 {
+    Q_GADGET
+
 public:
     enum class Type : quint8
     {
@@ -53,6 +55,7 @@ public:
         ManufactorSpecificData = 0xfe,
         EscCode = 0xff
     };
+    Q_ENUMS(Type)
     QKnxAdditionalInfo::Type type() const;
 
     QKnxAdditionalInfo() = default;

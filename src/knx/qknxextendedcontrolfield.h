@@ -35,6 +35,8 @@ QT_BEGIN_NAMESPACE
 
 class Q_KNX_EXPORT QKnxExtendedControlField final
 {
+    Q_GADGET
+
 public:
     QKnxExtendedControlField() = default;
     explicit QKnxExtendedControlField(quint8 data);
@@ -52,6 +54,7 @@ public:
         Standard = 0x00,
         Lte = 0x01
     };
+    Q_ENUMS(ExtendedFrameFormat)
     QKnxExtendedControlField::ExtendedFrameFormat format() const;
     void setFormat(QKnxExtendedControlField::ExtendedFrameFormat format);
 
