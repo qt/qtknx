@@ -48,7 +48,6 @@ void tst_QKnxControlField::testDefaultConstructor()
 
     QKnxExtendedControlField crf2(QByteArray::fromHex("e0"));
     QCOMPARE(crf2.hopCount(), quint8(6));
-    qDebug()<<"destination Type"<<quint8(crf2.destinationAddressType());
     QCOMPARE(crf2.destinationAddressType(), QKnxAddress::Type::Group);
 }
 
