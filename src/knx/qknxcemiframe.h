@@ -77,7 +77,7 @@ public:
         ResetRequest = 0xf1,                            // M_Reset.req
         ResetIndication = 0xf0,                         // M_Reset.ind
     };
-    Q_ENUMS(MessageCode)
+    Q_ENUM(MessageCode)
     QKnxCemiFrame::MessageCode messageCode() const;
     void setMessageCode(QKnxCemiFrame::MessageCode code);
 

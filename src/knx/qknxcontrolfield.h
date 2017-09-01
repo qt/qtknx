@@ -47,7 +47,7 @@ public:
         Extended = 0x00,
         Standard = 0x01
     };
-    Q_ENUMS(FrameType)
+    Q_ENUM(FrameType)
     QKnxControlField::FrameType frameType() const { return static_cast<FrameType> (quint8(m_ctrl1[7])); }
     void setFrameType(QKnxControlField::FrameType type) { m_ctrl1[7] = static_cast<int> (type); }
 
@@ -56,7 +56,7 @@ public:
         Repeat = 0x00,
         DoNotRepeat = 0x01
     };
-    Q_ENUMS(Repeat)
+    Q_ENUM(Repeat)
     QKnxControlField::Repeat repeat() const { return static_cast<Repeat> (quint8(m_ctrl1[5])); }
     void setRepeat(QKnxControlField::Repeat repeat) { m_ctrl1[5] = static_cast<int> (repeat); }
 
@@ -65,7 +65,7 @@ public:
         System = 0x00,
         Domain = 0x01
     };
-    Q_ENUMS(Broadcast)
+    Q_ENUM(Broadcast)
     QKnxControlField::Broadcast broadcast() const { return static_cast<Broadcast> (quint8(m_ctrl1[4])); }
     void setBroadcast(QKnxControlField::Broadcast bcst) { m_ctrl1[4] = static_cast<int> (bcst); }
 
@@ -76,7 +76,7 @@ public:
         Urgent = 0x02,
         Low = 0x03
     };
-    Q_ENUMS(Priority)
+    Q_ENUM(Priority)
     QKnxControlField::Priority priority() const;
     void setPriority(QKnxControlField::Priority priority);
 
@@ -85,7 +85,7 @@ public:
         NotRequested = 0x00,
         Requested = 0x01
     };
-    Q_ENUMS(Acknowledge)
+    Q_ENUM(Acknowledge)
     QKnxControlField::Acknowledge acknowledge() const { return Acknowledge(quint8(m_ctrl1[1])); }
     void setAcknowledge(QKnxControlField::Acknowledge ack) { m_ctrl1[1] = static_cast<int> (ack); }
 
@@ -94,7 +94,7 @@ public:
         NoError = 0x00,
         Error = 0x01
     };
-    Q_ENUMS(Confirm)
+    Q_ENUM(Confirm)
     QKnxControlField::Confirm confirm() const { return static_cast<Confirm> (quint8(m_ctrl1[0])); }
     void setConfirm(QKnxControlField::Confirm confirm) { m_ctrl1[0] = static_cast<int> (confirm); }
 

@@ -55,7 +55,7 @@ public:
         ManufactorSpecificData = 0xfe,
         EscCode = 0xff
     };
-    Q_ENUMS(Type)
+    Q_ENUM(Type)
     QKnxAdditionalInfo::Type type() const;
 
     QKnxAdditionalInfo() = default;

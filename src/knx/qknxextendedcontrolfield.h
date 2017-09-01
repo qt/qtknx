@@ -54,7 +54,7 @@ public:
         Standard = 0x00,
         Lte = 0x01
     };
-    Q_ENUMS(ExtendedFrameFormat)
+    Q_ENUM(ExtendedFrameFormat)
     QKnxExtendedControlField::ExtendedFrameFormat format() const;
     void setFormat(QKnxExtendedControlField::ExtendedFrameFormat format);
 
