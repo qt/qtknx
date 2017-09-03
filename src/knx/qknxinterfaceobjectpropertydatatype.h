@@ -26,6 +26,7 @@
 #include <QtCore/qshareddata.h>
 #include <QtCore/qvector.h>
 #include <QtKnx/qknxinterfaceobjectproperty.h>
+#include <QtKnx/qknxdatapointtype.h>
 
 QT_BEGIN_NAMESPACE
 
@@ -113,14 +114,16 @@ public:
     Q_ENUM(Id)
 
     QKnxInterfaceObjectPropertyDataType();
-    QKnxInterfaceObjectPropertyDataType(QKnxInterfaceObjectPropertyDataType::Id id, quint8 size,
-        Unit unit = Unit::Single);
     ~QKnxInterfaceObjectPropertyDataType();
+
+    QKnxInterfaceObjectPropertyDataType(QKnxInterfaceObjectPropertyDataType::Id id,
+        QKnxDatapointType::Type type = QKnxDatapointType::Type::Unknown, Unit unit = Unit::Single);
 
     bool isValid() const;
     quint8 size(bool read = false) const;
 
     QKnxInterfaceObjectPropertyDataType::Id id() const;
+    QKnxDatapointType::Type datapointType() const;
     QKnxInterfaceObjectPropertyDataType::Unit unit() const;
 
     static quint8 size(QKnxInterfaceObjectPropertyDataType::Id id, bool read = false);
