@@ -32,6 +32,8 @@ namespace Ui {
 }
 
 class QComboBox;
+class QTreeWidget;
+class QTreeWidgetItem;
 QT_END_NAMESPACE
 
 class LocalDeviceManagement : public QWidget
@@ -63,9 +65,11 @@ private slots:
 
 private:
     void setupMessageCodeComboBox();
+    void updatePropertyTypeCombobox(const QString &type);
     void handleIoListResponse(const QKnxDeviceManagementFrame &frame);
     int keyToValue(const QMetaObject &object, const QString &key, bool *ok);
-    void setupMessageCodeComboBox(const QMetaObject &object, QComboBox *comboBox, const QSet<int> &values = {});
+    void setupComboBox(QComboBox *comboBox, const QMetaObject &object, const QSet<int> &values = {});
+    void selectFirstSubitem(QTreeWidget *treeView, QTreeWidgetItem *rootItem, QComboBox *comboBox);
 
 private:
     Ui::LocalDeviceManagement *ui { nullptr };

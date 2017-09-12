@@ -26,8 +26,7 @@
 #include <QKnxInterfaceObjectPropertyDataType>
 #include <QMetaEnum>
 #include <QMetaType>
-#include <QStandardItemModel>
-#include <QTreeView>
+#include <QTreeWidget>
 
 LocalDeviceManagement::LocalDeviceManagement(QWidget* parent)
     : QWidget(parent)
@@ -36,8 +35,20 @@ LocalDeviceManagement::LocalDeviceManagement(QWidget* parent)
     ui->setupUi(this);
 
     setupMessageCodeComboBox();
-    setupMessageCodeComboBox(QKnxInterfaceObjectType::staticMetaObject, ui->objectType);
-    setupMessageCodeComboBox(QKnxInterfaceObjectProperty::staticMetaObject, ui->property);
+
+    const auto setTreeWidget = [](QComboBox *comboBox) {
+        auto treeWidget = new QTreeWidget;
+        treeWidget->setHeaderHidden(true);
+        treeWidget->setUniformRowHeights(true);
+
+        comboBox->setModel(treeWidget->model());
+        comboBox->setView(treeWidget);
+    };
+    setTreeWidget(ui->property);
+    setTreeWidget(ui->objectType);
+
+    setupComboBox(ui->property, QKnxInterfaceObjectProperty::staticMetaObject);
+    setupComboBox(ui->objectType, QKnxInterfaceObjectType::staticMetaObject);
 
     connect(ui->connectRequestDeviceManagement, &QPushButton::clicked, this, [&]() {
         m_management.setLocalPort(0);
@@ -66,7 +77,7 @@ LocalDeviceManagement::LocalDeviceManagement(QWidget* parent)
         ui->deviceManagementSendRequest->setEnabled(false);
         ui->connectRequestDeviceManagement->setEnabled(true);
         ui->disconnectRequestDeviceManagement->setEnabled(false);
-        setupMessageCodeComboBox(QKnxInterfaceObjectType::staticMetaObject, ui->objectType);
+        setupComboBox(ui->objectType, QKnxInterfaceObjectType::staticMetaObject);
         ui->textOuputDeviceManagement->append(QStringLiteral("Successfully disconnected from: %1"
             " on port: %2\n").arg(m_server.controlEndpointAddress().toString())
             .arg(m_server.controlEndpointPort()));
@@ -171,6 +182,7 @@ void LocalDeviceManagement::on_objectType_currentTextChanged(const QString &type
         auto text = ui->m_cemiFrame->text();
         ui->m_cemiFrame->setText(text.left(2) + QString("%1").arg(value, 4, 16, QChar('0'))
             + text.mid(6));
+        updatePropertyTypeCombobox(type);
     }
 }
 
@@ -235,6 +247,31 @@ void LocalDeviceManagement::setupMessageCodeComboBox()
         quint8(QKnxDeviceManagementFrame::MessageCode::ResetRequest));
 }
 
+void LocalDeviceManagement::updatePropertyTypeCombobox(const QString &type)
+{
+    int index = QKnxInterfaceObjectProperty::staticMetaObject.indexOfEnumerator("General");
+    if (index >= 0) {
+        auto treeView = qobject_cast<QTreeWidget *>(ui->property->view());
+        if (!treeView)
+            return;
+
+        auto topLevelItem = treeView->takeTopLevelItem(0);
+        ui->property->clear();
+        treeView->addTopLevelItem(topLevelItem);
+
+        auto index = QKnxInterfaceObjectProperty::staticMetaObject.indexOfEnumerator(type.toLatin1());
+        if (index >= 0) {
+            auto typeEnum = QKnxInterfaceObjectProperty::staticMetaObject.enumerator(index);
+            topLevelItem = new QTreeWidgetItem(treeView, { typeEnum.name() });
+            for (auto a = 0; a < typeEnum.keyCount(); ++a)
+                topLevelItem->addChild(new QTreeWidgetItem({ typeEnum.key(a) }));
+            topLevelItem->setFlags(topLevelItem->flags() &~Qt::ItemIsSelectable);
+        }
+        treeView->expandItem(topLevelItem);
+        selectFirstSubitem(treeView, topLevelItem, ui->property);
+    }
+}
+
 void LocalDeviceManagement::handleIoListResponse(const QKnxDeviceManagementFrame &frame)
 {
     if (frame.objectType() != QKnxInterfaceObjectType::System::Device
@@ -243,7 +280,8 @@ void LocalDeviceManagement::handleIoListResponse(const QKnxDeviceManagementFrame
 
     m_awaitIoListResponse = true;
 
-    auto dataTypes = QKnxInterfaceObjectPropertyDataType::fromProperty(QKnxInterfaceObjectProperty::Device::IoList);
+    auto dataTypes = QKnxInterfaceObjectPropertyDataType::fromProperty(QKnxInterfaceObjectProperty
+        ::Device::IoList);
     if (!dataTypes.value(0).isValid())
         return;
 
@@ -261,8 +299,7 @@ void LocalDeviceManagement::handleIoListResponse(const QKnxDeviceManagementFrame
             QSet<int> values;
             for (int i = 0; i < data.size(); i += expectedDataSize)
                 values.insert(data.mid(i, expectedDataSize).toHex().toUShort(nullptr, 16));
-            ui->objectType->clear();
-            setupMessageCodeComboBox(QKnxInterfaceObjectType::staticMetaObject, ui->objectType, values);
+            setupComboBox(ui->objectType, QKnxInterfaceObjectType::staticMetaObject, values);
         }
     }
 }
@@ -278,27 +315,38 @@ int LocalDeviceManagement::keyToValue(const QMetaObject &object, const QString &
     return -1;
 }
 
-void LocalDeviceManagement::setupMessageCodeComboBox(const QMetaObject &object, QComboBox *comboBox,
+void LocalDeviceManagement::setupComboBox(QComboBox *comboBox, const QMetaObject &object,
     const QSet<int> &values)
 {
-    auto model = new QStandardItemModel;
+    comboBox->clear();
+
+    auto treeWidget = qobject_cast<QTreeWidget *> (comboBox->view());
+    if (!treeWidget)
+        return;
+
+    QTreeWidgetItem *rootItem = nullptr;
     auto enumCount = object.enumeratorCount();
     for (auto i = 0; i < enumCount; ++i) {
         auto typeEnum = object.enumerator(i);
-        auto topLevelItem = new QStandardItem(typeEnum.name());
+        auto topLevelItem = new QTreeWidgetItem(treeWidget, { typeEnum.name() });
+        if (!rootItem)
+            rootItem = topLevelItem;
         for (auto a = 0; a < typeEnum.keyCount(); ++a) {
-            auto subItem = new QStandardItem(typeEnum.key(a));
-            subItem->setEnabled(values.isEmpty() ? true : values.contains(typeEnum.value(a)));
-            topLevelItem->insertRow(a, subItem);
+            auto subItem = new QTreeWidgetItem(topLevelItem, { typeEnum.key(a) });
+            subItem->setDisabled(values.isEmpty() ? false : !values.contains(typeEnum.value(a)));
         }
-        model->setItem(i, topLevelItem);
-        topLevelItem->setSelectable(false);
+        topLevelItem->setFlags(topLevelItem->flags() &~ Qt::ItemIsSelectable);
     }
-    comboBox->setModel(model);
+    treeWidget->expandItem(rootItem);
+    selectFirstSubitem(treeWidget, rootItem, comboBox);
+}
 
-    auto treeView = new QTreeView;
-    treeView->setHeaderHidden(true);
-    treeView->setUniformRowHeights(true);
-    comboBox->setView(treeView);
-    treeView->expand(model->index(0, 0));
+void LocalDeviceManagement::selectFirstSubitem(QTreeWidget *treeWidget, QTreeWidgetItem *rootItem,
+    QComboBox *comboBox)
+{
+    treeWidget->setCurrentItem(rootItem, 0);
+    comboBox->setRootModelIndex(treeWidget->currentIndex());
+    comboBox->setCurrentIndex(0);
+    treeWidget->setCurrentItem(treeWidget->invisibleRootItem(), 0);
+    comboBox->setRootModelIndex(treeWidget->currentIndex());
 }
