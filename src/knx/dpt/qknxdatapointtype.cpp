@@ -190,17 +190,17 @@ const quint8 &QKnxDatapointType::operator[](int i) const
     return d_ptr->m_bytes[i];
 }
 
-inline quint8 * QKnxDatapointType::data()
+quint8 * QKnxDatapointType::data()
 {
     return d_ptr->m_bytes.data();
 }
 
-inline const quint8 * QKnxDatapointType::data() const
+const quint8 * QKnxDatapointType::data() const
 {
     return d_ptr->m_bytes.data();
 }
 
-inline const quint8 * QKnxDatapointType::constData() const
+const quint8 * QKnxDatapointType::constData() const
 {
     return d_ptr->m_bytes.constData();
 }

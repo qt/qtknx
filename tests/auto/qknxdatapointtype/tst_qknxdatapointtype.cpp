@@ -24,6 +24,8 @@
 #include <QtKnx/qknx1bitcontrolled.h>
 #include <QtKnx/qknxdatapointtype.h>
 #include <QtKnx/qknxdatapointtypefactory.h>
+#include <QtKnx/qknxdatetime.h>
+#include <QtKnx/qknxtime.h>
 #include <QtTest/qtest.h>
 
 class tst_QKnxDatapointType : public QObject
@@ -35,6 +37,9 @@ private slots:
     void dpt1_1Bit();
     void dpt2_1BitControlled();
     void dpt21_8BitSet();
+    void dpt10_TimeOfDay();
+    void dpt11_Date();
+    void dpt19_DateTime();
 };
 
 void tst_QKnxDatapointType::datapointType()
@@ -135,6 +140,109 @@ void tst_QKnxDatapointType::dpt2_1BitControlled()
 void tst_QKnxDatapointType::dpt21_8BitSet()
 {
     // TODO: Implement.
+}
+
+void tst_QKnxDatapointType::dpt10_TimeOfDay()
+{
+    QKnxTime time;
+    QCOMPARE(time, QKnxTime());
+    QCOMPARE(time.isNull(), true);
+    QCOMPARE(time.isValid(), false);
+    QCOMPARE(time.hour(), qint8(-1));
+    QCOMPARE(time.minute(), qint8(-1));
+    QCOMPARE(time.second(), qint8(-1));
+    QCOMPARE(time.dayOfWeek(), QKnxTime::DayOfWeek::Ignore);
+
+    time.setHMS(24, 0, 0);
+    QCOMPARE(time.isValid(), false);
+
+    time.setHMS(23, 59, 59);
+    QCOMPARE(time.isValid(), true);
+
+    time.setDayOfWeek(QKnxTime::DayOfWeek::Monday);
+    QCOMPARE(time.dayOfWeek(), QKnxTime::DayOfWeek::Monday);
+    QCOMPARE(time, QKnxTime(23, 59, 59, QKnxTime::DayOfWeek::Monday));
+
+    QKnxTimeOfDay timeOfDay;
+    QCOMPARE(timeOfDay.isValid(), true);
+    QCOMPARE(timeOfDay.value(), QKnxTime(0, 0, 0, QKnxTime::DayOfWeek::Ignore));
+
+    timeOfDay.setValue(time);
+    QCOMPARE(timeOfDay.value(), time);
+
+     QKnxTimeOfDay timeOfDay2;
+     QCOMPARE(timeOfDay2.hour(), quint8(0));
+     timeOfDay2.setHour(23);
+
+    QCOMPARE(timeOfDay2.minute(), quint8(0));
+    timeOfDay2.setMinute(59);
+
+    QCOMPARE(timeOfDay2.second(), quint8(0));
+    timeOfDay2.setSecond(59);
+
+    QCOMPARE(timeOfDay2.dayOfDay(), QKnxTime::DayOfWeek::Ignore);
+    timeOfDay2.setDayOfWeek(QKnxTime::DayOfWeek::Monday);
+
+    QCOMPARE(timeOfDay.bytes(), timeOfDay2.bytes());
+    QCOMPARE(QKnxDatapointTypeFactory::instance().containsMainType(timeOfDay.mainType()), true);
+}
+
+void tst_QKnxDatapointType::dpt11_Date()
+{
+    QKnxDate date;
+    QCOMPARE(date.isValid(), false);
+    QCOMPARE(date.value(), QDate(2000, 0, 0));
+    QCOMPARE(date.year(), quint16(2000));
+    QCOMPARE(date.month(), quint8(0));
+    QCOMPARE(date.day(), quint8(0));
+
+    date.setValue({ 1990, 01, 01 });
+    QCOMPARE(date.value(), date.minimum().toDate());
+
+    date.setYear(2089);
+    QCOMPARE(date.value(), QDate(2089, 01, 01));
+
+    date.setMonth(12);
+    QCOMPARE(date.value(), QDate(2089, 12, 1));
+
+    date.setDay(31);
+    QCOMPARE(date.value(), QDate(2089, 12, 31));
+
+    QCOMPARE(date.isValid(), true);
+    QCOMPARE(date.value(), date.maximum().toDate());
+
+    QCOMPARE(QKnxDatapointTypeFactory::instance().containsMainType(date.mainType()), true);
+}
+
+void tst_QKnxDatapointType::dpt19_DateTime()
+{
+    QKnxTime24 time;
+    QCOMPARE(time, QKnxTime24());
+    QCOMPARE(time.isNull(), true);
+    QCOMPARE(time.isValid(), false);
+    QCOMPARE(time.hour(), qint8(-1));
+    QCOMPARE(time.minute(), qint8(-1));
+    QCOMPARE(time.second(), qint8(-1));
+    QCOMPARE(time.dayOfWeek(), QKnxTime24::DayOfWeek::Ignore);
+
+    time.setHMS(23, 59, 59);
+    QCOMPARE(time.isValid(), true);
+
+    time.setHMS(24, 0, 0);
+    QCOMPARE(time.isValid(), true);
+
+    time.setDayOfWeek(QKnxTime24::DayOfWeek::Saturday);
+    QCOMPARE(time.isValid(), true);
+
+    QKnxDateTime dt;
+    QCOMPARE(dt.isValid(), false);
+
+    dt.setValue({ 2013, 11, 30 }, { 23, 45, 0 }, QKnxDateTime::Attribute::Fault,
+        QKnxDateTime::ClockQuality::WithExtendedSyncSignal);
+    QCOMPARE(dt.isValid(), true);
+    QCOMPARE(QKnxDatapointTypeFactory::instance().containsMainType(dt.mainType()), true);
+
+    // TODO: Extend the auto-test.
 }
 
 QTEST_MAIN(tst_QKnxDatapointType)
