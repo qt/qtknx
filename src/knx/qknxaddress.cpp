@@ -320,6 +320,16 @@ QString QKnxAddress::toString() const
     return QString();
 }
 
+bool QKnxAddress::operator==(const QKnxAddress &other) const
+{
+    return m_address == other.m_address && m_type == other.m_type;
+}
+
+bool QKnxAddress::operator!=(const QKnxAddress &other) const
+{
+    return !operator==(other);
+}
+
 /*!
     \fn auto QKnxAddress::bytes() const
 

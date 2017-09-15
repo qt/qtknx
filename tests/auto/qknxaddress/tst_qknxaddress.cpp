@@ -689,6 +689,14 @@ private slots:
         QCOMPARE(address.isCouplerOrRouter(), true);
     }
 
+    void testComparisonOperators()
+    {
+         QKnxAddress address = QKnxAddress::Group::Broadcast;
+         QCOMPARE(address, QKnxAddress(QKnxAddress::Type::Group, 0x0000));
+         QCOMPARE(address == QKnxAddress(QKnxAddress::Type::Individual, 0x0000), false);
+         QCOMPARE(address != QKnxAddress(QKnxAddress::Type::Individual, 0x0000), true);
+    }
+
     void testDebugStream()
     {
         struct DebugHandler

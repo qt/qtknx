@@ -83,6 +83,9 @@ public:
 
     QString toString() const;
 
+    bool operator==(const QKnxAddress &other) const;
+    bool operator!=(const QKnxAddress &other) const;
+
 private:
     QKnxAddress(QKnxAddress::Type type, quint16 sec1, quint16 *sec2, quint16 sec3);
 
