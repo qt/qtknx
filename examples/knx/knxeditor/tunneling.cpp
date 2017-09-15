@@ -72,7 +72,11 @@ Tunneling::Tunneling(QWidget* parent)
     });
 
     connect(&m_tunnel, &QKnxNetIpTunnelConnection::receivedTunnelFrame, this,
-        [&](QKnxDeviceManagementFrame frame) {
+        [&](QKnxTunnelFrame frame) {
+        ui->textOuputTunneling->append(QString::fromLatin1("Source address: %1").arg(frame
+            .sourceAddress().toString()));
+        ui->textOuputTunneling->append(QString::fromLatin1("Destination address: %1").arg(frame
+            .destionationAddress().toString()));
         ui->textOuputTunneling->append(QString::fromLatin1("Received tunnel frame with cEMI "
             "payload: " + frame.bytes().toHex()));
     });

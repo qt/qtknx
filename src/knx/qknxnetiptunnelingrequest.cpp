@@ -47,7 +47,8 @@ quint8 QKnxNetIpTunnelingRequest::sequenceCount() const
 
 QKnxCemiFrame QKnxNetIpTunnelingRequest::cemi() const
 {
-    return QKnxCemiFrame::fromBytes(payloadRef(), 0, payloadRef().size());
+    auto ref = payloadRef(connectionHeaderSize());
+    return QKnxCemiFrame::fromBytes(ref.bytes<QByteArray>(), 0, ref.size());
 }
 
 bool QKnxNetIpTunnelingRequest::isValid() const
