@@ -114,7 +114,7 @@ void MainWindow::newServerSelected(int serverBoxIndex)
     if (serverBoxIndex < 1)
         return;
 
-    auto info = ui->serverBox->itemData(serverBoxIndex).value<QKnxNetIpServerDiscoveryInfo>();
+    auto info = ui->serverBox->itemData(serverBoxIndex).value<QKnxNetIpServerInfo>();
 
     ui->serverDescription->setText(tr("<html><head><style> th { text-align: left; } td.padding { "
         "padding-left: 10px; } </style></head> <body>"
@@ -183,7 +183,7 @@ void MainWindow::newIPAddressSelected(int localIpBoxIndex)
     ui->deviceManagement->setLocalAddress(newAddress);
 }
 
-void MainWindow::showServerAndServices(const QKnxNetIpServerDiscoveryInfo &info)
+void MainWindow::showServerAndServices(const QKnxNetIpServerInfo &info)
 {
     ui->outputEdit->append("Server Endpoint found");
     ui->outputEdit->append(info.endpoint().toString());

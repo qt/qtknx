@@ -121,7 +121,7 @@ void LocalDeviceManagement::setLocalAddress(const QHostAddress &address)
     m_management.setLocalAddress(address);
 }
 
-void LocalDeviceManagement::setKnxNetIpServer(const QKnxNetIpServerDiscoveryInfo &server)
+void LocalDeviceManagement::setKnxNetIpServer(const QKnxNetIpServerInfo &server)
 {
     m_management.disconnectFromHost();
     m_server = server;

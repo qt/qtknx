@@ -179,7 +179,7 @@ void Tunneling::setLocalAddress(const QHostAddress &address)
     m_tunnel.setLocalAddress(address);
 }
 
-void Tunneling::setKnxNetIpServer(const QKnxNetIpServerDiscoveryInfo &server)
+void Tunneling::setKnxNetIpServer(const QKnxNetIpServerInfo &server)
 {
     m_tunnel.disconnectFromHost();
     m_server = server;

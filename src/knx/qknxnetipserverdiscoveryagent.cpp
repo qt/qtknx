@@ -183,7 +183,7 @@ void QKnxNetIpServerDiscoveryAgentPrivate::setAndEmitStateChanged(
 }
 
 void QKnxNetIpServerDiscoveryAgentPrivate::setAndEmitDeviceDiscovered(
-                                                 const QKnxNetIpServerDiscoveryInfo &discoveryInfo)
+                                                 const QKnxNetIpServerInfo &discoveryInfo)
 {
     servers.append(discoveryInfo);
 
@@ -242,7 +242,7 @@ QString QKnxNetIpServerDiscoveryAgent::errorString() const
     return d->errorString;
 }
 
-QVector<QKnxNetIpServerDiscoveryInfo> QKnxNetIpServerDiscoveryAgent::discoveredServers() const
+QVector<QKnxNetIpServerInfo> QKnxNetIpServerDiscoveryAgent::discoveredServers() const
 {
     Q_D(const QKnxNetIpServerDiscoveryAgent);
     return d->servers;

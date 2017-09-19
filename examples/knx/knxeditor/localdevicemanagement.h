@@ -24,7 +24,7 @@
 
 #include <QWidget>
 #include <QKnxNetIpDeviceManagementConnection>
-#include <QKnxNetIpServerDiscoveryInfo>
+#include <QKnxNetIpServerInfo>
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -47,7 +47,7 @@ public:
 
     void setNatAware(bool isNatAware);
     void setLocalAddress(const QHostAddress &address);
-    void setKnxNetIpServer(const QKnxNetIpServerDiscoveryInfo &server);
+    void setKnxNetIpServer(const QKnxNetIpServerInfo &server);
 
 public slots:
     void clearLogging();
@@ -77,7 +77,7 @@ private:
     QString m_fullCemiFrame;
     bool m_awaitIoListResponse { true };
 
-    QKnxNetIpServerDiscoveryInfo m_server;
+    QKnxNetIpServerInfo m_server;
     QKnxNetIpDeviceManagementConnection m_management;
 };
 

@@ -25,7 +25,7 @@
 #include <QtCore/qobject.h>
 #include <QtCore/qvector.h>
 #include <QtKnx/qknxglobal.h>
-#include <QtKnx/qknxnetipserverdiscoveryinfo.h>
+#include <QtKnx/qknxnetipserverinfo.h>
 #include <QtNetwork/qhostaddress.h>
 
 QT_BEGIN_NAMESPACE
@@ -76,7 +76,7 @@ public:
     QKnxNetIpServerDiscoveryAgent::Error error() const;
 
     QString errorString() const;
-    QVector<QKnxNetIpServerDiscoveryInfo> discoveredServers() const;
+    QVector<QKnxNetIpServerInfo> discoveredServers() const;
 
     quint16 localPort() const;
     void setLocalPort(quint16 port);
@@ -108,7 +108,7 @@ Q_SIGNALS:
     void started();
     void finished();
 
-    void deviceDiscovered(QKnxNetIpServerDiscoveryInfo server);
+    void deviceDiscovered(QKnxNetIpServerInfo server);
     void stateChanged(QKnxNetIpServerDiscoveryAgent::State state);
     void errorOccurred(QKnxNetIpServerDiscoveryAgent::Error error, QString errorString);
 

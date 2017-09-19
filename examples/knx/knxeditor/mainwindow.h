@@ -23,7 +23,7 @@
 #define MAINWINDOW_H
 
 #include <QKnxNetIpServerDiscoveryAgent>
-#include <QKnxNetIpServerDiscoveryInfo>
+#include <QKnxNetIpServerInfo>
 #include <QMainWindow>
 
 QT_BEGIN_NAMESPACE
@@ -43,7 +43,7 @@ public:
 private slots:
     void newServerSelected(int serverBoxIndex);
     void newIPAddressSelected(int localIpBoxIndex);
-    void showServerAndServices(const QKnxNetIpServerDiscoveryInfo &info);
+    void showServerAndServices(const QKnxNetIpServerInfo &info);
 
 private:
     void fillLocalIpBox();
@@ -51,7 +51,7 @@ private:
 private:
     Ui::MainWindow *ui { nullptr };
 
-    QKnxNetIpServerDiscoveryInfo m_server;
+    QKnxNetIpServerInfo m_server;
     QKnxNetIpServerDiscoveryAgent m_discoveryAgent;
 };
 

@@ -19,8 +19,8 @@
 **
 ******************************************************************************/
 
-#ifndef QKNXNETIPSERVERDISCOVERYINFO_H
-#define QKNXNETIPSERVERDISCOVERYINFO_H
+#ifndef QKNXNETIPSERVERINFO_H
+#define QKNXNETIPSERVERINFO_H
 
 #include <QtCore/qmetatype.h>
 #include <QtCore/qshareddata.h>
@@ -33,15 +33,16 @@
 
 QT_BEGIN_NAMESPACE
 
-struct QKnxNetIpServerDiscoveryInfoPrivate;
+struct QKnxNetIpServerInfoPrivate;
 
-class Q_KNX_EXPORT QKnxNetIpServerDiscoveryInfo final
+class Q_KNX_EXPORT QKnxNetIpServerInfo final
 {
     friend class QKnxNetIpServerDiscoveryAgentPrivate;
+    friend class QKnxNetIpServerDescriptionAgentPrivate;
 
 public:
-    QKnxNetIpServerDiscoveryInfo();
-    ~QKnxNetIpServerDiscoveryInfo();
+    QKnxNetIpServerInfo();
+    ~QKnxNetIpServerInfo();
 
     QString deviceName() const;
     QKnxAddress individualAddress() const;
@@ -55,29 +56,29 @@ public:
     QKnxNetIpDeviceDib hardware() const;
     QKnxNetIpServiceFamiliesDib services() const;
 
-    QKnxNetIpServerDiscoveryInfo(const QKnxNetIpServerDiscoveryInfo &o);
-    QKnxNetIpServerDiscoveryInfo &operator=(const QKnxNetIpServerDiscoveryInfo &o);
+    QKnxNetIpServerInfo(const QKnxNetIpServerInfo &o);
+    QKnxNetIpServerInfo &operator=(const QKnxNetIpServerInfo &o);
 
 #ifdef Q_COMPILER_RVALUE_REFS
-    QKnxNetIpServerDiscoveryInfo &operator=(QKnxNetIpServerDiscoveryInfo &&other) Q_DECL_NOTHROW;
+    QKnxNetIpServerInfo &operator=(QKnxNetIpServerInfo &&other) Q_DECL_NOTHROW;
 #endif
 
-    bool operator==(const QKnxNetIpServerDiscoveryInfo &other) const;
-    bool operator!=(const QKnxNetIpServerDiscoveryInfo &other) const;
+    bool operator==(const QKnxNetIpServerInfo &other) const;
+    bool operator!=(const QKnxNetIpServerInfo &other) const;
 
-    void swap(QKnxNetIpServerDiscoveryInfo &other) Q_DECL_NOTHROW;
+    void swap(QKnxNetIpServerInfo &other) Q_DECL_NOTHROW;
 
 private:
-    QKnxNetIpServerDiscoveryInfo(const QKnxNetIpHpai &hpai, const QKnxNetIpDeviceDib &hardware,
+    QKnxNetIpServerInfo(const QKnxNetIpHpai &hpai, const QKnxNetIpDeviceDib &hardware,
         QKnxNetIpServiceFamiliesDib services);
-    explicit QKnxNetIpServerDiscoveryInfo(QKnxNetIpServerDiscoveryInfoPrivate &dd);
+    explicit QKnxNetIpServerInfo(QKnxNetIpServerInfoPrivate &dd);
 
 private:
-    QExplicitlySharedDataPointer<QKnxNetIpServerDiscoveryInfoPrivate> d_ptr;
+    QExplicitlySharedDataPointer<QKnxNetIpServerInfoPrivate> d_ptr;
 };
 
 QT_END_NAMESPACE
 
-Q_DECLARE_METATYPE(QKnxNetIpServerDiscoveryInfo)
+Q_DECLARE_METATYPE(QKnxNetIpServerInfo)
 
 #endif

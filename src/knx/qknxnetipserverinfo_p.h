@@ -19,8 +19,8 @@
 **
 ******************************************************************************/
 
-#ifndef QKNXNETIPSERVERDISCOVERYINFO_P_H
-#define QKNXNETIPSERVERDISCOVERYINFO_P_H
+#ifndef QKNXNETIPSERVERINFO_P_H
+#define QKNXNETIPSERVERINFO_P_H
 
 //
 //  W A R N I N G
@@ -41,10 +41,10 @@
 
 QT_BEGIN_NAMESPACE
 
-struct Q_KNX_EXPORT QKnxNetIpServerDiscoveryInfoPrivate final : public QSharedData
+struct Q_KNX_EXPORT QKnxNetIpServerInfoPrivate final : public QSharedData
 {
-    QKnxNetIpServerDiscoveryInfoPrivate() = default;
-    ~QKnxNetIpServerDiscoveryInfoPrivate() = default;
+    QKnxNetIpServerInfoPrivate() = default;
+    ~QKnxNetIpServerInfoPrivate() = default;
 
     QKnxNetIpHpai hpai;
     QKnxNetIpDeviceDib hardware;

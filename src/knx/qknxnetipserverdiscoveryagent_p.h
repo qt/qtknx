@@ -61,7 +61,7 @@ public:
     void setupAndStartFrequencyTimer();
 
     void setAndEmitStateChanged(QKnxNetIpServerDiscoveryAgent::State newState);
-    void setAndEmitDeviceDiscovered(const QKnxNetIpServerDiscoveryInfo &discoveryInfo);
+    void setAndEmitDeviceDiscovered(const QKnxNetIpServerInfo &discoveryInfo);
     void setAndEmitErrorOccurred(QKnxNetIpServerDiscoveryAgent::Error e, const QString &message);
 
 private:
@@ -81,7 +81,7 @@ private:
     int timeout { QKnxNetIp::Timeout::SearchTimeout };
 
     QString errorString;
-    QVector<QKnxNetIpServerDiscoveryInfo> servers;
+    QVector<QKnxNetIpServerInfo> servers;
 
     QKnxNetIpServerDiscoveryAgent::Error error { QKnxNetIpServerDiscoveryAgent::Error::None };
     QKnxNetIpServerDiscoveryAgent::State state { QKnxNetIpServerDiscoveryAgent::State::NotRunning };

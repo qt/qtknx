@@ -25,7 +25,7 @@
 #include <QKnxControlField>
 #include <QKnxExtendedControlField>
 #include <QKnxNetIpTunnelConnection>
-#include <QKnxNetIpServerDiscoveryInfo>
+#include <QKnxNetIpServerInfo>
 #include <QKnxTunnelFrame>
 #include <QValidator>
 #include <QRegularExpression>
@@ -91,7 +91,7 @@ public:
 
     void setNatAware(bool isNatAware);
     void setLocalAddress(const QHostAddress &address);
-    void setKnxNetIpServer(const QKnxNetIpServerDiscoveryInfo &server);
+    void setKnxNetIpServer(const QKnxNetIpServerInfo &server);
 
 public slots:
     void clearLogging();
@@ -114,7 +114,7 @@ private:
 
     QKnxTunnelFrame m_frame;
     QKnxNetIpTunnelConnection m_tunnel;
-    QKnxNetIpServerDiscoveryInfo m_server;
+    QKnxNetIpServerInfo m_server;
 };
 
 #endif

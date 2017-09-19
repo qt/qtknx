@@ -19,79 +19,79 @@
 **
 ******************************************************************************/
 
-#include "qknxnetipserverdiscoveryinfo.h"
-#include "qknxnetipserverdiscoveryinfo_p.h"
+#include "qknxnetipserverinfo.h"
+#include "qknxnetipserverinfo_p.h"
 
 QT_BEGIN_NAMESPACE
 
-QKnxNetIpServerDiscoveryInfo::QKnxNetIpServerDiscoveryInfo()
-    : d_ptr(new QKnxNetIpServerDiscoveryInfoPrivate)
+QKnxNetIpServerInfo::QKnxNetIpServerInfo()
+    : d_ptr(new QKnxNetIpServerInfoPrivate)
 {}
 
-QKnxNetIpServerDiscoveryInfo::~QKnxNetIpServerDiscoveryInfo()
+QKnxNetIpServerInfo::~QKnxNetIpServerInfo()
 {}
 
-QString QKnxNetIpServerDiscoveryInfo::deviceName() const
+QString QKnxNetIpServerInfo::deviceName() const
 {
     return QString::fromUtf8(d_ptr->hardware.deviceName());
 }
 
-QKnxAddress QKnxNetIpServerDiscoveryInfo::individualAddress() const
+QKnxAddress QKnxNetIpServerInfo::individualAddress() const
 {
     return d_ptr->hardware.individualAddress();
 }
 
-quint16 QKnxNetIpServerDiscoveryInfo::controlEndpointPort() const
+quint16 QKnxNetIpServerInfo::controlEndpointPort() const
 {
     return d_ptr->hpai.port();
 }
 
-QHostAddress QKnxNetIpServerDiscoveryInfo::controlEndpointAddress() const
+QHostAddress QKnxNetIpServerInfo::controlEndpointAddress() const
 {
     return d_ptr->hpai.address();
 }
 
-QKnxNetIpServiceFamiliesDib::ServiceFamilyIdVersions QKnxNetIpServerDiscoveryInfo::supportedServices() const
+QKnxNetIpServiceFamiliesDib::ServiceFamilyIdVersions QKnxNetIpServerInfo::supportedServices() const
 {
     return d_ptr->services.serviceFamilyIdVersions();
 }
 
-QKnxNetIpHpai QKnxNetIpServerDiscoveryInfo::endpoint() const
+QKnxNetIpHpai QKnxNetIpServerInfo::endpoint() const
 {
     return d_ptr->hpai;
 }
 
-QKnxNetIpDeviceDib QKnxNetIpServerDiscoveryInfo::hardware() const
+QKnxNetIpDeviceDib QKnxNetIpServerInfo::hardware() const
 {
     return d_ptr->hardware;
 }
 
-QKnxNetIpServiceFamiliesDib QKnxNetIpServerDiscoveryInfo::services() const
+QKnxNetIpServiceFamiliesDib QKnxNetIpServerInfo::services() const
 {
     return d_ptr->services;
 }
 
-QKnxNetIpServerDiscoveryInfo::QKnxNetIpServerDiscoveryInfo(const QKnxNetIpServerDiscoveryInfo &o)
+QKnxNetIpServerInfo::QKnxNetIpServerInfo(const QKnxNetIpServerInfo &o)
     : d_ptr(o.d_ptr)
 {}
 
-QKnxNetIpServerDiscoveryInfo &
-QKnxNetIpServerDiscoveryInfo::operator=(const QKnxNetIpServerDiscoveryInfo &other)
+QKnxNetIpServerInfo &
+QKnxNetIpServerInfo::operator=(const QKnxNetIpServerInfo &other)
 {
     d_ptr = other.d_ptr;
     return *this;
 }
 
 #ifdef Q_COMPILER_RVALUE_REFS
-QKnxNetIpServerDiscoveryInfo &
-QKnxNetIpServerDiscoveryInfo::operator=(QKnxNetIpServerDiscoveryInfo &&other) Q_DECL_NOTHROW
+QKnxNetIpServerInfo &
+QKnxNetIpServerInfo::operator=(QKnxNetIpServerInfo &&other) Q_DECL_NOTHROW
 {
     swap(other);
     return *this;
 }
 #endif
 
-bool QKnxNetIpServerDiscoveryInfo::operator==(const QKnxNetIpServerDiscoveryInfo &other) const
+bool QKnxNetIpServerInfo::operator==(const QKnxNetIpServerInfo &other) const
 {
     return d_ptr == other.d_ptr || [&]() -> bool {
         // TODO: Implement operator== in QKnxNetIpStruct classes and revisit this code.
@@ -101,27 +101,27 @@ bool QKnxNetIpServerDiscoveryInfo::operator==(const QKnxNetIpServerDiscoveryInfo
     }();
 }
 
-bool QKnxNetIpServerDiscoveryInfo::operator!=(const QKnxNetIpServerDiscoveryInfo &other) const
+bool QKnxNetIpServerInfo::operator!=(const QKnxNetIpServerInfo &other) const
 {
     return !operator==(other);
 }
 
-void QKnxNetIpServerDiscoveryInfo::swap(QKnxNetIpServerDiscoveryInfo &other) Q_DECL_NOTHROW
+void QKnxNetIpServerInfo::swap(QKnxNetIpServerInfo &other) Q_DECL_NOTHROW
 {
     d_ptr.swap(other.d_ptr);
 }
 
-QKnxNetIpServerDiscoveryInfo::QKnxNetIpServerDiscoveryInfo(const QKnxNetIpHpai &hpai,
+QKnxNetIpServerInfo::QKnxNetIpServerInfo(const QKnxNetIpHpai &hpai,
     const QKnxNetIpDeviceDib &hardware, QKnxNetIpServiceFamiliesDib services)
-    : QKnxNetIpServerDiscoveryInfo()
+    : QKnxNetIpServerInfo()
 {
     d_ptr->hpai = hpai;
     d_ptr->hardware = hardware;
     d_ptr->services = services;
 }
 
-QKnxNetIpServerDiscoveryInfo::QKnxNetIpServerDiscoveryInfo(QKnxNetIpServerDiscoveryInfoPrivate &dd)
-    : d_ptr(new QKnxNetIpServerDiscoveryInfoPrivate(dd))
+QKnxNetIpServerInfo::QKnxNetIpServerInfo(QKnxNetIpServerInfoPrivate &dd)
+    : d_ptr(new QKnxNetIpServerInfoPrivate(dd))
 {}
 
 QT_END_NAMESPACE
