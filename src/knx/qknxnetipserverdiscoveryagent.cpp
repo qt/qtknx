@@ -46,6 +46,8 @@ namespace QKnxPrivate
 
 void QKnxNetIpServerDiscoveryAgentPrivate::setupSocket()
 {
+    usedPort = port;
+    usedAddress = address;
     QKnxPrivate::clearSocket(&socket);
 
     Q_Q(QKnxNetIpServerDiscoveryAgent);
@@ -60,23 +62,23 @@ void QKnxNetIpServerDiscoveryAgentPrivate::setupSocket()
 
             if (type == QKnxNetIpServerDiscoveryAgent::ResponseType::Multicast) {
                 if (socket->joinMulticastGroup(multicastAddress)) {
-                    port = multicastPort;
-                    address = multicastAddress;
+                    usedPort = multicastPort;
+                    usedAddress = multicastAddress;
                 } else {
                     setAndEmitErrorOccurred(QKnxNetIpServerDiscoveryAgent::Error::Network,
                         QKnxNetIpServerDiscoveryAgent::tr("Could not join multicast group."));
                     q->stop();
                 }
             } else {
-                port = socket->localPort();
-                address = socket->localAddress();
+                usedPort = socket->localPort();
+                usedAddress = socket->localAddress();
             }
 
             if (q->state() == QKnxNetIpServerDiscoveryAgent::State::Running) {
                 servers.clear();
                 socket->writeDatagram(QKnxNetIpSearchRequest({
-                    (nat ? QHostAddress::AnyIPv4 : address),
-                    (nat ? quint16(0u) : port)
+                    (nat ? QHostAddress::AnyIPv4 : usedAddress),
+                    (nat ? quint16(0u) : usedPort)
                 }).bytes(), multicastAddress, multicastPort);
 
                 setupAndStartReceiveTimer();
@@ -251,6 +253,8 @@ QVector<QKnxNetIpServerInfo> QKnxNetIpServerDiscoveryAgent::discoveredServers() 
 quint16 QKnxNetIpServerDiscoveryAgent::localPort() const
 {
     Q_D(const QKnxNetIpServerDiscoveryAgent);
+    if (d->state == QKnxNetIpServerDiscoveryAgent::State::Running)
+        return d->usedPort;
     return d->port;
 }
 
@@ -264,6 +268,8 @@ void QKnxNetIpServerDiscoveryAgent::setLocalPort(quint16 port)
 QHostAddress QKnxNetIpServerDiscoveryAgent::localAddress() const
 {
     Q_D(const QKnxNetIpServerDiscoveryAgent);
+    if (d->state == QKnxNetIpServerDiscoveryAgent::State::Running)
+        return d->usedAddress;
     return d->address;
 }
 

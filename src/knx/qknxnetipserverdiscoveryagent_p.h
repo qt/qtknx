@@ -69,8 +69,8 @@ private:
     QTimer *receiveTimer { nullptr };
     QTimer *frequencyTimer { nullptr };
 
-    quint16 port { 0 };
-    QHostAddress address { QHostAddress::AnyIPv4 };
+    quint16 port { 0 }, usedPort;
+    QHostAddress address { QHostAddress::AnyIPv4 }, usedAddress;
 
     const quint16 multicastPort { QKnxNetIp::DefaultPort };
     const QHostAddress multicastAddress { QLatin1String(QKnxNetIp::MulticastAddress) };
