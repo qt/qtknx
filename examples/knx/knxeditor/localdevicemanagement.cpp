@@ -22,7 +22,7 @@
 #include "localdevicemanagement.h"
 #include "ui_localdevicemanagement.h"
 
-#include <QKnxDeviceManagementFrameFactory>
+#include <QKnxLocalDeviceManagementFrameFactory>
 #include <QKnxInterfaceObjectPropertyDataType>
 #include <QMetaEnum>
 #include <QMetaType>
@@ -63,7 +63,7 @@ LocalDeviceManagement::LocalDeviceManagement(QWidget* parent)
             .controlEndpointAddress().toString() + " on port: " + QString::number(m_server
                 .controlEndpointPort()));
 
-        m_management.sendDeviceManagementFrame(QKnxDeviceManagementFrameFactory::PropertyRead
+        m_management.sendDeviceManagementFrame(QKnxLocalDeviceManagementFrameFactory::PropertyRead
             ::createRequest(QKnxInterfaceObjectType::System::Device, 1,
                 QKnxInterfaceObjectProperty::Device::IoList, 1, 0));
     });
@@ -93,7 +93,7 @@ LocalDeviceManagement::LocalDeviceManagement(QWidget* parent)
     });
 
     connect(&m_management, &QKnxNetIpDeviceManagementConnection::receivedDeviceManagementFrame,
-        this, [&](QKnxDeviceManagementFrame frame) {
+        this, [&](QKnxLocalDeviceManagementFrame frame) {
         ui->textOuputDeviceManagement->append(QString::fromUtf8("Received device management "
             "frame with cEMI payload: " + frame.bytes().toHex()));
 
@@ -236,15 +236,15 @@ void LocalDeviceManagement::on_manualInput_clicked(bool checked)
 void LocalDeviceManagement::setupMessageCodeComboBox()
 {
     ui->mc->addItem("M_PropRead.req",
-        quint8(QKnxDeviceManagementFrame::MessageCode::PropertyReadRequest));
+        quint8(QKnxLocalDeviceManagementFrame::MessageCode::PropertyReadRequest));
     ui->mc->addItem("M_PropWrite.req",
-        quint8(QKnxDeviceManagementFrame::MessageCode::PropertyWriteRequest));
+        quint8(QKnxLocalDeviceManagementFrame::MessageCode::PropertyWriteRequest));
     ui->mc->addItem("M_FuncPropCommand.req",
-        quint8(QKnxDeviceManagementFrame::MessageCode::FunctionPropertyCommandRequest));
+        quint8(QKnxLocalDeviceManagementFrame::MessageCode::FunctionPropertyCommandRequest));
     ui->mc->addItem("M_FuncPropStateRead.req",
-        quint8(QKnxDeviceManagementFrame::MessageCode::FunctionPropertyStateReadRequest));
+        quint8(QKnxLocalDeviceManagementFrame::MessageCode::FunctionPropertyStateReadRequest));
     ui->mc->addItem("M_Reset.req",
-        quint8(QKnxDeviceManagementFrame::MessageCode::ResetRequest));
+        quint8(QKnxLocalDeviceManagementFrame::MessageCode::ResetRequest));
 }
 
 void LocalDeviceManagement::updatePropertyTypeCombobox(const QString &type)
@@ -272,7 +272,7 @@ void LocalDeviceManagement::updatePropertyTypeCombobox(const QString &type)
     }
 }
 
-void LocalDeviceManagement::handleIoListResponse(const QKnxDeviceManagementFrame &frame)
+void LocalDeviceManagement::handleIoListResponse(const QKnxLocalDeviceManagementFrame &frame)
 {
     if (frame.objectType() != QKnxInterfaceObjectType::System::Device
         || frame.property() != QKnxInterfaceObjectProperty::Device::IoList)
@@ -289,7 +289,7 @@ void LocalDeviceManagement::handleIoListResponse(const QKnxDeviceManagementFrame
     quint8 expectedDataSize = dataTypes[0].size();
     if (frame.startIndex() == 0) {
         if (data.size() == expectedDataSize) {
-            m_management.sendDeviceManagementFrame(QKnxDeviceManagementFrameFactory::PropertyRead
+            m_management.sendDeviceManagementFrame(QKnxLocalDeviceManagementFrameFactory::PropertyRead
                 ::createRequest(QKnxInterfaceObjectType::System::Device, 1,
                     QKnxInterfaceObjectProperty::Device::IoList, data.toHex().toUShort(nullptr,
                         16), 1));

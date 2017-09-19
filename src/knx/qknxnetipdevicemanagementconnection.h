@@ -22,7 +22,7 @@
 #ifndef QKNXNETIPDEVICEMANAGEMENTCONNECTION_H
 #define QKNXNETIPDEVICEMANAGEMENTCONNECTION_H
 
-#include <QtKnx/qknxdevicemanagementframe.h>
+#include <QtKnx/qknxlocaldevicemanagementframe.h>
 #include <QtKnx/qknxglobal.h>
 #include <QtKnx/qknxnetipendpointconnection.h>
 
@@ -44,10 +44,10 @@ public:
     QKnxNetIpDeviceManagementConnection(const QHostAddress &localAddress, quint16 localPort,
         QObject *parent = nullptr);
 
-    bool sendDeviceManagementFrame(const QKnxDeviceManagementFrame &frame);
+    bool sendDeviceManagementFrame(const QKnxLocalDeviceManagementFrame &frame);
 
 Q_SIGNALS:
-    void receivedDeviceManagementFrame(QKnxDeviceManagementFrame frame);
+    void receivedDeviceManagementFrame(QKnxLocalDeviceManagementFrame frame);
 };
 
 QT_END_NAMESPACE

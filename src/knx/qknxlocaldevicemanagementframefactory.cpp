@@ -19,13 +19,13 @@
 **
 ******************************************************************************/
 
-#include "qknxdevicemanagementframefactory.h"
+#include "qknxlocaldevicemanagementframefactory.h"
 
 QT_BEGIN_NAMESPACE
 
 // -- PropertyRead
 
-QKnxDeviceManagementFrame QKnxDeviceManagementFrameFactory::PropertyRead::createRequest(
+QKnxLocalDeviceManagementFrame QKnxLocalDeviceManagementFrameFactory::PropertyRead::createRequest(
     QKnxInterfaceObjectType type, quint8 instance, QKnxInterfaceObjectProperty pid,
     quint8 numberOfElements, quint16 startIndex)
 {
@@ -33,7 +33,7 @@ QKnxDeviceManagementFrame QKnxDeviceManagementFrameFactory::PropertyRead::create
         startIndex };
 }
 
-QKnxDeviceManagementFrame QKnxDeviceManagementFrameFactory::PropertyRead::createConfirmation(
+QKnxLocalDeviceManagementFrame QKnxLocalDeviceManagementFrameFactory::PropertyRead::createConfirmation(
     QKnxInterfaceObjectType type, quint8 instance, QKnxInterfaceObjectProperty pid,
     quint8 numberOfElements, quint16 startIndex, const QVector<quint8> &data)
 {
@@ -41,28 +41,28 @@ QKnxDeviceManagementFrame QKnxDeviceManagementFrameFactory::PropertyRead::create
         numberOfElements, startIndex, data };
 }
 
-QKnxDeviceManagementFrame QKnxDeviceManagementFrameFactory::PropertyRead::createConfirmation(
+QKnxLocalDeviceManagementFrame QKnxLocalDeviceManagementFrameFactory::PropertyRead::createConfirmation(
     QKnxInterfaceObjectType type, quint8 instance, QKnxInterfaceObjectProperty pid,
     quint8 numberOfElements, quint16 startIndex, QKnxCemi::Server::Error error)
 {
-    QKnxDeviceManagementFrame frame { QKnxCemiFrame::MessageCode::PropertyReadConfirmation, type,
+    QKnxLocalDeviceManagementFrame frame { QKnxCemiFrame::MessageCode::PropertyReadConfirmation, type,
         instance, pid, numberOfElements, startIndex };
     frame.setError(error);
     return frame;
 }
 
-QKnxDeviceManagementFrame QKnxDeviceManagementFrameFactory::PropertyRead::createConfirmation(
-    const QKnxDeviceManagementFrame &request, const QVector<quint8> &data)
+QKnxLocalDeviceManagementFrame QKnxLocalDeviceManagementFrameFactory::PropertyRead::createConfirmation(
+    const QKnxLocalDeviceManagementFrame &request, const QVector<quint8> &data)
 {
     return { QKnxCemiFrame::MessageCode::PropertyReadConfirmation, request.objectType(), request
         .objectInstance(), request.property(), request.numberOfElements(), request.startIndex(),
         data };
 }
 
-QKnxDeviceManagementFrame QKnxDeviceManagementFrameFactory::PropertyRead::createConfirmation(
-    const QKnxDeviceManagementFrame &request, QKnxCemi::Server::Error error)
+QKnxLocalDeviceManagementFrame QKnxLocalDeviceManagementFrameFactory::PropertyRead::createConfirmation(
+    const QKnxLocalDeviceManagementFrame &request, QKnxCemi::Server::Error error)
 {
-    QKnxDeviceManagementFrame frame = { QKnxCemiFrame::MessageCode::PropertyReadConfirmation,
+    QKnxLocalDeviceManagementFrame frame = { QKnxCemiFrame::MessageCode::PropertyReadConfirmation,
         request.objectType(), request.objectInstance(), request.property(), 0, request.startIndex() };
     frame.setError(error);
     return frame;
@@ -71,7 +71,7 @@ QKnxDeviceManagementFrame QKnxDeviceManagementFrameFactory::PropertyRead::create
 
 // -- PropertyWrite
 
-QKnxDeviceManagementFrame QKnxDeviceManagementFrameFactory::PropertyWrite::createRequest(
+QKnxLocalDeviceManagementFrame QKnxLocalDeviceManagementFrameFactory::PropertyWrite::createRequest(
     QKnxInterfaceObjectType type, quint8 instance, QKnxInterfaceObjectProperty pid,
     quint8 numberOfElements, quint16 startIndex, const QVector<quint8> &data)
 {
@@ -79,21 +79,21 @@ QKnxDeviceManagementFrame QKnxDeviceManagementFrameFactory::PropertyWrite::creat
         startIndex, data };
 }
 
-QKnxDeviceManagementFrame QKnxDeviceManagementFrameFactory::PropertyWrite::createConfirmation(
+QKnxLocalDeviceManagementFrame QKnxLocalDeviceManagementFrameFactory::PropertyWrite::createConfirmation(
     QKnxInterfaceObjectType type, quint8 instance, QKnxInterfaceObjectProperty pid,
     quint8 numberOfElements, quint16 startIndex, QKnxCemi::Server::Error error)
 {
-    QKnxDeviceManagementFrame frame = { QKnxCemiFrame::MessageCode::PropertyWriteConfirmation, type,
+    QKnxLocalDeviceManagementFrame frame = { QKnxCemiFrame::MessageCode::PropertyWriteConfirmation, type,
         instance, pid, numberOfElements, startIndex };
     if (error != QKnxCemi::Server::Error::None)
         frame.setError(error);
     return frame;
 }
 
-QKnxDeviceManagementFrame QKnxDeviceManagementFrameFactory::PropertyWrite::createConfirmation(
-    const QKnxDeviceManagementFrame &request, QKnxCemi::Server::Error error)
+QKnxLocalDeviceManagementFrame QKnxLocalDeviceManagementFrameFactory::PropertyWrite::createConfirmation(
+    const QKnxLocalDeviceManagementFrame &request, QKnxCemi::Server::Error error)
 {
-    QKnxDeviceManagementFrame frame = { QKnxCemiFrame::MessageCode::PropertyWriteConfirmation,
+    QKnxLocalDeviceManagementFrame frame = { QKnxCemiFrame::MessageCode::PropertyWriteConfirmation,
         request.objectType(), request.objectInstance(), request.property(), 0, request.startIndex() };
     if (error != QKnxCemi::Server::Error::None)
         frame.setError(error);
@@ -103,7 +103,7 @@ QKnxDeviceManagementFrame QKnxDeviceManagementFrameFactory::PropertyWrite::creat
 
 // -- PropertyIndication
 
-QKnxDeviceManagementFrame QKnxDeviceManagementFrameFactory::PropertyIndication::create(
+QKnxLocalDeviceManagementFrame QKnxLocalDeviceManagementFrameFactory::PropertyIndication::create(
     QKnxInterfaceObjectType type, quint8 instance, QKnxInterfaceObjectProperty pid,
     quint8 numberOfElements, quint16 startIndex, const QVector<quint8> &data)
 {
@@ -114,20 +114,20 @@ QKnxDeviceManagementFrame QKnxDeviceManagementFrameFactory::PropertyIndication::
 
 // -- FunctionPropertyCommand
 
-QKnxDeviceManagementFrame QKnxDeviceManagementFrameFactory::FunctionPropertyCommand::createRequest(
+QKnxLocalDeviceManagementFrame QKnxLocalDeviceManagementFrameFactory::FunctionPropertyCommand::createRequest(
     QKnxInterfaceObjectType type, quint8 instance, QKnxInterfaceObjectProperty pid,
     const QVector<quint8> &data)
 {
     return { QKnxCemiFrame::MessageCode::FunctionPropertyCommandRequest, type, instance, pid, data };
 }
 
-QKnxDeviceManagementFrame QKnxDeviceManagementFrameFactory::FunctionPropertyCommand::createConfirmation(
+QKnxLocalDeviceManagementFrame QKnxLocalDeviceManagementFrameFactory::FunctionPropertyCommand::createConfirmation(
     QKnxInterfaceObjectType type, quint8 instance, QKnxInterfaceObjectProperty pid)
 {
     return { QKnxCemiFrame::MessageCode::FunctionPropertyCommandConfirmation, type, instance, pid };
 }
 
-QKnxDeviceManagementFrame QKnxDeviceManagementFrameFactory::FunctionPropertyCommand::createConfirmation(
+QKnxLocalDeviceManagementFrame QKnxLocalDeviceManagementFrameFactory::FunctionPropertyCommand::createConfirmation(
     QKnxInterfaceObjectType type, quint8 instance, QKnxInterfaceObjectProperty pid,
     QKnxCemi::Server::ReturnCode code, const QVector<quint8> &data)
 {
@@ -135,15 +135,15 @@ QKnxDeviceManagementFrame QKnxDeviceManagementFrameFactory::FunctionPropertyComm
         QVector<quint8>({ quint8(code) }) + data };
 }
 
-QKnxDeviceManagementFrame QKnxDeviceManagementFrameFactory::FunctionPropertyCommand::createConfirmation(
-    const QKnxDeviceManagementFrame &request)
+QKnxLocalDeviceManagementFrame QKnxLocalDeviceManagementFrameFactory::FunctionPropertyCommand::createConfirmation(
+    const QKnxLocalDeviceManagementFrame &request)
 {
     return { QKnxCemiFrame::MessageCode::FunctionPropertyCommandConfirmation, request.objectType(),
         request.objectInstance(), request.property() };
 }
 
-QKnxDeviceManagementFrame QKnxDeviceManagementFrameFactory::FunctionPropertyCommand::createConfirmation(
-    const QKnxDeviceManagementFrame &request, QKnxCemi::Server::ReturnCode code,
+QKnxLocalDeviceManagementFrame QKnxLocalDeviceManagementFrameFactory::FunctionPropertyCommand::createConfirmation(
+    const QKnxLocalDeviceManagementFrame &request, QKnxCemi::Server::ReturnCode code,
     const QVector<quint8> &data)
 {
     return { QKnxCemiFrame::MessageCode::FunctionPropertyCommandConfirmation, request.objectType(),
@@ -153,20 +153,20 @@ QKnxDeviceManagementFrame QKnxDeviceManagementFrameFactory::FunctionPropertyComm
 
 // -- FunctionPropertyState
 
-QKnxDeviceManagementFrame QKnxDeviceManagementFrameFactory::FunctionPropertyState::createRequest(
+QKnxLocalDeviceManagementFrame QKnxLocalDeviceManagementFrameFactory::FunctionPropertyState::createRequest(
     QKnxInterfaceObjectType type, quint8 instance, QKnxInterfaceObjectProperty pid,
     const QVector<quint8> &data)
 {
     return { QKnxCemiFrame::MessageCode::FunctionPropertyStateReadRequest, type, instance, pid, data };
 }
 
-QKnxDeviceManagementFrame QKnxDeviceManagementFrameFactory::FunctionPropertyState::createConfirmation(
+QKnxLocalDeviceManagementFrame QKnxLocalDeviceManagementFrameFactory::FunctionPropertyState::createConfirmation(
     QKnxInterfaceObjectType type, quint8 instance, QKnxInterfaceObjectProperty pid)
 {
     return { QKnxCemiFrame::MessageCode::FunctionPropertyStateReadConfirmation, type, instance, pid };
 }
 
-QKnxDeviceManagementFrame QKnxDeviceManagementFrameFactory::FunctionPropertyState::createConfirmation(
+QKnxLocalDeviceManagementFrame QKnxLocalDeviceManagementFrameFactory::FunctionPropertyState::createConfirmation(
     QKnxInterfaceObjectType type, quint8 instance, QKnxInterfaceObjectProperty pid,
     QKnxCemi::Server::ReturnCode code, const QVector<quint8> &data)
 {
@@ -174,15 +174,15 @@ QKnxDeviceManagementFrame QKnxDeviceManagementFrameFactory::FunctionPropertyStat
         QVector<quint8>({ quint8(code) }) + data };
 }
 
-QKnxDeviceManagementFrame QKnxDeviceManagementFrameFactory::FunctionPropertyState::createConfirmation(
-    const QKnxDeviceManagementFrame &request)
+QKnxLocalDeviceManagementFrame QKnxLocalDeviceManagementFrameFactory::FunctionPropertyState::createConfirmation(
+    const QKnxLocalDeviceManagementFrame &request)
 {
     return { QKnxCemiFrame::MessageCode::FunctionPropertyStateReadConfirmation, request.objectType(),
         request.objectInstance(), request.property() };
 }
 
-QKnxDeviceManagementFrame QKnxDeviceManagementFrameFactory::FunctionPropertyState::createConfirmation(
-    const QKnxDeviceManagementFrame &request, QKnxCemi::Server::ReturnCode code,
+QKnxLocalDeviceManagementFrame QKnxLocalDeviceManagementFrameFactory::FunctionPropertyState::createConfirmation(
+    const QKnxLocalDeviceManagementFrame &request, QKnxCemi::Server::ReturnCode code,
     const QVector<quint8> &data)
 {
     return { QKnxCemiFrame::MessageCode::FunctionPropertyStateReadConfirmation, request.objectType(),
@@ -192,14 +192,14 @@ QKnxDeviceManagementFrame QKnxDeviceManagementFrameFactory::FunctionPropertyStat
 
 // -- Reset
 
-QKnxDeviceManagementFrame QKnxDeviceManagementFrameFactory::Reset::createRequest()
+QKnxLocalDeviceManagementFrame QKnxLocalDeviceManagementFrameFactory::Reset::createRequest()
 {
-    return QKnxDeviceManagementFrame { QKnxCemiFrame::MessageCode::ResetRequest };
+    return QKnxLocalDeviceManagementFrame { QKnxCemiFrame::MessageCode::ResetRequest };
 }
 
-QKnxDeviceManagementFrame QKnxDeviceManagementFrameFactory::Reset::createIndication()
+QKnxLocalDeviceManagementFrame QKnxLocalDeviceManagementFrameFactory::Reset::createIndication()
 {
-    return QKnxDeviceManagementFrame { QKnxCemiFrame::MessageCode::ResetIndication };
+    return QKnxLocalDeviceManagementFrame { QKnxCemiFrame::MessageCode::ResetIndication };
 }
 
 QT_END_NAMESPACE

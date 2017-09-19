@@ -20,11 +20,11 @@
 ******************************************************************************/
 
 #include "qknxcemi.h"
-#include "qknxdevicemanagementframe.h"
+#include "qknxlocaldevicemanagementframe.h"
 
 QT_BEGIN_NAMESPACE
 
-QKnxDeviceManagementFrame::QKnxDeviceManagementFrame(QKnxDeviceManagementFrame::MessageCode code)
+QKnxLocalDeviceManagementFrame::QKnxLocalDeviceManagementFrame(QKnxCemiFrame::MessageCode code)
     : QKnxCemiFrame(code)
 {
     if (code != QKnxCemiFrame::MessageCode::ResetRequest
@@ -34,7 +34,7 @@ QKnxDeviceManagementFrame::QKnxDeviceManagementFrame(QKnxDeviceManagementFrame::
     }
 }
 
-bool QKnxDeviceManagementFrame::isValid() const
+bool QKnxLocalDeviceManagementFrame::isValid() const
 {
     switch (messageCode()) {
     case QKnxCemiFrame::MessageCode::PropertyReadRequest:
@@ -83,7 +83,7 @@ bool QKnxDeviceManagementFrame::isValid() const
     return true; // TODO: Find other definitions of validity.
 }
 
-bool QKnxDeviceManagementFrame::isNegativeConfirmation() const
+bool QKnxLocalDeviceManagementFrame::isNegativeConfirmation() const
 {
     switch (messageCode()) {
     case QKnxCemiFrame::MessageCode::PropertyReadConfirmation:
@@ -102,12 +102,12 @@ bool QKnxDeviceManagementFrame::isNegativeConfirmation() const
     return false;
 }
 
-QKnxInterfaceObjectType QKnxDeviceManagementFrame::objectType() const
+QKnxInterfaceObjectType QKnxLocalDeviceManagementFrame::objectType() const
 {
     return QKnxInterfaceObjectType(QKnxUtils::QUint16::fromBytes(serviceInformationRef()));
 }
 
-void QKnxDeviceManagementFrame::setObjectType(QKnxInterfaceObjectType type)
+void QKnxLocalDeviceManagementFrame::setObjectType(QKnxInterfaceObjectType type)
 {
     if (!QKnxInterfaceObjectType::isObjectType(type))
         return;
@@ -117,36 +117,36 @@ void QKnxDeviceManagementFrame::setObjectType(QKnxInterfaceObjectType type)
     setServiceInformation(si);
 }
 
-quint8 QKnxDeviceManagementFrame::objectInstance() const
+quint8 QKnxLocalDeviceManagementFrame::objectInstance() const
 {
     return serviceInformationRef().byte(2);
 }
 
-void QKnxDeviceManagementFrame::setObjectInstance(quint8 instance)
+void QKnxLocalDeviceManagementFrame::setObjectInstance(quint8 instance)
 {
     auto si = serviceInformation();
     si.replaceBytes<std::array<quint8, 1>, 1>(2, { { instance } });
     setServiceInformation(si);
 }
 
-QKnxInterfaceObjectProperty QKnxDeviceManagementFrame::property() const
+QKnxInterfaceObjectProperty QKnxLocalDeviceManagementFrame::property() const
 {
     return serviceInformationRef().byte(3);
 }
 
-void QKnxDeviceManagementFrame::setProperty(QKnxInterfaceObjectProperty pid)
+void QKnxLocalDeviceManagementFrame::setProperty(QKnxInterfaceObjectProperty pid)
 {
     auto si = serviceInformation();
     si.replaceBytes<std::array<quint8, 1>, 1>(3, { { quint8(pid) } });
     setServiceInformation(si);
 }
 
-quint8 QKnxDeviceManagementFrame::numberOfElements() const
+quint8 QKnxLocalDeviceManagementFrame::numberOfElements() const
 {
     return quint8(serviceInformationRef().byte(4) & 0xf0) >> 4;
 }
 
-void QKnxDeviceManagementFrame::setNumberOfElements(quint8 numOfElements)
+void QKnxLocalDeviceManagementFrame::setNumberOfElements(quint8 numOfElements)
 {
     if (numOfElements > 0xf)
         return;
@@ -156,12 +156,12 @@ void QKnxDeviceManagementFrame::setNumberOfElements(quint8 numOfElements)
     setServiceInformation(si);
 }
 
-quint16 QKnxDeviceManagementFrame::startIndex() const
+quint16 QKnxLocalDeviceManagementFrame::startIndex() const
 {
     return QKnxUtils::QUint16::fromBytes(serviceInformationRef(4)) & 0x0fff;
 }
 
-void QKnxDeviceManagementFrame::setStartIndex(quint16 index)
+void QKnxLocalDeviceManagementFrame::setStartIndex(quint16 index)
 {
     if (index > 0x0fff)
         return;
@@ -172,7 +172,7 @@ void QKnxDeviceManagementFrame::setStartIndex(quint16 index)
     setServiceInformation(si);
 }
 
-QKnxCemi::Server::Error QKnxDeviceManagementFrame::error() const
+QKnxCemi::Server::Error QKnxLocalDeviceManagementFrame::error() const
 {
     switch (messageCode()) {
     case QKnxCemiFrame::MessageCode::PropertyReadConfirmation:
@@ -189,7 +189,7 @@ QKnxCemi::Server::Error QKnxDeviceManagementFrame::error() const
     return QKnxCemi::Server::Error::None;
 }
 
-void QKnxDeviceManagementFrame::setError(QKnxCemi::Server::Error error)
+void QKnxLocalDeviceManagementFrame::setError(QKnxCemi::Server::Error error)
 {
     // Set error code on confirmed messages only. See paragraph 4.1.7.3.7.1
     switch (messageCode()) {
@@ -206,7 +206,7 @@ void QKnxDeviceManagementFrame::setError(QKnxCemi::Server::Error error)
     }
 }
 
-QKnxCemi::Server::ReturnCode QKnxDeviceManagementFrame::returnCode() const
+QKnxCemi::Server::ReturnCode QKnxLocalDeviceManagementFrame::returnCode() const
 {
     switch (messageCode()) {
     //case QKnxCemiFrame::MessageCode::FunctionPropertyStateReadConfirmation:
@@ -219,7 +219,7 @@ QKnxCemi::Server::ReturnCode QKnxDeviceManagementFrame::returnCode() const
     return QKnxCemi::Server::ReturnCode::Error;
 }
 
-void QKnxDeviceManagementFrame::setReturnCode(QKnxCemi::Server::ReturnCode code)
+void QKnxLocalDeviceManagementFrame::setReturnCode(QKnxCemi::Server::ReturnCode code)
 {
     switch (messageCode()) {
     //case QKnxCemiFrame::MessageCode::FunctionPropertyStateReadConfirmation:
@@ -236,7 +236,7 @@ void QKnxDeviceManagementFrame::setReturnCode(QKnxCemi::Server::ReturnCode code)
     setServiceInformation(sf);
 }
 
-QKnxDeviceManagementFrame::QKnxDeviceManagementFrame(const QKnxCemiFrame &other)
+QKnxLocalDeviceManagementFrame::QKnxLocalDeviceManagementFrame(const QKnxCemiFrame &other)
     : QKnxCemiFrame(other)
 {}
 

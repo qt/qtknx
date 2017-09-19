@@ -66,7 +66,7 @@ private slots:
 private:
     void setupMessageCodeComboBox();
     void updatePropertyTypeCombobox(const QString &type);
-    void handleIoListResponse(const QKnxDeviceManagementFrame &frame);
+    void handleIoListResponse(const QKnxLocalDeviceManagementFrame &frame);
     int keyToValue(const QMetaObject &object, const QString &key, bool *ok);
     void setupComboBox(QComboBox *comboBox, const QMetaObject &object, const QSet<int> &values = {});
     void selectFirstSubitem(QTreeWidget *treeView, QTreeWidgetItem *rootItem, QComboBox *comboBox);

@@ -66,8 +66,8 @@ PUBLIC_HEADERS += \
     qknxnpdufactory.h \
     qknxinterfaceobjecttype.h \
     qknxinterfaceobjectproperty.h \
-    qknxdevicemanagementframe.h \
-    qknxdevicemanagementframefactory.h \
+    qknxlocaldevicemanagementframe.h \
+    qknxlocaldevicemanagementframefactory.h \
     qknxinterfaceobjectpropertydatatype.h \
     qknxdpt.h \
     qknxdatapoint.h \
@@ -130,8 +130,8 @@ SOURCES += \
     qknxnpdufactory.cpp \
     qknxinterfaceobjecttype.cpp \
     qknxinterfaceobjectproperty.cpp \
-    qknxdevicemanagementframe.cpp \
-    qknxdevicemanagementframefactory.cpp \
+    qknxlocaldevicemanagementframe.cpp \
+    qknxlocaldevicemanagementframefactory.cpp \
     qknxinterfaceobjectpropertydatatype.cpp \
     qknxdptfactory.cpp \
     qknxdatapoint.cpp \

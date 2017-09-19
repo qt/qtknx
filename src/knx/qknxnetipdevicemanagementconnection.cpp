@@ -57,7 +57,7 @@ QKnxNetIpDeviceManagementConnection::QKnxNetIpDeviceManagementConnection(const Q
     : QKnxNetIpEndpointConnection(*new QKnxNetIpDeviceManagementConnectionPrivate(addr, port), obj)
 {}
 
-bool QKnxNetIpDeviceManagementConnection::sendDeviceManagementFrame(const QKnxDeviceManagementFrame &frame)
+bool QKnxNetIpDeviceManagementConnection::sendDeviceManagementFrame(const QKnxLocalDeviceManagementFrame &frame)
 {
     if (state() != State::Connected)
         return false;

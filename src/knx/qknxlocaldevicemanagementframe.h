@@ -19,8 +19,8 @@
 **
 ******************************************************************************/
 
-#ifndef QKNXDEVICEMANAGEMENTFRAME_H
-#define QKNXDEVICEMANAGEMENTFRAME_H
+#ifndef QKNXLOCALDEVICEMANAGEMENTFRAME_H
+#define QKNXLOCALDEVICEMANAGEMENTFRAME_H
 
 #include <QtKnx/qknxcemi.h>
 #include <QtKnx/qknxcemiframe.h>
@@ -30,15 +30,15 @@
 
 QT_BEGIN_NAMESPACE
 
-class Q_KNX_EXPORT QKnxDeviceManagementFrame final : public QKnxCemiFrame
+class Q_KNX_EXPORT QKnxLocalDeviceManagementFrame final : public QKnxCemiFrame
 {
-    friend class QKnxDeviceManagementFrameFactory;
+    friend class QKnxLocalDeviceManagementFrameFactory;
 
 public:
-    QKnxDeviceManagementFrame() = default;
-    ~QKnxDeviceManagementFrame() override = default;
+    QKnxLocalDeviceManagementFrame() = default;
+    ~QKnxLocalDeviceManagementFrame() override = default;
 
-    explicit QKnxDeviceManagementFrame(QKnxDeviceManagementFrame::MessageCode code);
+    explicit QKnxLocalDeviceManagementFrame(QKnxCemiFrame::MessageCode code);
 
     bool isValid() const override;
     bool isNegativeConfirmation() const;
@@ -87,13 +87,13 @@ public:
         setServiceInformation(sf);
     }
 
-    QKnxDeviceManagementFrame(const QKnxCemiFrame &other);
+    QKnxLocalDeviceManagementFrame(const QKnxCemiFrame &other);
 
 private:
-    template <typename T = QByteArray> QKnxDeviceManagementFrame(QKnxCemiFrame::MessageCode code,
+    template <typename T = QByteArray> QKnxLocalDeviceManagementFrame(QKnxCemiFrame::MessageCode code,
             QKnxInterfaceObjectType type, quint8 instance, QKnxInterfaceObjectProperty pid,
             quint8 noe, quint16 index, const T &payload = {})
-        : QKnxDeviceManagementFrame(code)
+        : QKnxLocalDeviceManagementFrame(code)
     {
         static_assert(is_type<T, QByteArray, QVector<quint8>, QKnxByteStoreRef, std::deque<quint8>,
             std::vector<quint8>>::value, "Type not supported.");
@@ -107,10 +107,10 @@ private:
         setServiceInformation(si);
     }
 
-    template <typename T = QByteArray> QKnxDeviceManagementFrame(QKnxCemiFrame::MessageCode code,
+    template <typename T = QByteArray> QKnxLocalDeviceManagementFrame(QKnxCemiFrame::MessageCode code,
             QKnxInterfaceObjectType type, quint8 instance, QKnxInterfaceObjectProperty pid,
             const T &payload = {})
-        : QKnxDeviceManagementFrame(code)
+        : QKnxLocalDeviceManagementFrame(code)
     {
         static_assert(is_type<T, QByteArray, QVector<quint8>, QKnxByteStoreRef, std::deque<quint8>,
             std::vector<quint8>>::value, "Type not supported.");
