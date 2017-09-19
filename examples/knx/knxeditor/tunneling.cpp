@@ -22,8 +22,6 @@
 #include "tunneling.h"
 #include "ui_tunneling.h"
 
-#include <QKnxDeviceManagementFrameFactory>
-#include <QKnxInterfaceObjectPropertyDataType>
 #include <QMetaEnum>
 #include <QMetaType>
 #include <QStandardItemModel>
@@ -240,15 +238,15 @@ void Tunneling::on_manualInput_clicked(bool checked)
 void Tunneling::setupMessageCodeComboBox()
 {
     ui->mc->addItem("L_Data.req",
-        quint8(QKnxDeviceManagementFrame::MessageCode::DataRequest));
+        quint8(QKnxTunnelFrame::MessageCode::DataRequest));
     ui->mc->addItem("L_Raw.req",
-        quint8(QKnxDeviceManagementFrame::MessageCode::RawRequest));
+        quint8(QKnxTunnelFrame::MessageCode::RawRequest));
     ui->mc->addItem("L_Poll_Data.req",
-        quint8(QKnxDeviceManagementFrame::MessageCode::PollDataRequest));
+        quint8(QKnxTunnelFrame::MessageCode::PollDataRequest));
     ui->mc->addItem("T_Data_Connected.req",
-        quint8(QKnxDeviceManagementFrame::MessageCode::DataConnectedRequest));
+        quint8(QKnxTunnelFrame::MessageCode::DataConnectedRequest));
     ui->mc->addItem("T_Data_Individual.req",
-        quint8(QKnxDeviceManagementFrame::MessageCode::DataIndividualRequest));
+        quint8(QKnxTunnelFrame::MessageCode::DataIndividualRequest));
 }
 
 void Tunneling::updateAdditionalInfoTypesComboBox()
