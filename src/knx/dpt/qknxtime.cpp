@@ -23,6 +23,9 @@
 
 QT_BEGIN_NAMESPACE
 
+QAbstractKnxTime::~QAbstractKnxTime()
+{}
+
 bool QKnxTime::isValid() const
 {
     return QKnxTimeBase<QKnxTime>::ds() > NullTime
@@ -42,5 +45,7 @@ bool QKnxTime24::isValid(quint8 h, quint8 m, quint8 s)
 {
     return quint32(h) <= 24 && quint32(m) < 60 && quint32(s) < 60;
 }
+
+#include "moc_qknxtime.cpp"
 
 QT_END_NAMESPACE

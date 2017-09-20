@@ -185,6 +185,8 @@ void tst_QKnxDatapointType::dpt10_TimeOfDay()
 
     QCOMPARE(timeOfDay.bytes(), timeOfDay2.bytes());
     QCOMPARE(QKnxDatapointTypeFactory::instance().containsMainType(timeOfDay.mainType()), true);
+
+    QCOMPARE(time.staticMetaObject.enumeratorCount(), 1);
 }
 
 void tst_QKnxDatapointType::dpt11_Date()
@@ -241,6 +243,8 @@ void tst_QKnxDatapointType::dpt19_DateTime()
         QKnxDateTime::ClockQuality::WithExtendedSyncSignal);
     QCOMPARE(dt.isValid(), true);
     QCOMPARE(QKnxDatapointTypeFactory::instance().containsMainType(dt.mainType()), true);
+
+    QCOMPARE(time.staticMetaObject.enumeratorCount(), 1);
 
     // TODO: Extend the auto-test.
 }

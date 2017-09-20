@@ -27,10 +27,12 @@
 
 QT_BEGIN_NAMESPACE
 
-template<typename Derived> class QKnxTimeBase
+class Q_KNX_EXPORT QAbstractKnxTime
 {
+    Q_GADGET
+
 public:
-    enum class DayOfWeek : quint8
+    enum DayOfWeek : quint8
     {
         Ignore = 0,
         Monday = 1,
@@ -41,7 +43,13 @@ public:
         Saturday = 6,
         Sunday = 7
     };
+    Q_ENUM(DayOfWeek)
+    virtual ~QAbstractKnxTime() = 0;
+};
 
+template<typename Derived> class QKnxTimeBase : public QAbstractKnxTime
+{
+public:
     QKnxTimeBase() = default;
     QKnxTimeBase(quint8 h, quint8 m, quint8 s = 0, DayOfWeek day = DayOfWeek::Ignore)
     { setHMS(h, m, s); m_day = day; }

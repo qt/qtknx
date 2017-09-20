@@ -109,6 +109,8 @@ public:
         WithoutExtendedSyncSignal,
         WithExtendedSyncSignal = 0x01
     };
+    Q_ENUM(ClockQuality)
+
     QKnxDateTime();
     QKnxDateTime(const QDate &date, const QKnxTime24 &time, Attributes attr, ClockQuality quality);
 
