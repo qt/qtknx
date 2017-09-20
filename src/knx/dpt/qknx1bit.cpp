@@ -47,17 +47,17 @@ QKnx1Bit::QKnx1Bit(int subType, bool bit)
 
 bool QKnx1Bit::bit() const
 {
-    return testBit(operator[](0), 0);
+    return QKnxDatapointType::testBit(byte(0), 0);
 }
 
-void QKnx1Bit::setBit(bool value)
+bool QKnx1Bit::setBit(bool value)
 {
-    operator[](0) = (value ? 0x01 : 0x00);
+    return setByte(0, (value ? 0x01 : 0x00));
 }
 
 bool QKnx1Bit::isValid() const
 {
-    return mainType() == MainType && size() == TypeSize && operator[](0) <= maximum().toUInt();
+    return QKnxDatapointType::isValid() && byte(0) <= maximum().toUInt();
 }
 
 
@@ -79,9 +79,9 @@ QKnxSwitch::State QKnxSwitch::value() const
     return QKnxSwitch::State(QKnx1Bit::bit());
 }
 
-void QKnxSwitch::setValue(State state)
+bool QKnxSwitch::setValue(State state)
 {
-    QKnx1Bit::setBit(bool(state));
+    return QKnx1Bit::setBit(bool(state));
 }
 
 #include "moc_qknx1bit.cpp"

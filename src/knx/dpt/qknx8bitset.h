@@ -31,7 +31,7 @@ class Q_KNX_EXPORT QKnx8BitSet : public QKnxDatapointType
 {
 public:
     QKnx8BitSet();
-    explicit QKnx8BitSet(quint8 byte);
+    explicit QKnx8BitSet(quint8 value);
 
     static const constexpr int TypeSize = 0x01;
     static const constexpr int MainType = 0x15;
@@ -46,7 +46,6 @@ public:
 
 protected:
     explicit QKnx8BitSet(int subType);
-    using QKnxDatapointType::setBit;
 };
 
 class Q_KNX_EXPORT QKnxGeneralStatus : public QKnx8BitSet

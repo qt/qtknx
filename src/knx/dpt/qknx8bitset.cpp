@@ -31,10 +31,10 @@ QKnx8BitSet::QKnx8BitSet()
     : QKnx8BitSet(SubType)
 {}
 
-QKnx8BitSet::QKnx8BitSet(quint8 byte)
+QKnx8BitSet::QKnx8BitSet(quint8 value)
     : QKnx8BitSet(SubType)
 {
-    operator[](0) = byte;
+    setByte(value);
 }
 
 QKnx8BitSet::QKnx8BitSet(int subType)
@@ -48,27 +48,27 @@ QKnx8BitSet::QKnx8BitSet(int subType)
 
 bool QKnx8BitSet::bit(int index) const
 {
-    return testBit(operator[](0), index);
+    return QKnxDatapointType::testBit(operator[](0), index);
 }
 
 void QKnx8BitSet::setBit(bool value, int index)
 {
-    QKnxDatapointType::setBit(operator[](0), value, index);
+    QKnxDatapointType::setBit(&(operator[](0)), value, index);
 }
 
 quint8 QKnx8BitSet::byte() const
 {
-    return operator[](0);
+    return QKnxDatapointType::byte(0);
 }
 
 void QKnx8BitSet::setByte(quint8 value)
 {
-    operator[](0) = value;
+    QKnxDatapointType::setByte(0, value);
 }
 
 bool QKnx8BitSet::isValid() const
 {
-    return mainType() == MainType && size() == TypeSize && operator[](0) <= maximum().toUInt();
+    return QKnxDatapointType::isValid() && byte() <= maximum().toUInt();
 }
 
 
@@ -89,22 +89,23 @@ QKnxGeneralStatus::QKnxGeneralStatus(Attributes attributes)
 
 QKnxGeneralStatus::Attributes QKnxGeneralStatus::value() const
 {
-    return Attributes().setFlag(Attribute::OutOfService, testBit(operator[](0), 0))
-        .setFlag(Attribute::Fault, testBit(operator[](0), 1))
-        .setFlag(Attribute::Overridden, testBit(operator[](0), 2))
-        .setFlag(Attribute::InAlarm, testBit(operator[](0), 3))
-        .setFlag(Attribute::AlarmUnacknowledged, testBit(operator[](0), 4));
+    auto value = byte();
+    return Attributes().setFlag(Attribute::OutOfService, QKnxDatapointType::testBit(value, 0))
+        .setFlag(Attribute::Fault, QKnxDatapointType::testBit(value, 1))
+        .setFlag(Attribute::Overridden, QKnxDatapointType::testBit(value, 2))
+        .setFlag(Attribute::InAlarm, QKnxDatapointType::testBit(value, 3))
+        .setFlag(Attribute::AlarmUnacknowledged, QKnxDatapointType::testBit(value, 4));
 }
 
 void QKnxGeneralStatus::setValue(Attributes attributes)
 {
-    quint8 byte = operator[](0);
-    setBit(byte, attributes.testFlag(Attribute::OutOfService), 0);
-    setBit(byte, attributes.testFlag(Attribute::Fault), 1);
-    setBit(byte, attributes.testFlag(Attribute::Overridden), 2);
-    setBit(byte, attributes.testFlag(Attribute::InAlarm), 3);
-    setBit(byte, attributes.testFlag(Attribute::AlarmUnacknowledged), 4);
-    operator[](0) = byte;
+    quint8 value = byte();
+    QKnxDatapointType::setBit(&value, attributes.testFlag(Attribute::OutOfService), 0);
+    QKnxDatapointType::setBit(&value, attributes.testFlag(Attribute::Fault), 1);
+    QKnxDatapointType::setBit(&value, attributes.testFlag(Attribute::Overridden), 2);
+    QKnxDatapointType::setBit(&value, attributes.testFlag(Attribute::InAlarm), 3);
+    QKnxDatapointType::setBit(&value, attributes.testFlag(Attribute::AlarmUnacknowledged), 4);
+    setByte(value);
 }
 
 bool QKnxGeneralStatus::isSet(Attribute attribute) const

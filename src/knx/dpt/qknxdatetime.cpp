@@ -49,8 +49,8 @@ QKnxTimeOfDay::QKnxTimeOfDay(quint8 h, quint8 m, quint8 s, QKnxTime::DayOfWeek d
 
 QKnxTime QKnxTimeOfDay::value() const
 {
-    return { quint8(operator[](0) & 0x1f), operator[](1), operator[](2),
-        static_cast<QKnxTime::DayOfWeek> ((operator[](0) & 0xe0) >> 5u) };
+    return { quint8(byte(0) & 0x1f), byte(1), byte(2),
+        static_cast<QKnxTime::DayOfWeek> ((byte(0) & 0xe0) >> 5u) };
 }
 
 void QKnxTimeOfDay::setValue(const QKnxTime &time)
@@ -58,58 +58,58 @@ void QKnxTimeOfDay::setValue(const QKnxTime &time)
     if (!time.isValid())
         return;
 
-    operator[](2) = quint8(time.second());
-    operator[](1) = quint8(time.minute());
-    operator[](0) = quint8(time.hour()) | quint8(time.dayOfWeek()) << 5u;
+    setByte(2, quint8(time.second()));
+    setByte(1, quint8(time.minute()));
+    setByte(0, quint8(time.hour()) | quint8(time.dayOfWeek()) << 5u);
 }
 
 quint8 QKnxTimeOfDay::hour() const
 {
-    return operator[](0) & 0x1f;
+    return byte(0) & 0x1f;
 }
 
 void QKnxTimeOfDay::setHour(quint8 hour)
 {
     if (hour < 24)
-        operator[](0) = quint8(operator[](0) &0xe0) | hour;
+        setByte(0, quint8(byte(0) &0xe0) | hour);
 }
 
 quint8 QKnxTimeOfDay::minute() const
 {
-    return operator[](1);
+    return byte(1);
 }
 
 void QKnxTimeOfDay::setMinute(quint8 minute)
 {
     if (minute < 60)
-        operator[](1) = minute;
+        setByte(1, minute);
 }
 
 quint8 QKnxTimeOfDay::second() const
 {
-    return operator[](2);
+    return byte(2);
 }
 
 void QKnxTimeOfDay::setSecond(quint8 second)
 {
     if (second < 60)
-        operator[](2) = second;
+        setByte(2, second);
 }
 
 QKnxTime::DayOfWeek QKnxTimeOfDay::dayOfDay() const
 {
-    return QKnxTime::DayOfWeek(quint8(operator[](0) & 0xe0) >> 5u);
+    return QKnxTime::DayOfWeek(quint8(byte(0) & 0xe0) >> 5u);
 }
 
 void QKnxTimeOfDay::setDayOfWeek(QKnxTime::DayOfWeek day)
 {
-    operator[](0) = quint8(day) << 5u | quint8(operator[](0) & 0x1f);
+    setByte(0, quint8(day) << 5u | quint8(byte(0) & 0x1f));
 }
 
 bool QKnxTimeOfDay::isValid() const
 {
     auto time = value();
-    return mainType() == MainType && size() == TypeSize && time.isValid()
+    return QKnxDatapointType::isValid() && time.isValid()
         && (time >= minimum().value<QKnxTime>()) && (time <= maximum().value<QKnxTime>());
 }
 
@@ -144,50 +144,50 @@ QDate QKnxDate::value() const
 void QKnxDate::setValue(const QDate &date)
 {
     if (date.isValid() && (date >= minimum().toDate()) && (date <= maximum().toDate())) {
-        operator[](0) = date.day();
-        operator[](1) = date.month();
-        operator[](2) = quint8(date.year() % 100);
+        setByte(0, date.day());
+        setByte(1, date.month());
+        setByte(2, quint8(date.year() % 100));
     }
 }
 
 quint16 QKnxDate::year() const
 {
-    quint16 year = operator[](2);
+    quint16 year = byte(2);
     return year + quint16(year < 90 ? 2000 : 1900);
 }
 
 void QKnxDate::setYear(quint16 year)
 {
     if (year >= 1990 && year <= 2089)
-        operator[](2) = quint8(year % 100);
+        setByte(2, quint8(year % 100));
 }
 
 quint8 QKnxDate::month() const
 {
-    return quint8(operator[](1));
+    return byte(1);
 }
 
 void QKnxDate::setMonth(quint8 month)
 {
     if (month <= 12)
-        operator[](1) = month;
+        setByte(1, month);
 }
 
 quint8 QKnxDate::day() const
 {
-    return quint8(operator[](0));
+    return byte(0);
 }
 
 void QKnxDate::setDay(quint8 day)
 {
     if (day <= 31)
-        operator[](0) = day;
+        setByte(0, day);
 }
 
 bool QKnxDate::isValid() const
 {
     auto date = value();
-    return mainType() == MainType && size() == TypeSize && date.isValid()
+    return QKnxDatapointType::isValid() && date.isValid()
         && (date >= minimum().toDate()) && (date <= maximum().toDate());
 }
 
@@ -207,7 +207,7 @@ QKnxDateTime::QKnxDateTime()
 
 QKnxDateTime::QKnxDateTime(const QDate &date, const QKnxTime24 &time, Attributes attributes,
         ClockQuality quality)
-    : QKnxDatapointType()
+    : QKnxDateTime()
 {
     setValue(date, time, attributes, quality);
 }
@@ -223,77 +223,77 @@ void QKnxDateTime::setValue(const QDate &date, const QKnxTime24 &time, Attribute
 
 QDate QKnxDateTime::date() const
 {
-    return { operator[](0) + 1900, operator[](1), operator[](2) };
+    return { byte(0) + 1900, byte(1), byte(2) };
 }
 
 void QKnxDateTime::setDate(const QDate &date)
 {
     if (date.isValid() && (date.year() >= 1900) && (date.year() <= 2155)) {
-        operator[](0) = quint8(date.year() - 1900);
-        operator[](1) = date.month();
-        operator[](2) = date.day();
+        setByte(0, quint8(date.year() - 1900));
+        setByte(1, date.month());
+        setByte(2, date.day());
     }
 }
 
 QKnxTime24 QKnxDateTime::time() const
 {
-    return { operator[](3), operator[](4), operator[](5) };
+    return { byte(3), byte(4), byte(5) };
 }
 
 void QKnxDateTime::setTime(const QKnxTime24 &time)
 {
     if (time.isValid()) {
-        operator[](3) = quint8(time.hour()) | quint8(time.dayOfWeek()) << 5u;
-        operator[](4) = quint8(time.minute());
-        operator[](5) = quint8(time.second());
+        setByte(3, quint8(time.hour()) | quint8(time.dayOfWeek()) << 5u);
+        setByte(4, quint8(time.minute()));
+        setByte(5, quint8(time.second()));
     }
 }
 
 QKnxDateTime::Attributes QKnxDateTime::attributes() const
 {
-    return Attributes().setFlag(Attribute::Fault, testBit(operator[](7), 7))
-        .setFlag(Attribute::WorkingDay, testBit(operator[](7), 6))
-        .setFlag(Attribute::WorkingDay, testBit(operator[](7), 5))
-        .setFlag(Attribute::YearInvalild, testBit(operator[](7), 4))
-        .setFlag(Attribute::DateInvalid, testBit(operator[](7), 3))
-        .setFlag(Attribute::DayOfWeekInvalid, testBit(operator[](7), 2))
-        .setFlag(Attribute::TimeInvalid, testBit(operator[](7), 1))
-        .setFlag(Attribute::StandardSummerTime, testBit(operator[](7), 0));
+    return Attributes().setFlag(Attribute::Fault, QKnxDatapointType::testBit(byte(7), 7))
+        .setFlag(Attribute::WorkingDay, QKnxDatapointType::testBit(byte(7), 6))
+        .setFlag(Attribute::WorkingDay, QKnxDatapointType::testBit(byte(7), 5))
+        .setFlag(Attribute::YearInvalild, QKnxDatapointType::testBit(byte(7), 4))
+        .setFlag(Attribute::DateInvalid, QKnxDatapointType::testBit(byte(7), 3))
+        .setFlag(Attribute::DayOfWeekInvalid, QKnxDatapointType::testBit(byte(7), 2))
+        .setFlag(Attribute::TimeInvalid, QKnxDatapointType::testBit(byte(7), 1))
+        .setFlag(Attribute::StandardSummerTime, QKnxDatapointType::testBit(byte(7), 0));
 }
 
 void QKnxDateTime::setAttributes(Attributes attributes)
 {
     quint8 byte = 0x00;
-    setBit(byte, attributes.testFlag(Attribute::Fault), 7);
-    setBit(byte, attributes.testFlag(Attribute::WorkingDay), 6);
-    setBit(byte, attributes.testFlag(Attribute::WorkingDayInvalid), 5);
-    setBit(byte, attributes.testFlag(Attribute::YearInvalild), 4);
-    setBit(byte, attributes.testFlag(Attribute::DateInvalid), 3);
-    setBit(byte, attributes.testFlag(Attribute::DayOfWeekInvalid), 2);
-    setBit(byte, attributes.testFlag(Attribute::TimeInvalid), 1);
-    setBit(byte, attributes.testFlag(Attribute::StandardSummerTime), 0);
-    operator[](6) = byte;
+    QKnxDatapointType::setBit(&byte, attributes.testFlag(Attribute::Fault), 7);
+    QKnxDatapointType::setBit(&byte, attributes.testFlag(Attribute::WorkingDay), 6);
+    QKnxDatapointType::setBit(&byte, attributes.testFlag(Attribute::WorkingDayInvalid), 5);
+    QKnxDatapointType::setBit(&byte, attributes.testFlag(Attribute::YearInvalild), 4);
+    QKnxDatapointType::setBit(&byte, attributes.testFlag(Attribute::DateInvalid), 3);
+    QKnxDatapointType::setBit(&byte, attributes.testFlag(Attribute::DayOfWeekInvalid), 2);
+    QKnxDatapointType::setBit(&byte, attributes.testFlag(Attribute::TimeInvalid), 1);
+    QKnxDatapointType::setBit(&byte, attributes.testFlag(Attribute::StandardSummerTime), 0);
+    setByte(6, byte);
 }
 
 QKnxDateTime::ClockQuality QKnxDateTime::clockQuality() const
 {
-    return ClockQuality(operator[](7));
+    return ClockQuality(byte(7));
 }
 
 void QKnxDateTime::setClockQuality(ClockQuality quality)
 {
-    setBit(operator[](7), bool(quality), 7);
+    QKnxDatapointType::setBit(&(operator[](7)), bool(quality), 7);
 }
 
 bool QKnxDateTime::isValid() const
 {
     auto tmpDate = date(); auto tmpTime = time();
-    return mainType() == MainType && size() == TypeSize && tmpDate.isValid() && tmpTime.isValid()
+    return QKnxDatapointType::isValid() && tmpDate.isValid() && tmpTime.isValid()
         && (tmpDate >= minimum().toList()[0].toDate())
         && (tmpDate <= maximum().toList()[0].toDate())
         && (tmpTime >= minimum().toList()[1].value<QKnxTime24>())
         && (tmpTime <= maximum().toList()[1].value<QKnxTime24>())
-        && ((operator[](7) == 0x00) || (operator[](7) == 0x80));
+        && ((byte(7) == 0x00) || (byte(7) == 0x80));
 }
 
 #include "moc_qknxdatetime.cpp"

@@ -37,7 +37,7 @@ public:
     static const constexpr int MainType = 0x01;
 
     bool bit() const;
-    void setBit(bool value);
+    bool setBit(bool value);
 
     bool isValid() const override;
 
@@ -63,7 +63,7 @@ public:
     static const constexpr int SubType = 0x01;
 
     State value() const;
-    void setValue(State state);
+    bool setValue(State state);
 };
 
 QT_END_NAMESPACE

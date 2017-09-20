@@ -71,10 +71,11 @@ struct Q_KNX_EXPORT QKnxDatapointTypePrivate : public QSharedData
     }
     void setup(quint16 mainType, quint16 subType, quint32 type, int size)
     {
-        m_type = type;
-        m_bytes.resize(size);
         m_subType = subType;
         m_mainType = mainType;
+
+        m_type = type;
+        m_bytes.resize(size);
     }
 };
 

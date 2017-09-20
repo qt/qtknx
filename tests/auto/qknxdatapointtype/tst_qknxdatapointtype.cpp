@@ -102,7 +102,7 @@ void tst_QKnxDatapointType::dpt1_1Bit()
     QCOMPARE(dptSwitch.value(), QKnxSwitch::State::On);
     QCOMPARE(dptSwitch.bytes(), QByteArray::fromHex("01"));
 
-    dptSwitch.setBytes(QVector<quint8>{ 0xff }, 0, 1);
+    dptSwitch.setBytes(QByteArray::fromHex("ff"), 0, 1);
     QCOMPARE(dptSwitch.isValid(), false);
 
     dptSwitch.setBytes(QByteArray::fromHex("01"), 0, 1);

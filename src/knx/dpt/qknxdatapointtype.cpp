@@ -29,10 +29,6 @@ QKnxDatapointType::Type QKnxDatapointType::type() const
     return static_cast<Type> (d_ptr->m_type);
 }
 
-QKnxDatapointType::QKnxDatapointType()
-    : d_ptr(new QKnxDatapointTypePrivate)
-{}
-
 QKnxDatapointType::~QKnxDatapointType()
 {}
 
@@ -171,7 +167,7 @@ void QKnxDatapointType::setDescription(const QString &description)
 
 bool QKnxDatapointType::isValid() const
 {
-    return d_ptr->m_mainType != 0;
+    return (d_ptr->m_type != 0) && (d_ptr->m_bytes.size() > 0);
 }
 
 QString QKnxDatapointType::toString() const
@@ -182,27 +178,43 @@ QString QKnxDatapointType::toString() const
 
 quint8 &QKnxDatapointType::operator[](int i)
 {
+    Q_ASSERT_X(i >= 0 && i < d_ptr->m_bytes.size(), "QKnxDatapointType::operator[]",
+        "index out of range");
     return d_ptr->m_bytes[i];
 }
 
 const quint8 &QKnxDatapointType::operator[](int i) const
 {
+    Q_ASSERT_X(i >= 0 && i < d_ptr->m_bytes.size(), "QKnxDatapointType::operator[]",
+        "index out of range");
     return d_ptr->m_bytes[i];
 }
 
-quint8 * QKnxDatapointType::data()
+quint8 *QKnxDatapointType::data()
 {
     return d_ptr->m_bytes.data();
 }
 
-const quint8 * QKnxDatapointType::data() const
+const quint8 *QKnxDatapointType::data() const
 {
     return d_ptr->m_bytes.data();
 }
 
-const quint8 * QKnxDatapointType::constData() const
+const quint8 *QKnxDatapointType::constData() const
 {
     return d_ptr->m_bytes.constData();
+}
+
+quint8 QKnxDatapointType::byte(quint16 index) const
+{
+    return (index < d_ptr->m_bytes.size() ? d_ptr->m_bytes[index] : quint8{});
+}
+
+bool QKnxDatapointType::setByte(quint16 index, quint8 bytes)
+{
+    if (index < d_ptr->m_bytes.size())
+        d_ptr->m_bytes[index] = bytes;
+    return (index < d_ptr->m_bytes.size());
 }
 
 QKnxDatapointType::QKnxDatapointType(const QKnxDatapointType &other)

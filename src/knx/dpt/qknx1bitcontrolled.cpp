@@ -50,27 +50,27 @@ QKnx1BitControlled::QKnx1BitControlled(int subType, const QKnxDatapointType &dpt
 
 bool QKnx1BitControlled::valueBit() const
 {
-    return testBit(operator[](0), 0);
+    return QKnxDatapointType::testBit(byte(0), 0);
 }
 
 void QKnx1BitControlled::setValueBit(bool value)
 {
-    setBit(operator[](0), value, 0);
+    QKnxDatapointType::setBit(&(operator[](0)), value, 0);
 }
 
 bool QKnx1BitControlled::controlBit() const
 {
-    return testBit(operator[](0), 1);
+    return QKnxDatapointType::testBit(byte(0), 1);
 }
 
 void QKnx1BitControlled::setControlBit(bool control)
 {
-    setBit(operator[](0), control, 1);
+    QKnxDatapointType::setBit(&(operator[](0)), control, 1);
 }
 
 bool QKnx1BitControlled::isValid() const
 {
-    return mainType() == MainType && size() == TypeSize && operator[](0) <= maximum().toUInt();
+    return QKnxDatapointType::isValid() && byte(0) <= maximum().toUInt();
 }
 
 

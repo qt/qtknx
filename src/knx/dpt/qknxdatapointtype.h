@@ -100,7 +100,6 @@ public:
     Q_ENUMS(Type)
     Type type() const;
 
-    QKnxDatapointType();
     virtual ~QKnxDatapointType();
 
     QKnxDatapointType(Type type, int size);
@@ -143,6 +142,7 @@ public:
     const quint8 *data() const;
     const quint8 *constData() const;
 
+    quint8 byte(quint16 index) const;
     template <typename T = QByteArray> auto bytes() const -> decltype(T())
     {
         T t(size(), 0x00);
@@ -150,6 +150,7 @@ public:
         return t;
     }
 
+    bool setByte(quint16 index, quint8 bytes);
     template <typename T> void setBytes(const T &bytesToSet, quint16 index, quint16 count)
     {
         if (((bytesToSet.size() - index) < count) || (size() != count))
@@ -168,19 +169,20 @@ public:
     bool operator==(const QKnxDatapointType &other) const;
     bool operator!=(const QKnxDatapointType &other) const;
 
-    static inline bool testBit(const quint8 &byte, const quint8 &bit)
+    static inline bool testBit(quint8 byteToTest, quint8 bit)
     {
-        return (byte & (quint8(1) << bit)) != 0;
+        return (byteToTest & (quint8(1) << bit)) != 0;
     }
 
-    static inline void setBit(quint8 &byte, const bool &value, const quint8 &bit)
+    static inline void setBit(quint8 *byteToSet, bool value, quint8 bit)
     {
-        value ?  byte |= quint8(1) << bit : byte &= ~(quint8(1) << bit);
+        value ? (*byteToSet |= quint8(1) << bit) : (*byteToSet &= ~(quint8(1) << bit));
     }
 
     static const constexpr int SubType = 0x00;
 
 private:
+    QKnxDatapointType() = delete;
     explicit QKnxDatapointType(QKnxDatapointTypePrivate &dd);
 
 private:
