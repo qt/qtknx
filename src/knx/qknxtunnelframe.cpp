@@ -183,14 +183,14 @@ void QKnxTunnelFrame::setDestionationAddress(const QKnxAddress &destination)
     setServiceInformation(payload);
 }
 
-QKnxNpdu QKnxTunnelFrame::networkLayerProtocolDataUnit() const
+QKnxNpdu QKnxTunnelFrame::npdu() const
 {
      // length field + ctrl + extCtrl + 2 * KNX address -> 7
     return QKnxNpdu::fromBytes(serviceInformationRef(), additionalInfosSize() + 7,
         size() - (additionalInfosSize() + 7));
 }
 
-void QKnxTunnelFrame::setNetworkLayerProtocolDataUnit(const QKnxNpdu & npdu)
+void QKnxTunnelFrame::setNpdu(const QKnxNpdu &npdu)
 {
     auto info = serviceInformation();
     info.resize(additionalInfosSize() + 7); // length field + ctrl + extCtrl + 2 * KNX address

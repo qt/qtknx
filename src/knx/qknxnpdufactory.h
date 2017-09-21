@@ -45,9 +45,6 @@ class Q_KNX_EXPORT QKnxNpduFactory final
 public:
     QKnxNpduFactory() = delete;
 
-    static QKnxCemi::TransportLayerControlField transportLayerControlFied(const QKnxNpdu &npdu);
-    static QKnxCemi::ApplicationLayerControlField applicationLayerControlField(const QKnxNpdu &npdu);
-
     static QKnxNpdu createGroupValueReadNpdu();
     static QKnxNpdu createGroupValueWriteNpdu(const QByteArray &data);
 
@@ -118,25 +115,25 @@ public:
 
 private:
     static QByteArray parameterType(QKnxInterfaceObjectType objectType, QKnxInterfaceObjectProperty property);
-    static QKnxCemi::TransportLayerControlField buildTransportControlField(quint8 sequence);
+    static QKnxNpdu::TransportLayerControlField buildTransportControlField(quint8 sequence);
 
-    static QKnxNpdu createGroupPropValueNpdu(QKnxCemi::ApplicationLayerControlField apci,
+    static QKnxNpdu createGroupPropValueNpdu(QKnxNpdu::ApplicationLayerControlField apci,
         QKnxInterfaceObjectType objectType, quint8 objectInstance, QKnxInterfaceObjectProperty property,
         const QByteArray &data = {});
 
-    static QKnxNpdu createNetworkParameterNpdu(QKnxCemi::ApplicationLayerControlField apci,
+    static QKnxNpdu createNetworkParameterNpdu(QKnxNpdu::ApplicationLayerControlField apci,
         QKnxInterfaceObjectType objectType, QKnxInterfaceObjectProperty property, const QByteArray &testInfoValue,
         Network type);
 
     static QKnxNpdu createPropertyValueReadWriteNpdu(quint8 objectIndex, QKnxInterfaceObjectProperty property,
         quint8 nbElement, quint16 startIndex, quint8 sequenceNumber,
-        QKnxCemi::ApplicationLayerControlField apci, const QByteArray &data = {});
+        QKnxNpdu::ApplicationLayerControlField apci, const QByteArray &data = {});
 
-    static QKnxNpdu createFunctionPropertyNpdu(QKnxCemi::ApplicationLayerControlField apci,
+    static QKnxNpdu createFunctionPropertyNpdu(QKnxNpdu::ApplicationLayerControlField apci,
         quint8 objectIndex, QKnxInterfaceObjectProperty property, const QByteArray &data, quint8 sequenceNumber);
 
-    static QKnxNpdu createNpduOctets6And7(QKnxCemi::TransportLayerControlField tpci,
-        QKnxCemi::ApplicationLayerControlField apci, quint8 data = 0);
+    static QKnxNpdu setupNpdu(QKnxNpdu::TransportLayerControlField tpci,
+        QKnxNpdu::ApplicationLayerControlField apci, const QByteArray &data = {});
 
     static QKnxNpdu createUserMemoryReadWriteNpdu(quint8 addressExtention, quint8 number,
         const QKnxAddress &address, quint8 sequenceNumber, const QByteArray &data = {});

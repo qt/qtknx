@@ -232,7 +232,7 @@ void Tunneling::updateFrame()
     m_frame.setDestionationAddress({ m_extCtrl.destinationAddressType(), ui->destAddress->text() });
 
     auto npdu = QByteArray::fromHex(ui->npdu->text().toLatin1());
-    m_frame.setNetworkLayerProtocolDataUnit(QKnxNpdu::fromBytes(npdu, 0, npdu.size()));
+    m_frame.setNpdu(QKnxNpdu::fromBytes(npdu, 0, npdu.size()));
     ui->m_cemiFrame->setText(m_frame.bytes().toHex());
 }
 

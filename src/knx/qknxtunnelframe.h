@@ -92,8 +92,8 @@ public:
     const QKnxAddress destionationAddress() const;
     void setDestionationAddress(const QKnxAddress &address);
 
-    QKnxNpdu networkLayerProtocolDataUnit() const;
-    void setNetworkLayerProtocolDataUnit(const QKnxNpdu &npdu);
+    QKnxNpdu npdu() const;
+    void setNpdu(const QKnxNpdu &npdu);
 
     QKnxTunnelFrame(const QKnxCemiFrame &other);
 };
