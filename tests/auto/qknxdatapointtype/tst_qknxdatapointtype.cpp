@@ -32,6 +32,7 @@
 #include <QtKnx/qknx1bitcontrolled.h>
 #include <QtKnx/qknx2bytefloat.h>
 #include <QtKnx/qknx3bitcontrolled.h>
+#include <QtKnx/qknx8bitsignedvalue.h>
 #include <QtKnx/qknxdatapointtype.h>
 #include <QtKnx/qknxdatapointtypefactory.h>
 #include <QtKnx/qknxdatetime.h>
@@ -49,6 +50,7 @@ private slots:
     void dpt1_1Bit();
     void dpt2_1BitControlled();
     void dpt3_3BitControlled();
+    void dpt6_8BitSignedValue();
     void dpt21_8BitSet();
     void dpt9_2ByteFloat();
     void dpt10_TimeOfDay();
@@ -184,6 +186,39 @@ void tst_QKnxDatapointType::dpt3_3BitControlled()
     dptBlinds.setControl(QKnxControlBlinds::Down);
     QCOMPARE(dptBlinds.control(), QKnxControlBlinds::Down);
     QCOMPARE(dptBlinds.numberOfIntervals(), QKnx3BitControlled::NumberOfIntervals::ThirtyTwo);
+}
+
+void tst_QKnxDatapointType::dpt6_8BitSignedValue()
+{
+    QKnx8BitSignedValue dpt;
+    QCOMPARE(dpt.mainType(), 0x06);
+    QCOMPARE(dpt.subType(), 0x00);
+    QCOMPARE(dpt.isValid(), true);
+    QCOMPARE(dpt.value(), qint8(0));
+    dpt.setValue(127);
+    QCOMPARE(dpt.value(), qint8(127));
+    dpt.setValue(-128);
+    QCOMPARE(dpt.value(), qint8(-128));
+
+    QKnxPercentV8 percent;
+    QCOMPARE(percent.mainType(), 0x06);
+    QCOMPARE(percent.subType(), 0x01);
+    QCOMPARE(percent.isValid(), true);
+    QCOMPARE(percent.value(), qint8(0));
+    percent.setValue(127);
+    QCOMPARE(percent.value(), qint8(127));
+    percent.setValue(-128);
+    QCOMPARE(percent.value(), qint8(-128));
+
+    QKnxValue1Count value;
+    QCOMPARE(value.mainType(), 0x06);
+    QCOMPARE(value.subType(), 0x0a);
+    QCOMPARE(value.isValid(), true);
+    QCOMPARE(value.value(), qint8(0));
+    value.setValue(127);
+    QCOMPARE(value.value(), qint8(127));
+    value.setValue(-128);
+    QCOMPARE(value.value(), qint8(-128));
 }
 
 void tst_QKnxDatapointType::dpt21_8BitSet()

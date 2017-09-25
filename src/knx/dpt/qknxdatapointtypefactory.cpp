@@ -35,6 +35,7 @@
 #include "qknx2bytefloat.h"
 #include "qknx3bitcontrolled.h"
 #include "qknx8bitset.h"
+#include "qknx8bitsignedvalue.h"
 #include "qknxdatetime.h"
 #include "qknxentranceaccess.h"
 
@@ -118,12 +119,9 @@ QKnxDatapointTypeFactory::QKnxDatapointTypeFactory()
     registerType<QKnxControlDimming>();
     registerType<QKnxControlBlinds>();
 
-    registerType<QKnx8BitSet>();
-    registerType<QKnxGeneralStatus>();
-
-    registerType<QKnxTimeOfDay>();
-    registerType<QKnxDate>();
-    registerType<QKnxDateTime>();
+    registerType<QKnx8BitSignedValue>();
+    registerType<QKnxPercentV8>();
+    registerType<QKnxValue1Count>();
 
     registerType<QKnx2ByteFloat>();
     registerType<QKnxTemperatureCelcius>();
@@ -146,7 +144,15 @@ QKnxDatapointTypeFactory::QKnxDatapointTypeFactory()
     registerType<QKnxTemperatureFahrenheit>();
     registerType<QKnxWindSpeedKmPerHour>();
 
+    registerType<QKnxTimeOfDay>();
+    registerType<QKnxDate>();
+
     registerType<QKnxEntranceAccess>();
+
+    registerType<QKnxDateTime>();
+
+    registerType<QKnx8BitSet>();
+    registerType<QKnxGeneralStatus>();
 }
 
 QHash<int, int> &QKnxDatapointTypeFactory::sizeTable()
