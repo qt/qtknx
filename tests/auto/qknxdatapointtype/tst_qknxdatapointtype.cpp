@@ -133,10 +133,10 @@ void tst_QKnxDatapointType::dpt1_1Bit()
     QCOMPARE(dpt->type(), QKnxDatapointType::Type::DptSwitch);
 
     auto knx1bit = dynamic_cast<QKnx1Bit *> (dpt.data());
-    QVERIFY2(knx1bit != nullptr, "dynamic_cast to QKnx1Bit was not suposed to fail");
+    QVERIFY2(knx1bit != nullptr, "dynamic_cast to QKnx1Bit was not supposed to fail");
 
     auto knxSwitch = dynamic_cast<QKnxSwitch *> (dpt.data());
-    QVERIFY2(knxSwitch != nullptr, "dynamic_cast to QKnxSwitch was not suposed to fail");
+    QVERIFY2(knxSwitch != nullptr, "dynamic_cast to QKnxSwitch was not supposed to fail");
 
     auto controlled = dynamic_cast<QKnx1BitControlled *> (dpt.data());
     QCOMPARE(controlled, nullptr);
