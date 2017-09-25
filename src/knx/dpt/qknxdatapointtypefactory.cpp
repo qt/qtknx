@@ -33,6 +33,7 @@
 #include "qknx1bit.h"
 #include "qknx1bitcontrolled.h"
 #include "qknx2bytefloat.h"
+#include "qknx3bitcontrolled.h"
 #include "qknx8bitset.h"
 #include "qknxdatetime.h"
 #include "qknxentranceaccess.h"
@@ -112,6 +113,10 @@ QKnxDatapointTypeFactory::QKnxDatapointTypeFactory()
 
     registerType<QKnx1BitControlled>();
     registerType<QKnxSwitchControl>();
+
+    registerType<QKnx3BitControlled>();
+    registerType<QKnxControlDimming>();
+    registerType<QKnxControlBlinds>();
 
     registerType<QKnx8BitSet>();
     registerType<QKnxGeneralStatus>();

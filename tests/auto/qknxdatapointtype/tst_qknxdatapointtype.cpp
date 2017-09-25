@@ -31,6 +31,7 @@
 #include <QtKnx/qknx1bit.h>
 #include <QtKnx/qknx1bitcontrolled.h>
 #include <QtKnx/qknx2bytefloat.h>
+#include <QtKnx/qknx3bitcontrolled.h>
 #include <QtKnx/qknxdatapointtype.h>
 #include <QtKnx/qknxdatapointtypefactory.h>
 #include <QtKnx/qknxdatetime.h>
@@ -47,6 +48,7 @@ private slots:
     void datapointType();
     void dpt1_1Bit();
     void dpt2_1BitControlled();
+    void dpt3_3BitControlled();
     void dpt21_8BitSet();
     void dpt9_2ByteFloat();
     void dpt10_TimeOfDay();
@@ -148,6 +150,40 @@ void tst_QKnxDatapointType::dpt1_1Bit()
 void tst_QKnxDatapointType::dpt2_1BitControlled()
 {
     // TODO: Implement.
+}
+
+void tst_QKnxDatapointType::dpt3_3BitControlled()
+{
+    QKnx3BitControlled dpt;
+    QCOMPARE(dpt.mainType(), 0x03);
+    QCOMPARE(dpt.subType(), 0x00);
+    QCOMPARE(dpt.isValid(), true);
+    dpt.setControlBit(false);
+    dpt.setNumberOfIntervals(QKnx3BitControlled::NumberOfIntervals::Sixteen);
+    QCOMPARE(dpt.controlBit(), false);
+    QCOMPARE(dpt.numberOfIntervals(), QKnx3BitControlled::NumberOfIntervals::Sixteen);
+
+    QKnxControlDimming dptDimming(QKnxControlDimming::Decrease,
+        QKnxControlDimming::NumberOfIntervals::ThirtyTwo);
+    QCOMPARE(dptDimming.mainType(), 0x03);
+    QCOMPARE(dptDimming.subType(), 0x07);
+    QCOMPARE(dptDimming.isValid(), true);
+    QCOMPARE(dptDimming.controlBit(), false);
+    QCOMPARE(dptDimming.numberOfIntervals(), QKnx3BitControlled::NumberOfIntervals::ThirtyTwo);
+    dptDimming.setControl(QKnxControlDimming::Increase);
+    QCOMPARE(dptDimming.control(), QKnxControlDimming::Increase);
+    QCOMPARE(dptDimming.numberOfIntervals(), QKnx3BitControlled::NumberOfIntervals::ThirtyTwo);
+
+    QKnxControlBlinds dptBlinds(QKnxControlBlinds::Up,
+        QKnxControlBlinds::NumberOfIntervals::ThirtyTwo);
+    QCOMPARE(dptBlinds.mainType(), 0x03);
+    QCOMPARE(dptBlinds.subType(), 0x08);
+    QCOMPARE(dptBlinds.isValid(), true);
+    QCOMPARE(dptBlinds.controlBit(), false);
+    QCOMPARE(dptBlinds.numberOfIntervals(), QKnx3BitControlled::NumberOfIntervals::ThirtyTwo);
+    dptBlinds.setControl(QKnxControlBlinds::Down);
+    QCOMPARE(dptBlinds.control(), QKnxControlBlinds::Down);
+    QCOMPARE(dptBlinds.numberOfIntervals(), QKnx3BitControlled::NumberOfIntervals::ThirtyTwo);
 }
 
 void tst_QKnxDatapointType::dpt21_8BitSet()

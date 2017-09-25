@@ -8,7 +8,8 @@ PUBLIC_HEADERS += $$PWD/qknxdatapointtype.h \
     $$PWD/qknxtime.h \
     $$PWD/qknxdatetime.h \
     $$PWD/qknxentranceaccess.h \
-    $$PWD/qknx2bytefloat.h
+    $$PWD/qknx2bytefloat.h \
+    $$PWD/qknx3bitcontrolled.h
 
 PRIVATE_HEADERS += $$PWD/qknxdatapointtype_p.h
 
@@ -20,4 +21,5 @@ SOURCES += $$PWD/qknxdatapointtype.cpp \
     $$PWD/qknxtime.cpp \
     $$PWD/qknxdatetime.cpp \
     $$PWD/qknxentranceaccess.cpp \
-    $$PWD/qknx2bytefloat.cpp
+    $$PWD/qknx2bytefloat.cpp \
+    $$PWD/qknx3bitcontrolled.cpp
