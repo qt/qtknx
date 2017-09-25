@@ -32,6 +32,7 @@
 
 #include "qknx1bit.h"
 #include "qknx1bitcontrolled.h"
+#include "qknx2bytefloat.h"
 #include "qknx8bitset.h"
 #include "qknxdatetime.h"
 #include "qknxentranceaccess.h"
@@ -118,6 +119,27 @@ QKnxDatapointTypeFactory::QKnxDatapointTypeFactory()
     registerType<QKnxTimeOfDay>();
     registerType<QKnxDate>();
     registerType<QKnxDateTime>();
+
+    registerType<QKnx2ByteFloat>();
+    registerType<QKnxTemperatureCelcius>();
+    registerType<QKnxTemperatureKelvin>();
+    registerType<QKnxTemperatureChange>();
+    registerType<QKnxBrightness>();
+    registerType<QKnxWindSpeed>();
+    registerType<QKnxPressure>();
+    registerType<QKnxHumidity>();
+    registerType<QKnxAirQuality>();
+    registerType<QKnxTimeSecond>();
+    registerType<QKnxTimeMilliSecond>();
+    registerType<QKnxVoltage>();
+    registerType<QKnxCurrent>();
+    registerType<QKnxPowerDensity>();
+    registerType<QKnxKelvinPerPercent>();
+    registerType<QKnxPower>();
+    registerType<QKnxVolumeFlow>();
+    registerType<QKnxAmountRain>();
+    registerType<QKnxTemperatureFahrenheit>();
+    registerType<QKnxWindSpeedKmPerHour>();
 
     registerType<QKnxEntranceAccess>();
 }

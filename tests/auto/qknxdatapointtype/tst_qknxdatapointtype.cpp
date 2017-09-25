@@ -30,6 +30,7 @@
 #include <QtCore/qdebug.h>
 #include <QtKnx/qknx1bit.h>
 #include <QtKnx/qknx1bitcontrolled.h>
+#include <QtKnx/qknx2bytefloat.h>
 #include <QtKnx/qknxdatapointtype.h>
 #include <QtKnx/qknxdatapointtypefactory.h>
 #include <QtKnx/qknxdatetime.h>
@@ -47,6 +48,7 @@ private slots:
     void dpt1_1Bit();
     void dpt2_1BitControlled();
     void dpt21_8BitSet();
+    void dpt9_2ByteFloat();
     void dpt10_TimeOfDay();
     void dpt11_Date();
     void dpt15_EntranceAccess();
@@ -227,6 +229,40 @@ void tst_QKnxDatapointType::dpt11_Date()
     QCOMPARE(QKnxDatapointTypeFactory::instance().containsMainType(date.mainType()), true);
 }
 
+void tst_QKnxDatapointType::dpt9_2ByteFloat()
+{
+    QKnx2ByteFloat dpt;
+    QCOMPARE(dpt.size(), 2);
+    QCOMPARE(dpt.mainType(), 9);
+    QCOMPARE(dpt.subType(), 0);
+    QCOMPARE(dpt.isValid(), true);
+
+    dpt.setValue(float(-5.2));
+    QCOMPARE(dpt.value(),-5.2f);
+    dpt.setValue(float(-671088.64));
+    QCOMPARE(dpt.value(),-671088.64f);
+    dpt.setValue(float(670760.96));
+    QCOMPARE(dpt.value(),670760.96f);
+
+    QKnxTemperatureCelcius dptTemp;
+    QCOMPARE(dptTemp.size(), 2);
+    QCOMPARE(dptTemp.mainType(), 9);
+    QCOMPARE(dptTemp.subType(), 1);
+    QCOMPARE(dptTemp.isValid(), true);
+    dptTemp.setValue(float(-5.2));
+    QCOMPARE(dptTemp.value(),-5.2f);
+    QCOMPARE(dptTemp.setValue(float(-671088.64)), false);
+    QCOMPARE(dptTemp.value(),float(-5.2));
+    QCOMPARE(dptTemp.setValue(float(670760.96)), false);
+    QCOMPARE(dptTemp.value(),float(-5.2));
+    dptTemp.setValue(float(-273));
+    QCOMPARE(dptTemp.value(),-272.96f);
+    dptTemp.setValue(float(670760));
+    QCOMPARE(dptTemp.value(),float(670760));
+
+    // TODO: Extend the auto-test.
+}
+
 void tst_QKnxDatapointType::dpt15_EntranceAccess()
 {
     QKnxEntranceAccess dptAccessData;
@@ -257,9 +293,9 @@ void tst_QKnxDatapointType::dpt15_EntranceAccess()
     QCOMPARE(dpt.digit(1), qint8(0));
     QCOMPARE(dpt.digit(3), qint8(1));
 
-
     // TODO: Extend the auto-test.
 }
+
 void tst_QKnxDatapointType::dpt19_DateTime()
 {
     QKnxTime24 time;
