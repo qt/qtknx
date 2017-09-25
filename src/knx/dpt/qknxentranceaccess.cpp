@@ -1,19 +1,27 @@
 /******************************************************************************
 **
 ** Copyright (C) 2017 The Qt Company Ltd.
-** Contact: http://www.qt.io/licensing/
+** Contact: https://www.qt.io/licensing/
 **
 ** This file is part of the QtKnx module.
 **
-** $QT_BEGIN_LICENSE:COMM$
-**
+** $QT_BEGIN_LICENSE:GPL$
 ** Commercial License Usage
 ** Licensees holding valid commercial Qt licenses may use this file in
 ** accordance with the commercial license agreement provided with the
 ** Software or, alternatively, in accordance with the terms contained in
 ** a written agreement between you and The Qt Company. For licensing terms
-** and conditions see http://www.qt.io/terms-conditions. For further
-** information use the contact form at http://www.qt.io/contact-us.
+** and conditions see https://www.qt.io/terms-conditions. For further
+** information use the contact form at https://www.qt.io/contact-us.
+**
+** GNU General Public License Usage
+** Alternatively, this file may be used under the terms of the GNU
+** General Public License version 3 or (at your option) any later version
+** approved by the KDE Free Qt Foundation. The licenses are as published by
+** the Free Software Foundation and appearing in the file LICENSE.GPL3
+** included in the packaging of this file. Please review the following
+** information to ensure the GNU General Public License requirements will
+** be met: https://www.gnu.org/licenses/gpl-3.0.html.
 **
 ** $QT_END_LICENSE$
 **
@@ -50,22 +58,21 @@ qint32 QKnxEntranceAccess::idCode() const
 qint8 QKnxEntranceAccess::digit(quint8 x) const
 {
     qint8 value = -1;
-     if (isValid() &&  x >= 1 && x <= 6) {
-         if (x == 5 || x == 6)
-             value = qint8(byte(0));
-         if (x == 4 || x == 3)
-             value = qint8(byte(1));
-         if (x == 2 || x == 1)
-             value = qint8(byte(2));
-         value = (x % 2 ? value & 0x0f : (value & 0xf0) >> 4);
-     }
-     return value;
+    if (isValid() && x >= 1 && x <= 6) {
+        if (x == 5 || x == 6)
+            value = qint8(byte(0));
+        if (x == 4 || x == 3)
+            value = qint8(byte(1));
+        if (x == 2 || x == 1)
+            value = qint8(byte(2));
+        value = (x % 2 ? value & 0x0f : (value & 0xf0) >> 4);
+    }
+    return value;
 }
 
 QKnxEntranceAccess::Attributes QKnxEntranceAccess::attributes() const
 {
-    return Attributes()
-        .setFlag(Attribute::Error, isSet(Attribute::Error))
+    return Attributes().setFlag(Attribute::Error, isSet(Attribute::Error))
         .setFlag(Attribute::PermissionAccepted, isSet(Attribute::PermissionAccepted))
         .setFlag(Attribute::ReadRightToLeft, isSet(Attribute::ReadRightToLeft))
         .setFlag(Attribute::Encrypted, isSet(Attribute::Encrypted));
@@ -93,6 +100,7 @@ bool QKnxEntranceAccess::setIdCode(quint32 idCode)
 {
     if (idCode > 999999)
         return false;
+
     QVector<quint8> digits;
     while (idCode != 0) {
         digits.push_back(idCode % 10);
@@ -152,4 +160,3 @@ bool QKnxEntranceAccess::isValid() const
 #include "moc_qknxentranceaccess.cpp"
 
 QT_END_NAMESPACE
-
