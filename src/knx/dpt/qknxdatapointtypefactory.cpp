@@ -26,6 +26,7 @@
 #include "qknx1bitcontrolled.h"
 #include "qknx8bitset.h"
 #include "qknxdatetime.h"
+#include "qknxentranceaccess.h"
 
 QT_BEGIN_NAMESPACE
 
@@ -109,6 +110,8 @@ QKnxDatapointTypeFactory::QKnxDatapointTypeFactory()
     registerType<QKnxTimeOfDay>();
     registerType<QKnxDate>();
     registerType<QKnxDateTime>();
+
+    registerType<QKnxEntranceAccess>();
 }
 
 QHash<int, int> &QKnxDatapointTypeFactory::sizeTable()

@@ -20,12 +20,15 @@
 ******************************************************************************/
 
 #include <QtCore/qvector.h>
+#include <QtCore/qdebug.h>
 #include <QtKnx/qknx1bit.h>
 #include <QtKnx/qknx1bitcontrolled.h>
 #include <QtKnx/qknxdatapointtype.h>
 #include <QtKnx/qknxdatapointtypefactory.h>
 #include <QtKnx/qknxdatetime.h>
+#include <QtKnx/qknxentranceaccess.h>
 #include <QtKnx/qknxtime.h>
+#include <QtKnx/qknxutils.h>
 #include <QtTest/qtest.h>
 
 class tst_QKnxDatapointType : public QObject
@@ -39,6 +42,7 @@ private slots:
     void dpt21_8BitSet();
     void dpt10_TimeOfDay();
     void dpt11_Date();
+    void dpt15_EntranceAccess();
     void dpt19_DateTime();
 };
 
@@ -216,6 +220,39 @@ void tst_QKnxDatapointType::dpt11_Date()
     QCOMPARE(QKnxDatapointTypeFactory::instance().containsMainType(date.mainType()), true);
 }
 
+void tst_QKnxDatapointType::dpt15_EntranceAccess()
+{
+    QKnxEntranceAccess dptAccessData;
+    QCOMPARE(dptAccessData.size(), 4);
+    QCOMPARE(dptAccessData.mainType(), 15);
+    QCOMPARE(dptAccessData.subType(), 0x00);
+    QCOMPARE(dptAccessData.isValid(), true);
+
+    dptAccessData.setValue(90,QKnxEntranceAccess::Attributes().setFlag(QKnxEntranceAccess::Error),0);
+    QCOMPARE(dptAccessData.isValid(), true);
+    QCOMPARE(dptAccessData.isSet(QKnxEntranceAccess::Error), true);
+    QCOMPARE(dptAccessData.isSet(QKnxEntranceAccess::Encrypted), false);
+    dptAccessData.setAttribute(QKnxEntranceAccess::Encrypted);
+    QCOMPARE(dptAccessData.isSet(QKnxEntranceAccess::Error), true);
+    QCOMPARE(dptAccessData.isSet(QKnxEntranceAccess::Encrypted), true);
+    dptAccessData.removeAttribute(QKnxEntranceAccess::Encrypted);
+    QCOMPARE(dptAccessData.isSet(QKnxEntranceAccess::Encrypted), false);
+    QCOMPARE(dptAccessData.digit(1), qint8(0));
+    QCOMPARE(dptAccessData.digit(2), qint8(9));
+
+    QKnxEntranceAccess dpt;
+    QCOMPARE(dpt.isValid(), true);
+    dpt.setBytes(QByteArray::fromHex("ff000000"), 0, 4);
+    QCOMPARE(dpt.isValid(), false);
+    QCOMPARE(dpt.digit(1), qint8(-1));
+    dpt.setBytes(QByteArray::fromHex("00010000"), 0, 4);
+    QCOMPARE(dpt.isValid(), true);
+    QCOMPARE(dpt.digit(1), qint8(0));
+    QCOMPARE(dpt.digit(3), qint8(1));
+
+
+    // TODO: Extend the auto-test.
+}
 void tst_QKnxDatapointType::dpt19_DateTime()
 {
     QKnxTime24 time;
