@@ -66,7 +66,7 @@ public:
 
 private:
     QKnxAddress m_individualAddress;
-    QKnxNetIp::TunnelingLayer m_layer;
+    QKnxNetIp::TunnelingLayer m_layer { QKnxNetIp::TunnelingLayer::Unknown };
 };
 
 QKnxNetIpTunnelConnection::QKnxNetIpTunnelConnection(QObject *parent)
@@ -101,6 +101,18 @@ void QKnxNetIpTunnelConnection::setIndividualAddress(const QKnxAddress &address)
         "address used for tunnel connections not implemented yet.");
 
     Q_UNUSED(address) // TODO: Maybe implement 03_08_04 Tunnelling v01.05.03 AS.pdf, paragraph 3.2
+}
+
+QKnxNetIp::TunnelingLayer QKnxNetIpTunnelConnection::layer() const
+{
+    return d_func()->m_layer;
+}
+
+void QKnxNetIpTunnelConnection::setTunnelingLayer(QKnxNetIp::TunnelingLayer layer)
+{
+    if (state() != State::Disconnected)
+        return;
+    d_func()->m_layer = layer;
 }
 
 bool QKnxNetIpTunnelConnection::sendTunnelFrame(const QKnxTunnelFrame &frame)

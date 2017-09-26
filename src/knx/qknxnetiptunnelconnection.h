@@ -58,6 +58,9 @@ public:
     QKnxAddress individualAddress() const;
     void setIndividualAddress(const QKnxAddress &address);
 
+    QKnxNetIp::TunnelingLayer layer() const;
+    void setTunnelingLayer(QKnxNetIp::TunnelingLayer layer);
+
     bool sendTunnelFrame(const QKnxTunnelFrame &frame);
 
 Q_SIGNALS:
