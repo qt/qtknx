@@ -68,10 +68,8 @@ quint32 QKnx4ByteUnsignedValue::value() const
 
 bool QKnx4ByteUnsignedValue::setValue(quint32 value)
 {
-    if (value <= maximum().toUInt() && value >= minimum().toUInt()) {
-        QByteArray data = QKnxUtils::QUint32::bytes(value);
-        return setBytes(data, 0, 4);
-    }
+    if (value <= maximum().toUInt() && value >= minimum().toUInt())
+        return setBytes(QKnxUtils::QUint32::bytes(value), 0, 4);
     return false;
 }
 

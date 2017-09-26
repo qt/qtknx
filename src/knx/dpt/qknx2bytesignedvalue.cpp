@@ -59,10 +59,8 @@ double QKnx2ByteSignedValue::value() const
 
 bool QKnx2ByteSignedValue::setValue(double value)
 {
-    if (value <= maximum().toDouble() && value >= minimum().toDouble()) {
-        QByteArray data = QKnxUtils::QUint16::bytes(quint16(qRound(value / coefficient())));
-        return setBytes(data, 0, 2);
-    }
+    if (value <= maximum().toDouble() && value >= minimum().toDouble())
+        return setBytes(QKnxUtils::QUint16::bytes(quint16(qRound(value / coefficient()))), 0, 2);
     return false;
 }
 
