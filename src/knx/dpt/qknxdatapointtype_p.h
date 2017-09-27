@@ -60,6 +60,7 @@ struct Q_KNX_EXPORT QKnxDatapointTypePrivate : public QSharedData
     QVector<quint8> m_bytes;
     QString m_unit, m_descrition;
     QVariant m_minimum, m_maximum;
+    double m_coefficient { 1 };
     QString m_minimumText, m_maximumText;
     const QRegularExpression m_dpt { QStringLiteral("^DPT-(?<MainOnly>\\d{1,5})$"
         "|^(DPST-)?(?<MainType>\\d{1,5})(\\.|-)(?<SubType>\\d{1,5})$"),

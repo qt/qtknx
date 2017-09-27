@@ -33,6 +33,7 @@
 #include <QtKnx/qknx2bytefloat.h>
 #include <QtKnx/qknx3bitcontrolled.h>
 #include <QtKnx/qknx8bitsignedvalue.h>
+#include <QtKnx/qknx8bitunsignedvalue.h>
 #include <QtKnx/qknxdatapointtype.h>
 #include <QtKnx/qknxdatapointtypefactory.h>
 #include <QtKnx/qknxdatetime.h>
@@ -51,6 +52,7 @@ private slots:
     void dpt2_1BitControlled();
     void dpt3_3BitControlled();
     void dpt6_8BitSignedValue();
+    void dpt5_8BitUnsignedValue();
     void dpt21_8BitSet();
     void dpt9_2ByteFloat();
     void dpt10_TimeOfDay();
@@ -219,6 +221,54 @@ void tst_QKnxDatapointType::dpt6_8BitSignedValue()
     QCOMPARE(value.value(), qint8(127));
     value.setValue(-128);
     QCOMPARE(value.value(), qint8(-128));
+}
+
+void tst_QKnxDatapointType::dpt5_8BitUnsignedValue()
+{
+    QKnx8BitUnsignedValue dpt;
+    QCOMPARE(dpt.mainType(), 0x05);
+    QCOMPARE(dpt.subType(), 0x00);
+    QCOMPARE(dpt.isValid(), true);
+    QCOMPARE(dpt.setValue(255),true);
+    QCOMPARE(quint8(dpt.value()), quint8(255));
+
+    QKnxScaling scaling;
+    QCOMPARE(scaling.mainType(), 0x05);
+    QCOMPARE(scaling.subType(), 0x01);
+    QCOMPARE(scaling.isValid(), true);
+
+    QCOMPARE(scaling.setValue(255), false);
+
+    QCOMPARE(quint8(scaling.value()), quint8(0));
+    QCOMPARE(scaling.setValue(1), true);
+    QCOMPARE(qRound(scaling.value()), 1);
+    QCOMPARE(scaling.setValue(0.4), true);
+    QCOMPARE(qRound(10*scaling.value())/10., 0.4);
+    QCOMPARE(scaling.setValue(1.2), true);
+    QCOMPARE(qRound(10*scaling.value())/10., 1.2);
+    scaling.setByte(0, 255);
+    QCOMPARE(scaling.isValid(), true);
+    QCOMPARE(quint8(scaling.value()), quint8(100));
+
+    QKnxAngle angle;
+    QCOMPARE(angle.mainType(), 0x05);
+    QCOMPARE(angle.subType(), 0x03);
+    QCOMPARE(angle.isValid(), true);
+    QCOMPARE(angle.setValue(360), true);
+    QCOMPARE(angle.value(), double(360));
+    QCOMPARE(angle.setValue(1.4), true);
+    QCOMPARE(qRound(10*angle.value())/10., double(1.4));
+
+    QKnxTariff tariff;
+    QCOMPARE(tariff.mainType(), 0x05);
+    QCOMPARE(tariff.subType(), 0x06);
+    QCOMPARE(tariff.isValid(), true);
+    QCOMPARE(tariff.setValue(254), true);
+    QCOMPARE(quint8(tariff.value()), quint8(254));
+    QCOMPARE(tariff.setValue(255), false);
+    QCOMPARE(quint8(tariff.value()), quint8(254));
+    tariff.setByte(0, 255);
+    QCOMPARE(tariff.isValid(), false);
 }
 
 void tst_QKnxDatapointType::dpt21_8BitSet()

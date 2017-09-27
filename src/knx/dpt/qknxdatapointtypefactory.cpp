@@ -36,6 +36,7 @@
 #include "qknx3bitcontrolled.h"
 #include "qknx8bitset.h"
 #include "qknx8bitsignedvalue.h"
+#include "qknx8bitunsignedvalue.h"
 #include "qknxdatetime.h"
 #include "qknxentranceaccess.h"
 
@@ -143,6 +144,17 @@ QKnxDatapointTypeFactory::QKnxDatapointTypeFactory()
     registerType<QKnxAmountRain>();
     registerType<QKnxTemperatureFahrenheit>();
     registerType<QKnxWindSpeedKmPerHour>();
+
+    registerType<QKnx8BitUnsignedValue>();
+    registerType<QKnxScaling>();
+    registerType<QKnxAngle>();
+    registerType<QKnxPercentU8>();
+    registerType<QKnxDecimalFactor>();
+    registerType<QKnxValue1Ucount>();
+    registerType<QKnxTariff>();
+
+    registerType<QKnx8BitSet>();
+    registerType<QKnxGeneralStatus>();
 
     registerType<QKnxTimeOfDay>();
     registerType<QKnxDate>();

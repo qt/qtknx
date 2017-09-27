@@ -64,7 +64,8 @@ public:
         Dpt4_Character = 400000,
             DptCharAscii, DptChar8859,
         Dpt5_8bitUnsigned = 500000,
-            DptScaling, DptAngle = 500003, DptPercentU8, DptDecimalFactor, DptValue1Ucount = 500010,
+            DptScaling, DptAngle = 500003, DptPercentU8, DptDecimalFactor, DptTariff,
+            DptValue1Ucount = 500010,
         Dpt6_8bitSigned = 600000,
             DptPercentV8, DptValue1Count = 600010, DptStatusMode3 = 600020,
         Dpt7_2ByteUnsigned = 700000,
@@ -124,6 +125,9 @@ public:
 
     QVariant maximum() const;
     void setMaximum(const QVariant &maximum);
+
+    double coefficient() const;
+    void setCoefficient(double coef);
 
     QString minimumText() const;
     void setMinimumText(const QString &minimumText);

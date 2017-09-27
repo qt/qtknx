@@ -121,6 +121,16 @@ void QKnxDatapointType::setMaximum(const QVariant &maximum)
     d_ptr->m_maximum = maximum;
 }
 
+double QKnxDatapointType::coefficient() const
+{
+    return d_ptr->m_coefficient;
+}
+
+void QKnxDatapointType::setCoefficient(double coef)
+{
+    d_ptr->m_coefficient = coef;
+}
+
 QString QKnxDatapointType::minimumText() const
 {
     return d_ptr->m_minimumText;
@@ -258,6 +268,7 @@ bool QKnxDatapointType::operator==(const QKnxDatapointType &other) const
             && d_ptr->m_descrition == other.d_ptr->m_descrition
             && d_ptr->m_minimum == other.d_ptr->m_minimum
             && d_ptr->m_maximum == other.d_ptr->m_maximum
+            && d_ptr->m_coefficient == other.d_ptr->m_coefficient
             && d_ptr->m_minimumText == other.d_ptr->m_minimumText
             && d_ptr->m_maximumText == other.d_ptr->m_maximumText);
 }
