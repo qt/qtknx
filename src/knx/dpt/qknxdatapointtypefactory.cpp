@@ -111,15 +111,27 @@ bool QKnxDatapointTypeFactory::containsSubType(int mainType, int subType) const
 
 QKnxDatapointTypeFactory::QKnxDatapointTypeFactory()
 {
+    // DPT-1
     registerType<QKnx1Bit>();
     registerType<QKnxSwitch>();
 
+    // DPT-2
     registerType<QKnx1BitControlled>();
     registerType<QKnxSwitchControl>();
 
+    // DPT-3
     registerType<QKnx3BitControlled>();
     registerType<QKnxControlDimming>();
     registerType<QKnxControlBlinds>();
+
+    // DPT-5
+    registerType<QKnx8BitUnsignedValue>();
+    registerType<QKnxScaling>();
+    registerType<QKnxAngle>();
+    registerType<QKnxPercentU8>();
+    registerType<QKnxDecimalFactor>();
+    registerType<QKnxValue1Ucount>();
+    registerType<QKnxTariff>();
 
     // DPT-6
     registerType<QKnx8BitSignedValue>();
@@ -127,6 +139,7 @@ QKnxDatapointTypeFactory::QKnxDatapointTypeFactory()
     registerType<QKnxValue1Count>();
     registerType<QKnxStatusMode3>();
 
+    // DPT-9
     registerType<QKnx2ByteFloat>();
     registerType<QKnxTemperatureCelcius>();
     registerType<QKnxTemperatureKelvin>();
@@ -148,24 +161,17 @@ QKnxDatapointTypeFactory::QKnxDatapointTypeFactory()
     registerType<QKnxTemperatureFahrenheit>();
     registerType<QKnxWindSpeedKmPerHour>();
 
-    registerType<QKnx8BitUnsignedValue>();
-    registerType<QKnxScaling>();
-    registerType<QKnxAngle>();
-    registerType<QKnxPercentU8>();
-    registerType<QKnxDecimalFactor>();
-    registerType<QKnxValue1Ucount>();
-    registerType<QKnxTariff>();
-
-    registerType<QKnx8BitSet>();
-    registerType<QKnxGeneralStatus>();
-
+    // DPT-10
     registerType<QKnxTimeOfDay>();
     registerType<QKnxDate>();
 
+    // DPT-15
     registerType<QKnxEntranceAccess>();
 
+    // DPT-19
     registerType<QKnxDateTime>();
 
+    // DPT-21
     registerType<QKnx8BitSet>();
     registerType<QKnxGeneralStatus>();
 }
