@@ -11,7 +11,8 @@ PUBLIC_HEADERS += $$PWD/qknxdatapointtype.h \
     $$PWD/qknx2bytefloat.h \
     $$PWD/qknx3bitcontrolled.h \
     $$PWD/qknx8bitsignedvalue.h \
-    $$PWD/qknx8bitunsignedvalue.h
+    $$PWD/qknx8bitunsignedvalue.h \
+    $$PWD/qknxstatusmode3.h
 
 PRIVATE_HEADERS += $$PWD/qknxdatapointtype_p.h
 
@@ -26,4 +27,5 @@ SOURCES += $$PWD/qknxdatapointtype.cpp \
     $$PWD/qknx2bytefloat.cpp \
     $$PWD/qknx3bitcontrolled.cpp \
     $$PWD/qknx8bitsignedvalue.cpp \
-    $$PWD/qknx8bitunsignedvalue.cpp
+    $$PWD/qknx8bitunsignedvalue.cpp \
+    $$PWD/qknxstatusmode3.cpp

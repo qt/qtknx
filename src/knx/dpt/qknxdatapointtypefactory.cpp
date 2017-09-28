@@ -39,6 +39,7 @@
 #include "qknx8bitunsignedvalue.h"
 #include "qknxdatetime.h"
 #include "qknxentranceaccess.h"
+#include "qknxstatusmode3.h"
 
 QT_BEGIN_NAMESPACE
 
@@ -120,9 +121,11 @@ QKnxDatapointTypeFactory::QKnxDatapointTypeFactory()
     registerType<QKnxControlDimming>();
     registerType<QKnxControlBlinds>();
 
+    // DPT-6
     registerType<QKnx8BitSignedValue>();
     registerType<QKnxPercentV8>();
     registerType<QKnxValue1Count>();
+    registerType<QKnxStatusMode3>();
 
     registerType<QKnx2ByteFloat>();
     registerType<QKnxTemperatureCelcius>();
