@@ -39,7 +39,7 @@ class Q_KNX_EXPORT QKnx8BitSignedValue : public QKnxDatapointType
 {
 public:
     QKnx8BitSignedValue();
-    explicit QKnx8BitSignedValue(quint8 value);
+    explicit QKnx8BitSignedValue(qint8 value);
 
     static const constexpr int TypeSize = 0x01;
     static const constexpr int MainType = 0x06;
@@ -48,7 +48,7 @@ public:
     void setValue(qint8 value);
 
 protected:
-    explicit QKnx8BitSignedValue(int subType);
+    QKnx8BitSignedValue(int subType, qint8 value);
 };
 
 #define CREATE_CLASS_DECLARATION(CLASS, SUB_TYPE) \

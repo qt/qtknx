@@ -36,7 +36,7 @@ QT_BEGIN_NAMESPACE
 // -- QKnx1Bit
 
 QKnx1Bit::QKnx1Bit()
-: QKnx1Bit(false)
+    : QKnx1Bit(false)
 {}
 
 QKnx1Bit::QKnx1Bit(bool bit)
@@ -46,11 +46,11 @@ QKnx1Bit::QKnx1Bit(bool bit)
 QKnx1Bit::QKnx1Bit(int subType, bool bit)
     : QKnxDatapointType(MainType, subType, TypeSize)
 {
-    setBit(bit);
     setDescription(tr("1-bit"));
-
     setRangeText(tr("true"), tr("false"));
     setRange(QVariant(0x00), QVariant(0x01));
+
+    setBit(bit);
 }
 
 bool QKnx1Bit::bit() const
@@ -72,15 +72,15 @@ bool QKnx1Bit::isValid() const
 // -- QKnxSwitch
 
 QKnxSwitch::QKnxSwitch()
-    : QKnx1Bit(SubType, false)
+    : QKnxSwitch(State::Off)
+{}
+
+QKnxSwitch::QKnxSwitch(State state)
+    : QKnx1Bit(SubType, bool(state))
 {
     setDescription(tr("Switch"));
     setRangeText(tr("Off"), tr("On"));
 }
-
-QKnxSwitch::QKnxSwitch(State state)
-    : QKnx1Bit(SubType, bool(state))
-{}
 
 QKnxSwitch::State QKnxSwitch::value() const
 {

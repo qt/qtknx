@@ -36,22 +36,21 @@ QT_BEGIN_NAMESPACE
 // -- QKnx8BitUnsignedValue
 
 QKnx8BitUnsignedValue::QKnx8BitUnsignedValue()
-    : QKnx8BitUnsignedValue(SubType)
+    : QKnx8BitUnsignedValue(0.0)
+{}
+
+QKnx8BitUnsignedValue::QKnx8BitUnsignedValue(double value)
+    : QKnx8BitUnsignedValue(SubType, value)
+{}
+
+QKnx8BitUnsignedValue::QKnx8BitUnsignedValue(int subType, double value)
+    : QKnxDatapointType(MainType, subType, TypeSize)
 {
     setDescription(tr("8-bit unsigned value"));
     setRange(QVariant(0x00), QVariant(0xff));
     setRangeText(tr("0"), tr("255"));
-}
 
-QKnx8BitUnsignedValue::QKnx8BitUnsignedValue(double value)
-    : QKnx8BitUnsignedValue(SubType)
-{
     setValue(value);
-}
-
-QKnx8BitUnsignedValue::QKnx8BitUnsignedValue(int subType)
-    : QKnxDatapointType(MainType, subType, TypeSize)
-{
 }
 
 double QKnx8BitUnsignedValue::value() const
@@ -63,10 +62,8 @@ double QKnx8BitUnsignedValue::value() const
 
 bool QKnx8BitUnsignedValue::setValue(double value)
 {
-    if (value <= maximum().toDouble() && value >= minimum().toDouble()) {
-        setByte(0, quint8(qRound(value / coefficient())));
-        return true;
-    }
+    if (value <= maximum().toDouble() && value >= minimum().toDouble())
+        return setByte(0, quint8(qRound(value / coefficient())));
     return false;
 }
 
@@ -78,7 +75,7 @@ bool QKnxTariff::isValid() const
 #define CREATE_CLASS_BODY(CLASS, DESCRIPTION, RANGE_TEXT_MINIMUM, RANGE_TEXT_MAXIMUM, UNIT, \
     RANGE_VALUE_MINIMUM, RANGE_VALUE_MAXIMUM, COEFFICIENT) \
 CLASS::CLASS() \
-    : QKnx8BitUnsignedValue(SubType) \
+    : QKnx8BitUnsignedValue(SubType, 0.0) \
 { \
     setUnit(tr(UNIT)); \
     setCoefficient(COEFFICIENT); \

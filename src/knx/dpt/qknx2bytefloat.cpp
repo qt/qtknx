@@ -36,20 +36,20 @@
 QT_BEGIN_NAMESPACE
 
 QKnx2ByteFloat::QKnx2ByteFloat()
-    : QKnxDatapointType(MainType, SubType, TypeSize)
+    : QKnx2ByteFloat(0.0)
+{}
+
+QKnx2ByteFloat::QKnx2ByteFloat(float value)
+    : QKnx2ByteFloat(SubType, value)
+{}
+
+QKnx2ByteFloat::QKnx2ByteFloat(int subType, float value)
+    : QKnxDatapointType(MainType, subType, TypeSize)
 {
     setDescription(tr("2 byte float"));
     setRangeText(tr("Minimum Value, -671 088.64"), tr("Maximum Value, 670 760.96"));
     setRange(QVariant::fromValue(-671088.64), QVariant::fromValue(670760.96));
-}
 
-QKnx2ByteFloat::QKnx2ByteFloat(int subType)
-    : QKnxDatapointType(MainType, subType, TypeSize)
-{}
-
-QKnx2ByteFloat::QKnx2ByteFloat(float value)
-    : QKnx2ByteFloat()
-{
     setValue(value);
 }
 
@@ -96,7 +96,7 @@ bool QKnx2ByteFloat::isValid() const
 #define CREATE_CLASS_BODY(CLASS, DESCRIPTION, RANGE_TEXT_MINIMUM, RANGE_TEXT_MAXIMUM, UNIT, \
     RANGE_VALUE_MINIMUM, RANGE_VALUE_MAXIMUM) \
 CLASS::CLASS() \
-    : QKnx2ByteFloat(SubType) \
+    : QKnx2ByteFloat(SubType, 0.0) \
 { \
     setUnit(tr(UNIT)); \
     setDescription(tr(DESCRIPTION)); \

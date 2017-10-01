@@ -78,9 +78,6 @@ public:
     void removeStatus(Status status);
 
     bool isValid() const override;
-
-protected:
-    explicit QKnxStatusMode3(int subType);
 };
 Q_DECLARE_OPERATORS_FOR_FLAGS(QKnxStatusMode3::StatusFlags)
 

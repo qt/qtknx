@@ -92,7 +92,7 @@ QKnxControlDimming::QKnxControlDimming()
 }
 
 QKnxControlDimming::QKnxControlDimming(Control control, NumberOfIntervals interval)
-    : QKnx3BitControlled(SubType)
+    : QKnxControlDimming()
 {
     setControl(control);
     setNumberOfIntervals(interval);
@@ -120,7 +120,7 @@ QKnxControlBlinds::QKnxControlBlinds()
 }
 
 QKnxControlBlinds::QKnxControlBlinds(Control control, NumberOfIntervals interval)
-    : QKnx3BitControlled(SubType)
+    : QKnxControlBlinds()
 {
     setControl(control);
     setNumberOfIntervals(interval);

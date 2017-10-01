@@ -32,6 +32,7 @@
 #include <QtKnx/qknx1bitcontrolled.h>
 #include <QtKnx/qknx2bytefloat.h>
 #include <QtKnx/qknx3bitcontrolled.h>
+#include <QtKnx/qknx8bitset.h>
 #include <QtKnx/qknx8bitsignedvalue.h>
 #include <QtKnx/qknx8bitunsignedvalue.h>
 #include <QtKnx/qknxstatusmode3.h>
@@ -155,7 +156,15 @@ void tst_QKnxDatapointType::dpt1_1Bit()
 
 void tst_QKnxDatapointType::dpt2_1BitControlled()
 {
-    // TODO: Implement.
+    QKnx1BitControlled dpt;
+    QCOMPARE(dpt.mainType(), 2);
+    QCOMPARE(dpt.subType(), 0x00);
+
+    QKnxSwitchControl sSwitchControlled;
+    QCOMPARE(sSwitchControlled.mainType(), 2);
+    QCOMPARE(sSwitchControlled.subType(), 0x01);
+
+    // TODO: Extend.
 }
 
 void tst_QKnxDatapointType::dpt3_3BitControlled()
@@ -331,7 +340,15 @@ void tst_QKnxDatapointType::dpt6_StatusMode3()
 
 void tst_QKnxDatapointType::dpt21_8BitSet()
 {
-    // TODO: Implement.
+    QKnx8BitSet dpt;
+    QCOMPARE(dpt.mainType(), 0x15);
+    QCOMPARE(dpt.subType(), 0x00);
+
+    QKnxGeneralStatus dptGS;
+    QCOMPARE(dptGS.mainType(), 0x15);
+    QCOMPARE(dptGS.subType(), 0x01);
+
+    // TODO: Extend.
 }
 
 void tst_QKnxDatapointType::dpt10_TimeOfDay()

@@ -35,22 +35,22 @@ QT_BEGIN_NAMESPACE
 // -- QKnx8BitSignedValue
 
 QKnx8BitSignedValue::QKnx8BitSignedValue()
-    : QKnx8BitSignedValue(SubType)
+    : QKnx8BitSignedValue(0)
+{}
+
+QKnx8BitSignedValue::QKnx8BitSignedValue(qint8 value)
+    : QKnx8BitSignedValue(SubType, value)
+{}
+
+QKnx8BitSignedValue::QKnx8BitSignedValue(int subType, qint8 value)
+    : QKnxDatapointType(MainType, subType, TypeSize)
 {
     setRangeText(tr("-128"), tr("127"));
     setRange(QVariant(0x00), QVariant(0xff));
     setDescription(tr("8-bit signed value"));
-}
 
-QKnx8BitSignedValue::QKnx8BitSignedValue(quint8 value)
-    : QKnx8BitSignedValue(SubType)
-{
     setValue(value);
 }
-
-QKnx8BitSignedValue::QKnx8BitSignedValue(int subType)
-    : QKnxDatapointType(MainType, subType, TypeSize)
-{}
 
 qint8 QKnx8BitSignedValue::value() const
 {
@@ -65,7 +65,7 @@ void QKnx8BitSignedValue::setValue(qint8 value)
 #define CREATE_CLASS_BODY(CLASS, DESCRIPTION, RANGE_TEXT_MINIMUM, RANGE_TEXT_MAXIMUM, UNIT, \
     RANGE_VALUE_MINIMUM, RANGE_VALUE_MAXIMUM) \
 CLASS::CLASS() \
-    : QKnx8BitSignedValue(SubType) \
+    : QKnx8BitSignedValue(SubType, 0) \
 { \
     setUnit(tr(UNIT)); \
     setDescription(tr(DESCRIPTION)); \

@@ -51,7 +51,7 @@ public:
     bool isValid() const override;
 
 protected:
-    explicit QKnx2ByteFloat(int subType);
+    QKnx2ByteFloat(int subType, float value);
 };
 
 #define CREATE_CLASS_DECLARATION(CLASS, SUB_TYPE) \

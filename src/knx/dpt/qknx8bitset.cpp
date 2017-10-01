@@ -36,22 +36,21 @@ QT_BEGIN_NAMESPACE
 // -- QKnx8BitSet
 
 QKnx8BitSet::QKnx8BitSet()
-    : QKnx8BitSet(SubType)
+    : QKnx8BitSet(0)
 {}
 
 QKnx8BitSet::QKnx8BitSet(quint8 value)
-    : QKnx8BitSet(SubType)
-{
-    setByte(value);
-}
+    : QKnx8BitSet(SubType, value)
+{}
 
-QKnx8BitSet::QKnx8BitSet(int subType)
+QKnx8BitSet::QKnx8BitSet(int subType, quint8 value)
     : QKnxDatapointType(MainType, subType, TypeSize)
 {
     setDescription(tr("8-bit set"));
-
     setRange(QVariant(0x00), QVariant(0xff));
     setRangeText(tr("No bits set"), tr("All bits set"));
+
+    setByte(value);
 }
 
 bool QKnx8BitSet::bit(int index) const
@@ -83,14 +82,14 @@ bool QKnx8BitSet::isValid() const
 // -- QKnxGeneralStatus
 
 QKnxGeneralStatus::QKnxGeneralStatus()
-    : QKnx8BitSet(SubType)
+    : QKnx8BitSet(SubType, 0)
 {
     setDescription(tr("General Status"));
     setRange(QVariant(0x00), QVariant(0x1f));
 }
 
 QKnxGeneralStatus::QKnxGeneralStatus(Attributes attributes)
-    : QKnx8BitSet(SubType)
+    : QKnxGeneralStatus()
 {
     setValue(attributes);
 }

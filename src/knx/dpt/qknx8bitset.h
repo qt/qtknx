@@ -53,7 +53,7 @@ public:
     bool isValid() const override;
 
 protected:
-    explicit QKnx8BitSet(int subType);
+    QKnx8BitSet(int subType, quint8 value);
 };
 
 class Q_KNX_EXPORT QKnxGeneralStatus : public QKnx8BitSet

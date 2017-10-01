@@ -85,14 +85,13 @@ bool QKnx1BitControlled::isValid() const
 // QKnxSwitchControlled
 
 QKnxSwitchControl::QKnxSwitchControl()
-    : QKnx1BitControlled(SubType, QKnxSwitch())
-{
-    setDescription(tr("Switch Controlled"));
-}
+    : QKnxSwitchControl(Attributes())
+{}
 
 QKnxSwitchControl::QKnxSwitchControl(Attributes attributes)
     : QKnx1BitControlled(SubType, QKnxSwitch())
 {
+    setDescription(tr("Switch Controlled"));
     setValue(attributes);
 }
 

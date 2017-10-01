@@ -48,7 +48,7 @@ public:
     bool setValue(double value);
 
 protected:
-    explicit QKnx8BitUnsignedValue(int subType);
+    QKnx8BitUnsignedValue(int subType, double value);
 };
 
 class Q_KNX_EXPORT QKnxTariff : public QKnx8BitUnsignedValue
