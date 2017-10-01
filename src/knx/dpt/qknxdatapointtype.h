@@ -163,11 +163,12 @@ public:
     }
 
     bool setByte(quint16 index, quint8 bytes);
-    template <typename T> void setBytes(const T &bytesToSet, quint16 index, quint16 count)
+    template <typename T> bool setBytes(const T &bytesToSet, quint16 index, quint16 count)
     {
         if (((bytesToSet.size() - index) < count) || (size() != count))
-            return;
+            return false;
         std::copy(std::begin(bytesToSet), std::end(bytesToSet), data());
+        return true;
     }
 
     QKnxDatapointType(const QKnxDatapointType &other);
