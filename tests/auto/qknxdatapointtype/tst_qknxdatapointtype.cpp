@@ -553,8 +553,10 @@ void tst_QKnxDatapointType::dpt9_2ByteFloat()
     dpt.setValue(float(-5.2));
     QCOMPARE(dpt.value(),-5.2f);
     dpt.setValue(float(-671088.64));
+    QCOMPARE(dpt.isValid(), true);
     QCOMPARE(dpt.value(),-671088.64f);
     dpt.setValue(float(670760.96));
+    QCOMPARE(dpt.isValid(), true);
     QCOMPARE(dpt.value(),670760.96f);
 
     QKnxTemperatureCelcius dptTemp;

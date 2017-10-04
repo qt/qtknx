@@ -90,7 +90,7 @@ bool QKnx2ByteFloat::setValue(float value)
 bool QKnx2ByteFloat::isValid() const
 {
     return QKnxDatapointType::isValid()
-        && value() > minimum().toFloat() && value() < maximum().toFloat();
+        && value() >= minimum().toFloat() && value() <= maximum().toFloat();
 }
 
 #define CREATE_CLASS_BODY(CLASS, DESCRIPTION, RANGE_TEXT_MINIMUM, RANGE_TEXT_MAXIMUM, UNIT, \
