@@ -115,7 +115,7 @@ CREATE_CLASS_BODY(QKnxTemperatureKelvin, "Temperature in degree Kelvin",
     "Minimum Value, -670 760", "Maximum Value, 670 760", "degree Kelvin", -670760, 670760)
 CREATE_CLASS_BODY(QKnxTemperatureChange, "Change in Temperature (K) per hour",
     "Minimum Value, -670 760", "Maximum Value, 670 760", "Lux", -670760, 670760)
-CREATE_CLASS_BODY(QKnxBrightness, "Brightness in Lux",
+CREATE_CLASS_BODY(QKnxValueLux, "Brightness in Lux",
     "Minimum Value, 0", "Maximum Value, 670 760", "Lux", 0, 670760)
 CREATE_CLASS_BODY(QKnxWindSpeed, "Wind Speed in meter per second",
     "Minimum Value, 0", "Maximum Value, 670 760", "m/s", 0, 670760)

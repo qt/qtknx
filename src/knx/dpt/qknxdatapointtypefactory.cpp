@@ -144,7 +144,7 @@ QKnxDatapointTypeFactory::QKnxDatapointTypeFactory()
     registerType<QKnxTemperatureCelcius>();
     registerType<QKnxTemperatureKelvin>();
     registerType<QKnxTemperatureChange>();
-    registerType<QKnxBrightness>();
+    registerType<QKnxValueLux>();
     registerType<QKnxWindSpeed>();
     registerType<QKnxPressure>();
     registerType<QKnxHumidity>();
