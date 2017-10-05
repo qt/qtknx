@@ -33,13 +33,14 @@
 #include "qknx1bit.h"
 #include "qknx1bitcontrolled.h"
 #include "qknx2bytefloat.h"
+#include "qknx2byteunsignedvalue.h"
 #include "qknx3bitcontrolled.h"
+#include "qknx4bytesignedvalue.h"
+#include "qknx4byteunsignedvalue.h"
 #include "qknx8bitset.h"
 #include "qknx8bitsignedvalue.h"
 #include "qknx8bitunsignedvalue.h"
-#include "qknx2byteunsignedvalue.h"
 #include "qknxdatetime.h"
-#include "qknx4bytesignedvalue.h"
 #include "qknxentranceaccess.h"
 #include "qknxstatusmode3.h"
 
@@ -180,6 +181,10 @@ QKnxDatapointTypeFactory::QKnxDatapointTypeFactory()
     // DPT-10
     registerType<QKnxTimeOfDay>();
     registerType<QKnxDate>();
+
+    // DPT-12
+    registerType<QKnx4ByteUnsignedValue>();
+    registerType<QKnxValue4UCount>();
 
     // DPT-13
     registerType<QKnx4ByteSignedValue>();
