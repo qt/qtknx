@@ -36,6 +36,7 @@
 #include <QtKnx/qknx8bitsignedvalue.h>
 #include <QtKnx/qknx8bitunsignedvalue.h>
 #include <QtKnx/qknxstatusmode3.h>
+#include <QtKnx/qknx2byteunsignedvalue.h>
 #include <QtKnx/qknxdatapointtype.h>
 #include <QtKnx/qknxdatapointtypefactory.h>
 #include <QtKnx/qknxdatetime.h>
@@ -56,6 +57,7 @@ private slots:
     void dpt5_8BitUnsignedValue();
     void dpt6_8BitSignedValue();
     void dpt6_StatusMode3();
+    void dpt5_2ByteUnsignedValue();
     void dpt21_8BitSet();
     void dpt9_2ByteFloat();
     void dpt10_TimeOfDay();
@@ -337,6 +339,47 @@ void tst_QKnxDatapointType::dpt6_StatusMode3()
     QCOMPARE(dpt.setMode(QKnxStatusMode3::Mode::Zero), true);
     QCOMPARE(dpt.isValid(), true);
 }
+
+void tst_QKnxDatapointType::dpt5_2ByteUnsignedValue()
+{
+    QKnx2ByteUnsignedValue dpt;
+    QCOMPARE(dpt.mainType(), 0x07);
+    QCOMPARE(dpt.subType(), 0x00);
+    QCOMPARE(dpt.isValid(), true);
+    QCOMPARE(dpt.setValue(65535),true);
+    QCOMPARE(dpt.isValid(), true);
+    QCOMPARE(qint32(dpt.value()), qint32(65535));
+
+    QKnxValue2Ucount dpt1;
+    QCOMPARE(dpt1.mainType(), 0x07);
+    QCOMPARE(dpt1.subType(), 0x01);
+    QCOMPARE(dpt1.isValid(), true);
+    QCOMPARE(dpt1.setValue(65535), true);
+    QCOMPARE(quint32(dpt1.value()), quint32(65535));
+    QCOMPARE(dpt.isValid(), true);
+    QCOMPARE(dpt1.setValue(655350), false);
+    QCOMPARE(quint32(dpt1.value()), quint32(65535));
+
+    QKnxTimePeriod100Msec dpt2;
+    QCOMPARE(dpt2.mainType(), 0x07);
+    QCOMPARE(dpt2.subType(), 0x04);
+    QCOMPARE(dpt2.isValid(), true);
+    QCOMPARE(dpt2.setValue(65535), true);
+    QCOMPARE(quint32(dpt2.value()), quint32(65500));
+    QCOMPARE(dpt2.setValue(65555), true);
+    QCOMPARE(quint32(dpt2.value()), quint32(65600));
+    QCOMPARE(dpt2.setValue(6553500), true);
+    QCOMPARE(quint32(dpt2.value()), quint32(6553500));
+
+    QKnxTimePeriod10Msec dpt3(quint32(6550));
+    QCOMPARE(dpt3.mainType(), 0x07);
+    QCOMPARE(dpt3.subType(), 0x03);
+    QCOMPARE(dpt3.isValid(), true);
+    QCOMPARE(quint32(dpt3.value()), quint32(6550));
+
+    // TODO: Extend the auto-test.
+}
+
 
 void tst_QKnxDatapointType::dpt21_8BitSet()
 {

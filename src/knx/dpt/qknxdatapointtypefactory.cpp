@@ -37,6 +37,7 @@
 #include "qknx8bitset.h"
 #include "qknx8bitsignedvalue.h"
 #include "qknx8bitunsignedvalue.h"
+#include "qknx2byteunsignedvalue.h"
 #include "qknxdatetime.h"
 #include "qknxentranceaccess.h"
 #include "qknxstatusmode3.h"
@@ -138,6 +139,20 @@ QKnxDatapointTypeFactory::QKnxDatapointTypeFactory()
     registerType<QKnxPercentV8>();
     registerType<QKnxValue1Count>();
     registerType<QKnxStatusMode3>();
+
+    // DPT-7
+    registerType<QKnx2ByteUnsignedValue>();
+    registerType<QKnxValue2Ucount>();
+    registerType<QKnxPropDataType>();
+    registerType<QKnxTimePeriodMsec>();
+    registerType<QKnxTimePeriod10Msec>();
+    registerType<QKnxTimePeriod100Msec>();
+    registerType<QKnxTimePeriodSec>();
+    registerType<QKnxTimePeriodMin>();
+    registerType<QKnxTimePeriodHrs>();
+    registerType<QKnxLengthMilliMeter>();
+    registerType<QKnxUEICurrentMilliA>();
+    registerType<QKnxBrightness>();
 
     // DPT-9
     registerType<QKnx2ByteFloat>();
