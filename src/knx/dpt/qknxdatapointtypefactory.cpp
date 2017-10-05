@@ -39,6 +39,7 @@
 #include "qknx8bitunsignedvalue.h"
 #include "qknx2byteunsignedvalue.h"
 #include "qknxdatetime.h"
+#include "qknx4bytesignedvalue.h"
 #include "qknxentranceaccess.h"
 #include "qknxstatusmode3.h"
 
@@ -179,6 +180,18 @@ QKnxDatapointTypeFactory::QKnxDatapointTypeFactory()
     // DPT-10
     registerType<QKnxTimeOfDay>();
     registerType<QKnxDate>();
+
+    // DPT-13
+    registerType<QKnx4ByteSignedValue>();
+    registerType<QKnxValue4Count>();
+    registerType<QKnxFlowRateCubicMeterPerHour>();
+    registerType<QKnxActiveEnergy>();
+    registerType<QKnxApparentEnergy>();
+    registerType<QKnxReactiveEnergy>();
+    registerType<QKnxActiveEnergykWh>();
+    registerType<QKnxApparentEnergykVAh>();
+    registerType<QKnxReactiveEnergykVARh>();
+    registerType<QKnxLongDeltaTimeSec>();
 
     // DPT-15
     registerType<QKnxEntranceAccess>();

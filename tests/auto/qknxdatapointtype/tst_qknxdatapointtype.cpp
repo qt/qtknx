@@ -40,6 +40,7 @@
 #include <QtKnx/qknxdatapointtype.h>
 #include <QtKnx/qknxdatapointtypefactory.h>
 #include <QtKnx/qknxdatetime.h>
+#include <QtKnx/qknx4bytesignedvalue.h>
 #include <QtKnx/qknxentranceaccess.h>
 #include <QtKnx/qknxtime.h>
 #include <QtKnx/qknxutils.h>
@@ -62,6 +63,7 @@ private slots:
     void dpt9_2ByteFloat();
     void dpt10_TimeOfDay();
     void dpt11_Date();
+    void dpt13_4ByteSignedValue();
     void dpt15_EntranceAccess();
     void dpt19_DateTime();
 };
@@ -466,6 +468,36 @@ void tst_QKnxDatapointType::dpt11_Date()
     QCOMPARE(date.value(), date.maximum().toDate());
 
     QCOMPARE(QKnxDatapointTypeFactory::instance().containsMainType(date.mainType()), true);
+}
+
+void tst_QKnxDatapointType::dpt13_4ByteSignedValue()
+{
+    QKnx4ByteSignedValue dpt;
+    QCOMPARE(dpt.mainType(), 0x0d);
+    QCOMPARE(dpt.subType(), 0x00);
+    QCOMPARE(dpt.isValid(), true);
+    QCOMPARE(dpt.setValue(255), true);
+    QCOMPARE(qint32(dpt.value()), qint32(255));
+    QCOMPARE(dpt.setValue(-2147483648), true);
+    QCOMPARE(dpt.isValid(), true);
+    QCOMPARE(qint32(dpt.value()), qint32(-2147483648));
+    QCOMPARE(dpt.setValue(2147483647), true);
+    QCOMPARE(dpt.isValid(), true);
+    QCOMPARE(qint32(dpt.value()), qint32(2147483647));
+
+    QKnxLongDeltaTimeSec dpt2;
+    QCOMPARE(dpt2.mainType(), 0x0d);
+    QCOMPARE(dpt2.subType(), 0x64);
+    QCOMPARE(dpt2.isValid(), true);
+    QCOMPARE(dpt2.setValue(255),true);
+    QCOMPARE(qint32(dpt2.value()), qint32(255));
+    QCOMPARE(dpt2.setValue(-2147483648), true);
+    QCOMPARE(dpt2.isValid(), true);
+    QCOMPARE(qint32(dpt2.value()), qint32(-2147483648));
+    QCOMPARE(dpt2.setValue(2147483647), true);
+    QCOMPARE(dpt2.isValid(), true);
+    QCOMPARE(qint32(dpt2.value()), qint32(2147483647));
+
 }
 
 void tst_QKnxDatapointType::dpt9_2ByteFloat()
