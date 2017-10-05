@@ -76,7 +76,7 @@ bool QKnx2ByteUnsignedValue::isValid() const
 #define CREATE_CLASS_BODY(CLASS, DESCRIPTION, RANGE_TEXT_MINIMUM, RANGE_TEXT_MAXIMUM, UNIT, \
     RANGE_VALUE_MINIMUM, RANGE_VALUE_MAXIMUM, COEFFICIENT) \
 CLASS::CLASS() \
-    : QKnx2ByteUnsignedValue(SubType,0) \
+    : QKnx2ByteUnsignedValue(SubType, 0) \
 { \
     setUnit(tr(UNIT)); \
     setCoefficient(COEFFICIENT); \

@@ -31,6 +31,7 @@
 #include <QtKnx/qknx1bit.h>
 #include <QtKnx/qknx1bitcontrolled.h>
 #include <QtKnx/qknx2bytefloat.h>
+#include <QtKnx/qknx2bytesignedvalue.h>
 #include <QtKnx/qknx2byteunsignedvalue.h>
 #include <QtKnx/qknx3bitcontrolled.h>
 #include <QtKnx/qknx4bytesignedvalue.h>
@@ -60,6 +61,7 @@ private slots:
     void dpt6_8BitSignedValue();
     void dpt6_StatusMode3();
     void dpt7_2ByteUnsignedValue();
+    void dpt8_2ByteSignedValue();
     void dpt9_2ByteFloat();
     void dpt10_TimeOfDay();
     void dpt11_Date();
@@ -384,6 +386,44 @@ void tst_QKnxDatapointType::dpt7_2ByteUnsignedValue()
     // TODO: Extend the auto-test.
 }
 
+void tst_QKnxDatapointType::dpt8_2ByteSignedValue()
+{
+    QKnx2ByteSignedValue dpt;
+    QCOMPARE(dpt.mainType(), 0x08);
+    QCOMPARE(dpt.subType(), 0x00);
+    QCOMPARE(dpt.isValid(), true);
+    QCOMPARE(dpt.value(), 0.);
+    dpt.setValue(-32768);
+    QCOMPARE(dpt.value(), double(-32768.));
+    dpt.setValue(32767);
+    QCOMPARE(dpt.value(), 32767.);
+
+    QKnxPercentV16 percent;
+    QCOMPARE(percent.mainType(), 0x08);
+    QCOMPARE(percent.subType(), 0x0a);
+    QCOMPARE(percent.isValid(), true);
+    QCOMPARE(percent.value(), 0.);
+    percent.setValue(-32768);
+    QCOMPARE(percent.value(), 0.);
+    percent.setValue(-327.68);
+    QCOMPARE(percent.value(), -327.68);
+    percent.setValue(327.67);
+    QCOMPARE(percent.value(), 327.67);
+
+    QKnxDeltaTime100Msec delta;
+    QCOMPARE(delta.mainType(), 0x08);
+    QCOMPARE(delta.subType(), 0x04);
+    QCOMPARE(delta.isValid(), true);
+    QCOMPARE(delta.value(), 0.);
+    delta.setValue(-32768);
+    QCOMPARE(delta.value(), double(-32800));
+    delta.setValue(-3276800);
+    QCOMPARE(delta.value(), double(-3276800));
+    delta.setValue(3276700);
+    QCOMPARE(delta.value(), double(3276700));
+
+    // TODO: Extend.
+}
 
 void tst_QKnxDatapointType::dpt21_8BitSet()
 {

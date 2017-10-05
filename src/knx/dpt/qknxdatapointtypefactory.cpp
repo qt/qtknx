@@ -33,6 +33,7 @@
 #include "qknx1bit.h"
 #include "qknx1bitcontrolled.h"
 #include "qknx2bytefloat.h"
+#include "qknx2bytesignedvalue.h"
 #include "qknx2byteunsignedvalue.h"
 #include "qknx3bitcontrolled.h"
 #include "qknx4bytesignedvalue.h"
@@ -155,6 +156,18 @@ QKnxDatapointTypeFactory::QKnxDatapointTypeFactory()
     registerType<QKnxLengthMilliMeter>();
     registerType<QKnxUEICurrentMilliA>();
     registerType<QKnxBrightness>();
+
+    // DPT-8
+    registerType<QKnx2ByteSignedValue>();
+    registerType<QKnxValue2Count>();
+    registerType<QKnxPercentV16>();
+    registerType<QKnxDeltaTimeMsec>();
+    registerType<QKnxDeltaTime10Msec>();
+    registerType<QKnxDeltaTime100Msec>();
+    registerType<QKnxDeltaTimeSec>();
+    registerType<QKnxDeltaTimeMin>();
+    registerType<QKnxDeltaTimeHrs>();
+    registerType<QKnxRotationAngle>();
 
     // DPT-9
     registerType<QKnx2ByteFloat>();

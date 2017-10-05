@@ -3,6 +3,7 @@ INCLUDEPATH += $$PWD
 PUBLIC_HEADERS += $$PWD/qknx1bit.h \
     $$PWD/qknx1bitcontrolled.h \
     $$PWD/qknx2bytefloat.h \
+    $$PWD/qknx2bytesignedvalue.h \
     $$PWD/qknx2byteunsignedvalue.h \
     $$PWD/qknx3bitcontrolled.h \
     $$PWD/qknx4bytesignedvalue.h \
@@ -22,6 +23,7 @@ PRIVATE_HEADERS += $$PWD/qknxdatapointtype_p.h
 SOURCES += $$PWD/qknx1bit.cpp \
     $$PWD/qknx1bitcontrolled.cpp \
     $$PWD/qknx2bytefloat.cpp \
+    $$PWD/qknx2bytesignedvalue.cpp \
     $$PWD/qknx2byteunsignedvalue.cpp \
     $$PWD/qknx3bitcontrolled.cpp \
     $$PWD/qknx4bytesignedvalue.cpp \
