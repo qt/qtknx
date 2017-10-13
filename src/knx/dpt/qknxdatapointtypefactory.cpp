@@ -36,6 +36,7 @@
 #include "qknx2bytesignedvalue.h"
 #include "qknx2byteunsignedvalue.h"
 #include "qknx3bitcontrolled.h"
+#include "qknx4bytefloat.h"
 #include "qknx4bytesignedvalue.h"
 #include "qknx4byteunsignedvalue.h"
 #include "qknx8bitset.h"
@@ -210,6 +211,89 @@ QKnxDatapointTypeFactory::QKnxDatapointTypeFactory()
     registerType<QKnxApparentEnergykVAh>();
     registerType<QKnxReactiveEnergykVARh>();
     registerType<QKnxLongDeltaTimeSec>();
+
+    // DPT-14
+    registerType<QKnx4ByteFloat>();
+    registerType<QKnxValueAcceleration>();
+    registerType<QKnxValueAccelerationAngular>();
+    registerType<QKnxValueActivationEnergy>();
+    registerType<QKnxValueActivity>();
+    registerType<QKnxValueMol>();
+    registerType<QKnxValueAmplitude>();
+    registerType<QKnxValueAngleRad>();
+    registerType<QKnxValueAngleDeg>();
+    registerType<QKnxValueAngularMomentum>();
+    registerType<QKnxValueAngularVelocity>();
+    registerType<QKnxValueArea>();
+    registerType<QKnxValueCapacitance>();
+    registerType<QKnxValueChargeDensitySurface>();
+    registerType<QKnxValueChargeDensityVolume>();
+    registerType<QKnxValueCompressibility>();
+    registerType<QKnxValueConductance>();
+    registerType<QKnxValueElectricalConductivity>();
+    registerType<QKnxValueDensity>();
+    registerType<QKnxValueElectricCharge>();
+    registerType<QKnxValueElectricCurrent>();
+    registerType<QKnxValueElectricCurrentDensity>();
+    registerType<QKnxValueElectricDipoleMoment>();
+    registerType<QKnxValueElectricDisplacement>();
+    registerType<QKnxValueElectricFieldStrength>();
+    registerType<QKnxValueElectricFlux>();
+    registerType<QKnxValueElectricFluxDensity>();
+    registerType<QKnxValueElectricPolarization>();
+    registerType<QKnxValueElectricPotential>();
+    registerType<QKnxValueElectricPotentialDifference>();
+    registerType<QKnxValueElectromagneticMoment>();
+    registerType<QKnxValueElectromotiveForce>();
+    registerType<QKnxValueEnergy>();
+    registerType<QKnxValueForce>();
+    registerType<QKnxValueFrequency>();
+    registerType<QKnxValueAngularFrequency>();
+    registerType<QKnxValueHeatCapacity>();
+    registerType<QKnxValueHeatFlowRate>();
+    registerType<QKnxValueHeatQuantity>();
+    registerType<QKnxValueImpedance>();
+    registerType<QKnxValueLength>();
+    registerType<QKnxValueLightQuantity>();
+    registerType<QKnxValueLuminance>();
+    registerType<QKnxValueLuminousFlux>();
+    registerType<QKnxValueLuminousIntensity>();
+    registerType<QKnxValueMagneticFieldStrength>();
+    registerType<QKnxValueMagneticFlux>();
+    registerType<QKnxValueMagneticFluxDensity>();
+    registerType<QKnxValueMagneticMoment>();
+    registerType<QKnxValueMagneticPolarization>();
+    registerType<QKnxValueMagnetization>();
+    registerType<QKnxValueMagnetomotiveForce>();
+    registerType<QKnxValueMass>();
+    registerType<QKnxValueMassFlux>();
+    registerType<QKnxValueMomentum>();
+    registerType<QKnxValuePhaseAngleRad>();
+    registerType<QKnxValuePhaseAngleDeg>();
+    registerType<QKnxValuePower>();
+    registerType<QKnxValuePowerFactor>();
+    registerType<QKnxValuePressure>();
+    registerType<QKnxValueReactance>();
+    registerType<QKnxValueResistance>();
+    registerType<QKnxValueResistivity>();
+    registerType<QKnxValueSelfInductance>();
+    registerType<QKnxValueSolidAngle>();
+    registerType<QKnxValueSoundIntensity>();
+    registerType<QKnxValueSpeed>();
+    registerType<QKnxValueStress>();
+    registerType<QKnxValueSurfaceTension>();
+    registerType<QKnxValueCommonTemperature>();
+    registerType<QKnxValueAbsoluteTemperature>();
+    registerType<QKnxValueTemperatureDifference>();
+    registerType<QKnxValueThermalCapacity>();
+    registerType<QKnxValueThermalConductivity>();
+    registerType<QKnxValueThermoelectricPower>();
+    registerType<QKnxValueTime>();
+    registerType<QKnxValueTorque>();
+    registerType<QKnxValueVolume>();
+    registerType<QKnxValueVolumeFlux>();
+    registerType<QKnxValueWeight>();
+    registerType<QKnxValueWork>();
 
     // DPT-15
     registerType<QKnxEntranceAccess>();

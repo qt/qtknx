@@ -34,6 +34,7 @@
 #include <QtKnx/qknx2bytesignedvalue.h>
 #include <QtKnx/qknx2byteunsignedvalue.h>
 #include <QtKnx/qknx3bitcontrolled.h>
+#include <QtKnx/qknx4bytefloat.h>
 #include <QtKnx/qknx4bytesignedvalue.h>
 #include <QtKnx/qknx4byteunsignedvalue.h>
 #include <QtKnx/qknx8bitset.h>
@@ -67,6 +68,7 @@ private slots:
     void dpt11_Date();
     void dpt12_4ByteUnsignedValue();
     void dpt13_4ByteSignedValue();
+    void dpt14_4ByteFloat();
     void dpt15_EntranceAccess();
     void dpt19_DateTime();
     void dpt21_8BitSet();
@@ -617,6 +619,28 @@ void tst_QKnxDatapointType::dpt12_4ByteUnsignedValue()
     QCOMPARE(dpt2.isValid(), true);
     QCOMPARE(dpt2.setValue(4294967295),true);
     QCOMPARE(quint32(dpt2.value()), quint32(4294967295));
+}
+
+void tst_QKnxDatapointType::dpt14_4ByteFloat()
+{
+    QKnx4ByteFloat dpt;
+    QCOMPARE(dpt.size(), 4);
+    QCOMPARE(dpt.mainType(), 14);
+    QCOMPARE(dpt.subType(), 0);
+    QCOMPARE(dpt.isValid(), true);
+
+    dpt.setValue(float(-5.2));
+    QCOMPARE(dpt.value(), -5.2f);
+    dpt.setValue(float(-671088.64));
+    QCOMPARE(dpt.value(), -671088.64f);
+    dpt.setValue(float(670760.96));
+    QCOMPARE(dpt.value(), 670760.96f);
+    dpt.setValue(float(-3.40282e+38));
+    QCOMPARE(dpt.value(), float(-3.40282e+38));
+    dpt.setValue(float(3.40282e+38));
+    QCOMPARE(dpt.value(), float(3.40282e+38));
+
+    // TODO: Extend the auto-test.
 }
 
 void tst_QKnxDatapointType::dpt15_EntranceAccess()
