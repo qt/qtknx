@@ -46,6 +46,16 @@ struct QKnxUtils final
 {
     struct QUint8 final
     {
+        template <typename T = QByteArray> static auto bytes(quint8 integer) -> decltype(T())
+        {
+            static_assert(is_type<T, QByteArray, QVector<quint8>, std::deque<quint8>,
+                std::vector<quint8>>::value, "Type not supported.");
+
+            T t(1, 0);
+            t[0] = quint8(integer);
+            return t;
+        }
+
         static quint8 fromBytes(const QKnxByteStoreRef &data, quint16 index = 0)
         {
             if (data.size() - index < 1)
