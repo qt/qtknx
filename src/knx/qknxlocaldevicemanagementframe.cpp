@@ -156,11 +156,11 @@ quint8 QKnxLocalDeviceManagementFrame::numberOfElements() const
 
 void QKnxLocalDeviceManagementFrame::setNumberOfElements(quint8 numOfElements)
 {
-    if (numOfElements > 0xf)
+    if (numOfElements > 0x0f)
         return;
 
     auto si = serviceInformation();
-    si.setByte(4, (si.byte(4) & 0xf) | (numOfElements << 4));
+    si.setByte(4, (si.byte(4) & 0x0f) | (numOfElements << 4));
     setServiceInformation(si);
 }
 
