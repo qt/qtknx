@@ -520,9 +520,9 @@ void tst_QKnxDatapointType::dpt13_4ByteSignedValue()
     QCOMPARE(dpt.isValid(), true);
     QCOMPARE(dpt.setValue(255), true);
     QCOMPARE(qint32(dpt.value()), qint32(255));
-    QCOMPARE(dpt.setValue(-2147483648), true);
+    QCOMPARE(dpt.setValue(INT_MIN), true);
     QCOMPARE(dpt.isValid(), true);
-    QCOMPARE(qint32(dpt.value()), qint32(-2147483648));
+    QCOMPARE(qint32(dpt.value()), qint32(INT_MIN));
     QCOMPARE(dpt.setValue(2147483647), true);
     QCOMPARE(dpt.isValid(), true);
     QCOMPARE(qint32(dpt.value()), qint32(2147483647));
@@ -533,13 +533,12 @@ void tst_QKnxDatapointType::dpt13_4ByteSignedValue()
     QCOMPARE(dpt2.isValid(), true);
     QCOMPARE(dpt2.setValue(255),true);
     QCOMPARE(qint32(dpt2.value()), qint32(255));
-    QCOMPARE(dpt2.setValue(-2147483648), true);
+    QCOMPARE(dpt2.setValue(INT_MIN), true);
     QCOMPARE(dpt2.isValid(), true);
-    QCOMPARE(qint32(dpt2.value()), qint32(-2147483648));
+    QCOMPARE(qint32(dpt2.value()), qint32(INT_MIN));
     QCOMPARE(dpt2.setValue(2147483647), true);
     QCOMPARE(dpt2.isValid(), true);
     QCOMPARE(qint32(dpt2.value()), qint32(2147483647));
-
 }
 
 void tst_QKnxDatapointType::dpt9_2ByteFloat()
