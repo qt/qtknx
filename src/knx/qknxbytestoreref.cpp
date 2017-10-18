@@ -47,6 +47,14 @@ quint16 QKnxByteStoreRef::size() const
     return 0;
 }
 
+quint8 QKnxByteStoreRef::operator[](int i) const
+{
+    Q_ASSERT_X(i >= 0 && i < size(), "QKnxByteStoreRef::operator[]", "index out of range");
+    if (const quint8 *tmp = bytes())
+        return tmp[i];
+    return 0;
+}
+
 const quint8 *QKnxByteStoreRef::bytes() const
 {
     if (m_store)

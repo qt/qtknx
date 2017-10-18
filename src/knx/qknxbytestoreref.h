@@ -95,6 +95,8 @@ public:
         return std::next(tmp, size());
     }
 
+    quint8 operator[](int i) const;
+
 private:
     explicit QKnxByteStoreRef(QKnxByteStore *store);
     QKnxByteStoreRef(QKnxByteStore *store, quint16 index);
