@@ -1,0 +1,44 @@
+<RCC>
+    <qresource prefix="/">
+        <file>main.qml</file>
+        <file>KnxSwitch.qml</file>
+        <file>BlindSimulationView.qml</file>
+        <file>ColorSlider.qml</file>
+        <file>qtquickcontrols2.conf</file>
+        <file>KnxBoardLayout.qml</file>
+        <file>images/ArrowDown.png</file>
+        <file>images/ArrowUp.png</file>
+        <file>images/icon_light.png</file>
+        <file>images/topBar.png</file>
+        <file>images/settings_icon.png</file>
+        <file>images/quit_icon.png</file>
+        <file>images/e1Scheme.png</file>
+        <file>images/e2Scheme.png</file>
+        <file>images/e3e4Scheme.png</file>
+        <file>images/e5e6Scheme.png</file>
+        <file>images/e10Scheme.png</file>
+        <file>images/temperature_symbol.png</file>
+        <file>images/clock.png</file>
+        <file>main.cpp</file>
+        <file>images/Qt-logo-medium.png</file>
+        <file>images/rainbow.png</file>
+        <file>images/on_green.png</file>
+        <file>images/off.png</file>
+        <file>images/blind.png</file>
+        <file>images/blindCover.png</file>
+        <file>images/on_orange.png</file>
+        <file>images/stop_orange.png</file>
+        <file>E1Scheme.qml</file>
+        <file>E2Scheme.qml</file>
+        <file>E3E4Scheme.qml</file>
+        <file>E5E6Scheme.qml</file>
+        <file>E7E8Scheme.qml</file>
+        <file>E9RedLed.qml</file>
+        <file>E10RedLed.qml</file>
+        <file>E11RedLed.qml</file>
+        <file>E12RedLed.qml</file>
+        <file>E13Led.qml</file>
+        <file>E14Led.qml</file>
+      </qresource>
+    <qresource prefix="/examples"/>
+</RCC>
