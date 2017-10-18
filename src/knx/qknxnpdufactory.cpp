@@ -1,19 +1,27 @@
 /******************************************************************************
 **
 ** Copyright (C) 2017 The Qt Company Ltd.
-** Contact: http://www.qt.io/licensing/
+** Contact: https://www.qt.io/licensing/
 **
 ** This file is part of the QtKnx module.
 **
-** $QT_BEGIN_LICENSE:COMM$
-**
+** $QT_BEGIN_LICENSE:GPL$
 ** Commercial License Usage
 ** Licensees holding valid commercial Qt licenses may use this file in
 ** accordance with the commercial license agreement provided with the
 ** Software or, alternatively, in accordance with the terms contained in
 ** a written agreement between you and The Qt Company. For licensing terms
-** and conditions see http://www.qt.io/terms-conditions. For further
-** information use the contact form at http://www.qt.io/contact-us.
+** and conditions see https://www.qt.io/terms-conditions. For further
+** information use the contact form at https://www.qt.io/contact-us.
+**
+** GNU General Public License Usage
+** Alternatively, this file may be used under the terms of the GNU
+** General Public License version 3 or (at your option) any later version
+** approved by the KDE Free Qt Foundation. The licenses are as published by
+** the Free Software Foundation and appearing in the file LICENSE.GPL3
+** included in the packaging of this file. Please review the following
+** information to ensure the GNU General Public License requirements will
+** be met: https://www.gnu.org/licenses/gpl-3.0.html.
 **
 ** $QT_END_LICENSE$
 **
@@ -30,57 +38,6 @@ QT_BEGIN_NAMESPACE
     \brief The QKnxNpduFactory class is used to create a valid Network protocol
     data unit to be used in an \l QKnxTunnelFrame.
 */
-
-/*!
-    Returns the Transport control field of the given \a npdu.
-*/
-QKnxCemi::TransportLayerControlField QKnxNpduFactory::transportLayerControlFied(const QKnxNpdu &npdu)
-{
-    if (npdu.size() < 2)
-        return QKnxCemi::TransportLayerControlField::Error;
-    return QKnxCemi::TransportLayerControlField(npdu.byte(1) & 0xfc); // mask out the first two bits
-}
-
-/*!
-    Returns the Application layer control field of the given \a npdu.
-*/
-QKnxCemi::ApplicationLayerControlField
-    QKnxNpduFactory::applicationLayerControlField(const QKnxNpdu &npdu)
-{
-    if (npdu.size() < 3)
-        return QKnxCemi::ApplicationLayerControlField::Error;
-
-    std::bitset<8> apciHigh = npdu.byte(1) & 0x03; // mask out all bits except the first two
-    std::bitset<8> apciLow = npdu.byte(2) & 0xc0;  // mask out all bits except the last two
-
-    const auto fourBitsApci = [&apciHigh, &apciLow]() {
-        QVector<quint8> apciBytes = { { quint8(apciHigh.to_ulong()), quint8(apciLow.to_ulong()) } };
-        return QKnxCemi::ApplicationLayerControlField(QKnxUtils::QUint16::fromBytes(apciBytes));
-    };
-    const auto tenBitsApci = [apciHigh](quint8 octet7) {
-        QVector<quint8> apciBytes = { { quint8(apciHigh.to_ulong()), octet7 } };
-        return QKnxCemi::ApplicationLayerControlField(QKnxUtils::QUint16::fromBytes(apciBytes));
-    };
-
-    if ((apciHigh[0] == 0 && apciHigh[1] == 0) || (apciHigh[0] == 1 && apciHigh[1] == 1)) {
-        std::bitset<8> octet7 = npdu.byte(2);
-        if (octet7[7] == 1 && octet7[6] == 1)
-            return tenBitsApci(npdu.byte(2));
-        return fourBitsApci();
-    }
-
-    if (apciHigh[1] == 0 && apciHigh[0] == 1) {
-        // connection oriented, it's one of the A_ADC service
-        if (quint8(transportLayerControlFied(npdu)) > 0)
-            return fourBitsApci();
-        return tenBitsApci(npdu.byte(2));
-    }
-
-    // it's one of the A_Memory Service (only the 2 last bits of octet 6 are needed for the apci)
-    if (apciLow[7] == 0 || apciLow[6] == 0)
-        return fourBitsApci();
-    return tenBitsApci(npdu.byte(2));
-}
 
 /*!
     \table
@@ -116,8 +73,8 @@ QKnxCemi::ApplicationLayerControlField
 */
 QKnxNpdu QKnxNpduFactory::createGroupValueReadNpdu()
 {
-    return createNpduOctets6And7(QKnxCemi::TransportLayerControlField::DataGroup,
-        QKnxCemi::ApplicationLayerControlField::GroupValueRead);
+    return setupNpdu(QKnxNpdu::TransportLayerControlField::DataGroup,
+        QKnxNpdu::ApplicationLayerControlField::GroupValueRead);
 }
 
 /*!
@@ -126,27 +83,27 @@ QKnxNpdu QKnxNpduFactory::createGroupValueReadNpdu()
 QKnxNpdu QKnxNpduFactory::createGroupValueWriteNpdu(const QByteArray &data)
 {
     if (data.size() < 2 && quint8(data[0]) < 64) {
-        return createNpduOctets6And7(QKnxCemi::TransportLayerControlField::DataGroup,
-            QKnxCemi::ApplicationLayerControlField::GroupValueWrite, quint8(data[0]));
+        return setupNpdu(QKnxNpdu::TransportLayerControlField::DataGroup,
+            QKnxNpdu::ApplicationLayerControlField::GroupValueWrite, { 1, data[0] });
     }
 
-    auto npdu = createNpduOctets6And7(QKnxCemi::TransportLayerControlField::DataGroup,
-        QKnxCemi::ApplicationLayerControlField::GroupValueWrite);
-    npdu.appendAndUpdate(data);
+    auto npdu = setupNpdu(QKnxNpdu::TransportLayerControlField::DataGroup,
+        QKnxNpdu::ApplicationLayerControlField::GroupValueWrite);
+    npdu.setData(data);
     return npdu;
 }
 
 QKnxNpdu QKnxNpduFactory::createGroupPropValueReadNpdu(QKnxInterfaceObjectType objectType,
     quint8 objectInstance, QKnxInterfaceObjectProperty property)
 {
-    return createGroupPropValueNpdu(QKnxCemi::ApplicationLayerControlField::GroupPropValueRead,
+    return createGroupPropValueNpdu(QKnxNpdu::ApplicationLayerControlField::GroupPropValueRead,
         objectType, objectInstance, property);
 }
 
 QKnxNpdu QKnxNpduFactory::createGroupPropValueWriteNpdu(QKnxInterfaceObjectType objectType,
     quint8 objectInstance, QKnxInterfaceObjectProperty property, const QByteArray &data)
 {
-    return createGroupPropValueNpdu(QKnxCemi::ApplicationLayerControlField::GroupPropValueWrite,
+    return createGroupPropValueNpdu(QKnxNpdu::ApplicationLayerControlField::GroupPropValueWrite,
         objectType, objectInstance, property, data);
 }
 
@@ -206,8 +163,8 @@ QKnxNpdu QKnxNpduFactory::createGroupPropValueWriteNpdu(QKnxInterfaceObjectType 
 */
 QKnxNpdu QKnxNpduFactory::createIndividualAddressReadNpdu()
 {
-    return createNpduOctets6And7(QKnxCemi::TransportLayerControlField::DataBroadcast,
-        QKnxCemi::ApplicationLayerControlField::IndividualAddressRead);
+    return setupNpdu(QKnxNpdu::TransportLayerControlField::DataBroadcast,
+        QKnxNpdu::ApplicationLayerControlField::IndividualAddressRead);
 }
 
 /*!
@@ -220,10 +177,8 @@ QKnxNpdu QKnxNpduFactory::createIndividualAddressWriteNpdu(const QKnxAddress &ne
     if (newAddress.type() != QKnxAddress::Type::Individual)
         return {};
 
-    auto npdu = createNpduOctets6And7(QKnxCemi::TransportLayerControlField::DataBroadcast,
-        QKnxCemi::ApplicationLayerControlField::IndividualAddressWrite);
-    npdu.appendAndUpdate(newAddress.bytes());
-    return npdu;
+    return setupNpdu(QKnxNpdu::TransportLayerControlField::DataBroadcast,
+        QKnxNpdu::ApplicationLayerControlField::IndividualAddressWrite, newAddress.bytes());
 }
 
 /*!
@@ -236,10 +191,8 @@ QKnxNpdu QKnxNpduFactory::createIndividualAddressSerialNumberReadNpdu(const QByt
     if (serialNumber.size() != 6)
         return {};
 
-    auto npdu = createNpduOctets6And7(QKnxCemi::TransportLayerControlField::DataBroadcast,
-        QKnxCemi::ApplicationLayerControlField::IndividualAddressSerialNumberRead);
-    npdu.appendAndUpdate(serialNumber);
-    return npdu;
+    return setupNpdu(QKnxNpdu::TransportLayerControlField::DataBroadcast,
+        QKnxNpdu::ApplicationLayerControlField::IndividualAddressSerialNumberRead, serialNumber);
 }
 
 /*!
@@ -254,10 +207,9 @@ QKnxNpdu QKnxNpduFactory::createIndividualAddressSerialNumberWriteNpdu(const QBy
     if ((serialNumber.size() != 6) || (newAddress.type() != QKnxAddress::Type::Individual))
         return {};
 
-    auto npdu = createNpduOctets6And7(QKnxCemi::TransportLayerControlField::DataBroadcast,
-        QKnxCemi::ApplicationLayerControlField::IndividualAddressSerialNumberWrite);
-    npdu.appendAndUpdate(serialNumber + newAddress.bytes());
-    return npdu;
+    return setupNpdu(QKnxNpdu::TransportLayerControlField::DataBroadcast,
+        QKnxNpdu::ApplicationLayerControlField::IndividualAddressSerialNumberWrite, serialNumber
+        + newAddress.bytes());
 }
 
 /*!
@@ -265,8 +217,8 @@ QKnxNpdu QKnxNpduFactory::createIndividualAddressSerialNumberWriteNpdu(const QBy
 */
 QKnxNpdu QKnxNpduFactory::createDomainAddressReadNpdu()
 {
-    return createNpduOctets6And7(QKnxCemi::TransportLayerControlField::DataBroadcast,
-        QKnxCemi::ApplicationLayerControlField::DomainAddressRead);
+    return setupNpdu(QKnxNpdu::TransportLayerControlField::DataBroadcast,
+        QKnxNpdu::ApplicationLayerControlField::DomainAddressRead);
 }
 
 /*!
@@ -275,10 +227,8 @@ QKnxNpdu QKnxNpduFactory::createDomainAddressReadNpdu()
 */
 QKnxNpdu QKnxNpduFactory::createDomainAddressWriteNpdu(const QKnxAddress &domainAddress)
 {
-    auto npdu = createNpduOctets6And7(QKnxCemi::TransportLayerControlField::DataBroadcast,
-        QKnxCemi::ApplicationLayerControlField::DomainAddressWrite);
-    npdu.appendAndUpdate(domainAddress.bytes());
-    return npdu;
+    return setupNpdu(QKnxNpdu::TransportLayerControlField::DataBroadcast,
+        QKnxNpdu::ApplicationLayerControlField::DomainAddressWrite, domainAddress.bytes());
 }
 
 /*
@@ -286,7 +236,7 @@ QKnxNpdu QKnxNpduFactory::createDomainAddressSelectiveReadNpdu()
 {
     // TODO: this one is more complicated than that
     auto npdu = createNpduOctets6And7(QKnxCemi::TransportControlField::DataBroadcast,
-        QKnxCemi::ApplicationLayerControlField::DomainAddressRead);
+        QKnxNpdu::ApplicationLayerControlField::DomainAddressRead);
     // append the ASDU (?)
     return npdu;
 }
@@ -302,10 +252,8 @@ QKnxNpdu QKnxNpduFactory::createDomainAddressSerialNumberReadNpdu(const QByteArr
     if (serialNumber.size() != 6)
         return {};
 
-    auto npdu = createNpduOctets6And7(QKnxCemi::TransportLayerControlField::DataBroadcast,
-        QKnxCemi::ApplicationLayerControlField::DomainAddressSerialNumberRead);
-    npdu.appendAndUpdate(serialNumber);
-    return npdu;
+    return setupNpdu(QKnxNpdu::TransportLayerControlField::DataBroadcast,
+        QKnxNpdu::ApplicationLayerControlField::DomainAddressSerialNumberRead, serialNumber);
 }
 
 /*!
@@ -320,10 +268,9 @@ QKnxNpdu QKnxNpduFactory::createDomainAddressSerialNumberWriteNpdu(const QByteAr
     if (serialNumber.size() != 6)
         return {};
 
-    auto npdu = createNpduOctets6And7(QKnxCemi::TransportLayerControlField::DataBroadcast,
-        QKnxCemi::ApplicationLayerControlField::DomainAddressSerialNumberWrite);
-    npdu.appendAndUpdate(serialNumber + domainAddress.bytes());
-    return npdu;
+    return setupNpdu(QKnxNpdu::TransportLayerControlField::DataBroadcast,
+        QKnxNpdu::ApplicationLayerControlField::DomainAddressSerialNumberWrite, serialNumber
+        + domainAddress.bytes());
 }
 
 QKnxNpdu QKnxNpduFactory::createNetworkParameterWriteNpdu(Network type,
@@ -331,8 +278,8 @@ QKnxNpdu QKnxNpduFactory::createNetworkParameterWriteNpdu(Network type,
     const QByteArray &value)
 {
     auto field = (type == Network::System
-        ? QKnxCemi::ApplicationLayerControlField::SystemNetworkParameterWrite
-        : QKnxCemi::ApplicationLayerControlField::NetworkParameterWrite);
+        ? QKnxNpdu::ApplicationLayerControlField::SystemNetworkParameterWrite
+        : QKnxNpdu::ApplicationLayerControlField::NetworkParameterWrite);
     return createNetworkParameterNpdu(field, objectType, property, value, type);
 }
 
@@ -340,7 +287,7 @@ QKnxNpdu QKnxNpduFactory::createPropertyValueReadNpdu(quint8 objectIndex,
     QKnxInterfaceObjectProperty property, quint8 nbElement, quint16 startIndex, quint8 seqNumber)
 {
     return createPropertyValueReadWriteNpdu(objectIndex, property, nbElement, startIndex,
-        seqNumber, QKnxCemi::ApplicationLayerControlField::PropertyValueRead);
+        seqNumber, QKnxNpdu::ApplicationLayerControlField::PropertyValueRead);
 }
 
 QKnxNpdu QKnxNpduFactory::createPropertyValueWriteNpdu(quint8 objectIndex,
@@ -348,7 +295,7 @@ QKnxNpdu QKnxNpduFactory::createPropertyValueWriteNpdu(quint8 objectIndex,
     const QByteArray &data, quint8 seqNumber)
 {
     return createPropertyValueReadWriteNpdu(objectIndex, property, nbElement, startIndex,
-        seqNumber, QKnxCemi::ApplicationLayerControlField::PropertyValueWrite, data);
+        seqNumber, QKnxNpdu::ApplicationLayerControlField::PropertyValueWrite, data);
 }
 
 QKnxNpdu QKnxNpduFactory::createPropertyDescriptionReadNpdu(quint8 objectIndex,
@@ -357,15 +304,16 @@ QKnxNpdu QKnxNpduFactory::createPropertyDescriptionReadNpdu(quint8 objectIndex,
     // TODO: Check if the property belongs to an interface object.
 
     auto tpci = buildTransportControlField(seqNumber);
-    if (tpci == QKnxCemi::TransportLayerControlField::Error)
+    if (tpci == QKnxNpdu::TransportLayerControlField::Invalid)
         return {};
 
-    auto npdu = createNpduOctets6And7(tpci,
-        QKnxCemi::ApplicationLayerControlField::PropertyDescriptionRead);
-    npdu.setByte(npdu.size(), objectIndex);
-    npdu.setByte(npdu.size(), quint8(property));
-    npdu.setByte(npdu.size(), propertyIndex);
-    npdu.setByte(0, quint8(npdu.size() - 2));
+    auto npdu = setupNpdu(tpci,
+        QKnxNpdu::ApplicationLayerControlField::PropertyDescriptionRead);
+    QByteArray data(3, Qt::Uninitialized);
+    data[0] = quint8(objectIndex);
+    data[1] = quint8(property);
+    data[2] = quint8(propertyIndex);
+    npdu.setData(data);
     return npdu;
 }
 
@@ -373,7 +321,7 @@ QKnxNpdu QKnxNpduFactory::createFunctionPropertyStateReadNpdu(quint8 objectIndex
     QKnxInterfaceObjectProperty property, const QByteArray &data, quint8 seqNumber)
 {
     return createFunctionPropertyNpdu(
-        QKnxCemi::ApplicationLayerControlField::FunctionPropertyStateRead,
+        QKnxNpdu::ApplicationLayerControlField::FunctionPropertyStateRead,
         objectIndex, property, data, seqNumber);
 }
 
@@ -381,7 +329,7 @@ QKnxNpdu QKnxNpduFactory::createFunctionPropertyCommandNpdu(quint8 objectIndex,
     QKnxInterfaceObjectProperty property, const QByteArray &data, quint8 seqNumber)
 {
     return createFunctionPropertyNpdu(
-        QKnxCemi::ApplicationLayerControlField::FunctionPropertyCommand, objectIndex,
+        QKnxNpdu::ApplicationLayerControlField::FunctionPropertyCommand, objectIndex,
         property, data, seqNumber);
 }
 
@@ -389,13 +337,14 @@ QKnxNpdu QKnxNpduFactory::createLinkReadNpdu(quint8 groupObjectNumber, quint8 st
     quint8 seqNumber)
 {
     auto tpci = buildTransportControlField(seqNumber);
-    if (tpci == QKnxCemi::TransportLayerControlField::Error)
+    if (tpci == QKnxNpdu::TransportLayerControlField::Invalid)
         return {};
 
-    auto npdu = createNpduOctets6And7(tpci, QKnxCemi::ApplicationLayerControlField::LinkRead);
-    npdu.setByte(npdu.size(), groupObjectNumber);
-    npdu.setByte(npdu.size(), startIndex);
-    npdu.setByte(0, quint8(npdu.size() - 2));
+    auto npdu = setupNpdu(tpci, QKnxNpdu::ApplicationLayerControlField::LinkRead);
+    QByteArray data(2, Qt::Uninitialized);
+    data[0] = quint8(groupObjectNumber);
+    data[1] = quint8(startIndex);
+    npdu.setData(data);
     return npdu;
 }
 
@@ -406,13 +355,14 @@ QKnxNpdu QKnxNpduFactory::createLinkWriteNpdu(quint8 groupObjectNumber, quint8 f
         return {};
 
     auto tpci = buildTransportControlField(seqNumber);
-    if (tpci == QKnxCemi::TransportLayerControlField::Error)
+    if (tpci == QKnxNpdu::TransportLayerControlField::Invalid)
         return {};
 
-    auto npdu = createNpduOctets6And7(tpci, QKnxCemi::ApplicationLayerControlField::LinkWrite);
-    npdu.setByte(npdu.size(), groupObjectNumber);
-    npdu.setByte(npdu.size(), flags);
-    npdu.appendAndUpdate(groupAddress.bytes());
+    auto npdu = setupNpdu(tpci, QKnxNpdu::ApplicationLayerControlField::LinkWrite);
+    QByteArray data(2, Qt::Uninitialized);
+    data[0] = quint8(groupObjectNumber);
+    data[1] = quint8(flags);
+    npdu.setData(QByteArray(data + groupAddress.bytes()));
     return npdu;
 }
 
@@ -422,13 +372,13 @@ QKnxNpdu QKnxNpduFactory::createDeviceDescriptorReadNpdu(quint8 descriptorType, 
         return {};
 
     auto tpci = buildTransportControlField(seqNumber);
-    if (tpci == QKnxCemi::TransportLayerControlField::Error)
+    if (tpci == QKnxNpdu::TransportLayerControlField::Invalid)
         return {};
 
     // Device Descriptor can be of type 0 or 2 (cf Glossary)
     // but if not supported just receive an answer with error message
-    return createNpduOctets6And7(tpci,
-        QKnxCemi::ApplicationLayerControlField::DeviceDescriptorRead, descriptorType);
+    return setupNpdu(tpci,
+        QKnxNpdu::ApplicationLayerControlField::DeviceDescriptorRead, { 1, char(descriptorType) });
 }
 
 QKnxNpdu QKnxNpduFactory::createNetworkParameterReadNpdu(Network type,
@@ -436,8 +386,8 @@ QKnxNpdu QKnxNpduFactory::createNetworkParameterReadNpdu(Network type,
     const QByteArray &testInfo)
 {
     auto field = (type == Network::System
-        ? QKnxCemi::ApplicationLayerControlField::SystemNetworkParameterRead
-        : QKnxCemi::ApplicationLayerControlField::NetworkParameterRead);
+        ? QKnxNpdu::ApplicationLayerControlField::SystemNetworkParameterRead
+        : QKnxNpdu::ApplicationLayerControlField::NetworkParameterRead);
     return createNetworkParameterNpdu(field, objectType, property, testInfo, type);
 }
 
@@ -594,11 +544,11 @@ QKnxNpdu QKnxNpduFactory::createNetworkParameterReadNpdu(Network type,
 QKnxNpdu QKnxNpduFactory::createUserManufacturerInfoReadNpdu(quint8 seqNumber)
 {
     auto tpci = buildTransportControlField(seqNumber);
-    if (tpci == QKnxCemi::TransportLayerControlField::Error)
+    if (tpci == QKnxNpdu::TransportLayerControlField::Invalid)
         return {};
 
-    return createNpduOctets6And7(tpci,
-        QKnxCemi::ApplicationLayerControlField::UserManufacturerInfoRead);
+    return setupNpdu(tpci,
+        QKnxNpdu::ApplicationLayerControlField::UserManufacturerInfoRead);
 }
 
 /*!
@@ -609,14 +559,11 @@ QKnxNpdu QKnxNpduFactory::createMemoryReadNpdu(quint8 number, const QKnxAddress 
     quint8 seqNumber)
 {
     auto tpci = buildTransportControlField(seqNumber);
-    if (tpci == QKnxCemi::TransportLayerControlField::Error)
+    if (tpci == QKnxNpdu::TransportLayerControlField::Invalid)
         return {};
 
-    auto npdu = createNpduOctets6And7(tpci, QKnxCemi::ApplicationLayerControlField::MemoryRead,
-        number);
-    if (npdu.size() > 0)
-        npdu.appendAndUpdate(address.bytes());
-    return npdu;
+    return setupNpdu(tpci, QKnxNpdu::ApplicationLayerControlField::MemoryRead,
+        QByteArray(1, char(number)) + address.bytes());
 }
 
 /*!
@@ -627,16 +574,11 @@ QKnxNpdu QKnxNpduFactory::createMemoryWriteNpdu(quint8 number, const QKnxAddress
     const QByteArray &data, quint8 seqNumber)
 {
     auto tpci = buildTransportControlField(seqNumber);
-    if (tpci == QKnxCemi::TransportLayerControlField::Error)
+    if (tpci == QKnxNpdu::TransportLayerControlField::Invalid)
         return {};
 
-    auto npdu = createNpduOctets6And7(tpci, QKnxCemi::ApplicationLayerControlField::MemoryWrite,
-        number);
-    if (npdu.size() > 0) {
-        npdu.appendAndUpdate(address.bytes());
-        npdu.appendAndUpdate(data);
-    }
-    return npdu;
+    return setupNpdu(tpci, QKnxNpdu::ApplicationLayerControlField::MemoryWrite,
+        QByteArray(1, char(number)) + address.bytes() + data);
 }
 
 /*!
@@ -668,17 +610,14 @@ QKnxNpdu QKnxNpduFactory::createAdcReadNpdu(quint8 seqNumber, quint8 channelNumb
     quint8 readCount)
 {
     auto tpci = buildTransportControlField(seqNumber);
-    if (tpci == QKnxCemi::TransportLayerControlField::Error)
+    if (tpci == QKnxNpdu::TransportLayerControlField::Invalid)
         return {};
 
     // Device Descriptor can be of type 0 or 2 (cf Glossary)
     // but if not supported just receive an answer with error message
-    auto npdu = createNpduOctets6And7(tpci, QKnxCemi::ApplicationLayerControlField::AdcRead,
-        channelNumber);
-    if (npdu.size() > 0) {
-        npdu.setByte(npdu.size(), readCount);
-        npdu.setByte(0, quint8(npdu.size() - 2));
-    }
+    auto npdu = setupNpdu(tpci, QKnxNpdu::ApplicationLayerControlField::AdcRead);
+    if (npdu.isValid())
+        npdu.setData(QByteArray(1, char(channelNumber)) + QByteArray(1, char(readCount)));
     return npdu;
 }
 
@@ -696,19 +635,19 @@ QByteArray QKnxNpduFactory::parameterType(QKnxInterfaceObjectType objectType,
 /*!
     Returns the Transport control field with the sequence number \a seqNumber set.
 */
-QKnxCemi::TransportLayerControlField QKnxNpduFactory::buildTransportControlField(quint8 seqNumber)
+QKnxNpdu::TransportLayerControlField QKnxNpduFactory::buildTransportControlField(quint8 seqNumber)
 {
     if (seqNumber > 15)
-        return QKnxCemi::TransportLayerControlField::Error;
+        return QKnxNpdu::TransportLayerControlField::Invalid;
 
     if (seqNumber == 0)
-        return QKnxCemi::TransportLayerControlField::DataIndividual;
+        return QKnxNpdu::TransportLayerControlField::DataIndividual;
 
-    auto connected = quint8(QKnxCemi::TransportLayerControlField::DataConnected);
-    return QKnxCemi::TransportLayerControlField(connected | (seqNumber << 2));
+    auto connected = quint8(QKnxNpdu::TransportLayerControlField::DataConnected);
+    return QKnxNpdu::TransportLayerControlField(connected | (seqNumber << 2));
 }
 
-QKnxNpdu QKnxNpduFactory::createGroupPropValueNpdu(QKnxCemi::ApplicationLayerControlField apci,
+QKnxNpdu QKnxNpduFactory::createGroupPropValueNpdu(QKnxNpdu::ApplicationLayerControlField apci,
     QKnxInterfaceObjectType objectType, quint8 objectInstance, QKnxInterfaceObjectProperty property,
     const QByteArray &data)
 {
@@ -721,14 +660,12 @@ QKnxNpdu QKnxNpduFactory::createGroupPropValueNpdu(QKnxCemi::ApplicationLayerCon
     // parameter type is build (and checked first) then the Object Instance is inserted
     bytes.insert(2, objectInstance);
     // if objectInstance is 0, it means all instance (10/1 Logical Tag Extended p81)
-    auto npdu = createNpduOctets6And7(QKnxCemi::TransportLayerControlField::DataTagGroup, apci);
-    npdu.appendAndUpdate(bytes);
-    if (data.size() > 0)
-        npdu.appendAndUpdate(data);
+    auto npdu = setupNpdu(QKnxNpdu::TransportLayerControlField::DataTagGroup, apci,
+        bytes + data);
     return npdu;
 }
 
-QKnxNpdu QKnxNpduFactory::createNetworkParameterNpdu(QKnxCemi::ApplicationLayerControlField apci,
+QKnxNpdu QKnxNpduFactory::createNetworkParameterNpdu(QKnxNpdu::ApplicationLayerControlField apci,
     QKnxInterfaceObjectType objectType, QKnxInterfaceObjectProperty property,
     const QByteArray &testInfoValue, Network type)
 {
@@ -737,28 +674,30 @@ QKnxNpdu QKnxNpduFactory::createNetworkParameterNpdu(QKnxCemi::ApplicationLayerC
     if (bytes.size() == 0)
         return {};
 
-    auto npdu = createNpduOctets6And7((type == Network::System
-        ? QKnxCemi::TransportLayerControlField::DataBroadcast
-        : QKnxCemi::TransportLayerControlField::DataIndividual), apci);
+    auto npdu = setupNpdu((type == Network::System
+        ? QKnxNpdu::TransportLayerControlField::DataBroadcast
+        : QKnxNpdu::TransportLayerControlField::DataIndividual), apci);
+    if (!npdu.isValid())
+        return npdu;
 
     //--- part PID part test_info reserved: Setting the whole octet 11 to zero---
     if (type == Network::System)
         bytes.append(QByteArray::fromHex("00"));
     bytes.append(testInfoValue);
-    npdu.appendAndUpdate(bytes);
+    npdu.setData(bytes);
     return npdu;
 }
 
 QKnxNpdu QKnxNpduFactory::createPropertyValueReadWriteNpdu(quint8 objectIndex,
     QKnxInterfaceObjectProperty property, quint8 nbElement, quint16 startIndex,
-    quint8 seqNumber, QKnxCemi::ApplicationLayerControlField apci, const QByteArray &data)
+    quint8 seqNumber, QKnxNpdu::ApplicationLayerControlField apci, const QByteArray &data)
 {
     // This is for Interface Object (reduced one: 3/4/1 p16)
     // TODO: Check if the property belongs to an interface object.
 
-    if (apci == QKnxCemi::ApplicationLayerControlField::PropertyValueRead && data.size() != 0)
+    if (apci == QKnxNpdu::ApplicationLayerControlField::PropertyValueRead && data.size() != 0)
         return {};
-    if (apci == QKnxCemi::ApplicationLayerControlField::PropertyValueWrite && data.size() == 0)
+    if (apci == QKnxNpdu::ApplicationLayerControlField::PropertyValueWrite && data.size() == 0)
         return {};
 
     // objectIndex is relative to the device. Different from the ObjectType!!!!
@@ -768,35 +707,42 @@ QKnxNpdu QKnxNpduFactory::createPropertyValueReadWriteNpdu(quint8 objectIndex,
     // ApplicationLayer p52. if it does not fit the response is empty
 
     auto tpci = buildTransportControlField(seqNumber);
-    if (tpci == QKnxCemi::TransportLayerControlField::Error)
+    if (tpci == QKnxNpdu::TransportLayerControlField::Invalid)
         return {};
 
-    auto npdu = createNpduOctets6And7(tpci, apci);
-    npdu.setByte(npdu.size(), objectIndex);
-    npdu.setByte(npdu.size(), quint8(property));
+    auto npdu = setupNpdu(tpci, apci);
+    if (!npdu.isValid())
+        return npdu;
 
     auto bytes = QKnxUtils::QUint16::bytes(quint16(startIndex));
+    bytes.append(char(objectIndex));
+    bytes.append(char(property));
+
     bytes[0] = quint8(quint8(bytes[0]) | (nbElement << 4));
 
-    npdu.appendAndUpdate(bytes);
-    if (apci == QKnxCemi::ApplicationLayerControlField::PropertyValueWrite)
-        npdu.appendAndUpdate(data);
+    if (apci == QKnxNpdu::ApplicationLayerControlField::PropertyValueWrite)
+        bytes += data;
+    npdu.setData(bytes);
     return npdu;
 }
 
-QKnxNpdu QKnxNpduFactory::createFunctionPropertyNpdu(QKnxCemi::ApplicationLayerControlField apci,
+QKnxNpdu QKnxNpduFactory::createFunctionPropertyNpdu(QKnxNpdu::ApplicationLayerControlField apci,
     quint8 objectIndex, QKnxInterfaceObjectProperty property, const QByteArray &data,
     quint8 seqNumber)
 {
     // TODO: Figure out what is data
     auto tpci = buildTransportControlField(seqNumber);
-    if (tpci == QKnxCemi::TransportLayerControlField::Error)
+    if (tpci == QKnxNpdu::TransportLayerControlField::Invalid)
         return {};
 
-    auto npdu = createNpduOctets6And7(tpci, apci);
-    npdu.setByte(npdu.size(), objectIndex);
-    npdu.setByte(npdu.size(), quint8(property));
-    npdu.appendAndUpdate(data);
+    auto npdu = setupNpdu(tpci, apci);
+    if (!npdu.isValid())
+        return npdu;
+
+    QByteArray value = data;
+    value.prepend(char(property));
+    value.prepend(char(objectIndex));
+    npdu.setData(value);
     return npdu;
 }
 
@@ -808,19 +754,13 @@ QKnxNpdu QKnxNpduFactory::createFunctionPropertyNpdu(QKnxCemi::ApplicationLayerC
     Application layer control field. The third byte contains the low part of
     the Application layer control field together with, in some cases, data.
 */
-QKnxNpdu QKnxNpduFactory::createNpduOctets6And7(QKnxCemi::TransportLayerControlField tpci,
-    QKnxCemi::ApplicationLayerControlField apci, quint8 data)
+QKnxNpdu QKnxNpduFactory::setupNpdu(QKnxNpdu::TransportLayerControlField tpci,
+    QKnxNpdu::ApplicationLayerControlField apci, const QByteArray &data)
 {
-    if (data >= 64) // data has to be less then 64
-        return {};
-
-    auto bytes = QKnxUtils::QUint16::bytes<QVector<quint8>>(quint16(apci));
-
-    QKnxNpdu npdu;
-    npdu.setByte(1, bytes[0] | quint8(tpci)); // set TPCI
-    npdu.setByte(2, (data > 0 ? bytes[1] | data : bytes[1]));  // set data in APCI-DATA
-    npdu.setByte(0, quint8(npdu.size() - 2)); // Length (starts counting after TPCI-APCI octet)
-    return npdu;
+    QKnxNpdu npdu(tpci, apci);
+    if (npdu.setData(data))
+        return npdu;
+    return {};
 }
 
 /*!
@@ -835,17 +775,20 @@ QKnxNpdu QKnxNpduFactory::createUserMemoryReadWriteNpdu(quint8 addressExtention,
         return {};
 
     auto tpci = buildTransportControlField(seqNumber);
-    if (tpci == QKnxCemi::TransportLayerControlField::Error)
+    if (tpci == QKnxNpdu::TransportLayerControlField::Invalid)
         return {};
 
-    auto apci = ((data.size() == 0) ? QKnxCemi::ApplicationLayerControlField::UserMemoryRead
-        : QKnxCemi::ApplicationLayerControlField::UserMemoryWrite);
+    auto apci = ((data.size() == 0) ? QKnxNpdu::ApplicationLayerControlField::UserMemoryRead
+        : QKnxNpdu::ApplicationLayerControlField::UserMemoryWrite);
 
-    auto npdu = createNpduOctets6And7(tpci, apci);
-    npdu.setByte(npdu.size(), number | (addressExtention << 4));
-    npdu.appendAndUpdate(address.bytes());
-    if (data.size() > 0)
-        npdu.appendAndUpdate(data);
+    auto npdu = setupNpdu(tpci, apci);
+    if (!npdu.isValid())
+        return npdu;
+
+    QByteArray value = data;
+    value.prepend(address.bytes());
+    value.prepend(char(number | (addressExtention << 4)));
+    npdu.setData(value);
     return npdu;
 }
 
