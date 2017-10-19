@@ -54,13 +54,13 @@ private slots:
         frame.setExtendedControlField(QKnxExtendedControlField(2));
         frame.addAdditionalInfo(addInfos.first());
         frame.setSourceAddress(QKnxAddress::Individual::Unregistered);
-        frame.setDestionationAddress(QKnxAddress::Group::Broadcast);
+        frame.setDestinationAddress(QKnxAddress::Group::Broadcast);
 
         QCOMPARE(frame.controlField().bytes(), QKnxControlField(1).bytes());
         QCOMPARE(frame.extendedControlField().bytes(), QKnxExtendedControlField(2).bytes());
         QCOMPARE(frame.additionalInfos().first().bytes(), QByteArray::fromHex("07021020"));
         QCOMPARE(frame.sourceAddress().bytes(), QKnxAddress::Individual::Unregistered.bytes());
-        QCOMPARE(frame.destionationAddress().bytes(), QKnxAddress::Group::Broadcast.bytes());
+        QCOMPARE(frame.destinationAddress().bytes(), QKnxAddress::Group::Broadcast.bytes());
 
         frame.addAdditionalInfo(addInfos.last());
         frame.addAdditionalInfo(addInfos.value(1));
@@ -69,7 +69,7 @@ private slots:
         for (int i = 0; i < infos.size(); ++i)
             QCOMPARE(infos[i].bytes(), addInfos[i].bytes());
 
-        QCOMPARE(frame.destionationAddress().bytes(), QKnxAddress::Group::Broadcast.bytes());
+        QCOMPARE(frame.destinationAddress().bytes(), QKnxAddress::Group::Broadcast.bytes());
 
         frame.removeAdditionalInfo(QKnxAdditionalInfo::Type::RfFastAckInformation);
         infos = frame.additionalInfos();
@@ -77,7 +77,7 @@ private slots:
         QCOMPARE(frame.additionalInfos().first().bytes(), QByteArray::fromHex("07021020"));
         QCOMPARE(frame.additionalInfos().last().bytes(), QByteArray::fromHex("fe03708090"));
 
-        QCOMPARE(frame.destionationAddress().bytes(), QKnxAddress::Group::Broadcast.bytes());
+        QCOMPARE(frame.destinationAddress().bytes(), QKnxAddress::Group::Broadcast.bytes());
     }
 
     void testDebugStream()

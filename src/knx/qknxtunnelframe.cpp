@@ -170,13 +170,13 @@ void QKnxTunnelFrame::setSourceAddress(const QKnxAddress &source)
     setServiceInformation(payload);
 }
 
-const QKnxAddress QKnxTunnelFrame::destionationAddress() const
+const QKnxAddress QKnxTunnelFrame::destinationAddress() const
 {
     return { extendedControlField().destinationAddressType(),
         serviceInformationRef(additionalInfosSize() + 1).bytes(4, 2) };
 }
 
-void QKnxTunnelFrame::setDestionationAddress(const QKnxAddress &destination)
+void QKnxTunnelFrame::setDestinationAddress(const QKnxAddress &destination)
 {
     auto payload = serviceInformation();
     payload.replaceBytes(additionalInfosSize() + 5, destination.bytes());
