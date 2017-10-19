@@ -617,6 +617,11 @@ void tst_QKnxDatapointType::dpt15_EntranceAccess()
     QCOMPARE(dptAccessData.mainType(), 15);
     QCOMPARE(dptAccessData.subType(), 0x00);
     QCOMPARE(dptAccessData.isValid(), true);
+    QCOMPARE(dptAccessData.isSet(QKnxEntranceAccess::Error), false);
+    QCOMPARE(dptAccessData.isSet(QKnxEntranceAccess::Encrypted), false);
+    QCOMPARE(dptAccessData.isSet(QKnxEntranceAccess::PermissionAccepted), false);
+    QCOMPARE(dptAccessData.isSet(QKnxEntranceAccess::ReadRightToLeft), false);
+    QCOMPARE(dptAccessData.idCode(), qint32(0));
 
     dptAccessData.setValue(90,QKnxEntranceAccess::Attributes().setFlag(QKnxEntranceAccess::Error),0);
     QCOMPARE(dptAccessData.isValid(), true);
