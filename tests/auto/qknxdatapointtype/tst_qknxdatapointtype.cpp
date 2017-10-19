@@ -181,11 +181,19 @@ void tst_QKnxDatapointType::dpt3_3BitControlled()
     QCOMPARE(dpt.mainType(), 0x03);
     QCOMPARE(dpt.subType(), 0x00);
     QCOMPARE(dpt.isValid(), true);
+    QCOMPARE(dpt.controlBit(), false);
+    QCOMPARE(dpt.numberOfIntervals(), QKnx3BitControlled::NumberOfIntervals::Break);
     dpt.setControlBit(false);
     dpt.setNumberOfIntervals(QKnx3BitControlled::NumberOfIntervals::Sixteen);
     QCOMPARE(dpt.controlBit(), false);
     QCOMPARE(dpt.numberOfIntervals(), QKnx3BitControlled::NumberOfIntervals::Sixteen);
 
+    QKnxControlDimming dptDim;
+    QCOMPARE(dptDim.mainType(), 0x03);
+    QCOMPARE(dptDim.subType(), 0x07);
+    QCOMPARE(dptDim.isValid(), true);
+    QCOMPARE(dptDim.controlBit(), false);
+    QCOMPARE(dptDim.numberOfIntervals(), QKnx3BitControlled::NumberOfIntervals::Break);
     QKnxControlDimming dptDimming(QKnxControlDimming::Decrease,
         QKnxControlDimming::NumberOfIntervals::ThirtyTwo);
     QCOMPARE(dptDimming.mainType(), 0x03);
@@ -195,8 +203,15 @@ void tst_QKnxDatapointType::dpt3_3BitControlled()
     QCOMPARE(dptDimming.numberOfIntervals(), QKnx3BitControlled::NumberOfIntervals::ThirtyTwo);
     dptDimming.setControl(QKnxControlDimming::Increase);
     QCOMPARE(dptDimming.control(), QKnxControlDimming::Increase);
+    QCOMPARE(dptDimming.isValid(), true);
     QCOMPARE(dptDimming.numberOfIntervals(), QKnx3BitControlled::NumberOfIntervals::ThirtyTwo);
 
+    QKnxControlBlinds dptBl;
+    QCOMPARE(dptBl.mainType(), 0x03);
+    QCOMPARE(dptBl.subType(), 0x08);
+    QCOMPARE(dptBl.isValid(), true);
+    QCOMPARE(dptBl.controlBit(), false);
+    QCOMPARE(dptBl.numberOfIntervals(), QKnx3BitControlled::NumberOfIntervals::Break);
     QKnxControlBlinds dptBlinds(QKnxControlBlinds::Up,
         QKnxControlBlinds::NumberOfIntervals::ThirtyTwo);
     QCOMPARE(dptBlinds.mainType(), 0x03);
@@ -204,8 +219,9 @@ void tst_QKnxDatapointType::dpt3_3BitControlled()
     QCOMPARE(dptBlinds.isValid(), true);
     QCOMPARE(dptBlinds.controlBit(), false);
     QCOMPARE(dptBlinds.numberOfIntervals(), QKnx3BitControlled::NumberOfIntervals::ThirtyTwo);
-    dptBlinds.setControl(QKnxControlBlinds::Down);
-    QCOMPARE(dptBlinds.control(), QKnxControlBlinds::Down);
+    dptBlinds.setControl(QKnxControlBlinds::Up);
+    QCOMPARE(dptBlinds.isValid(), true);
+    QCOMPARE(dptBlinds.control(), QKnxControlBlinds::Up);
     QCOMPARE(dptBlinds.numberOfIntervals(), QKnx3BitControlled::NumberOfIntervals::ThirtyTwo);
 }
 

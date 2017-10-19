@@ -36,15 +36,22 @@ QT_BEGIN_NAMESPACE
 // -- QKnx3BitControlled
 
 QKnx3BitControlled::QKnx3BitControlled()
-    : QKnx3BitControlled(SubType)
+    : QKnx3BitControlled(false, NumberOfIntervals::Break)
 {}
 
-QKnx3BitControlled::QKnx3BitControlled(int subType)
+QKnx3BitControlled::QKnx3BitControlled(bool control, NumberOfIntervals n)
+    : QKnx3BitControlled(SubType, control, n)
+{}
+
+QKnx3BitControlled::QKnx3BitControlled(int subType, bool control, NumberOfIntervals n)
     : QKnxDatapointType(MainType, subType, TypeSize)
 {
     setDescription(tr("3-bit controlled"));
-    setRange(QVariant(0x00), QVariant(0x07));
+    setRange(QVariant(0x00), QVariant(0x0f));
     setRangeText(tr("No control, Break"), tr("Controlled, 32 intervals"));
+
+    setControlBit(control);
+    setNumberOfIntervals(n);
 }
 
 bool QKnx3BitControlled::controlBit() const
@@ -65,8 +72,7 @@ bool QKnx3BitControlled::setNumberOfIntervals(NumberOfIntervals n)
     quint8 stepCode = 0;
     if (n != NumberOfIntervals::Break)
         stepCode = quint8(1 + qLn(quint8(n)) / qLn(2.));
-    setByte(0, (byte(0) & 0x08) | stepCode);
-    return true;
+    return setByte(0, (byte(0) & 0x08) | stepCode);
 }
 
 QKnx3BitControlled::NumberOfIntervals QKnx3BitControlled::numberOfIntervals() const
@@ -84,18 +90,14 @@ bool QKnx3BitControlled::isValid() const
 // -- QKnxControlDimming
 
 QKnxControlDimming::QKnxControlDimming()
-    : QKnx3BitControlled(SubType)
-{
-    setDescription(tr("Control Dimming"));
-    setRange(QVariant(0x00), QVariant(0x07));
-    setRangeText(tr("Decrease, Break"), tr("Increase, 32 intervals"));
-}
+    : QKnxControlDimming(Control::Decrease, NumberOfIntervals::Break)
+{}
 
 QKnxControlDimming::QKnxControlDimming(Control control, NumberOfIntervals interval)
-    : QKnxControlDimming()
+    : QKnx3BitControlled(SubType, bool(control), interval)
 {
-    setControl(control);
-    setNumberOfIntervals(interval);
+    setDescription(tr("Control Dimming"));
+    setRangeText(tr("Decrease, Break"), tr("Increase, 32 intervals"));
 }
 
 void QKnxControlDimming::setControl(Control control)
@@ -112,18 +114,14 @@ QKnxControlDimming::Control QKnxControlDimming::control() const
 // -- QKnxControlBlinds
 
 QKnxControlBlinds::QKnxControlBlinds()
-    : QKnx3BitControlled(SubType)
-{
-    setDescription(tr("Control Blinds"));
-    setRange(QVariant(0x00), QVariant(0x07));
-    setRangeText(tr("Up, Break"), tr("Down, 32 intervals"));
-}
+    : QKnxControlBlinds(Control::Up, NumberOfIntervals::Break)
+{}
 
 QKnxControlBlinds::QKnxControlBlinds(Control control, NumberOfIntervals interval)
-    : QKnxControlBlinds()
+    : QKnx3BitControlled (SubType, bool(control), interval)
 {
-    setControl(control);
-    setNumberOfIntervals(interval);
+    setDescription(tr("Control Blinds"));
+    setRangeText(tr("Up, Break"), tr("Down, 32 intervals"));
 }
 
 void QKnxControlBlinds::setControl(Control control)
