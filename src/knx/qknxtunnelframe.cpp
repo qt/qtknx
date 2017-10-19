@@ -40,10 +40,10 @@ bool QKnxTunnelFrame::isValid() const
     return QKnxCemiFrame::isValid();
     // TODO: check NPDU size, several cases need to be taken into account:
     // 1; Information-Length (max. value is 255); number of NPDU octets, TPCI octet not included!
-    // 2; Check precense of Pl/RF medium information in the additional info -> size always needs
-    //    to be greather then 15 bytes because both need additional information.
+    // 2; Check presence of Pl/RF medium information in the additional info -> size always needs
+    //    to be greater then 15 bytes because both need additional information.
     //    03_06_03 EMI_IMI v01.03.03 AS.pdf page 76 Table(Use of flags in control field)
-    // 3; RF frames do not inlcude a length field at all, it is supposed to be set to 0x00.
+    // 3; RF frames do not include a length field at all, it is supposed to be set to 0x00.
     //    03_06_03 EMI_IMI v01.03.03 AS.pdf page 75 NOTE 1
     // 4; control field frame type standard -> max. length value is 15
     //    control field frame type extended -> max. length value is 255
