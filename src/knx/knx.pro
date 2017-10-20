@@ -42,12 +42,14 @@ SOURCES += \
     qknxcemiframe.cpp \
     qknxtunnelframe.cpp \
     qknxnpdu.cpp \
-    qknxnpdufactory.cpp \
+    qknxnpdufactory_p2p.cpp \
     qknxinterfaceobjecttype.cpp \
     qknxinterfaceobjectproperty.cpp \
     qknxlocaldevicemanagementframe.cpp \
     qknxlocaldevicemanagementframefactory.cpp \
-    qknxinterfaceobjectpropertydatatype.cpp
+    qknxinterfaceobjectpropertydatatype.cpp \
+    qknxnpdufactory_multicast.cpp \
+    qknxnpdufactory_broadcast.cpp
 
 HEADERS += $$PUBLIC_HEADERS $$PRIVATE_HEADERS
 

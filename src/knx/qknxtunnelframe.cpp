@@ -185,9 +185,12 @@ void QKnxTunnelFrame::setDestinationAddress(const QKnxAddress &destination)
 
 QKnxNpdu QKnxTunnelFrame::npdu() const
 {
-     // length field + ctrl + extCtrl + 2 * KNX address -> 7
-    return QKnxNpdu::fromBytes(serviceInformationRef(), additionalInfosSize() + 7,
-        size() - (additionalInfosSize() + 7));
+    // TODO: In RF-Frames the length field is set to 0x00, figure out how this fits in here.
+    // See 03_06_03 EMI_IMI, paragraph 4.1.5.3.1 Implementation and usage, page 75, Note 1,2,3
+
+    // length field + ctrl + extCtrl + 2 * KNX address -> 7 bytes
+    const quint8 npduOffset = additionalInfosSize() + 7 /* bytes */;
+    return QKnxNpdu::fromBytes(serviceInformationRef(), npduOffset, (size() - 1) - npduOffset);
 }
 
 void QKnxTunnelFrame::setNpdu(const QKnxNpdu &npdu)

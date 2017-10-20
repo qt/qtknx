@@ -28,6 +28,7 @@
 
 #include <QtCore/qdebug.h>
 #include <QtKnx/qknxtunnelframe.h>
+#include <QtKnx/qknxnpdufactory.h>
 #include <QtTest/qtest.h>
 
 static QString s_msg;
@@ -78,6 +79,38 @@ private slots:
         QCOMPARE(frame.additionalInfos().last().bytes(), QByteArray::fromHex("fe03708090"));
 
         QCOMPARE(frame.destinationAddress().bytes(), QKnxAddress::Group::Broadcast.bytes());
+    }
+
+    void testNpduFetcher()
+    {
+        QVector<QKnxAdditionalInfo> addInfos = {
+            { QKnxAdditionalInfo::Type::BiBatInformation, QByteArray::fromHex("1020") },
+            { QKnxAdditionalInfo::Type::RfFastAckInformation, QByteArray::fromHex("30405060") },
+            { QKnxAdditionalInfo::Type::ManufactorSpecificData, QByteArray::fromHex("708090") }
+        };
+
+        QKnxTunnelFrame frame(QKnxTunnelFrame::MessageCode::DataRequest);
+        frame.setControlField(QKnxControlField(1));
+        frame.setExtendedControlField(QKnxExtendedControlField(2));
+        frame.addAdditionalInfo(addInfos.first());
+        frame.setSourceAddress(QKnxAddress::Individual::Unregistered);
+        frame.setDestinationAddress(QKnxAddress::Group::Broadcast);
+
+        QKnxNpdu npdu = QKnxNpduFactory::Multicast::createGroupValueWriteNpdu(
+            QByteArray::fromHex("01"));
+        QCOMPARE(npdu.bytes(), QByteArray::fromHex("010081"));
+        frame.setNpdu(npdu);
+        QCOMPARE(frame.npdu().bytes(), QByteArray::fromHex("010081"));
+        QKnxNpdu npdu2 = QKnxNpduFactory::Multicast::createGroupValueWriteNpdu(
+            QByteArray::fromHex("0101"));
+        QCOMPARE(npdu2.bytes(), QByteArray::fromHex("0300800101"));
+        frame.setNpdu(npdu2);
+        QCOMPARE(frame.npdu().bytes(), QByteArray::fromHex("0300800101"));
+        QKnxNpdu npdu4 = QKnxNpduFactory::Multicast::createGroupValueWriteNpdu(
+            QByteArray::fromHex("ff"));
+        QCOMPARE(npdu4.bytes(), QByteArray::fromHex("020080ff"));
+        frame.setNpdu(npdu4);
+        QCOMPARE(frame.npdu().bytes(), QByteArray::fromHex("020080ff"));
     }
 
     void testDebugStream()
