@@ -71,11 +71,11 @@ public:
     bool setMode(Mode mode);
 
     StatusFlags statusFlags() const;
-    void setStatusFlags(StatusFlags statusFlags);
+    bool setStatusFlags(StatusFlags statusFlags);
 
     bool isSet(Status status) const;
-    void setStatus(Status status);
-    void removeStatus(Status status);
+    bool setStatus(Status status);
+    bool removeStatus(Status status);
 
     bool isValid() const override;
 };
