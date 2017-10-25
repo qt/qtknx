@@ -180,6 +180,7 @@ QKnxDatapointTypeFactory::QKnxDatapointTypeFactory()
     registerType<QKnxPressure>();
     registerType<QKnxHumidity>();
     registerType<QKnxAirQuality>();
+    registerType<QKnxAirFlow>();
     registerType<QKnxTimeSecond>();
     registerType<QKnxTimeMilliSecond>();
     registerType<QKnxVoltage>();

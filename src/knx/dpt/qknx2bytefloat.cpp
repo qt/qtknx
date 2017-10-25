@@ -125,6 +125,8 @@ CREATE_CLASS_BODY(QKnxHumidity, "Humidity in percent",
     "Minimum Value, 0", "Maximum Value, 670 760", "Percent", 0, 670760)
 CREATE_CLASS_BODY(QKnxAirQuality, "Air Quality in ppm",
     "Minimum Value, 0", "Maximum Value, 670 760", "ppm", 0, 670760)
+CREATE_CLASS_BODY(QKnxAirFlow, "Air Flow in m3/h",
+    "Minimum Value, -670 760", "Maximum Value, 670 760", "m3/h", -670760, 670760)
 CREATE_CLASS_BODY(QKnxTimeSecond, "Time in second",
     "Minimum Value, -670 760", "Maximum Value, 670 760", "s", -670760, 670760)
 CREATE_CLASS_BODY(QKnxTimeMilliSecond, "Time in milli-Second",

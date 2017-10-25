@@ -77,7 +77,7 @@ public:
             DptRotationAngle,
         Dpt9_2ByteFloat = 900000,
         DptTemperatureCelcius, DptTemperatureKelvin, DptTemperatureChange, DptValueLux,
-            DptWindSpeed, DptPressure, DptHumidity, DptAirQuality, DptTimeSecond = 900010,
+            DptWindSpeed, DptPressure, DptHumidity, DptAirQuality, DptAirFlow, DptTimeSecond,
             DptTimeMilliSecond, DptVoltage = 900020, DptCurrent, DptPowerDensity,
             DptKelvinPerPercent, DptPower, DptVolumeFlow, DptAmountRain, DptTemperatureFahrenheit,
             DptWindSpeedKmPerHour,
