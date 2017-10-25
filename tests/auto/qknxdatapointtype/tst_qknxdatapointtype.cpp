@@ -481,6 +481,7 @@ void tst_QKnxDatapointType::dpt10_TimeOfDay()
 
     time.setHMS(23, 59, 59);
     QCOMPARE(time.isValid(), true);
+    QCOMPARE(time.isValid(), true);
 
     time.setDayOfWeek(QKnxTime::DayOfWeek::Monday);
     QCOMPARE(time.dayOfWeek(), QKnxTime::DayOfWeek::Monday);
@@ -493,17 +494,32 @@ void tst_QKnxDatapointType::dpt10_TimeOfDay()
     timeOfDay.setValue(time);
     QCOMPARE(timeOfDay.value(), time);
 
-     QKnxTimeOfDay timeOfDay2;
-     QCOMPARE(timeOfDay2.hour(), quint8(0));
-     timeOfDay2.setHour(23);
+    QKnxTimeOfDay timeOfDay2;
+    QCOMPARE(timeOfDay2.isValid(), true);
+    QCOMPARE(timeOfDay2.hour(), quint8(0));
+    QCOMPARE(timeOfDay2.setHour(23), true);
+    QCOMPARE(timeOfDay2.hour(), quint8(23));
+    QCOMPARE(timeOfDay2.setHour(24), false);
+    QCOMPARE(timeOfDay2.hour(), quint8(23));
 
     QCOMPARE(timeOfDay2.minute(), quint8(0));
-    timeOfDay2.setMinute(59);
+    QCOMPARE(timeOfDay2.setMinute(59), true);
+    QCOMPARE(timeOfDay2.minute(), quint8(59));
+    QCOMPARE(timeOfDay2.setMinute(60), false);
+    QCOMPARE(timeOfDay2.minute(), quint8(59));
 
     QCOMPARE(timeOfDay2.second(), quint8(0));
-    timeOfDay2.setSecond(59);
+    QCOMPARE(timeOfDay2.setSecond(59), true);
+    QCOMPARE(timeOfDay2.second(), quint8(59));
+    QCOMPARE(timeOfDay2.setSecond(60), false);
+    QCOMPARE(timeOfDay2.second(), quint8(59));
 
     QCOMPARE(timeOfDay2.dayOfDay(), QKnxTime::DayOfWeek::Ignore);
+    QCOMPARE(timeOfDay2.setDayOfWeek(QKnxTime::DayOfWeek::Monday), true);
+    QCOMPARE(timeOfDay2.dayOfDay(), QKnxTime::DayOfWeek::Monday);
+    QCOMPARE(timeOfDay2.setDayOfWeek(QKnxTime::DayOfWeek::Ignore), true);
+    QCOMPARE(timeOfDay2.dayOfDay(), QKnxTime::DayOfWeek::Ignore);
+    QCOMPARE(timeOfDay2.isValid(), true);
     timeOfDay2.setDayOfWeek(QKnxTime::DayOfWeek::Monday);
 
     QCOMPARE(timeOfDay.bytes(), timeOfDay2.bytes());
@@ -521,16 +537,20 @@ void tst_QKnxDatapointType::dpt11_Date()
     QCOMPARE(date.month(), quint8(0));
     QCOMPARE(date.day(), quint8(0));
 
-    date.setValue({ 1990, 01, 01 });
+    QCOMPARE(date.setValue({ 1990, 01, 01 }), true);
     QCOMPARE(date.value(), date.minimum().toDate());
 
-    date.setYear(2089);
+    QCOMPARE(date.setYear(2089), true);
     QCOMPARE(date.value(), QDate(2089, 01, 01));
 
-    date.setMonth(12);
+    QCOMPARE(date.setMonth(12), true);
+    QCOMPARE(date.value(), QDate(2089, 12, 1));
+    QCOMPARE(date.setMonth(0), false);
     QCOMPARE(date.value(), QDate(2089, 12, 1));
 
-    date.setDay(31);
+    QCOMPARE(date.setDay(31), true);
+    QCOMPARE(date.value(), QDate(2089, 12, 31));
+    QCOMPARE(date.setDay(0), false);
     QCOMPARE(date.value(), QDate(2089, 12, 31));
 
     QCOMPARE(date.isValid(), true);
@@ -703,9 +723,22 @@ void tst_QKnxDatapointType::dpt19_DateTime()
 
     QKnxDateTime dt;
     QCOMPARE(dt.isValid(), false);
+    QCOMPARE(dt.date(), QDate(2000, 0, 0));
+    QCOMPARE(dt.time(), QKnxTime24(0, 0));
+    QKnxDateTime::Attributes testAttributes =
+        QKnxDateTime::Attributes().setFlag(QKnxDateTime::Attribute::Fault, false)
+            .setFlag(QKnxDateTime::Attribute::WorkingDay, false)
+            .setFlag(QKnxDateTime::Attribute::WorkingDay, false)
+            .setFlag(QKnxDateTime::Attribute::YearInvalild, false)
+            .setFlag(QKnxDateTime::Attribute::DateInvalid, false)
+            .setFlag(QKnxDateTime::Attribute::DayOfWeekInvalid, false)
+            .setFlag(QKnxDateTime::Attribute::TimeInvalid, false)
+            .setFlag(QKnxDateTime::Attribute::StandardSummerTime, false);
+    QCOMPARE(dt.attributes(), testAttributes);
+    QCOMPARE(dt.clockQuality(), QKnxDateTime::ClockQuality::WithoutExtendedSyncSignal);
 
-    dt.setValue({ 2013, 11, 30 }, { 23, 45, 0 }, QKnxDateTime::Attribute::Fault,
-        QKnxDateTime::ClockQuality::WithExtendedSyncSignal);
+    QCOMPARE(dt.setValue({ 2013, 11, 30 }, { 23, 45, 0 }, QKnxDateTime::Attribute::Fault,
+        QKnxDateTime::ClockQuality::WithExtendedSyncSignal), true);
     QCOMPARE(dt.isValid(), true);
     QCOMPARE(QKnxDatapointTypeFactory::instance().containsMainType(dt.mainType()), true);
 
