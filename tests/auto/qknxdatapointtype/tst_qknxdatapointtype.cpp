@@ -457,12 +457,84 @@ void tst_QKnxDatapointType::dpt21_8BitSet()
     QKnx8BitSet dpt;
     QCOMPARE(dpt.mainType(), 0x15);
     QCOMPARE(dpt.subType(), 0x00);
+    QCOMPARE(dpt.isValid(), true);
 
     QKnxGeneralStatus dptGS;
     QCOMPARE(dptGS.mainType(), 0x15);
     QCOMPARE(dptGS.subType(), 0x01);
+    QCOMPARE(dptGS.isValid(), true);
+    QCOMPARE(dptGS.isSet(QKnxGeneralStatus::Fault), false);
+    QCOMPARE(dptGS.isSet(QKnxGeneralStatus::AlarmUnacknowledged), false);
+    QCOMPARE(dptGS.isSet(QKnxGeneralStatus::InAlarm), false);
+    QCOMPARE(dptGS.isSet(QKnxGeneralStatus::OutOfService), false);
+    QCOMPARE(dptGS.isSet(QKnxGeneralStatus::Overridden), false);
+    dptGS.setAttribute(QKnxGeneralStatus::OutOfService);
+    QCOMPARE(dptGS.isValid(), true);
+    QCOMPARE(dptGS.isSet(QKnxGeneralStatus::OutOfService), true);
+    dptGS.setValue(QKnxGeneralStatus::Attributes().setFlag(QKnxGeneralStatus::Fault, true)
+        .setFlag(QKnxGeneralStatus::OutOfService, false));
+    dptGS.setAttribute(QKnxGeneralStatus::Overridden);
+    dptGS.removeAttribute(QKnxGeneralStatus::Overridden);
+    QCOMPARE(dptGS.isSet(QKnxGeneralStatus::Fault), true);
+    QCOMPARE(dptGS.isSet(QKnxGeneralStatus::AlarmUnacknowledged), false);
+    QCOMPARE(dptGS.isSet(QKnxGeneralStatus::InAlarm), false);
+    QCOMPARE(dptGS.isSet(QKnxGeneralStatus::OutOfService), false);
+    QCOMPARE(dptGS.isSet(QKnxGeneralStatus::Overridden), false);
+    QCOMPARE(dptGS.isValid(), true);
+    dptGS.setBytes(QByteArray::fromHex("ff"), 0, 1);
+    QCOMPARE(dptGS.isValid(), false);
+    QCOMPARE(dptGS.isSet(QKnxGeneralStatus::Fault), true);
+    QCOMPARE(dptGS.isSet(QKnxGeneralStatus::AlarmUnacknowledged), true);
+    QCOMPARE(dptGS.isSet(QKnxGeneralStatus::InAlarm), true);
+    QCOMPARE(dptGS.isSet(QKnxGeneralStatus::OutOfService), true);
+    QCOMPARE(dptGS.isSet(QKnxGeneralStatus::Overridden), true);
+    dptGS.setBytes(QByteArray::fromHex("1f"), 0, 1);
+    QCOMPARE(dptGS.isValid(), true);
+    QCOMPARE(dptGS.isSet(QKnxGeneralStatus::Fault), true);
+    QCOMPARE(dptGS.isSet(QKnxGeneralStatus::AlarmUnacknowledged), true);
+    QCOMPARE(dptGS.isSet(QKnxGeneralStatus::InAlarm), true);
+    QCOMPARE(dptGS.isSet(QKnxGeneralStatus::OutOfService), true);
+    QCOMPARE(dptGS.isSet(QKnxGeneralStatus::Overridden), true);
 
-    // TODO: Extend.
+    QKnxDeviceControl dptDC;
+    QCOMPARE(dptDC.mainType(), 0x15);
+    QCOMPARE(dptDC.subType(), 0x02);
+    QCOMPARE(dptDC.isValid(), true);
+    QCOMPARE(dptDC.isSet(QKnxDeviceControl::UserStopped), false);
+    QCOMPARE(dptDC.isSet(QKnxDeviceControl::OwnIA), false);
+    QCOMPARE(dptDC.isSet(QKnxDeviceControl::VerifyMode), false);
+    dptDC.setAttribute(QKnxDeviceControl::OwnIA);
+    QCOMPARE(dptDC.isValid(), true);
+    QCOMPARE(dptDC.isSet(QKnxDeviceControl::OwnIA), true);
+    dptDC.removeAttribute(QKnxDeviceControl::OwnIA);
+    QCOMPARE(dptDC.isValid(), true);
+    QCOMPARE(dptDC.isSet(QKnxDeviceControl::OwnIA), false);
+    dptDC.setValue(QKnxDeviceControl::Attributes().setFlag(QKnxDeviceControl::VerifyMode, true));
+    QCOMPARE(dptDC.isValid(), true);
+    QCOMPARE(dptDC.isSet(QKnxDeviceControl::VerifyMode), true);
+    QCOMPARE(dptDC.isSet(QKnxDeviceControl::UserStopped), false);
+    QCOMPARE(dptDC.isSet(QKnxDeviceControl::OwnIA), false);
+    dptDC.setBytes(QByteArray::fromHex("ff"), 0, 1);
+    QCOMPARE(dptDC.isValid(), false);
+    QCOMPARE(dptDC.isSet(QKnxDeviceControl::UserStopped), true);
+    QCOMPARE(dptDC.isSet(QKnxDeviceControl::OwnIA), true);
+    QCOMPARE(dptDC.isSet(QKnxDeviceControl::VerifyMode), true);
+    dptDC.setBytes(QByteArray::fromHex("1f"), 0, 1);
+    QCOMPARE(dptDC.isValid(), false);
+    QCOMPARE(dptDC.isSet(QKnxDeviceControl::UserStopped), true);
+    QCOMPARE(dptDC.isSet(QKnxDeviceControl::OwnIA), true);
+    QCOMPARE(dptDC.isSet(QKnxDeviceControl::VerifyMode), true);
+    dptDC.setBytes(QByteArray::fromHex("07"), 0, 1);
+    QCOMPARE(dptDC.isValid(), true);
+    QCOMPARE(dptDC.isSet(QKnxDeviceControl::UserStopped), true);
+    QCOMPARE(dptDC.isSet(QKnxDeviceControl::OwnIA), true);
+    QCOMPARE(dptDC.isSet(QKnxDeviceControl::VerifyMode), true);
+    dptDC.setBytes(QByteArray::fromHex("0f"), 0, 1);
+    QCOMPARE(dptDC.isValid(), true);
+    QCOMPARE(dptDC.isSet(QKnxDeviceControl::UserStopped), true);
+    QCOMPARE(dptDC.isSet(QKnxDeviceControl::OwnIA), true);
+    QCOMPARE(dptDC.isSet(QKnxDeviceControl::VerifyMode), true);
+    QCOMPARE(dptDC.isSet(QKnxDeviceControl::SafeState), true);
 }
 
 void tst_QKnxDatapointType::dpt10_TimeOfDay()

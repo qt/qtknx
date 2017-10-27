@@ -305,6 +305,7 @@ QKnxDatapointTypeFactory::QKnxDatapointTypeFactory()
     // DPT-21
     registerType<QKnx8BitSet>();
     registerType<QKnxGeneralStatus>();
+    registerType<QKnxDeviceControl>();
 }
 
 QHash<int, int> &QKnxDatapointTypeFactory::sizeTable()

@@ -124,7 +124,7 @@ public:
             DptDateTime = 1900001,
         Dpt20_1Byte = 2000000,
         Dpt21_8BitSet = 2100000,
-            DptGeneralStatus = 2100010,
+            DptGeneralStatus, DptDeviceControl,
         Dpt22_16BitSet = 2200000,
         Dpt23_2BitSet = 2300000,
         Dpt24_String = 2400000,
