@@ -120,6 +120,27 @@ QKnxDatapointTypeFactory::QKnxDatapointTypeFactory()
     // DPT-1
     registerType<QKnx1Bit>();
     registerType<QKnxSwitch>();
+    registerType<QKnxBool>();
+    registerType<QKnxEnable>();
+    registerType<QKnxRamp>();
+    registerType<QKnxAlarm>();
+    registerType<QKnxBinaryValue>();
+    registerType<QKnxStep>();
+    registerType<QKnxUpDown>();
+    registerType<QKnxOpenClose>();
+    registerType<QKnxStart>();
+    registerType<QKnxState>();
+    registerType<QKnxInvert>();
+    registerType<QKnxDimSendStyle>();
+    registerType<QKnxInputSource>();
+    registerType<QKnxReset>();
+    registerType<QKnxAck>();
+    registerType<QKnxTrigger>();
+    registerType<QKnxOccupancy>();
+    registerType<QKnxWindowDoor>();
+    registerType<QKnxLogicalFunction>();
+    registerType<QKnxSceneAB>();
+    registerType<QKnxShutterBlindsMode>();
 
     // DPT-2
     registerType<QKnx1BitControlled>();

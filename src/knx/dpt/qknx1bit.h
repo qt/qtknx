@@ -53,26 +53,54 @@ protected:
     QKnx1Bit(int subType, bool bit);
 };
 
-class Q_KNX_EXPORT QKnxSwitch : public QKnx1Bit
-{
-    Q_GADGET
-
-public:
-    enum class State : quint8
-    {
-        Off,
-        On
-    };
-    Q_ENUM(State)
-
-    QKnxSwitch();
-    explicit QKnxSwitch(State state);
-
-    static const constexpr int SubType = 0x01;
-
-    State value() const;
-    bool setValue(State state);
+#define CREATE_CLASS_DECLARATION(CLASS, SUB_TYPE, STATE_1, STATE_2) \
+class Q_KNX_EXPORT CLASS : public QKnx1Bit \
+{ \
+    Q_GADGET \
+\
+public: \
+    enum class State : quint8 \
+    { \
+        STATE_1, \
+        STATE_2 \
+    }; \
+    Q_ENUM(State) \
+\
+    CLASS(); \
+    explicit CLASS(State state); \
+\
+    static const constexpr int SubType = SUB_TYPE; \
+\
+    State value() const; \
+    bool setValue(State state); \
 };
+
+CREATE_CLASS_DECLARATION(QKnxSwitch, 0x01, Off, On)
+CREATE_CLASS_DECLARATION(QKnxBool, 0x02, False, True)
+CREATE_CLASS_DECLARATION(QKnxEnable, 0x03, Disable, Enable)
+CREATE_CLASS_DECLARATION(QKnxRamp, 0x04, NoRamp, Ramp)
+CREATE_CLASS_DECLARATION(QKnxAlarm, 0x05, NoAlarm, Alarm)
+CREATE_CLASS_DECLARATION(QKnxBinaryValue, 0x06, Low, High)
+CREATE_CLASS_DECLARATION(QKnxStep, 0x07, Decrease, Increase)
+CREATE_CLASS_DECLARATION(QKnxUpDown, 0x08, Up, Down)
+CREATE_CLASS_DECLARATION(QKnxOpenClose, 0x09, Open, Close)
+CREATE_CLASS_DECLARATION(QKnxStart, 0x0a, Stop, Start)
+CREATE_CLASS_DECLARATION(QKnxState, 0x0b, Inactive, Active)
+CREATE_CLASS_DECLARATION(QKnxInvert, 0x0c, NotInverted, Inverted)
+CREATE_CLASS_DECLARATION(QKnxDimSendStyle, 0x0d, StartStop, Cyclically)
+CREATE_CLASS_DECLARATION(QKnxInputSource, 0x0e, Fixed, Calculated)
+CREATE_CLASS_DECLARATION(QKnxReset, 0x0f, NoAction, ResetCommand)
+CREATE_CLASS_DECLARATION(QKnxAck, 0x10, NoAction, AcknowledgeCommand)
+CREATE_CLASS_DECLARATION(QKnxTrigger, 0x11, Trigger, TriggerAlso)
+CREATE_CLASS_DECLARATION(QKnxOccupancy, 0x12, NotOccupied, Occupied)
+CREATE_CLASS_DECLARATION(QKnxWindowDoor, 0x13, Closed, Open)
+CREATE_CLASS_DECLARATION(QKnxLogicalFunction, 0x15, OR, AND)
+CREATE_CLASS_DECLARATION(QKnxSceneAB, 0x16, SceneA, SceneB)
+CREATE_CLASS_DECLARATION(QKnxShutterBlindsMode, 0x17, OnlyMoveUpDownShutter,
+    MoveUpDownAndStepModeBlind)
+CREATE_CLASS_DECLARATION(QKnxHeatCool, 0x64, Cooling, Heating)
+
+#undef CREATE_CLASS_DECLARATION
 
 QT_END_NAMESPACE
 

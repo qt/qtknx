@@ -164,6 +164,16 @@ void tst_QKnxDatapointType::dpt1_1Bit()
 
     dpt.reset(factory.createType(QKnxDatapointType::Type::Dpt1_1Bit));
     QCOMPARE(dpt->type(), QKnxDatapointType::Type::Dpt1_1Bit);
+
+    QKnxWindowDoor dptWindowDoor;
+    QCOMPARE(dptWindowDoor.size(), 1);
+    QCOMPARE(dptWindowDoor.mainType(), 1);
+    QCOMPARE(dptWindowDoor.subType(), 19);
+    QCOMPARE(dptWindowDoor.isValid(), true);
+    QCOMPARE(dptWindowDoor.value(), QKnxWindowDoor::State::Closed);
+    QCOMPARE(dptWindowDoor.bytes(), QByteArray::fromHex("00"));
+    QCOMPARE(dptWindowDoor.type(), QKnxDatapointType::Type::DptWindowDoor);
+
 }
 
 void tst_QKnxDatapointType::dpt2_1BitControlled()
