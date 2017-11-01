@@ -181,8 +181,13 @@ void tst_QKnxDatapointType::dpt2_1BitControlled()
     QKnx1BitControlled dpt;
     QCOMPARE(dpt.mainType(), 2);
     QCOMPARE(dpt.subType(), 0x00);
+    QCOMPARE(dpt.valueBit(), false);
+    QCOMPARE(dpt.controlBit(), false);
+    QCOMPARE(dpt.isValid(), true);
+    QCOMPARE(dpt.bytes(), QByteArray::fromHex("00"));
+    QCOMPARE(dpt.type(), QKnxDatapointType::Type::Dpt2_1BitControlled);
 
-    QKnxSwitchControl sSwitchControlled;
+    QKnxSwitchControl sSwitchControlled(QKnxSwitchControl::State::Off, QKnxSwitchControl::Control::NoControl);
     QCOMPARE(sSwitchControlled.mainType(), 2);
     QCOMPARE(sSwitchControlled.subType(), 0x01);
 

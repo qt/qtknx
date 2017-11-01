@@ -145,6 +145,17 @@ QKnxDatapointTypeFactory::QKnxDatapointTypeFactory()
     // DPT-2
     registerType<QKnx1BitControlled>();
     registerType<QKnxSwitchControl>();
+    registerType<QKnxBoolControl>();
+    registerType<QKnxEnableControl>();
+    registerType<QKnxRampControl>();
+    registerType<QKnxAlarmControl>();
+    registerType<QKnxBinaryValueControl>();
+    registerType<QKnxStepControl>();
+    registerType<QKnxDirection1Control>();
+    registerType<QKnxDirection2Control>();
+    registerType<QKnxStartControl>();
+    registerType<QKnxStateControl>();
+    registerType<QKnxInvertControl>();
 
     // DPT-3
     registerType<QKnx3BitControlled>();

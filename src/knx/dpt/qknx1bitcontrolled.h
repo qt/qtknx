@@ -52,39 +52,58 @@ public:
     bool isValid() const override;
 
 protected:
-    explicit QKnx1BitControlled(int subType);
-    QKnx1BitControlled(int subType, const QKnxDatapointType &dpt);
+    QKnx1BitControlled(int subType, bool state, bool control);
+    QKnx1BitControlled(int subType, const QKnxDatapointType &dpt, bool state, bool control);
 };
 
-class Q_KNX_EXPORT QKnxSwitchControl : public QKnx1BitControlled
-{
-    Q_GADGET
-
-public:
-    enum Attribute : quint8
-    {
-        Off = 0x00,
-        On = 0x01,
-        NoControl = 0x02,
-        Controlled = 0x04
-    };
-    Q_ENUM(Attribute)
-    Q_DECLARE_FLAGS(Attributes, Attribute)
-
-    QKnxSwitchControl();
-    explicit QKnxSwitchControl(Attributes attributes);
-
-    static const constexpr int SubType = 0x01;
-
-    void setValue(Attributes attributes);
-    QKnxSwitchControl::Attributes value() const;
-
-    bool isSet(Attribute flag) const;
-
-    void setAttribute(Attribute option);
-    void removeAttribute(Attribute option);
+#define CREATE_CLASS_DECLARATION(CLASS, SUB_TYPE, STATE_1, STATE_2) \
+class Q_KNX_EXPORT CLASS : public QKnx1BitControlled \
+{ \
+    Q_GADGET \
+\
+public: \
+    enum class State : quint8 \
+    { \
+        STATE_1, \
+        STATE_2 \
+    }; \
+    Q_ENUM(State) \
+\
+    enum class Control : quint8 \
+    { \
+        NoControl, \
+        Control \
+    }; \
+    Q_ENUM(Control) \
+\
+    CLASS(); \
+    CLASS(State state, Control control); \
+\
+    static const constexpr int SubType = SUB_TYPE; \
+\
+    State state() const; \
+    void setState(State state); \
+\
+    Control control() const; \
+    void setControl(Control control); \
+\
+    void setValue(State state, Control control); \
 };
-Q_DECLARE_OPERATORS_FOR_FLAGS(QKnxSwitchControl::Attributes)
+
+CREATE_CLASS_DECLARATION(QKnxSwitchControl, 0x01, Off, On)
+CREATE_CLASS_DECLARATION(QKnxBoolControl, 0x02, False, True)
+CREATE_CLASS_DECLARATION(QKnxEnableControl, 0x03, Disable, Enable)
+CREATE_CLASS_DECLARATION(QKnxRampControl, 0x04, NoRamp, Ramp)
+CREATE_CLASS_DECLARATION(QKnxAlarmControl, 0x05, NoAlarm, Alarm)
+CREATE_CLASS_DECLARATION(QKnxBinaryValueControl, 0x06, Low, High)
+CREATE_CLASS_DECLARATION(QKnxStepControl, 0x07, Decrease, Increase)
+CREATE_CLASS_DECLARATION(QKnxDirection1Control, 0x08, Up, Down)
+CREATE_CLASS_DECLARATION(QKnxDirection2Control, 0x09, Open, Close)
+CREATE_CLASS_DECLARATION(QKnxStartControl, 0x0a, Stop, Start)
+CREATE_CLASS_DECLARATION(QKnxStateControl, 0x0b, Inactive, Active)
+CREATE_CLASS_DECLARATION(QKnxInvertControl, 0x0c, NotInverted, Inverted)
+
+#undef CREATE_CLASS_DECLARATION
 
 QT_END_NAMESPACE
 
