@@ -44,6 +44,7 @@
 #include "qknx8bitset.h"
 #include "qknx8bitsignedvalue.h"
 #include "qknx8bitunsignedvalue.h"
+#include "qknxchar.h"
 #include "qknxdatetime.h"
 #include "qknxentranceaccess.h"
 #include "qknxscene.h"
@@ -163,6 +164,11 @@ QKnxDatapointTypeFactory::QKnxDatapointTypeFactory()
     registerType<QKnx3BitControlled>();
     registerType<QKnxControlDimming>();
     registerType<QKnxControlBlinds>();
+
+    // DPT-4
+    registerType<QKnxChar>();
+    registerType<QKnxASCII>();
+    registerType<QKnxLatin1>();
 
     // DPT-5
     registerType<QKnx8BitUnsignedValue>();

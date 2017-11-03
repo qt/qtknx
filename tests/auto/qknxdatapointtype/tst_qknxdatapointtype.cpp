@@ -42,6 +42,7 @@
 #include <QtKnx/qknx8bitset.h>
 #include <QtKnx/qknx8bitsignedvalue.h>
 #include <QtKnx/qknx8bitunsignedvalue.h>
+#include <QtKnx/qknxchar.h>
 #include <QtKnx/qknxdatapointtype.h>
 #include <QtKnx/qknxdatapointtypefactory.h>
 #include <QtKnx/qknxdatetime.h>
@@ -61,6 +62,7 @@ private slots:
     void dpt1_1Bit();
     void dpt2_1BitControlled();
     void dpt3_3BitControlled();
+    void dpt4_Character();
     void dpt5_8BitUnsignedValue();
     void dpt6_8BitSignedValue();
     void dpt6_StatusMode3();
@@ -248,6 +250,48 @@ void tst_QKnxDatapointType::dpt3_3BitControlled()
     QCOMPARE(dptBlinds.isValid(), true);
     QCOMPARE(dptBlinds.control(), QKnxControlBlinds::Up);
     QCOMPARE(dptBlinds.numberOfIntervals(), QKnx3BitControlled::NumberOfIntervals::ThirtyTwo);
+}
+
+void tst_QKnxDatapointType::dpt4_Character()
+{
+    QKnxChar dpt;
+    QCOMPARE(dpt.mainType(), 0x04);
+    QCOMPARE(dpt.subType(), 0x00);
+    QCOMPARE(dpt.isValid(), true);
+    QCOMPARE(dpt.value(), quint8(0));
+    QCOMPARE(dpt.setValue(255), true);
+    QCOMPARE(dpt.value(), quint8(255));
+
+    QKnxASCII asci;
+    QCOMPARE(asci.mainType(), 0x04);
+    QCOMPARE(asci.subType(), 0x01);
+    QCOMPARE(asci.isValid(), true);
+    QCOMPARE(asci.value(), quint8(0));
+    QCOMPARE(asci.setValue(255), false);
+    QCOMPARE(asci.value(), quint8(0));
+    QCOMPARE(asci.setCharacter('p'), true);
+    QCOMPARE(asci.value(), quint8(112));
+    QCOMPARE(asci.setCharacter('P'), true);
+    QCOMPARE(asci.value(), quint8(80));
+    QCOMPARE(asci.setCharacter('~'), true);
+    QCOMPARE(asci.value(), quint8(126));
+    QCOMPARE(asci.setCharacter('!'), true);
+    QCOMPARE(asci.value(), quint8(33));
+    QCOMPARE(asci.setCharacter(char(NULL)), true);
+    QCOMPARE(asci.value(), quint8(0));
+    QCOMPARE(asci.setCharacter(char('\n')), true); // LF
+    QCOMPARE(asci.value(), quint8(10));
+    QCOMPARE(asci.setCharacter('p'), true);
+    QCOMPARE(asci.character(), 'p');
+
+    QKnxLatin1 char88;
+    QCOMPARE(char88.mainType(), 0x04);
+    QCOMPARE(char88.subType(), 0x02);
+    QCOMPARE(char88.isValid(), true);
+    QCOMPARE(char88.value(), quint8(0));
+    QCOMPARE(char88.setValue(255), true);
+    QCOMPARE(char88.value(), quint8(255));
+    QCOMPARE(quint8(char88.character()), quint8(255));
 }
 
 void tst_QKnxDatapointType::dpt5_8BitUnsignedValue()
