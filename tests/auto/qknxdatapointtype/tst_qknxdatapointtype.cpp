@@ -235,7 +235,7 @@ void tst_QKnxDatapointType::dpt5_8BitUnsignedValue()
     QCOMPARE(dpt.mainType(), 0x05);
     QCOMPARE(dpt.subType(), 0x00);
     QCOMPARE(dpt.isValid(), true);
-    QCOMPARE(dpt.setValue(255),true);
+    QCOMPARE(dpt.setValue(255), true);
     QCOMPARE(quint8(dpt.value()), quint8(255));
 
     QKnxScaling scaling;
@@ -249,9 +249,9 @@ void tst_QKnxDatapointType::dpt5_8BitUnsignedValue()
     QCOMPARE(scaling.setValue(1), true);
     QCOMPARE(qRound(scaling.value()), 1);
     QCOMPARE(scaling.setValue(0.4), true);
-    QCOMPARE(qRound(10*scaling.value())/10., 0.4);
+    QCOMPARE(qRound(10 * scaling.value()) / 10., 0.4);
     QCOMPARE(scaling.setValue(1.2), true);
-    QCOMPARE(qRound(10*scaling.value())/10., 1.2);
+    QCOMPARE(qRound(10 * scaling.value()) / 10., 1.2);
     scaling.setByte(0, 255);
     QCOMPARE(scaling.isValid(), true);
     QCOMPARE(quint8(scaling.value()), quint8(100));
@@ -263,7 +263,7 @@ void tst_QKnxDatapointType::dpt5_8BitUnsignedValue()
     QCOMPARE(angle.setValue(360), true);
     QCOMPARE(angle.value(), double(360));
     QCOMPARE(angle.setValue(1.4), true);
-    QCOMPARE(qRound(10*angle.value())/10., double(1.4));
+    QCOMPARE(qRound(10 * angle.value()) / 10., double(1.4));
 
     QKnxTariff tariff;
     QCOMPARE(tariff.mainType(), 0x05);
@@ -357,7 +357,7 @@ void tst_QKnxDatapointType::dpt6_StatusMode3()
     QCOMPARE(dpt.isSet(QKnxStatusMode3::Status::E), false);
 
     auto index = dpt.staticMetaObject.indexOfEnumerator("Status");
-    QCOMPARE(index>= 0, true);
+    QCOMPARE(index >= 0, true);
     auto statusEnum = dpt.staticMetaObject.enumerator(index);
     QCOMPARE(statusEnum.isValid(), true);
     QCOMPARE(statusEnum.keyCount(), 5);
@@ -381,7 +381,7 @@ void tst_QKnxDatapointType::dpt7_2ByteUnsignedValue()
     QCOMPARE(dpt.mainType(), 0x07);
     QCOMPARE(dpt.subType(), 0x00);
     QCOMPARE(dpt.isValid(), true);
-    QCOMPARE(dpt.setValue(65535),true);
+    QCOMPARE(dpt.setValue(65535), true);
     QCOMPARE(dpt.isValid(), true);
     QCOMPARE(qint32(dpt.value()), qint32(65535));
 
@@ -652,7 +652,7 @@ void tst_QKnxDatapointType::dpt13_4ByteSignedValue()
     QCOMPARE(dpt2.mainType(), 0x0d);
     QCOMPARE(dpt2.subType(), 0x64);
     QCOMPARE(dpt2.isValid(), true);
-    QCOMPARE(dpt2.setValue(255),true);
+    QCOMPARE(dpt2.setValue(255), true);
     QCOMPARE(qint32(dpt2.value()), qint32(255));
     QCOMPARE(dpt2.setValue(INT_MIN), true);
     QCOMPARE(dpt2.isValid(), true);
@@ -671,13 +671,13 @@ void tst_QKnxDatapointType::dpt9_2ByteFloat()
     QCOMPARE(dpt.isValid(), true);
 
     dpt.setValue(float(-5.2));
-    QCOMPARE(dpt.value(),-5.2f);
+    QCOMPARE(dpt.value(), -5.2f);
     dpt.setValue(float(-671088.64));
     QCOMPARE(dpt.isValid(), true);
-    QCOMPARE(dpt.value(),-671088.64f);
+    QCOMPARE(dpt.value(), -671088.64f);
     dpt.setValue(float(670760.96));
     QCOMPARE(dpt.isValid(), true);
-    QCOMPARE(dpt.value(),670760.96f);
+    QCOMPARE(dpt.value(), 670760.96f);
 
     QKnxTemperatureCelcius dptTemp;
     QCOMPARE(dptTemp.size(), 2);
@@ -685,15 +685,15 @@ void tst_QKnxDatapointType::dpt9_2ByteFloat()
     QCOMPARE(dptTemp.subType(), 1);
     QCOMPARE(dptTemp.isValid(), true);
     dptTemp.setValue(float(-5.2));
-    QCOMPARE(dptTemp.value(),-5.2f);
+    QCOMPARE(dptTemp.value(), -5.2f);
     QCOMPARE(dptTemp.setValue(float(-671088.64)), false);
-    QCOMPARE(dptTemp.value(),float(-5.2));
+    QCOMPARE(dptTemp.value(), float(-5.2));
     QCOMPARE(dptTemp.setValue(float(670760.96)), false);
-    QCOMPARE(dptTemp.value(),float(-5.2));
+    QCOMPARE(dptTemp.value(), float(-5.2));
     dptTemp.setValue(float(-273));
-    QCOMPARE(dptTemp.value(),-272.96f);
+    QCOMPARE(dptTemp.value(), -272.96f);
     dptTemp.setValue(float(670760));
-    QCOMPARE(dptTemp.value(),float(670760));
+    QCOMPARE(dptTemp.value(), float(670760));
 
     // TODO: Extend the auto-test.
 }
@@ -704,14 +704,14 @@ void tst_QKnxDatapointType::dpt12_4ByteUnsignedValue()
     QCOMPARE(dpt.mainType(), 0x0c);
     QCOMPARE(dpt.subType(), 0x00);
     QCOMPARE(dpt.isValid(), true);
-    QCOMPARE(dpt.setValue(4294967295),true);
+    QCOMPARE(dpt.setValue(4294967295), true);
     QCOMPARE(quint32(dpt.value()), quint32(4294967295));
 
     QKnxValue4UCount dpt2;
     QCOMPARE(dpt2.mainType(), 0x0c);
     QCOMPARE(dpt2.subType(), 0x01);
     QCOMPARE(dpt2.isValid(), true);
-    QCOMPARE(dpt2.setValue(4294967295),true);
+    QCOMPARE(dpt2.setValue(4294967295), true);
     QCOMPARE(quint32(dpt2.value()), quint32(4294967295));
 }
 
@@ -750,7 +750,7 @@ void tst_QKnxDatapointType::dpt15_EntranceAccess()
     QCOMPARE(dptAccessData.isSet(QKnxEntranceAccess::ReadRightToLeft), false);
     QCOMPARE(dptAccessData.idCode(), qint32(0));
 
-    dptAccessData.setValue(90,QKnxEntranceAccess::Attributes().setFlag(QKnxEntranceAccess::Error),0);
+    dptAccessData.setValue(90, QKnxEntranceAccess::Attributes().setFlag(QKnxEntranceAccess::Error), 0);
     QCOMPARE(dptAccessData.isValid(), true);
     QCOMPARE(dptAccessData.isSet(QKnxEntranceAccess::Error), true);
     QCOMPARE(dptAccessData.isSet(QKnxEntranceAccess::Encrypted), false);
