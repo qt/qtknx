@@ -32,6 +32,7 @@
 
 #include "qknx1bit.h"
 #include "qknx1bitcontrolled.h"
+#include "qknx1byte.h"
 #include "qknx2bytefloat.h"
 #include "qknx2bytesignedvalue.h"
 #include "qknx2byteunsignedvalue.h"
@@ -301,6 +302,23 @@ QKnxDatapointTypeFactory::QKnxDatapointTypeFactory()
 
     // DPT-19
     registerType<QKnxDateTime>();
+
+    // DPT-20
+    registerType<QKnx1Byte>();
+    registerType<QKnxScloMode>();
+    registerType<QKnxBuildingMode>();
+    registerType<QKnxOccupyMode>();
+    registerType<QKnxPriority>();
+    registerType<QKnxLightApplicationMode>();
+    registerType<QKnxApplicationArea>();
+    registerType<QKnxAlarmClassType>();
+    registerType<QKnxPsuMode>();
+    registerType<QKnxErrorClassSystem>();
+    registerType<QKnxErrorClassHvac>();
+    registerType<QKnxTimeDelay>();
+    registerType<QKnxBeaufortWindForceScale>();
+    registerType<QKnxSensorSelect>();
+    registerType<QKnxActuatorConnectType>();
 
     // DPT-21
     registerType<QKnx8BitSet>();
