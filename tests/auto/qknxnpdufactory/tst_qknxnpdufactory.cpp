@@ -27,6 +27,7 @@
 ******************************************************************************/
 
 #include <QtKnx/qknxnpdufactory.h>
+#include <QtKnx/qknxtunnelframe.h>
 #include <QtTest/qtest.h>
 
 class tst_QKnxNpduFactory : public QObject
@@ -99,6 +100,16 @@ private Q_SLOTS:
 
 void tst_QKnxNpduFactory::testNpdu()
 {
+    QKnxNpdu npdu1;
+    npdu1.setTransportControlField(QKnxNpdu::TransportControlField::DataGroup);
+    npdu1.setApplicationControlField(QKnxNpdu::ApplicationControlField::GroupValueWrite);
+    npdu1.setData(QByteArray::fromHex("01"));
+
+    QKnxTunnelFrame frame;
+    frame.setNpdu(npdu1);
+    QCOMPARE(npdu1.applicationControlField(), QKnxNpdu::ApplicationControlField::GroupValueWrite);
+    QCOMPARE(frame.npdu().data(), QByteArray::fromHex("01"));
+
     QKnxNpdu npdu;
     QCOMPARE(npdu.isValid(), false);
 
