@@ -99,7 +99,7 @@ public:
         ObjectAddress = 0x42,
         PsuType = 0x43,
         PsuStatus = 0x44,
-        PsuEnables = 0x45,
+        PsuEnable = 0x45,
         DomainAddress = 0x46,
         IoList = 0x47,
         MgtDescriptor01 = 0x48,

@@ -105,7 +105,7 @@ bool QKnxInterfaceObjectProperty::isDeviceProperty(QKnxInterfaceObjectProperty p
     case QKnxInterfaceObjectProperty::Device::ObjectAddress:
     case QKnxInterfaceObjectProperty::Device::PsuType:
     case QKnxInterfaceObjectProperty::Device::PsuStatus:
-    case QKnxInterfaceObjectProperty::Device::PsuEnables:
+    case QKnxInterfaceObjectProperty::Device::PsuEnable:
     case QKnxInterfaceObjectProperty::Device::DomainAddress:
     case QKnxInterfaceObjectProperty::Device::IoList:
     case QKnxInterfaceObjectProperty::Device::MgtDescriptor01:

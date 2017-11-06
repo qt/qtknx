@@ -221,7 +221,11 @@ QVector<QKnxInterfaceObjectPropertyDataType>
                 }
             },
             { QKnxInterfaceObjectProperty::General::ServicesSupported, { /* TODO */ } },
-            { QKnxInterfaceObjectProperty::General::SerialNumber, { { Id::Generic06 } } },
+            { QKnxInterfaceObjectProperty::General::SerialNumber,
+                {
+                    { Id::Generic06, QKnxDatapointType::Type::DptSerialNumber }
+                }
+            },
             { QKnxInterfaceObjectProperty::General::ManufacturerId,
                 {
                     { Id::UnsignedInt, QKnxDatapointType::Type::Dpt7_2ByteUnsigned }
@@ -230,7 +234,7 @@ QVector<QKnxInterfaceObjectPropertyDataType>
             { QKnxInterfaceObjectProperty::General::ProgramVersion, { { Id::Generic05 } } },
             { QKnxInterfaceObjectProperty::General::DeviceControl,
                 {
-                    { Id::Bitset8, QKnxDatapointType::Type::Dpt21_8BitSet },
+                    { Id::Bitset8, QKnxDatapointType::Type::DptDeviceControl },
                     { Id::Generic01 }
                 }
             },
@@ -287,15 +291,20 @@ QVector<QKnxInterfaceObjectPropertyDataType>
                     { Id::Generic08, QKnxDatapointType::Type::Unknown, Unit::Array }
                 }
             },
-            { QKnxInterfaceObjectProperty::General::ErrorCode, { { Id::Generic01 } } },
+            { QKnxInterfaceObjectProperty::General::ErrorCode,
+                {
+                    { Id::Enum8, QKnxDatapointType::Type::DptErrorClassSystem },
+                    { Id::UnsignedChar }
+                }
+            },
             { QKnxInterfaceObjectProperty::General::ObjectIndex,
                 {
-                    { Id::UnsignedChar, QKnxDatapointType::Type::Dpt5_8bitUnsigned }
+                    { Id::UnsignedChar, QKnxDatapointType::Type::DptValue1Ucount }
                 }
             },
             { QKnxInterfaceObjectProperty::General::DownloadCounter,
                 {
-                    { Id::UnsignedChar, QKnxDatapointType::Type::Dpt5_8bitUnsigned }
+                    { Id::UnsignedChar, QKnxDatapointType::Type::DptValue2UCount }
                 }
             }
         };
@@ -373,24 +382,24 @@ QVector<QKnxInterfaceObjectPropertyDataType>
             },
             { QKnxInterfaceObjectProperty::Device::PsuType,
                 {
-                    { Id::UnsignedInt, QKnxDatapointType::Type::Dpt7_2ByteUnsigned }
+                    { Id::UnsignedInt, QKnxDatapointType::Type::DptUEICurrentMilliA }
                 }
             },
             { QKnxInterfaceObjectProperty::Device::PsuStatus,
                 {
-                    { Id::BinaryInformation, QKnxDatapointType::Type::Dpt1_1Bit },
+                    { Id::BinaryInformation, QKnxDatapointType::Type::DptSwitch },
                     { Id::UnsignedChar, QKnxDatapointType::Type::Dpt5_8bitUnsigned }
                 }
             },
-            { QKnxInterfaceObjectProperty::Device::PsuEnables,
+            { QKnxInterfaceObjectProperty::Device::PsuEnable,
                 {
-                    { Id::Enum8, QKnxDatapointType::Type::Dpt20_1Byte },
+                    { Id::Enum8, QKnxDatapointType::Type::DptPsuMode },
                     { Id::UnsignedChar, QKnxDatapointType::Type::Dpt5_8bitUnsigned }
                 }
             },
             { QKnxInterfaceObjectProperty::Device::DomainAddress,
                 {
-                    { Id::UnsignedInt, QKnxDatapointType::Type::Dpt7_2ByteUnsigned }
+                    { Id::UnsignedInt, QKnxDatapointType::Type::DptValue2UCount }
                 }
             },
             { QKnxInterfaceObjectProperty::Device::IoList,
@@ -428,7 +437,7 @@ QVector<QKnxInterfaceObjectPropertyDataType>
             },
             { QKnxInterfaceObjectProperty::Device::SerialNumberTable,
                 {
-                    { Id::Generic06, QKnxDatapointType::Type::Unknown, Unit::Array }
+                    { Id::Generic06, QKnxDatapointType::Type::DptSerialNumber, Unit::Array }
                 }
             },
             { QKnxInterfaceObjectProperty::Device::BibatMasterAddress,
@@ -716,6 +725,68 @@ QVector<QKnxInterfaceObjectPropertyDataType>
     }();
     if (QKnxInterfaceObjectProperty::isKnxNetIpParameterProperty(property))
         return netIp.value(property);
+
+    static const PropertyDataTypeHash cemiServer = []() -> PropertyDataTypeHash {
+        return {
+            { QKnxInterfaceObjectProperty::CemiServer::MediumType,
+                {
+                    { Id::Bitset16, QKnxDatapointType::Type::DptMedia }
+                }
+            },
+            { QKnxInterfaceObjectProperty::CemiServer::CommonMode,
+                {
+                    { Id::Enum8, QKnxDatapointType::Type::DptCommandMode }
+                }
+            },
+            { QKnxInterfaceObjectProperty::CemiServer::MediumAvailability,
+                {
+                    { Id::Bitset16, QKnxDatapointType::Type::DptMedia }
+                }
+            },
+            { QKnxInterfaceObjectProperty::CemiServer::AdditionalInfoTypes,
+                {
+                    { Id::Enum8, QKnxDatapointType::Type::DptAdditionalInfoTypes, Unit::Array }
+                }
+            },
+            { QKnxInterfaceObjectProperty::CemiServer::TimeBase,
+                {
+                    { Id::UnsignedInt, QKnxDatapointType::Type::DptValue2UCount }
+                }
+            },
+            { QKnxInterfaceObjectProperty::CemiServer::TransparencyModeEnabled,
+                {
+                    { Id::BinaryInformation, QKnxDatapointType::Type::DptEnable }
+                }
+            },
+            { QKnxInterfaceObjectProperty::CemiServer::BiBatNextBlock,
+                {
+                    { Id::UnsignedChar, QKnxDatapointType::Type::DptValue1Ucount }
+                }
+            },
+            { QKnxInterfaceObjectProperty::CemiServer::RfModeSelect,
+                {
+                    { Id::Enum8 }, { Id::UnsignedChar }
+                }
+            },
+            { QKnxInterfaceObjectProperty::CemiServer::RfModeSupport,
+                {
+                    { Id::Bitset8 }, { Id::Generic01 }
+                }
+            },
+            { QKnxInterfaceObjectProperty::CemiServer::RfFilteringModeSelectCemiServer,
+                {
+                    { Id::Enum8 }, { Id::UnsignedChar }
+                }
+            },
+            { QKnxInterfaceObjectProperty::CemiServer::RfFilteringModeSupport,
+                {
+                    { Id::Bitset8 }, { Id::Generic01 }
+                }
+            }
+        };
+    }();
+    if (QKnxInterfaceObjectProperty::isCemiServerProperty(property))
+        return cemiServer.value(property);
 
     static const PropertyDataTypeHash security = []() -> PropertyDataTypeHash {
         return {
