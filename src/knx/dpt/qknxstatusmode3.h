@@ -35,7 +35,7 @@
 
 QT_BEGIN_NAMESPACE
 
-class Q_KNX_EXPORT QKnxStatusMode3 : public QKnxDatapointType
+class Q_KNX_EXPORT QKnxStatusMode3 : public QKnxFixedSizeDatapointType
 {
     Q_GADGET
 

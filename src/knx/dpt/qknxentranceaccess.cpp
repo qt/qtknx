@@ -38,7 +38,7 @@ QKnxEntranceAccess::QKnxEntranceAccess()
 {}
 
 QKnxEntranceAccess::QKnxEntranceAccess(quint32 idCode, Attributes attributes, quint8 index)
-    : QKnxDatapointType(MainType, SubType, TypeSize)
+    : QKnxFixedSizeDatapointType(MainType, SubType, TypeSize)
 {
     setDescription(tr("Entrance Access"));
     setRangeText(tr("Low Code, 0 0 0 0 0 0"), tr("High Code, 9 9 9 9 9 9"));

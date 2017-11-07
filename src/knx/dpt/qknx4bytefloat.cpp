@@ -43,7 +43,7 @@ QKnx4ByteFloat::QKnx4ByteFloat(float value)
 {}
 
 QKnx4ByteFloat::QKnx4ByteFloat(int subType, float value)
-    : QKnxDatapointType(MainType, subType, TypeSize)
+    : QKnxFixedSizeDatapointType(MainType, subType, TypeSize)
 {
     setDescription(tr("4 byte float value"));
     setRangeText(tr("Minimum Value, -3.40282e+38"), tr("Maximum Value, 3.40282e+38"));

@@ -40,7 +40,7 @@ QKnx1BitControlled::QKnx1BitControlled()
 {}
 
 QKnx1BitControlled::QKnx1BitControlled(int subType, bool state, bool control)
-    : QKnxDatapointType(MainType, subType, TypeSize)
+    : QKnxFixedSizeDatapointType(MainType, subType, TypeSize)
 {
     setDescription(tr("1-bit controlled"));
 

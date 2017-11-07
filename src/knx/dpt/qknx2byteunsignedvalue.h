@@ -35,7 +35,7 @@
 
 QT_BEGIN_NAMESPACE
 
-class Q_KNX_EXPORT QKnx2ByteUnsignedValue : public QKnxDatapointType
+class Q_KNX_EXPORT QKnx2ByteUnsignedValue : public QKnxFixedSizeDatapointType
 {
 public:
     QKnx2ByteUnsignedValue();

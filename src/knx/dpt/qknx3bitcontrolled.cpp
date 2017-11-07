@@ -44,7 +44,7 @@ QKnx3BitControlled::QKnx3BitControlled(bool control, NumberOfIntervals n)
 {}
 
 QKnx3BitControlled::QKnx3BitControlled(int subType, bool control, NumberOfIntervals n)
-    : QKnxDatapointType(MainType, subType, TypeSize)
+    : QKnxFixedSizeDatapointType(MainType, subType, TypeSize)
 {
     setDescription(tr("3-bit controlled"));
     setRange(QVariant(0x00), QVariant(0x0f));

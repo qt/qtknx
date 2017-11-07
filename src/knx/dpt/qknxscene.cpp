@@ -39,7 +39,7 @@ QKnxSceneNumber::QKnxSceneNumber()
 {}
 
 QKnxSceneNumber::QKnxSceneNumber(quint8 number)
-    : QKnxDatapointType(MainType, SubType, TypeSize)
+    : QKnxFixedSizeDatapointType(MainType, SubType, TypeSize)
 {
     setDescription(tr("Scene Number"));
     setRange(QVariant(0x00), QVariant(0x3f));
@@ -73,7 +73,7 @@ QKnxSceneControl::QKnxSceneControl()
 {}
 
 QKnxSceneControl::QKnxSceneControl(quint8 sceneNumber, QKnxSceneControl::Control control)
-    : QKnxDatapointType(MainType, SubType, TypeSize)
+    : QKnxFixedSizeDatapointType(MainType, SubType, TypeSize)
 {
     setDescription(tr("Scene Control"));
     setRange(QVariant(0x00), QVariant(0xbf));
@@ -126,7 +126,7 @@ QKnxSceneInfo::QKnxSceneInfo()
 {}
 
 QKnxSceneInfo::QKnxSceneInfo(quint8 sceneNumber, QKnxSceneInfo::Info info)
-    : QKnxDatapointType(MainType, SubType, TypeSize)
+    : QKnxFixedSizeDatapointType(MainType, SubType, TypeSize)
 {
     setDescription(tr("Scene Information"));
     setRange(QVariant(0x00), QVariant(0x7f));

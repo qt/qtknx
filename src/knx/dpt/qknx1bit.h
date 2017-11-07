@@ -35,7 +35,7 @@
 
 QT_BEGIN_NAMESPACE
 
-class Q_KNX_EXPORT QKnx1Bit : public QKnxDatapointType
+class Q_KNX_EXPORT QKnx1Bit : public QKnxFixedSizeDatapointType
 {
 public:
     QKnx1Bit();

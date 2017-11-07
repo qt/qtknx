@@ -44,7 +44,7 @@ QKnx1Byte::QKnx1Byte(quint8 value)
 {}
 
 QKnx1Byte::QKnx1Byte(int subType, quint8 value)
-    : QKnxDatapointType(MainType, subType, TypeSize)
+    : QKnxFixedSizeDatapointType(MainType, subType, TypeSize)
 {
     setDescription(tr("1-byte"));
     setRange(QVariant(0x00), QVariant(0xff));

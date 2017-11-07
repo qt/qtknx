@@ -44,7 +44,7 @@ QKnx1Bit::QKnx1Bit(bool bit)
 {}
 
 QKnx1Bit::QKnx1Bit(int subType, bool bit)
-    : QKnxDatapointType(MainType, subType, TypeSize)
+    : QKnxFixedSizeDatapointType(MainType, subType, TypeSize)
 {
     setDescription(tr("1-bit"));
     setRangeText(tr("true"), tr("false"));

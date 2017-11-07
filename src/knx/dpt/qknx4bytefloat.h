@@ -35,7 +35,7 @@
 
 QT_BEGIN_NAMESPACE
 
-class Q_KNX_EXPORT QKnx4ByteFloat : public QKnxDatapointType
+class Q_KNX_EXPORT QKnx4ByteFloat : public QKnxFixedSizeDatapointType
 {
 public:
 

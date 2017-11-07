@@ -43,7 +43,7 @@ QKnx8BitSignedValue::QKnx8BitSignedValue(qint8 value)
 {}
 
 QKnx8BitSignedValue::QKnx8BitSignedValue(int subType, qint8 value)
-    : QKnxDatapointType(MainType, subType, TypeSize)
+    : QKnxFixedSizeDatapointType(MainType, subType, TypeSize)
 {
     setRangeText(tr("-128"), tr("127"));
     setRange(QVariant(0x00), QVariant(0xff));

@@ -37,7 +37,7 @@
 
 QT_BEGIN_NAMESPACE
 
-class Q_KNX_EXPORT QKnxTimeOfDay : public QKnxDatapointType
+class Q_KNX_EXPORT QKnxTimeOfDay : public QKnxFixedSizeDatapointType
 {
 public:
     QKnxTimeOfDay();
@@ -67,7 +67,7 @@ public:
     bool isValid() const override;
 };
 
-class Q_KNX_EXPORT QKnxDate : public QKnxDatapointType
+class Q_KNX_EXPORT QKnxDate : public QKnxFixedSizeDatapointType
 {
 public:
     QKnxDate();
@@ -93,7 +93,7 @@ public:
     bool isValid() const override;
 };
 
-class Q_KNX_EXPORT QKnxDateTime : public QKnxDatapointType
+class Q_KNX_EXPORT QKnxDateTime : public QKnxFixedSizeDatapointType
 {
     Q_GADGET
 

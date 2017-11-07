@@ -40,7 +40,7 @@ QKnxStatusMode3::QKnxStatusMode3()
 {}
 
 QKnxStatusMode3::QKnxStatusMode3(Mode mode, StatusFlags statusFlags)
-    : QKnxDatapointType(MainType, SubType, TypeSize)
+    : QKnxFixedSizeDatapointType(MainType, SubType, TypeSize)
 {
     setDescription(tr("Status with Mode"));
     setRange(QVariant(0x01), QVariant(0xfc));

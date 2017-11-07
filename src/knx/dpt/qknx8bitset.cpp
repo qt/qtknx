@@ -44,7 +44,7 @@ QKnx8BitSet::QKnx8BitSet(quint8 value)
 {}
 
 QKnx8BitSet::QKnx8BitSet(int subType, quint8 value)
-    : QKnxDatapointType(MainType, subType, TypeSize)
+    : QKnxFixedSizeDatapointType(MainType, subType, TypeSize)
 {
     setDescription(tr("8-bit set"));
     setRange(QVariant(0x00), QVariant(0xff));

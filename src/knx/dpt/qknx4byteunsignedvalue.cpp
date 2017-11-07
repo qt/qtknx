@@ -43,7 +43,7 @@ QKnx4ByteUnsignedValue::QKnx4ByteUnsignedValue(quint32 value)
 {}
 
 QKnx4ByteUnsignedValue::QKnx4ByteUnsignedValue(int subType, quint32 value)
-    : QKnxDatapointType(MainType, subType, TypeSize)
+    : QKnxFixedSizeDatapointType(MainType, subType, TypeSize)
 {
     setDescription(tr("4-byte unsigned value"));
     setRangeText(tr("Minimum Value, 0"), tr("Maximum Value, 4 294 967 295"));

@@ -35,7 +35,7 @@
 
 QT_BEGIN_NAMESPACE
 
-class Q_KNX_EXPORT QKnx4ByteSignedValue : public QKnxDatapointType
+class Q_KNX_EXPORT QKnx4ByteSignedValue : public QKnxFixedSizeDatapointType
 {
 public:
 

@@ -281,6 +281,11 @@ bool QKnxDatapointType::operator!=(const QKnxDatapointType &other) const
 
 // -- private
 
+void QKnxDatapointType::resize(int newSize)
+{
+    d_ptr->m_bytes.resize(newSize);
+}
+
 QKnxDatapointType::QKnxDatapointType(QKnxDatapointTypePrivate &dd)
     : d_ptr(new QKnxDatapointTypePrivate(dd))
 {}

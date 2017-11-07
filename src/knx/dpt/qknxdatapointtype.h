@@ -210,13 +210,6 @@ public:
     }
 
     bool setByte(quint16 index, quint8 bytes);
-    template <typename T> bool setBytes(const T &bytesToSet, quint16 index, quint16 count)
-    {
-        if (((bytesToSet.size() - index) < count) || (size() != count))
-            return false;
-        std::copy(std::begin(bytesToSet), std::end(bytesToSet), data());
-        return true;
-    }
 
     QKnxDatapointType(const QKnxDatapointType &other);
     QKnxDatapointType &operator=(const QKnxDatapointType &other);
@@ -241,12 +234,59 @@ public:
 
     static const constexpr int SubType = 0x00;
 
+protected:
+    void resize(int newSize);
+    template <typename T> bool setBytes(const T &bytesToSet, quint16 index, quint16 count)
+    {
+        if (((bytesToSet.size() - index) < count) || (size() != count))
+            return false;
+        std::copy(std::begin(bytesToSet), std::end(bytesToSet), data());
+        return true;
+    }
+
 private:
     QKnxDatapointType() = delete;
     explicit QKnxDatapointType(QKnxDatapointTypePrivate &dd);
 
 private:
     QSharedDataPointer<QKnxDatapointTypePrivate> d_ptr;
+};
+
+class Q_KNX_EXPORT QKnxFixedSizeDatapointType : public QKnxDatapointType
+{
+public:
+    QKnxFixedSizeDatapointType(Type type, int size)
+        : QKnxDatapointType(type, size) {}
+    QKnxFixedSizeDatapointType(const QString &dptId, int size)
+        : QKnxDatapointType(dptId, size) {}
+    QKnxFixedSizeDatapointType(quint16 mainType, quint16 subType, int size)
+        : QKnxDatapointType(mainType, subType, size) {}
+
+    using QKnxDatapointType::setBytes;
+
+private:
+    using QKnxDatapointType::resize;
+};
+
+class Q_KNX_EXPORT QKnxVariableSizeDatapointType : public QKnxDatapointType
+{
+public:
+    QKnxVariableSizeDatapointType(Type type, int size)
+        : QKnxDatapointType(type, size) {}
+    QKnxVariableSizeDatapointType(const QString &dptId, int size)
+        : QKnxDatapointType(dptId, size) {}
+    QKnxVariableSizeDatapointType(quint16 mainType, quint16 subType, int size)
+        : QKnxDatapointType(mainType, subType, size) {}
+
+    template <typename T> bool setBytes(const T &bytesToSet, quint16 index, quint16 count)
+    {
+        if ((bytesToSet.size() - index) < count)
+            return false;
+
+        resize(count);
+        std::copy(std::begin(bytesToSet), std::end(bytesToSet), data());
+        return true;
+    }
 };
 
 QT_END_NAMESPACE

@@ -44,7 +44,7 @@ QKnx8BitUnsignedValue::QKnx8BitUnsignedValue(double value)
 {}
 
 QKnx8BitUnsignedValue::QKnx8BitUnsignedValue(int subType, double value)
-    : QKnxDatapointType(MainType, subType, TypeSize)
+    : QKnxFixedSizeDatapointType(MainType, subType, TypeSize)
 {
     setDescription(tr("8-bit unsigned value"));
     setRange(QVariant(0x00), QVariant(0xff));

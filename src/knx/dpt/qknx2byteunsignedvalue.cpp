@@ -45,7 +45,7 @@ QKnx2ByteUnsignedValue::QKnx2ByteUnsignedValue(quint32 value)
 {}
 
 QKnx2ByteUnsignedValue::QKnx2ByteUnsignedValue(int subType, quint32 value)
-    : QKnxDatapointType(MainType, subType, TypeSize)
+    : QKnxFixedSizeDatapointType(MainType, subType, TypeSize)
 {
     setDescription(tr("2-byte unsigned value"));
     setRange(QVariant(0x0000), QVariant(0xffff));

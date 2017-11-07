@@ -40,7 +40,7 @@ QKnxTimeOfDay::QKnxTimeOfDay()
 {}
 
 QKnxTimeOfDay::QKnxTimeOfDay(const QKnxTime &time)
-    : QKnxDatapointType(MainType, SubType, TypeSize)
+    : QKnxFixedSizeDatapointType(MainType, SubType, TypeSize)
 {
     setDescription(tr("Time of day"));
     setRangeText(tr("No day, 00:00:00"), tr("Sunday, 23:59:59"));
@@ -135,7 +135,7 @@ QKnxDate::QKnxDate()
 }
 
 QKnxDate::QKnxDate(const QDate &date)
-    : QKnxDatapointType(MainType, SubType, TypeSize)
+    : QKnxFixedSizeDatapointType(MainType, SubType, TypeSize)
 {
     setValue(date);
 }
@@ -215,7 +215,7 @@ QKnxDateTime::QKnxDateTime()
 
 QKnxDateTime::QKnxDateTime(const QDate &date, const QKnxTime24 &time, Attributes attributes,
         ClockQuality quality)
-    : QKnxDatapointType(MainType, SubType, TypeSize)
+    : QKnxFixedSizeDatapointType(MainType, SubType, TypeSize)
 {
     setDescription(tr("Date Time"));
     setMinimumText(tr("Monday, 1900-01-01; Any day, 00:00:00"));
