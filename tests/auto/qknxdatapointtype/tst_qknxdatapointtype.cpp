@@ -45,6 +45,7 @@
 #include <QtKnx/qknxdatapointtypefactory.h>
 #include <QtKnx/qknxdatetime.h>
 #include <QtKnx/qknxentranceaccess.h>
+#include <QtKnx/qknxscene.h>
 #include <QtKnx/qknxstatusmode3.h>
 #include <QtKnx/qknxtime.h>
 #include <QtKnx/qknxutils.h>
@@ -71,9 +72,12 @@ private slots:
     void dpt13_4ByteSignedValue();
     void dpt14_4ByteFloat();
     void dpt15_EntranceAccess();
+    void dpt17_SceneNumber();
+    void dpt18_SceneControl();
     void dpt19_DateTime();
     void dpt20_1Byte();
     void dpt21_8BitSet();
+    void dpt26_SceneInfo();
 };
 
 void tst_QKnxDatapointType::datapointType()
@@ -788,6 +792,76 @@ void tst_QKnxDatapointType::dpt15_EntranceAccess()
     QCOMPARE(dpt.digit(3), qint8(1));
 
     // TODO: Extend the auto-test.
+}
+
+void tst_QKnxDatapointType::dpt17_SceneNumber()
+{
+    QKnxSceneNumber dpt;
+    QCOMPARE(dpt.size(), 1);
+    QCOMPARE(dpt.mainType(), 17);
+    QCOMPARE(dpt.subType(), 0x01);
+    QCOMPARE(dpt.isValid(), true);
+    QCOMPARE(dpt.sceneNumber(), quint8(0));
+
+    QCOMPARE(dpt.setSceneNumber(63), true);
+    QCOMPARE(dpt.isValid(), true);
+    QCOMPARE(dpt.sceneNumber(), quint8(63));
+    QCOMPARE(dpt.setSceneNumber(0), true);
+    QCOMPARE(dpt.isValid(), true);
+    QCOMPARE(dpt.sceneNumber(), quint8(0));
+    QCOMPARE(dpt.setSceneNumber(64), false);
+    QCOMPARE(dpt.isValid(), true);
+    QCOMPARE(dpt.sceneNumber(), quint8(0));
+
+    dpt.setBytes(QByteArray::fromHex("ff"), 0, 1);
+    QCOMPARE(dpt.isValid(), false);
+    QCOMPARE(dpt.sceneNumber(), quint8(63));
+}
+
+void tst_QKnxDatapointType::dpt18_SceneControl()
+{
+    QKnxSceneControl dpt;
+    QCOMPARE(dpt.size(), 1);
+    QCOMPARE(dpt.mainType(), 18);
+    QCOMPARE(dpt.subType(), 0x01);
+    QCOMPARE(dpt.isValid(), true);
+    QCOMPARE(dpt.sceneNumber(), quint8(0));
+    QCOMPARE(dpt.control(), QKnxSceneControl::Control::Activate);
+
+    QCOMPARE(dpt.setSceneNumber(63), true);
+    QCOMPARE(dpt.isValid(), true);
+    QCOMPARE(dpt.sceneNumber(), quint8(63));
+    QCOMPARE(dpt.setSceneNumber(0), true);
+    QCOMPARE(dpt.isValid(), true);
+    QCOMPARE(dpt.sceneNumber(), quint8(0));
+    QCOMPARE(dpt.setSceneNumber(64), false);
+    QCOMPARE(dpt.isValid(), true);
+    QCOMPARE(dpt.sceneNumber(), quint8(0));
+
+    QCOMPARE(dpt.setControl(QKnxSceneControl::Activate), true);
+    QCOMPARE(dpt.isValid(), true);
+    QCOMPARE(dpt.control(), QKnxSceneControl::Activate);
+    QCOMPARE(dpt.setControl(QKnxSceneControl::Learn), true);
+    QCOMPARE(dpt.isValid(), true);
+    QCOMPARE(dpt.control(), QKnxSceneControl::Learn);
+    QCOMPARE(dpt.setControl(QKnxSceneControl::Control(2)), false);
+    QCOMPARE(dpt.isValid(), true);
+    QCOMPARE(dpt.control(), QKnxSceneControl::Learn);
+
+    dpt.setBytes(QByteArray::fromHex("ff"), 0, 1);
+    QCOMPARE(dpt.isValid(), false);
+    QCOMPARE(dpt.sceneNumber(), quint8(63));
+    QCOMPARE(dpt.control(), QKnxSceneControl::Control::Learn);
+
+    dpt.setBytes(QByteArray::fromHex("80"), 0, 1);
+    QCOMPARE(dpt.isValid(), true);
+    QCOMPARE(dpt.sceneNumber(), quint8(0));
+    QCOMPARE(dpt.control(), QKnxSceneControl::Control::Learn);
+
+    dpt.setBytes(QByteArray::fromHex("40"), 0, 1);
+    QCOMPARE(dpt.isValid(), false);
+    QCOMPARE(dpt.sceneNumber(), quint8(0));
+    QCOMPARE(dpt.control(), QKnxSceneControl::Control::Activate);
 }
 
 void tst_QKnxDatapointType::dpt20_1Byte()
@@ -1590,6 +1664,52 @@ void tst_QKnxDatapointType::dpt19_DateTime()
     QCOMPARE(time.staticMetaObject.enumeratorCount(), 1);
 
     // TODO: Extend the auto-test.
+}
+
+void tst_QKnxDatapointType::dpt26_SceneInfo()
+{
+    QKnxSceneInfo dpt;
+    QCOMPARE(dpt.size(), 1);
+    QCOMPARE(dpt.mainType(), 26);
+    QCOMPARE(dpt.subType(), 0x01);
+    QCOMPARE(dpt.isValid(), true);
+    QCOMPARE(dpt.sceneNumber(), quint8(0));
+    QCOMPARE(dpt.info(), QKnxSceneInfo::Info::Active);
+
+    QCOMPARE(dpt.setSceneNumber(63), true);
+    QCOMPARE(dpt.isValid(), true);
+    QCOMPARE(dpt.sceneNumber(), quint8(63));
+    QCOMPARE(dpt.setSceneNumber(0), true);
+    QCOMPARE(dpt.isValid(), true);
+    QCOMPARE(dpt.sceneNumber(), quint8(0));
+    QCOMPARE(dpt.setSceneNumber(64), false);
+    QCOMPARE(dpt.isValid(), true);
+    QCOMPARE(dpt.sceneNumber(), quint8(0));
+
+    QCOMPARE(dpt.setInfo(QKnxSceneInfo::Active), true);
+    QCOMPARE(dpt.isValid(), true);
+    QCOMPARE(dpt.info(), QKnxSceneInfo::Active);
+    QCOMPARE(dpt.setInfo(QKnxSceneInfo::Inactive), true);
+    QCOMPARE(dpt.isValid(), true);
+    QCOMPARE(dpt.info(), QKnxSceneInfo::Inactive);
+    QCOMPARE(dpt.setInfo(QKnxSceneInfo::Info(2)), false);
+    QCOMPARE(dpt.isValid(), true);
+    QCOMPARE(dpt.info(), QKnxSceneInfo::Inactive);
+
+    dpt.setBytes(QByteArray::fromHex("ff"), 0, 1);
+    QCOMPARE(dpt.isValid(), false);
+    QCOMPARE(dpt.sceneNumber(), quint8(63));
+    QCOMPARE(dpt.info(), QKnxSceneInfo::Info::Inactive);
+
+    dpt.setBytes(QByteArray::fromHex("80"), 0, 1);
+    QCOMPARE(dpt.isValid(), false);
+    QCOMPARE(dpt.sceneNumber(), quint8(0));
+    QCOMPARE(dpt.info(), QKnxSceneInfo::Info::Active);
+
+    dpt.setBytes(QByteArray::fromHex("42"), 0, 1);
+    QCOMPARE(dpt.isValid(), true);
+    QCOMPARE(dpt.sceneNumber(), quint8(2));
+    QCOMPARE(dpt.info(), QKnxSceneInfo::Info::Inactive);
 }
 
 QTEST_MAIN(tst_QKnxDatapointType)

@@ -45,6 +45,7 @@
 #include "qknx8bitunsignedvalue.h"
 #include "qknxdatetime.h"
 #include "qknxentranceaccess.h"
+#include "qknxscene.h"
 #include "qknxstatusmode3.h"
 
 QT_BEGIN_NAMESPACE
@@ -332,6 +333,12 @@ QKnxDatapointTypeFactory::QKnxDatapointTypeFactory()
     // DPT-15
     registerType<QKnxEntranceAccess>();
 
+    // DPT-17
+    registerType<QKnxSceneNumber>();
+
+    // DPT-18
+    registerType<QKnxSceneControl>();
+
     // DPT-19
     registerType<QKnxDateTime>();
 
@@ -356,6 +363,9 @@ QKnxDatapointTypeFactory::QKnxDatapointTypeFactory()
     registerType<QKnx8BitSet>();
     registerType<QKnxGeneralStatus>();
     registerType<QKnxDeviceControl>();
+
+    // DPT-26
+    registerType<QKnxSceneInfo>();
 }
 
 QHash<int, int> &QKnxDatapointTypeFactory::sizeTable()
