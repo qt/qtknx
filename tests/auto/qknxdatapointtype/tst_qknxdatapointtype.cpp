@@ -473,89 +473,40 @@ void tst_QKnxDatapointType::dpt8_2ByteSignedValue()
     // TODO: Extend.
 }
 
-void tst_QKnxDatapointType::dpt21_8BitSet()
+void tst_QKnxDatapointType::dpt9_2ByteFloat()
 {
-    QKnx8BitSet dpt;
-    QCOMPARE(dpt.mainType(), 0x15);
-    QCOMPARE(dpt.subType(), 0x00);
+    QKnx2ByteFloat dpt;
+    QCOMPARE(dpt.size(), 2);
+    QCOMPARE(dpt.mainType(), 9);
+    QCOMPARE(dpt.subType(), 0);
     QCOMPARE(dpt.isValid(), true);
 
-    QKnxGeneralStatus dptGS;
-    QCOMPARE(dptGS.mainType(), 0x15);
-    QCOMPARE(dptGS.subType(), 0x01);
-    QCOMPARE(dptGS.isValid(), true);
-    QCOMPARE(dptGS.isSet(QKnxGeneralStatus::Fault), false);
-    QCOMPARE(dptGS.isSet(QKnxGeneralStatus::AlarmUnacknowledged), false);
-    QCOMPARE(dptGS.isSet(QKnxGeneralStatus::InAlarm), false);
-    QCOMPARE(dptGS.isSet(QKnxGeneralStatus::OutOfService), false);
-    QCOMPARE(dptGS.isSet(QKnxGeneralStatus::Overridden), false);
-    dptGS.setAttribute(QKnxGeneralStatus::OutOfService);
-    QCOMPARE(dptGS.isValid(), true);
-    QCOMPARE(dptGS.isSet(QKnxGeneralStatus::OutOfService), true);
-    dptGS.setValue(QKnxGeneralStatus::Attributes().setFlag(QKnxGeneralStatus::Fault, true)
-        .setFlag(QKnxGeneralStatus::OutOfService, false));
-    dptGS.setAttribute(QKnxGeneralStatus::Overridden);
-    dptGS.removeAttribute(QKnxGeneralStatus::Overridden);
-    QCOMPARE(dptGS.isSet(QKnxGeneralStatus::Fault), true);
-    QCOMPARE(dptGS.isSet(QKnxGeneralStatus::AlarmUnacknowledged), false);
-    QCOMPARE(dptGS.isSet(QKnxGeneralStatus::InAlarm), false);
-    QCOMPARE(dptGS.isSet(QKnxGeneralStatus::OutOfService), false);
-    QCOMPARE(dptGS.isSet(QKnxGeneralStatus::Overridden), false);
-    QCOMPARE(dptGS.isValid(), true);
-    dptGS.setBytes(QByteArray::fromHex("ff"), 0, 1);
-    QCOMPARE(dptGS.isValid(), false);
-    QCOMPARE(dptGS.isSet(QKnxGeneralStatus::Fault), true);
-    QCOMPARE(dptGS.isSet(QKnxGeneralStatus::AlarmUnacknowledged), true);
-    QCOMPARE(dptGS.isSet(QKnxGeneralStatus::InAlarm), true);
-    QCOMPARE(dptGS.isSet(QKnxGeneralStatus::OutOfService), true);
-    QCOMPARE(dptGS.isSet(QKnxGeneralStatus::Overridden), true);
-    dptGS.setBytes(QByteArray::fromHex("1f"), 0, 1);
-    QCOMPARE(dptGS.isValid(), true);
-    QCOMPARE(dptGS.isSet(QKnxGeneralStatus::Fault), true);
-    QCOMPARE(dptGS.isSet(QKnxGeneralStatus::AlarmUnacknowledged), true);
-    QCOMPARE(dptGS.isSet(QKnxGeneralStatus::InAlarm), true);
-    QCOMPARE(dptGS.isSet(QKnxGeneralStatus::OutOfService), true);
-    QCOMPARE(dptGS.isSet(QKnxGeneralStatus::Overridden), true);
+    dpt.setValue(float(-5.2));
+    QCOMPARE(dpt.value(), -5.2f);
+    dpt.setValue(float(-671088.64));
+    QCOMPARE(dpt.isValid(), true);
+    QCOMPARE(dpt.value(), -671088.64f);
+    dpt.setValue(float(670760.96));
+    QCOMPARE(dpt.isValid(), true);
+    QCOMPARE(dpt.value(), 670760.96f);
 
-    QKnxDeviceControl dptDC;
-    QCOMPARE(dptDC.mainType(), 0x15);
-    QCOMPARE(dptDC.subType(), 0x02);
-    QCOMPARE(dptDC.isValid(), true);
-    QCOMPARE(dptDC.isSet(QKnxDeviceControl::UserStopped), false);
-    QCOMPARE(dptDC.isSet(QKnxDeviceControl::OwnIA), false);
-    QCOMPARE(dptDC.isSet(QKnxDeviceControl::VerifyMode), false);
-    dptDC.setAttribute(QKnxDeviceControl::OwnIA);
-    QCOMPARE(dptDC.isValid(), true);
-    QCOMPARE(dptDC.isSet(QKnxDeviceControl::OwnIA), true);
-    dptDC.removeAttribute(QKnxDeviceControl::OwnIA);
-    QCOMPARE(dptDC.isValid(), true);
-    QCOMPARE(dptDC.isSet(QKnxDeviceControl::OwnIA), false);
-    dptDC.setValue(QKnxDeviceControl::Attributes().setFlag(QKnxDeviceControl::VerifyMode, true));
-    QCOMPARE(dptDC.isValid(), true);
-    QCOMPARE(dptDC.isSet(QKnxDeviceControl::VerifyMode), true);
-    QCOMPARE(dptDC.isSet(QKnxDeviceControl::UserStopped), false);
-    QCOMPARE(dptDC.isSet(QKnxDeviceControl::OwnIA), false);
-    dptDC.setBytes(QByteArray::fromHex("ff"), 0, 1);
-    QCOMPARE(dptDC.isValid(), false);
-    QCOMPARE(dptDC.isSet(QKnxDeviceControl::UserStopped), true);
-    QCOMPARE(dptDC.isSet(QKnxDeviceControl::OwnIA), true);
-    QCOMPARE(dptDC.isSet(QKnxDeviceControl::VerifyMode), true);
-    dptDC.setBytes(QByteArray::fromHex("1f"), 0, 1);
-    QCOMPARE(dptDC.isValid(), false);
-    QCOMPARE(dptDC.isSet(QKnxDeviceControl::UserStopped), true);
-    QCOMPARE(dptDC.isSet(QKnxDeviceControl::OwnIA), true);
-    QCOMPARE(dptDC.isSet(QKnxDeviceControl::VerifyMode), true);
-    dptDC.setBytes(QByteArray::fromHex("07"), 0, 1);
-    QCOMPARE(dptDC.isValid(), true);
-    QCOMPARE(dptDC.isSet(QKnxDeviceControl::UserStopped), true);
-    QCOMPARE(dptDC.isSet(QKnxDeviceControl::OwnIA), true);
-    QCOMPARE(dptDC.isSet(QKnxDeviceControl::VerifyMode), true);
-    dptDC.setBytes(QByteArray::fromHex("0f"), 0, 1);
-    QCOMPARE(dptDC.isValid(), true);
-    QCOMPARE(dptDC.isSet(QKnxDeviceControl::UserStopped), true);
-    QCOMPARE(dptDC.isSet(QKnxDeviceControl::OwnIA), true);
-    QCOMPARE(dptDC.isSet(QKnxDeviceControl::VerifyMode), true);
-    QCOMPARE(dptDC.isSet(QKnxDeviceControl::SafeState), true);
+    QKnxTemperatureCelcius dptTemp;
+    QCOMPARE(dptTemp.size(), 2);
+    QCOMPARE(dptTemp.mainType(), 9);
+    QCOMPARE(dptTemp.subType(), 1);
+    QCOMPARE(dptTemp.isValid(), true);
+    dptTemp.setValue(float(-5.2));
+    QCOMPARE(dptTemp.value(), -5.2f);
+    QCOMPARE(dptTemp.setValue(float(-671088.64)), false);
+    QCOMPARE(dptTemp.value(), float(-5.2));
+    QCOMPARE(dptTemp.setValue(float(670760.96)), false);
+    QCOMPARE(dptTemp.value(), float(-5.2));
+    dptTemp.setValue(float(-273));
+    QCOMPARE(dptTemp.value(), -272.96f);
+    dptTemp.setValue(float(670760));
+    QCOMPARE(dptTemp.value(), float(670760));
+
+    // TODO: Extend the auto-test.
 }
 
 void tst_QKnxDatapointType::dpt10_TimeOfDay()
@@ -652,6 +603,23 @@ void tst_QKnxDatapointType::dpt11_Date()
     QCOMPARE(QKnxDatapointTypeFactory::instance().containsMainType(date.mainType()), true);
 }
 
+void tst_QKnxDatapointType::dpt12_4ByteUnsignedValue()
+{
+    QKnx4ByteUnsignedValue dpt;
+    QCOMPARE(dpt.mainType(), 0x0c);
+    QCOMPARE(dpt.subType(), 0x00);
+    QCOMPARE(dpt.isValid(), true);
+    QCOMPARE(dpt.setValue(4294967295), true);
+    QCOMPARE(quint32(dpt.value()), quint32(4294967295));
+
+    QKnxValue4UCount dpt2;
+    QCOMPARE(dpt2.mainType(), 0x0c);
+    QCOMPARE(dpt2.subType(), 0x01);
+    QCOMPARE(dpt2.isValid(), true);
+    QCOMPARE(dpt2.setValue(4294967295), true);
+    QCOMPARE(quint32(dpt2.value()), quint32(4294967295));
+}
+
 void tst_QKnxDatapointType::dpt13_4ByteSignedValue()
 {
     QKnx4ByteSignedValue dpt;
@@ -679,59 +647,6 @@ void tst_QKnxDatapointType::dpt13_4ByteSignedValue()
     QCOMPARE(dpt2.setValue(2147483647), true);
     QCOMPARE(dpt2.isValid(), true);
     QCOMPARE(qint32(dpt2.value()), qint32(2147483647));
-}
-
-void tst_QKnxDatapointType::dpt9_2ByteFloat()
-{
-    QKnx2ByteFloat dpt;
-    QCOMPARE(dpt.size(), 2);
-    QCOMPARE(dpt.mainType(), 9);
-    QCOMPARE(dpt.subType(), 0);
-    QCOMPARE(dpt.isValid(), true);
-
-    dpt.setValue(float(-5.2));
-    QCOMPARE(dpt.value(), -5.2f);
-    dpt.setValue(float(-671088.64));
-    QCOMPARE(dpt.isValid(), true);
-    QCOMPARE(dpt.value(), -671088.64f);
-    dpt.setValue(float(670760.96));
-    QCOMPARE(dpt.isValid(), true);
-    QCOMPARE(dpt.value(), 670760.96f);
-
-    QKnxTemperatureCelcius dptTemp;
-    QCOMPARE(dptTemp.size(), 2);
-    QCOMPARE(dptTemp.mainType(), 9);
-    QCOMPARE(dptTemp.subType(), 1);
-    QCOMPARE(dptTemp.isValid(), true);
-    dptTemp.setValue(float(-5.2));
-    QCOMPARE(dptTemp.value(), -5.2f);
-    QCOMPARE(dptTemp.setValue(float(-671088.64)), false);
-    QCOMPARE(dptTemp.value(), float(-5.2));
-    QCOMPARE(dptTemp.setValue(float(670760.96)), false);
-    QCOMPARE(dptTemp.value(), float(-5.2));
-    dptTemp.setValue(float(-273));
-    QCOMPARE(dptTemp.value(), -272.96f);
-    dptTemp.setValue(float(670760));
-    QCOMPARE(dptTemp.value(), float(670760));
-
-    // TODO: Extend the auto-test.
-}
-
-void tst_QKnxDatapointType::dpt12_4ByteUnsignedValue()
-{
-    QKnx4ByteUnsignedValue dpt;
-    QCOMPARE(dpt.mainType(), 0x0c);
-    QCOMPARE(dpt.subType(), 0x00);
-    QCOMPARE(dpt.isValid(), true);
-    QCOMPARE(dpt.setValue(4294967295), true);
-    QCOMPARE(quint32(dpt.value()), quint32(4294967295));
-
-    QKnxValue4UCount dpt2;
-    QCOMPARE(dpt2.mainType(), 0x0c);
-    QCOMPARE(dpt2.subType(), 0x01);
-    QCOMPARE(dpt2.isValid(), true);
-    QCOMPARE(dpt2.setValue(4294967295), true);
-    QCOMPARE(quint32(dpt2.value()), quint32(4294967295));
 }
 
 void tst_QKnxDatapointType::dpt14_4ByteFloat()
@@ -862,6 +777,52 @@ void tst_QKnxDatapointType::dpt18_SceneControl()
     QCOMPARE(dpt.isValid(), false);
     QCOMPARE(dpt.sceneNumber(), quint8(0));
     QCOMPARE(dpt.control(), QKnxSceneControl::Control::Activate);
+}
+
+void tst_QKnxDatapointType::dpt19_DateTime()
+{
+    QKnxTime24 time;
+    QCOMPARE(time, QKnxTime24());
+    QCOMPARE(time.isNull(), true);
+    QCOMPARE(time.isValid(), false);
+    QCOMPARE(time.hour(), qint8(-1));
+    QCOMPARE(time.minute(), qint8(-1));
+    QCOMPARE(time.second(), qint8(-1));
+    QCOMPARE(time.dayOfWeek(), QKnxTime24::DayOfWeek::Ignore);
+
+    time.setHMS(23, 59, 59);
+    QCOMPARE(time.isValid(), true);
+
+    time.setHMS(24, 0, 0);
+    QCOMPARE(time.isValid(), true);
+
+    time.setDayOfWeek(QKnxTime24::DayOfWeek::Saturday);
+    QCOMPARE(time.isValid(), true);
+
+    QKnxDateTime dt;
+    QCOMPARE(dt.isValid(), false);
+    QCOMPARE(dt.date(), QDate(2000, 0, 0));
+    QCOMPARE(dt.time(), QKnxTime24(0, 0));
+    QKnxDateTime::Attributes testAttributes =
+        QKnxDateTime::Attributes().setFlag(QKnxDateTime::Attribute::Fault, false)
+            .setFlag(QKnxDateTime::Attribute::WorkingDay, false)
+            .setFlag(QKnxDateTime::Attribute::WorkingDay, false)
+            .setFlag(QKnxDateTime::Attribute::YearInvalild, false)
+            .setFlag(QKnxDateTime::Attribute::DateInvalid, false)
+            .setFlag(QKnxDateTime::Attribute::DayOfWeekInvalid, false)
+            .setFlag(QKnxDateTime::Attribute::TimeInvalid, false)
+            .setFlag(QKnxDateTime::Attribute::StandardSummerTime, false);
+    QCOMPARE(dt.attributes(), testAttributes);
+    QCOMPARE(dt.clockQuality(), QKnxDateTime::ClockQuality::WithoutExtendedSyncSignal);
+
+    QCOMPARE(dt.setValue({ 2013, 11, 30 }, { 23, 45, 0 }, QKnxDateTime::Attribute::Fault,
+        QKnxDateTime::ClockQuality::WithExtendedSyncSignal), true);
+    QCOMPARE(dt.isValid(), true);
+    QCOMPARE(QKnxDatapointTypeFactory::instance().containsMainType(dt.mainType()), true);
+
+    QCOMPARE(time.staticMetaObject.enumeratorCount(), 1);
+
+    // TODO: Extend the auto-test.
 }
 
 void tst_QKnxDatapointType::dpt20_1Byte()
@@ -1620,50 +1581,89 @@ void tst_QKnxDatapointType::dpt20_1Byte()
     QCOMPARE(dptConnectBis.value(), quint8(2));
 }
 
-void tst_QKnxDatapointType::dpt19_DateTime()
+void tst_QKnxDatapointType::dpt21_8BitSet()
 {
-    QKnxTime24 time;
-    QCOMPARE(time, QKnxTime24());
-    QCOMPARE(time.isNull(), true);
-    QCOMPARE(time.isValid(), false);
-    QCOMPARE(time.hour(), qint8(-1));
-    QCOMPARE(time.minute(), qint8(-1));
-    QCOMPARE(time.second(), qint8(-1));
-    QCOMPARE(time.dayOfWeek(), QKnxTime24::DayOfWeek::Ignore);
+    QKnx8BitSet dpt;
+    QCOMPARE(dpt.mainType(), 0x15);
+    QCOMPARE(dpt.subType(), 0x00);
+    QCOMPARE(dpt.isValid(), true);
 
-    time.setHMS(23, 59, 59);
-    QCOMPARE(time.isValid(), true);
+    QKnxGeneralStatus dptGS;
+    QCOMPARE(dptGS.mainType(), 0x15);
+    QCOMPARE(dptGS.subType(), 0x01);
+    QCOMPARE(dptGS.isValid(), true);
+    QCOMPARE(dptGS.isSet(QKnxGeneralStatus::Fault), false);
+    QCOMPARE(dptGS.isSet(QKnxGeneralStatus::AlarmUnacknowledged), false);
+    QCOMPARE(dptGS.isSet(QKnxGeneralStatus::InAlarm), false);
+    QCOMPARE(dptGS.isSet(QKnxGeneralStatus::OutOfService), false);
+    QCOMPARE(dptGS.isSet(QKnxGeneralStatus::Overridden), false);
+    dptGS.setAttribute(QKnxGeneralStatus::OutOfService);
+    QCOMPARE(dptGS.isValid(), true);
+    QCOMPARE(dptGS.isSet(QKnxGeneralStatus::OutOfService), true);
+    dptGS.setValue(QKnxGeneralStatus::Attributes().setFlag(QKnxGeneralStatus::Fault, true)
+        .setFlag(QKnxGeneralStatus::OutOfService, false));
+    dptGS.setAttribute(QKnxGeneralStatus::Overridden);
+    dptGS.removeAttribute(QKnxGeneralStatus::Overridden);
+    QCOMPARE(dptGS.isSet(QKnxGeneralStatus::Fault), true);
+    QCOMPARE(dptGS.isSet(QKnxGeneralStatus::AlarmUnacknowledged), false);
+    QCOMPARE(dptGS.isSet(QKnxGeneralStatus::InAlarm), false);
+    QCOMPARE(dptGS.isSet(QKnxGeneralStatus::OutOfService), false);
+    QCOMPARE(dptGS.isSet(QKnxGeneralStatus::Overridden), false);
+    QCOMPARE(dptGS.isValid(), true);
+    dptGS.setBytes(QByteArray::fromHex("ff"), 0, 1);
+    QCOMPARE(dptGS.isValid(), false);
+    QCOMPARE(dptGS.isSet(QKnxGeneralStatus::Fault), true);
+    QCOMPARE(dptGS.isSet(QKnxGeneralStatus::AlarmUnacknowledged), true);
+    QCOMPARE(dptGS.isSet(QKnxGeneralStatus::InAlarm), true);
+    QCOMPARE(dptGS.isSet(QKnxGeneralStatus::OutOfService), true);
+    QCOMPARE(dptGS.isSet(QKnxGeneralStatus::Overridden), true);
+    dptGS.setBytes(QByteArray::fromHex("1f"), 0, 1);
+    QCOMPARE(dptGS.isValid(), true);
+    QCOMPARE(dptGS.isSet(QKnxGeneralStatus::Fault), true);
+    QCOMPARE(dptGS.isSet(QKnxGeneralStatus::AlarmUnacknowledged), true);
+    QCOMPARE(dptGS.isSet(QKnxGeneralStatus::InAlarm), true);
+    QCOMPARE(dptGS.isSet(QKnxGeneralStatus::OutOfService), true);
+    QCOMPARE(dptGS.isSet(QKnxGeneralStatus::Overridden), true);
 
-    time.setHMS(24, 0, 0);
-    QCOMPARE(time.isValid(), true);
-
-    time.setDayOfWeek(QKnxTime24::DayOfWeek::Saturday);
-    QCOMPARE(time.isValid(), true);
-
-    QKnxDateTime dt;
-    QCOMPARE(dt.isValid(), false);
-    QCOMPARE(dt.date(), QDate(2000, 0, 0));
-    QCOMPARE(dt.time(), QKnxTime24(0, 0));
-    QKnxDateTime::Attributes testAttributes =
-        QKnxDateTime::Attributes().setFlag(QKnxDateTime::Attribute::Fault, false)
-            .setFlag(QKnxDateTime::Attribute::WorkingDay, false)
-            .setFlag(QKnxDateTime::Attribute::WorkingDay, false)
-            .setFlag(QKnxDateTime::Attribute::YearInvalild, false)
-            .setFlag(QKnxDateTime::Attribute::DateInvalid, false)
-            .setFlag(QKnxDateTime::Attribute::DayOfWeekInvalid, false)
-            .setFlag(QKnxDateTime::Attribute::TimeInvalid, false)
-            .setFlag(QKnxDateTime::Attribute::StandardSummerTime, false);
-    QCOMPARE(dt.attributes(), testAttributes);
-    QCOMPARE(dt.clockQuality(), QKnxDateTime::ClockQuality::WithoutExtendedSyncSignal);
-
-    QCOMPARE(dt.setValue({ 2013, 11, 30 }, { 23, 45, 0 }, QKnxDateTime::Attribute::Fault,
-        QKnxDateTime::ClockQuality::WithExtendedSyncSignal), true);
-    QCOMPARE(dt.isValid(), true);
-    QCOMPARE(QKnxDatapointTypeFactory::instance().containsMainType(dt.mainType()), true);
-
-    QCOMPARE(time.staticMetaObject.enumeratorCount(), 1);
-
-    // TODO: Extend the auto-test.
+    QKnxDeviceControl dptDC;
+    QCOMPARE(dptDC.mainType(), 0x15);
+    QCOMPARE(dptDC.subType(), 0x02);
+    QCOMPARE(dptDC.isValid(), true);
+    QCOMPARE(dptDC.isSet(QKnxDeviceControl::UserStopped), false);
+    QCOMPARE(dptDC.isSet(QKnxDeviceControl::OwnIA), false);
+    QCOMPARE(dptDC.isSet(QKnxDeviceControl::VerifyMode), false);
+    dptDC.setAttribute(QKnxDeviceControl::OwnIA);
+    QCOMPARE(dptDC.isValid(), true);
+    QCOMPARE(dptDC.isSet(QKnxDeviceControl::OwnIA), true);
+    dptDC.removeAttribute(QKnxDeviceControl::OwnIA);
+    QCOMPARE(dptDC.isValid(), true);
+    QCOMPARE(dptDC.isSet(QKnxDeviceControl::OwnIA), false);
+    dptDC.setValue(QKnxDeviceControl::Attributes().setFlag(QKnxDeviceControl::VerifyMode, true));
+    QCOMPARE(dptDC.isValid(), true);
+    QCOMPARE(dptDC.isSet(QKnxDeviceControl::VerifyMode), true);
+    QCOMPARE(dptDC.isSet(QKnxDeviceControl::UserStopped), false);
+    QCOMPARE(dptDC.isSet(QKnxDeviceControl::OwnIA), false);
+    dptDC.setBytes(QByteArray::fromHex("ff"), 0, 1);
+    QCOMPARE(dptDC.isValid(), false);
+    QCOMPARE(dptDC.isSet(QKnxDeviceControl::UserStopped), true);
+    QCOMPARE(dptDC.isSet(QKnxDeviceControl::OwnIA), true);
+    QCOMPARE(dptDC.isSet(QKnxDeviceControl::VerifyMode), true);
+    dptDC.setBytes(QByteArray::fromHex("1f"), 0, 1);
+    QCOMPARE(dptDC.isValid(), false);
+    QCOMPARE(dptDC.isSet(QKnxDeviceControl::UserStopped), true);
+    QCOMPARE(dptDC.isSet(QKnxDeviceControl::OwnIA), true);
+    QCOMPARE(dptDC.isSet(QKnxDeviceControl::VerifyMode), true);
+    dptDC.setBytes(QByteArray::fromHex("07"), 0, 1);
+    QCOMPARE(dptDC.isValid(), true);
+    QCOMPARE(dptDC.isSet(QKnxDeviceControl::UserStopped), true);
+    QCOMPARE(dptDC.isSet(QKnxDeviceControl::OwnIA), true);
+    QCOMPARE(dptDC.isSet(QKnxDeviceControl::VerifyMode), true);
+    dptDC.setBytes(QByteArray::fromHex("0f"), 0, 1);
+    QCOMPARE(dptDC.isValid(), true);
+    QCOMPARE(dptDC.isSet(QKnxDeviceControl::UserStopped), true);
+    QCOMPARE(dptDC.isSet(QKnxDeviceControl::OwnIA), true);
+    QCOMPARE(dptDC.isSet(QKnxDeviceControl::VerifyMode), true);
+    QCOMPARE(dptDC.isSet(QKnxDeviceControl::SafeState), true);
 }
 
 void tst_QKnxDatapointType::dpt26_SceneInfo()

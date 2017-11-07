@@ -68,15 +68,15 @@ bool QKnxStatusMode3::setMode(Mode mode)
 bool QKnxStatusMode3::isSet(Status status) const
 {
     if (status == Status::A)
-        return !testBit(byte(0), 7);
+        return !QKnxDatapointType::testBit(byte(0), 7);
     if (status == Status::B)
-        return !testBit(byte(0), 6);
+        return !QKnxDatapointType::testBit(byte(0), 6);
     if (status == Status::C)
-        return !testBit(byte(0), 5);
+        return !QKnxDatapointType::testBit(byte(0), 5);
     if (status == Status::D)
-        return !testBit(byte(0), 4);
+        return !QKnxDatapointType::testBit(byte(0), 4);
     if (status == Status::E)
-        return !testBit(byte(0), 3);
+        return !QKnxDatapointType::testBit(byte(0), 3);
     return false;
 }
 
