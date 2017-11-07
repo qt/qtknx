@@ -37,6 +37,7 @@
 #include "qknx2bytefloat.h"
 #include "qknx2bytesignedvalue.h"
 #include "qknx2byteunsignedvalue.h"
+#include "qknx32bitset.h"
 #include "qknx3bitcontrolled.h"
 #include "qknx4bytefloat.h"
 #include "qknx4bytesignedvalue.h"
@@ -379,6 +380,10 @@ QKnxDatapointTypeFactory::QKnxDatapointTypeFactory()
 
     // DPT-26
     registerType<QKnxSceneInfo>();
+
+    // DPT-27
+    registerType<QKnx32BitSet>();
+    registerType<QKnxCombinedInfoOnOff>();
 }
 
 QHash<int, int> &QKnxDatapointTypeFactory::sizeTable()

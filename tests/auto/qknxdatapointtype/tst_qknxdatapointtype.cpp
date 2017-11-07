@@ -40,6 +40,7 @@
 #include <QtKnx/qknx4bytesignedvalue.h>
 #include <QtKnx/qknx4byteunsignedvalue.h>
 #include <QtKnx/qknx8bitset.h>
+#include <QtKnx/qknx32bitset.h>
 #include <QtKnx/qknx8bitsignedvalue.h>
 #include <QtKnx/qknx8bitunsignedvalue.h>
 #include <QtKnx/qknxchar.h>
@@ -82,6 +83,7 @@ private slots:
     void dpt21_8BitSet();
     void dpt23_2BitSet();
     void dpt26_SceneInfo();
+    void dpt27_32BitSet();
 };
 
 void tst_QKnxDatapointType::datapointType()
@@ -1833,6 +1835,98 @@ void tst_QKnxDatapointType::dpt26_SceneInfo()
     QCOMPARE(dpt.isValid(), true);
     QCOMPARE(dpt.sceneNumber(), quint8(2));
     QCOMPARE(dpt.info(), QKnxSceneInfo::Info::Inactive);
+}
+
+void tst_QKnxDatapointType::dpt27_32BitSet()
+{
+    QKnx32BitSet dpt32;
+    QCOMPARE(dpt32.mainType(), 27);
+    QCOMPARE(dpt32.subType(), 0);
+    QCOMPARE(dpt32.size(), 4);
+
+    QKnxCombinedInfoOnOff dpt;
+    QCOMPARE(dpt.mainType(), 27);
+    QCOMPARE(dpt.subType(), 1);
+    QCOMPARE(dpt.size(), 4);
+    QCOMPARE(dpt.isValid(), true);
+
+    QCOMPARE(dpt.state(QKnxCombinedInfoOnOff::Output::First), QKnxCombinedInfoOnOff::OutputState::Off);
+    QCOMPARE(dpt.state(QKnxCombinedInfoOnOff::Output::Second), QKnxCombinedInfoOnOff::OutputState::Off);
+    QCOMPARE(dpt.state(QKnxCombinedInfoOnOff::Output::Third), QKnxCombinedInfoOnOff::OutputState::Off);
+    QCOMPARE(dpt.state(QKnxCombinedInfoOnOff::Output::Fourth), QKnxCombinedInfoOnOff::OutputState::Off);
+    QCOMPARE(dpt.state(QKnxCombinedInfoOnOff::Output::Fifth), QKnxCombinedInfoOnOff::OutputState::Off);
+    QCOMPARE(dpt.state(QKnxCombinedInfoOnOff::Output::Sixth), QKnxCombinedInfoOnOff::OutputState::Off);
+    QCOMPARE(dpt.state(QKnxCombinedInfoOnOff::Output::Seventh), QKnxCombinedInfoOnOff::OutputState::Off);
+    QCOMPARE(dpt.state(QKnxCombinedInfoOnOff::Output::Eighth), QKnxCombinedInfoOnOff::OutputState::Off);
+    QCOMPARE(dpt.state(QKnxCombinedInfoOnOff::Output::Ninth), QKnxCombinedInfoOnOff::OutputState::Off);
+    QCOMPARE(dpt.state(QKnxCombinedInfoOnOff::Output::Tenth), QKnxCombinedInfoOnOff::OutputState::Off);
+    QCOMPARE(dpt.state(QKnxCombinedInfoOnOff::Output::Eleventh), QKnxCombinedInfoOnOff::OutputState::Off);
+    QCOMPARE(dpt.state(QKnxCombinedInfoOnOff::Output::Twelfth), QKnxCombinedInfoOnOff::OutputState::Off);
+    QCOMPARE(dpt.state(QKnxCombinedInfoOnOff::Output::Thirteenth), QKnxCombinedInfoOnOff::OutputState::Off);
+    QCOMPARE(dpt.state(QKnxCombinedInfoOnOff::Output::Fourteenth), QKnxCombinedInfoOnOff::OutputState::Off);
+    QCOMPARE(dpt.state(QKnxCombinedInfoOnOff::Output::Fifteenth), QKnxCombinedInfoOnOff::OutputState::Off);
+    QCOMPARE(dpt.state(QKnxCombinedInfoOnOff::Output::Sixteenth), QKnxCombinedInfoOnOff::OutputState::Off);
+
+    QCOMPARE(dpt.validity(QKnxCombinedInfoOnOff::Output::First), QKnxCombinedInfoOnOff::OutputValidity::Invalid);
+    QCOMPARE(dpt.validity(QKnxCombinedInfoOnOff::Output::Second), QKnxCombinedInfoOnOff::OutputValidity::Invalid);
+    QCOMPARE(dpt.validity(QKnxCombinedInfoOnOff::Output::Third), QKnxCombinedInfoOnOff::OutputValidity::Invalid);
+    QCOMPARE(dpt.validity(QKnxCombinedInfoOnOff::Output::Fourth), QKnxCombinedInfoOnOff::OutputValidity::Invalid);
+    QCOMPARE(dpt.validity(QKnxCombinedInfoOnOff::Output::Fifth), QKnxCombinedInfoOnOff::OutputValidity::Invalid);
+    QCOMPARE(dpt.validity(QKnxCombinedInfoOnOff::Output::Sixth), QKnxCombinedInfoOnOff::OutputValidity::Invalid);
+    QCOMPARE(dpt.validity(QKnxCombinedInfoOnOff::Output::Seventh), QKnxCombinedInfoOnOff::OutputValidity::Invalid);
+    QCOMPARE(dpt.validity(QKnxCombinedInfoOnOff::Output::Eighth), QKnxCombinedInfoOnOff::OutputValidity::Invalid);
+    QCOMPARE(dpt.validity(QKnxCombinedInfoOnOff::Output::Ninth), QKnxCombinedInfoOnOff::OutputValidity::Invalid);
+    QCOMPARE(dpt.validity(QKnxCombinedInfoOnOff::Output::Tenth), QKnxCombinedInfoOnOff::OutputValidity::Invalid);
+    QCOMPARE(dpt.validity(QKnxCombinedInfoOnOff::Output::Eleventh), QKnxCombinedInfoOnOff::OutputValidity::Invalid);
+    QCOMPARE(dpt.validity(QKnxCombinedInfoOnOff::Output::Twelfth), QKnxCombinedInfoOnOff::OutputValidity::Invalid);
+    QCOMPARE(dpt.validity(QKnxCombinedInfoOnOff::Output::Thirteenth), QKnxCombinedInfoOnOff::OutputValidity::Invalid);
+    QCOMPARE(dpt.validity(QKnxCombinedInfoOnOff::Output::Fourteenth), QKnxCombinedInfoOnOff::OutputValidity::Invalid);
+    QCOMPARE(dpt.validity(QKnxCombinedInfoOnOff::Output::Fifteenth), QKnxCombinedInfoOnOff::OutputValidity::Invalid);
+    QCOMPARE(dpt.validity(QKnxCombinedInfoOnOff::Output::Sixteenth), QKnxCombinedInfoOnOff::OutputValidity::Invalid);
+
+    for (int i = 0; i < 16; ++i) {
+        dpt.setState(QKnxCombinedInfoOnOff::Output(i), QKnxCombinedInfoOnOff::OutputState::On);
+        dpt.setValidity(QKnxCombinedInfoOnOff::Output(i), QKnxCombinedInfoOnOff::OutputValidity::Valid);
+
+        QCOMPARE(QKnxDatapointType::testBit(dpt.value(), i), true);
+        QCOMPARE(dpt.state(QKnxCombinedInfoOnOff::Output(i)), QKnxCombinedInfoOnOff::OutputState::On);
+
+        QCOMPARE(QKnxDatapointType::testBit(dpt.value(), i + 16), true);
+        QCOMPARE(dpt.validity(QKnxCombinedInfoOnOff::Output(i)), QKnxCombinedInfoOnOff::OutputValidity::Valid);
+
+        dpt.setState(QKnxCombinedInfoOnOff::Output(i), QKnxCombinedInfoOnOff::OutputState::Off);
+        dpt.setValidity(QKnxCombinedInfoOnOff::Output(i), QKnxCombinedInfoOnOff::OutputValidity::Invalid);
+
+        QCOMPARE(QKnxDatapointType::testBit(dpt.value(), i), false);
+        QCOMPARE(dpt.state(QKnxCombinedInfoOnOff::Output(i)), QKnxCombinedInfoOnOff::OutputState::Off);
+
+        QCOMPARE(QKnxDatapointType::testBit(dpt.value(), i + 16), false);
+        QCOMPARE(dpt.validity(QKnxCombinedInfoOnOff::Output(i)), QKnxCombinedInfoOnOff::OutputValidity::Invalid);
+    }
+
+    dpt = QKnxCombinedInfoOnOff(
+        {
+            { QKnxCombinedInfoOnOff::Output::First, QKnxCombinedInfoOnOff::OutputState::On,
+                QKnxCombinedInfoOnOff::OutputValidity::Valid },
+            { QKnxCombinedInfoOnOff::Output::Third, QKnxCombinedInfoOnOff::OutputState::Off,
+                QKnxCombinedInfoOnOff::OutputValidity::Valid },
+            { QKnxCombinedInfoOnOff::Output::Fifth, QKnxCombinedInfoOnOff::OutputState::Off,
+                QKnxCombinedInfoOnOff::OutputValidity::Invalid },
+            { QKnxCombinedInfoOnOff::Output::Sixteenth, QKnxCombinedInfoOnOff::OutputState::On,
+                QKnxCombinedInfoOnOff::OutputValidity::Valid }
+        }
+    );
+    QCOMPARE(QKnxDatapointType::testBit(dpt.value(), 0), true); // Output::First -> State on
+    QCOMPARE(QKnxDatapointType::testBit(dpt.value(), 16), true); // Output::First -> State valid
+
+    QCOMPARE(QKnxDatapointType::testBit(dpt.value(), 2), false); // Output::Third -> State off
+    QCOMPARE(QKnxDatapointType::testBit(dpt.value(), 18), true); // Output::Third -> State valid
+
+    QCOMPARE(QKnxDatapointType::testBit(dpt.value(), 4), false); // Output::Fifth -> State off
+    QCOMPARE(QKnxDatapointType::testBit(dpt.value(), 20), false); // Output::Fifth -> State invalid
+
+    QCOMPARE(QKnxDatapointType::testBit(dpt.value(), 15), true); // Output::Sixteenth -> State on
+    QCOMPARE(QKnxDatapointType::testBit(dpt.value(), 31), true); // Output::Sixteenth -> State valid
 }
 
 QTEST_MAIN(tst_QKnxDatapointType)

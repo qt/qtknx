@@ -7,6 +7,7 @@ PUBLIC_HEADERS += $$PWD/qknx1bit.h \
     $$PWD/qknx2bytefloat.h \
     $$PWD/qknx2bytesignedvalue.h \
     $$PWD/qknx2byteunsignedvalue.h \
+    $$PWD/qknx32bitset.h \
     $$PWD/qknx3bitcontrolled.h \
     $$PWD/qknx4bytefloat.h \
     $$PWD/qknx4bytesignedvalue.h \
@@ -32,6 +33,7 @@ SOURCES += $$PWD/qknx1bit.cpp \
     $$PWD/qknx2bytefloat.cpp \
     $$PWD/qknx2bytesignedvalue.cpp \
     $$PWD/qknx2byteunsignedvalue.cpp \
+    $$PWD/qknx32bitset.cpp \
     $$PWD/qknx3bitcontrolled.cpp \
     $$PWD/qknx4bytefloat.cpp \
     $$PWD/qknx4bytesignedvalue.cpp \

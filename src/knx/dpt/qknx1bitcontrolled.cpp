@@ -65,7 +65,7 @@ bool QKnx1BitControlled::valueBit() const
 
 void QKnx1BitControlled::setValueBit(bool value)
 {
-    QKnxDatapointType::setBit(data(), value, 0);
+    setByte(0, QKnxDatapointType::setBit(byte(0), value, 0));
 }
 
 bool QKnx1BitControlled::controlBit() const
@@ -75,7 +75,7 @@ bool QKnx1BitControlled::controlBit() const
 
 void QKnx1BitControlled::setControlBit(bool control)
 {
-    QKnxDatapointType::setBit(data(), control, 1);
+    setByte(0, QKnxDatapointType::setBit(byte(0), control, 1));
 }
 
 bool QKnx1BitControlled::isValid() const

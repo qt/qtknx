@@ -142,6 +142,7 @@ public:
         Dpt26_8BitSet = 2600000,
             DptSceneInfo,
         Dpt27_32BitSet = 2700000,
+            DptCombinedInfoOnOff,
         Dpt28_StringUtf8 = 2800000,
             DptUtf8 = 2800001,
         Dpt29_ElectricalEnergy = 2900000,
