@@ -33,6 +33,7 @@
 #include "qknx1bit.h"
 #include "qknx1bitcontrolled.h"
 #include "qknx1byte.h"
+#include "qknx2bitset.h"
 #include "qknx2bytefloat.h"
 #include "qknx2bytesignedvalue.h"
 #include "qknx2byteunsignedvalue.h"
@@ -363,6 +364,12 @@ QKnxDatapointTypeFactory::QKnxDatapointTypeFactory()
     registerType<QKnx8BitSet>();
     registerType<QKnxGeneralStatus>();
     registerType<QKnxDeviceControl>();
+
+    // DPT-23
+    registerType<QKnx2BitSet>();
+    registerType<QKnxOnOffAction>();
+    registerType<QKnxAlarmReaction>();
+    registerType<QKnxUpDownAction>();
 
     // DPT-26
     registerType<QKnxSceneInfo>();

@@ -31,6 +31,7 @@
 #include <QtKnx/qknx1bit.h>
 #include <QtKnx/qknx1bitcontrolled.h>
 #include <QtKnx/qknx1byte.h>
+#include <QtKnx/qknx2bitset.h>
 #include <QtKnx/qknx2bytefloat.h>
 #include <QtKnx/qknx2bytesignedvalue.h>
 #include <QtKnx/qknx2byteunsignedvalue.h>
@@ -77,6 +78,7 @@ private slots:
     void dpt19_DateTime();
     void dpt20_1Byte();
     void dpt21_8BitSet();
+    void dpt23_2BitSet();
     void dpt26_SceneInfo();
 };
 
@@ -1664,6 +1666,83 @@ void tst_QKnxDatapointType::dpt21_8BitSet()
     QCOMPARE(dptDC.isSet(QKnxDeviceControl::OwnIA), true);
     QCOMPARE(dptDC.isSet(QKnxDeviceControl::VerifyMode), true);
     QCOMPARE(dptDC.isSet(QKnxDeviceControl::SafeState), true);
+}
+
+void tst_QKnxDatapointType::dpt23_2BitSet()
+{
+    QKnx2BitSet dpt;
+    QCOMPARE(dpt.mainType(), 23);
+    QCOMPARE(dpt.subType(), 0);
+    QCOMPARE(dpt.isValid(), true);
+
+    QKnxOnOffAction action;
+    QCOMPARE(action.mainType(), 23);
+    QCOMPARE(action.subType(), 1);
+    QCOMPARE(action.isValid(), true);
+    QCOMPARE(action.value(), qint8(0));
+    QCOMPARE(action.action(), QKnxOnOffAction::Action::Off);
+    QCOMPARE(action.setAction(QKnxOnOffAction::Action::OffOn), true);
+    QCOMPARE(action.isValid(), true);
+    QCOMPARE(action.action(), QKnxOnOffAction::Action::OffOn);
+    QCOMPARE(action.value(), qint8(2));
+    action.setBytes(QByteArray::fromHex("ff"), 0, 1);
+    QCOMPARE(action.isValid(), false);
+    QCOMPARE(action.value(), quint8(3));
+    QCOMPARE(action.action(), QKnxOnOffAction::Action::OnOff);
+    action.setBytes(QByteArray::fromHex("04"), 0, 1);
+    QCOMPARE(action.isValid(), false);
+    QCOMPARE(action.value(), quint8(0));
+    QCOMPARE(action.action(), QKnxOnOffAction::Action::Off);
+    action.setBytes(QByteArray::fromHex("03"), 0, 1);
+    QCOMPARE(action.isValid(), true);
+    QCOMPARE(action.value(), qint8(3));
+    QCOMPARE(action.action(), QKnxOnOffAction::Action::OnOff);
+
+    QKnxAlarmReaction alarm;
+    QCOMPARE(alarm.mainType(), 23);
+    QCOMPARE(alarm.subType(), 2);
+    QCOMPARE(alarm.isValid(), true);
+    QCOMPARE(alarm.value(), qint8(0));
+    QCOMPARE(alarm.alarm(), QKnxAlarmReaction::Alarm::NoAlarm);
+    QCOMPARE(alarm.setAlarm(QKnxAlarmReaction::Alarm::AlarmDown), true);
+    QCOMPARE(alarm.isValid(), true);
+    QCOMPARE(alarm.alarm(), QKnxAlarmReaction::Alarm::AlarmDown);
+    QCOMPARE(alarm.value(), qint8(2));
+    alarm.setBytes(QByteArray::fromHex("ff"), 0, 1);
+    QCOMPARE(alarm.isValid(), false);
+    QCOMPARE(alarm.value(), quint8(3));
+    QCOMPARE(alarm.alarm(), QKnxAlarmReaction::Alarm::AlarmDown);
+    alarm.setBytes(QByteArray::fromHex("03"), 0, 1);
+    QCOMPARE(alarm.isValid(), false);
+    QCOMPARE(alarm.value(), quint8(3));
+    QCOMPARE(alarm.alarm(), QKnxAlarmReaction::Alarm::AlarmDown);
+    alarm.setBytes(QByteArray::fromHex("02"), 0, 1);
+    QCOMPARE(alarm.isValid(), true);
+    QCOMPARE(alarm.value(), qint8(2));
+    QCOMPARE(alarm.alarm(), QKnxAlarmReaction::Alarm::AlarmDown);
+
+    QKnxUpDownAction upAction;
+    QCOMPARE(upAction.mainType(), 23);
+    QCOMPARE(upAction.subType(), 3);
+    QCOMPARE(upAction.isValid(), true);
+    QCOMPARE(upAction.value(), qint8(0));
+    QCOMPARE(upAction.action(), QKnxUpDownAction::Action::Up);
+    QCOMPARE(upAction.setAction(QKnxUpDownAction::Action::UpDown), true);
+    QCOMPARE(upAction.isValid(), true);
+    QCOMPARE(upAction.action(), QKnxUpDownAction::Action::UpDown);
+    QCOMPARE(upAction.value(), qint8(2));
+    upAction.setBytes(QByteArray::fromHex("ff"), 0, 1);
+    QCOMPARE(upAction.isValid(), false);
+    QCOMPARE(upAction.value(), quint8(3));
+    QCOMPARE(upAction.action(), QKnxUpDownAction::Action::DownUp);
+    upAction.setBytes(QByteArray::fromHex("04"), 0, 1);
+    QCOMPARE(upAction.isValid(), false);
+    QCOMPARE(upAction.value(), quint8(0));
+    QCOMPARE(upAction.action(), QKnxUpDownAction::Action::Up);
+    upAction.setBytes(QByteArray::fromHex("03"), 0, 1);
+    QCOMPARE(upAction.isValid(), true);
+    QCOMPARE(upAction.value(), qint8(3));
+    QCOMPARE(upAction.action(), QKnxUpDownAction::Action::DownUp);
 }
 
 void tst_QKnxDatapointType::dpt26_SceneInfo()

@@ -135,6 +135,7 @@ public:
         Dpt22_16BitSet = 2200000,
             DptMedia = 2201000,
         Dpt23_2BitSet = 2300000,
+            DptOnOffAction, DptAlarmReaction, DptUpDownAction,
         Dpt24_String = 2400000,
             DptVariableString8859 = 2400001,
         Dpt25_2NibbleSet = 2500000,
