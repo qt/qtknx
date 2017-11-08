@@ -1679,12 +1679,12 @@ void tst_QKnxDatapointType::dpt23_2BitSet()
     QCOMPARE(action.mainType(), 23);
     QCOMPARE(action.subType(), 1);
     QCOMPARE(action.isValid(), true);
-    QCOMPARE(action.value(), qint8(0));
+    QCOMPARE(action.value(), quint8(0));
     QCOMPARE(action.action(), QKnxOnOffAction::Action::Off);
     QCOMPARE(action.setAction(QKnxOnOffAction::Action::OffOn), true);
     QCOMPARE(action.isValid(), true);
     QCOMPARE(action.action(), QKnxOnOffAction::Action::OffOn);
-    QCOMPARE(action.value(), qint8(2));
+    QCOMPARE(action.value(), quint8(2));
     action.setBytes(QByteArray::fromHex("ff"), 0, 1);
     QCOMPARE(action.isValid(), false);
     QCOMPARE(action.value(), quint8(3));
@@ -1695,19 +1695,19 @@ void tst_QKnxDatapointType::dpt23_2BitSet()
     QCOMPARE(action.action(), QKnxOnOffAction::Action::Off);
     action.setBytes(QByteArray::fromHex("03"), 0, 1);
     QCOMPARE(action.isValid(), true);
-    QCOMPARE(action.value(), qint8(3));
+    QCOMPARE(action.value(), quint8(3));
     QCOMPARE(action.action(), QKnxOnOffAction::Action::OnOff);
 
     QKnxAlarmReaction alarm;
     QCOMPARE(alarm.mainType(), 23);
     QCOMPARE(alarm.subType(), 2);
     QCOMPARE(alarm.isValid(), true);
-    QCOMPARE(alarm.value(), qint8(0));
+    QCOMPARE(alarm.value(), quint8(0));
     QCOMPARE(alarm.alarm(), QKnxAlarmReaction::Alarm::NoAlarm);
     QCOMPARE(alarm.setAlarm(QKnxAlarmReaction::Alarm::AlarmDown), true);
     QCOMPARE(alarm.isValid(), true);
     QCOMPARE(alarm.alarm(), QKnxAlarmReaction::Alarm::AlarmDown);
-    QCOMPARE(alarm.value(), qint8(2));
+    QCOMPARE(alarm.value(), quint8(2));
     alarm.setBytes(QByteArray::fromHex("ff"), 0, 1);
     QCOMPARE(alarm.isValid(), false);
     QCOMPARE(alarm.value(), quint8(3));
@@ -1718,19 +1718,19 @@ void tst_QKnxDatapointType::dpt23_2BitSet()
     QCOMPARE(alarm.alarm(), QKnxAlarmReaction::Alarm::AlarmDown);
     alarm.setBytes(QByteArray::fromHex("02"), 0, 1);
     QCOMPARE(alarm.isValid(), true);
-    QCOMPARE(alarm.value(), qint8(2));
+    QCOMPARE(alarm.value(), quint8(2));
     QCOMPARE(alarm.alarm(), QKnxAlarmReaction::Alarm::AlarmDown);
 
     QKnxUpDownAction upAction;
     QCOMPARE(upAction.mainType(), 23);
     QCOMPARE(upAction.subType(), 3);
     QCOMPARE(upAction.isValid(), true);
-    QCOMPARE(upAction.value(), qint8(0));
+    QCOMPARE(upAction.value(), quint8(0));
     QCOMPARE(upAction.action(), QKnxUpDownAction::Action::Up);
     QCOMPARE(upAction.setAction(QKnxUpDownAction::Action::UpDown), true);
     QCOMPARE(upAction.isValid(), true);
     QCOMPARE(upAction.action(), QKnxUpDownAction::Action::UpDown);
-    QCOMPARE(upAction.value(), qint8(2));
+    QCOMPARE(upAction.value(), quint8(2));
     upAction.setBytes(QByteArray::fromHex("ff"), 0, 1);
     QCOMPARE(upAction.isValid(), false);
     QCOMPARE(upAction.value(), quint8(3));
@@ -1741,7 +1741,7 @@ void tst_QKnxDatapointType::dpt23_2BitSet()
     QCOMPARE(upAction.action(), QKnxUpDownAction::Action::Up);
     upAction.setBytes(QByteArray::fromHex("03"), 0, 1);
     QCOMPARE(upAction.isValid(), true);
-    QCOMPARE(upAction.value(), qint8(3));
+    QCOMPARE(upAction.value(), quint8(3));
     QCOMPARE(upAction.action(), QKnxUpDownAction::Action::DownUp);
 }
 
