@@ -118,6 +118,7 @@ public:
             DptValueVolume, DptValueVolumeFlux, DptValueWeight, DptValueWork,
         Dpt15_EntranceAccess = 1500000,
         Dpt16_CharacterString = 1600000,
+            DptStringASCII = 1600000, DptString88591,
         Dpt17_SceneNumber = 1700000,
             DptSceneNumber,
         Dpt18_SceneControl = 1800000,

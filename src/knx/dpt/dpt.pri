@@ -16,6 +16,7 @@ PUBLIC_HEADERS += $$PWD/qknx1bit.h \
     $$PWD/qknx8bitsignedvalue.h \
     $$PWD/qknx8bitunsignedvalue.h \
     $$PWD/qknxchar.h \
+    $$PWD/qknxcharstring.h \
     $$PWD/qknxdatapointtype.h \
     $$PWD/qknxdatapointtypefactory.h \
     $$PWD/qknxdatetime.h \
@@ -42,6 +43,7 @@ SOURCES += $$PWD/qknx1bit.cpp \
     $$PWD/qknx8bitsignedvalue.cpp \
     $$PWD/qknx8bitunsignedvalue.cpp \
     $$PWD/qknxchar.cpp \
+    $$PWD/qknxcharstring.cpp \
     $$PWD/qknxdatapointtype.cpp \
     $$PWD/qknxdatapointtypefactory.cpp \
     $$PWD/qknxdatetime.cpp \

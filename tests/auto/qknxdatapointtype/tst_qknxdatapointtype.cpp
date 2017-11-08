@@ -44,6 +44,7 @@
 #include <QtKnx/qknx8bitsignedvalue.h>
 #include <QtKnx/qknx8bitunsignedvalue.h>
 #include <QtKnx/qknxchar.h>
+#include <QtKnx/qknxcharstring.h>
 #include <QtKnx/qknxdatapointtype.h>
 #include <QtKnx/qknxdatapointtypefactory.h>
 #include <QtKnx/qknxdatetime.h>
@@ -77,6 +78,7 @@ private slots:
     void dpt14_4ByteFloat();
     void dpt15_EntranceAccess();
     void dpt17_SceneNumber();
+    void dpt16_String();
     void dpt18_SceneControl();
     void dpt19_DateTime();
     void dpt20_1Byte();
@@ -755,6 +757,56 @@ void tst_QKnxDatapointType::dpt15_EntranceAccess()
     QCOMPARE(dpt.digit(3), qint8(1));
 
     // TODO: Extend the auto-test.
+}
+
+void tst_QKnxDatapointType::dpt16_String()
+{
+    QKnxCharString knxString;
+    QCOMPARE(knxString.mainType(), 0x10);
+    QCOMPARE(knxString.subType(), 0x00);
+    QCOMPARE(knxString.size(), 0x0e);
+    QCOMPARE(knxString.isValid(), true);
+    QCOMPARE(knxString.string(), QLatin1String());
+
+    QCOMPARE(knxString.setString(QLatin1String("KNX is OK")), true);
+    QCOMPARE(knxString.string(), QLatin1String("KNX is OK"));
+    QCOMPARE(knxString.bytes(), QByteArray::fromHex("4b4e58206973204f4b0000000000"));
+
+    unsigned char value[4] = { 0xdf, 0xef, 0xff, 0x00 };
+    QCOMPARE(knxString.setString(QLatin1String((const char*) value)), true);
+    QCOMPARE(knxString.bytes(), QByteArray::fromHex("dfefff0000000000000000000000"));
+
+    QKnxCharStringASCII stringA;
+    QCOMPARE(stringA.mainType(), 16);
+    QCOMPARE(stringA.subType(), 0);
+    QCOMPARE(stringA.size(), 14);
+    QCOMPARE(stringA.isValid(), true);
+
+    QCOMPARE(stringA.setString(QLatin1String((const char*) value)), false);
+    QCOMPARE(stringA.string(), QLatin1String());
+    QCOMPARE(stringA.bytes(), QByteArray::fromHex("0000000000000000000000000000"));
+    QCOMPARE(stringA.isValid(), true);
+
+    QCOMPARE(stringA.setByte(0, 255), true);
+    QCOMPARE(stringA.byte(0), quint8(255));
+    QCOMPARE(stringA.isValid(), false);
+    QCOMPARE(stringA.setByte(14, 255), false);
+    QCOMPARE(stringA.setByte(13, 255), true);
+    QCOMPARE(stringA.byte(13), quint8(255));
+    QCOMPARE(stringA.isValid(), false);
+
+    QCOMPARE(stringA.setBytes(QByteArray::fromHex("4b4e58206973204f4b0000000000"), 0, 14), true);
+    QCOMPARE(stringA.string(), QLatin1String("KNX is OK"));
+    QCOMPARE(stringA.isValid(), true);
+
+    QKnxCharString88591 string8;
+    QCOMPARE(string8.mainType(), 16);
+    QCOMPARE(string8.subType(), 1);
+    QCOMPARE(string8.size(), 14);
+    QCOMPARE(string8.isValid(), true);
+    QCOMPARE(string8.byte(0), quint8(0));
+    QCOMPARE(string8.setString(QLatin1String((const char*) value)), true);
+    QCOMPARE(string8.bytes(), QByteArray::fromHex("dfefff0000000000000000000000"));
 }
 
 void tst_QKnxDatapointType::dpt17_SceneNumber()

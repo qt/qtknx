@@ -46,6 +46,7 @@
 #include "qknx8bitsignedvalue.h"
 #include "qknx8bitunsignedvalue.h"
 #include "qknxchar.h"
+#include "qknxcharstring.h"
 #include "qknxdatetime.h"
 #include "qknxentranceaccess.h"
 #include "qknxscene.h"
@@ -340,6 +341,11 @@ QKnxDatapointTypeFactory::QKnxDatapointTypeFactory()
 
     // DPT-15
     registerType<QKnxEntranceAccess>();
+
+    // DPT-16
+    registerType<QKnxCharString>();
+    registerType<QKnxCharStringASCII>(); // TODO: this replaces the QKnxCharString (subtype == 0)
+    registerType<QKnxCharString88591>();
 
     // DPT-17
     registerType<QKnxSceneNumber>();
