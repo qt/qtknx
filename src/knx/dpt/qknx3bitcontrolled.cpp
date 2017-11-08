@@ -61,7 +61,7 @@ bool QKnx3BitControlled::controlBit() const
 
 void QKnx3BitControlled::setControlBit(bool value)
 {
-    QKnxDatapointType::setBit(&(operator[](0)), value, 3);
+    setByte(0, QKnxDatapointType::setBit(byte(0), value, 3));
 }
 
 bool QKnx3BitControlled::setNumberOfIntervals(NumberOfIntervals n)

@@ -223,14 +223,14 @@ public:
     bool operator==(const QKnxDatapointType &other) const;
     bool operator!=(const QKnxDatapointType &other) const;
 
-    static inline bool testBit(quint8 byteToTest, quint8 bit)
+    template<typename T> static constexpr bool testBit(T byteToTest, quint8 bit) noexcept
     {
-        return (byteToTest & (quint8(1) << bit)) != 0;
+        return (byteToTest & (T(1) << bit)) != 0;
     }
 
-    static inline void setBit(quint8 *byteToSet, bool value, quint8 bit)
+    template<typename T> static constexpr T setBit(T byteToSet, bool value, quint8 bit) noexcept
     {
-        value ? (*byteToSet |= quint8(1) << bit) : (*byteToSet &= ~(quint8(1) << bit));
+        return (value ? byteToSet | (T(1) << bit) : byteToSet & ~(T(1) << bit));
     }
 
     static const constexpr int SubType = 0x00;

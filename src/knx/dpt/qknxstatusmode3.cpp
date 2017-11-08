@@ -92,11 +92,11 @@ QKnxStatusMode3::StatusFlags QKnxStatusMode3::statusFlags() const
 bool  QKnxStatusMode3::setStatusFlags(StatusFlags statusFlags)
 {
     quint8 value = byte(0);
-    QKnxDatapointType::setBit(&value, !statusFlags.testFlag(Status::A), 7);
-    QKnxDatapointType::setBit(&value, !statusFlags.testFlag(Status::B), 6);
-    QKnxDatapointType::setBit(&value, !statusFlags.testFlag(Status::C), 5);
-    QKnxDatapointType::setBit(&value, !statusFlags.testFlag(Status::D), 4);
-    QKnxDatapointType::setBit(&value, !statusFlags.testFlag(Status::E), 3);
+    value = QKnxDatapointType::setBit(value, !statusFlags.testFlag(Status::A), 7);
+    value = QKnxDatapointType::setBit(value, !statusFlags.testFlag(Status::B), 6);
+    value = QKnxDatapointType::setBit(value, !statusFlags.testFlag(Status::C), 5);
+    value = QKnxDatapointType::setBit(value, !statusFlags.testFlag(Status::D), 4);
+    value = QKnxDatapointType::setBit(value, !statusFlags.testFlag(Status::E), 3);
     return setByte(0, value);
 }
 

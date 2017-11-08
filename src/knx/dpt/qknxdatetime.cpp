@@ -279,14 +279,14 @@ QKnxDateTime::Attributes QKnxDateTime::attributes() const
 void QKnxDateTime::setAttributes(Attributes attributes)
 {
     quint8 byte = 0x00;
-    QKnxDatapointType::setBit(&byte, attributes.testFlag(Attribute::Fault), 7);
-    QKnxDatapointType::setBit(&byte, attributes.testFlag(Attribute::WorkingDay), 6);
-    QKnxDatapointType::setBit(&byte, attributes.testFlag(Attribute::WorkingDayInvalid), 5);
-    QKnxDatapointType::setBit(&byte, attributes.testFlag(Attribute::YearInvalild), 4);
-    QKnxDatapointType::setBit(&byte, attributes.testFlag(Attribute::DateInvalid), 3);
-    QKnxDatapointType::setBit(&byte, attributes.testFlag(Attribute::DayOfWeekInvalid), 2);
-    QKnxDatapointType::setBit(&byte, attributes.testFlag(Attribute::TimeInvalid), 1);
-    QKnxDatapointType::setBit(&byte, attributes.testFlag(Attribute::StandardSummerTime), 0);
+    byte = QKnxDatapointType::setBit(byte, attributes.testFlag(Attribute::Fault), 7);
+    byte = QKnxDatapointType::setBit(byte, attributes.testFlag(Attribute::WorkingDay), 6);
+    byte = QKnxDatapointType::setBit(byte, attributes.testFlag(Attribute::WorkingDayInvalid), 5);
+    byte = QKnxDatapointType::setBit(byte, attributes.testFlag(Attribute::YearInvalild), 4);
+    byte = QKnxDatapointType::setBit(byte, attributes.testFlag(Attribute::DateInvalid), 3);
+    byte = QKnxDatapointType::setBit(byte, attributes.testFlag(Attribute::DayOfWeekInvalid), 2);
+    byte = QKnxDatapointType::setBit(byte, attributes.testFlag(Attribute::TimeInvalid), 1);
+    byte = QKnxDatapointType::setBit(byte, attributes.testFlag(Attribute::StandardSummerTime), 0);
     setByte(6, byte);
 }
 
@@ -297,7 +297,7 @@ QKnxDateTime::ClockQuality QKnxDateTime::clockQuality() const
 
 void QKnxDateTime::setClockQuality(ClockQuality quality)
 {
-    QKnxDatapointType::setBit(&(operator[](7)), bool(quality), 7);
+    setByte(7, QKnxDatapointType::setBit(byte(7), bool(quality), 7));
 }
 
 bool QKnxDateTime::isValid() const

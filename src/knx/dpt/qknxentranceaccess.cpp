@@ -115,10 +115,10 @@ bool QKnxEntranceAccess::setIdCode(quint32 idCode)
 bool QKnxEntranceAccess::setAttributes(Attributes attributes)
 {
     quint8 temp = byte(3);
-    setBit(&temp, attributes.testFlag(Attribute::Error), 7);
-    setBit(&temp, attributes.testFlag(Attribute::PermissionAccepted), 6);
-    setBit(&temp, attributes.testFlag(Attribute::ReadRightToLeft), 5);
-    setBit(&temp, attributes.testFlag(Attribute::Encrypted), 4);
+    temp = QKnxDatapointType::setBit(temp, attributes.testFlag(Attribute::Error), 7);
+    temp = QKnxDatapointType::setBit(temp, attributes.testFlag(Attribute::PermissionAccepted), 6);
+    temp = QKnxDatapointType::setBit(temp, attributes.testFlag(Attribute::ReadRightToLeft), 5);
+    temp = QKnxDatapointType::setBit(temp, attributes.testFlag(Attribute::Encrypted), 4);
     return setByte(3, temp);
 }
 

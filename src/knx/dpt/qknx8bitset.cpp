@@ -60,7 +60,7 @@ bool QKnx8BitSet::bit(int index) const
 
 void QKnx8BitSet::setBit(bool value, int index)
 {
-    QKnxDatapointType::setBit(data(), value, index);
+    setByte(QKnxDatapointType::setBit(byte(), value, index));
 }
 
 quint8 QKnx8BitSet::byte() const
@@ -106,11 +106,11 @@ QKnxGeneralStatus::Attributes QKnxGeneralStatus::value() const
 bool QKnxGeneralStatus::setValue(Attributes attributes)
 {
     quint8 value = byte();
-    QKnxDatapointType::setBit(&value, attributes.testFlag(Attribute::OutOfService), 0);
-    QKnxDatapointType::setBit(&value, attributes.testFlag(Attribute::Fault), 1);
-    QKnxDatapointType::setBit(&value, attributes.testFlag(Attribute::Overridden), 2);
-    QKnxDatapointType::setBit(&value, attributes.testFlag(Attribute::InAlarm), 3);
-    QKnxDatapointType::setBit(&value, attributes.testFlag(Attribute::AlarmUnacknowledged), 4);
+    value = QKnxDatapointType::setBit(value, attributes.testFlag(Attribute::OutOfService), 0);
+    value = QKnxDatapointType::setBit(value, attributes.testFlag(Attribute::Fault), 1);
+    value = QKnxDatapointType::setBit(value, attributes.testFlag(Attribute::Overridden), 2);
+    value = QKnxDatapointType::setBit(value, attributes.testFlag(Attribute::InAlarm), 3);
+    value = QKnxDatapointType::setBit(value, attributes.testFlag(Attribute::AlarmUnacknowledged), 4);
     return setByte(value);
 }
 
@@ -156,10 +156,10 @@ QKnxDeviceControl::Attributes QKnxDeviceControl::value() const
 bool QKnxDeviceControl::setValue(Attributes attributes)
 {
     quint8 value = byte();
-    QKnxDatapointType::setBit(&value, attributes.testFlag(Attribute::UserStopped), 0);
-    QKnxDatapointType::setBit(&value, attributes.testFlag(Attribute::OwnIA), 1);
-    QKnxDatapointType::setBit(&value, attributes.testFlag(Attribute::VerifyMode), 2);
-    QKnxDatapointType::setBit(&value, attributes.testFlag(Attribute::SafeState), 3);
+    value = QKnxDatapointType::setBit(value, attributes.testFlag(Attribute::UserStopped), 0);
+    value = QKnxDatapointType::setBit(value, attributes.testFlag(Attribute::OwnIA), 1);
+    value = QKnxDatapointType::setBit(value, attributes.testFlag(Attribute::VerifyMode), 2);
+    value = QKnxDatapointType::setBit(value, attributes.testFlag(Attribute::SafeState), 3);
     return setByte(value);
 }
 
