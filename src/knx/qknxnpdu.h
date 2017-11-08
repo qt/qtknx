@@ -187,7 +187,7 @@ public:
 
         // see 03_06_03 EMI_IMI, paragraph 4.1.5.3.1 Implementation and usage
         // read NPDU size, can be 0x00 in case of RF-frames and then the size needs to be passed
-        quint8 npduSize = qMax<quint8>(type[index + 1], size); // TODO: RF-frame handling
+        quint8 npduSize = qMax<quint8>(type[index] + 2, size); // TODO: RF-frame handling
         if (npduSize == 255 || npduSize > availableSize) // 255 escape-code, or missing bytes
             return {};
 
