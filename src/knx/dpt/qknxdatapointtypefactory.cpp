@@ -51,6 +51,7 @@
 #include "qknxentranceaccess.h"
 #include "qknxscene.h"
 #include "qknxstatusmode3.h"
+#include "qknxvarstring.h"
 
 QT_BEGIN_NAMESPACE
 
@@ -383,6 +384,10 @@ QKnxDatapointTypeFactory::QKnxDatapointTypeFactory()
     registerType<QKnxOnOffAction>();
     registerType<QKnxAlarmReaction>();
     registerType<QKnxUpDownAction>();
+
+    // DPT-24
+    registerType<QKnxVarString>();
+    registerType<QKnxVarString88591>();
 
     // DPT-26
     registerType<QKnxSceneInfo>();

@@ -271,7 +271,7 @@ QVector<QKnxInterfaceObjectPropertyDataType>
             { QKnxInterfaceObjectProperty::General::Enrol,
                 {
                     { Id::Function },
-                    { Id::VariableLength, QKnxDatapointType::Type::DptVariableString8859 }
+                    { Id::VariableLength, QKnxDatapointType::Type::DptVariableString88591 }
                 }
             },
             { QKnxInterfaceObjectProperty::General::Version,
@@ -283,7 +283,7 @@ QVector<QKnxInterfaceObjectPropertyDataType>
             { QKnxInterfaceObjectProperty::General::GroupObjectLink,
                 {
                     { Id::Function },
-                    { Id::VariableLength, QKnxDatapointType::Type::DptVariableString8859 }
+                    { Id::VariableLength, QKnxDatapointType::Type::DptVariableString88591 }
                 }
             },
             { QKnxInterfaceObjectProperty::General::McbTable,
@@ -353,31 +353,31 @@ QVector<QKnxInterfaceObjectPropertyDataType>
             { QKnxInterfaceObjectProperty::Device::ObjectValue,
                 {
                     { Id::Function },
-                    { Id::VariableLength, QKnxDatapointType::Type::DptVariableString8859 }
+                    { Id::VariableLength, QKnxDatapointType::Type::DptVariableString88591 }
                 }
             },
             { QKnxInterfaceObjectProperty::Device::ObjectLink,
                 {
                     { Id::Function },
-                    { Id::VariableLength, QKnxDatapointType::Type::DptVariableString8859 }
+                    { Id::VariableLength, QKnxDatapointType::Type::DptVariableString88591 }
                 }
             },
             { QKnxInterfaceObjectProperty::Device::Application,
                 {
                     { Id::Function },
-                    { Id::VariableLength, QKnxDatapointType::Type::DptVariableString8859 }
+                    { Id::VariableLength, QKnxDatapointType::Type::DptVariableString88591 }
                 }
             },
             { QKnxInterfaceObjectProperty::Device::Parameter,
                 {
                     { Id::Function },
-                    { Id::VariableLength, QKnxDatapointType::Type::DptVariableString8859 }
+                    { Id::VariableLength, QKnxDatapointType::Type::DptVariableString88591 }
                 }
             },
             { QKnxInterfaceObjectProperty::Device::ObjectAddress,
                 {
                     { Id::Function },
-                    { Id::VariableLength, QKnxDatapointType::Type::DptVariableString8859 }
+                    { Id::VariableLength, QKnxDatapointType::Type::DptVariableString88591 }
                 }
             },
             { QKnxInterfaceObjectProperty::Device::PsuType,
@@ -520,7 +520,7 @@ QVector<QKnxInterfaceObjectPropertyDataType>
             { QKnxInterfaceObjectProperty::Router::RouteTableControl,
                 {
                     { Id::Function },
-                    { Id::VariableLength, QKnxDatapointType::Type::DptVariableString8859 }
+                    { Id::VariableLength, QKnxDatapointType::Type::DptVariableString88591 }
                 }
             },
             { QKnxInterfaceObjectProperty::Router::CouplerServerControl, { { Id::Generic01 } } },
@@ -544,7 +544,7 @@ QVector<QKnxInterfaceObjectPropertyDataType>
             { QKnxInterfaceObjectProperty::Router::RfEnableSbc,
                 {
                     { Id::Function },
-                    { Id::VariableLength, QKnxDatapointType::Type::DptVariableString8859 }
+                    { Id::VariableLength, QKnxDatapointType::Type::DptVariableString88591 }
                 }
             }
         };
@@ -702,7 +702,7 @@ QVector<QKnxInterfaceObjectPropertyDataType>
             { QKnxInterfaceObjectProperty::KnxNetIpParameter::SecuredServiceFamilies,
                 {
                     { Id::Function },
-                    { Id::VariableLength, QKnxDatapointType::Type::DptVariableString8859 }
+                    { Id::VariableLength, QKnxDatapointType::Type::DptVariableString88591 }
                 }
             },
             { QKnxInterfaceObjectProperty::KnxNetIpParameter::MulticastLatencyTolerance,
@@ -793,7 +793,7 @@ QVector<QKnxInterfaceObjectPropertyDataType>
             { QKnxInterfaceObjectProperty::Security::SecurityMode,
                 {
                     { Id::Function },
-                    { Id::VariableLength, QKnxDatapointType::Type::DptVariableString8859 }
+                    { Id::VariableLength, QKnxDatapointType::Type::DptVariableString88591 }
                 }
             },
             { QKnxInterfaceObjectProperty::Security::P2pKeyTable,
@@ -814,7 +814,7 @@ QVector<QKnxInterfaceObjectPropertyDataType>
             { QKnxInterfaceObjectProperty::Security::SecurityFailuresLog,
                 {
                     { Id::Function },
-                    { Id::VariableLength, QKnxDatapointType::Type::DptVariableString8859 }
+                    { Id::VariableLength, QKnxDatapointType::Type::DptVariableString88591 }
                 }
             },
             { QKnxInterfaceObjectProperty::Security::SkiTool, { { Id::Generic16 } } },
@@ -880,7 +880,7 @@ QVector<QKnxInterfaceObjectPropertyDataType>
             { QKnxInterfaceObjectProperty::RfMedium::RfBidirTimeout,
                 {
                     { Id::Function },
-                    { Id::VariableLength, QKnxDatapointType::Type::DptVariableString8859 }
+                    { Id::VariableLength, QKnxDatapointType::Type::DptVariableString88591 }
                 }
             },
             { QKnxInterfaceObjectProperty::RfMedium::RfDiagSaFilterTable,
@@ -896,7 +896,7 @@ QVector<QKnxInterfaceObjectPropertyDataType>
             { QKnxInterfaceObjectProperty::RfMedium::RfDiagProbe,
                 {
                     { Id::Function },
-                    { Id::VariableLength, QKnxDatapointType::Type::DptVariableString8859 }
+                    { Id::VariableLength, QKnxDatapointType::Type::DptVariableString88591 }
                 }
             },
             { QKnxInterfaceObjectProperty::RfMedium::TransmissionMode,

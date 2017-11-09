@@ -23,7 +23,8 @@ PUBLIC_HEADERS += $$PWD/qknx1bit.h \
     $$PWD/qknxentranceaccess.h \
     $$PWD/qknxscene.h \
     $$PWD/qknxstatusmode3.h \
-    $$PWD/qknxtime.h
+    $$PWD/qknxtime.h \
+    $$PWD/qknxvarstring.h
 
 PRIVATE_HEADERS += $$PWD/qknxdatapointtype_p.h
 
@@ -50,4 +51,5 @@ SOURCES += $$PWD/qknx1bit.cpp \
     $$PWD/qknxentranceaccess.cpp \
     $$PWD/qknxscene.cpp \
     $$PWD/qknxstatusmode3.cpp \
-    $$PWD/qknxtime.cpp
+    $$PWD/qknxtime.cpp \
+    $$PWD/qknxvarstring.cpp

@@ -52,6 +52,7 @@
 #include <QtKnx/qknxscene.h>
 #include <QtKnx/qknxstatusmode3.h>
 #include <QtKnx/qknxtime.h>
+#include <QtKnx/qknxvarstring.h>
 #include <QtKnx/qknxutils.h>
 #include <QtTest/qtest.h>
 
@@ -84,6 +85,7 @@ private slots:
     void dpt20_1Byte();
     void dpt21_8BitSet();
     void dpt23_2BitSet();
+    void dpt24_VarString();
     void dpt26_SceneInfo();
     void dpt27_32BitSet();
 };
@@ -1841,6 +1843,42 @@ void tst_QKnxDatapointType::dpt23_2BitSet()
     QCOMPARE(upAction.isValid(), true);
     QCOMPARE(upAction.value(), quint8(3));
     QCOMPARE(upAction.action(), QKnxUpDownAction::Action::DownUp);
+}
+
+void tst_QKnxDatapointType::dpt24_VarString()
+{
+    QKnxVarString string;
+    QCOMPARE(string.mainType(), 24);
+    QCOMPARE(string.subType(), 0);
+    QCOMPARE(string.size(), 1);
+    QCOMPARE(string.isValid(), true);
+    QCOMPARE(string.byte(0), quint8(0));
+
+    QCOMPARE(string.setString(QLatin1String("Test")), true);
+    QCOMPARE(string.size(), 5);
+    QCOMPARE(string.isValid(), true);
+    QCOMPARE(string.byte(0), quint8(0x54));
+    QCOMPARE(string.string(), QLatin1String("Test"));
+    QCOMPARE(string.bytes(), QByteArray::fromHex("5465737400"));
+
+    QCOMPARE(string.setString(QLatin1String("This format allows transmission of long strings!")),
+        true);
+    QCOMPARE(string.size(), 49);
+    QCOMPARE(string.isValid(), true);
+    QCOMPARE(string.string(), QLatin1String("This format allows transmission of long strings!"));
+    QCOMPARE(string.bytes(), QByteArray::fromHex("5468697320666f726d617420616c6c6f7773207472616e"
+        "736d697373696f6e206f66206c6f6e6720737472696e67732100"));
+
+    QCOMPARE(string.setString(QLatin1String("KNX is OK")), true);
+    QCOMPARE(string.size(), 10);
+    QCOMPARE(string.isValid(), true);
+    QCOMPARE(string.string(), QLatin1String("KNX is OK"));
+    QCOMPARE(string.bytes(), QByteArray::fromHex("4b4e58206973204f4b00"));
+
+    QCOMPARE(string.setBytes(QByteArray::fromHex("01"), 0, 1), true);
+    QCOMPARE(string.isValid(), false);
+    QCOMPARE(string.setBytes(QByteArray::fromHex("0100"), 0, 2), true);
+    QCOMPARE(string.isValid(), true);
 }
 
 void tst_QKnxDatapointType::dpt26_SceneInfo()
