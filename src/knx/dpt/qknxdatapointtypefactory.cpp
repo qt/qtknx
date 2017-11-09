@@ -48,6 +48,7 @@
 #include "qknxchar.h"
 #include "qknxcharstring.h"
 #include "qknxdatetime.h"
+#include "qknxelectricalenergy.h"
 #include "qknxentranceaccess.h"
 #include "qknxscene.h"
 #include "qknxstatusmode3.h"
@@ -395,6 +396,12 @@ QKnxDatapointTypeFactory::QKnxDatapointTypeFactory()
     // DPT-27
     registerType<QKnx32BitSet>();
     registerType<QKnxCombinedInfoOnOff>();
+
+    // DPT-29
+    registerType<QKnxElectricalEnergy>();
+    registerType<QKnxActiveEnergyV64>();
+    registerType<QKnxApparentEnergyV64>();
+    registerType<QKnxReactiveEnergyV64>();
 }
 
 QHash<int, int> &QKnxDatapointTypeFactory::sizeTable()

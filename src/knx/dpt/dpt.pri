@@ -20,6 +20,7 @@ PUBLIC_HEADERS += $$PWD/qknx1bit.h \
     $$PWD/qknxdatapointtype.h \
     $$PWD/qknxdatapointtypefactory.h \
     $$PWD/qknxdatetime.h \
+    $$PWD/qknxelectricalenergy.h \
     $$PWD/qknxentranceaccess.h \
     $$PWD/qknxscene.h \
     $$PWD/qknxstatusmode3.h \
@@ -48,6 +49,7 @@ SOURCES += $$PWD/qknx1bit.cpp \
     $$PWD/qknxdatapointtype.cpp \
     $$PWD/qknxdatapointtypefactory.cpp \
     $$PWD/qknxdatetime.cpp \
+    $$PWD/qknxelectricalenergy.cpp \
     $$PWD/qknxentranceaccess.cpp \
     $$PWD/qknxscene.cpp \
     $$PWD/qknxstatusmode3.cpp \

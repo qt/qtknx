@@ -148,6 +148,7 @@ public:
         Dpt28_StringUtf8 = 2800000,
             DptUtf8 = 2800001,
         Dpt29_ElectricalEnergy = 2900000,
+            DptActiveEnergyV64 = 2900010, DptApparentEnergyV64, DptReactiveEnergyV64,
         Dpt30_24TimesChannelActivation = 3000000,
         DPT217_DatapointTypeVersion = 21700000,
             DptVersion = 21700001,

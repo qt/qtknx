@@ -48,6 +48,7 @@
 #include <QtKnx/qknxdatapointtype.h>
 #include <QtKnx/qknxdatapointtypefactory.h>
 #include <QtKnx/qknxdatetime.h>
+#include <QtKnx/qknxelectricalenergy.h>
 #include <QtKnx/qknxentranceaccess.h>
 #include <QtKnx/qknxscene.h>
 #include <QtKnx/qknxstatusmode3.h>
@@ -88,6 +89,7 @@ private slots:
     void dpt24_VarString();
     void dpt26_SceneInfo();
     void dpt27_32BitSet();
+    void dpt29_ElectricalEnergy();
 };
 
 void tst_QKnxDatapointType::datapointType()
@@ -2017,6 +2019,35 @@ void tst_QKnxDatapointType::dpt27_32BitSet()
 
     QCOMPARE(QKnxDatapointType::testBit(dpt.value(), 15), true); // Output::Sixteenth -> State on
     QCOMPARE(QKnxDatapointType::testBit(dpt.value(), 31), true); // Output::Sixteenth -> State valid
+}
+
+void tst_QKnxDatapointType::dpt29_ElectricalEnergy()
+{
+    QKnxElectricalEnergy dpt;
+    QCOMPARE(dpt.mainType(), 0x1d);
+    QCOMPARE(dpt.subType(), 0x00);
+    QCOMPARE(dpt.isValid(), true);
+    QCOMPARE(dpt.setValue(255), true);
+    QCOMPARE(dpt.value(), qint64(255));
+    QCOMPARE(dpt.setValue(LONG_MIN), true);
+    QCOMPARE(dpt.isValid(), true);
+    QCOMPARE(dpt.value(), qint64(LONG_MIN));
+    QCOMPARE(dpt.setValue(2147483647), true);
+    QCOMPARE(dpt.isValid(), true);
+    QCOMPARE(qint64(dpt.value()), qint64(2147483647));
+
+    QKnxActiveEnergyV64 dpt2;
+    QCOMPARE(dpt2.mainType(), 0x1d);
+    QCOMPARE(dpt2.subType(), 0x0a);
+    QCOMPARE(dpt2.isValid(), true);
+    QCOMPARE(dpt2.setValue(255), true);
+    QCOMPARE(dpt2.value(), qint64(255));
+    QCOMPARE(dpt2.setValue(LONG_MIN), true);
+    QCOMPARE(dpt2.isValid(), true);
+    QCOMPARE(dpt2.value(), qint64(LONG_MIN));
+    QCOMPARE(dpt2.setValue(2147483647), true);
+    QCOMPARE(dpt2.isValid(), true);
+    QCOMPARE(dpt2.value(), qint64(2147483647));
 }
 
 QTEST_MAIN(tst_QKnxDatapointType)
