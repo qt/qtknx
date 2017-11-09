@@ -258,7 +258,7 @@ QKnxDatapointTypeFactory::QKnxDatapointTypeFactory()
 
     // DPT-14
     registerType<QKnx4ByteFloat>();
-    registerType<QKnxValueAcceleration>();
+    registerType<QKnxValueAcceleration>(); // TODO: this replaces the QKnx4ByteFloat (subtype == 0)
     registerType<QKnxValueAccelerationAngular>();
     registerType<QKnxValueActivationEnergy>();
     registerType<QKnxValueActivity>();
