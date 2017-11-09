@@ -169,8 +169,8 @@ QKnxDatapointTypeFactory::QKnxDatapointTypeFactory()
 
     // DPT-4
     registerType<QKnxChar>();
-    registerType<QKnxASCII>();
-    registerType<QKnxLatin1>();
+    registerType<QKnxCharASCII>();
+    registerType<QKnxChar88591>();
 
     // DPT-5
     registerType<QKnx8BitUnsignedValue>();

@@ -53,11 +53,11 @@ protected:
     QKnxChar(int subType, unsigned char value);
 };
 
-class Q_KNX_EXPORT QKnxASCII : public QKnxChar
+class Q_KNX_EXPORT QKnxCharASCII : public QKnxChar
 {
 public:
-    QKnxASCII();
-    explicit QKnxASCII(char value);
+    QKnxCharASCII();
+    explicit QKnxCharASCII(char value);
 
     static const constexpr int SubType = 0x01;
 
@@ -65,11 +65,11 @@ public:
     bool setCharacter(char value);
 };
 
-class Q_KNX_EXPORT QKnxLatin1 : public QKnxChar
+class Q_KNX_EXPORT QKnxChar88591 : public QKnxChar
 {
 public:
-    QKnxLatin1();
-    explicit QKnxLatin1(unsigned char character);
+    QKnxChar88591();
+    explicit QKnxChar88591(unsigned char character);
 
     static const constexpr int SubType = 0x02;
 

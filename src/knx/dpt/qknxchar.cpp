@@ -70,52 +70,52 @@ bool QKnxChar::isValid() const
     return QKnxDatapointType::isValid() && byte(0) <= maximum().toUInt();
 }
 
-// -- QKnxASCII
+// -- QKnxCharASCII
 
-QKnxASCII::QKnxASCII()
+QKnxCharASCII::QKnxCharASCII()
     : QKnxChar(SubType, 0)
 {
     setDescription(tr("Character (ASCII)"));
     setRange(QVariant(0x00), QVariant(0x7f));
 }
 
-QKnxASCII::QKnxASCII(char value)
-    : QKnxASCII()
+QKnxCharASCII::QKnxCharASCII(char value)
+    : QKnxCharASCII()
 {
     setCharacter(value);
 }
 
-char QKnxASCII::character() const
+char QKnxCharASCII::character() const
 {
     return char(value());
 }
 
-bool QKnxASCII::setCharacter(char value)
+bool QKnxCharASCII::setCharacter(char value)
 {
     return setValue(value);
 }
 
-// -- QKnxLatin1
+// -- QKnxChar88591
 
-QKnxLatin1::QKnxLatin1()
+QKnxChar88591::QKnxChar88591()
     : QKnxChar(SubType, 0)
 {
     setDescription(tr("Character (ISO 8859-1)"));
     setRange(QVariant(0x00), QVariant(0xff));
 }
 
-QKnxLatin1::QKnxLatin1(unsigned char character)
-    : QKnxLatin1()
+QKnxChar88591::QKnxChar88591(unsigned char character)
+    : QKnxChar88591()
 {
     setCharacter(character);
 }
 
-unsigned char QKnxLatin1::character() const
+unsigned char QKnxChar88591::character() const
 {
     return value();
 }
 
-bool QKnxLatin1::setCharacter(unsigned char value)
+bool QKnxChar88591::setCharacter(unsigned char value)
 {
     return setValue(value);
 }

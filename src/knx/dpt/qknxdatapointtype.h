@@ -62,7 +62,7 @@ public:
         Dpt3_3BitControlled = 300000,
             DptControlDimming = 300007, DptControlBlinds = 300008,
         Dpt4_Character = 400000,
-            DptCharAscii, DptChar8859,
+            DptCharAscii, DptChar88591,
         Dpt5_8bitUnsigned = 500000,
             DptScaling, DptAngle = 500003, DptPercentU8, DptDecimalFactor, DptTariff,
             DptValue1Ucount = 500010,

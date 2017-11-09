@@ -266,7 +266,7 @@ void tst_QKnxDatapointType::dpt4_Character()
     QCOMPARE(dpt.setValue(255), true);
     QCOMPARE(dpt.value(), quint8(255));
 
-    QKnxASCII asci;
+    QKnxCharASCII asci;
     QCOMPARE(asci.mainType(), 0x04);
     QCOMPARE(asci.subType(), 0x01);
     QCOMPARE(asci.isValid(), true);
@@ -288,7 +288,7 @@ void tst_QKnxDatapointType::dpt4_Character()
     QCOMPARE(asci.setCharacter('p'), true);
     QCOMPARE(asci.character(), 'p');
 
-    QKnxLatin1 char88;
+    QKnxChar88591 char88;
     QCOMPARE(char88.mainType(), 0x04);
     QCOMPARE(char88.subType(), 0x02);
     QCOMPARE(char88.isValid(), true);
