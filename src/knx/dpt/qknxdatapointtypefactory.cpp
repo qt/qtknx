@@ -52,6 +52,7 @@
 #include "qknxentranceaccess.h"
 #include "qknxscene.h"
 #include "qknxstatusmode3.h"
+#include "qknxutf8string.h"
 #include "qknxvarstring.h"
 
 QT_BEGIN_NAMESPACE
@@ -402,6 +403,10 @@ QKnxDatapointTypeFactory::QKnxDatapointTypeFactory()
     registerType<QKnxActiveEnergyV64>();
     registerType<QKnxApparentEnergyV64>();
     registerType<QKnxReactiveEnergyV64>();
+
+    // DPT-28
+    registerType<QKnxUtf8String>();
+    registerType<QKnxUtf8>();
 }
 
 QHash<int, int> &QKnxDatapointTypeFactory::sizeTable()

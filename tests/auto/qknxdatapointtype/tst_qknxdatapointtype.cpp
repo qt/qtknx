@@ -53,6 +53,7 @@
 #include <QtKnx/qknxscene.h>
 #include <QtKnx/qknxstatusmode3.h>
 #include <QtKnx/qknxtime.h>
+#include <QtKnx/qknxutf8string.h>
 #include <QtKnx/qknxvarstring.h>
 #include <QtKnx/qknxutils.h>
 #include <QtTest/qtest.h>
@@ -89,6 +90,7 @@ private slots:
     void dpt24_VarString();
     void dpt26_SceneInfo();
     void dpt27_32BitSet();
+    void dpt28_StringUtf8();
     void dpt29_ElectricalEnergy();
 };
 
@@ -2019,6 +2021,45 @@ void tst_QKnxDatapointType::dpt27_32BitSet()
 
     QCOMPARE(QKnxDatapointType::testBit(dpt.value(), 15), true); // Output::Sixteenth -> State on
     QCOMPARE(QKnxDatapointType::testBit(dpt.value(), 31), true); // Output::Sixteenth -> State valid
+}
+
+void tst_QKnxDatapointType::dpt28_StringUtf8()
+{
+    QKnxUtf8String string;
+    QCOMPARE(string.mainType(), 28);
+    QCOMPARE(string.subType(), 0);
+    QCOMPARE(string.size(), 1);
+    QCOMPARE(string.isValid(), true);
+    QCOMPARE(string.setString(QString(QByteArray(1, char(85)))), true);
+    QCOMPARE(string.byte(0), quint8(85));
+
+    const quint8 data[21] = { 0xe2, 0x88, 0x83, 0x79, 0x20, 0xe2, 0x88, 0x80, 0x78, 0x20, 0xc2,
+        0xac, 0x28, 0x78, 0x20, 0xe2, 0x89, 0xba, 0x20, 0x79, 0x29 };
+
+    QCOMPARE(string.setString(QString::fromUtf8({ (const char*) data, 21 })), true);
+    QCOMPARE(string.size(), 22);
+    QCOMPARE(string.isValid(), true);
+    QCOMPARE(string.byte(0), data[0]);
+    QCOMPARE(string.byte(1), data[1]);
+    QCOMPARE(string.byte(2), data[2]);
+    QCOMPARE(string.bytes(), QByteArray((const char*) data, 21) + QByteArray(1, 0));
+
+    QCOMPARE(string.setString(QString("KNX is OK")), true);
+    QCOMPARE(string.byte(0), quint8(75));
+    QCOMPARE(string.string(), QString("KNX is OK"));
+
+    QKnxUtf8 utf8;
+    QCOMPARE(utf8.setString((const char*) data, 21), true);
+    QCOMPARE(utf8.size(), 22);
+    QCOMPARE(utf8.isValid(), true);
+    QCOMPARE(utf8.byte(0), data[0]);
+    QCOMPARE(utf8.byte(1), data[1]);
+    QCOMPARE(utf8.byte(2), data[2]);
+    QCOMPARE(utf8.bytes(), QByteArray((const char*) data, 21) + QByteArray(1, 0));
+
+    QCOMPARE(utf8.setString(QString("KNX is OK")), true);
+    QCOMPARE(utf8.byte(0), quint8(75));
+    QCOMPARE(utf8.string(), QString("KNX is OK"));
 }
 
 void tst_QKnxDatapointType::dpt29_ElectricalEnergy()
