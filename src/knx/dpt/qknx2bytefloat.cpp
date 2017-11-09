@@ -46,7 +46,7 @@ QKnx2ByteFloat::QKnx2ByteFloat(float value)
 QKnx2ByteFloat::QKnx2ByteFloat(int subType, float value)
     : QKnxFixedSizeDatapointType(MainType, subType, TypeSize)
 {
-    setDescription(tr("2 byte float"));
+    setDescription(tr("2-byte float"));
     setRangeText(tr("Minimum Value, -671 088.64"), tr("Maximum Value, 670 760.96"));
     setRange(QVariant::fromValue(-671088.64), QVariant::fromValue(670760.96));
 

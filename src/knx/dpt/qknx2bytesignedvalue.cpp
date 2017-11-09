@@ -45,7 +45,7 @@ QKnx2ByteSignedValue::QKnx2ByteSignedValue(double value)
 QKnx2ByteSignedValue::QKnx2ByteSignedValue(int subType, double value)
     : QKnxFixedSizeDatapointType(MainType, subType, TypeSize)
 {
-    setDescription(tr("2 byte signed value"));
+    setDescription(tr("2-byte signed value"));
     setRangeText(tr("Minimum Value, -32 768"), tr("Maximum Value, 32 767"));
     setRange(QVariant::fromValue(-32768), QVariant::fromValue(32767));
 

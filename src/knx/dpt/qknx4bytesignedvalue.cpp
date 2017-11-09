@@ -45,7 +45,7 @@ QKnx4ByteSignedValue::QKnx4ByteSignedValue(qint32 value)
 QKnx4ByteSignedValue::QKnx4ByteSignedValue(int subType, qint32 value)
     : QKnxFixedSizeDatapointType(MainType, subType, TypeSize)
 {
-    setDescription(tr("4 byte signed value"));
+    setDescription(tr("4-byte signed value"));
     setRange(QVariant::fromValue(INT_MIN), QVariant::fromValue(INT_MAX));
     setRangeText(tr("Minimum Value, -2 147 483 648"), tr("Maximum Value, 2 147 483 647"));
 
