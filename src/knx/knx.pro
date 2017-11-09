@@ -28,6 +28,7 @@ PUBLIC_HEADERS += \
     qknxinterfaceobjectproperty.h \
     qknxlocaldevicemanagementframe.h \
     qknxlocaldevicemanagementframefactory.h \
+    qknxtunnelframefactory.h \
     qknxinterfaceobjectpropertydatatype.h
 
 PRIVATE_HEADERS +=
@@ -49,6 +50,7 @@ SOURCES += \
     qknxlocaldevicemanagementframefactory.cpp \
     qknxinterfaceobjectpropertydatatype.cpp \
     qknxnpdufactory_multicast.cpp \
+    qknxtunnelframefactory.cpp \
     qknxnpdufactory_broadcast.cpp
 
 HEADERS += $$PUBLIC_HEADERS $$PRIVATE_HEADERS

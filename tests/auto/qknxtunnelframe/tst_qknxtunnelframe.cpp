@@ -129,6 +129,8 @@ private slots:
     void testDataStream()
     {
     }
+
+    //TO DO: test the isValid function
 };
 
 QTEST_MAIN(tst_QKnxTunnelFrame)

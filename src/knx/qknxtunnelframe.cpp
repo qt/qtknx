@@ -37,17 +37,47 @@ QKnxTunnelFrame::QKnxTunnelFrame(QKnxTunnelFrame::MessageCode messageCode)
 
 bool QKnxTunnelFrame::isValid() const
 {
-    return QKnxCemiFrame::isValid();
+    // TODO: Make sure all constraints from 3.3.2 paragraph 2.2 L_Data is checked here
+
+    //Extended control field destination address type corresponds to the destination address
+    if (destinationAddress().type() != extendedControlField().destinationAddressType())
+        return false;
+    // Npdu is valid
+    if (! npdu().isValid())
+        return false;
+
+    switch (messageCode()) {
+    // L_Data
+    case MessageCode::DataRequest:
+    case MessageCode::DataConfirmation:
+    case MessageCode::DataIndication:
+        // From 3.3.2 paragrah 2.2.1
+        if (sourceAddress().type() != QKnxAddress::Type::Individual)
+            return false;
+    default:
+        break;
+    }
     // TODO: check NPDU size, several cases need to be taken into account:
     // 1; Information-Length (max. value is 255); number of NPDU octets, TPCI octet not included!
+    if (controlField().frameType() == QKnxControlField::FrameType::Extended
+        && npdu().size() > 257)
+        return false;
+    // Low Priority is Mandatory for long frame 3.3.2 paragraph 2.2.3
+    if (npdu().size() > 17 && controlField().priority() != QKnxControlField::Priority::Low)
+        return false;
     // 2; Check presence of Pl/RF medium information in the additional info -> size always needs
     //    to be greater then 15 bytes because both need additional information.
     //    03_06_03 EMI_IMI v01.03.03 AS.pdf page 76 Table(Use of flags in control field)
     // 3; RF frames do not include a length field at all, it is supposed to be set to 0x00.
     //    03_06_03 EMI_IMI v01.03.03 AS.pdf page 75 NOTE 1
-    // 4; control field frame type standard -> max. length value is 15
-    //    control field frame type extended -> max. length value is 255
-    //    03_03_02 Data Link Layer General v01.02.02 AS.pdf page 12 paragraph 2.2.5
+    // 4; 03_03_02 Data Link Layer General v01.02.02 AS.pdf page 12 paragraph 2.2.5
+    // control field frame type standard -> max. length value is 15
+    if (controlField().frameType() == QKnxControlField::FrameType::Standard
+        && npdu().byte(0) > 15)
+        return false;
+    //  control field frame type extended -> max. length value is 255
+
+    return QKnxCemiFrame::isValid();
 }
 
 QKnxControlField QKnxTunnelFrame::controlField() const
