@@ -47,7 +47,7 @@ QKnxNpdu QKnxNpduFactory::Multicast::createGroupValueReadNpdu()
 */
 QKnxNpdu QKnxNpduFactory::Multicast::createGroupValueResponseNpdu(const QByteArray &data)
 {
-    if (data.size() > 13)
+    if (data.size() > 14) // 3_02_02 Communication Medium TP1, Paragraph 2.2.4.1
         return {}; // 03_03_07 Application Layer, Paragraph 3.1.2: Data can be up to 14 octets.
 
     return { QKnxNpdu::TransportControlField::DataGroup,
@@ -59,7 +59,7 @@ QKnxNpdu QKnxNpduFactory::Multicast::createGroupValueResponseNpdu(const QByteArr
 */
 QKnxNpdu QKnxNpduFactory::Multicast::createGroupValueWriteNpdu(const QByteArray &data)
 {
-    if (data.size() > 13)
+    if (data.size() > 14) // 3_02_02 Communication Medium TP1, Paragraph 2.2.4.1
         return {}; // 03_03_07 Application Layer, Paragraph 3.1.3: Data can be up to 14 octets.
 
     return { QKnxNpdu::TransportControlField::DataGroup,
@@ -73,7 +73,7 @@ static QKnxNpdu createGroupPropertyValueNpdu(QKnxNpdu::ApplicationControlField a
                                       QKnxInterfaceObjectType object, quint8 objectInstance,
                                       QKnxInterfaceObjectProperty property, const QByteArray &data)
 {
-    if (data.size() > 248) // L_Data_Extended -> max 254 bytes
+    if (data.size() > 249) // L_Data_Extended -> max 254 bytes
         return {}; // 6 bytes already used for APCI, object, instance, property
 
     // 10_01 Logical Tag Extended, Paragraph 7.6.7

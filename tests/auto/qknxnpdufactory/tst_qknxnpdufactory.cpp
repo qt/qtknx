@@ -26,6 +26,7 @@
 **
 ******************************************************************************/
 
+#include <QtKnx/qknxcharstring.h>
 #include <QtKnx/qknxnpdufactory.h>
 #include <QtKnx/qknxtunnelframe.h>
 #include <QtTest/qtest.h>
@@ -65,7 +66,7 @@ private Q_SLOTS:
     // TODO: SystemNetworkParameterResponse
     void testNetworkParameterRead();
     void testNetworkParameterWrite();
-    // TODO: NetworkParameterResponse
+    void testNetworkParameterResponse();
     void testPropertyValueRead();
     void testPropertyValueWrite();
     // TODO: PropertyValueResponse
@@ -78,7 +79,7 @@ private Q_SLOTS:
     void testLinkWrite();
     // TODO: LinkResponse
     void testDeviceDescriptorRead();
-    // TODO: DeviceDescriptorResponse
+    void testDeviceDescriptorResponse();
     // TODO Restart
     void testAdcRead();
     // TODO: AdcResponse
@@ -228,6 +229,16 @@ void tst_QKnxNpduFactory::testGroupValueWrite()
     QCOMPARE(npdu.size(), quint16(4));
     QCOMPARE(npdu.data(), QByteArray::fromHex("ff"));
 
+    npdu.setData(QKnxCharString("The Qt Company").bytes());
+    QCOMPARE(npdu.isValid(), true);
+    QCOMPARE(npdu.size(), quint16(17));
+    QCOMPARE(npdu.dataSize(), quint8(15));
+
+    npdu = QKnxNpduFactory::Multicast::createGroupValueWriteNpdu(QKnxCharString("The Qt Company")
+        .bytes());
+    QCOMPARE(npdu.isValid(), true);
+    QCOMPARE(npdu.size(), quint16(17));
+    QCOMPARE(npdu.dataSize(), quint8(15));
 }
 
 void tst_QKnxNpduFactory::testGroupPropValueRead()
@@ -250,6 +261,18 @@ void tst_QKnxNpduFactory::testGroupPropValueWrite()
     QCOMPARE(npdu.data(), QByteArray::fromHex("00001305010203"));
     QCOMPARE(npdu.transportControlField(), QKnxNpdu::TransportControlField::DataTagGroup);
     QCOMPARE(npdu.applicationControlField(), QKnxNpdu::ApplicationControlField::GroupPropValueWrite);
+
+    npdu.setData(QByteArray(253, 1));
+    QCOMPARE(npdu.isValid(), true);
+    QCOMPARE(npdu.size(), quint16(256));
+    QCOMPARE(npdu.dataSize(), quint8(254));
+
+    npdu = QKnxNpduFactory::Multicast::createGroupPropertyValueWriteNpdu(QKnxInterfaceObjectType
+        ::System::Device, 5, QKnxInterfaceObjectProperty::General::ManufacturerData,
+        QByteArray(249, 1));
+    QCOMPARE(npdu.isValid(), true);
+    QCOMPARE(npdu.size(), quint16(256));
+    QCOMPARE(npdu.dataSize(), quint8(254));
 }
 
 void tst_QKnxNpduFactory::testIndividualAddressRead()
@@ -392,6 +415,12 @@ void tst_QKnxNpduFactory::testNetworkParameterRead()
     QCOMPARE(npdu.size(), quint16(10));
     QCOMPARE(npdu.transportControlField(), QKnxNpdu::TransportControlField::DataBroadcast);
     QCOMPARE(npdu.applicationControlField(), QKnxNpdu::ApplicationControlField::NetworkParameterRead);
+
+    npdu = QKnxNpduFactory::Broadcast::createNetworkParameterReadNpdu(
+        QKnxInterfaceObjectType::System::Device, QKnxInterfaceObjectProperty::Device::ErrorFlags,
+        QByteArray(250, 1));
+    QCOMPARE(npdu.size(), quint16(256));
+    QCOMPARE(npdu.dataSize(), quint8(254));
 }
 
 void tst_QKnxNpduFactory::testNetworkParameterWrite()
@@ -411,6 +440,18 @@ void tst_QKnxNpduFactory::testNetworkParameterWrite()
     QCOMPARE(npdu.size(), quint16(10));
     QCOMPARE(npdu.transportControlField(), QKnxNpdu::TransportControlField::DataIndividual);
     QCOMPARE(npdu.applicationControlField(), QKnxNpdu::ApplicationControlField::NetworkParameterWrite);
+}
+
+void tst_QKnxNpduFactory::testNetworkParameterResponse()
+{
+   auto npdu = QKnxNpduFactory::Broadcast::createNetworkParameterResponseNpdu(
+        QKnxInterfaceObjectType::System::Device, QKnxInterfaceObjectProperty::Device::ErrorFlags,
+        {}, QByteArray(11, 1));
+
+    QCOMPARE(npdu.size(), quint16(17));
+    QCOMPARE(npdu.dataSize(), quint8(15));
+
+    // TODO: extend test
 }
 
 void tst_QKnxNpduFactory::testPropertyValueRead()
@@ -609,6 +650,18 @@ void tst_QKnxNpduFactory::testDeviceDescriptorRead()
     QCOMPARE(npdu.sequenceNumber(), sequenceNumber);
     QCOMPARE(npdu.transportControlField(), QKnxNpdu::TransportControlField::DataConnected);
     QCOMPARE(npdu.applicationControlField(), QKnxNpdu::ApplicationControlField::DeviceDescriptorRead);
+}
+
+void tst_QKnxNpduFactory::testDeviceDescriptorResponse()
+{
+    quint8 descriptorType = 63;
+    auto npdu = QKnxNpduFactory::PointToPoint::createDeviceDescriptorResponseNpdu(
+        QKnxNpduFactory::PointToPoint::Mode::Connectionless, descriptorType, QByteArray(253, 0));
+
+    QCOMPARE(npdu.size(), quint16(256));
+    QCOMPARE(npdu.dataSize(), quint8(254));
+
+    // TODO: extend test
 }
 
 void tst_QKnxNpduFactory::testAdcRead()

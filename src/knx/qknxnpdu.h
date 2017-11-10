@@ -168,6 +168,7 @@ public:
         const QByteArray &data = {});
 
     bool isValid() const;
+    quint8 dataSize() const;
 
     quint8 sequenceNumber() const;
     void setSequenceNumber(quint8 seqNumber);

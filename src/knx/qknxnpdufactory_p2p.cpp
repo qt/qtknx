@@ -67,7 +67,7 @@ QKnxNpdu QKnxNpduFactory::PointToPoint::createMemoryReadNpdu(Mode mode, quint8 n
 QKnxNpdu QKnxNpduFactory::PointToPoint::createMemoryResponseNpdu(Mode mode, quint8 number,
     quint16 address, const QByteArray &data, quint8 seqNumber)
 {
-    if (data.size() > 250)
+    if (data.size() > 251)
         return {}; // L_Data_Extended -> max 254 Bytes payload, 4 Bytes already taken
 
     return { tpci(mode, seqNumber), QKnxNpdu::ApplicationControlField::MemoryResponse, seqNumber,
@@ -81,7 +81,7 @@ QKnxNpdu QKnxNpduFactory::PointToPoint::createMemoryResponseNpdu(Mode mode, quin
 QKnxNpdu QKnxNpduFactory::PointToPoint::createMemoryWriteNpdu(Mode mode, quint8 number,
     quint16 address, const QByteArray &data, quint8 seqNumber)
 {
-    if (data.size() > 250)
+    if (data.size() > 251)
         return {}; // L_Data_Extended -> max 254 Bytes payload, 4 Bytes already taken
 
     return { tpci(mode, seqNumber), QKnxNpdu::ApplicationControlField::MemoryWrite, seqNumber,
@@ -91,7 +91,7 @@ QKnxNpdu QKnxNpduFactory::PointToPoint::createMemoryWriteNpdu(Mode mode, quint8 
 QKnxNpdu QKnxNpduFactory::PointToPoint::createFunctionPropertyCommandNpdu(Mode mode,
     quint8 objIndex, QKnxInterfaceObjectProperty property, const QByteArray &data, quint8 seqNumber)
 {
-    if (data.size() > 250)
+    if (data.size() > 251)
         return {}; // L_Data_Extended -> max 254 Bytes payload, 4 Bytes already taken
 
     return { tpci(mode, seqNumber), QKnxNpdu::ApplicationControlField::FunctionPropertyCommand,
@@ -101,7 +101,7 @@ QKnxNpdu QKnxNpduFactory::PointToPoint::createFunctionPropertyCommandNpdu(Mode m
 QKnxNpdu QKnxNpduFactory::PointToPoint::createFunctionPropertyStateReadNpdu(Mode mode,
     quint8 objIndex, QKnxInterfaceObjectProperty property, const QByteArray &data, quint8 seqNumber)
 {
-    if (data.size() > 250)
+    if (data.size() > 251)
         return {}; // L_Data_Extended -> max 254 Bytes payload, 4 Bytes already taken
 
     return { tpci(mode, seqNumber), QKnxNpdu::ApplicationControlField::FunctionPropertyStateRead,
@@ -112,7 +112,7 @@ QKnxNpdu QKnxNpduFactory::PointToPoint::createFunctionPropertyStateResponseNpdu(
     quint8 objectIndex, QKnxInterfaceObjectProperty property, QKnxNpdu::ErrorCode code,
     const QByteArray &data, quint8 seqNumber)
 {
-    if (data.size() > 249)
+    if (data.size() > 250)
         return {}; // L_Data_Extended -> max 254 Bytes payload, 5 Bytes already taken
 
     return { tpci(mode, seqNumber), QKnxNpdu::ApplicationControlField::FunctionPropertyStateResponse,
@@ -133,7 +133,7 @@ QKnxNpdu QKnxNpduFactory::PointToPoint::createDeviceDescriptorReadNpdu(Mode mode
 QKnxNpdu QKnxNpduFactory::PointToPoint::createDeviceDescriptorResponseNpdu(Mode mode,
     quint8 descriptorType, const QByteArray &deviceDescriptor, quint8 seqNumber)
 {
-    if (descriptorType >= 64 || deviceDescriptor.size() > 252)
+    if (descriptorType >= 64 || deviceDescriptor.size() > 254)
         return {};
 
     return { tpci(mode, seqNumber), QKnxNpdu::ApplicationControlField::DeviceDescriptorResponse,
@@ -176,7 +176,7 @@ static QKnxNpdu createPropertyValueNpdu(QKnxNpduFactory::PointToPoint::Mode mode
                                         quint8 objectIndex, quint8 property, quint8 nbElement,
                                         quint16 startIndex, const QByteArray &data = {})
 {
-    if (data.size() > 248) // L_Data_Extended -> max 254 bytes payload
+    if (data.size() > 249) // L_Data_Extended -> max 254 bytes payload
         return {}; // 6 bytes already used for APCI, object index, PID etc.
 
     if ((nbElement > 0x0f) || (startIndex > 0x0fff))
@@ -295,7 +295,7 @@ QKnxNpdu QKnxNpduFactory::PointToPoint::createFileStreamInfoReportNpdu(Mode mode
     if (fileHandle > 15 || fileBlockSeqNumber > 15)
         return {};
 
-    if (data.size() > 251)
+    if (data.size() > 254)
         return {};
 
     return { tpci(mode, seqNumber), QKnxNpdu::ApplicationControlField::FileStreamInfoReport,
@@ -323,7 +323,7 @@ QKnxNpdu
 QKnxNpduFactory::PointToPointConnectionless::createNetworkParameterResponseNpdu(QKnxInterfaceObjectType object,
     QKnxInterfaceObjectProperty property, const QByteArray &testInfo, const QByteArray &testResult)
 {
-    if ((testInfo.size() + testResult.size()) > 8) // L_Data -> max 13 bytes payload
+    if ((testInfo.size() + testResult.size()) > 11) // L_Data -> max 14 bytes payload
         return {}; // 5 bytes already used for APCI, object, instance
 
     return createNetworkParameterNpduP2P(QKnxNpdu::ApplicationControlField::NetworkParameterResponse,
@@ -334,7 +334,7 @@ QKnxNpdu
 QKnxNpduFactory::PointToPointConnectionless::createNetworkParameterWriteNpdu(QKnxInterfaceObjectType object,
     QKnxInterfaceObjectProperty property, const QByteArray &value)
 {
-    if (value.size() > 249) // L_Data_Extended -> max 254 bytes payload
+    if (value.size() > 250) // L_Data_Extended -> max 254 bytes payload
         return {}; // 5 bytes already used for APCI, object, instance
 
     return createNetworkParameterNpduP2P(QKnxNpdu::ApplicationControlField::NetworkParameterWrite,
@@ -393,7 +393,7 @@ QKnxNpduFactory::PointToPointConnectionOriented::createUserMemoryResponseNpdu(qu
     quint8 number, quint16 address, const QByteArray &data, quint8 seqNumber)
 {
     // TODO: Figure out if data is supposed to be of a given size.
-    if (addressExtention > 15 || number > 15 || data.size() <= 0 || data.size() > 249)
+    if (addressExtention > 15 || number > 15 || data.size() <= 0 || data.size() > 250)
         return {}; // L_Data_Extended -> max 254 Bytes payload, 5 Bytes already taken
 
     const PointToPoint::Mode mode = PointToPoint::Mode::ConnectionOriented;
@@ -412,7 +412,7 @@ QKnxNpduFactory::PointToPointConnectionOriented::createUserMemoryWriteNpdu(quint
     quint8 number, quint16 address, const QByteArray &data, quint8 seqNumber)
 {
     // TODO: Figure out if data is supposed to be of a given size.
-    if (addressExtention > 15 || number > 15 || data.size() <= 0 || data.size() > 249)
+    if (addressExtention > 15 || number > 15 || data.size() <= 0 || data.size() > 250)
         return {}; // L_Data_Extended -> max 254 Bytes payload, 5 Bytes already taken
 
     const PointToPoint::Mode mode = PointToPoint::Mode::ConnectionOriented;

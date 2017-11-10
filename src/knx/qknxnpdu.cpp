@@ -151,8 +151,8 @@ bool QKnxNpdu::isValid() const
         return false;
 
 #define HEADER_SIZE 3 // [size][TCPI|APCI][APCI] 3 bytes
-#define L_DATA_PAYLOAD 13 // 3_02_02 Communication Medium TP1, Paragraph 2.2.4.1
-#define L_DATA_EXTENDED_PAYLOAD 252 // 3_02_02 Communication Medium TP1, Paragraph 2.2.5.1
+#define L_DATA_PAYLOAD 14 // 3_02_02 Communication Medium TP1, Paragraph 2.2.4.1
+#define L_DATA_EXTENDED_PAYLOAD 253 // 3_02_02 Communication Medium TP1, Paragraph 2.2.5.1
 
     switch (applicationControlField()) {
     case ApplicationControlField::GroupValueRead:
@@ -245,6 +245,11 @@ bool QKnxNpdu::isValid() const
 #undef HEADER_SIZE
 #undef L_DATA_PAYLOAD
 #undef L_DATA_EXTENDED_PAYLOAD
+}
+
+quint8 QKnxNpdu::dataSize() const
+{
+    return byte(0);
 }
 
 quint8 QKnxNpdu::sequenceNumber() const

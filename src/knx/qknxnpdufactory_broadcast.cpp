@@ -50,7 +50,7 @@ static QKnxNpdu createNetworkParameterNpdu(QKnxNpdu::ApplicationControlField apc
 QKnxNpdu QKnxNpduFactory::Broadcast::createNetworkParameterReadNpdu(QKnxInterfaceObjectType object,
     QKnxInterfaceObjectProperty property, const QByteArray &testInfo)
 {
-    if (testInfo.size() > 249) // L_Data_Extended -> max 254 bytes payload
+    if (testInfo.size() > 250) // L_Data_Extended -> max 254 bytes payload
         return {}; // 5 bytes already used for APCI, object, instance
 
     return createNetworkParameterNpdu(QKnxNpdu::ApplicationControlField::NetworkParameterRead,
@@ -61,7 +61,7 @@ QKnxNpdu
 QKnxNpduFactory::Broadcast::createNetworkParameterResponseNpdu(QKnxInterfaceObjectType object,
     QKnxInterfaceObjectProperty property, const QByteArray &testInfo, const QByteArray &testResult)
 {
-    if ((testInfo.size() + testResult.size()) > 8) // L_Data -> max 13 bytes payload
+    if ((testInfo.size() + testResult.size()) > 11) // L_Data -> max 14 bytes payload
         return {}; // 5 bytes already used for APCI, object, instance
 
     return createNetworkParameterNpdu(QKnxNpdu::ApplicationControlField::NetworkParameterResponse,
@@ -71,7 +71,7 @@ QKnxNpduFactory::Broadcast::createNetworkParameterResponseNpdu(QKnxInterfaceObje
 QKnxNpdu QKnxNpduFactory::Broadcast::createNetworkParameterWriteNpdu(QKnxInterfaceObjectType object,
     QKnxInterfaceObjectProperty property, const QByteArray &value)
 {
-    if (value.size() > 249) // L_Data_Extended -> max 254 bytes payload
+    if (value.size() > 250) // L_Data_Extended -> max 254 bytes payload
         return {}; // 5 bytes already used for APCI, object, instance
 
     return createNetworkParameterNpdu(QKnxNpdu::ApplicationControlField::NetworkParameterWrite,
@@ -82,7 +82,7 @@ QKnxNpdu
 QKnxNpduFactory::Broadcast::createNetworkParameterInfoReportNpdu(QKnxInterfaceObjectType object,
     QKnxInterfaceObjectProperty property, const QByteArray &testInfo, const QByteArray &testResult)
 {
-    if ((testInfo.size() + testResult.size()) > 249) // L_Data_Extended -> max 254 bytes payload
+    if ((testInfo.size() + testResult.size()) > 250) // L_Data_Extended -> max 254 bytes payload
         return {}; // 5 bytes already used for APCI, object, instance
 
     return createNetworkParameterNpdu(QKnxNpdu::ApplicationControlField::NetworkParameterInfoReport,
@@ -101,7 +101,7 @@ static QKnxNpdu createSystemNetworkParameterNpdu(QKnxNpdu::ApplicationControlFie
     if (property > 0x0fff)
         return {};
 
-    if ((data.size() + testResult.size()) > 248) // L_Data_Extended -> max 254 bytes payload
+    if ((data.size() + testResult.size()) > 249) // L_Data_Extended -> max 254 bytes payload
         return {}; // 6 bytes already used for APCI, object type, PID
 
     return { QKnxNpdu::TransportControlField::DataSystemBroadcast, apci,
