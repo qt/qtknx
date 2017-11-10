@@ -40,23 +40,28 @@ class Q_KNX_EXPORT QKnxVarString : public QKnxVariableSizeDatapointType
 public:
     QKnxVarString();
     explicit QKnxVarString(QLatin1String string);
+    explicit QKnxVarString(const char *string, int size = -1);
 
     static const constexpr int MainType = 0x18;
     static const constexpr int TypeSize = 0x01;
 
     QLatin1String string() const;
     bool setString(QLatin1String string);
+    bool setString(const char *string, int size = -1);
 
     bool isValid() const override;
 
 protected:
-    QKnxVarString(int subType, QLatin1String string);
+    QKnxVarString(int subType, const char *string, int size);
 };
 
 class Q_KNX_EXPORT QKnxVarString88591 : public QKnxVarString
 {
 public:
-    using QKnxVarString::QKnxVarString;
+    QKnxVarString88591();
+    explicit QKnxVarString88591(QLatin1String string);
+    explicit QKnxVarString88591(const char *string, int size = -1);
+
     static const constexpr int SubType = 0x01;
 };
 

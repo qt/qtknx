@@ -48,20 +48,24 @@ static bool isAscii(const char *bytes, int size, quint8 maxValue)
 }
 
 QKnxCharString::QKnxCharString()
-    : QKnxCharString(SubType, {})
+    : QKnxCharString(SubType, nullptr, 0)
 {}
 
 QKnxCharString::QKnxCharString(QLatin1String string)
-    : QKnxCharString(SubType, string)
+    : QKnxCharString(SubType, string.latin1(), string.size())
 {}
 
-QKnxCharString::QKnxCharString(int subType, QLatin1String string)
+QKnxCharString::QKnxCharString(const char *string, int size)
+    : QKnxCharString(SubType, string, size)
+{}
+
+QKnxCharString::QKnxCharString(int subType, const char* string, int size)
     : QKnxFixedSizeDatapointType(MainType, subType, TypeSize)
 {
-    setDescription(tr("Character string"));
+    setDescription(tr("Fixed length character string"));
     setRange(QVariant(0x00), QVariant(0xff));
     setRangeText(tr("Minimum number of characters: 0"), tr("Maximum number of characters: 14"));
-    setString(string);
+    setString(string, size);
 }
 
 QLatin1String QKnxCharString::string() const
@@ -71,12 +75,22 @@ QLatin1String QKnxCharString::string() const
 
 bool QKnxCharString::setString(QLatin1String string)
 {
-    if (string.size() > size() || !isAscii(string.latin1(), string.size(), maximum().toUInt()))
-        return false;
+    return setString(string.latin1(), string.size());
+}
 
-    memset(data(), 0, size());
-    memcpy(data(), string.latin1(), string.size());
-    return true;
+bool QKnxCharString::setString(const char *string, int size)
+{
+    static auto null = QByteArray(TypeSize, 0);
+    if (!string)
+        return setBytes(null, 0, TypeSize);
+
+    size = (size < 0 ? int(strlen(string)) : size);
+    if (size == 0)
+        return setBytes(null, 0, TypeSize);
+
+    if (size > TypeSize || !isAscii(string, size, maximum().toUInt()))
+        return false;
+    return setBytes(QByteArray(QByteArray(string, size) + null.mid(0, TypeSize - size)), 0, TypeSize);
 }
 
 bool QKnxCharString::isValid() const
@@ -89,31 +103,36 @@ bool QKnxCharString::isValid() const
 // -- QKnxCharStringASCII
 
 QKnxCharStringASCII::QKnxCharStringASCII()
-    : QKnxCharString(SubType, {})
-{
-    setDescription(tr("Character string (ASCII)"));
-    setRange(QVariant(0x00), QVariant(0x7f));
-}
+    : QKnxCharStringASCII(nullptr)
+{}
 
 QKnxCharStringASCII::QKnxCharStringASCII(QLatin1String string)
-    : QKnxCharStringASCII()
+    : QKnxCharStringASCII(string.latin1(), string.size())
+{}
+
+QKnxCharStringASCII::QKnxCharStringASCII(const char *string, int size)
+    : QKnxCharString(SubType, nullptr, 0)
 {
-    setString(string);
+    setDescription(tr("Fixed length character string (ASCII)"));
+    setRange(QVariant(0x00), QVariant(0x7f));
+    setString(string, size);
 }
 
 
 // -- QKnxCharString88591
 
 QKnxCharString88591::QKnxCharString88591()
-    : QKnxCharString(SubType, {})
-{
-    setDescription(tr("Character string (ISO 8859-1)"));
-}
+    : QKnxCharString88591(nullptr)
+{}
 
 QKnxCharString88591::QKnxCharString88591(QLatin1String string)
-    : QKnxCharString88591()
+    : QKnxCharString88591(string.latin1(), string.size())
+{}
+
+QKnxCharString88591::QKnxCharString88591(const char *string, int size)
+    : QKnxCharString(SubType, string, size)
 {
-    setString(string);
+    setDescription(tr("Fixed length character string (ISO 8859-1)"));
 }
 
 QT_END_NAMESPACE

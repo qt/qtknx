@@ -35,19 +35,23 @@ QT_BEGIN_NAMESPACE
 // -- QKnxVarString
 
 QKnxVarString::QKnxVarString()
-    : QKnxVarString(SubType, {})
+    : QKnxVarString(nullptr)
 {}
 
 QKnxVarString::QKnxVarString(QLatin1String string)
-    : QKnxVarString(SubType, string)
+    : QKnxVarString(string.latin1(), string.size())
 {}
 
-QKnxVarString::QKnxVarString(int subType, QLatin1String string)
+QKnxVarString::QKnxVarString(const char *string, int size)
+    : QKnxVarString(SubType, string, size)
+{}
+
+QKnxVarString::QKnxVarString(int subType, const char *string, int size)
     : QKnxVariableSizeDatapointType(MainType, subType, TypeSize)
 {
     setDescription(tr("Variable length character string (ISO 8859-1)"));
     setRange(QVariant(0x00), QVariant(0xff));
-    setString(string);
+    setString(string, size);
 }
 
 QLatin1String QKnxVarString::string() const
@@ -57,17 +61,42 @@ QLatin1String QKnxVarString::string() const
 
 bool QKnxVarString::setString(QLatin1String string)
 {
-    if (string.size() >= INT_MAX)
-        return false;
+    return setString(string.latin1(), string.size());
+}
 
-    resize(string.size() + 1);
-    memcpy(data(), string.latin1(), string.size());
-    return setByte(string.size(), 0);
+bool QKnxVarString::setString(const char *string, int size)
+{
+    auto null = QByteArray::fromHex("00");
+    if (!string)
+        return setBytes(null, 0, 1);
+
+    size = (size < 0 ? int(strlen(string)) : size);
+    if (size == 0)
+        return setBytes(null, 0, 1);
+
+    if (size >= USHRT_MAX)
+        return false;
+    return setBytes(QByteArray(QByteArray::fromRawData(string, size) + null), 0, size + 1);
 }
 
 bool QKnxVarString::isValid() const
 {
     return QKnxDatapointType::isValid() && byte(quint16(size() - 1)) == 0;
 }
+
+
+// -- QKnxVarString88591
+
+QKnxVarString88591::QKnxVarString88591()
+    : QKnxVarString88591(nullptr)
+{}
+
+QKnxVarString88591::QKnxVarString88591(QLatin1String string)
+    : QKnxVarString88591(string.latin1(), string.size())
+{}
+
+QKnxVarString88591::QKnxVarString88591(const char *string, int size)
+    : QKnxVarString(SubType, string, size)
+{}
 
 QT_END_NAMESPACE

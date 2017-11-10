@@ -40,17 +40,19 @@ class Q_KNX_EXPORT QKnxCharString : public QKnxFixedSizeDatapointType
 public:
     QKnxCharString();
     explicit QKnxCharString(QLatin1String string);
+    explicit QKnxCharString(const char *string, int size = -1);
 
     static const constexpr int TypeSize = 0x0e;
     static const constexpr int MainType = 0x10;
 
     QLatin1String string() const;
     bool setString(QLatin1String string);
+    bool setString(const char *string, int size = -1);
 
     bool isValid() const override;
 
 protected:
-    QKnxCharString(int subType, QLatin1String string);
+    QKnxCharString(int subType, const char* string, int size);
 };
 
 class Q_KNX_EXPORT QKnxCharStringASCII : public QKnxCharString
@@ -58,6 +60,7 @@ class Q_KNX_EXPORT QKnxCharStringASCII : public QKnxCharString
 public:
     QKnxCharStringASCII();
     explicit QKnxCharStringASCII(QLatin1String string);
+    explicit QKnxCharStringASCII(const char *string, int size = -1);
 };
 
 class Q_KNX_EXPORT QKnxCharString88591 : public QKnxCharString
@@ -65,6 +68,7 @@ class Q_KNX_EXPORT QKnxCharString88591 : public QKnxCharString
 public:
     QKnxCharString88591();
     explicit QKnxCharString88591(QLatin1String string);
+    explicit QKnxCharString88591(const char *string, int size = -1);
 
     static const constexpr int SubType = 0x01;
 };
