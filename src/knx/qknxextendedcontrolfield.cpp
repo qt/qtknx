@@ -80,12 +80,12 @@ QKnxExtendedControlField::QKnxExtendedControlField(const QVector<quint8> &data)
 
 QKnxAddress::Type QKnxExtendedControlField::destinationAddressType() const
 {
-    return static_cast<QKnxAddress::Type> (!quint8(m_ctrl2[7]));
+    return static_cast<QKnxAddress::Type> (quint8(m_ctrl2[7]));
 }
 
 void QKnxExtendedControlField::setDestinationAddressType(QKnxAddress::Type address)
 {
-    m_ctrl2[7] = static_cast<int> (address == QKnxAddress::Type::Group);
+    m_ctrl2[7] = static_cast<int> (address);
 }
 
 quint8 QKnxExtendedControlField::hopCount() const

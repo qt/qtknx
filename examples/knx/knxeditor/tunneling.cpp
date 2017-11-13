@@ -250,7 +250,7 @@ void Tunneling::updateControlField()
 
 void Tunneling::updateExtendedControlField()
 {
-    m_extCtrl.setDestinationAddressType(QKnxAddress::Type(ui->destAddrType->currentIndex()));
+    m_extCtrl.setDestinationAddressType(QKnxAddress::Type(ui->destAddrType->currentText() == "Group"));
     m_extCtrl.setHopCount(ui->hopCount->value());
     m_extCtrl.setFormat(QKnxExtendedControlField::ExtendedFrameFormat(ui->extFrameFormat->currentIndex()));
 

@@ -46,8 +46,8 @@ class Q_KNX_EXPORT QKnxAddress final
 public:
     enum class Type : quint8
     {
-        Group = 0x00,
-        Individual = 0x01
+        Group = 0x01,
+        Individual = 0x00
     };
     QKnxAddress::Type type() const;
 
