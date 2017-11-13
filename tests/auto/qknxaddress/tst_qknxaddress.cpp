@@ -58,7 +58,6 @@ private slots:
     {
         QKnxAddress address;
         QCOMPARE(address.type(), InvalidType);
-        QCOMPARE(address.notation(), QKnxAddress::Notation::ThreeLevel);
         QCOMPARE(address.isValid(), false);
         QCOMPARE(address.toString(), QStringLiteral(""));
         QCOMPARE(address.bytes<QByteArray>(), QByteArray {});
@@ -100,9 +99,12 @@ private slots:
     {
         QFETCH(QKnxAddress, address);
         QTEST(address.type(), "type");
-        QTEST(address.notation(), "notation");
         QTEST(address.isValid(), "isValid");
-        QTEST(address.toString(), "toString");
+
+        auto notation = *static_cast<const QKnxAddress::Notation *>(QTest::qElementData("notation",
+            qMetaTypeId<QKnxAddress::Notation>()));
+
+        QTEST(address.toString(notation), "toString");
         QTEST(address.bytes<QVector<quint8>>(), "bytes");
     }
 
@@ -376,9 +378,12 @@ private slots:
     {
         QFETCH(QKnxAddress, address);
         QTEST(address.type(), "type");
-        QTEST(address.notation(), "notation");
         QTEST(address.isValid(), "isValid");
-        QTEST(address.toString(), "toString");
+
+        auto notation = *static_cast<const QKnxAddress::Notation *>(QTest::qElementData("notation",
+            qMetaTypeId<QKnxAddress::Notation>()));
+
+        QTEST(address.toString(notation), "toString");
         QTEST(address.bytes<QVector<quint8>>(), "bytes");
     }
 
@@ -487,9 +492,12 @@ private slots:
     {
         QFETCH(QKnxAddress, address);
         QTEST(address.type(), "type");
-        QTEST(address.notation(), "notation");
         QTEST(address.isValid(), "isValid");
-        QTEST(address.toString(), "toString");
+
+        auto notation = *static_cast<const QKnxAddress::Notation *>(QTest::qElementData("notation",
+            qMetaTypeId<QKnxAddress::Notation>()));
+
+        QTEST(address.toString(notation), "toString");
         QTEST(address.bytes<QByteArray>(), "bytes");
     }
 
@@ -590,9 +598,12 @@ private slots:
     {
         QFETCH(QKnxAddress, address);
         QTEST(address.type(), "type");
-        QTEST(address.notation(), "notation");
         QTEST(address.isValid(), "isValid");
-        QTEST(address.toString(), "toString");
+
+        auto notation = *static_cast<const QKnxAddress::Notation *>(QTest::qElementData("notation",
+            qMetaTypeId<QKnxAddress::Notation>()));
+
+        QTEST(address.toString(notation), "toString");
         QTEST(address.bytes<QVector<quint8>>(), "bytes");
     }
 
@@ -602,7 +613,6 @@ private slots:
 
         QKnxAddress address = QKnxAddress::createGroup(1, 5155);
         QCOMPARE(address.type(), InvalidType);
-        QCOMPARE(address.notation(), QKnxAddress::Notation::ThreeLevel);
         QCOMPARE(address.isValid(), false);
         QCOMPARE(address.toString(), QStringLiteral(""));
         QCOMPARE(address.bytes<QVector<quint8>>(), QVector<quint8> {});
@@ -611,16 +621,14 @@ private slots:
 
         address = QKnxAddress::createGroup(1, 515);
         QCOMPARE(address.type(), QKnxAddress::Type::Group);
-        QCOMPARE(address.notation(), QKnxAddress::Notation::TwoLevel);
         QCOMPARE(address.isValid(), true);
-        QCOMPARE(address.toString(), QStringLiteral("1/515"));
         QCOMPARE(address.bytes<QVector<quint8>>(), QVector<quint8> ({ 0x0a, 0x03 }));
+        QCOMPARE(address.toString(QKnxAddress::Notation::TwoLevel), QStringLiteral("1/515"));
 
         // valid 3-level group address
 
         address = QKnxAddress::createGroup(1, 0, 1);
         QCOMPARE(address.type(), QKnxAddress::Type::Group);
-        QCOMPARE(address.notation(), QKnxAddress::Notation::ThreeLevel);
         QCOMPARE(address.isValid(), true);
         QCOMPARE(address.toString(), QStringLiteral("1/0/1"));
         QCOMPARE(address.bytes<QVector<quint8>>(), QVector<quint8> ({ 0x08, 0x01 }));
@@ -630,9 +638,9 @@ private slots:
     {
         const QKnxAddress address = QKnxAddress::createIndividual(1, 0, 1);
         QCOMPARE(address.type(), QKnxAddress::Type::Individual);
-        QCOMPARE(address.notation(), QKnxAddress::Notation::ThreeLevel);
         QCOMPARE(address.isValid(), true);
         QCOMPARE(address.toString(), QStringLiteral("1.0.1"));
+        QCOMPARE(address.toString(QKnxAddress::Notation::TwoLevel), QString());
         QCOMPARE(address.bytes<QVector<quint8>>(), QVector<quint8> ({ 0x10, 0x01 }));
     }
 
@@ -640,7 +648,6 @@ private slots:
     {
         QKnxAddress address = QKnxAddress::Group::Broadcast;
         QCOMPARE(address.type(), QKnxAddress::Type::Group);
-        QCOMPARE(address.notation(), QKnxAddress::Notation::ThreeLevel);
         QCOMPARE(address.isValid(), true);
         QCOMPARE(address.isBroadcast(), true);
         QCOMPARE(address.toString(), QStringLiteral("0/0/0"));
@@ -648,7 +655,6 @@ private slots:
 
         address = { QKnxAddress::Type::Group, 0x0000 };
         QCOMPARE(address.type(), QKnxAddress::Type::Group);
-        QCOMPARE(address.notation(), QKnxAddress::Notation::ThreeLevel);
         QCOMPARE(address.isValid(), true);
         QCOMPARE(address.isBroadcast(), true);
         QCOMPARE(address.toString(), QStringLiteral("0/0/0"));
@@ -659,7 +665,6 @@ private slots:
     {
         auto address = QKnxAddress::Individual::Unregistered;
         QCOMPARE(address.type(), QKnxAddress::Type::Individual);
-        QCOMPARE(address.notation(), QKnxAddress::Notation::ThreeLevel);
         QCOMPARE(address.isValid(), true);
         QCOMPARE(address.isBroadcast(), false);
         QCOMPARE(address.isUnregistered(), true);
@@ -668,7 +673,6 @@ private slots:
 
         address = { QKnxAddress::Type::Individual, 0x0000 };
         QCOMPARE(address.type(), QKnxAddress::Type::Individual);
-        QCOMPARE(address.notation(), QKnxAddress::Notation::ThreeLevel);
         QCOMPARE(address.isValid(), true);
         QCOMPARE(address.isBroadcast(), false);
         QCOMPARE(address.isUnregistered(), false);
@@ -677,7 +681,6 @@ private slots:
 
         address = { QKnxAddress::Type::Individual, 0x01ff };
         QCOMPARE(address.type(), QKnxAddress::Type::Individual);
-        QCOMPARE(address.notation(), QKnxAddress::Notation::ThreeLevel);
         QCOMPARE(address.isValid(), true);
         QCOMPARE(address.isUnregistered(), true);
         QCOMPARE(address.toString(), QStringLiteral("0.1.255"));

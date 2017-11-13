@@ -76,14 +76,6 @@ QKnxAddress::Type QKnxAddress::type() const
 }
 
 /*!
-    Returns the address notation.
-*/
-QKnxAddress::Notation QKnxAddress::notation() const
-{
-    return m_notation;
-}
-
-/*!
     \fn QKnxAddress::QKnxAddress()
 
     Constructs an new, invalid KNX address object. The formatting is set to
@@ -307,13 +299,13 @@ bool QKnxAddress::isValid() const
     as separator, while a address of type \l Individual is formatted using a
     dot as separator.
 
-    \note A \l Individual address is always returned in 3-level notation, a
-    \l Group address in 2-level or 3-level notation depending on the how the
-    address was created. If the address is invalid, an empty string is returned.
+    \note A \l Individual addresses support only 3-level notation, a \l Group
+    address 2-level or 3-level notation. If the address is invalid or 2-level
+    notation for individual addresses is requestd, an empty string is returned.
 */
-QString QKnxAddress::toString() const
+QString QKnxAddress::toString(Notation notation) const
 {
-    if (m_notation == QKnxAddress::Notation::ThreeLevel) {
+    if (notation == QKnxAddress::Notation::ThreeLevel) {
         if (m_type == QKnxAddress::Type::Group) {
             return QStringLiteral("%1/%2/%3").arg((m_address >> 11) & 0x1f)
                 .arg((m_address >> 8) & 0x07).arg(m_address & 0xff);
@@ -323,7 +315,7 @@ QString QKnxAddress::toString() const
                 .arg((m_address >> 8) & 0x0f).arg(m_address & 0xff);
         }
     }
-    if (m_notation == QKnxAddress::Notation::TwoLevel && m_type == QKnxAddress::Type::Group)
+    if (notation == QKnxAddress::Notation::TwoLevel && m_type == QKnxAddress::Type::Group)
         return QStringLiteral("%1/%2").arg((m_address >> 11) & 0x1f).arg(m_address & 0x07ff);
     return QString();
 }
@@ -409,7 +401,6 @@ QKnxAddress::QKnxAddress(QKnxAddress::Type type, quint16 sec1, quint16 *sec2, qu
         if (!sec2) {
             if (checkRange(QKnxAddress::Notation::TwoLevel)) {
                 m_type = type;
-                m_notation = QKnxAddress::Notation::TwoLevel;
                 m_address = quint16(sec1 << 11 | sec3);
             }
         } else {
