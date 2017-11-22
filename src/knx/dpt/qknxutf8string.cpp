@@ -1,8 +1,3 @@
-#include "qknxutf8string.h"
-#include "qknxutf8string.h"
-#include "qknxutf8string.h"
-#include "qknxutf8string.h"
-#include "qknxutf8string.h"
 /******************************************************************************
 **
 ** Copyright (C) 2017 The Qt Company Ltd.
