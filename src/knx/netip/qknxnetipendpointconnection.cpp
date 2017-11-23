@@ -339,7 +339,7 @@ void QKnxNetIpEndpointConnectionPrivate::process(const QKnxNetIpTunnelingAcknowl
     }
 }
 
-bool QKnxNetIpEndpointConnectionPrivate::sendTunnelingRequest(const QKnxCemiFrame &frame)
+bool QKnxNetIpEndpointConnectionPrivate::sendTunnelingRequest(const QKnxTunnelFrame &frame)
 {
     m_lastSendCemiRequest = QKnxNetIpTunnelingRequest(m_channelId, m_sendCount, frame).bytes();
     qDebug().noquote().nospace() << "Sending tunneling request: 0x" << m_lastSendCemiRequest.toHex();
@@ -397,7 +397,7 @@ void QKnxNetIpEndpointConnectionPrivate::process(const QKnxNetIpDeviceConfigurat
     }
 }
 
-bool QKnxNetIpEndpointConnectionPrivate::sendDeviceConfigurationRequest(const QKnxCemiFrame &frame)
+bool QKnxNetIpEndpointConnectionPrivate::sendDeviceConfigurationRequest(const QKnxLocalDeviceManagementFrame &frame)
 {
     m_lastSendCemiRequest = QKnxNetIpDeviceConfigurationRequest(m_channelId, m_sendCount, frame).bytes();
     qDebug().noquote().nospace() << "Sending device configuration request: 0x" << m_lastSendCemiRequest

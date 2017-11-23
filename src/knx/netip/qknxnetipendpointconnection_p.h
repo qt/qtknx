@@ -46,6 +46,8 @@
 #include <QtKnx/qknxglobal.h>
 #include <QtKnx/qknxnetipendpointconnection.h>
 #include <QtNetwork/qhostaddress.h>
+#include <QtKnx/qknxlocaldevicemanagementframe.h>
+#include <QtKnx/qknxtunnelframe.h>
 
 #include <private/qobject_p.h>
 
@@ -119,11 +121,11 @@ public:
     virtual void process(const QKnxCemiFrame &frame);
 
     // datapoint related processing
-    bool sendTunnelingRequest(const QKnxCemiFrame &frame);
+    bool sendTunnelingRequest(const QKnxTunnelFrame &frame);
     virtual void process(const QKnxNetIpTunnelingRequest &);
     virtual void process(const QKnxNetIpTunnelingAcknowledge &);
 
-    bool sendDeviceConfigurationRequest(const QKnxCemiFrame &frame);
+    bool sendDeviceConfigurationRequest(const QKnxLocalDeviceManagementFrame &frame);
     virtual void process(const QKnxNetIpDeviceConfigurationRequest &);
     virtual void process(const QKnxNetIpDeviceConfigurationAcknowledge &);
 
