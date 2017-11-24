@@ -86,8 +86,8 @@ QKnxControlField::Priority QKnxControlField::priority() const
 }
 
 /*!
-    Sets the priority that shall be used for transmission or reception of the
-    frame.
+    Sets the \a priority that shall be used for transmission or reception of
+    the frame.
 */
 void QKnxControlField::setPriority(QKnxControlField::Priority priority)
 {
@@ -113,7 +113,7 @@ QString QKnxControlField::toString() const
 }
 
 /*!
-    \fn auto QKnxControlField::bytes() const
+    \fn quint8 QKnxControlField::bytes() const
 
     Returns the control field as byte or range of bytes.
 

@@ -32,6 +32,21 @@
 
 QT_BEGIN_NAMESPACE
 
+/*!
+    \class QKnxTimeOfDay
+    \inherits QKnxFixedSizeDatapointType
+    \inmodule QtKnx
+
+    \brief The QKnxTimeOfDay class is a datapoint type for the time of day.
+
+    This is a fixed size datapoint type with the length of 3 bytes.
+
+    The left byte of the data holds the day as 3 bits and the hour as 5 bits,
+    the middle byte holds the minutes as 5 bits, and the right byte holds the
+    seconds as 5 bits.
+
+    \sa QKnxDatapointType
+*/
 
 // -- QKnxTimeOfDay
 
@@ -116,6 +131,9 @@ bool QKnxTimeOfDay::setDayOfWeek(QKnxTime::DayOfWeek day)
     return setByte(0, quint8(day) << 5u | quint8(byte(0) & 0x1f));
 }
 
+/*!
+    \reimp
+*/
 bool QKnxTimeOfDay::isValid() const
 {
     auto time = value();
@@ -123,6 +141,22 @@ bool QKnxTimeOfDay::isValid() const
         && (time >= minimum().value<QKnxTime>()) && (time <= maximum().value<QKnxTime>());
 }
 
+/*!
+    \class QKnxDate
+    \inherits QKnxFixedSizeDatapointType
+    \inmodule QtKnx
+
+    \brief The QKnxDate class is a datapoint type for a date.
+
+    This is a fixed size datapoint type with the length of 3 bytes.
+
+    The left byte of the data holds the day as 5 bits, the middle byte holds the
+    month as 4 bits, and the right byte holds the year as 7 bits.
+
+    Valids dates are from 1990-01-01 to 2089-12-31.
+
+    \sa QKnxDatapointType
+*/
 
 // -- QKnxDate
 
@@ -198,6 +232,9 @@ bool QKnxDate::setDay(quint8 day)
     return false;
 }
 
+/*!
+    \reimp
+*/
 bool QKnxDate::isValid() const
 {
     auto date = value();
@@ -205,6 +242,19 @@ bool QKnxDate::isValid() const
         && (date >= minimum().toDate()) && (date <= maximum().toDate());
 }
 
+/*!
+    \class QKnxDateTime
+    \inherits QKnxFixedSizeDatapointType
+    \inmodule QtKnx
+
+    \brief The QKnxDateTime class is a datapoint type for the date and time.
+
+    This is a fixed size datapoint type with the length of 8 bytes.
+
+    Valid dates are from Monday 1990-01-01 to Wednesday 2155-12-31.
+
+    \sa QKnxDatapointType
+*/
 
 // -- QKnxDateTime
 
@@ -300,6 +350,9 @@ void QKnxDateTime::setClockQuality(ClockQuality quality)
     setByte(7, QKnxDatapointType::setBit(byte(7), bool(quality), 7));
 }
 
+/*!
+    \reimp
+*/
 bool QKnxDateTime::isValid() const
 {
     auto tmpDate = date(); auto tmpTime = time();

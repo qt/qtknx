@@ -31,6 +31,24 @@
 
 QT_BEGIN_NAMESPACE
 
+/*!
+    \class QKnxTime
+
+    \inmodule QtKnx
+    \brief The QKnxTime class holds time information.
+
+    Hour values must be less than 24.
+*/
+
+/*!
+    \class QKnxTime24
+
+    \inmodule QtKnx
+    \brief The QKnxTime24 class holds time information.
+
+    Hour values can be up to 24.
+*/
+
 QAbstractKnxTime::~QAbstractKnxTime()
 {}
 

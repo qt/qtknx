@@ -34,6 +34,36 @@
 
 QT_BEGIN_NAMESPACE
 
+/*!
+    \class QKnxNetIpTunnelConnection
+
+    \inmodule QtKnx
+    \brief The QKnxNetIpTunnelConnection class enables the opening and handling
+    of a client connection to a KNXnet/IP server.
+
+    The QKnxNetIpTunnelConnection is a data connection between a client and a
+    KNXnet/IP server endpoint. This is used to access functionalities of devices
+    on a KNX bus. The IP address of the client must be set. It is then possible
+    to connect to a chosen KNXnet/IP server and to send \l QKnxTunnelFrame
+    frames to the KNXnet/IP server.
+
+    The class takes care of connecting to the server, asking for a data
+    connection, and monitoring the connection:
+
+    \code
+        QKnxNetIpTunnelConnection tunnel;
+        QHostAddress clientLocalAddress = ...
+        tunnel.setLocalAddress(clientLocalAddress);
+
+        QHostAddress knxNetIpServerAddress = ...
+        quint16 knxNetIpServerDataEndPointPort = ...
+        tunnel.connectToHost(knxNetIpServerAddress, knxNetIpServerDataEndPointPort);
+
+        QKnxTunnelFrame frame = ...
+        tunnel.sendTunnelFrame(frame);
+    \endcode
+*/
+
 class QKnxNetIpTunnelConnectionPrivate : public QKnxNetIpEndpointConnectionPrivate
 {
     Q_DECLARE_PUBLIC(QKnxNetIpTunnelConnection)

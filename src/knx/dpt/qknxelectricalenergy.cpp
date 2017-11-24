@@ -34,6 +34,19 @@
 
 QT_BEGIN_NAMESPACE
 
+/*!
+    \class QKnxElectricalEnergy
+    \inherits QKnxFixedSizeDatapointType
+    \inmodule QtKnx
+
+    \brief The QKnxElectricalEnergy class is a datapoint type for electrical
+    energy.
+
+    This is a fixed size datapoint type with the length of 8 bytes.
+
+    \sa QKnxDatapointType
+*/
+
 QKnxElectricalEnergy::QKnxElectricalEnergy()
     : QKnxElectricalEnergy(0)
 {}

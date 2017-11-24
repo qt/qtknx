@@ -32,6 +32,39 @@
 
 QT_BEGIN_NAMESPACE
 
+/*!
+    \class QKnxSceneNumber
+
+    \inmodule QtKnx
+    \brief The QKnxSceneNumber class is a datapoint type for a scene number.
+
+    This is a fixed size datapoint type with the length of 1 byte.
+
+    \sa QKnxDatapointType
+*/
+
+/*!
+    \class QKnxSceneControl
+
+    \inmodule QtKnx
+    \brief The QKnxSceneControl class is a datapoint type for a scene control.
+
+    This is a fixed size datapoint type with the length of 1 byte.
+
+    \sa QKnxDatapointType
+*/
+
+/*!
+    \class QKnxSceneInfo
+
+    \inmodule QtKnx
+    \brief The QKnxSceneInfo class is a datapoint type for scene information.
+
+    This is a fixed size datapoint type with the length of 1 byte.
+
+    \sa QKnxDatapointType
+*/
+
 // -- QKnxSceneNumber
 
 QKnxSceneNumber::QKnxSceneNumber()

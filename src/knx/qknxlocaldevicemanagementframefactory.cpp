@@ -31,6 +31,49 @@
 
 QT_BEGIN_NAMESPACE
 
+/*!
+    \class QKnxLocalDeviceManagementFrameFactory
+
+    \inmodule QtKnx
+    \brief This class helps build valid CEMI frame of type \l QKnxLocalDeviceManagementFrame.
+
+    This class builds a CEMI frame dedicated to local device management
+    One must first choose the service. The services one can choose from are:
+    \list
+        \li \l PropertyRead
+        \li \l PropertyWrite
+    \endlist
+
+    Client only services:
+    \list
+        \li \l FunctionPropertyCommand
+        \li \l FunctionPropertyStateRead
+        \li \l Reset
+    \endlist
+
+    Server only services:
+    \list
+        \li \l PropertyInfo
+        \li \l FunctionPropertyStateResponse
+    \endlist
+
+    Then, on creates a request, confirmation or indication, depending on what
+    is needed or what is possible, using the functions of the structures
+    representing the above named services.
+
+    The typical arguments needed to build a \l QKnxLocalDeviceManagementFrame are:
+    \list
+        \li The type of the interface object holding the property one wants to
+            access \l QKnxInterfaceObjectType
+        \li The instance of this interface object (because it is possible to
+            have more than one realization of an interface object in a given
+            device)
+        \li The property of the interface object one wants to access
+            \l QKnxInterfaceObjectProperty
+        \li The number of elements one wants to read in this property
+    \endlist
+*/
+
 // -- PropertyRead
 
 QKnxLocalDeviceManagementFrame QKnxLocalDeviceManagementFrameFactory::PropertyRead::createRequest(

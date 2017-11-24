@@ -33,6 +33,22 @@
 
 QT_BEGIN_NAMESPACE
 
+/*!
+    \class QKnx3BitControlled
+    \inherits QKnxFixedSizeDatapointType
+    \inmodule QtKnx
+
+    \brief The QKnx3BitControlled class is a datapoint type with a control part.
+
+    This is a fixed size datapoint type with the length of 1 byte, though only
+    4 bits are used by the actual implementation.
+
+    Of the 4 bits, 3 bits are reserved for the step code and 1 bit for the
+    control part.
+
+    \sa QKnxDatapointType
+*/
+
 // -- QKnx3BitControlled
 
 QKnx3BitControlled::QKnx3BitControlled()
@@ -81,6 +97,9 @@ QKnx3BitControlled::NumberOfIntervals QKnx3BitControlled::numberOfIntervals() co
     return NumberOfIntervals(quint8(qPow(2, stepCode - 1)));
 }
 
+/*!
+    \reimp
+*/
 bool QKnx3BitControlled::isValid() const
 {
     return QKnxDatapointType::isValid() && byte(0) <= maximum().toUInt();

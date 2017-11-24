@@ -33,6 +33,18 @@
 
 QT_BEGIN_NAMESPACE
 
+/*!
+    \class QKnxEntranceAccess
+
+    \inmodule QtKnx
+    \brief The QKnxEntranceAccess is a datapoint type for the entrance access.
+
+    A fixed size datapoint type with the length of 4 bytes that controls the
+    entrance access.
+
+    \sa QKnxDatapointType
+*/
+
 QKnxEntranceAccess::QKnxEntranceAccess()
     : QKnxEntranceAccess(0, Attributes(), 0)
 {}

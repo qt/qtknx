@@ -42,8 +42,22 @@ QT_BEGIN_NAMESPACE
 */
 
 /*!
-    Returns the KNXnet/IP structs total size and generic code as string. Code
-    and total size are formatted in hexadecimal notation.
+    \class QKnxNetIpStructHeader
+
+    \inmodule QtKnx
+
+    \brief The QKnxNetIpStructHeader class is a KNXnet/IP structure header.
+
+    The first octet of the structure is the length of the structure and the
+    second octet is an identifier that specifies the type of the structure.
+    The data follows from the third octet on.
+*/
+
+/*!
+    \fn QString QKnxNetIpStructHeader::toString() const
+
+    Returns the KNXnet/IP struct's total size and generic code as a string. The
+    code and total size are formatted in hexadecimal notation.
 */
 
 QT_END_NAMESPACE

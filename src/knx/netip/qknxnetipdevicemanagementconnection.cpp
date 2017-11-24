@@ -33,6 +33,38 @@
 
 QT_BEGIN_NAMESPACE
 
+/*!
+    \class QKnxNetIpDeviceManagementConnection
+
+    \inmodule QtKnx
+    \brief The QKnxNetIpDeviceManagementConnection class enables the opening and
+    handling of a client connection to a KNXnet/IP server.
+
+    The QKnxNetIpDeviceManagementConnection is a data connection between a
+    client and a KNXnet/IP server endpoint. This is used by the client side to
+    access management functionalities on the KNXnet/IP server. The IP address
+    of the client must be set. It is then possible to connect to a chosen
+
+    KNXnet/IP server and to send \l QKnxLocalDeviceManagementFrame frames
+    to the KNXnet/IP server.
+
+    The class takes care of connecting to the server, asking for a data
+    connection, and monitoring the connection.
+
+    \code
+        QKnxNetIpDeviceManagementConnection connection;
+        QHostAddress clientLocalAddress = ...
+        connection.setLocalAddress(clientLocalAddress);
+
+        QHostAddress knxNetIpServerAddress = ...
+        quint16 knxNetIpServerDataEndPointPort = ...
+        connection.connectToHost(knxNetIpServerAddress, knxNetIpServerDataEndPointPort);
+
+        QKnxLocalDeviceManagementFrame frame = ...
+        connection.sendTunnelFrame(frame);
+    \endcode
+*/
+
 class QKnxNetIpDeviceManagementConnectionPrivate : public QKnxNetIpEndpointConnectionPrivate
 {
     Q_DECLARE_PUBLIC(QKnxNetIpDeviceManagementConnection)

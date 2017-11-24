@@ -35,6 +35,25 @@
 
 QT_BEGIN_NAMESPACE
 
+/*!
+    \class QKnx2ByteFloat
+    \inherits QKnxFixedSizeDatapointType
+    \inmodule QtKnx
+
+    \brief The QKnx2ByteFloat class is a datapoint type for a 2-byte float
+    value.
+
+    The float is encoded as \c (0.01*M)*2^E where \c E and \c M are
+    encoded as follows in the 2 bytes:
+
+    \code
+    MEEEEMMM  MMMMMMMM
+    \endcode
+
+    This is fixed size datapoint type with the length of 2 bytes.
+    \sa QKnxDatapointType
+*/
+
 QKnx2ByteFloat::QKnx2ByteFloat()
     : QKnx2ByteFloat(0.0)
 {}
@@ -87,6 +106,9 @@ bool QKnx2ByteFloat::setValue(float value)
     return true;
 }
 
+/*!
+    \reimp
+*/
 bool QKnx2ByteFloat::isValid() const
 {
     return QKnxDatapointType::isValid()

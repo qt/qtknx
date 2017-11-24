@@ -32,6 +32,21 @@
 
 QT_BEGIN_NAMESPACE
 
+/*!
+    \class QKnxCharString
+    \inherits QKnxFixedSizeDatapointType
+    \inmodule QtKnx
+
+    \brief The QKnxCharString class is a datapoint type that encodes a string.
+
+    This datapoint type encodes a string of \l QKnxChar. The encoding of the
+    string is specified in \l QKnxStringCharASCII and \l QKnxStringChar88591
+    that inherit class.
+
+    This is a fixed size datapoint type with the length of 1 byte.
+
+    \sa QKnxDatapointType
+*/
 
 // -- QKnxCharString
 
@@ -93,6 +108,9 @@ bool QKnxCharString::setString(const char *string, int size)
     return setBytes(QByteArray(QByteArray(string, size) + null.mid(0, TypeSize - size)), 0, TypeSize);
 }
 
+/*!
+    \reimp
+*/
 bool QKnxCharString::isValid() const
 {
     return QKnxDatapointType::isValid()

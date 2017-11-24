@@ -31,6 +31,15 @@
 
 QT_BEGIN_NAMESPACE
 
+/*!
+    \class QKnxNpduFactory::Broadcast
+
+    \inmodule QtKnx
+    \brief The QKnxNpduFactory::Broadcast class is used to create a valid
+    Network protocol data unit (\l QKnxNpdu) for application services sent by
+    broadcast.
+*/
+
 // -- A_NetworkParameter
 
 static QKnxNpdu createNetworkParameterNpdu(QKnxNpdu::ApplicationControlField apci,
@@ -148,8 +157,8 @@ QKnxNpdu QKnxNpduFactory::Broadcast::createIndividualAddressReadNpdu()
 
 /*!
     Returns a NPDU for Individual Address Write Application Service with the
-    given \l QKnxAddress \a addr; or an empty NPDU if the \a addr is not of
-    type \l QKnxAddress::Type::Individual.
+    given \l QKnxAddress \a address; or an empty NPDU if the \a address is not
+    of type \l QKnxAddress::Individual.
 */
 QKnxNpdu QKnxNpduFactory::Broadcast::createIndividualAddressWriteNpdu(const QKnxAddress &address)
 {
@@ -199,9 +208,9 @@ QKnxNpduFactory::Broadcast::createIndividualAddressSerialNumberResponseNpdu(cons
 
 /*!
     Returns a NPDU for Individual Address Serial Number Write Application Service
-    with the given \a sn and \l QKnxAddress \a addr set; or otherwise an empty NPDU
-    if the \a sn has a different size then six octets or the type of \a addr is not
-    \l QKnxAddress::Type::Individual.
+    with the given \a sn and \l QKnxAddress \a newAddress set; or otherwise an
+    empty NPDU if the \a sn has a different size then six octets or the type of
+    \a newAddress is not of type \l QKnxAddress::Individual.
 */
 QKnxNpdu
 QKnxNpduFactory::Broadcast::createIndividualAddressSerialNumberWriteNpdu(const QByteArray &sn,
@@ -238,7 +247,7 @@ QKnxNpdu QKnxNpduFactory::Broadcast::createDomainAddressResponseNpdu(const QByte
 
 /*!
     Returns a NPDU for Domain Address Write Application Service with the given
-    \l QKnxAddress \a addr set.
+    \l QKnxAddress \a address set.
 */
 QKnxNpdu QKnxNpduFactory::Broadcast::createDomainAddressWriteNpdu(const QByteArray &address)
 {
@@ -280,8 +289,8 @@ QKnxNpduFactory::Broadcast::createDomainAddressSerialNumberResponseNpdu(const QB
 
 /*!
     Returns a NPDU for Domain Address Serial Number Write Application Service
-    with the given \a sn and \l QKnxAddress \a addr set; or otherwise an empty
-    NPDU if the \a sn has a different size then six octets.
+    with the given \a sn and \l QKnxAddress \a domainAddress set; or otherwise
+    an empty NPDU if the \a sn has a different size then six octets.
 */
 QKnxNpdu QKnxNpduFactory::Broadcast::createDomainAddressSerialNumberWriteNpdu(const QByteArray &sn,
     const QByteArray &domainAddress)

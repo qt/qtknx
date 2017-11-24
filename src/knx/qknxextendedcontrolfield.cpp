@@ -129,7 +129,7 @@ QString QKnxExtendedControlField::toString() const
 }
 
 /*!
-    \fn auto QKnxExtendedControlField::bytes() const
+    \fn quint8 QKnxExtendedControlField::bytes() const
 
     Returns the extended control field as byte or range of bytes.
 

@@ -32,6 +32,158 @@
 
 QT_BEGIN_NAMESPACE
 
+/*!
+    \class QKnxNpdu
+
+    \inmodule QtKnx
+    \brief This class represents the part of the \l QKnxCemiFrame to be read by
+    the network, transport and application layers.
+
+    To build a valid NPDU it is recommended to use the \l QKnxNpduFactory.
+    Reading the bytes from left to right, a NPDU is composed of the following
+    information:
+
+    \list
+        \li The length of the payload (full size of NPDU - 2)
+        \li The transport layer code \l TransportControlField,
+        \li The application layer service code \l ApplicationControlField
+    \endlist
+
+    If applicable, the T_CONNECT NPDU holds no application layer service for
+    example, and the data and other information (if applicable, depending on
+    the chosen service).
+*/
+
+/*!
+    \enum QKnxNpdu::ErrorCode
+
+    This enum describes the possible error codes needing in the building
+    of NPDU with service \l QKnxNpdu::FunctionPropertyStateResponse or
+    \l QKnxNpdu::Restart
+
+    \value NoError
+    \value Error
+*/
+
+/*!
+    \enum QKnxNpdu::ResetType
+    This enum describes the possible reset types needing in the building of
+    NPDU with service \l QKnxNpdu::Restart.
+
+    \value BasicRestart
+    \value MasterRestart
+*/
+
+/*!
+    \enum QKnxNpdu::EraseCode
+    This enum describes the possible erase codes needing in the building of
+    NPDU with service \l QKnxNpdu::Restart.
+
+    \value Reserved
+    \value ConfirmedRestart
+    \value FactoryReset
+    \value ResetIa
+    \value ResetAp
+    \value ResetParam
+    \value ResetLinks
+    \value ResetWithoutIa
+    \value Invalid
+*/
+
+/*!
+    \enum QKnxNpdu::LinkWriteFlags
+    This enum describes the possible link write flags needing in the building
+    of NPDU with service \l QKnxNpdu::LinkWrite.
+
+    \value AddGroupAddress
+    \value AddSendingGroupAddress
+    \value AddNotSendingGroupAddress
+    \value DeleteGroupAddress
+*/
+
+/*!
+    \enum QKnxNpdu::TransportControlField
+    This enum describes the possible message code dedicated to the transport
+    layer.
+
+    \value DataGroup
+    \value DataBroadcast
+    \value DataSystemBroadcast
+    \value DataTagGroup
+    \value DataIndividual
+    \value DataConnected
+    \value Connect
+    \value Disconnect
+    \value Acknowledge
+    \value NoAcknowledge
+    \value Invalid
+*/
+
+/*!
+    \enum QKnxNpdu::ApplicationControlField
+    This enum describes the message code dedicated to the application and
+    representing an application service.
+
+    \value GroupValueRead
+    \value GroupValueResponse
+    \value GroupValueWrite
+    \value IndividualAddressWrite
+    \value IndividualAddressRead
+    \value IndividualAddressResponse
+    \value AdcRead
+    \value AdcResponse
+    \value SystemNetworkParameterRead
+    \value SystemNetworkParameterResponse
+    \value SystemNetworkParameterWrite
+    \value MemoryRead
+    \value MemoryResponse
+    \value MemoryWrite
+    \value UserMemoryRead
+    \value UserMemoryResponse
+    \value UserMemoryWrite
+    \value UserManufacturerInfoRead
+    \value UserManufacturerInfoResponse
+    \value FunctionPropertyCommand
+    \value FunctionPropertyStateRead
+    \value FunctionPropertyStateResponse
+    \value DeviceDescriptorRead
+    \value DeviceDescriptorResponse
+    \value Restart
+    \value AuthorizeRequest
+    \value AuthorizeResponse
+    \value KeyWrite
+    \value KeyResponse
+    \value PropertyValueRead
+    \value PropertyValueResponse
+    \value PropertyValueWrite
+    \value PropertyDescriptionRead
+    \value PropertyDescriptionResponse
+    \value NetworkParameterRead
+    \value NetworkParameterResponse
+    \value IndividualAddressSerialNumberRead
+    \value IndividualAddressSerialNumberResponse
+    \value IndividualAddressSerialNumberWrite
+    \value DomainAddressWrite
+    \value DomainAddressRead
+    \value DomainAddressResponse
+    \value DomainAddressSelectiveRead
+    \value NetworkParameterWrite
+    \value NetworkParameterInfoReport
+    \value LinkRead
+    \value LinkResponse
+    \value LinkWrite
+    \value GroupPropValueRead
+    \value GroupPropValueResponse
+    \value GroupPropValueWrite
+    \value GroupPropValueInfoReport
+    \value DomainAddressSerialNumberRead
+    \value DomainAddressSerialNumberResponse
+    \value DomainAddressSerialNumberWrite
+    \value FileStreamInfoReport
+    \value Invalid
+*/
+
+
 static bool isBitSet(quint8 byteToTest, quint8 bit)
 {
     return (byteToTest & (quint8(1) << bit)) != 0;
@@ -145,6 +297,12 @@ QKnxNpdu::QKnxNpdu(TransportControlField tpci, ApplicationControlField apci, qui
     setData(data);
 }
 
+/*!
+    Returns true if the current NPDU is valid.
+
+    \note This function is not implemented for every services.
+    To make sure your NPDU is correct, use the \l QKnxNpduFactory.
+ */
 bool QKnxNpdu::isValid() const
 {
     if (transportControlField() == TransportControlField::Invalid)

@@ -34,6 +34,18 @@
 
 QT_BEGIN_NAMESPACE
 
+/*!
+    \class QKnx4ByteFloat
+    \inherits QKnxFixedSizeDatapointType
+    \inmodule QtKnx
+
+    \brief The QKnx4ByteFloat class is datapoint type for a 4-byte float value.
+
+    This is fixed size datapoint type with the length of 4 bytes.
+
+    \sa QKnxDatapointType
+*/
+
 QKnx4ByteFloat::QKnx4ByteFloat()
     : QKnx4ByteFloat(0.0)
 {}
@@ -68,6 +80,9 @@ void QKnx4ByteFloat::setValue(float value)
     setBytes(QKnxUtils::QUint32::bytes(tmp),0,4);
 }
 
+/*!
+    \reimp
+*/
 bool QKnx4ByteFloat::isValid() const
 {
     return QKnxDatapointType::isValid()

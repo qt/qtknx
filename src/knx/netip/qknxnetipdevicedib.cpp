@@ -36,9 +36,8 @@ QT_BEGIN_NAMESPACE
     \class QKnxNetIpDeviceDib
 
     \inmodule QtKnx
-    \brief The QKnxNetIpDeviceDib class represents the structure containing the
-    information that is necessary to serve as a device description information
-    block.
+    \brief The QKnxNetIpDeviceDib class represents a device description
+    information block.
 */
 
 QKnxNetIpDeviceDib::QKnxNetIpDeviceDib(const QKnxNetIpDescriptionTypeStruct &other)

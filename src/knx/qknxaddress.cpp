@@ -38,7 +38,7 @@ QT_BEGIN_NAMESPACE
     \brief The QKnxAddress class represents a 16 bit KNX address value.
 
     KNX is a fully distributed network, which accommodates up to 65,536 devices
-    in a 16 bit individual address space. Concrete address types are \l Group
+    in a 16-bit individual address space. Concrete address types are \l Group
     and \l Individual.
 */
 
@@ -46,10 +46,10 @@ QT_BEGIN_NAMESPACE
     \enum QKnxAddress::Type
     This enum describes the supported KNX address types.
 
-    \value Group        The Group address shall be a 2 byte value and does not
+    \value Group        The Group address shall be a 2-byte value and does not
                         need to be unique. A device may have more than one Group
                         address.
-    \value Individual   The Individual address shall be a 2 byte value and
+    \value Individual   The Individual address shall be a 2-byte value and
                         needs to be unique within a KNX installation.
 */
 
@@ -60,9 +60,10 @@ QT_BEGIN_NAMESPACE
     \value TwoLevel     The visual representation will be main group and sub
                         group, separated by a forward slash.
     \value ThreeLevel   The visual representation for \l Group addresses will
-                        be main, middle and sub group separated by a forward
-                        slash, while \l Individual addresses will be formated
-                        as area, line and sequential number separated by a dot.
+                        be main, middle, and sub group separated by a forward
+                        slash, while \l Individual addresses will be formatted
+                        as area, line, and sequential number, separated by a
+                        dot.
 
     \note Only \l Group addresses support 2-level notation as of now.
 */
@@ -83,9 +84,9 @@ QKnxAddress::Type QKnxAddress::type() const
 */
 
 /*!
-    Creates a KNX address from a 16 Bit \a address value. The type of the
+    Creates a KNX address from a 16-bit \a address value. The type of the
     address is specified by \a type. The value of \a address should be in the
-    range \c 0 to \c 65535. Hexadecimal, octal and decimal notation are
+    range \c 0 to \c 65535. Hexadecimal, octal, and decimal notation are
     supported. The formatting is set to 3-level notation.
 */
 QKnxAddress::QKnxAddress(QKnxAddress::Type type, quint16 address)
@@ -113,16 +114,16 @@ QKnxAddress::QKnxAddress(QKnxAddress::Type type, quint16 address)
             \l Individual addresses.
     \endlist
 
-    \note For \l Group address 2-level notation, the value of main group should
-    be in the range \c 0 to \c 31 and the sub group value in the range \c 0
-    to \c 2047.
+    \note For \l Group address 2-level notation, the value of the main group
+    should be in the range \c 0 to \c 31 and the sub group value in the range
+    \c 0 to \c 2047.
 
-    \note For \l Group address 3-level notation, the value of main group should
-    be in the range \c 0 to \c 31, the value of middle group in the range \c 0
-    to \c 7 and the sub group value in the range \c 0 to \c 255.
+    \note For \l Group address 3-level notation, the value of the main group
+    should be in the range \c 0 to \c 31, the value of middle group in the range
+    \c 0 to \c 7, and the sub group value in the range \c 0 to \c 255.
 
     \note For \l Individual address 3-level notation, the value of area should
-    be in the range \c 0 to \c 15, the value of line in the range \c 0 to \c 15
+    be in the range \c 0 to \c 15, the value of line in the range \c 0 to \c 15,
     and the sequential number value in the range \c 0 to \c 255.
 */
 QKnxAddress::QKnxAddress(QKnxAddress::Type type, const QString &address)
@@ -166,7 +167,7 @@ QKnxAddress::QKnxAddress(QKnxAddress::Type type, const QString &address)
 
 /*!
     Creates a KNX address from the first two bytes of the \a address byte
-    array. The type of the address is specified by \a type. Hexadecimal, octal
+    array. The type of the address is specified by \a type. Hexadecimal, octal,
     and decimal notation are supported.
 
     \note The byte array must contain at least two elements.
@@ -184,7 +185,7 @@ QKnxAddress::QKnxAddress(QKnxAddress::Type type, const QByteArray &address)
 
 /*!
     Creates a KNX address from the first two bytes of the \a address vector.
-    The type of the address is specified by \a type. Hexadecimal, octal and
+    The type of the address is specified by \a type. Hexadecimal, octal, and
     decimal notation are supported.
 
     \note The vector must contain at least two elements.
@@ -203,7 +204,7 @@ QKnxAddress::QKnxAddress(QKnxAddress::Type type, const QVector<quint8> &address)
 /*!
     Creates a KNX \l Group address from the 2-level notation. The value of
     \a mainGroup should be in the range \c 0 to \c 31 and the \a subGroup
-    value in the range \c 0 to \c 2047. Hexadecimal, octal and decimal
+    value in the range \c 0 to \c 2047. Hexadecimal, octal, and decimal
     notation are supported.
 */
 QKnxAddress QKnxAddress::createGroup(quint8 mainGroup, quint16 subGroup)
@@ -214,8 +215,8 @@ QKnxAddress QKnxAddress::createGroup(quint8 mainGroup, quint16 subGroup)
 /*!
     Creates a KNX \l Group address from the 3-level notation. The value of
     \a mainGroup should be in the range \c 0 to \c 31, the value of
-    \a middleGroup in the range \c 0 to \c 7 and the \a subGroup value in the
-    range \c 0 to \c 255. Hexadecimal, octal and decimal notation are supported.
+    \a middleGroup in the range \c 0 to \c 7, and the \a subGroup value in the
+    range \c 0 to \c 255. Hexadecimal, octal, and decimal notation are supported.
 */
 QKnxAddress QKnxAddress::createGroup(quint8 mainGroup, quint16 middleGroup, quint8 subGroup)
 {
@@ -225,8 +226,8 @@ QKnxAddress QKnxAddress::createGroup(quint8 mainGroup, quint16 middleGroup, quin
 /*!
     Creates a KNX \l Individual address from the 3-level notation. The value of
     \a area should be in the range \c 0 to \c 15, the value of \a line in the
-    range \c 0 to \c 15 and the \a sequentialNumber value in the range \c 0 to
-    \c 255. Hexadecimal, octal and decimal notation are supported.
+    range \c 0 to \c 15, and the \a sequentialNumber value in the range \c 0 to
+    \c 255. Hexadecimal, octal, and decimal notation are supported.
 */
 QKnxAddress QKnxAddress::createIndividual(quint8 area, quint16 line, quint8 sequentialNumber)
 {
@@ -246,7 +247,7 @@ bool QKnxAddress::isBroadcast() const
     \relates QKnxAddress
     \variable QKnxAddress::Group::Broadcast
 
-    Represents a single KNX \l Group address with value \c 0x0000 that is
+    Represents a single KNX \l Group address with the value \c 0x0000 that is
     reserved for the broadcast address that shall be exclusively used in
     broadcast communication mode.
 */
@@ -256,19 +257,20 @@ QKnxAddress QKnxAddress::Group::Broadcast = { QKnxAddress::Type::Group, 0x0000 }
     \relates QKnxAddress
     \variable QKnxAddress::Individual::Unregistered
 
-    Represents a single KNX \l Individual address with value \c 0xffff.
+    Represents a single KNX \l Individual address with the value \c 0xffff.
 */
 QKnxAddress QKnxAddress::Individual::Unregistered = { QKnxAddress::Type::Individual, 0xffff };
 
 /*!
     Returns \c true if this is a valid \l Individual KNX address object and the
-    devices sequential number is set to \c 0x00; \c false otherwise.
+    device's sequential number is set to \c 0x00; \c false otherwise.
 
     Area and line couplers, as well as KNXnet/IP routers (routing) are given
     the sequential number \c 0x00.
 
-    Example: Individual Address 1.5.0 - KNXnet/IP router acting as a line
-    coupler, coupling the fifth line with the main line in the first area.
+    For example, the individual address \c 1.5.0 identifies a KNXnet/IP router
+    acting as a line coupler that couples the fifth line with the main line in
+    the first area.
 */
 bool QKnxAddress::isCouplerOrRouter() const
 {
@@ -277,7 +279,7 @@ bool QKnxAddress::isCouplerOrRouter() const
 
 /*!
     Returns \c true if this is a valid \l Individual KNX address object and the
-    devices sequential number is set to \c 0xff; \c false otherwise.
+    device's sequential number is set to \c 0xff; \c false otherwise.
 */
 bool QKnxAddress::isUnregistered() const
 {
@@ -295,13 +297,14 @@ bool QKnxAddress::isValid() const
 
 /*!
     Returns the KNX address as a string formatted using the internal stored
-    notation. A address of type \l Group is formatted using a forward slash
-    as separator, while a address of type \l Individual is formatted using a
-    dot as separator.
+    notation. An address of the type \l Group is formatted using a forward slash
+    as a separator, while an address of the type \l Individual is formatted
+    using a dot as separator.
 
-    \note A \l Individual addresses support only 3-level notation, a \l Group
-    address 2-level or 3-level notation. If the address is invalid or 2-level
-    notation for individual addresses is requestd, an empty string is returned.
+    \note \l Individual addresses support only 3-level notation, whereas
+    \l Group addresses support 2-level or 3-level notation. If the address is
+    invalid or 2-level notation is requested for individual addresses, an empty
+    string is returned.
 */
 QString QKnxAddress::toString(Notation notation) const
 {
@@ -337,13 +340,13 @@ bool QKnxAddress::operator!=(const QKnxAddress &other) const
     otherwise the return value is empty. Only the first two bytes of the return
     value are part of the address.
 
-    \note Only QByteArray and QVector<quint8> are supported as return type.
+    \note Only QByteArray and QVector<quint8> are supported as return types.
 */
 
 /*!
     \relates QKnxAddress
 
-    Writes the KNX \a address to the \a debug stream.
+    Writes the KNX address \a address to the \a debug stream.
 */
 QDebug operator<<(QDebug debug, const QKnxAddress &address)
 {
@@ -361,8 +364,8 @@ QDebug operator<<(QDebug debug, const QKnxAddress &address)
 /*!
     \relates QKnxAddress
 
-    Writes a KNX \a address to the stream \a out and returns a reference to the
-    stream.
+    Writes the KNX address \a address to the stream \a out and returns a
+    reference to the stream.
 */
 QDataStream &operator<<(QDataStream &out, const QKnxAddress &address)
 {
@@ -379,7 +382,8 @@ QDataStream &operator<<(QDataStream &out, const QKnxAddress &address)
     \internal
 
     Creates a KNX address from 2 or 3-level notation. The type of the address is
-    specified by \a type. Hexadecimal, octal and decimal notation are supported.
+    specified by \a type. Hexadecimal, octal, and decimal notation are
+    supported.
 */
 QKnxAddress::QKnxAddress(QKnxAddress::Type type, quint16 sec1, quint16 *sec2, quint16 sec3)
 {

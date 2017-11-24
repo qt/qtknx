@@ -34,6 +34,22 @@
 
 QT_BEGIN_NAMESPACE
 
+/*!
+    \class QKnx4ByteUnsignedValue
+    \inherits QKnxFixedSizeDatapointType
+    \inmodule QtKnx
+
+    \brief The QKnx4ByteUnsignedValue class is a datapoint type with a 4-byte
+    unsigned value.
+
+    This is a fixed size datapoint type with the length of 4 bytes.
+
+    Integer values from 0 to 4 294 967 295 can be encoded in this datapoint
+    type.
+
+    \sa QKnxDatapointType
+*/
+
 QKnx4ByteUnsignedValue::QKnx4ByteUnsignedValue()
     : QKnx4ByteUnsignedValue(0)
 {}
@@ -73,6 +89,9 @@ bool QKnx4ByteUnsignedValue::setValue(quint32 value)
     return false;
 }
 
+/*!
+    \reimp
+*/
 bool QKnx4ByteUnsignedValue::isValid() const
 {
     return QKnxDatapointType::isValid()

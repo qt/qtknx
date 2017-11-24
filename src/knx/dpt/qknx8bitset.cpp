@@ -32,6 +32,17 @@
 
 QT_BEGIN_NAMESPACE
 
+/*!
+    \class QKnx8BitSet
+
+    \inmodule QtKnx
+    \brief The QKnx8BitSet class is a datapoint type with binary-coded values in
+    all fields.
+
+    This is a fixed size datapoint type with the length of 1 byte.
+
+    \sa QKnxDatapointType
+*/
 
 // -- QKnx8BitSet
 
@@ -73,6 +84,9 @@ bool QKnx8BitSet::setByte(quint8 value)
     return QKnxDatapointType::setByte(0, value);
 }
 
+/*!
+    \reimp
+*/
 bool QKnx8BitSet::isValid() const
 {
     return QKnxDatapointType::isValid() && byte() <= maximum().toUInt();

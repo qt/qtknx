@@ -33,6 +33,20 @@
 
 QT_BEGIN_NAMESPACE
 
+/*!
+    \class QKnx32BitSet
+    \inherits QKnxFixedSizeDatapointType
+    \inmodule QtKnx
+
+    \brief The QKnx32BitSet class is a datapoint type with binary-coded values
+    in all fields.
+
+    This is a fixed size datapoint type with the length of 4 bytes.
+
+    There is only one class inheriting QKnx32BitSet: \l QKnxCombinedInfoOnOff.
+
+    \sa QKnxDatapointType
+*/
 
 // -- QKnx32BitSet
 

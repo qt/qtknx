@@ -32,6 +32,28 @@
 
 QT_BEGIN_NAMESPACE
 
+/*!
+    \class QKnxNetIpServerDiscoveryAgent
+
+    \inmodule QtKnx
+    \brief The QKnxNetIpServerDiscoveryAgent class discovers KNXnet/IP servers
+    in the network that the client is connected to.
+
+    Here is an example on how to use this discovery agent:
+
+    \code
+        QKnxNetIpServerDiscoveryAgent agent;
+        QKnxAddress clientLocalAddress = ...
+        agent.setLocalAddress(clientLocalAddress);
+        agent.start();
+    \endcode
+
+    To retrieve the list of discovered servers:
+    \code
+        auto servers = agent.discoveredServers();
+    \endcode
+*/
+
 // -- QKnxNetIpServerDiscoveryAgentPrivate
 
 QKnxNetIpServerDiscoveryAgentPrivate::QKnxNetIpServerDiscoveryAgentPrivate(const QHostAddress &addr,
@@ -301,7 +323,7 @@ int QKnxNetIpServerDiscoveryAgent::timeout() const
 }
 
 /*!
-    Sets the timeout for the discovery agent to \a msecs. If \a msecs is -1,
+    Sets the timeout for the discovery agent to \a msec. If \a msec is -1,
     the agent will not timeout and has to be terminated by calling the \l stop
     function.
 
@@ -329,8 +351,8 @@ int QKnxNetIpServerDiscoveryAgent::searchFrequency() const
 }
 
 /*!
-    Sets the search frequency used by the discovery agent to send search
-    request messages. The default value is 0.
+    Sets the search frequency used by the discovery agent to \a timesPerMinute
+    to send search request messages. The default value is 0.
 
     \sa timeout
     \sa setTimeout

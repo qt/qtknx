@@ -31,6 +31,74 @@
 
 QT_BEGIN_NAMESPACE
 
+/*!
+    \class QKnxInterfaceObjectType
+
+    \inmodule QtKnx
+    \brief This class holds information about the type of the KNX interface object.
+
+    KNX interface objects hold information about the device functionalities.
+    The interface object can be of different types, covering different
+    functionalities. The different interface object type are listed here.
+    For every interface object, this type is always stored in the
+    \l QKnxInterfaceObjectProperty::ObjectType. This is the first property of
+    the interface object.
+*/
+
+/*!
+    \enum QKnxInterfaceObjectType::System
+    This enum describes the types of interface object dedicated to system.
+
+    \value Device
+    \value GroupAddressTable
+    \value AssociationTable
+    \value ApplicationProgram
+    \value InterfaceProgram
+    \value KnxObjectAssociationTable
+    \value Router
+    \value LteAddressRoutingTable
+    \value CemiServer
+    \value GroupObjectTable
+    \value PollingMaster
+    \value KnxNetIpParameter
+    \value Reserved
+    \value FileServer
+    \value Security
+    \value RfMedium
+*/
+
+/*!
+    \enum QKnxInterfaceObjectType::Application
+    This enum describes the ranges of types of interface object dedicated to
+    application.
+
+    \value Hvac
+    \value Lightning
+    \value IndoorBrightnessSensor
+    \value IndoorLuminanceSensor
+    \value LightSwitchingActuatorBasic
+    \value DimmingActuatorBasic
+    \value DimmingSensorBasic
+    \value SwitchingSensorBasic
+    \value SensorsAndActuators
+    \value ShuttersAndBlinds
+    \value FociS
+    \value Metering
+    \value OpenTherm
+    \value ApplicationReserved
+    \value WhiteGoods
+    \value ApplicationReserved2
+    \value WhiteGoods2
+*/
+
+/*!
+    \enum QKnxInterfaceObjectType::NonStandardized
+    This enum describes the types range of non standard interface objects.
+
+    \value First
+    \value Last
+*/
+
 QKnxInterfaceObjectType::QKnxInterfaceObjectType(int objectType)
     : m_objectType(objectType)
 {}
@@ -42,7 +110,7 @@ QKnxInterfaceObjectType &QKnxInterfaceObjectType::operator=(int objectType)
 }
 
 /*!
-    Returns true if the \a objectType is of type \l System, \l Application or
+    Returns true if the \a type is of type \l System, \l Application or
     l\ NonStandardized; false otherwise.
 
     \note Reserved values are considered invalid object types.
@@ -63,7 +131,7 @@ bool QKnxInterfaceObjectType::isObjectType(QKnxInterfaceObjectType type)
 
 /*!
     Returns true if the given \a property can be used in conjunction with the
-    given \a objectType; false otherwise.
+    given \a type; false otherwise.
 
     \note The function performs a check on the object type first and if it is
     not a valid object type, it will return false.

@@ -31,6 +31,18 @@
 
 QT_BEGIN_NAMESPACE
 
+/*!
+    \class QKnxNpduFactory::Multicast
+
+    \inmodule QtKnx
+    \brief The QKnxNpduFactory::Broadcast class is used to create a valid
+    Network protocol data unit (\l QKnxNpdu) for application services sent by
+    multicast.
+
+    From a client point of view, this is the service category to access devices
+    functionality via group addressing.
+*/
+
 // -- A_GroupValue
 
 /*!
@@ -43,7 +55,8 @@ QKnxNpdu QKnxNpduFactory::Multicast::createGroupValueReadNpdu()
 }
 
 /*!
-    Returns a NPDU for a Group value response application service.
+    Creates and returns a NPDU for a Group value response application service
+    with the given \a data.
 */
 QKnxNpdu QKnxNpduFactory::Multicast::createGroupValueResponseNpdu(const QByteArray &data)
 {
@@ -55,7 +68,8 @@ QKnxNpdu QKnxNpduFactory::Multicast::createGroupValueResponseNpdu(const QByteArr
 }
 
 /*!
-    Returns a NPDU for a Group value write application service.
+    Creates and returns a NPDU for a Group value write application service with
+    the given \a data.
 */
 QKnxNpdu QKnxNpduFactory::Multicast::createGroupValueWriteNpdu(const QByteArray &data)
 {

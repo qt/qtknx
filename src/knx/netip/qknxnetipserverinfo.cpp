@@ -32,6 +32,18 @@
 
 QT_BEGIN_NAMESPACE
 
+/*!
+    \class QKnxNetIpServerInfo
+
+    \inmodule QtKnx
+    \brief The QKnxNetIpServerInfo class stores information about a KNXnet/IP
+    server.
+
+    It contains the information provided by the server during its discovery
+    (using for example \l QKnxNetIpServerDiscoveryAgent) that the client needs
+    to establish a connection.
+*/
+
 QKnxNetIpServerInfo::QKnxNetIpServerInfo()
     : d_ptr(new QKnxNetIpServerInfoPrivate)
 {}

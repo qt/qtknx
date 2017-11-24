@@ -32,6 +32,17 @@
 
 QT_BEGIN_NAMESPACE
 
+/*!
+    \class QKnxByteStoreRef
+
+    \inmodule QtKnx
+    \brief The QKnxByteStoreRef class represents a pointer to a byte store.
+*/
+
+/*!
+    Constructs a byte store reference using the pointer \a store to a byte store
+    and the \a index at which the reference starts.
+*/
 QKnxByteStoreRef::QKnxByteStoreRef(QKnxByteStore *store, quint16 index)
 {
     if (store && index < store->size()) {
@@ -40,6 +51,9 @@ QKnxByteStoreRef::QKnxByteStoreRef(QKnxByteStore *store, quint16 index)
     }
 }
 
+/*!
+    Returns the size of the byte store referred to by the object.
+*/
 quint16 QKnxByteStoreRef::size() const
 {
     if (m_store)
@@ -55,11 +69,20 @@ quint8 QKnxByteStoreRef::operator[](int i) const
     return 0;
 }
 
+/*!
+    Returns the content of the byte store referred to as an array of \l quint8.
+*/
 const quint8 *QKnxByteStoreRef::bytes() const
 {
     if (m_store)
         return &(*std::next(m_store->data(), m_index));
     return nullptr;
 }
+
+/*!
+    \fn quint8 QKnxByteStoreRef::byte(quint16 index) const
+
+    Returns the byte at \a index.
+*/
 
 QT_END_NAMESPACE

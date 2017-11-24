@@ -57,6 +57,29 @@
 
 QT_BEGIN_NAMESPACE
 
+/*!
+    \class QKnxDatapointTypeFactory
+
+    \inmodule QtKnx
+    \brief The QKnxDatapointTypeFactory class is used to create
+    \l QKnxDatapointTypes based on their main number and sub number.
+
+    You can register one or more datapoints with this factory and query them
+    based on mian number and sub number. This class follows the singleton design
+    pattern. Only one instance of this class can be created and its reference
+    can be fetched from the instance() method.
+
+    The KNX datapoint types are identified by a 16 bit main number and a 16-bit
+    sub number.
+*/
+
+/*!
+    Returns a new instance of a \l QKnxDatapointType subclass. The instantiation
+    of the subclass depends on the \a mainType and \a subType given as arguments
+    to this function.
+
+    Note: Ownership of the created object remains with the programmer.
+*/
 QKnxDatapointType *QKnxDatapointTypeFactory::createType(int mainType, int subType) const
 {
     const auto main = factoryTable().constFind(mainType);
@@ -73,6 +96,12 @@ QKnxDatapointType *QKnxDatapointTypeFactory::createType(int mainType, int subTyp
     return (*sub)();
 }
 
+/*!
+    Returns a new instance of a \l QKnxDatapointType subclass. The instantiation
+    of the subclass depends on the \a type given as argument to this function.
+
+    Note: Ownership of the created object remains with the programmer.
+*/
 QKnxDatapointType *QKnxDatapointTypeFactory::createType(QKnxDatapointType::Type type) const
 {
     auto number = QString::number(int(type));
@@ -92,21 +121,34 @@ QKnxDatapointType *QKnxDatapointTypeFactory::createType(QKnxDatapointType::Type 
     return nullptr;
 }
 
+/*!
+    Returns the size in bytes for the given \a mainType.
+*/
 int QKnxDatapointTypeFactory::typeSize(int mainType)
 {
     return sizeTable().value(mainType);
 }
 
+/*!
+    Returns a list of registered main datapoint types.
+*/
 QList<int> QKnxDatapointTypeFactory::mainTypes() const
 {
     return factoryTable().keys();
 }
 
+/*!
+    Queries the factory for a the given \a mainType and if it is registered,
+    returns true; false otherwise.
+*/
 bool QKnxDatapointTypeFactory::containsMainType(int mainType) const
 {
     return factoryTable().contains(mainType);
 }
 
+/*!
+    Returns a list of registered sub datapoint types for the given \a mainType.
+*/
 QList<int> QKnxDatapointTypeFactory::subTypes(int mainType) const
 {
     const auto main = factoryTable().constFind(mainType);
@@ -115,6 +157,10 @@ QList<int> QKnxDatapointTypeFactory::subTypes(int mainType) const
     return {};
 }
 
+/*!
+    Queries the factory for a the given \a mainType and \a subType and if the
+    type is registered, returns true; false otherwise.
+*/
 bool QKnxDatapointTypeFactory::containsSubType(int mainType, int subType) const
 {
     const auto main = factoryTable().constFind(mainType);
@@ -123,6 +169,9 @@ bool QKnxDatapointTypeFactory::containsSubType(int mainType, int subType) const
     return false;
 }
 
+/*!
+    \internal
+*/
 QKnxDatapointTypeFactory::QKnxDatapointTypeFactory()
 {
     // DPT-1
@@ -409,12 +458,18 @@ QKnxDatapointTypeFactory::QKnxDatapointTypeFactory()
     registerType<QKnxUtf8>();
 }
 
+/*!
+    \internal
+*/
 QHash<int, int> &QKnxDatapointTypeFactory::sizeTable()
 {
     static QHash<int, int> _instance;
     return _instance;
 }
 
+/*!
+    \internal
+*/
 void QKnxDatapointTypeFactory::setTypeSize(int mainType, int size)
 {
     sizeTable().insert(mainType, size);

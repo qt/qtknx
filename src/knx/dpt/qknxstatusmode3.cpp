@@ -32,6 +32,16 @@
 
 QT_BEGIN_NAMESPACE
 
+/*!
+    \class QKnxStatusMode3
+
+    \inmodule QtKnx
+    \brief The QKnxStatusMode3 class is a datapoint type for a status mode 3.
+
+    This is a fixed size datapoint type with the length of 1 byte.
+
+    \sa QKnxDatapointType
+*/
 
 // -- QKnxStatusMode3
 

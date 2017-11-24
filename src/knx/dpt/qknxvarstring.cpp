@@ -32,6 +32,18 @@
 
 QT_BEGIN_NAMESPACE
 
+/*!
+    \class QKnxVarString
+
+    \inmodule QtKnx
+    \brief The QKnxVarString class is a datapoint type for a variable length
+    character string.
+
+    This is a variable sized datapoint type.
+
+    \sa QKnxDatapointType
+*/
+
 // -- QKnxVarString
 
 QKnxVarString::QKnxVarString()

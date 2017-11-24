@@ -33,6 +33,16 @@
 
 QT_BEGIN_NAMESPACE
 
+/*!
+    \class QKnx2BitSet
+    \inherits QKnxFixedSizeDatapointType
+    \inmodule QtKnx
+    \brief The QKnx2BitSet class is a fixed size datapoint type with the length
+    of 2 bits.
+
+    \sa QKnxDatapointType
+*/
+
 // -- QKnx2BitSet
 
 QKnx2BitSet::QKnx2BitSet()
@@ -63,6 +73,9 @@ bool QKnx2BitSet::setValue(quint8 value)
     return false;
 }
 
+/*!
+    \reimp
+*/
 bool QKnx2BitSet::isValid() const
 {
     return QKnxDatapointType::isValid() && byte(0) <= maximum().toUInt();

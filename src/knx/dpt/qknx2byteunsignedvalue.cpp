@@ -33,6 +33,21 @@
 
 QT_BEGIN_NAMESPACE
 
+/*!
+    \class QKnx2ByteUnsignedValue
+    \inherits QKnxFixedSizeDatapointType
+    \inmodule QtKnx
+
+    \brief The QKnx2ByteUnsignedValue class is a datapoint type with a 2-byte
+    unsigned value.
+
+    This is a fixed size datapoint type with the length of 2 bytes.
+
+    Integer values from 0 to 65 535 can be encoded in this datapoint type.
+
+    \sa QKnxDatapointType
+*/
+
 
 // -- QKnx2ByteUnsignedValue
 
@@ -65,6 +80,9 @@ bool QKnx2ByteUnsignedValue::setValue(quint32 value)
     return false;
 }
 
+/*!
+    \reimp
+*/
 bool QKnx2ByteUnsignedValue::isValid() const
 {
     return QKnxDatapointType::isValid()

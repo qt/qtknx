@@ -33,6 +33,17 @@
 
 QT_BEGIN_NAMESPACE
 
+/*!
+    \class QKnxUtf8String
+
+    \inmodule QtKnx
+    \brief The QKnxUtf8String class is a datapoint type for an UTF-8 string.
+
+    This is a variable sized datapoint type.
+
+    \sa QKnxDatapointType
+*/
+
 // -- QKnxUtf8String
 
 QKnxUtf8String::QKnxUtf8String()

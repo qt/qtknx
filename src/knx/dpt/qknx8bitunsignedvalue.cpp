@@ -32,6 +32,17 @@
 
 QT_BEGIN_NAMESPACE
 
+/*!
+    \class QKnx8BitUnsignedValue
+
+    \inmodule QtKnx
+    \brief The QKnx8BitUnsignedValue class is a datapoint type with an 8-bit
+    unsigned value.
+
+    This is a fixed size datapoint type with the length of 1 byte.
+
+    \sa QKnxDatapointType
+*/
 
 // -- QKnx8BitUnsignedValue
 
@@ -67,6 +78,9 @@ bool QKnx8BitUnsignedValue::setValue(double value)
     return false;
 }
 
+/*!
+    \reimp
+*/
 bool QKnxTariff::isValid() const
 {
     return QKnxDatapointType::isValid() && byte(0) < 255;

@@ -32,6 +32,18 @@
 
 QT_BEGIN_NAMESPACE
 
+/*!
+    \class QKnxLocalDeviceManagementFrame
+
+    \inmodule QtKnx
+    \brief This class represents a CEMI frame dedicated to communication
+    between a client and a KNXnet/IP server. The communication allow access
+    device management functionalities.
+
+    \l QKnxLocalDeviceManagementFrameFactory can be used to construct local
+    device management CEMI frames.
+*/
+
 QKnxLocalDeviceManagementFrame::QKnxLocalDeviceManagementFrame(QKnxCemiFrame::MessageCode code)
     : QKnxCemiFrame(code)
 {
@@ -42,6 +54,9 @@ QKnxLocalDeviceManagementFrame::QKnxLocalDeviceManagementFrame(QKnxCemiFrame::Me
     }
 }
 
+/*!
+    Returns true if the current CEMI frame is valid.
+*/
 bool QKnxLocalDeviceManagementFrame::isValid() const
 {
     switch (messageCode()) {

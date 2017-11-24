@@ -32,17 +32,40 @@
 
 QT_BEGIN_NAMESPACE
 
+/*!
+    \class QKnx1Bit
+    \inherits QKnxFixedSizeDatapointType
+    \inmodule QtKnx
+
+    \brief The QKnx1Bit class is a boolean datapoint type, such as switch on or
+    off.
+
+    This is a fixed size datapoint type with the length of 1 byte, though only
+    one bit is used by the actual implementation.
+
+    \sa QKnxDatapointType
+*/
 
 // -- QKnx1Bit
 
+/*!
+    Creates a fixed size datapoint type with the value set to \c false.
+*/
 QKnx1Bit::QKnx1Bit()
     : QKnx1Bit(false)
 {}
 
+/*!
+    Creates a fixed size datapoint type with the value \a bit.
+*/
 QKnx1Bit::QKnx1Bit(bool bit)
     : QKnx1Bit(SubType, bit)
 {}
 
+/*!
+    Creates a fixed size datapoint with the subtype \a subType and the value
+    \a bit.
+*/
 QKnx1Bit::QKnx1Bit(int subType, bool bit)
     : QKnxFixedSizeDatapointType(MainType, subType, TypeSize)
 {
@@ -53,16 +76,25 @@ QKnx1Bit::QKnx1Bit(int subType, bool bit)
     setBit(bit);
 }
 
+/*!
+    Returns the value stored in the data point type.
+*/
 bool QKnx1Bit::bit() const
 {
     return QKnxDatapointType::testBit(byte(0), 0);
 }
 
+/*!
+    Sets the value of the data point type to \a value.
+*/
 bool QKnx1Bit::setBit(bool value)
 {
     return setByte(0, (value ? 0x01 : 0x00));
 }
 
+/*!
+    \reimp
+*/
 bool QKnx1Bit::isValid() const
 {
     return QKnxDatapointType::isValid() && byte(0) <= maximum().toUInt();

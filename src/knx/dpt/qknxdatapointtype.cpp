@@ -32,6 +32,391 @@
 
 QT_BEGIN_NAMESPACE
 
+/*!
+    \class QKnxDatapointType
+
+    \inmodule QtKnx
+    \brief The QKnxDatapointType class is a base class for datapoint types
+    with specific properties.
+
+    A datapoint type represents the data corresponding to a KNX device
+    functionality. It describes the data, setting the rules about the format
+    and values to be allowed, and it holds the bytes containing the data.
+
+    This data is used in the data part of the \l QKnxNpdu class. To retrieve
+    the data of a data point type, call bytes().
+
+    There are two types of a QKnxDatapointType: \l QKnxFixedSizeDatapointType
+    for fixed length datapoint types and \l QKnxVariableSizeDatapointType for
+    variable length datapoint types.
+
+    A datapoint type is identified by its main number and a subnumber. Each
+    main number corresponds to a datapoint type with a particular structure.
+    The subnumbers correspond to different interpretations or naming of this
+    structure.
+
+    The Qt KNX module provides a class for each datapoint type with the main
+    number less than 30 and subnumber less than 100. All datapoint types with
+    the same main number inherit from a datapoint type class representing the
+    main number datapoint type characteristics.
+
+    \section1 Adding Datapoint Types
+
+    To implement a datapoint type described in the KNX documentation but not
+    implemented in the Qt KNX module, one can create a class inheriting from
+    \l QKnxFixedSizeDatapointType or \l QKnxVariableSizeDatapointType and
+    register this new class using an instance of \l QKnxDatapointTypeFactory:
+
+    \code
+        #include mynewdatapointtype.h
+
+        int main()
+        {
+            int mainType = 65535;
+            int subType = 100;
+            int typeSize = 1; // size in bytes
+
+            auto &factory = QKnxDatapointTypeFactory::instance() ;
+            factory.registerType<MyNewDataPointType>(mainType, subType, typeSize);
+        }
+    \endcode
+*/
+
+/*!
+    \enum QKnxDatapointType::Type
+
+    This enum type holds the type of the datapoint type.
+
+    \value Unknow
+            An unknown datapoint type.
+    \value Dpt1_1Bit
+            A fixed size datapoint type with the length of 1 bit. This is a
+            boolean datapoint type, such as: switch on or off, move up or down,
+            open and close, stop and start.
+    \value DptSwitch
+    \value DptBool
+    \value DptEnable
+    \value DptRamp
+    \value DptAlarm
+    \value DptBinaryValue
+    \value DptStep
+    \value DptUpDown
+    \value DptOpenClose
+    \value DptStart
+    \value DptState
+    \value DptInvert
+    \value DptDimSendStyle
+    \value DptInputSource
+    \value DptReset
+    \value DptAck
+    \value DptTrigger
+    \value DptOccupancy
+    \value DptWindowDoor
+    \value DptLogicalFunction
+    \value DptSceneAB
+    \value DptShutterBlindsMode
+    \value DptHeatCool
+    \value Dpt2_1BitControlled
+            A fixed size datapoint type with the length of 2 bits.
+    \value DptSwitchControl
+    \value DptBoolControl
+    \value DptEnableControl
+    \value DptRampControl
+    \value DptAlarmControl
+    \value DptBinaryValueControl
+    \value DptStepControl
+    \value DptDirection1Control
+    \value DptDirection2Control
+    \value DptStartControl
+    \value DptStateControl
+    \value DptInvertControl
+    \value Dpt3_3BitControlled
+            A fixed size datapoint type with the length of 3 bits.
+    \value DptControlDimming
+            Controls light dimming.
+    \value DptControlBlinds
+            Controls blinds.
+    \value Dpt4_Character
+            A fixed size datapoint type with the length of 1 byte that encodes
+            a character.
+    \value DptCharAscii
+    \value DptChar88591
+    \value Dpt5_8bitUnsigned
+    \value DptScaling
+    \value DptAngle
+    \value DptPercentU8
+    \value DptDecimalFactor
+    \value DptTariff
+    \value DptValue1Ucount
+    \value Dpt6_8bitSigned
+    \value DptPercentV8
+    \value DptValue1Count
+    \value DptStatusMode3
+    \value Dpt7_2ByteUnsigned
+    \value DptValue2UCount
+    \value DptTimePeriodMsec
+    \value DptTimePeriod10Msec
+    \value DptTimePeriod100Msec
+    \value DptTimePeriodSec
+    \value DptTimePeriodMin
+    \value DptTimePeriodHrs
+    \value DptPropertyDataType
+    \value DptLengthMilliMeter
+    \value DptUEICurrentMilliA
+    \value DptBrightness
+    \value Dpt8_2ByteSigned
+    \value DptValue2Count
+    \value DptDeltaTimeMsec
+    \value DptDeltaTime10Msec
+    \value DptDeltaTime100Msec
+    \value DptDeltaTimeSec
+    \value DptDeltaTimeMin
+    \value DptDeltaTimeHrs
+    \value DptPercentV16
+    \value DptRotationAngle
+    \value Dpt9_2ByteFloat
+    \value DptTemperatureCelcius
+    \value DptTemperatureKelvin
+    \value DptTemperatureChange
+    \value DptValueLux
+    \value DptWindSpeed
+    \value DptPressure
+    \value DptHumidity
+    \value DptAirQuality
+    \value DptAirFlow
+    \value DptTimeSecond
+    \value DptTimeMilliSecond
+    \value DptVoltage
+    \value DptCurrent
+    \value DptPowerDensity
+    \value DptKelvinPerPercent
+    \value DptPower
+    \value DptVolumeFlow
+    \value DptAmountRain
+    \value DptTemperatureFahrenheit
+    \value DptWindSpeedKmPerHour
+    \value Dpt10_TimeOfDay
+    \value DptTimeOfDay
+    \value Dpt11_Date
+    \value DptDate
+    \value Dpt12_4ByteUnsigned
+    \value DptValue4Ucount
+    \value Dpt13_4ByteSigned
+    \value DptValue4Count
+    \value DptFlowRateCubicMeterPerHour
+    \value DptApparentEnergy
+    \value DptReactiveEnergy
+    \value DptActiveEnergykWh
+    \value Dpt_ApparentEnergykVAh
+    \value DptReactiveEnergykVARh
+    \value DptActiveEnergy
+    \value DptLongDeltaTimeSec
+    \value Dpt14_4ByteFloat
+    \value DptValueAccelerationAngular
+    \value DptValueActivationEnergy
+    \value DptValueActivity
+    \value DptValueMol
+    \value DptValueAmplitude
+    \value DptValueAngleRad
+    \value DptValueAngleDeg
+    \value DptValueAngularMomentum
+    \value DptValueAngularVelocity
+    \value DptValueArea
+    \value DptValueCapacitance
+    \value DptValueChargeDensitySurface
+    \value DptValueChargeDensityVolume
+    \value DptValueCompressibility
+    \value DptValueConductance
+    \value DptValueElectricalConductivity
+    \value DptValueDensity
+    \value DptValueElectricCharge
+    \value DptValueElectricCurrent
+    \value DptValueElectricCurrentDensity
+    \value DptValueElectricDipoleMoment
+    \value DptValueElectricDisplacement
+    \value DptValueElectricFieldStrength
+    \value DptValueElectricFlux
+    \value DptValueElectricFluxDensity
+    \value DptValueElectricPolarization
+    \value DptValueElectricPotential
+    \value DptValueElectricPotentialDifference
+    \value DptValueElectromagneticMoment
+    \value DptValueElectromotiveForce
+    \value DptValueEnergy
+    \value DptValueForce
+    \value DptValueFrequency
+    \value DptValueAngularFrequency
+    \value DptValueHeatCapacity
+    \value DptValueHeatFlowRate
+    \value DptValueHeatQuantity
+    \value DptValueImpedance
+    \value DptValueLength
+    \value DptValueLightQuantity
+    \value DptValueLuminance
+    \value DptValueLuminousFlux
+    \value DptValueLuminousIntensity
+    \value DptValueMagneticFieldStrength
+    \value DptValueMagneticFlux
+    \value DptValueMagneticFluxDensity
+    \value DptValueMagneticMoment
+    \value DptValueMagneticPolarization
+    \value DptValueMagnetization
+    \value DptValueMagnetomotiveForce
+    \value DptValueMass
+    \value DptValueMassFlux
+    \value DptValueMomentum
+    \value DptValuePhaseAngleRad
+    \value DptValuePhaseAngleDeg
+    \value DptValuePower
+    \value DptValuePowerFactor
+    \value DptValuePressure
+    \value DptValueReactance
+    \value DptValueResistance
+    \value DptValueResistivity
+    \value DptValueSelfInductance
+    \value DptValueSolidAngle
+    \value DptValueSoundIntensity
+    \value DptValueSpeed
+    \value DptValueStress
+    \value DptValueSurfaceTension
+    \value DptValueCommonTemperature
+    \value DptValueAbsoluteTemperature
+    \value DptValueTemperatureDifference
+    \value DptValueThermalCapacity
+    \value DptValueThermalConductivity
+    \value DptValueThermoelectricPower
+    \value DptValueTime
+    \value DptValueTorque
+    \value DptValueVolume
+    \value DptValueVolumeFlux
+    \value DptValueWeight
+    \value DptValueWork
+    \value DptValueAcceleration
+    \value Dpt15_EntranceAccess
+    \value Dpt16_CharacterString
+    \value DptStringASCII
+    \value DptString88591
+    \value Dpt17_SceneNumber
+    \value DptSceneNumber
+    \value Dpt18_SceneControl
+    \value DptSceneControl
+    \value Dpt19_DataTime
+    \value DptDateTime
+    \value Dpt20_1Byte
+    \value DptScloMode
+    \value DptBuildingMode
+    \value DptOccMode
+    \value DptPriority
+    \value DptLightApplicationMode
+    \value DptApplicationArea
+    \value DptAlarmClassType
+    \value DptPsuMode
+    \value DptErrorClassSystem
+    \value DptErrorClassHvac
+    \value DptTimeDelay
+    \value DptBeaufortWindForceScale
+    \value DptSensorSelect
+    \value DptActuatorConnectType
+    \value DptCommandMode
+    \value DptAdditionalInfoTypes
+    \value Dpt21_8BitSet
+    \value DptGeneralStatus
+    \value DptDeviceControl
+    \value Dpt22_16BitSet
+    \value DptMedia
+    \value Dpt23_2BitSet
+    \value DptOnOffAction
+    \value DptAlarmReaction
+    \value DptUpDownAction
+    \value Dpt24_VariableString
+    \value DptVariableString88591
+    \value Dpt25_2NibbleSet
+    \value Dpt26_8BitSet
+    \value DptSceneInfo
+    \value Dpt27_32BitSet
+    \value DptCombinedInfoOnOff
+    \value Dpt28_StringUtf8
+    \value DptUtf8
+    \value Dpt29_ElectricalEnergy
+    \value DptActiveEnergyV64
+    \value DptApparentEnergyV64
+    \value DptReactiveEnergyV64
+    \value Dpt30_24TimesChannelActivation
+    \value DPT217_DatapointTypeVersion
+    \value DptVersion
+    \value Dpt221
+    \value DptSerialNumber
+    \value Dpt225_ScalingSpeed
+    \value Dpt232_3ByteColourRGB
+    \value DptColourRGB
+*/
+
+/*!
+    \class QKnxFixedSizeDatapointType
+    \inherits QKnxDatapointType
+    \inmodule QtKnx
+
+    \brief The QKnxFixedSizeDatapointType class is a base class for datapoint
+    types with a fixed size.
+
+    \sa Type
+*/
+
+/*!
+    \fn QKnxFixedSizeDatapointType::QKnxFixedSizeDatapointType(Type type, int size)
+
+    Creates a fixed size datapoint type with the type \c type and the size
+    \a size.
+*/
+
+/*!
+    \fn QKnxFixedSizeDatapointType::QKnxFixedSizeDatapointType(const QString &dptId, int size)
+
+    Creates a fixed size datapoint type with the identifier \c dptId and the
+    size \a size.
+*/
+
+/*!
+    \fn QKnxFixedSizeDatapointType::QKnxFixedSizeDatapointType(quint16 mainType, quint16 subType, int size)
+
+    Creates a fixed size datapoint type with the main type \c mainType, subtype
+    \a subType, and the size \a size.
+*/
+
+/*!
+    \class QKnxVariableSizeDatapointType
+    \inherits QKnxDatapointType
+    \inmodule QtKnx
+
+    \brief The QKnxVariableSizeDatapointType is a base class for datapoint
+    types with a variable size.
+
+    \sa Type
+*/
+
+/*!
+    \fn QKnxVariableSizeDatapointType::QKnxVariableSizeDatapointType(Type type, int size)
+
+    Creates a variable size datapoint type with the type \c type and the size
+    \a size.
+*/
+
+/*!
+    \fn QKnxVariableSizeDatapointType::QKnxVariableSizeDatapointType(const QString &dptId, int size)
+
+    Creates a variable size datapoint type with the identifier \c dptId and the
+    size \a size.
+*/
+
+/*!
+    \fn QKnxVariableSizeDatapointType::QKnxVariableSizeDatapointType(quint16 mainType, quint16 subType, int size)
+
+    Creates a variable size datapoint type with the main type \c mainType, subtype
+    \a subType, and the size \a size.
+*/
+
+//TODO: make sure the code description is correct and enough.
+
 QKnxDatapointType::Type QKnxDatapointType::type() const
 {
     return static_cast<Type> (d_ptr->m_type);

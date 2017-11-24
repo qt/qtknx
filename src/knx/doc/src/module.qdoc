@@ -34,7 +34,12 @@
     \qtvariable knx
     \brief List of C++ classes that enable access to a KNX network.
 
-    To use these classes in your application, use the following include statement:
+    \note The Qt KNX module is currently available as a Technology Preview and
+    therefore the API and functionality provided by the module may be subject
+    to change at any time without prior notice.
+
+    To use these classes in your application, use the following include
+    statement:
 
     \code
     #include <QtKnx/QtKnx>

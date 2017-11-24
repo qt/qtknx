@@ -32,7 +32,16 @@
 
 QT_BEGIN_NAMESPACE
 
+/*!
+    \class QKnx1Byte
+    \inherits QKnxFixedSizeDatapointType
+    \inmodule QtKnx
 
+    \brief The QKnx1Byte class is a fixed size datapoint type with the length of
+    1 byte.
+
+    \sa QKnxDatapointType
+*/
 // -- QKnx1Byte
 
 QKnx1Byte::QKnx1Byte()
@@ -63,6 +72,9 @@ bool QKnx1Byte::setValue(quint8 value)
     return setByte(0, value);
 }
 
+/*!
+    \reimp
+*/
 bool QKnx1Byte::isValid() const
 {
     return QKnxDatapointType::isValid() && byte(0) >= minimum().toUInt()

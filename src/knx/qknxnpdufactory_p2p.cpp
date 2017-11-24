@@ -37,7 +37,17 @@ QT_BEGIN_NAMESPACE
 
     \inmodule QtKnx
     \brief The QKnxNpduFactory class is used to create a valid Network protocol
-    data unit to be used in an \l QKnxTunnelFrame.
+    data unit (\l QKnxNpdu) to be used in an \l QKnxTunnelFrame.
+
+    One builds a NPDU to trigger a given application service. The factory is
+    organized according to the general category the service we want to trigger
+    belongs to. The category refers to the connection type needed to use the
+    services. The possible service categories are: \l Multicast, \l Broadcast,
+    \l PointToPoint, and \l PointToPointConnectionOriented.
+
+    Within those categories, there is a function to create a NPDU for each
+    possible application service belonging to the given category (all the
+    services are listed here \l QKnxNpdu::ApplicationControlField).
 */
 
 static QKnxNpdu::TransportControlField tpci(QKnxNpduFactory::PointToPoint::Mode mode, quint8 seq)
@@ -54,8 +64,32 @@ static QKnxNpdu::TransportControlField tpci(QKnxNpduFactory::PointToPoint::Mode 
 // -- PointToPoint
 
 /*!
+    \class QKnxNpduFactory::PointToPoint
+
+    \inmodule QtKnx
+    \brief The QKnxNpduFactory::PointToPoint class is used to create a valid
+    Network protocol data unit (\l QKnxNpdu) for application services requesting
+    point to point connection.
+
+    Those services are accessed using the individual address of the device
+    (\l QKnxAddress::Individual) in the source address part of the \l QKnxCemiFrame.
+    They can be used in \l QKnxNpduFactory::PointToPoint::ConnectionOriented or
+    \l QKnxNpduFactory::PointToPoint::Connectionless, that is with or without a
+    transport layer connection, respectively.
+*/
+
+/*!
+    \enum QKnxNpduFactory::PointToPoint::Mode
+
+    \value Connectionless,
+    \value ConnectionOriented
+*/
+
+/*!
     Returns a NPDU for Memory Read Application Service with the given \a number,
-    \a address and sequence number \a seqNumber set.
+    \a address and sequence number \a seqNumber set. Depending on the parameter
+    \a mode the NPDU shall be used in a connection oriented or connectionless
+    service.
 */
 QKnxNpdu QKnxNpduFactory::PointToPoint::createMemoryReadNpdu(Mode mode, quint8 number,
     quint16 address, quint8 seqNumber)
@@ -75,8 +109,10 @@ QKnxNpdu QKnxNpduFactory::PointToPoint::createMemoryResponseNpdu(Mode mode, quin
 }
 
 /*!
-    Returns a NPDU for Memory Write Application Service with the given \a number,
-    \a address, \a data and sequence number \a seqNumber set.
+    Returns a NPDU for Memory Write Application Service with the given
+    \a number, \a address, \a data and sequence number \a seqNumber set.
+    Depending on the parameter \a mode the NPDU shall be used in a connection
+    oriented or connectionless service.
 */
 QKnxNpdu QKnxNpduFactory::PointToPoint::createMemoryWriteNpdu(Mode mode, quint8 number,
     quint16 address, const QByteArray &data, quint8 seqNumber)
@@ -306,6 +342,20 @@ QKnxNpdu QKnxNpduFactory::PointToPoint::createFileStreamInfoReportNpdu(Mode mode
 
 // -- PointToPointConnectionless
 
+/*!
+    \class QKnxNpduFactory::PointToPointConnectionless
+
+    \inmodule QtKnx
+    \brief The QKnxNpduFactory::PointToPointConnectionless class is used to
+    create a valid Network protocol data unit (\l QKnxNpdu) for application
+    services requesting point to point connection without transport layer
+    connection.
+
+    Those services are accessed using the individual address of the device
+    (\l QKnxAddress::Individual) in the source address part of the
+    \l QKnxCemiFrame.
+*/
+
 static QKnxNpdu createNetworkParameterNpduP2P(QKnxNpdu::ApplicationControlField apci,
                                               QKnxInterfaceObjectType object,
                                               QKnxInterfaceObjectProperty property,
@@ -345,8 +395,23 @@ QKnxNpduFactory::PointToPointConnectionless::createNetworkParameterWriteNpdu(QKn
 // -- PointToPointConnectionOriented
 
 /*!
-    Returns a NPDU for ADC Read Application Service with the given sequence
-    number \a seqNumber, \a channelNumber and \a readCount set.
+    \class QKnxNpduFactory::PointToPointConnectionOriented
+
+    \inmodule QtKnx
+    \brief The QKnxNpduFactory::PointToPointConnectionOriented class is used to
+    create a valid Network protocol data unit (\l QKnxNpdu) for application
+    services requesting point to point connection with a mandatory transport
+    layer connection.
+
+    Those services are accessed using the individual address of the device
+    (\l QKnxAddress::Individual) in the source address part of the
+    \l QKnxCemiFrame. To be successful, the CEMI frame containing those
+    NPDU need to be send within the frame work of a transport layer connection.
+*/
+
+/*!
+    Returns a \l QKnxNpdu for ADC Read Application Service with the given
+    \a channel, \a readCount and \a seqNumber set.
 */
 QKnxNpdu QKnxNpduFactory::PointToPointConnectionOriented::createAdcReadNpdu(quint8 channel,
     quint8 readCount, quint8 seqNumber)
@@ -372,8 +437,9 @@ QKnxNpdu QKnxNpduFactory::PointToPointConnectionOriented::createAdcResponseNpdu(
 }
 
 /*!
-    Returns a NPDU for User Memory Read Application Service with \a number,
-    \a address, \a data and sequence number \a seqNumber set.
+    Returns a \l QKnxNpdu for User Memory Read Application Service with
+    \a addressExtention, \a number, \a address and sequence number \a seqNumber
+    set.
 */
 QKnxNpdu
 QKnxNpduFactory::PointToPointConnectionOriented::createUserMemoryReadNpdu(quint8 addressExtention,

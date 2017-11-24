@@ -31,10 +31,53 @@
 
 QT_BEGIN_NAMESPACE
 
+// List of Message code for Tunneling from 3.8.4 paragraph 2.2.1
+
+/*!
+    \class QKnxTunnelFrame
+
+    \inmodule QtKnx
+    \brief The QKnxTunnelFrame is a CEMI frame meant to be sent via a
+    \l QKnxNetIpTunnelConnection between a client and a KNXnet/IP server.
+
+    Following the KNXnet/IP tunneling specifications, only the
+    \l QKnxCemiFrame::MessageCode listed below are valid QKnxTunnelFrame message
+    code to be sent via KNXnet/IP tunnel connection:
+
+    \list
+        \li DataRequest (L_Data.req)
+        \li DataConfirmation (L_Data.con)
+        \li DataIndication (L_Data.ind)
+        \li BusmonitorIndication (L_Busmon.ind)
+        \li RawRequest (L_Raw.req)
+        \li RawIndication (L_Raw.ind)
+        \li RawConfirmation (L_Raw.con)
+        \li ResetRequest (M_Reset.req)
+    \endlist
+
+    For the moment, the QtKnx module is only implementing KNXnet/IP tunnel
+    connection, so only the previously mentioned message code should be used.
+
+    The message code is also to be chosen depending on the application service
+    (encoded with the \l QKnxNpdu::ApplicationControlField) hold in the \l QKnxNpdu.
+    In the \l QKnxNpduFactory, the application services are split into categories
+    depending on the addressing method.
+
+    The most basic functionalities are to be addressed with set of services built
+    in \l QKnxNpduFactory::Multicast. For those services one should use
+    DataRequest (L_Data.req), DataConfirmation (L_Data.con) or DataIndication
+    (L_Data.ind) as QKnxTunnelFrame message code.
+*/
+
 QKnxTunnelFrame::QKnxTunnelFrame(QKnxTunnelFrame::MessageCode messageCode)
     : QKnxCemiFrame(messageCode)
 {}
 
+/*!
+  Returns true if the message code is valid.
+
+  \note This function needs to be extended.
+*/
 bool QKnxTunnelFrame::isValid() const
 {
     // TODO: Make sure all constraints from 3.3.2 paragraph 2.2 L_Data is checked here
@@ -51,7 +94,7 @@ bool QKnxTunnelFrame::isValid() const
     case MessageCode::DataRequest:
     case MessageCode::DataConfirmation:
     case MessageCode::DataIndication:
-        // From 3.3.2 paragrah 2.2.1
+        // From 3.3.2 paragraph 2.2.1
         if (sourceAddress().type() != QKnxAddress::Type::Individual)
             return false;
     default:

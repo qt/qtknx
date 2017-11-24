@@ -32,6 +32,18 @@
 
 QT_BEGIN_NAMESPACE
 
+/*!
+    \class QKnx8BitSignedValue
+
+    \inmodule QtKnx
+    \brief The QKnx8BitSignedValue class is a datapoint type with an 8-bit
+    signed value.
+
+    This is a fixed size datapoint type with the length of 1 byte.
+
+    \sa QKnxDatapointType
+*/
+
 // -- QKnx8BitSignedValue
 
 QKnx8BitSignedValue::QKnx8BitSignedValue()

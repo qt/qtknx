@@ -34,6 +34,21 @@
 
 QT_BEGIN_NAMESPACE
 
+/*!
+    \class QKnx2ByteSignedValue
+    \inherits QKnxFixedSizeDatapointType
+    \inmodule QtKnx
+
+    \brief The QKnx2ByteSignedValue class is a datapoint type with a 2-byte
+    signed value.
+
+    This is a fixed size datapoint type with the length of 2 bytes.
+
+    Integer values from -32 768 to 32 767 can be encoded in this datapoint type.
+
+    \sa QKnxDatapointType
+*/
+
 QKnx2ByteSignedValue::QKnx2ByteSignedValue()
     : QKnx2ByteSignedValue(0.0)
 {}
@@ -64,6 +79,9 @@ bool QKnx2ByteSignedValue::setValue(double value)
     return false;
 }
 
+/*!
+    \reimp
+*/
 bool QKnx2ByteSignedValue::isValid() const
 {
     return QKnxDatapointType::isValid()

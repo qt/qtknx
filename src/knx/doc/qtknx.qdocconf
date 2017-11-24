@@ -4,6 +4,8 @@ project                 = QtKnx
 description             = Qt KNX Reference Documentation
 version                 = $QT_VERSION
 
+examplesinstallpath = knx
+
 qhp.projects            = QtKnx
 
 qhp.QtKnx.file                = qtknx.qhp
@@ -16,17 +18,25 @@ qhp.QtKnx.filterAttributes    = qtknx $QT_VERSION qtrefdoc
 qhp.QtKnx.customFilters.Qt.name = QtKnx $QT_VERSION
 qhp.QtKnx.customFilters.Qt.filterAttributes = qtknx $QT_VERSION
 
-qhp.QtKnx.subprojects         = classes
+qhp.QtKnx.subprojects         = classes examples
 
 qhp.QtKnx.subprojects.classes.title = C++ Classes
 qhp.QtKnx.subprojects.classes.indexTitle = Qt KNX C++ Classes
 qhp.QtKnx.subprojects.classes.selectors = class fake:headerfile
 qhp.QtKnx.subprojects.classes.sortPages = true
 
+qhp.QtMqtt.subprojects.examples.title         = Examples
+qhp.QtMqtt.subprojects.examples.indexTitle    = Qt KNX Examples
+qhp.QtMqtt.subprojects.examples.selectors     = fake:example
+qhp.QtMqtt.subprojects.examples.sortPages     = true
+
 headerdirs  += ..
 sourcedirs  += ..
+exampledirs = ../../../examples/knx
 imagedirs   += images
 excludedirs += ../qt4support
+
+Cpp.ignoretokens += Q_KNX_EXPORT
 
 depends += qtcore qtdoc qtnetwork qmake
 

@@ -30,7 +30,21 @@
 /*!
     \page qtknx-index.html
     \title Qt KNX
-    \brief Provides an API to make KNX programming simple and portable.
+    \brief Provides classes and functions to make KNX programming simple and
+    portable.
+
+    \note The Qt KNX module is currently available as a Technology Preview and
+    therefore the API and functionality provided by the module may be subject
+    to change at any time without prior notice.
+
+    The Qt KNX module implements the client side of a connection between a
+    client and a KNXnet/IP server. This connection can be used to send messages
+    to the KNX bus and to control the functionalities of the KNX devices.
+
+    Only local device management procedures and KNX application services working
+    with group addressing are fully supported.
+
+    \section1 Getting Started
 
     To use these classes in your application, use the following include statement:
 
@@ -44,7 +58,19 @@
     QT += knx
     \endcode
 
-    \section1 Related Information
+    \section1 Articles and Guides
+
+    \list
+        \li \l{Qt KNX Overview}{Overview}
+    \endlist
+
+    \section1 Examples
+
+    \list
+        \li \l{Qt KNX Examples}{Examples}
+    \endlist
+
+    \section1 Reference
     \list
     \li \l{Qt KNX C++ Classes}{C++ Classes}
     \endlist

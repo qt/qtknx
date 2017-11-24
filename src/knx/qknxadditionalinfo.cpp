@@ -137,27 +137,6 @@ bool QKnxAdditionalInfo::isValid() const
 }
 
 /*!
-    \fn bool QKnxAdditionalInfo::isValid(QKnxAdditionalInfo::Type type, const T &data)
-
-    Returns \c true if \a type is one of the know enumeration in \l Type and
-    \a data has the expected length for \a type.
-
-    \note The Additional Information field included in a cEMI message cannot
-    contain a value larger then 254, value 255 is reserved for future extension.
-    So the maximum valid data size cannot exceed 252 bytes, the two remaining
-    bytes are reserved for the \l Type and length information.
-
-    \sa expectedDataSize()
-*/
-
-/*!
-    \fn quint16 QKnxAdditionalInfo::size() const
-
-    Returns the number of bytes representing the additional info, including the
-    byte for \l Type id and the byte for length information.
-*/
-
-/*!
     Returns the number of bytes representing the additional info, excluding the
     byte for \l Type id and the byte for length information.
 */

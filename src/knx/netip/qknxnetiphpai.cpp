@@ -36,10 +36,12 @@ QT_BEGIN_NAMESPACE
     \class QKnxNetIpHpai
 
     \inmodule QtKnx
-    \brief The QKnxNetIpHpai class represents the structure containing the
-    information that is necessary to uniquely identify an Internet Protocol
-    transport connection endpoint. It includes the Network Layer address and
-    the Transport Layer identifier called Port number.
+    \brief The QKnxNetIpHpai class uniquely identifies an IP transport
+    connection endpoint.
+
+    The information needed to identify an IP transport connection endpoint
+    includes the Network Layer address and the Transport Layer identifier called
+    \e {port number}.
 */
 
 QKnxNetIpHpai::QKnxNetIpHpai(const QKnxNetIpHostProtocolStruct &other)

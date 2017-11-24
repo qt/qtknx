@@ -32,6 +32,20 @@
 
 QT_BEGIN_NAMESPACE
 
+/*!
+    \class QKnxChar
+    \inherits QKnxFixedSizeDatapointType
+    \inmodule QtKnx
+
+    \brief The QKnxChar class is a datapoint type that encodes a character.
+
+    The encoding of the character is specified in \l QKnxCharASCII and
+    \l QKnxChar88591 that inherit this class.
+
+    This is a fixed size datapoint type with the length of 1 byte.
+
+    \sa QKnxDatapointType
+*/
 
 // -- QKnxChar
 
@@ -65,6 +79,9 @@ bool QKnxChar::setValue(unsigned char value)
     return setByte(0, value);
 }
 
+/*!
+    \reimp
+*/
 bool QKnxChar::isValid() const
 {
     return QKnxDatapointType::isValid() && byte(0) <= maximum().toUInt();

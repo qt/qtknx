@@ -33,6 +33,24 @@
 
 QT_BEGIN_NAMESPACE
 
+/*!
+    \class QKnx1BitControlled
+    \inherits QKnxFixedSizeDatapointType
+    \inmodule QtKnx
+
+    \brief The QKnx1BitControlled class is a boolean datapoint type with a
+    control part.
+
+    This is a fixed size datapoint type with the length of 1 byte, though only
+    two bits are used by the actual implementation.
+
+    The right side bit corresponds to the datapoint type value, whereas the
+    left side bit represents the control part. For example, switch on or off
+    with priority control.
+
+    \sa QKnxDatapointType, QKnx1Bit
+*/
+
 // -- QKnx1BitControlled
 
 QKnx1BitControlled::QKnx1BitControlled()
@@ -77,7 +95,9 @@ void QKnx1BitControlled::setControlBit(bool control)
 {
     setByte(0, QKnxDatapointType::setBit(byte(0), control, 1));
 }
-
+/*!
+    \reimp
+*/
 bool QKnx1BitControlled::isValid() const
 {
     return QKnxDatapointType::isValid() && byte(0) <= maximum().toUInt();
