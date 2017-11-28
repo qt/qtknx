@@ -51,34 +51,29 @@ import QtQuick 2.7
 import QtQuick.Controls 2.2
 import QtQuick.Layouts 1.3
 
-Item {
-    width: 88
-    height: 48
-    property bool on: false
-    property int lightNumber: 0
-    property bool customSwitchAction: false
-
-    signal uiClicked();
-    MouseArea {
-        anchors.fill: parent
-        onClicked: {
-            if (!customSwitchAction)
-                toggleLight(lightNumber);
-            on = !on;
-            uiClicked();
-        }
-    }
+Rectangle {
+    color: "#272a33"
+    property alias lightE1: lightE1
+    Layout.fillWidth: true
+    Layout.fillHeight: true
+    Layout.preferredWidth: 400
+    Layout.preferredHeight: 220
+    border.width: 4
+    border.color: "#686a75"
     Image {
-        id: imageOff
-        anchors.fill: parent
-        visible: on
+        id: e1SchemeImg
+        source: pathPrefix + "images/e1View.png"
+        anchors.top: parent.top
+        anchors.bottom: parent.bottom
+        anchors.left: parent.left
+        anchors.right: lightE1.left
         fillMode: Image.PreserveAspectFit
-        source: "images/on_green.png"
     }
-    Image {
-        anchors.fill: parent
-        visible: !on
-        fillMode: Image.PreserveAspectFit
-        source: "images/off.png"
+    KnxSwitch {
+        id: lightE1
+        lightNumber:1
+        anchors.verticalCenter: e1SchemeImg.verticalCenter
+        anchors.right: parent.right
+        scale: xScaleFactor
     }
 }

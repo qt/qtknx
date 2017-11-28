@@ -49,27 +49,54 @@
 ****************************************************************************/
 import QtQuick 2.7
 import QtQuick.Controls 2.2
-import QtQuick.Layouts 1.3
+import QtGraphicalEffects 1.0
 
-Rectangle {
-    property alias lightE10: lightE10
-    Layout.fillWidth: true
-    Layout.fillHeight: true
-    Layout.preferredWidth: 100
-    color: "#272a33"
-    border.width: 4
-    border.color: "#686a75"
-    KnxSwitch {
-        id: lightE10
-        lightNumber: 10
-        anchors.centerIn: parent
-        z: 1
-        scale: xScaleFactor
+Item {
+    signal endSimulation();
+
+    function goUp()
+    {
+        animUp.start();
     }
-    Image {
-        anchors.fill: parent
-        anchors.margins: 10
-        fillMode: Image.PreserveAspectFit
-        source: "images/e10Scheme.png"
+    function goDown()
+    {
+        animDown.start();
+    }
+    function pause()
+    {
+        if (animUp.running)
+            animUp.stop();
+        if (animDown.running)
+            animDown.stop();
+    }
+
+    Rectangle {
+        anchors.left: parent.left
+        anchors.right: parent.right
+        color: "#272a33"
+        Image {
+            id: blind
+            width: 84
+            source: pathPrefix + "images/blind.png"
+            anchors.top: parent.bottom
+        }
+        SequentialAnimation {
+            id: animUp
+            running: false
+            NumberAnimation { target: blind; property: "height"; from: blind.height; to: 30; duration: 4000 }
+            onRunningChanged: {
+                if (!running)
+                    endSimulation()
+            }
+        }
+        SequentialAnimation {
+            id: animDown
+            running: false
+            NumberAnimation { target: blind; property: "height"; from: blind.height; to: blind.sourceSize.height; duration: 4000 }
+            onRunningChanged: {
+                if (!running)
+                    endSimulation()
+            }
+        }
     }
 }

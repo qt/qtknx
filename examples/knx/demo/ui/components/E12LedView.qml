@@ -50,91 +50,31 @@
 import QtQuick 2.7
 import QtQuick.Controls 2.2
 import QtQuick.Layouts 1.3
-import QtQuick.Window 2.2
 
 Rectangle {
-    property real xScaleFactor: (width / Screen.width).toFixed(2)
-
-    function toggleLight(num)
-    {
-        knxDemo.toggleLight(num);
-    }
-
-    function enableBox(num, checked)
-    {
-        if (num == 1)
-            e1Scheme.lightE1.on = checked;
-        else if (num == 2)
-            e2Scheme.lightE2.on = checked;
-        else if (num == 3)
-            e3e4Scheme.lightE3.on = checked;
-        else if (num == 4)
-            e3e4Scheme.lightE4.on = checked;
-        else if (num == 5)
-            e5e6Scheme.lightE5.on = checked;
-        else if (num == 6)
-            e5e6Scheme.lightE6.on = checked;
-        else if (num == 7)
-            e7e8Scheme.lightE7.on = checked;
-        else if (num == 8)
-            e7e8Scheme.lightE8.on = checked;
-        else if (num == 9)
-            e9Scheme.lightE9.on = checked;
-        else if (num == 10)
-            e10Scheme.lightE10.on = checked;
-        else if (num == 11)
-            e11Scheme.lightE11.on = checked;
-        else if (num == 12)
-            e12Scheme.lightE12.on = checked;
-        else if (num == 14)
-            changeLedColor(middleRightLed.led, checked ? "Yellow" : "#394251");
-        return;
-    }
-
-    function changeColorLeftLed(color)
-    {
-        changeLedColor(middleLeftLed.led, color);
-    }
-
-    function changeLedColor(led, color)
-    {
-        if (Qt.colorEqual(color, "black"))
-            led.color = "#394251";
-        else
-            led.color = color;
-    }
-
-    function rotateLogo(rocker)
-    {
-        logo.rotation = (rocker - 1000) * 360 / 1000;
-    }
-
+    property alias lightE12: lightE12
+    Layout.fillWidth: true
+    Layout.fillHeight: true
+    Layout.preferredWidth: 70
+    color: "#272a33"
+    border.width: 4
+    border.color: "#686a75"
     ColumnLayout {
-        anchors.fill: parent
-        spacing: 0
-        RowLayout {
-            spacing: 0
-            E1Scheme { id: e1Scheme }
-            E2Scheme { id: e2Scheme }
-            E3E4Scheme { id: e3e4Scheme }
+        anchors.bottomMargin: height / 2
+        anchors.topMargin: height / 2
+        anchors.centerIn: parent
+        Image {
+            Layout.preferredWidth: 70
+            Layout.preferredHeight: 70
+            fillMode: Image.PreserveAspectFit
+            anchors.horizontalCenter: lightE12.horizontalCenter
+            source: pathPrefix + "images/icon_light.png"
         }
-        RowLayout {
-            spacing: 0
-            E5E6Scheme { id: e5e6Scheme }
-            E13Led { id: middleLeftLed }
-            E12RedLed { id: e12Scheme }
-            E14Led { id: middleRightLed }
-            E7E8Scheme { id: e7e8Scheme }
-        }
-        RowLayout {
-            spacing: 0
-            E9RedLed { id: e9Scheme }
-            ColumnLayout {
-                spacing: 0
-                ColorSlider {}
-                E10RedLed { id: e10Scheme }
-            }
-            E11RedLed { id: e11Scheme }
+        KnxSwitch {
+            id: lightE12
+            lightNumber: 12
+            anchors.horizontalCenter: parent.horizontalCenter
+            scale: xScaleFactor
         }
     }
 }

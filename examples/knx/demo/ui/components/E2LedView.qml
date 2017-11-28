@@ -49,54 +49,32 @@
 ****************************************************************************/
 import QtQuick 2.7
 import QtQuick.Controls 2.2
-import QtGraphicalEffects 1.0
+import QtQuick.Layouts 1.3
 
-Item {
-    signal endSimulation();
-
-    function goUp()
-    {
-        animUp.start();
-    }
-    function goDown()
-    {
-        animDown.start();
-    }
-    function pause()
-    {
-        if (animUp.running)
-            animUp.stop();
-        if (animDown.running)
-            animDown.stop();
-    }
-
-    Rectangle {
+Rectangle {
+    id: e2Scheme
+    property alias lightE2: lightE2
+    Layout.fillWidth: true
+    Layout.fillHeight: true
+    Layout.preferredWidth: 300
+    Layout.preferredHeight: 220
+    color: "#272a33"
+    border.width: 4
+    border.color: "#686a75"
+    Image {
+        id: e2SchemeImg
+        anchors.top: parent.top
+        anchors.bottom: parent.bottom
         anchors.left: parent.left
+        anchors.right: lightE2.left
+        fillMode: Image.PreserveAspectFit
+        source: pathPrefix + "images/e2View.png"
+    }
+    KnxSwitch {
+        id: lightE2
+        lightNumber:2
         anchors.right: parent.right
-        color: "#272a33"
-        Image {
-            id: blind
-            width: 84
-            source: "images/blind.png"
-            anchors.top: parent.bottom
-        }
-        SequentialAnimation {
-            id: animUp
-            running: false
-            NumberAnimation { target: blind; property: "height"; from: blind.height; to: 30; duration: 4000 }
-            onRunningChanged: {
-                if (!running)
-                    endSimulation()
-            }
-        }
-        SequentialAnimation {
-            id: animDown
-            running: false
-            NumberAnimation { target: blind; property: "height"; from: blind.height; to: blind.sourceSize.height; duration: 4000 }
-            onRunningChanged: {
-                if (!running)
-                    endSimulation()
-            }
-        }
+        anchors.verticalCenter: e2SchemeImg.verticalCenter
+        scale: xScaleFactor
     }
 }

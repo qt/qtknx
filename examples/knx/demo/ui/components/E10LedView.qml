@@ -52,31 +52,24 @@ import QtQuick.Controls 2.2
 import QtQuick.Layouts 1.3
 
 Rectangle {
-    property alias lightE9: lightE9
+    property alias lightE10: lightE10
     Layout.fillWidth: true
     Layout.fillHeight: true
-    Layout.preferredWidth: 50
-    Layout.preferredHeight: 100
+    Layout.preferredWidth: 100
     color: "#272a33"
     border.width: 4
     border.color: "#686a75"
-    RowLayout {
+    KnxSwitch {
+        id: lightE10
+        lightNumber: 10
+        anchors.centerIn: parent
+        z: 1
+        scale: xScaleFactor
+    }
+    Image {
         anchors.fill: parent
-        anchors.margins: 20
-        Image {
-            id: tempSymbol
-            anchors.left: parent.left
-            anchors.top: parent.top
-            anchors.bottom: parent.bottom
-            anchors.right: lightE9.left
-            fillMode: Image.PreserveAspectFit
-            source: "images/temperature_symbol.png"
-        }
-        KnxSwitch {
-            id: lightE9
-            lightNumber: 9
-            anchors.centerIn: parent
-            scale: xScaleFactor
-        }
+        anchors.margins: 10
+        fillMode: Image.PreserveAspectFit
+        source: pathPrefix + "images/e10View.png"
     }
 }

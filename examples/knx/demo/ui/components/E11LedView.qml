@@ -52,41 +52,30 @@ import QtQuick.Controls 2.2
 import QtQuick.Layouts 1.3
 
 Rectangle {
-    id: e5e6Scheme
-    color: "#272a33"
-    property alias lightE5: lightE5
-    property alias lightE6: lightE6
+    property alias lightE11: lightE11
     Layout.fillWidth: true
     Layout.fillHeight: true
-    Layout.preferredWidth: 130
-    Layout.preferredHeight: 220
+    Layout.preferredWidth: 50
+    Layout.preferredHeight: 100
+    color: "#272a33"
     border.width: 4
     border.color: "#686a75"
-    Image {
-        id: e5e6SchemeImg
-        anchors.right: parent.righ
-        anchors.top: parent.top
-        anchors.bottom: parent.bottom
-        anchors.left: colSwitches.right
-        fillMode: Image.PreserveAspectFit
-        source: "images/e5e6Scheme.png"
-    }
-    ColumnLayout {
-        id: colSwitches
-        anchors.left: parent.left
-        anchors.top: parent.top
-        anchors.bottom: parent.bottom
-        anchors.margins: 4
-        KnxSwitch {
-            id: lightE5
-            lightNumber: 5
+    RowLayout {
+        anchors.fill: parent
+        anchors.margins: 20
+        Image {
+            id: clockSymbol
+            anchors.left: parent.left
             anchors.top: parent.top
-            scale: xScaleFactor
+            anchors.bottom: parent.bottom
+            anchors.right: lightE11.left
+            fillMode: Image.PreserveAspectFit
+            source: pathPrefix + "images/clock.png"
         }
         KnxSwitch {
-            id: lightE6
-            lightNumber: 6
-            anchors.bottom: parent.bottom
+            id: lightE11
+            lightNumber: 11
+            anchors.centerIn: parent
             scale: xScaleFactor
         }
     }

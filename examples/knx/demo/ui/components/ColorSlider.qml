@@ -50,69 +50,31 @@
 import QtQuick 2.7
 import QtQuick.Controls 2.2
 import QtQuick.Layouts 1.3
-import QmlKnxDemo 1.0
 
-ApplicationWindow {
-    id: mainWindow
-    visibility: "FullScreen"
-    width: 1280
-    height: 800
-    title: qsTr("KNX Demo")
-
-    QmlKnxDemo {
-        id: knxDemo
-        onBoardUpdate: {
-            console.log("signal onBoardUpdate lightNum: " + lightNum)
-            knxBoard.enableBox(lightNum, getLightState(lightNum));
-        }
-        onColorLedChange: knxBoard.changeColorLeftLed(color)
-        onRockerChange:  {
-            logo.rotation = (position - 1000) * 360 / 1000;
-        }
-    }
-
-    header: ToolBar {
-        height: mainWindow.height / 12
-        width: parent.width
-        Layout.fillWidth: true
-        background: Image {
-            anchors.fill: parent
-            source: "images/topBar.png"
-        }
-        Image {
-            id: logo
-            antialiasing: true
-            anchors.verticalCenter: title.verticalCenter
-            width: 45
-            height: 33
-            source: "images/Qt-logo-medium.png"
-        }
-        Label {
-            id: title
-            color: "grey"
-            text: qsTr("Qt for automation KNX demo")
-            anchors.left: logo.right
-            anchors.verticalCenter: parent.verticalCenter
-            Layout.maximumWidth: mainWindow.width / 3
-        }
-        ToolButton {
-            anchors.right: parent.right
-            anchors.verticalCenter: parent.verticalCenter
-            width: logo.width * 0.8
-            height: logo.width * 0.8
-            contentItem: Image {
-                fillMode: Image.PreserveAspectFit
-                source: "images/quit_icon.png"
-                MouseArea {
-                    anchors.fill: parent
-                    onClicked: Qt.quit();
-                }
-            }
-        }
-    }
-
-    KnxBoardLayout {
-        id: knxBoard
+Rectangle {
+    Layout.fillWidth: true
+    Layout.fillHeight: true
+    Layout.preferredWidth: 100
+    color: "#272a33"
+    border.width: 4
+    border.color: "#686a75"
+    Slider {
         anchors.fill: parent
+        anchors.margins: 17
+        onPressedChanged: knxDemo.colorSwitch(value)
+        handle: Rectangle {
+            x: parent.leftPadding + parent.visualPosition * (parent.availableWidth - width)
+            y: parent.topPadding + parent.availableHeight / 2 - height / 2
+            color: hovered ? "#272a33" : "#686a75"
+            border.color: "gray"
+            border.width: 1
+            implicitWidth: 24
+            implicitHeight: 24
+            radius: width * 0.2
+        }
+        background: Image {
+            source: pathPrefix + "images/rainbow.png"
+        }
     }
 }
+

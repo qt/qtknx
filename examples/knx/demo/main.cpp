@@ -51,6 +51,7 @@
 
 #include <QtGui/QGuiApplication>
 #include <QtQml/QQmlApplicationEngine>
+#include <QQmlContext>
 
 int main(int argc, char *argv[])
 {
@@ -60,9 +61,10 @@ int main(int argc, char *argv[])
     QQmlApplicationEngine engine;
 
     qmlRegisterType<QmlKnxDemo>("QmlKnxDemo", 1, 0, "QmlKnxDemo");
-    engine.load(QUrl(QLatin1String("qrc:/main.qml")));
+    engine.load(QUrl(QLatin1String("qrc:/ui/main.qml")));
     if (engine.rootObjects().isEmpty())
         return -1;
-
+    QString namingScheme = QStringLiteral("qrc://");
+    engine.rootContext()->setContextProperty("pathPrefix", namingScheme + "/");
     return app.exec();
 }

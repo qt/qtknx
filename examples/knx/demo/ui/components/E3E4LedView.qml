@@ -52,29 +52,39 @@ import QtQuick.Controls 2.2
 import QtQuick.Layouts 1.3
 
 Rectangle {
+    id: e3e4Scheme
+    property alias lightE3: lightE3
+    property alias lightE4: lightE4
     Layout.fillWidth: true
     Layout.fillHeight: true
-    Layout.preferredWidth: 100
+    Layout.preferredWidth: 400
+    Layout.preferredHeight: 220
     color: "#272a33"
     border.width: 4
     border.color: "#686a75"
-    Slider {
-        anchors.fill: parent
-        anchors.margins: 17
-        onPressedChanged: knxDemo.colorSwitch(value)
-        handle: Rectangle {
-            x: parent.leftPadding + parent.visualPosition * (parent.availableWidth - width)
-            y: parent.topPadding + parent.availableHeight / 2 - height / 2
-            color: hovered ? "#272a33" : "#686a75"
-            border.color: "gray"
-            border.width: 1
-            implicitWidth: 24
-            implicitHeight: 24
-            radius: width * 0.2
-        }
-        background: Image {
-            source: "images/rainbow.png"
-        }
+    KnxSwitch {
+        id: lightE3
+        lightNumber: 3
+        anchors.left: parent.left
+        anchors.right: e3e4SchemeImg.left
+        anchors.verticalCenter: e3e4SchemeImg.verticalCenter
+        scale: xScaleFactor
+    }
+    Image {
+        id: e3e4SchemeImg
+        anchors.left: lightE3.right
+        anchors.top: parent.top
+        anchors.bottom: parent.bottom
+        anchors.right: lightE4.left
+        fillMode: Image.PreserveAspectFit
+        source: pathPrefix + "images/e3e4View.png"
+    }
+    KnxSwitch {
+        id: lightE4
+        lightNumber: 4
+        width: 88
+        anchors.right: parent.right
+        anchors.verticalCenter: e3e4SchemeImg.verticalCenter
+        scale: xScaleFactor
     }
 }
-

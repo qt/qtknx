@@ -50,30 +50,69 @@
 import QtQuick 2.7
 import QtQuick.Controls 2.2
 import QtQuick.Layouts 1.3
+import QmlKnxDemo 1.0
 
-Rectangle {
-    color: "#272a33"
-    property alias lightE1: lightE1
-    Layout.fillWidth: true
-    Layout.fillHeight: true
-    Layout.preferredWidth: 400
-    Layout.preferredHeight: 220
-    border.width: 4
-    border.color: "#686a75"
-    Image {
-        id: e1SchemeImg
-        source: "images/e1Scheme.png"
-        anchors.top: parent.top
-        anchors.bottom: parent.bottom
-        anchors.left: parent.left
-        anchors.right: lightE1.left
-        fillMode: Image.PreserveAspectFit
+ApplicationWindow {
+    id: mainWindow
+    visibility: "FullScreen"
+    width: 1280
+    height: 800
+    title: qsTr("KNX Demo")
+
+    QmlKnxDemo {
+        id: knxDemo
+        onBoardUpdate: {
+            console.log("signal onBoardUpdate lightNum: " + lightNum)
+            knxBoard.enableBox(lightNum, getLightState(lightNum));
+        }
+        onColorLedChange: knxBoard.changeColorLeftLed(color)
+        onRockerChange:  {
+            logo.rotation = (position - 1000) * 360 / 1000;
+        }
     }
-    KnxSwitch {
-        id: lightE1
-        lightNumber:1
-        anchors.verticalCenter: e1SchemeImg.verticalCenter
-        anchors.right: parent.right
-        scale: xScaleFactor
+
+    header: ToolBar {
+        height: mainWindow.height / 12
+        width: parent.width
+        Layout.fillWidth: true
+        background: Image {
+            anchors.fill: parent
+            source: pathPrefix + "images/topBar.png"
+        }
+        Image {
+            id: logo
+            antialiasing: true
+            anchors.verticalCenter: title.verticalCenter
+            width: 45
+            height: 33
+            source: pathPrefix + "images/Qt-logo-medium.png"
+        }
+        Label {
+            id: title
+            color: "grey"
+            text: qsTr("Qt for automation KNX demo")
+            anchors.left: logo.right
+            anchors.verticalCenter: parent.verticalCenter
+            Layout.maximumWidth: mainWindow.width / 3
+        }
+        ToolButton {
+            anchors.right: parent.right
+            anchors.verticalCenter: parent.verticalCenter
+            width: logo.width * 0.8
+            height: logo.width * 0.8
+            contentItem: Image {
+                fillMode: Image.PreserveAspectFit
+                source: pathPrefix + "images/quit_icon.png"
+                MouseArea {
+                    anchors.fill: parent
+                    onClicked: Qt.quit();
+                }
+            }
+        }
+    }
+
+    KnxBoardLayout {
+        id: knxBoard
+        anchors.fill: parent
     }
 }
