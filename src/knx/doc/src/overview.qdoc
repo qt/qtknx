@@ -32,11 +32,11 @@
     \title Qt KNX Overview
     \brief An overview of the Qt KNX module.
 
-    \note The Qt KNX module is currently available as a "Technical Preview" and
+    \note The Qt KNX module is currently available as a Technology Preview, and
     therefore the API and functionality provided by the module may be subject
     to change at any time without prior notice.
 
-    \l{KNX} is stardard for controlling home and building management equipment,
+    \l{KNX} is a standard for controlling home and building management equipment,
     such as: lighting, blinds and shutters, security systems, energy management,
     heating, ventilation and air-conditioning systems, signalling and monitoring
     systems, interfaces to service and building control systems, remote control,
