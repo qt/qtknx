@@ -44,14 +44,28 @@ QT_BEGIN_NAMESPACE
 */
 // -- QKnx1Byte
 
+/*!
+    Creates a fixed size datapoint type with the value set to \c 0.
+*/
 QKnx1Byte::QKnx1Byte()
     : QKnx1Byte(0)
 {}
 
+/*!
+    Creates a fixed size datapoint type with the value \a value.
+
+    The range for the value is from \c 0 to \c 255.
+*/
 QKnx1Byte::QKnx1Byte(quint8 value)
     : QKnx1Byte(SubType, value)
 {}
 
+/*!
+    Creates a fixed size datapoint with the subtype \a subType and the value
+    \a value.
+
+    The range for the value is from \c 0 to \c 255.
+*/
 QKnx1Byte::QKnx1Byte(int subType, quint8 value)
     : QKnxFixedSizeDatapointType(MainType, subType, TypeSize)
 {
@@ -62,11 +76,17 @@ QKnx1Byte::QKnx1Byte(int subType, quint8 value)
     setValue(value);
 }
 
+/*!
+    Returns the value stored in the datapoint type.
+*/
 quint8 QKnx1Byte::value() const
 {
     return byte(0);
 }
 
+/*!
+    Sets the value of the datapoint type to \a value.
+*/
 bool QKnx1Byte::setValue(quint8 value)
 {
     return setByte(0, value);
