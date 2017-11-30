@@ -58,7 +58,7 @@ struct ConstExpr
 
 int main(int /*argc*/, char** /*argv*/)
 {
-#ifdef Q_QDOC
+#ifndef Q_QDOC
     auto port = ConstExpr::DefaultPort;
     Q_UNUSED(port)
     auto address = ConstExpr::MulticastAddress;
