@@ -52,8 +52,23 @@
     \example tunnelclient
     \title Tunnel Client Example
     \ingroup qtknx-examples
-    \brief A client that creates a tunnel connection with a KNX netIP server.
+    \brief A client that creates a tunnel connection to a KNX/netIP server.
 
-    \e {Tunnel Client} shows how to discover a server and construct a client.
+    \e {Tunnel Client} shows how to create a tunnel connection to a KNX/netIP
+    server.
 
+    In the main function, we create a tunnel connection:
+
+    \quotefromfile tunnelclient/main.cpp
+    \skipto int main(
+    \printuntil {
+    \dots
+    \skipto QKnxNetIpTunnelConnection tunnel
+    \printuntil ;
+
+    Then, we connect to the server using the server address and port number:
+
+    \dots
+    \skipto tunnel.connectToHost(
+    \printuntil ;
 */

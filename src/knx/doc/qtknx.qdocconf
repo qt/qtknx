@@ -40,5 +40,9 @@ Cpp.ignoretokens += Q_KNX_EXPORT
 
 depends += qtcore qtdoc qtnetwork qmake
 
+#add generic thumbnail images for example documentation that does not have an image.
+manifestmeta.thumbnail.names                += "QtKnx/Discoverer*" \
+                                               "QtKnx/Tunnel Client*"
+
 navigation.landingpage = "Qt KNX"
 navigation.cppclassespage = "Qt KNX C++ Classes"

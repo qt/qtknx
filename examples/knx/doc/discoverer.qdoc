@@ -52,7 +52,30 @@
     \example discoverer
     \title Discoverer Example
     \ingroup qtknx-examples
-    \brief Discovering KNX netIP servers on the network.
+    \brief Discovering KNX/netIP servers on the network.
 
-    \e {Discoverer} shows how to implement and start a discovery agent.
+    \e {Discoverer} shows how to implement and start a discovery agent that
+    discovers KNX/netIP servers on the network.
+
+    In the main function, we create the discovery agent:
+
+    \quotefromfile discoverer/main.cpp
+    \skipto int main(
+    \printuntil {
+    \dots
+    \skipto QKnxNetIpServerDiscoveryAgent agent;
+    \printuntil ;
+
+
+    Then, we start the discovery agent:
+
+    \dots
+    \skipto agent.start
+    \printuntil ;
+
+    Finally, we recover a list of servers:
+
+    \dots
+    \skipto agent.discoveredServers
+    \printuntil /^\}
 */
