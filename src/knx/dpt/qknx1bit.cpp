@@ -43,6 +43,45 @@ QT_BEGIN_NAMESPACE
     This is a fixed size datapoint type with the length of 1 byte, though only
     one bit is used by the actual implementation.
 
+    It is a base class for the following datapoint types:
+
+    \list
+        \li \c QKnxAck - Acknowledge command (trigger) for alarms, for example.
+            Possible values are \c Acknowledge and \c {No action (dummy)}.
+        \li \c QKnxAlarm - Possible values are \c Alarm and \c NoAlarm.
+        \li \c QKnxBinaryValue - Possible values are \c Low and \c High.
+        \li \c QKnxBool - Possible values are \c False and \c True.
+        \li \c QKnxDimSendStyle - Dim send style. Possible values are
+            \c Start/Stop or \c Cyclically.
+        \li \c QKnxEnable - Possible values are  \c Disable and \c Enable.
+        \li \c QKnxHeatCool - Possible values are \c Cooling and \c Heating.
+        \li \c QKnxInputSource - Possible values are \c Fixed and \c Calculated.
+        \li \c QKnxInvert - Possible values are \c Not inverted and \c Inverted.
+        \li \c QKnxLogicalFunction - Possible values are
+            \c {logical function OR} and \c {logical function AND}.
+        \li \c QKnxOccupancy - Possible values are \c {Not occupied} and
+            \c Occupied.
+        \li \c QKnxOpenClose - Possible values are \c Open and \c Close.
+        \li \c QKnxRamp - Possible values are \c NoRamp and \c Ramp.
+        \li \c QKnxReset - Possible values are \c {No action (dummy)} and
+            \c {Reset command (trigger)}.
+        \li \c QKnxSceneAB - Possible values are \c {Scene A} and \c {Scene B}.
+        \li \c QKnxShutterBlindsMode - Shutter or blinds mode. Possible values
+            are \c {Only move Up/Down mode (shutter)} and
+            \c {Move up down + StepStop mode (blind)}.
+        \li \c QKnxStart - Possible values are \c Stop and \c Start.
+        \li \c QKnxState - Possible values are \c Inactive and \c Active.
+        \li \c QKnxStep - Possible values are \c Decrease and \c Increase.
+        \li \c QKnxSwitch - Possible values are \c Off and \c On.
+        \li \c QKnxTrigger - Possible values are \c Trigger and
+            \c {Trigger (also)}.
+        \li \c QKnxUpDown - Possible values are \c Up and \c Down.
+        \li \c QKnxWindowDoor - Window or door. Possible values are \c Closed
+            and \c Open.
+    \endlist
+
+    The possible values for this datapoint type are \c true and \c false.
+
     \sa QKnxDatapointType
 */
 
@@ -77,7 +116,7 @@ QKnx1Bit::QKnx1Bit(int subType, bool bit)
 }
 
 /*!
-    Returns the value stored in the data point type.
+    Returns the value stored in the datapoint type.
 */
 bool QKnx1Bit::bit() const
 {
@@ -85,7 +124,7 @@ bool QKnx1Bit::bit() const
 }
 
 /*!
-    Sets the value of the data point type to \a value.
+    Sets the value of the datapoint type to \a value.
 */
 bool QKnx1Bit::setBit(bool value)
 {
