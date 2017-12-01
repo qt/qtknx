@@ -45,18 +45,43 @@ QT_BEGIN_NAMESPACE
     two bits are used by the actual implementation.
 
     The right side bit corresponds to the datapoint type value, whereas the
-    left side bit represents the control part. For example, switch on or off
-    with priority control.
+    left side bit represents the control part. For example, switch with priority
+    control.
+
+    It is a base class for the following datapoint types:
+
+    \list
+        \li \c QKnxAlarmControl
+        \li \c QKnxBinaryValueControl
+        \li \c QKnxBoolControl
+        \li \c QKnxEnableControl
+        \li \c QKnxInvertControl
+        \li \c QKnxOpenCloseControl
+        \li \c QKnxRampControl
+        \li \c QKnxStartControl
+        \li \c QKnxStateControl
+        \li \c QKnxStepControl
+        \li \c QKnxSwitchControl
+        \li \c QKnxUpDownControl
+    \endlist
 
     \sa QKnxDatapointType, QKnx1Bit
 */
 
 // -- QKnx1BitControlled
 
+/*!
+    Creates a fixed size datapoint type with the value and control part set to
+    \c false.
+*/
 QKnx1BitControlled::QKnx1BitControlled()
     : QKnx1BitControlled(SubType, false, false)
 {}
 
+/*!
+    Creates a fixed size datapoint type with the subtype \a subType, value
+    \a state, and control \a control.
+*/
 QKnx1BitControlled::QKnx1BitControlled(int subType, bool state, bool control)
     : QKnxFixedSizeDatapointType(MainType, subType, TypeSize)
 {
@@ -68,6 +93,11 @@ QKnx1BitControlled::QKnx1BitControlled(int subType, bool state, bool control)
     setControlBit(control);
 }
 
+/*!
+    Creates a fixed size datapoint type with the subtype \a subType, datapoint
+    type \a dpt, value \a state, and control \a control.
+*/
+
 QKnx1BitControlled::QKnx1BitControlled(int subType, const QKnxDatapointType &dpt, bool state,
         bool control)
     : QKnx1BitControlled(subType, state, control)
@@ -76,21 +106,33 @@ QKnx1BitControlled::QKnx1BitControlled(int subType, const QKnxDatapointType &dpt
     setMaximumText(tr("Controlled, %1").arg(dpt.maximumText()));
 }
 
+/*!
+    Returns the value stored in the datapoint type.
+*/
 bool QKnx1BitControlled::valueBit() const
 {
     return QKnxDatapointType::testBit(byte(0), 0);
 }
 
+/*!
+    Sets the value of the datapoint type to \a value.
+*/
 void QKnx1BitControlled::setValueBit(bool value)
 {
     setByte(0, QKnxDatapointType::setBit(byte(0), value, 0));
 }
 
+/*!
+    Returns the control stored in the datapoint type.
+*/
 bool QKnx1BitControlled::controlBit() const
 {
     return QKnxDatapointType::testBit(byte(0), 1);
 }
 
+/*!
+    Sets the control part of the datapoint type to \a control.
+*/
 void QKnx1BitControlled::setControlBit(bool control)
 {
     setByte(0, QKnxDatapointType::setBit(byte(0), control, 1));
