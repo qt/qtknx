@@ -40,19 +40,31 @@ QT_BEGIN_NAMESPACE
     \brief The QKnx2BitSet class is a fixed size datapoint type with the length
     of 2 bits.
 
+    The range for the value is from \c 0x00 to \c 0x03.
+
     \sa QKnxDatapointType
 */
 
 // -- QKnx2BitSet
 
+/*!
+    Creates a fixed size datapoint type with the 2-bit set to \c 0.
+*/
 QKnx2BitSet::QKnx2BitSet()
     : QKnx2BitSet(0)
 {}
 
+/*!
+    Creates a fixed size datapoint type with the value \a value.
+*/
 QKnx2BitSet::QKnx2BitSet(quint8 value)
     : QKnx2BitSet(SubType, value)
 {}
 
+/*!
+    Creates a fixed size datapoint with the subtype \a subType and the value
+    \a value.
+*/
 QKnx2BitSet::QKnx2BitSet(int subType, quint8 value)
     : QKnxFixedSizeDatapointType(MainType, subType, TypeSize)
 {
@@ -61,11 +73,20 @@ QKnx2BitSet::QKnx2BitSet(int subType, quint8 value)
     setValue(value);
 }
 
+/*!
+    Returns the value stored in the datapoint type.
+*/
 quint8 QKnx2BitSet::value() const
 {
     return byte(0) & 0x03;
 }
 
+/*!
+    Sets the value of the datapoint type to \a value.
+
+    If the value is outside the allowed range, returns \c false and does not set
+    the value.
+*/
 bool QKnx2BitSet::setValue(quint8 value)
 {
     if (value <= maximum().toUInt())
