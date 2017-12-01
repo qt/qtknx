@@ -43,6 +43,23 @@ QT_BEGIN_NAMESPACE
 
     This is a fixed size datapoint type with the length of 2 bytes.
 
+    It is a base class for the following datapoint types:
+
+    \list
+        \li \c QKnxBrightness - Brightness in LUX
+        \li \c QKnxLengthMilliMeter - Length in millimeters
+        \li \c QKnxPropDataType - Property data type
+        \li \c QKnxTimePeriod10Msec - Time in 10 milliseconds
+        \li \c QKnxTimePeriod100Msec - Time in 100 milliseconds
+        \li \c QKnxTimePeriodHrs - Time in hours
+        \li \c QKnxTimePeriodMin - Time in minutes
+        \li \c QKnxTimePeriodMsec - Time in milliseconds
+        \li \c QKnxTimePeriodSec - Time in seconds
+        \li \c QKnxUEICurrentMilliA - Current in milliampers (no bus poser
+            supply functionality available)
+        \li \c QKnxValue2Ucount - Pulses
+    \endlist
+
     Integer values from 0 to 65 535 can be encoded in this datapoint type.
 
     \sa QKnxDatapointType
@@ -51,14 +68,24 @@ QT_BEGIN_NAMESPACE
 
 // -- QKnx2ByteUnsignedValue
 
+/*!
+    Creates a fixed size datapoint type with the value \c 0.
+*/
 QKnx2ByteUnsignedValue::QKnx2ByteUnsignedValue()
     : QKnx2ByteUnsignedValue(0)
 {}
 
+/*!
+    Creates a fixed size datapoint type with the value \a value.
+*/
 QKnx2ByteUnsignedValue::QKnx2ByteUnsignedValue(quint32 value)
     : QKnx2ByteUnsignedValue(SubType, value)
 {}
 
+/*!
+    Creates a fixed size datapoint type with the subtype \a subType and value
+    \a value.
+*/
 QKnx2ByteUnsignedValue::QKnx2ByteUnsignedValue(int subType, quint32 value)
     : QKnxFixedSizeDatapointType(MainType, subType, TypeSize)
 {
@@ -68,11 +95,17 @@ QKnx2ByteUnsignedValue::QKnx2ByteUnsignedValue(int subType, quint32 value)
     setValue(value);
 }
 
+/*!
+    Returns the value stored in the datapoint type.
+*/
 quint32 QKnx2ByteUnsignedValue::value() const
 {
     return quint32(QKnxUtils::QUint16::fromBytes(bytes()) * coefficient());
 }
 
+/*!
+    Sets the value of the datapoint type to \a value.
+*/
 bool QKnx2ByteUnsignedValue::setValue(quint32 value)
 {
     if (value <= maximum().toUInt() && value >= minimum().toUInt())
