@@ -43,6 +43,14 @@ QT_BEGIN_NAMESPACE
     \brief The QKnx2ByteFloat class is a datapoint type for a 2-byte float
     value.
 
+    This is a fixed size datapoint type with the length of 2 bytes.
+    It is a base class for datapoint types for temperature, brightness in LUX,
+    and wind speed, as well as air pressure, humidity, quality, and flow, for
+    example.
+
+    The range for the value of this datapoint type is from \c {-671 088.64}
+    to \c {670 760.96}.
+
     The float is encoded as \c (0.01*M)*2^E where \c E and \c M are
     encoded as follows in the 2 bytes:
 
@@ -50,18 +58,116 @@ QT_BEGIN_NAMESPACE
     MEEEEMMM  MMMMMMMM
     \endcode
 
-    This is fixed size datapoint type with the length of 2 bytes.
+    This class is a base class for the following datapoint types:
+
+    \table
+    \header
+        \li Class
+        \li Description
+        \li Range
+    \row
+        \li \c QKnxAirFlow
+        \li Air flow in m3/h.
+        \li -670760 - 670760
+    \row
+        \li \c QKnxAirQuality
+        \li Air quality in ppm.
+        \li 0 - 670760
+    \row
+        \li \c QKnxAmountRain
+        \li Amount of Rain in liters per square meter (l/m2).
+        \li -671088.64 - 670760.96
+    \row
+        \li \c QKnxCurrent
+        \li Current in milli-ampers (mA).
+        \li -670760 - 670760
+    \row
+        \li \c QKnxHumidity
+        \li Humidity as a percentage.
+        \li 0 - 670760
+    \row
+        \li \c QKnxKelvinPerPercent
+        \li Kelvin per percent (K/Percent).
+        \li -670760 - 670760
+    \row
+        \li \c QKnxPower
+        \li Power in kilowatts (kW).
+        \li -670760 - 670760
+    \row
+        \li \c QKnxPowerDensity
+        \li Power Density in watts per square meter (W/m2).
+        \li -670760 - 670760
+    \row
+        \li \c QKnxPressure
+        \li Pressure in Pascal (Pa).
+        \li 0 - 670760
+    \row
+        \li \c QKnxTemperatureCelcius
+        \li Temperature in degrees Celcius.
+        \li -273 - 670760
+    \row
+        \li \c QKnxTemperatureChange
+        \li Change in temperature (K) per hour.
+        \li -670760 - 670760
+    \row
+        \li \c QKnxTemperatureFahrenheit
+        \li Temperature in degrees Fahrenheit.
+        \li -459.6 - 670760.96
+    \row
+        \li \c QKnxTemperatureKelvin
+        \li Temperature in degrees Kelvin.
+        \li -670760 - 670760
+    \row
+        \li \c QKnxTimeMilliSecond
+        \li Time in milli-seconds (ms).
+        \li -670760 - 670760
+    \row
+        \li \c QKnxTimeSecond
+        \li Time in seconds.
+        \li -670760 - 670760
+    \row
+        \li \c QKnxValueLux
+        \li Brightness in LUX.
+        \li 0 - 670760
+    \row
+        \li \c QKnxVoltage
+        \li Voltage in milli-volts (mV).
+        \li -670760 - 670760
+    \row
+        \li \c QKnxVolumeFlow
+        \li Volume flow in liters per hour (l/h).
+        \li -670760 - 670760
+    \row
+        \li \c QKnxWindSpeed
+        \li Wind speed in meters per second (m/s).
+        \li 0 - 670760
+    \row
+        \li \c QKnxWindSpeedKmPerHour
+        \li Wind speed in kilometers per hour (km/h).
+        \li 0 - 670760.96
+    \endtable
+
     \sa QKnxDatapointType
 */
 
+/*!
+    Creates a fixed size datapoint type.
+*/
 QKnx2ByteFloat::QKnx2ByteFloat()
     : QKnx2ByteFloat(0.0)
 {}
 
+/*!
+    Creates a fixed size datapoint type with the float \a value.
+*/
 QKnx2ByteFloat::QKnx2ByteFloat(float value)
     : QKnx2ByteFloat(SubType, value)
 {}
 
+/*!
+    Creates a fixed size datapoint type with the subtype \a subType and float
+    \a value.
+*/
 QKnx2ByteFloat::QKnx2ByteFloat(int subType, float value)
     : QKnxFixedSizeDatapointType(MainType, subType, TypeSize)
 {
@@ -72,6 +178,9 @@ QKnx2ByteFloat::QKnx2ByteFloat(int subType, float value)
     setValue(value);
 }
 
+/*!
+    Returns the float stored in the datapoint type.
+*/
 float QKnx2ByteFloat::value() const
 {
     quint16 temp = QKnxUtils::QUint16::fromBytes(bytes());
@@ -86,6 +195,12 @@ float QKnx2ByteFloat::value() const
     return float(0.01 * (M) * qPow(2, qreal(E)));
 }
 
+/*!
+    Sets the float of the datapoint type to \a value.
+
+    If the value is outside the allowed range, returns \c false and does not set
+    the value.
+*/
 bool QKnx2ByteFloat::setValue(float value)
 {
     if (value < minimum().toFloat() || value > maximum().toFloat())
