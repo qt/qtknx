@@ -222,7 +222,7 @@ QDebug operator<<(QDebug debug, const QKnxAdditionalInfo &info)
     QDebugStateSaver _(debug);
     if (info.isValid()) {
         QDebug &dbg = debug.nospace().noquote() << "0x" << hex << qSetFieldWidth(2)
-            << qSetPadChar('0');
+            << qSetPadChar(QLatin1Char('0'));
         const auto rawData = info.bytes();
         for (quint8 byte : qAsConst(rawData))
             dbg << byte;

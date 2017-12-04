@@ -562,7 +562,7 @@ int QKnxNetIpEndpointConnection::sequenceCount(SequenceType type) const
 quint8 QKnxNetIpEndpointConnection::netIpHeaderVersion(EndpointType endpoint) const
 {
     Q_D(const QKnxNetIpEndpointConnection);
-    return (endpoint ==  EndpointType::Data ? d->m_dataEndpointVersion : d->m_controlEndpointVersion);
+    return (endpoint == EndpointType::Data ? d->m_dataEndpointVersion : d->m_controlEndpointVersion);
 }
 
 quint16 QKnxNetIpEndpointConnection::localPort() const

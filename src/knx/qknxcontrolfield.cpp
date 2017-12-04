@@ -137,7 +137,7 @@ QString QKnxControlField::toString() const
 QDebug operator<<(QDebug debug, const QKnxControlField &field)
 {
     QDebugStateSaver _(debug);
-    debug.nospace().noquote() << "0x" << hex << qSetFieldWidth(2) << qSetPadChar('0')
+    debug.nospace().noquote() << "0x" << hex << qSetFieldWidth(2) << qSetPadChar(QLatin1Char('0'))
         << field.bytes();
     return debug;
 }

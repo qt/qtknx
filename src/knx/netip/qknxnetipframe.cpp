@@ -73,7 +73,7 @@ QDebug operator<<(QDebug debug, const QKnxNetIpFrame &package)
     QDebugStateSaver _(debug);
     if (package.isValid()) {
         QDebug &dbg = debug.nospace().noquote() << "0x" << hex << qSetFieldWidth(2)
-                                                << qSetPadChar('0');
+                                                << qSetPadChar(QLatin1Char('0'));
         const auto bytes = package.bytes();
         for (quint8 byte : qAsConst(bytes))
             dbg << byte;

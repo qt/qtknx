@@ -185,15 +185,15 @@ void LocalDeviceManagement::on_mc_currentIndexChanged(int index)
     case QKnxCemiFrame::MessageCode::FunctionPropertyCommandRequest:
     case QKnxCemiFrame::MessageCode::FunctionPropertyStateReadRequest:
         if (cemiFrame.size() < maxLength) {
-            cemiFrame.append(QStringLiteral("%1").arg(ui->noe->value(), 1, 16, QChar('0')));
-            cemiFrame.append(QStringLiteral("%1").arg(ui->startIndex->value(), 3, 16, QChar('0')));
+            cemiFrame.append(QStringLiteral("%1").arg(ui->noe->value(), 1, 16, QLatin1Char('0')));
+            cemiFrame.append(QStringLiteral("%1").arg(ui->startIndex->value(), 3, 16, QLatin1Char('0')));
         }
-        cemiFrame = QStringLiteral("%1").arg(data, 2, 16, QChar('0')) + cemiFrame.mid(2);
+        cemiFrame = QStringLiteral("%1").arg(data, 2, 16, QLatin1Char('0')) + cemiFrame.mid(2);
         break;
     case QKnxCemiFrame::MessageCode::ResetRequest:
         maxLength = 2;
         dataEnabled = false;
-        cemiFrame = QStringLiteral("%1").arg(data, 2, 16, QChar('0'));
+        cemiFrame = QStringLiteral("%1").arg(data, 2, 16, QLatin1Char('0'));
         break;
     default:
         break;
@@ -209,7 +209,7 @@ void LocalDeviceManagement::on_objectType_currentTextChanged(const QString &type
     quint16 value = keyToValue(QKnxInterfaceObjectType::staticMetaObject, type, &keyExists);
     if (keyExists) {
         auto text = ui->m_cemiFrame->text();
-        ui->m_cemiFrame->setText(text.left(2) + QString("%1").arg(value, 4, 16, QChar('0'))
+        ui->m_cemiFrame->setText(text.left(2) + QString("%1").arg(value, 4, 16, QLatin1Char('0'))
             + text.mid(6));
         updatePropertyTypeCombobox(type);
     }
@@ -221,7 +221,7 @@ void LocalDeviceManagement::on_property_currentTextChanged(const QString &proper
     quint8 value = keyToValue(QKnxInterfaceObjectProperty::staticMetaObject, property, &keyExists);
     if (keyExists) {
         auto text = ui->m_cemiFrame->text();
-        ui->m_cemiFrame->setText(text.left(8) + QString("%1").arg(value, 2, 16, QChar('0'))
+        ui->m_cemiFrame->setText(text.left(8) + QString("%1").arg(value, 2, 16, QLatin1Char('0'))
             + text.mid(10));
     }
 }
@@ -229,20 +229,20 @@ void LocalDeviceManagement::on_property_currentTextChanged(const QString &proper
 void LocalDeviceManagement::on_noe_valueChanged(int value)
 {
     auto text = ui->m_cemiFrame->text();
-    ui->m_cemiFrame->setText(text.left(10) + QString("%1").arg(value, 1, 16, QChar('0'))
+    ui->m_cemiFrame->setText(text.left(10) + QString("%1").arg(value, 1, 16, QLatin1Char('0'))
         + text.mid(11));
 }
 
 void LocalDeviceManagement::on_startIndex_valueChanged(int value)
 {
     auto text = ui->m_cemiFrame->text();
-    ui->m_cemiFrame->setText(text.left(11) + QString("%1").arg(value, 3, 16, QChar('0')));
+    ui->m_cemiFrame->setText(text.left(11) + QString("%1").arg(value, 3, 16, QLatin1Char('0')));
 }
 
 void LocalDeviceManagement::on_objectInstance_valueChanged(int value)
 {
     auto text = ui->m_cemiFrame->text();
-    ui->m_cemiFrame->setText(text.left(6) + QString("%1").arg(value, 2, 16, QChar('0'))
+    ui->m_cemiFrame->setText(text.left(6) + QString("%1").arg(value, 2, 16, QLatin1Char('0'))
         + text.mid(8));
 }
 
