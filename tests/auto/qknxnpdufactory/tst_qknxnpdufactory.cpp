@@ -26,7 +26,9 @@
 **
 ******************************************************************************/
 
+#include <QtKnx/qknxcharstring.h>
 #include <QtKnx/qknxnpdufactory.h>
+#include <QtKnx/qknxtunnelframe.h>
 #include <QtTest/qtest.h>
 
 class tst_QKnxNpduFactory : public QObject
@@ -38,10 +40,12 @@ private Q_SLOTS:
     void testGroupValueRead();
     void testGroupValueWrite();
     // TODO: GroupValueResponse
+
     void testGroupPropValueRead();
     void testGroupPropValueWrite();
     // TODO: GroupPropValueResponse
     // TODO: GroupPropValueInfoReport
+
     void testIndividualAddressRead();
     void testIndividualAddressWrite();
     // TODO: IndividualAddressResponse
@@ -51,17 +55,18 @@ private Q_SLOTS:
     void testDomainAddressRead();
     void testDomainAddressWrite();
     // TODO: DomainAddressResponse
-    // TO FINISH : DomainAddressSelectiveRead
+    // TODO: DomainAddressSelectiveRead
     void testDomainAddressSerialNumberRead();
     void testDomainAddressSerialNumberWrite();
     // TODO: DomainAddressSerialNumberResponse
-    // TODO: add DeviceDescriptorInfoReport
+    // TODO: DeviceDescriptorInfoReport
+
     void testSystemNetworkParameterRead();
     void testSystemNetworkParameterWrite();
     // TODO: SystemNetworkParameterResponse
     void testNetworkParameterRead();
     void testNetworkParameterWrite();
-    // TODO: NetworkParameterResponse
+    void testNetworkParameterResponse();
     void testPropertyValueRead();
     void testPropertyValueWrite();
     // TODO: PropertyValueResponse
@@ -74,7 +79,7 @@ private Q_SLOTS:
     void testLinkWrite();
     // TODO: LinkResponse
     void testDeviceDescriptorRead();
-    // TODO: DeviceDescriptorResponse
+    void testDeviceDescriptorResponse();
     // TODO Restart
     void testAdcRead();
     // TODO: AdcResponse
@@ -96,23 +101,33 @@ private Q_SLOTS:
 
 void tst_QKnxNpduFactory::testNpdu()
 {
+    QKnxNpdu npdu1;
+    npdu1.setTransportControlField(QKnxNpdu::TransportControlField::DataGroup);
+    npdu1.setApplicationControlField(QKnxNpdu::ApplicationControlField::GroupValueWrite);
+    npdu1.setData(QByteArray::fromHex("01"));
+
+    QKnxTunnelFrame frame;
+    frame.setNpdu(npdu1);
+    QCOMPARE(npdu1.applicationControlField(), QKnxNpdu::ApplicationControlField::GroupValueWrite);
+    QCOMPARE(frame.npdu().data(), QByteArray::fromHex("01"));
+
     QKnxNpdu npdu;
     QCOMPARE(npdu.isValid(), false);
 
-    npdu.setTransportLayerControlField(QKnxNpdu::TransportLayerControlField::DataGroup);
-    QCOMPARE(npdu.transportLayerControlField(), QKnxNpdu::TransportLayerControlField::DataGroup);
+    npdu.setTransportControlField(QKnxNpdu::TransportControlField::DataGroup);
+    QCOMPARE(npdu.transportControlField(), QKnxNpdu::TransportControlField::DataGroup);
 
-    npdu.setApplicationLayerControlField(QKnxNpdu::ApplicationLayerControlField::GroupValueRead);
-    QCOMPARE(npdu.transportLayerControlField(), QKnxNpdu::TransportLayerControlField::DataGroup);
-    QCOMPARE(npdu.applicationLayerControlField(), QKnxNpdu::ApplicationLayerControlField::GroupValueRead);
+    npdu.setApplicationControlField(QKnxNpdu::ApplicationControlField::GroupValueRead);
+    QCOMPARE(npdu.transportControlField(), QKnxNpdu::TransportControlField::DataGroup);
+    QCOMPARE(npdu.applicationControlField(), QKnxNpdu::ApplicationControlField::GroupValueRead);
 
-    npdu.setTransportLayerControlField(QKnxNpdu::TransportLayerControlField::DataBroadcast);
-    QCOMPARE(npdu.transportLayerControlField(), QKnxNpdu::TransportLayerControlField::DataBroadcast);
-    QCOMPARE(npdu.applicationLayerControlField(), QKnxNpdu::ApplicationLayerControlField::GroupValueRead);
+    npdu.setTransportControlField(QKnxNpdu::TransportControlField::DataBroadcast);
+    QCOMPARE(npdu.transportControlField(), QKnxNpdu::TransportControlField::DataBroadcast);
+    QCOMPARE(npdu.applicationControlField(), QKnxNpdu::ApplicationControlField::GroupValueRead);
 
-    npdu.setApplicationLayerControlField(QKnxNpdu::ApplicationLayerControlField::GroupValueWrite);
-    QCOMPARE(npdu.transportLayerControlField(), QKnxNpdu::TransportLayerControlField::DataBroadcast);
-    QCOMPARE(npdu.applicationLayerControlField(), QKnxNpdu::ApplicationLayerControlField::GroupValueWrite);
+    npdu.setApplicationControlField(QKnxNpdu::ApplicationControlField::GroupValueWrite);
+    QCOMPARE(npdu.transportControlField(), QKnxNpdu::TransportControlField::DataBroadcast);
+    QCOMPARE(npdu.applicationControlField(), QKnxNpdu::ApplicationControlField::GroupValueWrite);
 
     QCOMPARE(npdu.isValid(), true);
     npdu.setData(QByteArray::fromHex("3f"));
@@ -121,24 +136,24 @@ void tst_QKnxNpduFactory::testNpdu()
     npdu.setData(QByteArray::fromHex("43"));
     QCOMPARE(npdu.data(), QByteArray::fromHex("43"));
 
-    npdu = { QKnxNpdu::TransportLayerControlField::DataGroup,
-        QKnxNpdu::ApplicationLayerControlField::GroupValueRead };
-    QCOMPARE(npdu.transportLayerControlField(), QKnxNpdu::TransportLayerControlField::DataGroup);
-    QCOMPARE(npdu.applicationLayerControlField(), QKnxNpdu::ApplicationLayerControlField::GroupValueRead);
+    npdu = { QKnxNpdu::TransportControlField::DataGroup,
+        QKnxNpdu::ApplicationControlField::GroupValueRead };
+    QCOMPARE(npdu.transportControlField(), QKnxNpdu::TransportControlField::DataGroup);
+    QCOMPARE(npdu.applicationControlField(), QKnxNpdu::ApplicationControlField::GroupValueRead);
 
-    npdu = { QKnxNpdu::TransportLayerControlField::DataGroup,
-        QKnxNpdu::ApplicationLayerControlField::GroupValueResponse };
-    QCOMPARE(npdu.transportLayerControlField(), QKnxNpdu::TransportLayerControlField::DataGroup);
-    QCOMPARE(npdu.applicationLayerControlField(), QKnxNpdu::ApplicationLayerControlField::GroupValueResponse);
+    npdu = { QKnxNpdu::TransportControlField::DataGroup,
+        QKnxNpdu::ApplicationControlField::GroupValueResponse };
+    QCOMPARE(npdu.transportControlField(), QKnxNpdu::TransportControlField::DataGroup);
+    QCOMPARE(npdu.applicationControlField(), QKnxNpdu::ApplicationControlField::GroupValueResponse);
 
     npdu.setData(QByteArray::fromHex("3f"));
     QCOMPARE(npdu.data(), QByteArray::fromHex("3f"));
     QCOMPARE(npdu.bytes(), QByteArray::fromHex("01007f"));
 
-    npdu.setTransportLayerControlField(QKnxNpdu::TransportLayerControlField::DataBroadcast);
-    npdu.setApplicationLayerControlField(QKnxNpdu::ApplicationLayerControlField::GroupValueWrite);
-    QCOMPARE(npdu.transportLayerControlField(), QKnxNpdu::TransportLayerControlField::DataBroadcast);
-    QCOMPARE(npdu.applicationLayerControlField(), QKnxNpdu::ApplicationLayerControlField::GroupValueWrite);
+    npdu.setTransportControlField(QKnxNpdu::TransportControlField::DataBroadcast);
+    npdu.setApplicationControlField(QKnxNpdu::ApplicationControlField::GroupValueWrite);
+    QCOMPARE(npdu.transportControlField(), QKnxNpdu::TransportControlField::DataBroadcast);
+    QCOMPARE(npdu.applicationControlField(), QKnxNpdu::ApplicationControlField::GroupValueWrite);
     QCOMPARE(npdu.data(), QByteArray::fromHex("3f"));
     QCOMPARE(npdu.bytes(), QByteArray::fromHex("0100bf"));
 
@@ -146,18 +161,25 @@ void tst_QKnxNpduFactory::testNpdu()
     QCOMPARE(npdu.data(), QByteArray::fromHex("43"));
     QCOMPARE(npdu.bytes(), QByteArray::fromHex("02008043"));
 
-    npdu = { QKnxNpdu::TransportLayerControlField::DataGroup,
-        QKnxNpdu::ApplicationLayerControlField::GroupValueRead };
-    QCOMPARE(npdu.transportLayerControlField(), QKnxNpdu::TransportLayerControlField::DataGroup);
-    QCOMPARE(npdu.applicationLayerControlField(), QKnxNpdu::ApplicationLayerControlField::GroupValueRead);
-    QCOMPARE(npdu.setData(QByteArray::fromHex("3f3f")), false);
-    QCOMPARE(npdu.data(), QByteArray::fromHex("00"));
+    npdu = { QKnxNpdu::TransportControlField::DataGroup,
+        QKnxNpdu::ApplicationControlField::GroupValueRead };
+    QCOMPARE(npdu.transportControlField(), QKnxNpdu::TransportControlField::DataGroup);
+    QCOMPARE(npdu.applicationControlField(), QKnxNpdu::ApplicationControlField::GroupValueRead);
 
-    npdu.setApplicationLayerControlField(QKnxNpdu::ApplicationLayerControlField::GroupValueWrite);
-    QCOMPARE(npdu.setData(QByteArray::fromHex("3f3f")), true);
-    npdu.setTransportLayerControlField(QKnxNpdu::TransportLayerControlField::DataBroadcast);
-    QCOMPARE(npdu.transportLayerControlField(), QKnxNpdu::TransportLayerControlField::DataBroadcast);
-    QCOMPARE(npdu.applicationLayerControlField(), QKnxNpdu::ApplicationLayerControlField::GroupValueWrite);
+    npdu.setData(QByteArray::fromHex("3f3f"));
+    QCOMPARE(npdu.data(), QByteArray::fromHex("3f3f"));
+    QCOMPARE(npdu.isValid(), false);
+
+    npdu.setData({});
+    QCOMPARE(npdu.isValid(), true);
+    QCOMPARE(npdu.data(), QByteArray{});
+
+    npdu.setApplicationControlField(QKnxNpdu::ApplicationControlField::GroupValueWrite);
+    npdu.setData(QByteArray::fromHex("3f3f"));
+    QCOMPARE(npdu.isValid(), true);
+    npdu.setTransportControlField(QKnxNpdu::TransportControlField::DataBroadcast);
+    QCOMPARE(npdu.transportControlField(), QKnxNpdu::TransportControlField::DataBroadcast);
+    QCOMPARE(npdu.applicationControlField(), QKnxNpdu::ApplicationControlField::GroupValueWrite);
     QCOMPARE(npdu.data(), QByteArray::fromHex("3f3f"));
 
     npdu.setData(QByteArray::fromHex("3f"));
@@ -167,108 +189,128 @@ void tst_QKnxNpduFactory::testNpdu()
     npdu.setData(QByteArray::fromHex("00"));
     QCOMPARE(npdu.data(), QByteArray::fromHex("0"));
     QCOMPARE(npdu.bytes(), QByteArray::fromHex("010080"));
+
+    auto tmpNpdu = QKnxNpdu::fromBytes(npdu.bytes(), 0, quint8(npdu.size()));
+    QCOMPARE(tmpNpdu.bytes(), npdu.bytes());
 }
 
 void tst_QKnxNpduFactory::testGroupValueRead()
 {
-    // Built it
-    QKnxNpdu npdu = QKnxNpduFactory::createGroupValueReadNpdu();
-    // print it
+    auto npdu = QKnxNpduFactory::Multicast::createGroupValueReadNpdu();
 
-    // check the number of bytes
     QCOMPARE(npdu.size(), quint16(3));
-    // check the TPCI
-    QCOMPARE(npdu.transportLayerControlField(),
-        QKnxNpdu::TransportLayerControlField::DataGroup);
-    // check the APCI
-    QCOMPARE(npdu.applicationLayerControlField(),
-        QKnxNpdu::ApplicationLayerControlField::GroupValueRead);
+    QCOMPARE(npdu.transportControlField(), QKnxNpdu::TransportControlField::DataGroup);
+    QCOMPARE(npdu.applicationControlField(), QKnxNpdu::ApplicationControlField::GroupValueRead);
 }
 
 void tst_QKnxNpduFactory::testGroupValueWrite()
 {
-    // Built it
-    QByteArray data = QByteArray::fromHex("01");
-    QKnxNpdu npdu = QKnxNpduFactory::createGroupValueWriteNpdu(data);
-    // print it
+    auto data = QByteArray::fromHex("01");
+    auto npdu = QKnxNpduFactory::Multicast::createGroupValueWriteNpdu(data);
 
-    // check the number of bytes
+    QCOMPARE(npdu.data(), data);
     QCOMPARE(npdu.size(), quint16(3));
-    // check the TPCI
-    QCOMPARE(npdu.transportLayerControlField(),
-        QKnxNpdu::TransportLayerControlField::DataGroup);
-    // check the APCI
-    QCOMPARE(npdu.applicationLayerControlField(),
-        QKnxNpdu::ApplicationLayerControlField::GroupValueWrite);
+    QCOMPARE(npdu.transportControlField(), QKnxNpdu::TransportControlField::DataGroup);
+    QCOMPARE(npdu.applicationControlField(), QKnxNpdu::ApplicationControlField::GroupValueWrite);
+
+    npdu.setData(QByteArray::fromHex("0101"));
+    QCOMPARE(npdu.size(), quint16(5));
+    QCOMPARE(npdu.data(), QByteArray::fromHex("0101"));
+
+    npdu.setData(QByteArray::fromHex("40"));
+    QCOMPARE(npdu.size(), quint16(4));
+    QCOMPARE(npdu.data(), QByteArray::fromHex("40"));
+
+    npdu.setData(QByteArray::fromHex("f0"));
+    QCOMPARE(npdu.size(), quint16(4));
+    QCOMPARE(npdu.data(), QByteArray::fromHex("f0"));
+
+    npdu.setData(QByteArray::fromHex("ff"));
+    QCOMPARE(npdu.size(), quint16(4));
+    QCOMPARE(npdu.data(), QByteArray::fromHex("ff"));
+
+    npdu.setData(QKnxCharString("The Qt Company").bytes());
+    QCOMPARE(npdu.isValid(), true);
+    QCOMPARE(npdu.size(), quint16(17));
+    QCOMPARE(npdu.dataSize(), quint8(15));
+
+    npdu = QKnxNpduFactory::Multicast::createGroupValueWriteNpdu(QKnxCharString("The Qt Company")
+        .bytes());
+    QCOMPARE(npdu.isValid(), true);
+    QCOMPARE(npdu.size(), quint16(17));
+    QCOMPARE(npdu.dataSize(), quint8(15));
 }
 
 void tst_QKnxNpduFactory::testGroupPropValueRead()
 {
-    QKnxNpdu npdu = QKnxNpduFactory::createGroupPropValueReadNpdu(QKnxInterfaceObjectType::System::Device,
-        5, QKnxInterfaceObjectProperty::General::ManufacturerData);
+    auto npdu = QKnxNpduFactory::Multicast::createGroupPropertyValueReadNpdu(QKnxInterfaceObjectType
+        ::System::Device, 5, QKnxInterfaceObjectProperty::General::ManufacturerData);
 
     QCOMPARE(npdu.size(), quint16(7));
-    QCOMPARE(npdu.transportLayerControlField(),
-        QKnxNpdu::TransportLayerControlField::DataTagGroup);
-    QCOMPARE(npdu.applicationLayerControlField(),
-        QKnxNpdu::ApplicationLayerControlField::GroupPropValueRead);
+    QCOMPARE(npdu.transportControlField(), QKnxNpdu::TransportControlField::DataTagGroup);
+    QCOMPARE(npdu.applicationControlField(), QKnxNpdu::ApplicationControlField::GroupPropValueRead);
 }
 
 void tst_QKnxNpduFactory::testGroupPropValueWrite()
 {
-    QByteArray data = QByteArray::fromHex("010203");
-    QKnxNpdu npdu = QKnxNpduFactory::createGroupPropValueWriteNpdu(QKnxInterfaceObjectType::System::Device,
-        5, QKnxInterfaceObjectProperty::General::ManufacturerData, data);
+    auto data = QByteArray::fromHex("010203");
+    auto npdu = QKnxNpduFactory::Multicast::createGroupPropertyValueWriteNpdu(QKnxInterfaceObjectType
+        ::System::Device, 5, QKnxInterfaceObjectProperty::General::ManufacturerData, data);
 
     QCOMPARE(npdu.size(), quint16(10));
-    QCOMPARE(npdu.transportLayerControlField(),
-        QKnxNpdu::TransportLayerControlField::DataTagGroup);
-    QCOMPARE(npdu.applicationLayerControlField(),
-        QKnxNpdu::ApplicationLayerControlField::GroupPropValueWrite);
+    QCOMPARE(npdu.data(), QByteArray::fromHex("00001305010203"));
+    QCOMPARE(npdu.transportControlField(), QKnxNpdu::TransportControlField::DataTagGroup);
+    QCOMPARE(npdu.applicationControlField(), QKnxNpdu::ApplicationControlField::GroupPropValueWrite);
+
+    npdu.setData(QByteArray(253, 1));
+    QCOMPARE(npdu.isValid(), true);
+    QCOMPARE(npdu.size(), quint16(256));
+    QCOMPARE(npdu.dataSize(), quint8(254));
+
+    npdu = QKnxNpduFactory::Multicast::createGroupPropertyValueWriteNpdu(QKnxInterfaceObjectType
+        ::System::Device, 5, QKnxInterfaceObjectProperty::General::ManufacturerData,
+        QByteArray(249, 1));
+    QCOMPARE(npdu.isValid(), true);
+    QCOMPARE(npdu.size(), quint16(256));
+    QCOMPARE(npdu.dataSize(), quint8(254));
 }
 
 void tst_QKnxNpduFactory::testIndividualAddressRead()
 {
-    QKnxNpdu npdu = QKnxNpduFactory::createIndividualAddressReadNpdu();
+    auto npdu = QKnxNpduFactory::Broadcast::createIndividualAddressReadNpdu();
 
     QCOMPARE(npdu.size(), quint16(3));
-    QCOMPARE(npdu.transportLayerControlField(),
-        QKnxNpdu::TransportLayerControlField::DataBroadcast);
-    QCOMPARE(npdu.applicationLayerControlField(),
-        QKnxNpdu::ApplicationLayerControlField::IndividualAddressRead);
+    QCOMPARE(npdu.transportControlField(), QKnxNpdu::TransportControlField::DataBroadcast);
+    QCOMPARE(npdu.applicationControlField(), QKnxNpdu::ApplicationControlField::IndividualAddressRead);
 }
 
 void tst_QKnxNpduFactory::testIndividualAddressWrite()
 {
     auto address = QKnxAddress::Group::Broadcast;
-    auto npdu = QKnxNpduFactory::createIndividualAddressWriteNpdu(address);
+    auto npdu = QKnxNpduFactory::Broadcast::createIndividualAddressWriteNpdu(address);
     QCOMPARE(npdu.size(), quint16(0));
 
     address = QKnxAddress::createIndividual(1, 1, 1);
-    npdu = QKnxNpduFactory::createIndividualAddressWriteNpdu(address);
+    npdu = QKnxNpduFactory::Broadcast::createIndividualAddressWriteNpdu(address);
 
     QCOMPARE(npdu.size(), quint16(5));
-    QCOMPARE(npdu.transportLayerControlField(),
-        QKnxNpdu::TransportLayerControlField::DataBroadcast);
-    QCOMPARE(npdu.applicationLayerControlField(),
-        QKnxNpdu::ApplicationLayerControlField::IndividualAddressWrite);
-    QCOMPARE(address.bytes(), QKnxAddress(QKnxAddress::Type::Individual, npdu.bytes(3, 2)).bytes());
+    QCOMPARE(npdu.transportControlField(), QKnxNpdu::TransportControlField::DataBroadcast);
+    QCOMPARE(npdu.applicationControlField(), QKnxNpdu::ApplicationControlField::IndividualAddressWrite);
+    QCOMPARE(QKnxAddress(QKnxAddress::Type::Individual, npdu.data()), address);
 }
 
 void tst_QKnxNpduFactory::testIndividualAddressSerialNumberRead()
 {
     auto serialNumber = QByteArray::fromHex("010203");
-    auto npdu = QKnxNpduFactory::createIndividualAddressSerialNumberReadNpdu(serialNumber);
+    auto npdu = QKnxNpduFactory::Broadcast::createIndividualAddressSerialNumberReadNpdu(serialNumber);
     QCOMPARE(npdu.size(), quint16(0));
 
     serialNumber = QByteArray::fromHex("010203040506");
-    npdu = QKnxNpduFactory::createIndividualAddressSerialNumberReadNpdu(serialNumber);
+    npdu = QKnxNpduFactory::Broadcast::createIndividualAddressSerialNumberReadNpdu(serialNumber);
 
     QCOMPARE(npdu.size(), quint16(9));
-    QCOMPARE(npdu.transportLayerControlField(),
-        QKnxNpdu::TransportLayerControlField::DataBroadcast);
-    QCOMPARE(npdu.applicationLayerControlField(),
-        QKnxNpdu::ApplicationLayerControlField::IndividualAddressSerialNumberRead);
+    QCOMPARE(npdu.transportControlField(), QKnxNpdu::TransportControlField::DataBroadcast);
+    QCOMPARE(npdu.applicationControlField(), QKnxNpdu::ApplicationControlField::IndividualAddressSerialNumberRead);
 }
 
 void tst_QKnxNpduFactory::testIndividualAddressSerialNumberWrite()
@@ -276,392 +318,350 @@ void tst_QKnxNpduFactory::testIndividualAddressSerialNumberWrite()
     auto address = QKnxAddress::Group::Broadcast;
     auto serialNumber = QByteArray::fromHex("010203");
 
-    auto npdu = QKnxNpduFactory::createIndividualAddressSerialNumberWriteNpdu(serialNumber, address);
+    auto npdu = QKnxNpduFactory::Broadcast::createIndividualAddressSerialNumberWriteNpdu(serialNumber, address);
     QCOMPARE(npdu.size(), quint16(0));
 
     serialNumber = QByteArray::fromHex("010203040506");
-    npdu = QKnxNpduFactory::createIndividualAddressSerialNumberWriteNpdu(serialNumber, address);
+    npdu = QKnxNpduFactory::Broadcast::createIndividualAddressSerialNumberWriteNpdu(serialNumber, address);
     QCOMPARE(npdu.size(), quint16(0));
 
     address = QKnxAddress::createIndividual(1, 1, 1);
-    npdu = QKnxNpduFactory::createIndividualAddressSerialNumberWriteNpdu(serialNumber, address);
+    npdu = QKnxNpduFactory::Broadcast::createIndividualAddressSerialNumberWriteNpdu(serialNumber, address);
 
-    QCOMPARE(npdu.size(), quint16(11));
-    QCOMPARE(npdu.transportLayerControlField(),
-        QKnxNpdu::TransportLayerControlField::DataBroadcast);
-    QCOMPARE(npdu.applicationLayerControlField(),
-        QKnxNpdu::ApplicationLayerControlField::IndividualAddressSerialNumberWrite);
+    QCOMPARE(npdu.size(), quint16(15));
+    QCOMPARE(npdu.transportControlField(), QKnxNpdu::TransportControlField::DataBroadcast);
+    QCOMPARE(npdu.applicationControlField(), QKnxNpdu::ApplicationControlField::IndividualAddressSerialNumberWrite);
 }
 
 void tst_QKnxNpduFactory::testDomainAddressRead()
 {
-    auto npdu = QKnxNpduFactory::createDomainAddressReadNpdu();
+    auto npdu = QKnxNpduFactory::Broadcast::createDomainAddressReadNpdu();
 
     QCOMPARE(npdu.size(), quint16(3));
-    QCOMPARE(npdu.transportLayerControlField(),
-        QKnxNpdu::TransportLayerControlField::DataBroadcast);
-    QCOMPARE(npdu.applicationLayerControlField(),
-        QKnxNpdu::ApplicationLayerControlField::DomainAddressRead);
+    QCOMPARE(npdu.transportControlField(), QKnxNpdu::TransportControlField::DataBroadcast);
+    QCOMPARE(npdu.applicationControlField(), QKnxNpdu::ApplicationControlField::DomainAddressRead);
 }
 
 void tst_QKnxNpduFactory::testDomainAddressWrite()
 {
     auto address = QKnxAddress::createGroup(1, 1, 1);
-    auto npdu = QKnxNpduFactory::createDomainAddressWriteNpdu(address);
+    auto npdu = QKnxNpduFactory::Broadcast::createDomainAddressWriteNpdu(address.bytes());
 
     QCOMPARE(npdu.size(), quint16(5));
-    QCOMPARE(npdu.transportLayerControlField(),
-        QKnxNpdu::TransportLayerControlField::DataBroadcast);
-    QCOMPARE(npdu.applicationLayerControlField(),
-        QKnxNpdu::ApplicationLayerControlField::DomainAddressWrite);
+    QCOMPARE(npdu.transportControlField(), QKnxNpdu::TransportControlField::DataBroadcast);
+    QCOMPARE(npdu.applicationControlField(), QKnxNpdu::ApplicationControlField::DomainAddressWrite);
 }
 
 void tst_QKnxNpduFactory::testDomainAddressSerialNumberRead()
 {
     auto serialNumber = QByteArray::fromHex("010203");
-    auto npdu = QKnxNpduFactory::createDomainAddressSerialNumberReadNpdu(serialNumber);
+    auto npdu = QKnxNpduFactory::Broadcast::createDomainAddressSerialNumberReadNpdu(serialNumber);
     QCOMPARE(npdu.size(), quint16(0));
 
     serialNumber = QByteArray::fromHex("010203040506");
-    npdu = QKnxNpduFactory::createDomainAddressSerialNumberReadNpdu(serialNumber);
+    npdu = QKnxNpduFactory::Broadcast::createDomainAddressSerialNumberReadNpdu(serialNumber);
 
     QCOMPARE(npdu.size(), quint16(9));
-    QCOMPARE(npdu.transportLayerControlField(),
-        QKnxNpdu::TransportLayerControlField::DataBroadcast);
-    QCOMPARE(npdu.applicationLayerControlField(),
-        QKnxNpdu::ApplicationLayerControlField::DomainAddressSerialNumberRead);
+    QCOMPARE(npdu.transportControlField(), QKnxNpdu::TransportControlField::DataBroadcast);
+    QCOMPARE(npdu.applicationControlField(), QKnxNpdu::ApplicationControlField::DomainAddressSerialNumberRead);
 }
 
 void tst_QKnxNpduFactory::testDomainAddressSerialNumberWrite()
 {
-    auto address = QKnxAddress::createGroup(1, 1, 1);
+    auto address = QKnxAddress::createGroup(1, 1, 1).bytes();
     auto serialNumber = QByteArray::fromHex("010203");
-    auto npdu = QKnxNpduFactory::createDomainAddressSerialNumberWriteNpdu(serialNumber, address);
+    auto npdu = QKnxNpduFactory::Broadcast::createDomainAddressSerialNumberWriteNpdu(serialNumber, address);
+    QCOMPARE(npdu.size(), quint16(0));
+
+    npdu = QKnxNpduFactory::Broadcast::createDomainAddressSerialNumberWriteNpdu(serialNumber, serialNumber);
     QCOMPARE(npdu.size(), quint16(0));
 
     serialNumber = QByteArray::fromHex("010203040506");
-    npdu = QKnxNpduFactory::createDomainAddressSerialNumberWriteNpdu(serialNumber, address);
+    npdu = QKnxNpduFactory::Broadcast::createDomainAddressSerialNumberWriteNpdu(serialNumber, address);
 
     QCOMPARE(npdu.size(), quint16(11));
-    QCOMPARE(npdu.transportLayerControlField(),
-        QKnxNpdu::TransportLayerControlField::DataBroadcast);
-    QCOMPARE(npdu.applicationLayerControlField(),
-        QKnxNpdu::ApplicationLayerControlField::DomainAddressSerialNumberWrite);
+    QCOMPARE(npdu.transportControlField(), QKnxNpdu::TransportControlField::DataBroadcast);
+    QCOMPARE(npdu.applicationControlField(), QKnxNpdu::ApplicationControlField::DomainAddressSerialNumberWrite);
 }
 
 void tst_QKnxNpduFactory::testSystemNetworkParameterRead()
 {
-    QByteArray testInfo = QByteArray::fromHex("01020304");
-    QKnxNpdu npdu = QKnxNpduFactory::createNetworkParameterReadNpdu(QKnxNpduFactory::Network::System,
-        QKnxInterfaceObjectType::System::Device, QKnxInterfaceObjectProperty::Device::ErrorFlags, testInfo);
+    auto npdu = QKnxNpduFactory::Broadcast::createSystemNetworkParameterReadNpdu(
+        QKnxInterfaceObjectType::System::Device, QKnxInterfaceObjectProperty::Device::ErrorFlags,
+        QByteArray::fromHex("01020304"));
 
     QCOMPARE(npdu.size(), quint16(11));
-    QCOMPARE(npdu.transportLayerControlField(),
-        QKnxNpdu::TransportLayerControlField::DataBroadcast);
-    QCOMPARE(npdu.applicationLayerControlField(),
-        QKnxNpdu::ApplicationLayerControlField::SystemNetworkParameterRead);
+    QCOMPARE(npdu.transportControlField(), QKnxNpdu::TransportControlField::DataSystemBroadcast);
+    QCOMPARE(npdu.applicationControlField(), QKnxNpdu::ApplicationControlField::SystemNetworkParameterRead);
 }
 
 void tst_QKnxNpduFactory::testSystemNetworkParameterWrite()
 {
-    QByteArray value = QByteArray::fromHex("01020304");
-    QKnxNpdu npdu = QKnxNpduFactory::createNetworkParameterWriteNpdu(QKnxNpduFactory::Network::System,
-        QKnxInterfaceObjectType::System::Device, QKnxInterfaceObjectProperty::Device::ErrorFlags, value);
+    auto npdu = QKnxNpduFactory::Broadcast::createSystemNetworkParameterWriteNpdu(
+        QKnxInterfaceObjectType::System::Device, QKnxInterfaceObjectProperty::Device::ErrorFlags,
+        QByteArray::fromHex("01020304"));
 
     QCOMPARE(npdu.size(), quint16(11));
-    QCOMPARE(npdu.transportLayerControlField(),
-        QKnxNpdu::TransportLayerControlField::DataBroadcast);
-    QCOMPARE(npdu.applicationLayerControlField(),
-        QKnxNpdu::ApplicationLayerControlField::SystemNetworkParameterWrite);
+    QCOMPARE(npdu.transportControlField(), QKnxNpdu::TransportControlField::DataSystemBroadcast);
+    QCOMPARE(npdu.applicationControlField(), QKnxNpdu::ApplicationControlField::SystemNetworkParameterWrite);
 }
 
 void tst_QKnxNpduFactory::testNetworkParameterRead()
 {
-    QByteArray testInfo = QByteArray::fromHex("01020304");
-    QKnxNpdu npdu = QKnxNpduFactory::createNetworkParameterReadNpdu(QKnxNpduFactory::Network::Local,
-        QKnxInterfaceObjectType::System::Device, QKnxInterfaceObjectProperty::Device::ErrorFlags, testInfo);
+    auto npdu = QKnxNpduFactory::Broadcast::createNetworkParameterReadNpdu(
+        QKnxInterfaceObjectType::System::Device, QKnxInterfaceObjectProperty::Device::ErrorFlags,
+        QByteArray::fromHex("01020304"));
 
     QCOMPARE(npdu.size(), quint16(10));
-    QCOMPARE(npdu.transportLayerControlField(),
-        QKnxNpdu::TransportLayerControlField::DataIndividual);
-    QCOMPARE(npdu.applicationLayerControlField(),
-        QKnxNpdu::ApplicationLayerControlField::NetworkParameterRead);
+    QCOMPARE(npdu.transportControlField(), QKnxNpdu::TransportControlField::DataBroadcast);
+    QCOMPARE(npdu.applicationControlField(), QKnxNpdu::ApplicationControlField::NetworkParameterRead);
+
+    npdu = QKnxNpduFactory::Broadcast::createNetworkParameterReadNpdu(
+        QKnxInterfaceObjectType::System::Device, QKnxInterfaceObjectProperty::Device::ErrorFlags,
+        QByteArray(250, 1));
+    QCOMPARE(npdu.size(), quint16(256));
+    QCOMPARE(npdu.dataSize(), quint8(254));
 }
 
 void tst_QKnxNpduFactory::testNetworkParameterWrite()
 {
-    QByteArray value = QByteArray::fromHex("01020304");
-    QKnxNpdu npdu = QKnxNpduFactory::createNetworkParameterWriteNpdu(QKnxNpduFactory::Network::Local,
-        QKnxInterfaceObjectType::System::Device, QKnxInterfaceObjectProperty::Device::ErrorFlags, value);
+    auto npdu = QKnxNpduFactory::Broadcast::createNetworkParameterWriteNpdu(
+        QKnxInterfaceObjectType::System::Device, QKnxInterfaceObjectProperty::Device::ErrorFlags,
+        QByteArray::fromHex("01020304"));
 
     QCOMPARE(npdu.size(), quint16(10));
-    QCOMPARE(npdu.transportLayerControlField(),
-        QKnxNpdu::TransportLayerControlField::DataIndividual);
-    QCOMPARE(npdu.applicationLayerControlField(),
-        QKnxNpdu::ApplicationLayerControlField::NetworkParameterWrite);
+    QCOMPARE(npdu.transportControlField(), QKnxNpdu::TransportControlField::DataBroadcast);
+    QCOMPARE(npdu.applicationControlField(), QKnxNpdu::ApplicationControlField::NetworkParameterWrite);
+
+    npdu = QKnxNpduFactory::PointToPointConnectionless::createNetworkParameterWriteNpdu(
+        QKnxInterfaceObjectType::System::Device, QKnxInterfaceObjectProperty::Device::ErrorFlags,
+        QByteArray::fromHex("01020304"));
+
+    QCOMPARE(npdu.size(), quint16(10));
+    QCOMPARE(npdu.transportControlField(), QKnxNpdu::TransportControlField::DataIndividual);
+    QCOMPARE(npdu.applicationControlField(), QKnxNpdu::ApplicationControlField::NetworkParameterWrite);
+}
+
+void tst_QKnxNpduFactory::testNetworkParameterResponse()
+{
+   auto npdu = QKnxNpduFactory::Broadcast::createNetworkParameterResponseNpdu(
+        QKnxInterfaceObjectType::System::Device, QKnxInterfaceObjectProperty::Device::ErrorFlags,
+        {}, QByteArray(11, 1));
+
+    QCOMPARE(npdu.size(), quint16(17));
+    QCOMPARE(npdu.dataSize(), quint8(15));
+
+    // TODO: extend test
 }
 
 void tst_QKnxNpduFactory::testPropertyValueRead()
 {
-    QKnxNpdu npdu = QKnxNpduFactory::createPropertyValueReadNpdu(0,
+    auto npdu = QKnxNpduFactory::PointToPoint::createPropertyValueReadNpdu(
+        QKnxNpduFactory::PointToPoint::Mode::Connectionless, 0,
         QKnxInterfaceObjectProperty::Device::ErrorFlags, 1, 1);
 
     QCOMPARE(npdu.size(), quint16(7));
-    QCOMPARE(npdu.transportLayerControlField(),
-        QKnxNpdu::TransportLayerControlField::DataIndividual);
-    QCOMPARE(npdu.applicationLayerControlField(),
-        QKnxNpdu::ApplicationLayerControlField::PropertyValueRead);
+    QCOMPARE(npdu.transportControlField(), QKnxNpdu::TransportControlField::DataIndividual);
+    QCOMPARE(npdu.applicationControlField(), QKnxNpdu::ApplicationControlField::PropertyValueRead);
 
-    //connection oriented
     quint8 sequenceNumber = 2;
-    npdu = QKnxNpduFactory::createPropertyValueReadNpdu(0,
+    npdu = QKnxNpduFactory::PointToPoint::createPropertyValueReadNpdu(
+        QKnxNpduFactory::PointToPoint::Mode::ConnectionOriented, 0,
         QKnxInterfaceObjectProperty::Device::ErrorFlags, 1, 1, sequenceNumber);
 
     QCOMPARE(npdu.size(), quint16(7));
-    // check the TPCI
-    // add sequence Number to TPCI
-    std::bitset<8> tpci = quint8(QKnxNpdu::TransportLayerControlField::DataConnected);
-    std::bitset<8> sequenceNumberBits = quint8(sequenceNumber << 2);
-    tpci[2] = sequenceNumberBits[2];
-    tpci[3] = sequenceNumberBits[3];
-    tpci[4] = sequenceNumberBits[4];
-    tpci[5] = sequenceNumberBits[5];
-    QKnxNpdu::TransportLayerControlField fullTpci =
-        QKnxNpdu::TransportLayerControlField(quint8(tpci.to_ulong()));
-    QCOMPARE(npdu.transportLayerControlField(), fullTpci);
-    QCOMPARE(npdu.applicationLayerControlField(),
-        QKnxNpdu::ApplicationLayerControlField::PropertyValueRead);
+    QCOMPARE(npdu.sequenceNumber(), sequenceNumber);
+    QCOMPARE(npdu.transportControlField(), QKnxNpdu::TransportControlField::DataConnected);
+    QCOMPARE(npdu.applicationControlField(), QKnxNpdu::ApplicationControlField::PropertyValueRead);
 }
 
 void tst_QKnxNpduFactory::testPropertyValueWrite()
 {
-    QByteArray data = QByteArray::fromHex("01020304");
-    QKnxNpdu npdu = QKnxNpduFactory::createPropertyValueWriteNpdu(0,
+    auto data = QByteArray::fromHex("01020304");
+    auto npdu = QKnxNpduFactory::PointToPoint::createPropertyValueWriteNpdu(
+        QKnxNpduFactory::PointToPoint::Mode::Connectionless, 0,
         QKnxInterfaceObjectProperty::Device::ErrorFlags, 1, 1, data);
 
     QCOMPARE(npdu.size(), quint16(11));
-    QCOMPARE(npdu.transportLayerControlField(),
-        QKnxNpdu::TransportLayerControlField::DataIndividual);
-    QCOMPARE(npdu.applicationLayerControlField(),
-        QKnxNpdu::ApplicationLayerControlField::PropertyValueWrite);
+    QCOMPARE(npdu.transportControlField(), QKnxNpdu::TransportControlField::DataIndividual);
+    QCOMPARE(npdu.applicationControlField(), QKnxNpdu::ApplicationControlField::PropertyValueWrite);
 
     //connection oriented
     quint8 sequenceNumber = 2;
-    npdu = QKnxNpduFactory::createPropertyValueWriteNpdu(0, QKnxInterfaceObjectProperty::Device::ErrorFlags,
-        1, 1, data, sequenceNumber);
+    npdu = QKnxNpduFactory::PointToPoint::createPropertyValueWriteNpdu(
+        QKnxNpduFactory::PointToPoint::Mode::ConnectionOriented, 0,
+        QKnxInterfaceObjectProperty::Device::ErrorFlags, 1, 1, data, sequenceNumber);
 
     QCOMPARE(npdu.size(), quint16(11));
-    std::bitset<8> tpci = quint8(QKnxNpdu::TransportLayerControlField::DataConnected);
-    std::bitset<8> sequenceNumberBits = quint8(sequenceNumber << 2);
-    tpci[2] = sequenceNumberBits[2];
-    tpci[3] = sequenceNumberBits[3];
-    tpci[4] = sequenceNumberBits[4];
-    tpci[5] = sequenceNumberBits[5];
-    QKnxNpdu::TransportLayerControlField fullTpci =
-        QKnxNpdu::TransportLayerControlField(quint8(tpci.to_ulong()));
-    QCOMPARE(npdu.transportLayerControlField(), fullTpci);
-    QCOMPARE(npdu.applicationLayerControlField(),
-        QKnxNpdu::ApplicationLayerControlField::PropertyValueWrite);
+    QCOMPARE(npdu.sequenceNumber(), sequenceNumber);
+    QCOMPARE(npdu.transportControlField(), QKnxNpdu::TransportControlField::DataConnected);
+    QCOMPARE(npdu.applicationControlField(), QKnxNpdu::ApplicationControlField::PropertyValueWrite);
 }
 
 void tst_QKnxNpduFactory::testPropertyDescriptionRead()
 {
-    QKnxNpdu npdu = QKnxNpduFactory::createPropertyDescriptionReadNpdu(0,
+    auto npdu = QKnxNpduFactory::PointToPoint::createPropertyDescriptionReadNpdu(
+        QKnxNpduFactory::PointToPoint::Mode::Connectionless, 0,
         QKnxInterfaceObjectProperty::Device::ErrorFlags, 1);
 
     QCOMPARE(npdu.size(), quint16(6));
-    QCOMPARE(npdu.transportLayerControlField(),
-        QKnxNpdu::TransportLayerControlField::DataIndividual);
-    QCOMPARE(npdu.applicationLayerControlField(),
-        QKnxNpdu::ApplicationLayerControlField::PropertyDescriptionRead);
+    QCOMPARE(npdu.transportControlField(), QKnxNpdu::TransportControlField::DataIndividual);
+    QCOMPARE(npdu.applicationControlField(), QKnxNpdu::ApplicationControlField::PropertyDescriptionRead);
 
     //connection oriented
     quint8 sequenceNumber = 2;
-    npdu = QKnxNpduFactory::createPropertyDescriptionReadNpdu(0,
+    npdu = QKnxNpduFactory::PointToPoint::createPropertyDescriptionReadNpdu(
+        QKnxNpduFactory::PointToPoint::Mode::ConnectionOriented, 0,
         QKnxInterfaceObjectProperty::Device::ErrorFlags, 1, sequenceNumber);
 
     QCOMPARE(npdu.size(), quint16(6));
-    // check the TPCI
-    // add sequence Number to TPCI
-    std::bitset<8> tpci = quint8(QKnxNpdu::TransportLayerControlField::DataConnected);
-    std::bitset<8> sequenceNumberBits = quint8(sequenceNumber << 2);
-    tpci[2] = sequenceNumberBits[2];
-    tpci[3] = sequenceNumberBits[3];
-    tpci[4] = sequenceNumberBits[4];
-    tpci[5] = sequenceNumberBits[5];
-    QKnxNpdu::TransportLayerControlField fullTpci =
-        QKnxNpdu::TransportLayerControlField(quint8(tpci.to_ulong()));
-    QCOMPARE(npdu.transportLayerControlField(), fullTpci);
-    QCOMPARE(npdu.applicationLayerControlField(),
-        QKnxNpdu::ApplicationLayerControlField::PropertyDescriptionRead);
+    QCOMPARE(npdu.sequenceNumber(), sequenceNumber);
+    QCOMPARE(npdu.transportControlField(), QKnxNpdu::TransportControlField::DataConnected);
+    QCOMPARE(npdu.applicationControlField(), QKnxNpdu::ApplicationControlField::PropertyDescriptionRead);
 }
 
 void tst_QKnxNpduFactory::testFunctionPropertyCommand()
 {
-    QByteArray data = QByteArray::fromHex("0102030405");
-    QKnxNpdu npdu = QKnxNpduFactory::createFunctionPropertyCommandNpdu(0,
+    auto data = QByteArray::fromHex("0102030405");
+    auto npdu = QKnxNpduFactory::PointToPoint::createFunctionPropertyCommandNpdu(
+        QKnxNpduFactory::PointToPoint::Mode::Connectionless, 0,
         QKnxInterfaceObjectProperty::Device::ErrorFlags, data);
 
     QCOMPARE(npdu.size(), quint16(10));
-    QCOMPARE(npdu.transportLayerControlField(),
-        QKnxNpdu::TransportLayerControlField::DataIndividual);
-    QCOMPARE(npdu.applicationLayerControlField(),
-        QKnxNpdu::ApplicationLayerControlField::FunctionPropertyCommand);
+    QCOMPARE(npdu.transportControlField(), QKnxNpdu::TransportControlField::DataIndividual);
+    QCOMPARE(npdu.applicationControlField(), QKnxNpdu::ApplicationControlField::FunctionPropertyCommand);
 
     //connection oriented
     quint8 sequenceNumber = 2;
-    npdu = npdu = QKnxNpduFactory::createFunctionPropertyCommandNpdu(0,
+    npdu = npdu = QKnxNpduFactory::PointToPoint::createFunctionPropertyCommandNpdu(
+        QKnxNpduFactory::PointToPoint::Mode::ConnectionOriented, 0,
         QKnxInterfaceObjectProperty::Device::ErrorFlags, data, sequenceNumber);
 
     QCOMPARE(npdu.size(), quint16(10));
-    std::bitset<8> tpci = quint8(QKnxNpdu::TransportLayerControlField::DataConnected);
-    std::bitset<8> sequenceNumberBits = quint8(sequenceNumber << 2);
-    tpci[2] = sequenceNumberBits[2];
-    tpci[3] = sequenceNumberBits[3];
-    tpci[4] = sequenceNumberBits[4];
-    tpci[5] = sequenceNumberBits[5];
-    QKnxNpdu::TransportLayerControlField fullTpci =
-        QKnxNpdu::TransportLayerControlField(quint8(tpci.to_ulong()));
-    QCOMPARE(npdu.transportLayerControlField(), fullTpci);
-    QCOMPARE(npdu.applicationLayerControlField(),
-        QKnxNpdu::ApplicationLayerControlField::FunctionPropertyCommand);
+    QCOMPARE(npdu.sequenceNumber(), sequenceNumber);
+    QCOMPARE(npdu.transportControlField(), QKnxNpdu::TransportControlField::DataConnected);
+    QCOMPARE(npdu.applicationControlField(), QKnxNpdu::ApplicationControlField::FunctionPropertyCommand);
 }
 
 void tst_QKnxNpduFactory::testFunctionPropertyStateRead()
 {
-    QByteArray data = QByteArray::fromHex("0102030405");
-    QKnxNpdu npdu = QKnxNpduFactory::createFunctionPropertyStateReadNpdu(0,
+    auto data = QByteArray::fromHex("0102030405");
+    auto npdu = QKnxNpduFactory::PointToPoint::createFunctionPropertyStateReadNpdu(
+        QKnxNpduFactory::PointToPoint::Mode::Connectionless, 0,
         QKnxInterfaceObjectProperty::Device::ErrorFlags, data);
 
     QCOMPARE(npdu.size(), quint16(10));
-    QCOMPARE(npdu.transportLayerControlField(),
-        QKnxNpdu::TransportLayerControlField::DataIndividual);
-    QCOMPARE(npdu.applicationLayerControlField(),
-        QKnxNpdu::ApplicationLayerControlField::FunctionPropertyStateRead);
+    QCOMPARE(npdu.transportControlField(), QKnxNpdu::TransportControlField::DataIndividual);
+    QCOMPARE(npdu.applicationControlField(), QKnxNpdu::ApplicationControlField::FunctionPropertyStateRead);
 
     //connection oriented
     quint8 sequenceNumber = 2;
-    npdu = npdu = QKnxNpduFactory::createFunctionPropertyStateReadNpdu(0,
+    npdu = npdu = QKnxNpduFactory::PointToPoint::createFunctionPropertyStateReadNpdu(
+        QKnxNpduFactory::PointToPoint::Mode::ConnectionOriented, 0,
         QKnxInterfaceObjectProperty::Device::ErrorFlags, data, sequenceNumber);
 
     QCOMPARE(npdu.size(), quint16(10));
-    std::bitset<8> tpci = quint8(QKnxNpdu::TransportLayerControlField::DataConnected);
-    std::bitset<8> sequenceNumberBits = quint8(sequenceNumber << 2);
-    tpci[2] = sequenceNumberBits[2];
-    tpci[3] = sequenceNumberBits[3];
-    tpci[4] = sequenceNumberBits[4];
-    tpci[5] = sequenceNumberBits[5];
-    QKnxNpdu::TransportLayerControlField fullTpci =
-        QKnxNpdu::TransportLayerControlField(quint8(tpci.to_ulong()));
-    QCOMPARE(npdu.transportLayerControlField(), fullTpci);
-    // check the APCI
-    QCOMPARE(npdu.applicationLayerControlField(),
-        QKnxNpdu::ApplicationLayerControlField::FunctionPropertyStateRead);
+    QCOMPARE(npdu.sequenceNumber(), sequenceNumber);
+    QCOMPARE(npdu.transportControlField(), QKnxNpdu::TransportControlField::DataConnected);
+    QCOMPARE(npdu.applicationControlField(), QKnxNpdu::ApplicationControlField::FunctionPropertyStateRead);
 }
 
 void tst_QKnxNpduFactory::testLinkRead()
 {
-    QByteArray data = QByteArray::fromHex("0102030405");
-    QKnxNpdu npdu = QKnxNpduFactory::createLinkReadNpdu(0, 1);
+    auto data = QByteArray::fromHex("0102030405");
+    auto npdu = QKnxNpduFactory::PointToPoint::createLinkReadNpdu(
+        QKnxNpduFactory::PointToPoint::Mode::Connectionless, 0, 1);
 
     QCOMPARE(npdu.size(), quint16(5));
-    QCOMPARE(npdu.transportLayerControlField(),
-        QKnxNpdu::TransportLayerControlField::DataIndividual);
-    QCOMPARE(npdu.applicationLayerControlField(),
-        QKnxNpdu::ApplicationLayerControlField::LinkRead);
+    QCOMPARE(npdu.transportControlField(), QKnxNpdu::TransportControlField::DataIndividual);
+    QCOMPARE(npdu.applicationControlField(), QKnxNpdu::ApplicationControlField::LinkRead);
 
     //connection oriented
     quint8 sequenceNumber = 2;
-    npdu = npdu = QKnxNpduFactory::createLinkReadNpdu(0, 1, sequenceNumber);
+    npdu = npdu = QKnxNpduFactory::PointToPoint::createLinkReadNpdu(
+        QKnxNpduFactory::PointToPoint::Mode::ConnectionOriented, 0, 1, sequenceNumber);
 
     QCOMPARE(npdu.size(), quint16(5));
-    std::bitset<8> tpci = quint8(QKnxNpdu::TransportLayerControlField::DataConnected);
-    std::bitset<8> sequenceNumberBits = quint8(sequenceNumber << 2);
-    tpci[2] = sequenceNumberBits[2];
-    tpci[3] = sequenceNumberBits[3];
-    tpci[4] = sequenceNumberBits[4];
-    tpci[5] = sequenceNumberBits[5];
-    QKnxNpdu::TransportLayerControlField fullTpci =
-        QKnxNpdu::TransportLayerControlField(quint8(tpci.to_ulong()));
-    QCOMPARE(npdu.transportLayerControlField(), fullTpci);
-    QCOMPARE(npdu.applicationLayerControlField(),
-        QKnxNpdu::ApplicationLayerControlField::LinkRead);
+    QCOMPARE(npdu.sequenceNumber(), sequenceNumber);
+    QCOMPARE(npdu.transportControlField(), QKnxNpdu::TransportControlField::DataConnected);
+    QCOMPARE(npdu.applicationControlField(), QKnxNpdu::ApplicationControlField::LinkRead);
 }
 
 void tst_QKnxNpduFactory::testLinkWrite()
 {
     QKnxAddress individualAddress = QKnxAddress::createIndividual(1, 1, 1);
-    QByteArray data = QByteArray::fromHex("0102030405");
-    QKnxNpdu npdu = QKnxNpduFactory::createLinkWriteNpdu(0, 1, individualAddress);
+    auto data = QByteArray::fromHex("0102030405");
+    auto npdu = QKnxNpduFactory::PointToPoint::createLinkWriteNpdu(
+        QKnxNpduFactory::PointToPoint::Mode::Connectionless, 0,
+        QKnxNpdu::LinkWriteFlags::AddGroupAddress, individualAddress);
 
     QCOMPARE(npdu.size(), quint16(0));
-    QCOMPARE(npdu.transportLayerControlField(),
-        QKnxNpdu::TransportLayerControlField::Invalid);
-    QCOMPARE(npdu.applicationLayerControlField(),
-        QKnxNpdu::ApplicationLayerControlField::Invalid);
+    QCOMPARE(npdu.transportControlField(), QKnxNpdu::TransportControlField::Invalid);
+    QCOMPARE(npdu.applicationControlField(), QKnxNpdu::ApplicationControlField::Invalid);
 
     QKnxAddress groupAddress = QKnxAddress::createGroup(1, 1);
-    npdu = QKnxNpduFactory::createLinkWriteNpdu(0, 1, groupAddress);
+    npdu = QKnxNpduFactory::PointToPoint::createLinkWriteNpdu(
+        QKnxNpduFactory::PointToPoint::Mode::Connectionless, 0,
+        QKnxNpdu::LinkWriteFlags::AddGroupAddress, groupAddress, 1);
 
     QCOMPARE(npdu.size(), quint16(7));
-    QCOMPARE(npdu.transportLayerControlField(),
-        QKnxNpdu::TransportLayerControlField::DataIndividual);
-    QCOMPARE(npdu.applicationLayerControlField(),
-        QKnxNpdu::ApplicationLayerControlField::LinkWrite);
+    QCOMPARE(npdu.transportControlField(), QKnxNpdu::TransportControlField::DataIndividual);
+    QCOMPARE(npdu.applicationControlField(), QKnxNpdu::ApplicationControlField::LinkWrite);
 
     //connection oriented
     quint8 sequenceNumber = 2;
-    npdu = npdu = QKnxNpduFactory::createLinkWriteNpdu(0, 1, groupAddress, sequenceNumber);
+    npdu = npdu = QKnxNpduFactory::PointToPoint::createLinkWriteNpdu(
+        QKnxNpduFactory::PointToPoint::Mode::ConnectionOriented, 0,
+        QKnxNpdu::LinkWriteFlags::AddGroupAddress, groupAddress, sequenceNumber);
 
     QCOMPARE(npdu.size(), quint16(7));
-    std::bitset<8> tpci = quint8(QKnxNpdu::TransportLayerControlField::DataConnected);
-    std::bitset<8> sequenceNumberBits = quint8(sequenceNumber << 2);
-    tpci[2] = sequenceNumberBits[2];
-    tpci[3] = sequenceNumberBits[3];
-    tpci[4] = sequenceNumberBits[4];
-    tpci[5] = sequenceNumberBits[5];
-    QKnxNpdu::TransportLayerControlField fullTpci =
-        QKnxNpdu::TransportLayerControlField(quint8(tpci.to_ulong()));
-    QCOMPARE(npdu.transportLayerControlField(), fullTpci);
-    QCOMPARE(npdu.applicationLayerControlField(),
-        QKnxNpdu::ApplicationLayerControlField::LinkWrite);
+    QCOMPARE(npdu.sequenceNumber(), sequenceNumber);
+    QCOMPARE(npdu.transportControlField(), QKnxNpdu::TransportControlField::DataConnected);
+    QCOMPARE(npdu.applicationControlField(), QKnxNpdu::ApplicationControlField::LinkWrite);
 }
 
 void tst_QKnxNpduFactory::testDeviceDescriptorRead()
 {
     quint8 descriptorType = 64;
-    QKnxNpdu npdu = QKnxNpduFactory::createDeviceDescriptorReadNpdu(descriptorType);
+    auto npdu = QKnxNpduFactory::PointToPoint::createDeviceDescriptorReadNpdu(
+        QKnxNpduFactory::PointToPoint::Mode::Connectionless, descriptorType);
 
     QCOMPARE(npdu.size(), quint16(0));
-    QCOMPARE(npdu.transportLayerControlField(),
-        QKnxNpdu::TransportLayerControlField::Invalid);
-    QCOMPARE(npdu.applicationLayerControlField(),
-        QKnxNpdu::ApplicationLayerControlField::Invalid);
+    QCOMPARE(npdu.transportControlField(),
+        QKnxNpdu::TransportControlField::Invalid);
+    QCOMPARE(npdu.applicationControlField(),
+        QKnxNpdu::ApplicationControlField::Invalid);
 
-    npdu = QKnxNpduFactory::createDeviceDescriptorReadNpdu(63);
+    npdu = QKnxNpduFactory::PointToPoint::createDeviceDescriptorReadNpdu(
+        QKnxNpduFactory::PointToPoint::Mode::Connectionless, 63);
 
     QCOMPARE(npdu.size(), quint16(3));
-    QCOMPARE(npdu.transportLayerControlField(),
-        QKnxNpdu::TransportLayerControlField::DataIndividual);
-    QCOMPARE(npdu.applicationLayerControlField(),
-        QKnxNpdu::ApplicationLayerControlField::DeviceDescriptorRead);
+    QCOMPARE(npdu.transportControlField(),
+        QKnxNpdu::TransportControlField::DataIndividual);
+    QCOMPARE(npdu.applicationControlField(),
+        QKnxNpdu::ApplicationControlField::DeviceDescriptorRead);
 
     //connection oriented
     quint8 sequenceNumber = 2;
-    npdu = npdu = QKnxNpduFactory::createDeviceDescriptorReadNpdu(0, sequenceNumber);
+    npdu = npdu = QKnxNpduFactory::PointToPoint::createDeviceDescriptorReadNpdu(QKnxNpduFactory
+        ::PointToPoint::Mode::ConnectionOriented, 0, sequenceNumber);
 
     QCOMPARE(npdu.size(), quint16(3));
-    std::bitset<8> tpci = quint8(QKnxNpdu::TransportLayerControlField::DataConnected);
-    std::bitset<8> sequenceNumberBits = quint8(sequenceNumber << 2);
-    tpci[2] = sequenceNumberBits[2];
-    tpci[3] = sequenceNumberBits[3];
-    tpci[4] = sequenceNumberBits[4];
-    tpci[5] = sequenceNumberBits[5];
-    QKnxNpdu::TransportLayerControlField fullTpci =
-        QKnxNpdu::TransportLayerControlField(quint8(tpci.to_ulong()));
-    QCOMPARE(npdu.transportLayerControlField(), fullTpci);
-    QCOMPARE(npdu.applicationLayerControlField(),
-        QKnxNpdu::ApplicationLayerControlField::DeviceDescriptorRead);
+    QCOMPARE(npdu.sequenceNumber(), sequenceNumber);
+    QCOMPARE(npdu.transportControlField(), QKnxNpdu::TransportControlField::DataConnected);
+    QCOMPARE(npdu.applicationControlField(), QKnxNpdu::ApplicationControlField::DeviceDescriptorRead);
+}
+
+void tst_QKnxNpduFactory::testDeviceDescriptorResponse()
+{
+    quint8 descriptorType = 63;
+    auto npdu = QKnxNpduFactory::PointToPoint::createDeviceDescriptorResponseNpdu(
+        QKnxNpduFactory::PointToPoint::Mode::Connectionless, descriptorType, QByteArray(253, 0));
+
+    QCOMPARE(npdu.size(), quint16(256));
+    QCOMPARE(npdu.dataSize(), quint8(254));
+
+    // TODO: extend test
 }
 
 void tst_QKnxNpduFactory::testAdcRead()
@@ -669,131 +669,86 @@ void tst_QKnxNpduFactory::testAdcRead()
     quint8 sequenceNumber = 2;
     quint8 channelNumber = 2;
     quint8 readCount = 40;
-    QKnxNpdu npdu = QKnxNpduFactory::createAdcReadNpdu(sequenceNumber, channelNumber, readCount);
+    auto npdu = QKnxNpduFactory::PointToPointConnectionOriented::createAdcReadNpdu(channelNumber,
+        readCount, sequenceNumber);
     QCOMPARE(npdu.size(), quint16(4));
-
-    std::bitset<8> tpci = quint8(QKnxNpdu::TransportLayerControlField::DataConnected);
-    std::bitset<8> sequenceNumberBits = quint8(sequenceNumber << 2);
-    tpci[2] = sequenceNumberBits[2];
-    tpci[3] = sequenceNumberBits[3];
-    tpci[4] = sequenceNumberBits[4];
-    tpci[5] = sequenceNumberBits[5];
-    QKnxNpdu::TransportLayerControlField fullTpci =
-        QKnxNpdu::TransportLayerControlField(quint8(tpci.to_ulong()));
-    QCOMPARE(npdu.transportLayerControlField(), fullTpci);
-    QCOMPARE(npdu.applicationLayerControlField(),
-        QKnxNpdu::ApplicationLayerControlField::AdcRead);
+    QCOMPARE(npdu.sequenceNumber(), sequenceNumber);
+    QCOMPARE(npdu.transportControlField(), QKnxNpdu::TransportControlField::DataConnected);
+    QCOMPARE(npdu.applicationControlField(), QKnxNpdu::ApplicationControlField::AdcRead);
 }
 
 void tst_QKnxNpduFactory::testMemoryRead()
 {
     quint8 sequenceNumber = 2;
     quint8 number = 2;
-    QKnxAddress memoryAddress = QKnxAddress::createIndividual(1, 1, 1);
-    QKnxNpdu npdu = QKnxNpduFactory::createMemoryReadNpdu(number, memoryAddress, sequenceNumber);
+    quint16 memoryAddress = 0xabcd;
+    auto npdu = QKnxNpduFactory::PointToPoint::createMemoryReadNpdu(QKnxNpduFactory::PointToPoint
+        ::Mode::ConnectionOriented, number, memoryAddress, sequenceNumber);
 
     QCOMPARE(npdu.size(), quint16(5));
-    std::bitset<8> tpci = quint8(QKnxNpdu::TransportLayerControlField::DataConnected);
-    std::bitset<8> sequenceNumberBits = quint8(sequenceNumber << 2);
-    tpci[2] = sequenceNumberBits[2];
-    tpci[3] = sequenceNumberBits[3];
-    tpci[4] = sequenceNumberBits[4];
-    tpci[5] = sequenceNumberBits[5];
-    QKnxNpdu::TransportLayerControlField fullTpci =
-        QKnxNpdu::TransportLayerControlField(quint8(tpci.to_ulong()));
-    QCOMPARE(npdu.transportLayerControlField(), fullTpci);
-    // check the APCI
-    QCOMPARE(npdu.applicationLayerControlField(),
-        QKnxNpdu::ApplicationLayerControlField::MemoryRead);
+    QCOMPARE(npdu.sequenceNumber(), sequenceNumber);
+    QCOMPARE(npdu.transportControlField(), QKnxNpdu::TransportControlField::DataConnected);
+    QCOMPARE(npdu.applicationControlField(), QKnxNpdu::ApplicationControlField::MemoryRead);
 }
 
 void tst_QKnxNpduFactory::testMemoryWrite()
 {
-    QByteArray data = QByteArray::fromHex("0102030405");
+    auto data = QByteArray::fromHex("0102030405");
     quint8 sequenceNumber = 2;
     quint8 number = 2;
-    QKnxAddress memoryAddress = QKnxAddress::createIndividual(1, 1, 1);
-    QKnxNpdu npdu = QKnxNpduFactory::createMemoryWriteNpdu(number, memoryAddress, data,
+    quint16 memoryAddress = 0x1502;
+    auto npdu = QKnxNpduFactory::PointToPoint::createMemoryWriteNpdu(QKnxNpduFactory::PointToPoint
+        ::Mode::ConnectionOriented, number, memoryAddress, data,
         sequenceNumber);
 
     QCOMPARE(npdu.size(), quint16(10));
-    std::bitset<8> tpci = quint8(QKnxNpdu::TransportLayerControlField::DataConnected);
-    std::bitset<8> sequenceNumberBits = quint8(sequenceNumber << 2);
-    tpci[2] = sequenceNumberBits[2];
-    tpci[3] = sequenceNumberBits[3];
-    tpci[4] = sequenceNumberBits[4];
-    tpci[5] = sequenceNumberBits[5];
-    QKnxNpdu::TransportLayerControlField fullTpci =
-        QKnxNpdu::TransportLayerControlField(quint8(tpci.to_ulong()));
-    QCOMPARE(npdu.transportLayerControlField(), fullTpci);
-    QCOMPARE(npdu.applicationLayerControlField(),
-        QKnxNpdu::ApplicationLayerControlField::MemoryWrite);
+    QCOMPARE(npdu.sequenceNumber(), sequenceNumber);
+    QCOMPARE(npdu.transportControlField(), QKnxNpdu::TransportControlField::DataConnected);
+    QCOMPARE(npdu.applicationControlField(), QKnxNpdu::ApplicationControlField::MemoryWrite);
 }
 
 void tst_QKnxNpduFactory::testUserMemoryRead()
 {
     quint8 sequenceNumber = 2;
     quint8 addressExtention = 1;
-    quint8 number = 2;
-    QKnxAddress memoryAddress = QKnxAddress::createIndividual(1, 1, 1);
-    QKnxNpdu npdu = QKnxNpduFactory::createUserMemoryReadNpdu(addressExtention, number,
-        memoryAddress, sequenceNumber);
+    quint8 number = 3;
+    quint16 memoryAddress = 0xffff;
+    auto npdu = QKnxNpduFactory::PointToPointConnectionOriented::createUserMemoryReadNpdu(addressExtention,
+        number, memoryAddress, sequenceNumber);
 
     QCOMPARE(npdu.size(), quint16(6));
-    std::bitset<8> tpci = quint8(QKnxNpdu::TransportLayerControlField::DataConnected);
-    std::bitset<8> sequenceNumberBits = quint8(sequenceNumber << 2);
-    tpci[2] = sequenceNumberBits[2];
-    tpci[3] = sequenceNumberBits[3];
-    tpci[4] = sequenceNumberBits[4];
-    tpci[5] = sequenceNumberBits[5];
-    QKnxNpdu::TransportLayerControlField fullTpci =
-        QKnxNpdu::TransportLayerControlField(quint8(tpci.to_ulong()));
-    QCOMPARE(npdu.transportLayerControlField(), fullTpci);
-    QCOMPARE(npdu.applicationLayerControlField(),
-        QKnxNpdu::ApplicationLayerControlField::UserMemoryRead);
+    QCOMPARE(npdu.sequenceNumber(), sequenceNumber);
+    QCOMPARE(npdu.data(), QByteArray::fromHex("13FFFF"));
+    QCOMPARE(npdu.transportControlField(), QKnxNpdu::TransportControlField::DataConnected);
+    QCOMPARE(npdu.applicationControlField(), QKnxNpdu::ApplicationControlField::UserMemoryRead);
 }
 
 void tst_QKnxNpduFactory::testUserMemoryWrite()
 {
-    QByteArray data = QByteArray::fromHex("0102030405");
+    auto data = QByteArray::fromHex("0102030405");
     quint8 sequenceNumber = 2;
     quint8 addressExtention = 1;
     quint8 number = 2;
-    QKnxAddress memoryAddress = QKnxAddress::createIndividual(1, 1, 1);
-    QKnxNpdu npdu = QKnxNpduFactory::createUserMemoryWriteNpdu(addressExtention, number,
-        memoryAddress, data, sequenceNumber);
+    quint16 memoryAddress = 0x0000;
+    auto npdu = QKnxNpduFactory::PointToPointConnectionOriented::createUserMemoryWriteNpdu(addressExtention,
+        number, memoryAddress, data, sequenceNumber);
 
     QCOMPARE(npdu.size(), quint16(11));
-    std::bitset<8> tpci = quint8(QKnxNpdu::TransportLayerControlField::DataConnected);
-    std::bitset<8> sequenceNumberBits = quint8(sequenceNumber << 2);
-    tpci[2] = sequenceNumberBits[2];
-    tpci[3] = sequenceNumberBits[3];
-    tpci[4] = sequenceNumberBits[4];
-    tpci[5] = sequenceNumberBits[5];
-    QKnxNpdu::TransportLayerControlField fullTpci =
-        QKnxNpdu::TransportLayerControlField(quint8(tpci.to_ulong()));
-    QCOMPARE(npdu.transportLayerControlField(), fullTpci);
-    QCOMPARE(npdu.applicationLayerControlField(),
-        QKnxNpdu::ApplicationLayerControlField::UserMemoryWrite);
+    QCOMPARE(npdu.sequenceNumber(), sequenceNumber);
+    QCOMPARE(npdu.data(), QByteArray::fromHex("1200000102030405"));
+    QCOMPARE(npdu.transportControlField(), QKnxNpdu::TransportControlField::DataConnected);
+    QCOMPARE(npdu.applicationControlField(), QKnxNpdu::ApplicationControlField::UserMemoryWrite);
 }
 
 void tst_QKnxNpduFactory::testUserManufacturerInfoRead()
 {
     quint8 sequenceNumber = 2;
-    QKnxNpdu npdu = QKnxNpduFactory::createUserManufacturerInfoReadNpdu(sequenceNumber);
+    auto npdu = QKnxNpduFactory::PointToPointConnectionOriented::createUserManufacturerInfoReadNpdu(sequenceNumber);
 
     QCOMPARE(npdu.size(), quint16(3));
-    std::bitset<8> tpci = quint8(QKnxNpdu::TransportLayerControlField::DataConnected);
-    std::bitset<8> sequenceNumberBits = quint8(sequenceNumber << 2);
-    tpci[2] = sequenceNumberBits[2];
-    tpci[3] = sequenceNumberBits[3];
-    tpci[4] = sequenceNumberBits[4];
-    tpci[5] = sequenceNumberBits[5];
-    QKnxNpdu::TransportLayerControlField fullTpci =
-        QKnxNpdu::TransportLayerControlField(quint8(tpci.to_ulong()));
-    QCOMPARE(npdu.transportLayerControlField(), fullTpci);
-    QCOMPARE(npdu.applicationLayerControlField(),
-        QKnxNpdu::ApplicationLayerControlField::UserManufacturerInfoRead);
+    QCOMPARE(npdu.sequenceNumber(), sequenceNumber);
+    QCOMPARE(npdu.transportControlField(), QKnxNpdu::TransportControlField::DataConnected);
+    QCOMPARE(npdu.applicationControlField(), QKnxNpdu::ApplicationControlField::UserManufacturerInfoRead);
 }
 
 QTEST_APPLESS_MAIN(tst_QKnxNpduFactory)

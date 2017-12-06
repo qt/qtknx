@@ -34,4 +34,5 @@ SUBDIRS += cmake \
     qknxnpdufactory \
     qknxdevicemanagementframe \
     qknxcontrolfield \
+    qknxtunnelframefactory \
     qknxdatapointtype

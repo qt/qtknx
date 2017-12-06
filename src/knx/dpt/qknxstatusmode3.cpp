@@ -32,20 +32,30 @@
 
 QT_BEGIN_NAMESPACE
 
+/*!
+    \class QKnxStatusMode3
+
+    \inmodule QtKnx
+    \brief The QKnxStatusMode3 class is a datapoint type for a status mode 3.
+
+    This is a fixed size datapoint type with the length of 1 byte.
+
+    \sa QKnxDatapointType
+*/
 
 // -- QKnxStatusMode3
 
 QKnxStatusMode3::QKnxStatusMode3()
-    : QKnxDatapointType(MainType, SubType, TypeSize)
+    : QKnxStatusMode3(Mode::Unknown, StatusFlags())
+{}
+
+QKnxStatusMode3::QKnxStatusMode3(Mode mode, StatusFlags statusFlags)
+    : QKnxFixedSizeDatapointType(MainType, SubType, TypeSize)
 {
     setDescription(tr("Status with Mode"));
     setRange(QVariant(0x01), QVariant(0xfc));
     setRangeText(tr("All set and Mode 0"), tr("All cleared and Mode 2"));
-}
 
-QKnxStatusMode3::QKnxStatusMode3(Mode mode, StatusFlags statusFlags)
-    : QKnxStatusMode3()
-{
     setMode(mode);
     setStatusFlags(statusFlags);
 }
@@ -68,15 +78,15 @@ bool QKnxStatusMode3::setMode(Mode mode)
 bool QKnxStatusMode3::isSet(Status status) const
 {
     if (status == Status::A)
-        return !testBit(byte(0), 7);
+        return !QKnxDatapointType::testBit(byte(0), 7);
     if (status == Status::B)
-        return !testBit(byte(0), 6);
+        return !QKnxDatapointType::testBit(byte(0), 6);
     if (status == Status::C)
-        return !testBit(byte(0), 5);
+        return !QKnxDatapointType::testBit(byte(0), 5);
     if (status == Status::D)
-        return !testBit(byte(0), 4);
+        return !QKnxDatapointType::testBit(byte(0), 4);
     if (status == Status::E)
-        return !testBit(byte(0), 3);
+        return !QKnxDatapointType::testBit(byte(0), 3);
     return false;
 }
 
@@ -89,25 +99,25 @@ QKnxStatusMode3::StatusFlags QKnxStatusMode3::statusFlags() const
         .setFlag(Status::E, isSet(Status::E));
 }
 
-void QKnxStatusMode3::setStatusFlags(StatusFlags statusFlags)
+bool  QKnxStatusMode3::setStatusFlags(StatusFlags statusFlags)
 {
     quint8 value = byte(0);
-    QKnxDatapointType::setBit(&value, !statusFlags.testFlag(Status::A), 7);
-    QKnxDatapointType::setBit(&value, !statusFlags.testFlag(Status::B), 6);
-    QKnxDatapointType::setBit(&value, !statusFlags.testFlag(Status::C), 5);
-    QKnxDatapointType::setBit(&value, !statusFlags.testFlag(Status::D), 4);
-    QKnxDatapointType::setBit(&value, !statusFlags.testFlag(Status::E), 3);
-    setByte(0, value);
+    value = QKnxDatapointType::setBit(value, !statusFlags.testFlag(Status::A), 7);
+    value = QKnxDatapointType::setBit(value, !statusFlags.testFlag(Status::B), 6);
+    value = QKnxDatapointType::setBit(value, !statusFlags.testFlag(Status::C), 5);
+    value = QKnxDatapointType::setBit(value, !statusFlags.testFlag(Status::D), 4);
+    value = QKnxDatapointType::setBit(value, !statusFlags.testFlag(Status::E), 3);
+    return setByte(0, value);
 }
 
-void QKnxStatusMode3::setStatus(Status status)
+bool QKnxStatusMode3::setStatus(Status status)
 {
-    setStatusFlags(statusFlags() | status);
+    return setStatusFlags(statusFlags() | status);
 }
 
-void QKnxStatusMode3::removeStatus(Status status)
+bool QKnxStatusMode3::removeStatus(Status status)
 {
-    setStatusFlags(statusFlags() &~ status);
+    return setStatusFlags(statusFlags() &~ status);
 }
 
 bool QKnxStatusMode3::isValid() const

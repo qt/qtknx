@@ -34,6 +34,7 @@
 #include <QtKnx/qknxnetip.h>
 #include <QtKnx/qknxnetipconnectionheaderframe.h>
 #include <QtKnx/qknxglobal.h>
+#include <QtKnx/qknxtunnelframe.h>
 
 QT_BEGIN_NAMESPACE
 
@@ -43,7 +44,7 @@ public:
     QKnxNetIpTunnelingRequest() = default;
     ~QKnxNetIpTunnelingRequest() override = default;
 
-    QKnxNetIpTunnelingRequest(quint8 channelId, quint8 sequenceCount, const QKnxCemiFrame &cemi);
+    QKnxNetIpTunnelingRequest(quint8 channelId, quint8 sequenceCount, const QKnxTunnelFrame &cemi);
 
     template <typename T> static QKnxNetIpTunnelingRequest fromBytes(const T &bytes, quint16 index)
     {
@@ -53,7 +54,7 @@ public:
 
     quint8 channelId() const;
     quint8 sequenceCount() const;
-    QKnxCemiFrame cemi() const;
+    QKnxTunnelFrame cemi() const;
 
     bool isValid() const override;
 

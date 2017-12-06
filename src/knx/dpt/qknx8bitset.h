@@ -35,7 +35,7 @@
 
 QT_BEGIN_NAMESPACE
 
-class Q_KNX_EXPORT QKnx8BitSet : public QKnxDatapointType
+class Q_KNX_EXPORT QKnx8BitSet : public QKnxFixedSizeDatapointType
 {
 public:
     QKnx8BitSet();
@@ -48,7 +48,7 @@ public:
     void setBit(bool value, int index);
 
     quint8 byte() const;
-    void setByte(quint8 value);
+    bool setByte(quint8 value);
 
     bool isValid() const override;
 
@@ -78,14 +78,44 @@ public:
     static const constexpr int SubType = 0x01;
 
     Attributes value() const;
-    void setValue(Attributes attributes);
+    bool setValue(Attributes attributes);
 
     bool isSet(Attribute attribute) const;
 
-    void setAttribute(Attribute attribute);
-    void removeAttribute(Attribute attribute);
+    bool setAttribute(Attribute attribute);
+    bool removeAttribute(Attribute attribute);
+};
+
+class Q_KNX_EXPORT QKnxDeviceControl : public QKnx8BitSet
+{
+    Q_GADGET
+
+public:
+    enum Attribute : quint8
+    {
+        UserStopped = 0x01,
+        OwnIA = 0x02,
+        VerifyMode = 0x04,
+        SafeState = 0x08
+    };
+    Q_ENUM(Attribute)
+    Q_DECLARE_FLAGS(Attributes, Attribute)
+
+    QKnxDeviceControl();
+    explicit QKnxDeviceControl(Attributes attributes);
+
+    static const constexpr int SubType = 0x02;
+
+    Attributes value() const;
+    bool setValue(Attributes attributes);
+
+    bool isSet(Attribute attribute) const;
+
+    bool setAttribute(Attribute attribute);
+    bool removeAttribute(Attribute attribute);
 };
 Q_DECLARE_OPERATORS_FOR_FLAGS(QKnxGeneralStatus::Attributes)
+Q_DECLARE_OPERATORS_FOR_FLAGS(QKnxDeviceControl::Attributes)
 
 QT_END_NAMESPACE
 

@@ -44,10 +44,44 @@ class QKnxNpduFactory;
 class Q_KNX_EXPORT QKnxNpdu final : private QKnxByteStore
 {
 public:
-    enum class TransportLayerControlField : quint8
+    enum class ErrorCode : quint8
+    {
+        NoError = 0x00,
+        Error   = 0x01
+    };
+
+    enum class ResetType : quint8
+    {
+        BasicRestart  = 0x00,
+        MasterRestart = 0x01
+    };
+
+    enum class EraseCode : quint8
+    {
+        Reserved,
+        ConfirmedRestart,
+        FactoryReset,
+        ResetIa,
+        ResetAp,
+        ResetParam,
+        ResetLinks,
+        ResetWithoutIa,
+        Invalid
+    };
+
+    enum class LinkWriteFlags : quint8
+    {
+        AddGroupAddress = 0x00,
+        AddSendingGroupAddress = 0x01,
+        AddNotSendingGroupAddress = 0x00,
+        DeleteGroupAddress = 0x02,
+    };
+
+    enum class TransportControlField : quint8
     {
         DataGroup = 0x00,
         DataBroadcast = 0x00,
+        DataSystemBroadcast = 0x00,
         DataTagGroup = 0x04,
         DataIndividual = 0x00,
         DataConnected = 0x40,
@@ -55,12 +89,12 @@ public:
         Disconnect = 0x81,
         Acknowledge = 0xc2,
         NoAcknowledge = 0xc3,
-        Invalid = 0xff
+        Invalid = 0xfc
     };
-    TransportLayerControlField transportLayerControlField() const;
-    void setTransportLayerControlField(TransportLayerControlField tpci);
+    TransportControlField transportControlField() const;
+    void setTransportControlField(TransportControlField tpci);
 
-    enum class ApplicationLayerControlField : quint16
+    enum class ApplicationControlField : quint16
     {
         GroupValueRead = 0x0000,
         GroupValueResponse = 0x0040,
@@ -106,6 +140,7 @@ public:
         DomainAddressResponse = 0x03e2,
         DomainAddressSelectiveRead = 0x03e3,
         NetworkParameterWrite = 0x03e4,
+        NetworkParameterInfoReport = 0x03db,
         LinkRead = 0x03e5,
         LinkResponse = 0x03e6,
         LinkWrite = 0x03e7,
@@ -120,32 +155,46 @@ public:
 
         Invalid = 0xffff
     };
-    ApplicationLayerControlField applicationLayerControlField() const;
-    void setApplicationLayerControlField(ApplicationLayerControlField apci);
+    ApplicationControlField applicationControlField() const;
+    void setApplicationControlField(ApplicationControlField apci);
 
     QKnxNpdu() = default;
     ~QKnxNpdu() override = default;
 
-    explicit QKnxNpdu(TransportLayerControlField tpci);
-    QKnxNpdu(TransportLayerControlField tpci, ApplicationLayerControlField apci);
+    explicit QKnxNpdu(TransportControlField tpci);
+    QKnxNpdu(TransportControlField tpci, ApplicationControlField apci);
+    QKnxNpdu(TransportControlField tpci, ApplicationControlField apci, const QByteArray &data);
+    QKnxNpdu(TransportControlField tpci, ApplicationControlField apci, quint8 seqNumber,
+        const QByteArray &data = {});
 
     bool isValid() const;
+    quint8 dataSize() const;
+
+    quint8 sequenceNumber() const;
+    void setSequenceNumber(quint8 seqNumber);
 
     QByteArray data() const;
-    bool setData(const QByteArray &data);
+    void setData(const QByteArray &data);
 
     template <typename T, std::size_t S = 0>
-        static QKnxNpdu fromBytes(const T &type, quint16 index, quint16 size)
+        static QKnxNpdu fromBytes(const T &type, quint16 index, quint8 size = 0)
     {
         static_assert(is_type<T, QByteArray, QVector<quint8>, QKnxByteStoreRef, std::deque<quint8>,
             std::vector<quint8>, std::array<quint8, S>>::value, "Type not supported.");
 
-        if (size > 257)
+        const qint32 availableSize = type.size() - index;
+        if (availableSize < 1) // size field is missing
+            return {};
+
+        // see 03_06_03 EMI_IMI, paragraph 4.1.5.3.1 Implementation and usage
+        // read NPDU size, can be 0x00 in case of RF-frames and then the size needs to be passed
+        quint8 npduSize = qMax<quint8>(type[index] + 2, size); // TODO: RF-frame handling
+        if (npduSize == 255 || npduSize > availableSize) // 255 escape-code, or missing bytes
             return {};
 
         QKnxNpdu npdu;
         auto begin = std::next(std::begin(type), index);
-        npdu.setBytes(begin, std::next(begin, size));
+        npdu.setBytes(begin, std::next(begin, npduSize));
         return npdu;
     }
 
@@ -154,8 +203,12 @@ public:
     using QKnxByteStore::bytes;
     using QKnxByteStore::toString;
 };
-Q_DECLARE_TYPEINFO(QKnxNpdu::TransportLayerControlField, Q_PRIMITIVE_TYPE);
-Q_DECLARE_TYPEINFO(QKnxNpdu::ApplicationLayerControlField, Q_PRIMITIVE_TYPE);
+Q_DECLARE_TYPEINFO(QKnxNpdu::ErrorCode, Q_PRIMITIVE_TYPE);
+Q_DECLARE_TYPEINFO(QKnxNpdu::ResetType, Q_PRIMITIVE_TYPE);
+Q_DECLARE_TYPEINFO(QKnxNpdu::EraseCode, Q_PRIMITIVE_TYPE);
+Q_DECLARE_TYPEINFO(QKnxNpdu::LinkWriteFlags, Q_PRIMITIVE_TYPE);
+Q_DECLARE_TYPEINFO(QKnxNpdu::TransportControlField, Q_PRIMITIVE_TYPE);
+Q_DECLARE_TYPEINFO(QKnxNpdu::ApplicationControlField, Q_PRIMITIVE_TYPE);
 
 QT_END_NAMESPACE
 

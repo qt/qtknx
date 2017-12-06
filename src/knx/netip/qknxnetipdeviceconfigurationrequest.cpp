@@ -32,7 +32,7 @@
 QT_BEGIN_NAMESPACE
 
 QKnxNetIpDeviceConfigurationRequest::QKnxNetIpDeviceConfigurationRequest(quint8 id,
-        quint8 sequenceCount, const QKnxCemiFrame &cemi)
+        quint8 sequenceCount, const QKnxLocalDeviceManagementFrame &cemi)
     : QKnxNetIpConnectionHeaderFrame(QKnxNetIp::ServiceType::DeviceConfigurationRequest)
 {
     setConnectionHeader({ id, sequenceCount });
@@ -54,16 +54,15 @@ quint8 QKnxNetIpDeviceConfigurationRequest::sequenceCount() const
     return connectionHeader().sequenceCount();
 }
 
-QKnxCemiFrame QKnxNetIpDeviceConfigurationRequest::cemi() const
+QKnxLocalDeviceManagementFrame QKnxNetIpDeviceConfigurationRequest::cemi() const
 {
     auto ref = payloadRef(connectionHeaderSize());
-    return QKnxCemiFrame::fromBytes(ref.bytes<QByteArray>(), 0, ref.size());
+    return QKnxLocalDeviceManagementFrame::fromBytes(ref.bytes<QByteArray>(), 0, ref.size());
 }
 
 bool QKnxNetIpDeviceConfigurationRequest::isValid() const
 {
-    // TODO: fix size check once the minimum CEMI frame size is known
-    return QKnxNetIpConnectionHeaderFrame::isValid() && size() >= 12
+    return QKnxNetIpConnectionHeaderFrame::isValid() && size() >= 12 && cemi().isValid()
         && code() == QKnxNetIp::ServiceType::DeviceConfigurationRequest;
 }
 

@@ -32,20 +32,34 @@
 
 QT_BEGIN_NAMESPACE
 
+/*!
+    \class QKnxTimeOfDay
+    \inherits QKnxFixedSizeDatapointType
+    \inmodule QtKnx
+
+    \brief The QKnxTimeOfDay class is a datapoint type for the time of day.
+
+    This is a fixed size datapoint type with the length of 3 bytes.
+
+    The left byte of the data holds the day as 3 bits and the hour as 5 bits,
+    the middle byte holds the minutes as 5 bits, and the right byte holds the
+    seconds as 5 bits.
+
+    \sa QKnxDatapointType
+*/
 
 // -- QKnxTimeOfDay
 
 QKnxTimeOfDay::QKnxTimeOfDay()
-    : QKnxDatapointType(MainType, SubType, TypeSize)
+    : QKnxTimeOfDay(QKnxTime(0,0,0))
+{}
+
+QKnxTimeOfDay::QKnxTimeOfDay(const QKnxTime &time)
+    : QKnxFixedSizeDatapointType(MainType, SubType, TypeSize)
 {
     setDescription(tr("Time of day"));
     setRangeText(tr("No day, 00:00:00"), tr("Sunday, 23:59:59"));
     setRange(QVariant::fromValue(QKnxTime(00, 00, 00)), QVariant::fromValue(QKnxTime(23, 59, 59)));
-}
-
-QKnxTimeOfDay::QKnxTimeOfDay(const QKnxTime &time)
-    : QKnxTimeOfDay()
-{
     setValue(time);
 }
 
@@ -61,14 +75,14 @@ QKnxTime QKnxTimeOfDay::value() const
         static_cast<QKnxTime::DayOfWeek> ((byte(0) & 0xe0) >> 5u) };
 }
 
-void QKnxTimeOfDay::setValue(const QKnxTime &time)
+bool QKnxTimeOfDay::setValue(const QKnxTime &time)
 {
     if (!time.isValid())
-        return;
+        return false;
 
-    setByte(2, quint8(time.second()));
-    setByte(1, quint8(time.minute()));
-    setByte(0, quint8(time.hour()) | quint8(time.dayOfWeek()) << 5u);
+    return setByte(2, quint8(time.second()))
+        && setByte(1, quint8(time.minute()))
+        && setByte(0, quint8(time.hour()) | quint8(time.dayOfWeek()) << 5u);
 }
 
 quint8 QKnxTimeOfDay::hour() const
@@ -76,10 +90,11 @@ quint8 QKnxTimeOfDay::hour() const
     return byte(0) & 0x1f;
 }
 
-void QKnxTimeOfDay::setHour(quint8 hour)
+bool QKnxTimeOfDay::setHour(quint8 hour)
 {
     if (hour < 24)
-        setByte(0, quint8(byte(0) &0xe0) | hour);
+        return setByte(0, quint8(byte(0) &0xe0) | hour);
+    return false;
 }
 
 quint8 QKnxTimeOfDay::minute() const
@@ -87,10 +102,11 @@ quint8 QKnxTimeOfDay::minute() const
     return byte(1);
 }
 
-void QKnxTimeOfDay::setMinute(quint8 minute)
+bool QKnxTimeOfDay::setMinute(quint8 minute)
 {
     if (minute < 60)
-        setByte(1, minute);
+       return setByte(1, minute);
+    return false;
 }
 
 quint8 QKnxTimeOfDay::second() const
@@ -98,10 +114,11 @@ quint8 QKnxTimeOfDay::second() const
     return byte(2);
 }
 
-void QKnxTimeOfDay::setSecond(quint8 second)
+bool QKnxTimeOfDay::setSecond(quint8 second)
 {
     if (second < 60)
-        setByte(2, second);
+       return setByte(2, second);
+    return false;
 }
 
 QKnxTime::DayOfWeek QKnxTimeOfDay::dayOfDay() const
@@ -109,11 +126,14 @@ QKnxTime::DayOfWeek QKnxTimeOfDay::dayOfDay() const
     return QKnxTime::DayOfWeek(quint8(byte(0) & 0xe0) >> 5u);
 }
 
-void QKnxTimeOfDay::setDayOfWeek(QKnxTime::DayOfWeek day)
+bool QKnxTimeOfDay::setDayOfWeek(QKnxTime::DayOfWeek day)
 {
-    setByte(0, quint8(day) << 5u | quint8(byte(0) & 0x1f));
+    return setByte(0, quint8(day) << 5u | quint8(byte(0) & 0x1f));
 }
 
+/*!
+    \reimp
+*/
 bool QKnxTimeOfDay::isValid() const
 {
     auto time = value();
@@ -121,11 +141,27 @@ bool QKnxTimeOfDay::isValid() const
         && (time >= minimum().value<QKnxTime>()) && (time <= maximum().value<QKnxTime>());
 }
 
+/*!
+    \class QKnxDate
+    \inherits QKnxFixedSizeDatapointType
+    \inmodule QtKnx
+
+    \brief The QKnxDate class is a datapoint type for a date.
+
+    This is a fixed size datapoint type with the length of 3 bytes.
+
+    The left byte of the data holds the day as 5 bits, the middle byte holds the
+    month as 4 bits, and the right byte holds the year as 7 bits.
+
+    Valids dates are from 1990-01-01 to 2089-12-31.
+
+    \sa QKnxDatapointType
+*/
 
 // -- QKnxDate
 
 QKnxDate::QKnxDate()
-    : QKnxDatapointType(MainType, SubType, TypeSize)
+    : QKnxDate(QDate(2000, 0, 0))
 {
     setDescription(tr("Date"));
     setRange(QDate(1990, 1, 1), QDate(2089, 12, 31));
@@ -133,7 +169,7 @@ QKnxDate::QKnxDate()
 }
 
 QKnxDate::QKnxDate(const QDate &date)
-    : QKnxDate()
+    : QKnxFixedSizeDatapointType(MainType, SubType, TypeSize)
 {
     setValue(date);
 }
@@ -149,13 +185,14 @@ QDate QKnxDate::value() const
     return { year(), month(), day() };
 }
 
-void QKnxDate::setValue(const QDate &date)
+bool QKnxDate::setValue(const QDate &date)
 {
     if (date.isValid() && (date >= minimum().toDate()) && (date <= maximum().toDate())) {
-        setByte(0, date.day());
-        setByte(1, date.month());
-        setByte(2, quint8(date.year() % 100));
+        return setByte(0, date.day())
+            && setByte(1, date.month())
+            && setByte(2, quint8(date.year() % 100));
     }
+    return false;
 }
 
 quint16 QKnxDate::year() const
@@ -164,10 +201,11 @@ quint16 QKnxDate::year() const
     return year + quint16(year < 90 ? 2000 : 1900);
 }
 
-void QKnxDate::setYear(quint16 year)
+bool QKnxDate::setYear(quint16 year)
 {
     if (year >= 1990 && year <= 2089)
-        setByte(2, quint8(year % 100));
+        return setByte(2, quint8(year % 100));
+    return false;
 }
 
 quint8 QKnxDate::month() const
@@ -175,10 +213,11 @@ quint8 QKnxDate::month() const
     return byte(1);
 }
 
-void QKnxDate::setMonth(quint8 month)
+bool QKnxDate::setMonth(quint8 month)
 {
-    if (month <= 12)
-        setByte(1, month);
+    if (month <= 12 && month > 0)
+        return setByte(1, month);
+    return false;
 }
 
 quint8 QKnxDate::day() const
@@ -186,12 +225,16 @@ quint8 QKnxDate::day() const
     return byte(0);
 }
 
-void QKnxDate::setDay(quint8 day)
+bool QKnxDate::setDay(quint8 day)
 {
-    if (day <= 31)
-        setByte(0, day);
+    if (day <= 31 && day > 0)
+        return setByte(0, day);
+    return false;
 }
 
+/*!
+    \reimp
+*/
 bool QKnxDate::isValid() const
 {
     auto date = value();
@@ -199,34 +242,46 @@ bool QKnxDate::isValid() const
         && (date >= minimum().toDate()) && (date <= maximum().toDate());
 }
 
+/*!
+    \class QKnxDateTime
+    \inherits QKnxFixedSizeDatapointType
+    \inmodule QtKnx
+
+    \brief The QKnxDateTime class is a datapoint type for the date and time.
+
+    This is a fixed size datapoint type with the length of 8 bytes.
+
+    Valid dates are from Monday 1990-01-01 to Wednesday 2155-12-31.
+
+    \sa QKnxDatapointType
+*/
 
 // -- QKnxDateTime
 
 QKnxDateTime::QKnxDateTime()
-    : QKnxDatapointType(MainType, SubType, TypeSize)
+    : QKnxDateTime(QDate(2000, 0, 0), QKnxTime24(0, 0), Attributes(),
+    ClockQuality::WithoutExtendedSyncSignal)
+{}
+
+QKnxDateTime::QKnxDateTime(const QDate &date, const QKnxTime24 &time, Attributes attributes,
+        ClockQuality quality)
+    : QKnxFixedSizeDatapointType(MainType, SubType, TypeSize)
 {
     setDescription(tr("Date Time"));
-
     setMinimumText(tr("Monday, 1900-01-01; Any day, 00:00:00"));
     setMaximumText(tr("Wednesday, 2155-12-31; Sunday, 24:00:00"));
     setMinimum(QVariant({ QDate(1900, 01, 01), QVariant::fromValue(QKnxTime24(00, 00, 00)) }));
     setMaximum(QVariant({ QDate(2155, 12, 31), QVariant::fromValue(QKnxTime24(24, 00, 00)) }));
-}
 
-QKnxDateTime::QKnxDateTime(const QDate &date, const QKnxTime24 &time, Attributes attributes,
-        ClockQuality quality)
-    : QKnxDateTime()
-{
     setValue(date, time, attributes, quality);
 }
 
-void QKnxDateTime::setValue(const QDate &date, const QKnxTime24 &time, Attributes attributes,
+bool QKnxDateTime::setValue(const QDate &date, const QKnxTime24 &time, Attributes attributes,
         ClockQuality quality)
 {
-    setDate(date);
-    setTime(time);
     setAttributes(attributes);
     setClockQuality(quality);
+    return setDate(date) && setTime(time);
 }
 
 QDate QKnxDateTime::date() const
@@ -234,13 +289,14 @@ QDate QKnxDateTime::date() const
     return { byte(0) + 1900, byte(1), byte(2) };
 }
 
-void QKnxDateTime::setDate(const QDate &date)
+bool QKnxDateTime::setDate(const QDate &date)
 {
     if (date.isValid() && (date.year() >= 1900) && (date.year() <= 2155)) {
-        setByte(0, quint8(date.year() - 1900));
-        setByte(1, date.month());
-        setByte(2, date.day());
+        return setByte(0, quint8(date.year() - 1900))
+            && setByte(1, date.month())
+            && setByte(2, date.day());
     }
+    return false;
 }
 
 QKnxTime24 QKnxDateTime::time() const
@@ -248,13 +304,14 @@ QKnxTime24 QKnxDateTime::time() const
     return { byte(3), byte(4), byte(5) };
 }
 
-void QKnxDateTime::setTime(const QKnxTime24 &time)
+bool QKnxDateTime::setTime(const QKnxTime24 &time)
 {
     if (time.isValid()) {
-        setByte(3, quint8(time.hour()) | quint8(time.dayOfWeek()) << 5u);
-        setByte(4, quint8(time.minute()));
-        setByte(5, quint8(time.second()));
+        return setByte(3, quint8(time.hour()) | quint8(time.dayOfWeek()) << 5u)
+            && setByte(4, quint8(time.minute()))
+            && setByte(5, quint8(time.second()));
     }
+    return false;
 }
 
 QKnxDateTime::Attributes QKnxDateTime::attributes() const
@@ -272,14 +329,14 @@ QKnxDateTime::Attributes QKnxDateTime::attributes() const
 void QKnxDateTime::setAttributes(Attributes attributes)
 {
     quint8 byte = 0x00;
-    QKnxDatapointType::setBit(&byte, attributes.testFlag(Attribute::Fault), 7);
-    QKnxDatapointType::setBit(&byte, attributes.testFlag(Attribute::WorkingDay), 6);
-    QKnxDatapointType::setBit(&byte, attributes.testFlag(Attribute::WorkingDayInvalid), 5);
-    QKnxDatapointType::setBit(&byte, attributes.testFlag(Attribute::YearInvalild), 4);
-    QKnxDatapointType::setBit(&byte, attributes.testFlag(Attribute::DateInvalid), 3);
-    QKnxDatapointType::setBit(&byte, attributes.testFlag(Attribute::DayOfWeekInvalid), 2);
-    QKnxDatapointType::setBit(&byte, attributes.testFlag(Attribute::TimeInvalid), 1);
-    QKnxDatapointType::setBit(&byte, attributes.testFlag(Attribute::StandardSummerTime), 0);
+    byte = QKnxDatapointType::setBit(byte, attributes.testFlag(Attribute::Fault), 7);
+    byte = QKnxDatapointType::setBit(byte, attributes.testFlag(Attribute::WorkingDay), 6);
+    byte = QKnxDatapointType::setBit(byte, attributes.testFlag(Attribute::WorkingDayInvalid), 5);
+    byte = QKnxDatapointType::setBit(byte, attributes.testFlag(Attribute::YearInvalild), 4);
+    byte = QKnxDatapointType::setBit(byte, attributes.testFlag(Attribute::DateInvalid), 3);
+    byte = QKnxDatapointType::setBit(byte, attributes.testFlag(Attribute::DayOfWeekInvalid), 2);
+    byte = QKnxDatapointType::setBit(byte, attributes.testFlag(Attribute::TimeInvalid), 1);
+    byte = QKnxDatapointType::setBit(byte, attributes.testFlag(Attribute::StandardSummerTime), 0);
     setByte(6, byte);
 }
 
@@ -290,9 +347,12 @@ QKnxDateTime::ClockQuality QKnxDateTime::clockQuality() const
 
 void QKnxDateTime::setClockQuality(ClockQuality quality)
 {
-    QKnxDatapointType::setBit(&(operator[](7)), bool(quality), 7);
+    setByte(7, QKnxDatapointType::setBit(byte(7), bool(quality), 7));
 }
 
+/*!
+    \reimp
+*/
 bool QKnxDateTime::isValid() const
 {
     auto tmpDate = date(); auto tmpTime = time();

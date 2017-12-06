@@ -80,12 +80,12 @@ QKnxExtendedControlField::QKnxExtendedControlField(const QVector<quint8> &data)
 
 QKnxAddress::Type QKnxExtendedControlField::destinationAddressType() const
 {
-    return static_cast<QKnxAddress::Type> (!quint8(m_ctrl2[7]));
+    return static_cast<QKnxAddress::Type> (quint8(m_ctrl2[7]));
 }
 
 void QKnxExtendedControlField::setDestinationAddressType(QKnxAddress::Type address)
 {
-    m_ctrl2[7] = static_cast<int> (address == QKnxAddress::Type::Group);
+    m_ctrl2[7] = static_cast<int> (address);
 }
 
 quint8 QKnxExtendedControlField::hopCount() const
@@ -129,7 +129,7 @@ QString QKnxExtendedControlField::toString() const
 }
 
 /*!
-    \fn auto QKnxExtendedControlField::bytes() const
+    \fn quint8 QKnxExtendedControlField::bytes() const
 
     Returns the extended control field as byte or range of bytes.
 
@@ -153,7 +153,7 @@ QString QKnxExtendedControlField::toString() const
 QDebug operator<<(QDebug debug, const QKnxExtendedControlField &field)
 {
     QDebugStateSaver _(debug);
-    debug.nospace().noquote() << "0x" << hex << qSetFieldWidth(2) << qSetPadChar('0')
+    debug.nospace().noquote() << "0x" << hex << qSetFieldWidth(2) << qSetPadChar(QLatin1Char('0'))
         << field.bytes();
     return debug;
 }

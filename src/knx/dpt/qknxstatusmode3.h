@@ -35,7 +35,7 @@
 
 QT_BEGIN_NAMESPACE
 
-class Q_KNX_EXPORT QKnxStatusMode3 : public QKnxDatapointType
+class Q_KNX_EXPORT QKnxStatusMode3 : public QKnxFixedSizeDatapointType
 {
     Q_GADGET
 
@@ -71,11 +71,11 @@ public:
     bool setMode(Mode mode);
 
     StatusFlags statusFlags() const;
-    void setStatusFlags(StatusFlags statusFlags);
+    bool setStatusFlags(StatusFlags statusFlags);
 
     bool isSet(Status status) const;
-    void setStatus(Status status);
-    void removeStatus(Status status);
+    bool setStatus(Status status);
+    bool removeStatus(Status status);
 
     bool isValid() const override;
 };

@@ -31,23 +31,96 @@
 
 QT_BEGIN_NAMESPACE
 
+// List of Message code for Tunneling from 3.8.4 paragraph 2.2.1
+
+/*!
+    \class QKnxTunnelFrame
+
+    \inmodule QtKnx
+    \brief The QKnxTunnelFrame is a CEMI frame meant to be sent via a
+    \l QKnxNetIpTunnelConnection between a client and a KNXnet/IP server.
+
+    Following the KNXnet/IP tunneling specifications, only the
+    \l QKnxCemiFrame::MessageCode listed below are valid QKnxTunnelFrame message
+    code to be sent via KNXnet/IP tunnel connection:
+
+    \list
+        \li DataRequest (L_Data.req)
+        \li DataConfirmation (L_Data.con)
+        \li DataIndication (L_Data.ind)
+        \li BusmonitorIndication (L_Busmon.ind)
+        \li RawRequest (L_Raw.req)
+        \li RawIndication (L_Raw.ind)
+        \li RawConfirmation (L_Raw.con)
+        \li ResetRequest (M_Reset.req)
+    \endlist
+
+    For the moment, the QtKnx module is only implementing KNXnet/IP tunnel
+    connection, so only the previously mentioned message code should be used.
+
+    The message code is also to be chosen depending on the application service
+    (encoded with the \l QKnxNpdu::ApplicationControlField) hold in the \l QKnxNpdu.
+    In the \l QKnxNpduFactory, the application services are split into categories
+    depending on the addressing method.
+
+    The most basic functionalities are to be addressed with set of services built
+    in \l QKnxNpduFactory::Multicast. For those services one should use
+    DataRequest (L_Data.req), DataConfirmation (L_Data.con) or DataIndication
+    (L_Data.ind) as QKnxTunnelFrame message code.
+*/
+
 QKnxTunnelFrame::QKnxTunnelFrame(QKnxTunnelFrame::MessageCode messageCode)
     : QKnxCemiFrame(messageCode)
 {}
 
+/*!
+  Returns true if the message code is valid.
+
+  \note This function needs to be extended.
+*/
 bool QKnxTunnelFrame::isValid() const
 {
-    return QKnxCemiFrame::isValid();
+    // TODO: Make sure all constraints from 3.3.2 paragraph 2.2 L_Data is checked here
+
+    //Extended control field destination address type corresponds to the destination address
+    if (destinationAddress().type() != extendedControlField().destinationAddressType())
+        return false;
+    // Npdu is valid
+    if (! npdu().isValid())
+        return false;
+
+    switch (messageCode()) {
+    // L_Data
+    case MessageCode::DataRequest:
+    case MessageCode::DataConfirmation:
+    case MessageCode::DataIndication:
+        // From 3.3.2 paragraph 2.2.1
+        if (sourceAddress().type() != QKnxAddress::Type::Individual)
+            return false;
+    default:
+        break;
+    }
     // TODO: check NPDU size, several cases need to be taken into account:
     // 1; Information-Length (max. value is 255); number of NPDU octets, TPCI octet not included!
-    // 2; Check precense of Pl/RF medium information in the additional info -> size always needs
-    //    to be greather then 15 bytes because both need additional information.
+    if (controlField().frameType() == QKnxControlField::FrameType::Extended
+        && npdu().size() > 257)
+        return false;
+    // Low Priority is Mandatory for long frame 3.3.2 paragraph 2.2.3
+    if (npdu().size() > 17 && controlField().priority() != QKnxControlField::Priority::Low)
+        return false;
+    // 2; Check presence of Pl/RF medium information in the additional info -> size always needs
+    //    to be greater then 15 bytes because both need additional information.
     //    03_06_03 EMI_IMI v01.03.03 AS.pdf page 76 Table(Use of flags in control field)
-    // 3; RF frames do not inlcude a length field at all, it is supposed to be set to 0x00.
+    // 3; RF frames do not include a length field at all, it is supposed to be set to 0x00.
     //    03_06_03 EMI_IMI v01.03.03 AS.pdf page 75 NOTE 1
-    // 4; control field frame type standard -> max. length value is 15
-    //    control field frame type extended -> max. length value is 255
-    //    03_03_02 Data Link Layer General v01.02.02 AS.pdf page 12 paragraph 2.2.5
+    // 4; 03_03_02 Data Link Layer General v01.02.02 AS.pdf page 12 paragraph 2.2.5
+    // control field frame type standard -> max. length value is 15
+    if (controlField().frameType() == QKnxControlField::FrameType::Standard
+        && npdu().byte(0) > 15)
+        return false;
+    //  control field frame type extended -> max. length value is 255
+
+    return QKnxCemiFrame::isValid();
 }
 
 QKnxControlField QKnxTunnelFrame::controlField() const
@@ -170,13 +243,13 @@ void QKnxTunnelFrame::setSourceAddress(const QKnxAddress &source)
     setServiceInformation(payload);
 }
 
-const QKnxAddress QKnxTunnelFrame::destionationAddress() const
+const QKnxAddress QKnxTunnelFrame::destinationAddress() const
 {
     return { extendedControlField().destinationAddressType(),
         serviceInformationRef(additionalInfosSize() + 1).bytes(4, 2) };
 }
 
-void QKnxTunnelFrame::setDestionationAddress(const QKnxAddress &destination)
+void QKnxTunnelFrame::setDestinationAddress(const QKnxAddress &destination)
 {
     auto payload = serviceInformation();
     payload.replaceBytes(additionalInfosSize() + 5, destination.bytes());
@@ -185,9 +258,12 @@ void QKnxTunnelFrame::setDestionationAddress(const QKnxAddress &destination)
 
 QKnxNpdu QKnxTunnelFrame::npdu() const
 {
-     // length field + ctrl + extCtrl + 2 * KNX address -> 7
-    return QKnxNpdu::fromBytes(serviceInformationRef(), additionalInfosSize() + 7,
-        size() - (additionalInfosSize() + 7));
+    // TODO: In RF-Frames the length field is set to 0x00, figure out how this fits in here.
+    // See 03_06_03 EMI_IMI, paragraph 4.1.5.3.1 Implementation and usage, page 75, Note 1,2,3
+
+    // length field + ctrl + extCtrl + 2 * KNX address -> 7 bytes
+    const quint8 npduOffset = additionalInfosSize() + 7 /* bytes */;
+    return QKnxNpdu::fromBytes(serviceInformationRef(), npduOffset, (size() - 1) - npduOffset);
 }
 
 void QKnxTunnelFrame::setNpdu(const QKnxNpdu &npdu)

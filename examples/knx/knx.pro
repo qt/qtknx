@@ -3,7 +3,7 @@ requires(qtHaveModule(network))
 TEMPLATE = subdirs
 
 
-SUBDIRS += discoverer tunnelclient
+SUBDIRS += discoverer tunnelclient demo
 
 qtHaveModule(widgets) {
     SUBDIRS += knxeditor

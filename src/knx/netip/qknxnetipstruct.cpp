@@ -65,7 +65,8 @@ QT_BEGIN_NAMESPACE
 
 static QDebug stream(QDebug debug, const QVector<quint8> &bytes)
 {
-    QDebug &dbg = debug.nospace().noquote() << "0x" << hex << qSetFieldWidth(2) << qSetPadChar('0');
+    QDebug &dbg = debug.nospace().noquote() << "0x" << hex << qSetFieldWidth(2)
+        << qSetPadChar(QLatin1Char('0'));
     for (quint8 byte : qAsConst(bytes))
         dbg << byte;
     return debug;

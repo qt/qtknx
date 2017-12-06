@@ -1,0 +1,158 @@
+/******************************************************************************
+**
+** Copyright (C) 2017 The Qt Company Ltd.
+** Contact: https://www.qt.io/licensing/
+**
+** This file is part of the QtKnx module.
+**
+** $QT_BEGIN_LICENSE:GPL$
+** Commercial License Usage
+** Licensees holding valid commercial Qt licenses may use this file in
+** accordance with the commercial license agreement provided with the
+** Software or, alternatively, in accordance with the terms contained in
+** a written agreement between you and The Qt Company. For licensing terms
+** and conditions see https://www.qt.io/terms-conditions. For further
+** information use the contact form at https://www.qt.io/contact-us.
+**
+** GNU General Public License Usage
+** Alternatively, this file may be used under the terms of the GNU
+** General Public License version 3 or (at your option) any later version
+** approved by the KDE Free Qt Foundation. The licenses are as published by
+** the Free Software Foundation and appearing in the file LICENSE.GPL3
+** included in the packaging of this file. Please review the following
+** information to ensure the GNU General Public License requirements will
+** be met: https://www.gnu.org/licenses/gpl-3.0.html.
+**
+** $QT_END_LICENSE$
+**
+******************************************************************************/
+
+/*!
+    \page qtknx-overview.html
+    \title Qt KNX Overview
+    \brief An overview of the Qt KNX module.
+
+    \note The Qt KNX module is currently available as a Technology Preview, and
+    therefore the API and functionality provided by the module may be subject
+    to change at any time without prior notice.
+
+    \l{KNX} is a standard for controlling home and building management equipment,
+    such as: lighting, blinds and shutters, security systems, energy management,
+    heating, ventilation and air-conditioning systems, signalling and monitoring
+    systems, interfaces to service and building control systems, remote control,
+    metering, audio and video control, and white goods.
+
+    Qt KNX implements the client side of a connection between a client and a
+    KNXnet/IP server. This connection enables sending messages to the KNX bus
+    and controlling the functionalities of the KNX devices. Only local device
+    management procedures and KNX application services working with group
+    addressing are fully supported.
+
+    \section1 KNXnet/IP Server Communication
+
+    The first step in the communication process between a client and a KNXnet/IP
+    server is to discover the KNXnet/IP server. This can be done using the class
+    \l QKnxNetIpServerDiscoveryAgent. If the description of the server during
+    the discovery is not enough, it is possible to learn more about a particular
+    server using the class \l QKnxNetIpServerDescriptionAgent.
+
+    \section2 Creating Connections
+
+    Once the server is discovered, in order to send messages to the KNX devices,
+    a connection must be established with the server data endpoints. The client
+    requests this connection by using the server's control endpoint.
+
+    Depending on the client's goal, different connections have to be opened.
+    If the client wants to access the management functionalities of the
+    KNXnet/IP server, the class \l QKnxNetIpDeviceManagementConnection takes
+    care of opening and maintaining the connection. If the client wants to
+    access the functionalities of a KNX device on the bus behind the KNXnet/IP
+    server, the class \l QKnxNetIpTunnelConnection takes care of the connection.
+
+    \section2 Sending Frames
+
+    Frames can be sent to the KNX bus by using \l QKnxNetIpTunnelConnection or
+    \l QKnxNetIpDeviceManagementConnection. With the former, \l QKnxTunnelFrame
+    objects are sent and with the latter, \l QKnxLocalDeviceManagementFrame
+    objects are sent.
+
+    To help build the frames, the following factories are provided:
+
+     \list
+        \li \l QKnxTunnelFrameFactory
+        \li \l QKnxLocalDeviceManagementFrameFactory
+    \endlist
+
+    \l QKnxLocalDeviceManagementFrame objects are dedicated to the KNXnet/IP
+    server. Sending those frames allows access to the server's interface
+    objects. The \l QKnxInterfaceObjectType holds the type of an interface
+    object. The objects themselves hold the properties and functionalities of
+    the server. The client can use \l QKnxLocalDeviceManagementFrame to read and
+    write the values in the server's interface objects.
+
+    \l QKnxTunnelFrame objects are sent to the KNX devices on the bus, behind
+    the KNXnet/IP server. To build the frames, the following are needed:
+
+    \list
+        \li The address that the frame has to be sent to, represented by
+            \l QKnxAddress.
+        \li The KNX application service the client wants to trigger. For a list
+            of available services, see \l QKnxNpdu::ApplicationControlField.
+        \li The data. Needed if a write service is being triggered.
+    \endlist
+
+    \section3 Tunnel Frame Addresses
+
+    The tunnel frame destination address \l QKnxAddress can be individual or a
+    group (see \l QKnxAddress::Type). An individual address targets a specific
+    device on the bus. A group address targets one or several instances of a
+    datapoint.
+
+    A datapoint represents a device functionality. Datapoint types are held by
+    \l QKnxDatapointType. To be grouped under the same  group address, datapoint
+    instances, also called group objects, must be of the same type. The group
+    addresses and the group objects they represent are defined in the KNX
+    project file.
+
+    \section3 KNX Application Service
+
+    The KNX application service and data are encapsulated in the \l QKnxNpdu
+    part of \l QKnxTunnelFrame. If the \l QKnxTunnelFrame object is not built
+    using \l QKnxTunnelFrameFactory, the \l QKnxNpduFactory class provides a
+    builder for the \l QKnxNpdu part of \l QKnxTunnelFrame. Each KNX application
+    service has a different builder. When needed, the data part is to be
+    provided as a \l QByteArray.
+
+    \section3 Datapoints
+
+    The data is the representation of the device functionality. It is the bits
+    corresponding to a given group object or interface object property.
+
+    If the client is addressing a group object, the \l QByteArray data is easily
+    built using the appropriate \l QKnxDatapointType type. The group object is a
+    realisation of a datapoint at the level of the device. To create data
+    corresponding to a given datapoint, one must know the type of the datapoint.
+
+    The datapoint type is found in the KNX project file where the group address
+    is described. The main number and subnumber of the datapoint indicate its
+    type. The class \l QKnxDatapointTypeFactory can create the
+     \l QKnxDatapointType corresponding to those two numbers.
+
+    \section2 Example
+
+    For example, a client has a tunnel connection in place and wants to turn on
+    a lamp. From the KNX project file, the client knows the switch of the lamp
+    is linked to the group address 2.6.4 and that the main- and sub-number of
+    the corresponding datapoint type are 1.1.
+
+    \code
+        QKnxNetIpTunnelConnection connection;
+        connection.connectToHost(QHostAddress(...), port);
+
+        const QKnxSwitch switch { QKnxSwitch::State::On };
+        const QKnxAddress address { QKnxAddress::Type::Group, "2.6.4" };
+        QKnxTunnelFrame frame = QKnxTunnelFrameFactory::GroupValue::WriteRequest(address,
+            switch.bytes());
+        connection.sendTunnelFrame(frame);
+    \endcode
+*/

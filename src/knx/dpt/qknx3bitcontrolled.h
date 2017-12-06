@@ -35,7 +35,7 @@
 
 QT_BEGIN_NAMESPACE
 
-class Q_KNX_EXPORT QKnx3BitControlled : public QKnxDatapointType
+class Q_KNX_EXPORT QKnx3BitControlled : public QKnxFixedSizeDatapointType
 {
     Q_GADGET
 
@@ -53,6 +53,7 @@ public:
     Q_ENUM(NumberOfIntervals)
 
     QKnx3BitControlled();
+    QKnx3BitControlled(bool control, NumberOfIntervals n);
 
     static const constexpr int TypeSize = 0x01;
     static const constexpr int MainType = 0x03;
@@ -66,7 +67,7 @@ public:
     bool isValid() const override;
 
 protected:
-    explicit QKnx3BitControlled(int subType);
+    explicit QKnx3BitControlled(int subType, bool control, NumberOfIntervals n);
 };
 
 class Q_KNX_EXPORT QKnxControlDimming : public QKnx3BitControlled

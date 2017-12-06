@@ -9,6 +9,8 @@ QMAKE_DOCS = $$PWD/doc/qtknx.qdocconf
 include(dpt/dpt.pri)
 include(netip/netip.pri)
 
+DEFINES += QT_NO_CAST_FROM_ASCII
+
 PUBLIC_HEADERS += \
     qknxglobal.h \
     qknxaddress.h \
@@ -28,6 +30,7 @@ PUBLIC_HEADERS += \
     qknxinterfaceobjectproperty.h \
     qknxlocaldevicemanagementframe.h \
     qknxlocaldevicemanagementframefactory.h \
+    qknxtunnelframefactory.h \
     qknxinterfaceobjectpropertydatatype.h
 
 PRIVATE_HEADERS +=
@@ -42,12 +45,15 @@ SOURCES += \
     qknxcemiframe.cpp \
     qknxtunnelframe.cpp \
     qknxnpdu.cpp \
-    qknxnpdufactory.cpp \
+    qknxnpdufactory_p2p.cpp \
     qknxinterfaceobjecttype.cpp \
     qknxinterfaceobjectproperty.cpp \
     qknxlocaldevicemanagementframe.cpp \
     qknxlocaldevicemanagementframefactory.cpp \
-    qknxinterfaceobjectpropertydatatype.cpp
+    qknxinterfaceobjectpropertydatatype.cpp \
+    qknxnpdufactory_multicast.cpp \
+    qknxtunnelframefactory.cpp \
+    qknxnpdufactory_broadcast.cpp
 
 HEADERS += $$PUBLIC_HEADERS $$PRIVATE_HEADERS
 

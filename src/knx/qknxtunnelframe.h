@@ -89,8 +89,8 @@ public:
     const QKnxAddress sourceAddress() const;
     void setSourceAddress(const QKnxAddress &address);
 
-    const QKnxAddress destionationAddress() const;
-    void setDestionationAddress(const QKnxAddress &address);
+    const QKnxAddress destinationAddress() const;
+    void setDestinationAddress(const QKnxAddress &address);
 
     QKnxNpdu npdu() const;
     void setNpdu(const QKnxNpdu &npdu);

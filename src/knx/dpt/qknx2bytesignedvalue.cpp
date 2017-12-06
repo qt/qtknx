@@ -34,38 +34,84 @@
 
 QT_BEGIN_NAMESPACE
 
+/*!
+    \class QKnx2ByteSignedValue
+    \inherits QKnxFixedSizeDatapointType
+    \inmodule QtKnx
+
+    \brief The QKnx2ByteSignedValue class is a datapoint type with a 2-byte
+    signed value.
+
+    This is a fixed size datapoint type with the length of 2 bytes.
+
+    It is a base class for the following classes:
+
+    \list
+        \li \c QKnxDeltaTime10Msec - Time lag in 10 milliseconds
+        \li \c QKnxDeltaTime100Msec - Time lag in 100 milliseconds
+        \li \c QKnxDeltaTimeHrs - Time lag in hours
+        \li \c QKnxDeltaTimeMin - Time lag in minutes
+        \li \c QKnxDeltaTimeMsec - Time lag in milliseconds
+        \li \c QKnxDeltaTimeSec - Time lag in seconds
+        \li \c QKnxPercentV16 - Percentage difference
+        \li \c QKnxRotationAngle - Rotation angle in degrees
+        \li \c QKnxValue2Count - Pulses difference
+    \endlist
+
+    Integer values from -32 768 to 32 767 can be encoded in this datapoint type.
+
+    \sa QKnxDatapointType
+*/
+
+/*!
+    Creates a fixed size datapoint type with the value \c 0.0.
+*/
 QKnx2ByteSignedValue::QKnx2ByteSignedValue()
     : QKnx2ByteSignedValue(0.0)
 {}
 
+/*!
+    Creates a fixed size datapoint type with the value \a value.
+*/
 QKnx2ByteSignedValue::QKnx2ByteSignedValue(double value)
     : QKnx2ByteSignedValue(SubType, value)
 {}
 
+/*!
+    Creates a fixed size datapoint type with the subtype \a subType and value
+    \a value.
+*/
 QKnx2ByteSignedValue::QKnx2ByteSignedValue(int subType, double value)
-    : QKnxDatapointType(MainType, subType, TypeSize)
+    : QKnxFixedSizeDatapointType(MainType, subType, TypeSize)
 {
-    setDescription(tr("2 byte signed value"));
+    setDescription(tr("2-byte signed value"));
     setRangeText(tr("Minimum Value, -32 768"), tr("Maximum Value, 32 767"));
     setRange(QVariant::fromValue(-32768), QVariant::fromValue(32767));
 
     setValue(value);
 }
 
+/*!
+    Returns the value stored in the datapoint type.
+*/
 double QKnx2ByteSignedValue::value() const
 {
      return qint16(QKnxUtils::QUint16::fromBytes(bytes())) * coefficient();
 }
 
+/*!
+    Sets the value of the datapoint type to \a value.
+*/
 bool QKnx2ByteSignedValue::setValue(double value)
 {
-    if (value <= maximum().toDouble() && value >= minimum().toDouble()) {
-        QByteArray data = QKnxUtils::QUint16::bytes(quint16(qRound(value / coefficient())));
-        return setBytes(data, 0, 2);
-    }
+    if (value <= maximum().toDouble() && value >= minimum().toDouble())
+        return setBytes(QKnxUtils::QUint16::bytes(quint16(qRound(value / coefficient()))), 0, 2);
     return false;
 }
 
+/*!
+    \reimp
+*/
 bool QKnx2ByteSignedValue::isValid() const
 {
     return QKnxDatapointType::isValid()

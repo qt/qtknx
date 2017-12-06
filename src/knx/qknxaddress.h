@@ -46,8 +46,8 @@ class Q_KNX_EXPORT QKnxAddress final
 public:
     enum class Type : quint8
     {
-        Group = 0x00,
-        Individual = 0x01
+        Group = 0x01,
+        Individual = 0x00
     };
     QKnxAddress::Type type() const;
 
@@ -56,7 +56,6 @@ public:
         TwoLevel = 0x00,
         ThreeLevel = 0x01,
     };
-    QKnxAddress::Notation notation() const;
 
     QKnxAddress() = default;
     QKnxAddress(QKnxAddress::Type type, quint16 address);
@@ -89,7 +88,7 @@ public:
         return QKnxUtils::QUint16::bytes<T>(quint16(m_address));
     }
 
-    QString toString() const;
+    QString toString(Notation notation = Notation::ThreeLevel) const;
 
     bool operator==(const QKnxAddress &other) const;
     bool operator!=(const QKnxAddress &other) const;
@@ -100,7 +99,6 @@ private:
 private:
     qint32 m_address = -1;
     QKnxAddress::Type m_type = static_cast<QKnxAddress::Type>(0xff);
-    QKnxAddress::Notation m_notation = QKnxAddress::Notation::ThreeLevel;
 };
 Q_KNX_EXPORT QDebug operator<<(QDebug debug, const QKnxAddress &address);
 Q_KNX_EXPORT QDataStream &operator<<(QDataStream &stream, const QKnxAddress &address);

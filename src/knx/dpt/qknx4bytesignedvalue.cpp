@@ -34,6 +34,22 @@
 
 QT_BEGIN_NAMESPACE
 
+/*!
+    \class QKnx4ByteSignedValue
+    \inherits QKnxFixedSizeDatapointType
+    \inmodule QtKnx
+
+    \brief The QKnx4ByteSignedValue class is a datapoint type with a 4-byte
+    signed value.
+
+    This is a fixed size datapoint type with the length of 4 bytes.
+
+    Integer values from -2 147 483 648 to -2 147 483 647 can be encoded in this
+    datapoint type.
+
+    \sa QKnxDatapointType
+*/
+
 QKnx4ByteSignedValue::QKnx4ByteSignedValue()
     : QKnx4ByteSignedValue(0)
 {}
@@ -43,9 +59,9 @@ QKnx4ByteSignedValue::QKnx4ByteSignedValue(qint32 value)
 {}
 
 QKnx4ByteSignedValue::QKnx4ByteSignedValue(int subType, qint32 value)
-    : QKnxDatapointType(MainType, subType, TypeSize)
+    : QKnxFixedSizeDatapointType(MainType, subType, TypeSize)
 {
-    setDescription(tr("4 byte signed value"));
+    setDescription(tr("4-byte signed value"));
     setRange(QVariant::fromValue(INT_MIN), QVariant::fromValue(INT_MAX));
     setRangeText(tr("Minimum Value, -2 147 483 648"), tr("Maximum Value, 2 147 483 647"));
 
@@ -59,13 +75,14 @@ qint32 QKnx4ByteSignedValue::value() const
 
 bool QKnx4ByteSignedValue::setValue(qint32 value)
 {
-    if (value <= maximum().toInt() && value >= minimum().toInt()) {
-        QByteArray data = QKnxUtils::QUint32::bytes(quint32(value));
-        return setBytes(data, 0, 4);
-    }
+    if (value <= maximum().toInt() && value >= minimum().toInt())
+        return setBytes(QKnxUtils::QUint32::bytes(quint32(value)), 0, 4);
     return false;
 }
 
+/*!
+    \reimp
+*/
 bool QKnx4ByteSignedValue::isValid() const
 {
     return QKnxDatapointType::isValid()

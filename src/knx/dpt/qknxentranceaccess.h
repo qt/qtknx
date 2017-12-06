@@ -35,7 +35,7 @@
 
 QT_BEGIN_NAMESPACE
 
-class Q_KNX_EXPORT QKnxEntranceAccess : public QKnxDatapointType
+class Q_KNX_EXPORT QKnxEntranceAccess : public QKnxFixedSizeDatapointType
 {
     Q_GADGET
 
@@ -65,11 +65,11 @@ public:
     bool setDigit(quint8 x, quint8 digit);
 
     Attributes attributes() const;
-    void setAttributes(Attributes attributes);
+    bool setAttributes(Attributes attributes);
 
     bool isSet(Attribute attibute) const;
-    void setAttribute(Attribute attribute);
-    void removeAttribute(Attribute attribute);
+    bool setAttribute(Attribute attribute);
+    bool removeAttribute(Attribute attribute);
 
     quint8 index() const;
     bool setIndex(quint8 index);

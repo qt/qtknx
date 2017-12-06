@@ -117,7 +117,7 @@ public:
         NeFl = 0x3d,
         Function = 0x3e,
         Escape = 0x3f,
-        Invalid = 0xff
+        Invalid = 0x40
     };
     Q_ENUM(Id)
 

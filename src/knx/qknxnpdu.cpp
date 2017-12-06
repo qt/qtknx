@@ -33,16 +33,186 @@
 QT_BEGIN_NAMESPACE
 
 /*!
+    \class QKnxNpdu
+
+    \inmodule QtKnx
+    \brief This class represents the part of the \l QKnxCemiFrame to be read by
+    the network, transport and application layers.
+
+    To build a valid NPDU it is recommended to use the \l QKnxNpduFactory.
+    Reading the bytes from left to right, a NPDU is composed of the following
+    information:
+
+    \list
+        \li The length of the payload (full size of NPDU - 2)
+        \li The transport layer code \l TransportControlField,
+        \li The application layer service code \l ApplicationControlField
+    \endlist
+
+    If applicable, the T_CONNECT NPDU holds no application layer service for
+    example, and the data and other information (if applicable, depending on
+    the chosen service).
+*/
+
+/*!
+    \enum QKnxNpdu::ErrorCode
+
+    This enum describes the possible error codes needing in the building
+    of NPDU with service \l QKnxNpdu::FunctionPropertyStateResponse or
+    \l QKnxNpdu::Restart
+
+    \value NoError
+    \value Error
+*/
+
+/*!
+    \enum QKnxNpdu::ResetType
+    This enum describes the possible reset types needing in the building of
+    NPDU with service \l QKnxNpdu::Restart.
+
+    \value BasicRestart
+    \value MasterRestart
+*/
+
+/*!
+    \enum QKnxNpdu::EraseCode
+    This enum describes the possible erase codes needing in the building of
+    NPDU with service \l QKnxNpdu::Restart.
+
+    \value Reserved
+    \value ConfirmedRestart
+    \value FactoryReset
+    \value ResetIa
+    \value ResetAp
+    \value ResetParam
+    \value ResetLinks
+    \value ResetWithoutIa
+    \value Invalid
+*/
+
+/*!
+    \enum QKnxNpdu::LinkWriteFlags
+    This enum describes the possible link write flags needing in the building
+    of NPDU with service \l QKnxNpdu::LinkWrite.
+
+    \value AddGroupAddress
+    \value AddSendingGroupAddress
+    \value AddNotSendingGroupAddress
+    \value DeleteGroupAddress
+*/
+
+/*!
+    \enum QKnxNpdu::TransportControlField
+    This enum describes the possible message code dedicated to the transport
+    layer.
+
+    \value DataGroup
+    \value DataBroadcast
+    \value DataSystemBroadcast
+    \value DataTagGroup
+    \value DataIndividual
+    \value DataConnected
+    \value Connect
+    \value Disconnect
+    \value Acknowledge
+    \value NoAcknowledge
+    \value Invalid
+*/
+
+/*!
+    \enum QKnxNpdu::ApplicationControlField
+    This enum describes the message code dedicated to the application and
+    representing an application service.
+
+    \value GroupValueRead
+    \value GroupValueResponse
+    \value GroupValueWrite
+    \value IndividualAddressWrite
+    \value IndividualAddressRead
+    \value IndividualAddressResponse
+    \value AdcRead
+    \value AdcResponse
+    \value SystemNetworkParameterRead
+    \value SystemNetworkParameterResponse
+    \value SystemNetworkParameterWrite
+    \value MemoryRead
+    \value MemoryResponse
+    \value MemoryWrite
+    \value UserMemoryRead
+    \value UserMemoryResponse
+    \value UserMemoryWrite
+    \value UserManufacturerInfoRead
+    \value UserManufacturerInfoResponse
+    \value FunctionPropertyCommand
+    \value FunctionPropertyStateRead
+    \value FunctionPropertyStateResponse
+    \value DeviceDescriptorRead
+    \value DeviceDescriptorResponse
+    \value Restart
+    \value AuthorizeRequest
+    \value AuthorizeResponse
+    \value KeyWrite
+    \value KeyResponse
+    \value PropertyValueRead
+    \value PropertyValueResponse
+    \value PropertyValueWrite
+    \value PropertyDescriptionRead
+    \value PropertyDescriptionResponse
+    \value NetworkParameterRead
+    \value NetworkParameterResponse
+    \value IndividualAddressSerialNumberRead
+    \value IndividualAddressSerialNumberResponse
+    \value IndividualAddressSerialNumberWrite
+    \value DomainAddressWrite
+    \value DomainAddressRead
+    \value DomainAddressResponse
+    \value DomainAddressSelectiveRead
+    \value NetworkParameterWrite
+    \value NetworkParameterInfoReport
+    \value LinkRead
+    \value LinkResponse
+    \value LinkWrite
+    \value GroupPropValueRead
+    \value GroupPropValueResponse
+    \value GroupPropValueWrite
+    \value GroupPropValueInfoReport
+    \value DomainAddressSerialNumberRead
+    \value DomainAddressSerialNumberResponse
+    \value DomainAddressSerialNumberWrite
+    \value FileStreamInfoReport
+    \value Invalid
+*/
+
+
+static bool isBitSet(quint8 byteToTest, quint8 bit)
+{
+    return (byteToTest & (quint8(1) << bit)) != 0;
+};
+
+/*!
     Returns the Transport layer control field of the \c QKnxNpdu.
 */
-QKnxNpdu::TransportLayerControlField QKnxNpdu::transportLayerControlField() const
+QKnxNpdu::TransportControlField QKnxNpdu::transportControlField() const
 {
     if (size() < 2)
-        return TransportLayerControlField::Invalid;
-    return TransportLayerControlField(byte(1) & 0xfc); // mask out the first two bits
+        return TransportControlField::Invalid;
+
+    if (isBitSet(byte(1), 6))                                // T_DATA_CONNECTED, mask out the APCI
+        return TransportControlField((byte(1) & 0xfc) & 0xc3); // and the sequence number
+
+    if (isBitSet(byte(1), 7) && (!isBitSet(byte(1), 6))) // T_CONNECT/ T_DISCONNECT
+        return TransportControlField(byte(1)); // no APCI, no sequence number
+
+    if (isBitSet(byte(1), 7) && isBitSet(byte(1), 6))      // T_ACK/ T_NACK
+        return TransportControlField(byte(1) & 0xc3); // no APCI, mask out sequence number
+
+    return TransportControlField(byte(1) & 0xfc); // mask out the APCI
 }
 
-void QKnxNpdu::setTransportLayerControlField(TransportLayerControlField tpci)
+/*!
+    Sets the Transport layer control field to \a tpci.
+*/
+void QKnxNpdu::setTransportControlField(TransportControlField tpci)
 {
     if (size() < 2)
         resize(2);
@@ -53,21 +223,21 @@ void QKnxNpdu::setTransportLayerControlField(TransportLayerControlField tpci)
 /*!
     Returns the Application layer control field of the \c QKnxNpdu.
 */
-QKnxNpdu::ApplicationLayerControlField QKnxNpdu::applicationLayerControlField() const
+QKnxNpdu::ApplicationControlField QKnxNpdu::applicationControlField() const
 {
     if (size() < 3)
-        return ApplicationLayerControlField::Invalid;
+        return ApplicationControlField::Invalid;
 
     std::bitset<8> apciHigh = byte(1) & 0x03; // mask out all bits except the first two
     std::bitset<8> apciLow = byte(2) & 0xc0;  // mask out all bits except the last two
 
     const auto fourBitsApci = [&apciHigh, &apciLow]() {
         QVector<quint8> apciBytes = { { quint8(apciHigh.to_ulong()), quint8(apciLow.to_ulong()) } };
-        return ApplicationLayerControlField(QKnxUtils::QUint16::fromBytes(apciBytes));
+        return ApplicationControlField(QKnxUtils::QUint16::fromBytes(apciBytes));
     };
     const auto tenBitsApci = [apciHigh](quint8 octet7) {
         QVector<quint8> apciBytes = { { quint8(apciHigh.to_ulong()), octet7 } };
-        return ApplicationLayerControlField(QKnxUtils::QUint16::fromBytes(apciBytes));
+        return ApplicationControlField(QKnxUtils::QUint16::fromBytes(apciBytes));
     };
 
     if ((apciHigh[0] == 0 && apciHigh[1] == 0) || (apciHigh[0] == 1 && apciHigh[1] == 1)) {
@@ -79,7 +249,7 @@ QKnxNpdu::ApplicationLayerControlField QKnxNpdu::applicationLayerControlField() 
 
     if (apciHigh[1] == 0 && apciHigh[0] == 1) {
         // connection oriented, it's one of the A_ADC service
-        if (quint8(transportLayerControlField()) > 0)
+        if (quint8(transportControlField()) > 0)
             return fourBitsApci();
         return tenBitsApci(byte(2));
     }
@@ -90,7 +260,10 @@ QKnxNpdu::ApplicationLayerControlField QKnxNpdu::applicationLayerControlField() 
     return tenBitsApci(byte(2));
 }
 
-void QKnxNpdu::setApplicationLayerControlField(ApplicationLayerControlField apci)
+/*!
+    Sets the Application layer control field to \a apci.
+*/
+void QKnxNpdu::setApplicationControlField(ApplicationControlField apci)
 {
     if (size() < 3)
         resize(3);
@@ -101,131 +274,223 @@ void QKnxNpdu::setApplicationLayerControlField(ApplicationLayerControlField apci
     setByte(2, (byte(2) & 0x3f) | tmp[1]);
 }
 
-QKnxNpdu::QKnxNpdu(TransportLayerControlField tpci)
+QKnxNpdu::QKnxNpdu(TransportControlField tpci)
 {
-    setTransportLayerControlField(tpci);
+    setTransportControlField(tpci);
 }
 
-QKnxNpdu::QKnxNpdu(TransportLayerControlField tpci, ApplicationLayerControlField apci)
+QKnxNpdu::QKnxNpdu(TransportControlField tpci, ApplicationControlField apci)
 {
-    setTransportLayerControlField(tpci);
-    setApplicationLayerControlField(apci);
+    setTransportControlField(tpci);
+    setApplicationControlField(apci);
 }
 
+QKnxNpdu::QKnxNpdu(TransportControlField tpci, ApplicationControlField apci, const QByteArray &data)
+    : QKnxNpdu(tpci, apci, 0, data)
+{}
+
+QKnxNpdu::QKnxNpdu(TransportControlField tpci, ApplicationControlField apci, quint8 seqNumber,
+        const QByteArray &data)
+    : QKnxNpdu(tpci, apci)
+{
+    setSequenceNumber(seqNumber);
+    setData(data);
+}
+
+/*!
+    Returns true if the current NPDU is valid.
+
+    \note This function is not implemented for every services.
+    To make sure your NPDU is correct, use the \l QKnxNpduFactory.
+ */
 bool QKnxNpdu::isValid() const
 {
-    return size() >= 3; // TODO: Extend.
+    if (transportControlField() == TransportControlField::Invalid)
+        return false;
+
+#define HEADER_SIZE 3 // [size][TCPI|APCI][APCI] 3 bytes
+#define L_DATA_PAYLOAD 14 // 3_02_02 Communication Medium TP1, Paragraph 2.2.4.1
+#define L_DATA_EXTENDED_PAYLOAD 253 // 3_02_02 Communication Medium TP1, Paragraph 2.2.5.1
+
+    switch (applicationControlField()) {
+    case ApplicationControlField::GroupValueRead:
+    case ApplicationControlField::GroupPropValueRead:
+    case ApplicationControlField::IndividualAddressRead:
+    case ApplicationControlField::IndividualAddressResponse:
+    case ApplicationControlField::DomainAddressRead:
+        return size() == HEADER_SIZE;
+
+    case ApplicationControlField::IndividualAddressWrite:
+        return size() == HEADER_SIZE + 2; // 2 bytes individual address
+
+    case ApplicationControlField::GroupValueResponse:
+    case ApplicationControlField::GroupValueWrite:
+        return (size() >= HEADER_SIZE) && (size() <= HEADER_SIZE + L_DATA_PAYLOAD);
+
+    case ApplicationControlField::GroupPropValueResponse:
+    case ApplicationControlField::GroupPropValueWrite:
+    case ApplicationControlField::GroupPropValueInfoReport:
+    case ApplicationControlField::NetworkParameterRead:
+    case ApplicationControlField::NetworkParameterWrite:
+    case ApplicationControlField::SystemNetworkParameterRead:
+    case ApplicationControlField::SystemNetworkParameterResponse:
+    case ApplicationControlField::SystemNetworkParameterWrite:
+        // 3_02_02 Paragraph 2.2.5.1: L_Data_Extended -> max 254 bytes
+        return (size() >= HEADER_SIZE) && (size() <= HEADER_SIZE + L_DATA_EXTENDED_PAYLOAD);
+
+     // To properly jude that next two one needs to know the type of cEMI frame.
+    case ApplicationControlField::NetworkParameterResponse: // L_Data
+        //return (size() >= HEADER_SIZE) && (size() <= HEADER_SIZE + L_DATA_PAYLOAD);
+    // case ApplicationLayerControlField::NetworkParameterInfoReport: // L_Data_Extended
+        return (size() >= HEADER_SIZE) && (size() <= HEADER_SIZE + L_DATA_EXTENDED_PAYLOAD);
+
+    case ApplicationControlField::IndividualAddressSerialNumberRead:
+    case ApplicationControlField::DomainAddressSerialNumberRead:
+        return (size() >= HEADER_SIZE) && (size() <= HEADER_SIZE + 6); // 6 bytes serial number
+    case ApplicationControlField::IndividualAddressSerialNumberResponse:
+         // 6 bytes serial number, 2 bytes new address, 2 reserved bytes
+        return (size() >= HEADER_SIZE) && (size() <= HEADER_SIZE + 10);
+    case ApplicationControlField::IndividualAddressSerialNumberWrite:
+         // 6 bytes serial number, 2 bytes new address, 4 reserved bytes
+        return (size() >= HEADER_SIZE) && (size() <= HEADER_SIZE + 12);
+
+    case ApplicationControlField::DomainAddressWrite:
+    case ApplicationControlField::DomainAddressResponse:
+       return (size() == HEADER_SIZE + 2) || (size() == HEADER_SIZE + 6); // 2 or 6 byteToTest domain address
+    case ApplicationControlField::DomainAddressSelectiveRead:
+        if (size() >= HEADER_SIZE) // 03_05_02 Management Procedures
+            return size() == (byte(3) == 0x00 ? 8 : 14); // Paragraph: 2.12.1.1/2.12.1.2
+        return false;
+
+    case ApplicationControlField::DomainAddressSerialNumberResponse:
+    case ApplicationControlField::DomainAddressSerialNumberWrite: // 6 byteToTest serial number
+        return (size() == HEADER_SIZE + 8) || (size() == HEADER_SIZE + 12); // 2 or 6 byteToTest domain address
+
+    case ApplicationControlField::AdcRead:
+    case ApplicationControlField::AdcResponse:
+    case ApplicationControlField::MemoryRead:
+    case ApplicationControlField::MemoryResponse:
+    case ApplicationControlField::MemoryWrite:
+    case ApplicationControlField::UserMemoryRead:
+    case ApplicationControlField::UserMemoryResponse:
+    case ApplicationControlField::UserMemoryWrite:
+    case ApplicationControlField::UserManufacturerInfoRead:
+    case ApplicationControlField::UserManufacturerInfoResponse:
+    case ApplicationControlField::FunctionPropertyCommand:
+    case ApplicationControlField::FunctionPropertyStateRead:
+    case ApplicationControlField::FunctionPropertyStateResponse:
+    case ApplicationControlField::DeviceDescriptorRead:
+    case ApplicationControlField::DeviceDescriptorResponse:
+    case ApplicationControlField::Restart:
+    case ApplicationControlField::AuthorizeRequest:
+    case ApplicationControlField::AuthorizeResponse:
+    case ApplicationControlField::KeyWrite:
+    case ApplicationControlField::KeyResponse:
+    case ApplicationControlField::PropertyValueRead:
+    case ApplicationControlField::PropertyValueResponse:
+    case ApplicationControlField::PropertyValueWrite:
+    case ApplicationControlField::PropertyDescriptionRead:
+    case ApplicationControlField::PropertyDescriptionResponse:
+    case ApplicationControlField::LinkRead:
+    case ApplicationControlField::LinkResponse:
+    case ApplicationControlField::LinkWrite:
+    case ApplicationControlField::FileStreamInfoReport:
+    case ApplicationControlField::Invalid:
+        break;  // TODO: implement
+    }
+    return false;
+
+#undef HEADER_SIZE
+#undef L_DATA_PAYLOAD
+#undef L_DATA_EXTENDED_PAYLOAD
+}
+
+quint8 QKnxNpdu::dataSize() const
+{
+    return byte(0);
+}
+
+quint8 QKnxNpdu::sequenceNumber() const
+{
+    if (isBitSet(byte(1), 6))
+        return quint8((byte(1) & 0x3c) >> 2);
+    return 0;
+}
+
+void QKnxNpdu::setSequenceNumber(quint8 seqNumber)
+{
+    if ((seqNumber > 15) || (!isBitSet(byte(1), 6)))
+        return;
+    setByte(1, (byte(1) & 0xc3) | quint8(seqNumber << 2));
 }
 
 QByteArray QKnxNpdu::data() const
 {
-    if (!isValid())
+    if (size() < 3)
         return {};
 
-    if (size() > 3) {
-        const auto &tmp = ref(3);
-        return tmp.bytes<QByteArray>(0, tmp.size());
+    QByteArray bytes;
+    switch (applicationControlField()) {
+    case ApplicationControlField::GroupValueResponse:
+    case ApplicationControlField::GroupValueWrite:
+        if (size() > 3)
+            break;
+
+    case ApplicationControlField::AdcRead:
+    case ApplicationControlField::AdcResponse:
+    case ApplicationControlField::MemoryRead:
+    case ApplicationControlField::MemoryResponse:
+    case ApplicationControlField::MemoryWrite:
+    case ApplicationControlField::DeviceDescriptorRead:
+    case ApplicationControlField::DeviceDescriptorResponse:
+    case ApplicationControlField::Restart:
+        bytes = QKnxUtils::QUint8::bytes(quint8(byte(2) & 0x3f)); // 6 bits from an optimized NPDU
+
+    default:
+        break;
     }
-    return QByteArray(1, byte(2) & 0x3f); // 6 bits from an optimized NPDU
+
+    const auto &tmp = ref(3);
+    return bytes + tmp.bytes<QByteArray>(0, tmp.size());
 }
 
-bool QKnxNpdu::setData(const QByteArray &data)
+void QKnxNpdu::setData(const QByteArray &data)
 {
-    if (data.isEmpty())
-        return true;
-    if (data.size() > 254)
-        return false;
+    auto apci = applicationControlField();
+    auto apciBytes = QKnxUtils::QUint16::bytes<QVector<quint8>>(quint16(apci));
 
-    bool optimizedAppend = false;
-    auto apci = applicationLayerControlField();
-    switch (apci) {
-    case ApplicationLayerControlField::GroupValueRead:
-    case ApplicationLayerControlField::IndividualAddressRead:
-    case ApplicationLayerControlField::IndividualAddressResponse:
-    case ApplicationLayerControlField::UserManufacturerInfoRead:
-        return false;
+    resize(3); // always resize to minimum size
+    setByte(2, apciBytes[1]); // and clear the possible 6 bits of the upper APCI byteToTest
 
-    case ApplicationLayerControlField::GroupValueResponse:
-    case ApplicationLayerControlField::GroupValueWrite:
-        if (data.size() > 1 || data[0] > 0x3f)
-            break;
-        resize(3);
-        setByte(2, (byte(2) & 0xc0) | data[0]);
+    if (data.isEmpty()) {
         setByte(0, quint8(size() - 2));
-        return true; // build an optimized NPDU and return early
-
-    case ApplicationLayerControlField::AdcRead:
-    case ApplicationLayerControlField::AdcResponse:
-    case ApplicationLayerControlField::MemoryRead:
-    case ApplicationLayerControlField::MemoryResponse:
-    case ApplicationLayerControlField::MemoryWrite:
-    case ApplicationLayerControlField::DeviceDescriptorRead:
-    case ApplicationLayerControlField::DeviceDescriptorResponse:
-    case ApplicationLayerControlField::Restart:
-        optimizedAppend = true;
-        break;
-
-    case ApplicationLayerControlField::IndividualAddressWrite:
-    case ApplicationLayerControlField::SystemNetworkParameterRead:
-    case ApplicationLayerControlField::SystemNetworkParameterResponse:
-    case ApplicationLayerControlField::SystemNetworkParameterWrite:
-    case ApplicationLayerControlField::UserMemoryRead:
-    case ApplicationLayerControlField::UserMemoryResponse:
-    case ApplicationLayerControlField::UserMemoryWrite:
-    case ApplicationLayerControlField::UserManufacturerInfoResponse:
-    case ApplicationLayerControlField::FunctionPropertyCommand:
-    case ApplicationLayerControlField::FunctionPropertyStateRead:
-    case ApplicationLayerControlField::FunctionPropertyStateResponse:
-
-    // data will never fit into the first 4 bits only
-    case ApplicationLayerControlField::AuthorizeRequest:
-    case ApplicationLayerControlField::AuthorizeResponse:
-    case ApplicationLayerControlField::KeyWrite:
-    case ApplicationLayerControlField::KeyResponse:
-    case ApplicationLayerControlField::PropertyValueRead:
-    case ApplicationLayerControlField::PropertyValueResponse:
-    case ApplicationLayerControlField::PropertyValueWrite:
-    case ApplicationLayerControlField::PropertyDescriptionRead:
-    case ApplicationLayerControlField::PropertyDescriptionResponse:
-    case ApplicationLayerControlField::NetworkParameterRead:
-    case ApplicationLayerControlField::NetworkParameterResponse:
-    case ApplicationLayerControlField::IndividualAddressSerialNumberRead:
-    case ApplicationLayerControlField::IndividualAddressSerialNumberResponse:
-    case ApplicationLayerControlField::IndividualAddressSerialNumberWrite:
-    case ApplicationLayerControlField::DomainAddressWrite:
-    case ApplicationLayerControlField::DomainAddressRead:
-    case ApplicationLayerControlField::DomainAddressResponse:
-    case ApplicationLayerControlField::DomainAddressSelectiveRead:
-    case ApplicationLayerControlField::NetworkParameterWrite:
-    case ApplicationLayerControlField::LinkRead:
-    case ApplicationLayerControlField::LinkResponse:
-    case ApplicationLayerControlField::LinkWrite:
-    case ApplicationLayerControlField::GroupPropValueRead:
-    case ApplicationLayerControlField::GroupPropValueResponse:
-    case ApplicationLayerControlField::GroupPropValueWrite:
-    case ApplicationLayerControlField::GroupPropValueInfoReport:
-    case ApplicationLayerControlField::DomainAddressSerialNumberRead:
-    case ApplicationLayerControlField::DomainAddressSerialNumberResponse:
-    case ApplicationLayerControlField::DomainAddressSerialNumberWrite:
-    case ApplicationLayerControlField::FileStreamInfoReport:
-        break;
-    case ApplicationLayerControlField::Invalid:
-        return false;
+        return; // no data, bytes got cleared before
     }
 
-    resize(3);
-    auto tmp = QKnxUtils::QUint16::bytes(quint16(apci));
-    setByte(1, (byte(1) & 0xfc) | tmp[0]); // 2 bit APCI part
+    auto remainingData = data;
+    switch (apci) {
+    case ApplicationControlField::GroupValueResponse:
+    case ApplicationControlField::GroupValueWrite:
+        if (data.size() > 1 || quint8(data[0]) > 0x3f)
+            break;
 
-    if (optimizedAppend) {
-        setByte(2, tmp[1] | data[0]);
-        appendBytes(data.mid(1));
-    } else {
-        setByte(2, tmp[1]);
-        appendBytes(data);
+    case ApplicationControlField::AdcRead:
+    case ApplicationControlField::AdcResponse:
+    case ApplicationControlField::MemoryRead:
+    case ApplicationControlField::MemoryResponse:
+    case ApplicationControlField::MemoryWrite:
+    case ApplicationControlField::DeviceDescriptorRead:
+    case ApplicationControlField::DeviceDescriptorResponse:
+    case ApplicationControlField::Restart:
+        setByte(2, apciBytes[1] | quint8(data[0]));
+        remainingData = data.mid(1); Q_FALLTHROUGH();
+
+    default:
+        break;
     }
+
+    appendBytes(remainingData);
     setByte(0, quint8(size() - 2));
-    return true;
 }
 
 QT_END_NAMESPACE

@@ -32,6 +32,31 @@
 
 QT_BEGIN_NAMESPACE
 
+/*!
+    \class QKnxNetIpServerDescriptionAgent
+
+    \inmodule QtKnx
+    \brief The QKnxNetIpServerDescriptionAgent class establishes a point to
+    point connection with a KNXnet/IP server and requests its description.
+
+    One must first use the \l QKnxNetIpServerDiscoveryAgent class to choose a
+    server, as illustrated by the following code snippet:
+
+    \code
+        QKnxNetIpServerDescriptionAgent agent;
+        QKnxAddress clientLocalAddress = ...
+        agent.setLocalAddress(clientLocalAddress);
+        QKnxNetIpServerInfo server = agent.discoveredServers()[0]; // for example
+        agent.start(server);
+    \endcode
+
+    When the description is received, the class emits a
+    \c descriptionReceived(QKnxNetIpServerInfo server) signal containing the
+    information received from the server. The description received through this
+    point to point connection may be more complete than the one sent during the
+    discovery process.
+*/
+
 // -- QKnxNetIpServerDescriptionAgentPrivate
 
 QKnxNetIpServerDescriptionAgentPrivate::QKnxNetIpServerDescriptionAgentPrivate(
@@ -261,13 +286,11 @@ int QKnxNetIpServerDescriptionAgent::timeout() const
 }
 
 /*!
-    Sets the timeout for the discovery agent to \a msecs. If \a msecs is -1,
+    Sets the timeout for the discovery agent to \a msec. If \a msec is -1,
     the agent will not timeout and has to be terminated by calling the \l stop
     function.
 
     \sa timeout
-    \sa searchFrequency
-    \sa setSearchFrequency
 */
 void QKnxNetIpServerDescriptionAgent::setTimeout(int msec)
 {

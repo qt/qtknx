@@ -103,7 +103,7 @@ Tunneling::Tunneling(QWidget* parent)
         ui->textOuputTunneling->append(QString::fromLatin1("Source address: %1").arg(frame
             .sourceAddress().toString()));
         ui->textOuputTunneling->append(QString::fromLatin1("Destination address: %1").arg(frame
-            .destionationAddress().toString()));
+            .destinationAddress().toString()));
         ui->textOuputTunneling->append(QString::fromLatin1("Received tunnel frame with cEMI "
             "payload: " + frame.bytes().toHex()));
     });
@@ -229,7 +229,7 @@ void Tunneling::updateFrame()
     m_frame.setControlField(m_ctrl);
     m_frame.setExtendedControlField(m_extCtrl);
     m_frame.setSourceAddress({ QKnxAddress::Type::Individual, ui->sourceAddress->text() });
-    m_frame.setDestionationAddress({ m_extCtrl.destinationAddressType(), ui->destAddress->text() });
+    m_frame.setDestinationAddress({ m_extCtrl.destinationAddressType(), ui->destAddress->text() });
 
     auto npdu = QByteArray::fromHex(ui->npdu->text().toLatin1());
     m_frame.setNpdu(QKnxNpdu::fromBytes(npdu, 0, npdu.size()));
@@ -250,7 +250,7 @@ void Tunneling::updateControlField()
 
 void Tunneling::updateExtendedControlField()
 {
-    m_extCtrl.setDestinationAddressType(QKnxAddress::Type(ui->destAddrType->currentIndex()));
+    m_extCtrl.setDestinationAddressType(QKnxAddress::Type(ui->destAddrType->currentText() == "Group"));
     m_extCtrl.setHopCount(ui->hopCount->value());
     m_extCtrl.setFormat(QKnxExtendedControlField::ExtendedFrameFormat(ui->extFrameFormat->currentIndex()));
 

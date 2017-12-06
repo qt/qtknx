@@ -28,6 +28,7 @@
 
 #include <QtCore/qdebug.h>
 #include <QtKnx/qknxtunnelframe.h>
+#include <QtKnx/qknxnpdufactory.h>
 #include <QtTest/qtest.h>
 
 static QString s_msg;
@@ -54,13 +55,13 @@ private slots:
         frame.setExtendedControlField(QKnxExtendedControlField(2));
         frame.addAdditionalInfo(addInfos.first());
         frame.setSourceAddress(QKnxAddress::Individual::Unregistered);
-        frame.setDestionationAddress(QKnxAddress::Group::Broadcast);
+        frame.setDestinationAddress(QKnxAddress::Group::Broadcast);
 
         QCOMPARE(frame.controlField().bytes(), QKnxControlField(1).bytes());
         QCOMPARE(frame.extendedControlField().bytes(), QKnxExtendedControlField(2).bytes());
         QCOMPARE(frame.additionalInfos().first().bytes(), QByteArray::fromHex("07021020"));
         QCOMPARE(frame.sourceAddress().bytes(), QKnxAddress::Individual::Unregistered.bytes());
-        QCOMPARE(frame.destionationAddress().bytes(), QKnxAddress::Group::Broadcast.bytes());
+        QCOMPARE(frame.destinationAddress().bytes(), QKnxAddress::Group::Broadcast.bytes());
 
         frame.addAdditionalInfo(addInfos.last());
         frame.addAdditionalInfo(addInfos.value(1));
@@ -69,7 +70,7 @@ private slots:
         for (int i = 0; i < infos.size(); ++i)
             QCOMPARE(infos[i].bytes(), addInfos[i].bytes());
 
-        QCOMPARE(frame.destionationAddress().bytes(), QKnxAddress::Group::Broadcast.bytes());
+        QCOMPARE(frame.destinationAddress().bytes(), QKnxAddress::Group::Broadcast.bytes());
 
         frame.removeAdditionalInfo(QKnxAdditionalInfo::Type::RfFastAckInformation);
         infos = frame.additionalInfos();
@@ -77,7 +78,39 @@ private slots:
         QCOMPARE(frame.additionalInfos().first().bytes(), QByteArray::fromHex("07021020"));
         QCOMPARE(frame.additionalInfos().last().bytes(), QByteArray::fromHex("fe03708090"));
 
-        QCOMPARE(frame.destionationAddress().bytes(), QKnxAddress::Group::Broadcast.bytes());
+        QCOMPARE(frame.destinationAddress().bytes(), QKnxAddress::Group::Broadcast.bytes());
+    }
+
+    void testNpduFetcher()
+    {
+        QVector<QKnxAdditionalInfo> addInfos = {
+            { QKnxAdditionalInfo::Type::BiBatInformation, QByteArray::fromHex("1020") },
+            { QKnxAdditionalInfo::Type::RfFastAckInformation, QByteArray::fromHex("30405060") },
+            { QKnxAdditionalInfo::Type::ManufactorSpecificData, QByteArray::fromHex("708090") }
+        };
+
+        QKnxTunnelFrame frame(QKnxTunnelFrame::MessageCode::DataRequest);
+        frame.setControlField(QKnxControlField(1));
+        frame.setExtendedControlField(QKnxExtendedControlField(2));
+        frame.addAdditionalInfo(addInfos.first());
+        frame.setSourceAddress(QKnxAddress::Individual::Unregistered);
+        frame.setDestinationAddress(QKnxAddress::Group::Broadcast);
+
+        QKnxNpdu npdu = QKnxNpduFactory::Multicast::createGroupValueWriteNpdu(
+            QByteArray::fromHex("01"));
+        QCOMPARE(npdu.bytes(), QByteArray::fromHex("010081"));
+        frame.setNpdu(npdu);
+        QCOMPARE(frame.npdu().bytes(), QByteArray::fromHex("010081"));
+        QKnxNpdu npdu2 = QKnxNpduFactory::Multicast::createGroupValueWriteNpdu(
+            QByteArray::fromHex("0101"));
+        QCOMPARE(npdu2.bytes(), QByteArray::fromHex("0300800101"));
+        frame.setNpdu(npdu2);
+        QCOMPARE(frame.npdu().bytes(), QByteArray::fromHex("0300800101"));
+        QKnxNpdu npdu4 = QKnxNpduFactory::Multicast::createGroupValueWriteNpdu(
+            QByteArray::fromHex("ff"));
+        QCOMPARE(npdu4.bytes(), QByteArray::fromHex("020080ff"));
+        frame.setNpdu(npdu4);
+        QCOMPARE(frame.npdu().bytes(), QByteArray::fromHex("020080ff"));
     }
 
     void testDebugStream()
@@ -96,6 +129,8 @@ private slots:
     void testDataStream()
     {
     }
+
+    //TO DO: test the isValid function
 };
 
 QTEST_MAIN(tst_QKnxTunnelFrame)

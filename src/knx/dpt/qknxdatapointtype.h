@@ -62,7 +62,7 @@ public:
         Dpt3_3BitControlled = 300000,
             DptControlDimming = 300007, DptControlBlinds = 300008,
         Dpt4_Character = 400000,
-            DptCharAscii, DptChar8859,
+            DptCharAscii, DptChar88591,
         Dpt5_8bitUnsigned = 500000,
             DptScaling, DptAngle = 500003, DptPercentU8, DptDecimalFactor, DptTariff,
             DptValue1Ucount = 500010,
@@ -77,7 +77,7 @@ public:
             DptRotationAngle,
         Dpt9_2ByteFloat = 900000,
         DptTemperatureCelcius, DptTemperatureKelvin, DptTemperatureChange, DptValueLux,
-            DptWindSpeed, DptPressure, DptHumidity, DptAirQuality, DptTimeSecond = 900010,
+            DptWindSpeed, DptPressure, DptHumidity, DptAirQuality, DptAirFlow, DptTimeSecond,
             DptTimeMilliSecond, DptVoltage = 900020, DptCurrent, DptPowerDensity,
             DptKelvinPerPercent, DptPower, DptVolumeFlow, DptAmountRain, DptTemperatureFahrenheit,
             DptWindSpeedKmPerHour,
@@ -92,28 +92,68 @@ public:
             DptApparentEnergy, DptReactiveEnergy, DptActiveEnergykWh, Dpt_ApparentEnergykVAh,
             DptReactiveEnergykVARh, DptLongDeltaTimeSec = 1300100,
         Dpt14_4ByteFloat = 1400000,
+            DptValueAcceleration = 1400000, DptValueAccelerationAngular, DptValueActivationEnergy,
+            DptValueActivity, DptValueMol,
+            DptValueAmplitude, DptValueAngleRad, DptValueAngleDeg, DptValueAngularMomentum,
+            DptValueAngularVelocity, DptValueArea, DptValueCapacitance,
+            DptValueChargeDensitySurface, DptValueChargeDensityVolume, DptValueCompressibility,
+            DptValueConductance, DptValueElectricalConductivity, DptValueDensity,
+            DptValueElectricCharge, DptValueElectricCurrent, DptValueElectricCurrentDensity,
+            DptValueElectricDipoleMoment, DptValueElectricDisplacement,
+            DptValueElectricFieldStrength, DptValueElectricFlux, DptValueElectricFluxDensity,
+            DptValueElectricPolarization, DptValueElectricPotential,
+            DptValueElectricPotentialDifference, DptValueElectromagneticMoment,
+            DptValueElectromotiveForce, DptValueEnergy, DptValueForce, DptValueFrequency,
+            DptValueAngularFrequency, DptValueHeatCapacity, DptValueHeatFlowRate,
+            DptValueHeatQuantity, DptValueImpedance, DptValueLength, DptValueLightQuantity,
+            DptValueLuminance, DptValueLuminousFlux, DptValueLuminousIntensity,
+            DptValueMagneticFieldStrength, DptValueMagneticFlux, DptValueMagneticFluxDensity,
+            DptValueMagneticMoment, DptValueMagneticPolarization, DptValueMagnetization,
+            DptValueMagnetomotiveForce, DptValueMass, DptValueMassFlux, DptValueMomentum,
+            DptValuePhaseAngleRad, DptValuePhaseAngleDeg, DptValuePower, DptValuePowerFactor,
+            DptValuePressure, DptValueReactance, DptValueResistance, DptValueResistivity,
+            DptValueSelfInductance, DptValueSolidAngle, DptValueSoundIntensity, DptValueSpeed,
+            DptValueStress, DptValueSurfaceTension, DptValueCommonTemperature,
+            DptValueAbsoluteTemperature, DptValueTemperatureDifference, DptValueThermalCapacity,
+            DptValueThermalConductivity, DptValueThermoelectricPower, DptValueTime, DptValueTorque,
+            DptValueVolume, DptValueVolumeFlux, DptValueWeight, DptValueWork,
         Dpt15_EntranceAccess = 1500000,
         Dpt16_CharacterString = 1600000,
+            DptStringASCII = 1600000, DptString88591,
         Dpt17_SceneNumber = 1700000,
+            DptSceneNumber,
         Dpt18_SceneControl = 1800000,
+            DptSceneControl,
         Dpt19_DataTime = 1900000,
             DptDateTime = 1900001,
         Dpt20_1Byte = 2000000,
+            DptScloMode, DptBuildingMode, DptOccMode, DptPriority, DptLightApplicationMode,
+            DptApplicationArea, DptAlarmClassType, DptPsuMode, DptErrorClassSystem = 2000011,
+            DptErrorClassHvac, DptTimeDelay, DptBeaufortWindForceScale, DptSensorSelect = 2000017,
+            DptActuatorConnectType = 2000020, DptCommandMode = 2001000,
+            DptAdditionalInfoTypes = 2001001,
         Dpt21_8BitSet = 2100000,
-            DptGeneralStatus = 2100010,
+            DptGeneralStatus, DptDeviceControl,
         Dpt22_16BitSet = 2200000,
+            DptMedia = 2201000,
         Dpt23_2BitSet = 2300000,
-        Dpt24_String = 2400000,
-            DptVariableString8859 = 2400001,
+            DptOnOffAction, DptAlarmReaction, DptUpDownAction,
+        Dpt24_VariableString = 2400000,
+            DptVariableString88591 = 2400001,
         Dpt25_2NibbleSet = 2500000,
         Dpt26_8BitSet = 2600000,
+            DptSceneInfo,
         Dpt27_32BitSet = 2700000,
+            DptCombinedInfoOnOff,
         Dpt28_StringUtf8 = 2800000,
             DptUtf8 = 2800001,
         Dpt29_ElectricalEnergy = 2900000,
+            DptActiveEnergyV64 = 2900010, DptApparentEnergyV64, DptReactiveEnergyV64,
         Dpt30_24TimesChannelActivation = 3000000,
         DPT217_DatapointTypeVersion = 21700000,
             DptVersion = 21700001,
+        Dpt221 = 22100000,
+            DptSerialNumber = 22100001,
         Dpt225_ScalingSpeed = 22500000,
         Dpt232_3ByteColourRGB = 23200000,
             DptColourRGB = 23200600
@@ -175,13 +215,6 @@ public:
     }
 
     bool setByte(quint16 index, quint8 bytes);
-    template <typename T> bool setBytes(const T &bytesToSet, quint16 index, quint16 count)
-    {
-        if (((bytesToSet.size() - index) < count) || (size() != count))
-            return false;
-        std::copy(std::begin(bytesToSet), std::end(bytesToSet), data());
-        return true;
-    }
 
     QKnxDatapointType(const QKnxDatapointType &other);
     QKnxDatapointType &operator=(const QKnxDatapointType &other);
@@ -194,17 +227,27 @@ public:
     bool operator==(const QKnxDatapointType &other) const;
     bool operator!=(const QKnxDatapointType &other) const;
 
-    static inline bool testBit(quint8 byteToTest, quint8 bit)
+    template<typename T> static constexpr bool testBit(T byteToTest, quint8 bit) noexcept
     {
-        return (byteToTest & (quint8(1) << bit)) != 0;
+        return (byteToTest & (T(1) << bit)) != 0;
     }
 
-    static inline void setBit(quint8 *byteToSet, bool value, quint8 bit)
+    template<typename T> static constexpr T setBit(T byteToSet, bool value, quint8 bit) noexcept
     {
-        value ? (*byteToSet |= quint8(1) << bit) : (*byteToSet &= ~(quint8(1) << bit));
+        return (value ? byteToSet | (T(1) << bit) : byteToSet & ~(T(1) << bit));
     }
 
     static const constexpr int SubType = 0x00;
+
+protected:
+    void resize(int newSize);
+    template <typename T> bool setBytes(const T &bytesToSet, quint16 index, quint16 count)
+    {
+        if (((bytesToSet.size() - index) < count) || (size() != count))
+            return false;
+        std::copy(std::begin(bytesToSet), std::end(bytesToSet), data());
+        return true;
+    }
 
 private:
     QKnxDatapointType() = delete;
@@ -212,6 +255,43 @@ private:
 
 private:
     QSharedDataPointer<QKnxDatapointTypePrivate> d_ptr;
+};
+
+class Q_KNX_EXPORT QKnxFixedSizeDatapointType : public QKnxDatapointType
+{
+public:
+    QKnxFixedSizeDatapointType(Type type, int size)
+        : QKnxDatapointType(type, size) {}
+    QKnxFixedSizeDatapointType(const QString &dptId, int size)
+        : QKnxDatapointType(dptId, size) {}
+    QKnxFixedSizeDatapointType(quint16 mainType, quint16 subType, int size)
+        : QKnxDatapointType(mainType, subType, size) {}
+
+    using QKnxDatapointType::setBytes;
+
+private:
+    using QKnxDatapointType::resize;
+};
+
+class Q_KNX_EXPORT QKnxVariableSizeDatapointType : public QKnxDatapointType
+{
+public:
+    QKnxVariableSizeDatapointType(Type type, int size)
+        : QKnxDatapointType(type, size) {}
+    QKnxVariableSizeDatapointType(const QString &dptId, int size)
+        : QKnxDatapointType(dptId, size) {}
+    QKnxVariableSizeDatapointType(quint16 mainType, quint16 subType, int size)
+        : QKnxDatapointType(mainType, subType, size) {}
+
+    template <typename T> bool setBytes(const T &bytesToSet, quint16 index, quint16 count)
+    {
+        if ((bytesToSet.size() - index) < count)
+            return false;
+
+        resize(count);
+        std::copy(std::begin(bytesToSet), std::end(bytesToSet), data());
+        return true;
+    }
 };
 
 QT_END_NAMESPACE

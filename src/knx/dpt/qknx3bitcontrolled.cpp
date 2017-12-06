@@ -33,18 +33,41 @@
 
 QT_BEGIN_NAMESPACE
 
+/*!
+    \class QKnx3BitControlled
+    \inherits QKnxFixedSizeDatapointType
+    \inmodule QtKnx
+
+    \brief The QKnx3BitControlled class is a datapoint type with a control part.
+
+    This is a fixed size datapoint type with the length of 1 byte, though only
+    4 bits are used by the actual implementation.
+
+    Of the 4 bits, 3 bits are reserved for the step code and 1 bit for the
+    control part.
+
+    \sa QKnxDatapointType
+*/
+
 // -- QKnx3BitControlled
 
 QKnx3BitControlled::QKnx3BitControlled()
-    : QKnx3BitControlled(SubType)
+    : QKnx3BitControlled(false, NumberOfIntervals::Break)
 {}
 
-QKnx3BitControlled::QKnx3BitControlled(int subType)
-    : QKnxDatapointType(MainType, subType, TypeSize)
+QKnx3BitControlled::QKnx3BitControlled(bool control, NumberOfIntervals n)
+    : QKnx3BitControlled(SubType, control, n)
+{}
+
+QKnx3BitControlled::QKnx3BitControlled(int subType, bool control, NumberOfIntervals n)
+    : QKnxFixedSizeDatapointType(MainType, subType, TypeSize)
 {
     setDescription(tr("3-bit controlled"));
-    setRange(QVariant(0x00), QVariant(0x07));
+    setRange(QVariant(0x00), QVariant(0x0f));
     setRangeText(tr("No control, Break"), tr("Controlled, 32 intervals"));
+
+    setControlBit(control);
+    setNumberOfIntervals(n);
 }
 
 bool QKnx3BitControlled::controlBit() const
@@ -54,7 +77,7 @@ bool QKnx3BitControlled::controlBit() const
 
 void QKnx3BitControlled::setControlBit(bool value)
 {
-    QKnxDatapointType::setBit(&(operator[](0)), value, 3);
+    setByte(0, QKnxDatapointType::setBit(byte(0), value, 3));
 }
 
 bool QKnx3BitControlled::setNumberOfIntervals(NumberOfIntervals n)
@@ -65,8 +88,7 @@ bool QKnx3BitControlled::setNumberOfIntervals(NumberOfIntervals n)
     quint8 stepCode = 0;
     if (n != NumberOfIntervals::Break)
         stepCode = quint8(1 + qLn(quint8(n)) / qLn(2.));
-    setByte(0, (byte(0) & 0x08) | stepCode);
-    return true;
+    return setByte(0, (byte(0) & 0x08) | stepCode);
 }
 
 QKnx3BitControlled::NumberOfIntervals QKnx3BitControlled::numberOfIntervals() const
@@ -75,6 +97,9 @@ QKnx3BitControlled::NumberOfIntervals QKnx3BitControlled::numberOfIntervals() co
     return NumberOfIntervals(quint8(qPow(2, stepCode - 1)));
 }
 
+/*!
+    \reimp
+*/
 bool QKnx3BitControlled::isValid() const
 {
     return QKnxDatapointType::isValid() && byte(0) <= maximum().toUInt();
@@ -84,18 +109,14 @@ bool QKnx3BitControlled::isValid() const
 // -- QKnxControlDimming
 
 QKnxControlDimming::QKnxControlDimming()
-    : QKnx3BitControlled(SubType)
-{
-    setDescription(tr("Control Dimming"));
-    setRange(QVariant(0x00), QVariant(0x07));
-    setRangeText(tr("Decrease, Break"), tr("Increase, 32 intervals"));
-}
+    : QKnxControlDimming(Control::Decrease, NumberOfIntervals::Break)
+{}
 
 QKnxControlDimming::QKnxControlDimming(Control control, NumberOfIntervals interval)
-    : QKnxControlDimming()
+    : QKnx3BitControlled(SubType, bool(control), interval)
 {
-    setControl(control);
-    setNumberOfIntervals(interval);
+    setDescription(tr("Control Dimming"));
+    setRangeText(tr("Decrease, Break"), tr("Increase, 32 intervals"));
 }
 
 void QKnxControlDimming::setControl(Control control)
@@ -112,18 +133,14 @@ QKnxControlDimming::Control QKnxControlDimming::control() const
 // -- QKnxControlBlinds
 
 QKnxControlBlinds::QKnxControlBlinds()
-    : QKnx3BitControlled(SubType)
-{
-    setDescription(tr("Control Blinds"));
-    setRange(QVariant(0x00), QVariant(0x07));
-    setRangeText(tr("Up, Break"), tr("Down, 32 intervals"));
-}
+    : QKnxControlBlinds(Control::Up, NumberOfIntervals::Break)
+{}
 
 QKnxControlBlinds::QKnxControlBlinds(Control control, NumberOfIntervals interval)
-    : QKnxControlBlinds()
+    : QKnx3BitControlled (SubType, bool(control), interval)
 {
-    setControl(control);
-    setNumberOfIntervals(interval);
+    setDescription(tr("Control Blinds"));
+    setRangeText(tr("Up, Break"), tr("Down, 32 intervals"));
 }
 
 void QKnxControlBlinds::setControl(Control control)

@@ -32,6 +32,17 @@
 
 QT_BEGIN_NAMESPACE
 
+/*!
+    \class QKnx8BitSet
+
+    \inmodule QtKnx
+    \brief The QKnx8BitSet class is a datapoint type with binary-coded values in
+    all fields.
+
+    This is a fixed size datapoint type with the length of 1 byte.
+
+    \sa QKnxDatapointType
+*/
 
 // -- QKnx8BitSet
 
@@ -44,7 +55,7 @@ QKnx8BitSet::QKnx8BitSet(quint8 value)
 {}
 
 QKnx8BitSet::QKnx8BitSet(int subType, quint8 value)
-    : QKnxDatapointType(MainType, subType, TypeSize)
+    : QKnxFixedSizeDatapointType(MainType, subType, TypeSize)
 {
     setDescription(tr("8-bit set"));
     setRange(QVariant(0x00), QVariant(0xff));
@@ -55,12 +66,12 @@ QKnx8BitSet::QKnx8BitSet(int subType, quint8 value)
 
 bool QKnx8BitSet::bit(int index) const
 {
-    return QKnxDatapointType::testBit(operator[](0), index);
+    return QKnxDatapointType::testBit(byte(), index);
 }
 
 void QKnx8BitSet::setBit(bool value, int index)
 {
-    QKnxDatapointType::setBit(&(operator[](0)), value, index);
+    setByte(QKnxDatapointType::setBit(byte(), value, index));
 }
 
 quint8 QKnx8BitSet::byte() const
@@ -68,11 +79,14 @@ quint8 QKnx8BitSet::byte() const
     return QKnxDatapointType::byte(0);
 }
 
-void QKnx8BitSet::setByte(quint8 value)
+bool QKnx8BitSet::setByte(quint8 value)
 {
-    QKnxDatapointType::setByte(0, value);
+    return QKnxDatapointType::setByte(0, value);
 }
 
+/*!
+    \reimp
+*/
 bool QKnx8BitSet::isValid() const
 {
     return QKnxDatapointType::isValid() && byte() <= maximum().toUInt();
@@ -82,15 +96,14 @@ bool QKnx8BitSet::isValid() const
 // -- QKnxGeneralStatus
 
 QKnxGeneralStatus::QKnxGeneralStatus()
+    : QKnxGeneralStatus(Attributes())
+{}
+
+QKnxGeneralStatus::QKnxGeneralStatus(Attributes attributes)
     : QKnx8BitSet(SubType, 0)
 {
     setDescription(tr("General Status"));
     setRange(QVariant(0x00), QVariant(0x1f));
-}
-
-QKnxGeneralStatus::QKnxGeneralStatus(Attributes attributes)
-    : QKnxGeneralStatus()
-{
     setValue(attributes);
 }
 
@@ -104,15 +117,15 @@ QKnxGeneralStatus::Attributes QKnxGeneralStatus::value() const
         .setFlag(Attribute::AlarmUnacknowledged, QKnxDatapointType::testBit(value, 4));
 }
 
-void QKnxGeneralStatus::setValue(Attributes attributes)
+bool QKnxGeneralStatus::setValue(Attributes attributes)
 {
     quint8 value = byte();
-    QKnxDatapointType::setBit(&value, attributes.testFlag(Attribute::OutOfService), 0);
-    QKnxDatapointType::setBit(&value, attributes.testFlag(Attribute::Fault), 1);
-    QKnxDatapointType::setBit(&value, attributes.testFlag(Attribute::Overridden), 2);
-    QKnxDatapointType::setBit(&value, attributes.testFlag(Attribute::InAlarm), 3);
-    QKnxDatapointType::setBit(&value, attributes.testFlag(Attribute::AlarmUnacknowledged), 4);
-    setByte(value);
+    value = QKnxDatapointType::setBit(value, attributes.testFlag(Attribute::OutOfService), 0);
+    value = QKnxDatapointType::setBit(value, attributes.testFlag(Attribute::Fault), 1);
+    value = QKnxDatapointType::setBit(value, attributes.testFlag(Attribute::Overridden), 2);
+    value = QKnxDatapointType::setBit(value, attributes.testFlag(Attribute::InAlarm), 3);
+    value = QKnxDatapointType::setBit(value, attributes.testFlag(Attribute::AlarmUnacknowledged), 4);
+    return setByte(value);
 }
 
 bool QKnxGeneralStatus::isSet(Attribute attribute) const
@@ -120,14 +133,63 @@ bool QKnxGeneralStatus::isSet(Attribute attribute) const
     return value().testFlag(attribute);
 }
 
-void QKnxGeneralStatus::setAttribute(Attribute attribute)
+bool QKnxGeneralStatus::setAttribute(Attribute attribute)
 {
-    setValue(value() | attribute);
+    return setValue(value() | attribute);
 }
 
-void QKnxGeneralStatus::removeAttribute(Attribute attribute)
+bool QKnxGeneralStatus::removeAttribute(Attribute attribute)
 {
-    setValue(value() &~ attribute);
+    return setValue(value() &~ attribute);
+}
+
+
+// -- QKnxDeviceControl
+
+QKnxDeviceControl::QKnxDeviceControl()
+    : QKnxDeviceControl(Attributes())
+{}
+
+QKnxDeviceControl::QKnxDeviceControl(Attributes attributes)
+    : QKnx8BitSet(SubType, 0)
+{
+    setDescription(tr("Device Control"));
+    setRange(QVariant(0x00), QVariant(0x15));
+    setValue(attributes);
+}
+
+QKnxDeviceControl::Attributes QKnxDeviceControl::value() const
+{
+    auto value = byte();
+    return Attributes().setFlag(Attribute::UserStopped, QKnxDatapointType::testBit(value, 0))
+        .setFlag(Attribute::OwnIA, QKnxDatapointType::testBit(value, 1))
+        .setFlag(Attribute::VerifyMode, QKnxDatapointType::testBit(value, 2))
+        .setFlag(Attribute::SafeState, QKnxDatapointType::testBit(value, 3));
+}
+
+bool QKnxDeviceControl::setValue(Attributes attributes)
+{
+    quint8 value = byte();
+    value = QKnxDatapointType::setBit(value, attributes.testFlag(Attribute::UserStopped), 0);
+    value = QKnxDatapointType::setBit(value, attributes.testFlag(Attribute::OwnIA), 1);
+    value = QKnxDatapointType::setBit(value, attributes.testFlag(Attribute::VerifyMode), 2);
+    value = QKnxDatapointType::setBit(value, attributes.testFlag(Attribute::SafeState), 3);
+    return setByte(value);
+}
+
+bool QKnxDeviceControl::isSet(Attribute attribute) const
+{
+    return value().testFlag(attribute);
+}
+
+bool QKnxDeviceControl::setAttribute(Attribute attribute)
+{
+    return setValue(value() | attribute);
+}
+
+bool QKnxDeviceControl::removeAttribute(Attribute attribute)
+{
+    return setValue(value() &~ attribute);
 }
 
 #include "moc_qknx8bitset.cpp"

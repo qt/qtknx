@@ -33,17 +33,29 @@
 
 QT_BEGIN_NAMESPACE
 
+/*!
+    \class QKnxEntranceAccess
+
+    \inmodule QtKnx
+    \brief The QKnxEntranceAccess is a datapoint type for the entrance access.
+
+    A fixed size datapoint type with the length of 4 bytes that controls the
+    entrance access.
+
+    \sa QKnxDatapointType
+*/
+
 QKnxEntranceAccess::QKnxEntranceAccess()
-    : QKnxDatapointType(MainType, SubType, TypeSize)
+    : QKnxEntranceAccess(0, Attributes(), 0)
+{}
+
+QKnxEntranceAccess::QKnxEntranceAccess(quint32 idCode, Attributes attributes, quint8 index)
+    : QKnxFixedSizeDatapointType(MainType, SubType, TypeSize)
 {
     setDescription(tr("Entrance Access"));
     setRangeText(tr("Low Code, 0 0 0 0 0 0"), tr("High Code, 9 9 9 9 9 9"));
     setRange(QVariant::fromValue(0), QVariant::fromValue(2576980479));
-}
 
-QKnxEntranceAccess::QKnxEntranceAccess(quint32 idCode, Attributes attributes, quint8 index)
-    : QKnxEntranceAccess()
-{
     setValue(idCode, attributes, index);
 }
 
@@ -106,30 +118,30 @@ bool QKnxEntranceAccess::setIdCode(quint32 idCode)
         digits.push_back(idCode % 10);
         idCode = idCode / 10;
     }
-    setByte(0, quint8(digits.value(5) << 4) | digits.value(4));
-    setByte(1, quint8(digits.value(3) << 4) | digits.value(2));
-    setByte(2, quint8(digits.value(1) << 4) | digits.value(0));
-    return true;
+    bool success = setByte(0, quint8(digits.value(5) << 4) | digits.value(4));
+    success &= setByte(1, quint8(digits.value(3) << 4) | digits.value(2));
+    success &= setByte(2, quint8(digits.value(1) << 4) | digits.value(0));
+    return success;
 }
 
-void QKnxEntranceAccess::setAttributes(Attributes attributes)
+bool QKnxEntranceAccess::setAttributes(Attributes attributes)
 {
     quint8 temp = byte(3);
-    setBit(&temp, attributes.testFlag(Attribute::Error), 7);
-    setBit(&temp, attributes.testFlag(Attribute::PermissionAccepted), 6);
-    setBit(&temp, attributes.testFlag(Attribute::ReadRightToLeft), 5);
-    setBit(&temp, attributes.testFlag(Attribute::Encrypted), 4);
-    setByte(3, temp);
+    temp = QKnxDatapointType::setBit(temp, attributes.testFlag(Attribute::Error), 7);
+    temp = QKnxDatapointType::setBit(temp, attributes.testFlag(Attribute::PermissionAccepted), 6);
+    temp = QKnxDatapointType::setBit(temp, attributes.testFlag(Attribute::ReadRightToLeft), 5);
+    temp = QKnxDatapointType::setBit(temp, attributes.testFlag(Attribute::Encrypted), 4);
+    return setByte(3, temp);
 }
 
-void QKnxEntranceAccess::setAttribute(Attribute attribute)
+bool QKnxEntranceAccess::setAttribute(Attribute attribute)
 {
-    setAttributes(attributes() | attribute);
+    return setAttributes(attributes() | attribute);
 }
 
-void QKnxEntranceAccess::removeAttribute(Attribute attribute)
+bool QKnxEntranceAccess::removeAttribute(Attribute attribute)
 {
-    setAttributes(attributes() &~ attribute);
+    return setAttributes(attributes() &~ attribute);
 }
 
 bool QKnxEntranceAccess::setIndex(quint8 index)
@@ -137,17 +149,13 @@ bool QKnxEntranceAccess::setIndex(quint8 index)
     if (index > 15)
         return false;
     quint8 temp = byte(3) & 0xf0;
-    temp |= index;
-    setByte(3, temp);
-    return true;
+    return setByte(3, temp | index);
 }
 
 bool QKnxEntranceAccess::setValue(quint32 idCode, Attributes attributes, quint8 index)
 {
-    if (setIdCode(idCode) && setIndex(index)) {
-        setAttributes(attributes);
-        return true;
-    }
+    if (setIdCode(idCode) && setIndex(index))
+        return setAttributes(attributes);
     return false;
 }
 

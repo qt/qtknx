@@ -32,7 +32,7 @@
 QT_BEGIN_NAMESPACE
 
 QKnxNetIpTunnelingRequest::QKnxNetIpTunnelingRequest(quint8 id, quint8 sequenceCount,
-        const QKnxCemiFrame &cemi)
+        const QKnxTunnelFrame &cemi)
     : QKnxNetIpConnectionHeaderFrame(QKnxNetIp::ServiceType::TunnelingRequest)
 {
     setConnectionHeader({ id, sequenceCount });
@@ -53,16 +53,15 @@ quint8 QKnxNetIpTunnelingRequest::sequenceCount() const
     return connectionHeader().sequenceCount();
 }
 
-QKnxCemiFrame QKnxNetIpTunnelingRequest::cemi() const
+QKnxTunnelFrame QKnxNetIpTunnelingRequest::cemi() const
 {
     auto ref = payloadRef(connectionHeaderSize());
-    return QKnxCemiFrame::fromBytes(ref.bytes<QByteArray>(), 0, ref.size());
+    return QKnxTunnelFrame::fromBytes(ref.bytes<QByteArray>(), 0, ref.size());
 }
 
 bool QKnxNetIpTunnelingRequest::isValid() const
 {
-    // TODO: fix size check once the minimum CEMI frame size is known
-    return QKnxNetIpConnectionHeaderFrame::isValid() && size() >= 12
+    return QKnxNetIpConnectionHeaderFrame::isValid() && size() >= 12 && cemi().isValid()
         && code() == QKnxNetIp::ServiceType::TunnelingRequest;
 }
 

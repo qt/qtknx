@@ -37,7 +37,7 @@
 
 QT_BEGIN_NAMESPACE
 
-class Q_KNX_EXPORT QKnxTimeOfDay : public QKnxDatapointType
+class Q_KNX_EXPORT QKnxTimeOfDay : public QKnxFixedSizeDatapointType
 {
 public:
     QKnxTimeOfDay();
@@ -50,24 +50,24 @@ public:
     static const constexpr int SubType = 0x01;
 
     QKnxTime value() const;
-    void setValue(const QKnxTime &time);
+    bool setValue(const QKnxTime &time);
 
     quint8 hour() const;
-    void setHour(quint8 hour);
+    bool setHour(quint8 hour);
 
     quint8 minute() const;
-    void setMinute(quint8 minute);
+    bool setMinute(quint8 minute);
 
     quint8 second() const;
-    void setSecond(quint8 second);
+    bool setSecond(quint8 second);
 
     QKnxTime::DayOfWeek dayOfDay() const;
-    void setDayOfWeek(QKnxTime::DayOfWeek day);
+    bool setDayOfWeek(QKnxTime::DayOfWeek day);
 
     bool isValid() const override;
 };
 
-class Q_KNX_EXPORT QKnxDate : public QKnxDatapointType
+class Q_KNX_EXPORT QKnxDate : public QKnxFixedSizeDatapointType
 {
 public:
     QKnxDate();
@@ -79,21 +79,21 @@ public:
     static const constexpr int SubType = 0x01;
 
     QDate value() const;
-    void setValue(const QDate &date);
+    bool setValue(const QDate &date);
 
     quint16 year() const;
-    void setYear(quint16 year);
+    bool setYear(quint16 year);
 
     quint8 month() const;
-    void setMonth(quint8 month);
+    bool setMonth(quint8 month);
 
     quint8 day() const;
-    void setDay(quint8 day);
+    bool setDay(quint8 day);
 
     bool isValid() const override;
 };
 
-class Q_KNX_EXPORT QKnxDateTime : public QKnxDatapointType
+class Q_KNX_EXPORT QKnxDateTime : public QKnxFixedSizeDatapointType
 {
     Q_GADGET
 
@@ -126,13 +126,13 @@ public:
     static const constexpr int MainType = 0x13;
     static const constexpr int SubType = 0x01;
 
-    void setValue(const QDate &date, const QKnxTime24 &time, Attributes attr, ClockQuality quality);
+    bool setValue(const QDate &date, const QKnxTime24 &time, Attributes attr, ClockQuality quality);
 
     QDate date() const;
-    void setDate(const QDate &date);
+    bool setDate(const QDate &date);
 
     QKnxTime24 time() const;
-    void setTime(const QKnxTime24 &time);
+    bool setTime(const QKnxTime24 &time);
 
     Attributes attributes() const;
     void setAttributes(Attributes attributes);

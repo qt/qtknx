@@ -33,6 +33,102 @@
 
 QT_BEGIN_NAMESPACE
 
+/*!
+    \class QKnxInterfaceObjectPropertyDataType
+
+    \inmodule QtKnx
+    \brief This class holds information about the data type of the properties
+    of the KNX interface object.
+
+    KNX interface object holds information about the device functionalities.
+    Different properties are storing different functionalities. The data type
+    holds information about this property such as its
+    \list
+        \li \l QKnxInterfaceObjectPropertyDataType::Id
+        \li \l QKnxInterfaceObjectPropertyDataType::Unit
+        \li \l QKnxDatapointType::Type
+    \endlist
+*/
+
+/*!
+    \enum QKnxInterfaceObjectPropertyDataType::Unit
+    This enum describes the possible units of an interface object property.
+
+    \value Array
+    \value Single
+*/
+
+/*!
+    \enum QKnxInterfaceObjectPropertyDataType::Id
+    This enum describes the possible Ids of an interface object property.
+
+    \value Control
+    \value Char
+    \value UnsignedChar
+    \value Int
+    \value UnsignedInt
+    \value KnxFloat
+    \value Date
+    \value Time
+    \value Long
+    \value UnsignedLong
+    \value Float
+    \value Double
+    \value CharBlock
+    \value PollGroupSettings
+    \value ShortCharBlock
+    \value DateTime
+    \value VariableLength
+    \value Generic01
+    \value Generic02
+    \value Generic03
+    \value Generic04
+    \value Generic05
+    \value Generic06
+    \value Generic07
+    \value Generic08
+    \value Generic09
+    \value Generic10
+    \value Generic11
+    \value Generic12
+    \value Generic13
+    \value Generic14
+    \value Generic15
+    \value Generic16
+    \value Generic17
+    \value Generic18
+    \value Generic19
+    \value Generic20
+    \value Reserved01
+    \value Reserved02
+    \value Reserved03
+    \value Reserved04
+    \value Reserved05
+    \value Reserved06
+    \value Reserved07
+    \value Reserved08
+    \value Reserved09
+    \value Reserved10
+    \value Utf8
+    \value Version
+    \value AlarmInfo
+    \value BinaryInformation
+    \value Bitset8
+    \value Bitset16
+    \value Enum8
+    \value Scaling
+    \value Reserved11
+    \value Reserved12
+    \value Reserved13
+    \value Reserved14
+    \value Reserved15
+    \value NeVl
+    \value NeFl
+    \value Function
+    \value Escape
+    \value Invalid
+*/
+
 struct QKnxInterfaceObjectPropertyDataTypePrivate final : public QSharedData
 {
     QKnxInterfaceObjectPropertyDataTypePrivate() = default;
@@ -221,7 +317,11 @@ QVector<QKnxInterfaceObjectPropertyDataType>
                 }
             },
             { QKnxInterfaceObjectProperty::General::ServicesSupported, { /* TODO */ } },
-            { QKnxInterfaceObjectProperty::General::SerialNumber, { { Id::Generic06 } } },
+            { QKnxInterfaceObjectProperty::General::SerialNumber,
+                {
+                    { Id::Generic06, QKnxDatapointType::Type::DptSerialNumber }
+                }
+            },
             { QKnxInterfaceObjectProperty::General::ManufacturerId,
                 {
                     { Id::UnsignedInt, QKnxDatapointType::Type::Dpt7_2ByteUnsigned }
@@ -230,7 +330,7 @@ QVector<QKnxInterfaceObjectPropertyDataType>
             { QKnxInterfaceObjectProperty::General::ProgramVersion, { { Id::Generic05 } } },
             { QKnxInterfaceObjectProperty::General::DeviceControl,
                 {
-                    { Id::Bitset8, QKnxDatapointType::Type::Dpt21_8BitSet },
+                    { Id::Bitset8, QKnxDatapointType::Type::DptDeviceControl },
                     { Id::Generic01 }
                 }
             },
@@ -267,7 +367,7 @@ QVector<QKnxInterfaceObjectPropertyDataType>
             { QKnxInterfaceObjectProperty::General::Enrol,
                 {
                     { Id::Function },
-                    { Id::VariableLength, QKnxDatapointType::Type::DptVariableString8859 }
+                    { Id::VariableLength, QKnxDatapointType::Type::DptVariableString88591 }
                 }
             },
             { QKnxInterfaceObjectProperty::General::Version,
@@ -279,7 +379,7 @@ QVector<QKnxInterfaceObjectPropertyDataType>
             { QKnxInterfaceObjectProperty::General::GroupObjectLink,
                 {
                     { Id::Function },
-                    { Id::VariableLength, QKnxDatapointType::Type::DptVariableString8859 }
+                    { Id::VariableLength, QKnxDatapointType::Type::DptVariableString88591 }
                 }
             },
             { QKnxInterfaceObjectProperty::General::McbTable,
@@ -287,15 +387,20 @@ QVector<QKnxInterfaceObjectPropertyDataType>
                     { Id::Generic08, QKnxDatapointType::Type::Unknown, Unit::Array }
                 }
             },
-            { QKnxInterfaceObjectProperty::General::ErrorCode, { { Id::Generic01 } } },
+            { QKnxInterfaceObjectProperty::General::ErrorCode,
+                {
+                    { Id::Enum8, QKnxDatapointType::Type::DptErrorClassSystem },
+                    { Id::UnsignedChar }
+                }
+            },
             { QKnxInterfaceObjectProperty::General::ObjectIndex,
                 {
-                    { Id::UnsignedChar, QKnxDatapointType::Type::Dpt5_8bitUnsigned }
+                    { Id::UnsignedChar, QKnxDatapointType::Type::DptValue1Ucount }
                 }
             },
             { QKnxInterfaceObjectProperty::General::DownloadCounter,
                 {
-                    { Id::UnsignedChar, QKnxDatapointType::Type::Dpt5_8bitUnsigned }
+                    { Id::UnsignedChar, QKnxDatapointType::Type::DptValue2UCount }
                 }
             }
         };
@@ -344,53 +449,53 @@ QVector<QKnxInterfaceObjectPropertyDataType>
             { QKnxInterfaceObjectProperty::Device::ObjectValue,
                 {
                     { Id::Function },
-                    { Id::VariableLength, QKnxDatapointType::Type::DptVariableString8859 }
+                    { Id::VariableLength, QKnxDatapointType::Type::DptVariableString88591 }
                 }
             },
             { QKnxInterfaceObjectProperty::Device::ObjectLink,
                 {
                     { Id::Function },
-                    { Id::VariableLength, QKnxDatapointType::Type::DptVariableString8859 }
+                    { Id::VariableLength, QKnxDatapointType::Type::DptVariableString88591 }
                 }
             },
             { QKnxInterfaceObjectProperty::Device::Application,
                 {
                     { Id::Function },
-                    { Id::VariableLength, QKnxDatapointType::Type::DptVariableString8859 }
+                    { Id::VariableLength, QKnxDatapointType::Type::DptVariableString88591 }
                 }
             },
             { QKnxInterfaceObjectProperty::Device::Parameter,
                 {
                     { Id::Function },
-                    { Id::VariableLength, QKnxDatapointType::Type::DptVariableString8859 }
+                    { Id::VariableLength, QKnxDatapointType::Type::DptVariableString88591 }
                 }
             },
             { QKnxInterfaceObjectProperty::Device::ObjectAddress,
                 {
                     { Id::Function },
-                    { Id::VariableLength, QKnxDatapointType::Type::DptVariableString8859 }
+                    { Id::VariableLength, QKnxDatapointType::Type::DptVariableString88591 }
                 }
             },
             { QKnxInterfaceObjectProperty::Device::PsuType,
                 {
-                    { Id::UnsignedInt, QKnxDatapointType::Type::Dpt7_2ByteUnsigned }
+                    { Id::UnsignedInt, QKnxDatapointType::Type::DptUEICurrentMilliA }
                 }
             },
             { QKnxInterfaceObjectProperty::Device::PsuStatus,
                 {
-                    { Id::BinaryInformation, QKnxDatapointType::Type::Dpt1_1Bit },
+                    { Id::BinaryInformation, QKnxDatapointType::Type::DptSwitch },
                     { Id::UnsignedChar, QKnxDatapointType::Type::Dpt5_8bitUnsigned }
                 }
             },
-            { QKnxInterfaceObjectProperty::Device::PsuEnables,
+            { QKnxInterfaceObjectProperty::Device::PsuEnable,
                 {
-                    { Id::Enum8, QKnxDatapointType::Type::Dpt20_1Byte },
+                    { Id::Enum8, QKnxDatapointType::Type::DptPsuMode },
                     { Id::UnsignedChar, QKnxDatapointType::Type::Dpt5_8bitUnsigned }
                 }
             },
             { QKnxInterfaceObjectProperty::Device::DomainAddress,
                 {
-                    { Id::UnsignedInt, QKnxDatapointType::Type::Dpt7_2ByteUnsigned }
+                    { Id::UnsignedInt, QKnxDatapointType::Type::DptValue2UCount }
                 }
             },
             { QKnxInterfaceObjectProperty::Device::IoList,
@@ -428,7 +533,7 @@ QVector<QKnxInterfaceObjectPropertyDataType>
             },
             { QKnxInterfaceObjectProperty::Device::SerialNumberTable,
                 {
-                    { Id::Generic06, QKnxDatapointType::Type::Unknown, Unit::Array }
+                    { Id::Generic06, QKnxDatapointType::Type::DptSerialNumber, Unit::Array }
                 }
             },
             { QKnxInterfaceObjectProperty::Device::BibatMasterAddress,
@@ -511,7 +616,7 @@ QVector<QKnxInterfaceObjectPropertyDataType>
             { QKnxInterfaceObjectProperty::Router::RouteTableControl,
                 {
                     { Id::Function },
-                    { Id::VariableLength, QKnxDatapointType::Type::DptVariableString8859 }
+                    { Id::VariableLength, QKnxDatapointType::Type::DptVariableString88591 }
                 }
             },
             { QKnxInterfaceObjectProperty::Router::CouplerServerControl, { { Id::Generic01 } } },
@@ -535,7 +640,7 @@ QVector<QKnxInterfaceObjectPropertyDataType>
             { QKnxInterfaceObjectProperty::Router::RfEnableSbc,
                 {
                     { Id::Function },
-                    { Id::VariableLength, QKnxDatapointType::Type::DptVariableString8859 }
+                    { Id::VariableLength, QKnxDatapointType::Type::DptVariableString88591 }
                 }
             }
         };
@@ -693,7 +798,7 @@ QVector<QKnxInterfaceObjectPropertyDataType>
             { QKnxInterfaceObjectProperty::KnxNetIpParameter::SecuredServiceFamilies,
                 {
                     { Id::Function },
-                    { Id::VariableLength, QKnxDatapointType::Type::DptVariableString8859 }
+                    { Id::VariableLength, QKnxDatapointType::Type::DptVariableString88591 }
                 }
             },
             { QKnxInterfaceObjectProperty::KnxNetIpParameter::MulticastLatencyTolerance,
@@ -717,12 +822,74 @@ QVector<QKnxInterfaceObjectPropertyDataType>
     if (QKnxInterfaceObjectProperty::isKnxNetIpParameterProperty(property))
         return netIp.value(property);
 
+    static const PropertyDataTypeHash cemiServer = []() -> PropertyDataTypeHash {
+        return {
+            { QKnxInterfaceObjectProperty::CemiServer::MediumType,
+                {
+                    { Id::Bitset16, QKnxDatapointType::Type::DptMedia }
+                }
+            },
+            { QKnxInterfaceObjectProperty::CemiServer::CommonMode,
+                {
+                    { Id::Enum8, QKnxDatapointType::Type::DptCommandMode }
+                }
+            },
+            { QKnxInterfaceObjectProperty::CemiServer::MediumAvailability,
+                {
+                    { Id::Bitset16, QKnxDatapointType::Type::DptMedia }
+                }
+            },
+            { QKnxInterfaceObjectProperty::CemiServer::AdditionalInfoTypes,
+                {
+                    { Id::Enum8, QKnxDatapointType::Type::DptAdditionalInfoTypes, Unit::Array }
+                }
+            },
+            { QKnxInterfaceObjectProperty::CemiServer::TimeBase,
+                {
+                    { Id::UnsignedInt, QKnxDatapointType::Type::DptValue2UCount }
+                }
+            },
+            { QKnxInterfaceObjectProperty::CemiServer::TransparencyModeEnabled,
+                {
+                    { Id::BinaryInformation, QKnxDatapointType::Type::DptEnable }
+                }
+            },
+            { QKnxInterfaceObjectProperty::CemiServer::BiBatNextBlock,
+                {
+                    { Id::UnsignedChar, QKnxDatapointType::Type::DptValue1Ucount }
+                }
+            },
+            { QKnxInterfaceObjectProperty::CemiServer::RfModeSelect,
+                {
+                    { Id::Enum8 }, { Id::UnsignedChar }
+                }
+            },
+            { QKnxInterfaceObjectProperty::CemiServer::RfModeSupport,
+                {
+                    { Id::Bitset8 }, { Id::Generic01 }
+                }
+            },
+            { QKnxInterfaceObjectProperty::CemiServer::RfFilteringModeSelectCemiServer,
+                {
+                    { Id::Enum8 }, { Id::UnsignedChar }
+                }
+            },
+            { QKnxInterfaceObjectProperty::CemiServer::RfFilteringModeSupport,
+                {
+                    { Id::Bitset8 }, { Id::Generic01 }
+                }
+            }
+        };
+    }();
+    if (QKnxInterfaceObjectProperty::isCemiServerProperty(property))
+        return cemiServer.value(property);
+
     static const PropertyDataTypeHash security = []() -> PropertyDataTypeHash {
         return {
             { QKnxInterfaceObjectProperty::Security::SecurityMode,
                 {
                     { Id::Function },
-                    { Id::VariableLength, QKnxDatapointType::Type::DptVariableString8859 }
+                    { Id::VariableLength, QKnxDatapointType::Type::DptVariableString88591 }
                 }
             },
             { QKnxInterfaceObjectProperty::Security::P2pKeyTable,
@@ -743,7 +910,7 @@ QVector<QKnxInterfaceObjectPropertyDataType>
             { QKnxInterfaceObjectProperty::Security::SecurityFailuresLog,
                 {
                     { Id::Function },
-                    { Id::VariableLength, QKnxDatapointType::Type::DptVariableString8859 }
+                    { Id::VariableLength, QKnxDatapointType::Type::DptVariableString88591 }
                 }
             },
             { QKnxInterfaceObjectProperty::Security::SkiTool, { { Id::Generic16 } } },
@@ -809,7 +976,7 @@ QVector<QKnxInterfaceObjectPropertyDataType>
             { QKnxInterfaceObjectProperty::RfMedium::RfBidirTimeout,
                 {
                     { Id::Function },
-                    { Id::VariableLength, QKnxDatapointType::Type::DptVariableString8859 }
+                    { Id::VariableLength, QKnxDatapointType::Type::DptVariableString88591 }
                 }
             },
             { QKnxInterfaceObjectProperty::RfMedium::RfDiagSaFilterTable,
@@ -825,7 +992,7 @@ QVector<QKnxInterfaceObjectPropertyDataType>
             { QKnxInterfaceObjectProperty::RfMedium::RfDiagProbe,
                 {
                     { Id::Function },
-                    { Id::VariableLength, QKnxDatapointType::Type::DptVariableString8859 }
+                    { Id::VariableLength, QKnxDatapointType::Type::DptVariableString88591 }
                 }
             },
             { QKnxInterfaceObjectProperty::RfMedium::TransmissionMode,
