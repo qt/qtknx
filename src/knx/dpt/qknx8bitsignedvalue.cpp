@@ -41,19 +41,38 @@ QT_BEGIN_NAMESPACE
 
     This is a fixed size datapoint type with the length of 1 byte.
 
+    Integer values from -128 to 127 can be encoded in this datapoint type.
+
+    It is a base class for the following classes:
+
+    \list
+        \li \c QKnxPercentV8 - Percentage.
+        \li \c QKnxValue1Count - Counter pulses.
+    \endlist
+
     \sa QKnxDatapointType
 */
 
 // -- QKnx8BitSignedValue
 
+/*!
+    Creates a fixed size datapoint type with the value \c 0.
+*/
 QKnx8BitSignedValue::QKnx8BitSignedValue()
     : QKnx8BitSignedValue(0)
 {}
 
+/*!
+    Creates a fixed size datapoint type with the value \a value.
+*/
 QKnx8BitSignedValue::QKnx8BitSignedValue(qint8 value)
     : QKnx8BitSignedValue(SubType, value)
 {}
 
+/*!
+    Creates a fixed size datapoint type with the subtype \a subType and value
+    \a value.
+*/
 QKnx8BitSignedValue::QKnx8BitSignedValue(int subType, qint8 value)
     : QKnxFixedSizeDatapointType(MainType, subType, TypeSize)
 {
@@ -64,11 +83,17 @@ QKnx8BitSignedValue::QKnx8BitSignedValue(int subType, qint8 value)
     setValue(value);
 }
 
+/*!
+    Returns the value stored in the datapoint type.
+*/
 qint8 QKnx8BitSignedValue::value() const
 {
     return qint8(QKnxDatapointType::byte(0));
 }
 
+/*!
+    Sets the value of the datapoint type to \a value.
+*/
 void QKnx8BitSignedValue::setValue(qint8 value)
 {
     QKnxDatapointType::setByte(0, quint8(value));
