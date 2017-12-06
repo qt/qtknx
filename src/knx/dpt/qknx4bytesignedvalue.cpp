@@ -47,17 +47,42 @@ QT_BEGIN_NAMESPACE
     Integer values from -2 147 483 648 to -2 147 483 647 can be encoded in this
     datapoint type.
 
+    This class is a base class for the following datapoint types:
+
+    \list
+        \li \c QKnxActiveEnergy - Active energy in Wh.
+        \li \c QKnxActiveEnergykWh - Active energy in kWh.
+        \li \c QKnxApparentEnergy - Active energy in VAh.
+        \li \c QKnxApparentEnergykVAh - Active energy in kVAh.
+        \li \c QKnxFlowRateCubicMeterPerHour - Flow rate in cubic meters per
+            hour (m3/h).
+        \li \c QKnxLongDeltaTimeSec - Active energy in seconds.
+        \li \c QKnxReactiveEnergy - Active energy in VARh.
+        \li \c QKnxReactiveEnergykVARh - Active energy in kVARh.
+        \li \c QKnxValue4Count - Counter pulses (signed).
+    \endlist
+
     \sa QKnxDatapointType
 */
 
+/*!
+    Creates a fixed size datapoint type with the value set to \c 0.
+*/
 QKnx4ByteSignedValue::QKnx4ByteSignedValue()
     : QKnx4ByteSignedValue(0)
 {}
 
+/*!
+    Creates a fixed size datapoint type with the value \a value.
+*/
 QKnx4ByteSignedValue::QKnx4ByteSignedValue(qint32 value)
     : QKnx4ByteSignedValue(SubType, value)
 {}
 
+/*!
+    Creates a fixed size datapoint type with the subtype \a subType and value
+    \a value.
+*/
 QKnx4ByteSignedValue::QKnx4ByteSignedValue(int subType, qint32 value)
     : QKnxFixedSizeDatapointType(MainType, subType, TypeSize)
 {
@@ -68,11 +93,20 @@ QKnx4ByteSignedValue::QKnx4ByteSignedValue(int subType, qint32 value)
     setValue(value);
 }
 
+/*!
+    Returns the value stored in the datapoint type.
+*/
 qint32 QKnx4ByteSignedValue::value() const
 {
     return qint32(QKnxUtils::QUint32::fromBytes(bytes()));
 }
 
+/*!
+    Sets the value of the datapoint type to \a value.
+
+    If the value is outside the allowed range, returns \c false and does not set
+    the value.
+*/
 bool QKnx4ByteSignedValue::setValue(qint32 value)
 {
     if (value <= maximum().toInt() && value >= minimum().toInt())
