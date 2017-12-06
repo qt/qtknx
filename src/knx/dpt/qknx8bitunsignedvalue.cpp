@@ -41,19 +41,42 @@ QT_BEGIN_NAMESPACE
 
     This is a fixed size datapoint type with the length of 1 byte.
 
+    Integer values from 0 to 255 can be encoded in this datapoint type.
+
+    It is a base class for the following classes:
+
+    \list
+        \li \c QKnxScaling - Percentage from 0 to 100.
+        \li \c QKnxAngle - Angle in degrees from 0 to 360.
+        \li \c QKnxPercentU8 - Percentage
+        \li \c QKnxDecimalFactor - Ratio from 0 to 255
+        \li \c QKnxValue1Ucount - Counter pulses from 0 to 255.
+        \li \c QKnxTariff - Tariff from 0 to 254.
+    \endlist
+
     \sa QKnxDatapointType
 */
 
 // -- QKnx8BitUnsignedValue
 
+/*!
+    Creates a fixed size datapoint type with the value \c 0.0.
+*/
 QKnx8BitUnsignedValue::QKnx8BitUnsignedValue()
     : QKnx8BitUnsignedValue(0.0)
 {}
 
+/*!
+    Creates a fixed size datapoint type with the value \a value.
+*/
 QKnx8BitUnsignedValue::QKnx8BitUnsignedValue(double value)
     : QKnx8BitUnsignedValue(SubType, value)
 {}
 
+/*!
+    Creates a fixed size datapoint type with the subtype \a subType and value
+    \a value.
+*/
 QKnx8BitUnsignedValue::QKnx8BitUnsignedValue(int subType, double value)
     : QKnxFixedSizeDatapointType(MainType, subType, TypeSize)
 {
@@ -64,6 +87,9 @@ QKnx8BitUnsignedValue::QKnx8BitUnsignedValue(int subType, double value)
     setValue(value);
 }
 
+/*!
+    Returns the value stored in the datapoint type.
+*/
 double QKnx8BitUnsignedValue::value() const
 {
     if (!isValid())
@@ -71,6 +97,12 @@ double QKnx8BitUnsignedValue::value() const
     return byte(0) * coefficient();
 }
 
+/*!
+    Sets the value of the datapoint type to \a value.
+
+    If the value is outside the allowed range, returns \c false and does not set
+    the value.
+*/
 bool QKnx8BitUnsignedValue::setValue(double value)
 {
     if (value <= maximum().toDouble() && value >= minimum().toDouble())
