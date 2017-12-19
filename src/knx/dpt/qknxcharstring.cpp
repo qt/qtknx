@@ -40,10 +40,11 @@ QT_BEGIN_NAMESPACE
     \brief The QKnxCharString class is a datapoint type that encodes a string.
 
     This datapoint type encodes a string of \l QKnxChar. The encoding of the
-    string is specified in \l QKnxStringCharASCII and \l QKnxStringChar88591
-    that inherit class.
+    string is specified in \l QKnxCharStringASCII and \l QKnxCharString88591.
 
-    This is a fixed size datapoint type with the length of 1 byte.
+    This is a fixed size datapoint type with the length of 14 bytes.
+
+    The range for the string size is from \c 0 to \c 14.
 
     \sa QKnxDatapointType
 */
@@ -62,18 +63,32 @@ static bool isAscii(const char *bytes, int size, quint8 maxValue)
     return true;
 }
 
+/*!
+    Creates a fixed size datapoint type with the value set to \c 0.
+*/
 QKnxCharString::QKnxCharString()
     : QKnxCharString(SubType, nullptr, 0)
 {}
 
+/*!
+    Creates a fixed size datapoint type storing the string \a string.
+*/
 QKnxCharString::QKnxCharString(QLatin1String string)
     : QKnxCharString(SubType, string.latin1(), string.size())
 {}
 
+/*!
+    Creates a fixed size datapoint type storing the string \a string with the
+    length \a size.
+*/
 QKnxCharString::QKnxCharString(const char *string, int size)
     : QKnxCharString(SubType, string, size)
 {}
 
+/*!
+    Creates a fixed size datapoint with the subtype \a subType, storing the
+    string \a string with the length \a size.
+*/
 QKnxCharString::QKnxCharString(int subType, const char* string, int size)
     : QKnxFixedSizeDatapointType(MainType, subType, TypeSize)
 {
@@ -83,16 +98,28 @@ QKnxCharString::QKnxCharString(int subType, const char* string, int size)
     setString(string, size);
 }
 
+/*!
+    Returns the string stored in the datapoint type.
+*/
 QLatin1String QKnxCharString::string() const
 {
     return QLatin1String((const char*) constData());
 }
 
+/*!
+    Sets the string stored in the datapoint type to \a string.
+*/
 bool QKnxCharString::setString(QLatin1String string)
 {
     return setString(string.latin1(), string.size());
 }
 
+/*!
+    Sets the string stored in the datapoint type to \a string with the length
+    \a size.
+
+    If \a size is \c -1, the full \a string is used.
+*/
 bool QKnxCharString::setString(const char *string, int size)
 {
     static auto null = QByteArray(TypeSize, 0);
@@ -120,14 +147,41 @@ bool QKnxCharString::isValid() const
 
 // -- QKnxCharStringASCII
 
+/*!
+    \class QKnxCharStringASCII
+    \inherits QKnxCharString
+    \inmodule QtKnx
+
+    \brief The QKnxCharStringASCII class is a datapoint type that encodes a
+    string of ASCII characters.
+
+    This datapoint type encodes a string of \l QKnxChar.
+
+    This is a fixed size datapoint type with the length of 14 bytes.
+
+    \sa QKnxChar, QKnxDatapointType
+*/
+
+/*!
+    Creates a fixed size datapoint type with the value set to \c null.
+*/
 QKnxCharStringASCII::QKnxCharStringASCII()
     : QKnxCharStringASCII(nullptr)
 {}
 
+/*!
+    Creates a fixed size datapoint type storing the string \a string.
+*/
 QKnxCharStringASCII::QKnxCharStringASCII(QLatin1String string)
     : QKnxCharStringASCII(string.latin1(), string.size())
 {}
 
+/*!
+    Creates a fixed size datapoint type storing the string \a string with the
+    length \a size.
+
+    If \a size is \c -1, the full \a string is used.
+*/
 QKnxCharStringASCII::QKnxCharStringASCII(const char *string, int size)
     : QKnxCharString(SubType, nullptr, 0)
 {
@@ -138,15 +192,42 @@ QKnxCharStringASCII::QKnxCharStringASCII(const char *string, int size)
 
 
 // -- QKnxCharString88591
+/*!
+    \class QKnxCharString88591
+    \inherits QKnxChar
+    \inmodule QtKnx
 
+    \brief The QKnxCharString88591 class is a datapoint type that encodes a
+    string of ISO 8859-1 characters.
+
+    This datapoint type encodes a string of \l QKnxChar.
+
+    This is a fixed size datapoint type with the length of 14 bytes.
+
+    \sa QKnxChar, QKnxDatapointType
+*/
+
+/*!
+    Creates a fixed size datapoint type with the value set to \c null.
+*/
 QKnxCharString88591::QKnxCharString88591()
     : QKnxCharString88591(nullptr)
 {}
 
+/*!
+    Creates a fixed size datapoint type storing the string \a string.
+*/
 QKnxCharString88591::QKnxCharString88591(QLatin1String string)
     : QKnxCharString88591(string.latin1(), string.size())
 {}
 
+/*!
+    Creates a fixed size datapoint type storing the string \a string with the
+    length \a size.
+
+    If \a size is \c -1, the full \a string is used.
+
+*/
 QKnxCharString88591::QKnxCharString88591(const char *string, int size)
     : QKnxCharString(SubType, string, size)
 {
