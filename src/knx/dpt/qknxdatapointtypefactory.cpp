@@ -62,15 +62,30 @@ QT_BEGIN_NAMESPACE
 
     \inmodule QtKnx
     \brief The QKnxDatapointTypeFactory class is used to create
-    \l QKnxDatapointTypes based on their main number and sub number.
+    \l QKnxDatapointType objects based on their main number and sub number.
 
     You can register one or more datapoints with this factory and query them
-    based on mian number and sub number. This class follows the singleton design
-    pattern. Only one instance of this class can be created and its reference
-    can be fetched from the instance() method.
+    based on the main number and sub number.
 
-    The KNX datapoint types are identified by a 16 bit main number and a 16-bit
+    This class follows the singleton design pattern. Only one instance of this
+    class can be created and its reference can be fetched from the instance()
+    method.
+
+    The KNX datapoint types are identified by a 16-bit main number and a 16-bit
     sub number.
+*/
+
+/*!
+    \fn QKnxDatapointTypeFactory::instance()
+
+    Returns a reference to the datapoint type factory.
+*/
+
+/*!
+    \fn void QKnxDatapointTypeFactory::registerType(int mainType, int subType, int size)
+
+    Registers a datapoint type with the main type \a mainType, sub type
+    \a subType, and size \a size.
 */
 
 /*!
@@ -78,7 +93,7 @@ QT_BEGIN_NAMESPACE
     of the subclass depends on the \a mainType and \a subType given as arguments
     to this function.
 
-    Note: Ownership of the created object remains with the programmer.
+    \note The ownership of the created object remains with the programmer.
 */
 QKnxDatapointType *QKnxDatapointTypeFactory::createType(int mainType, int subType) const
 {
@@ -98,9 +113,10 @@ QKnxDatapointType *QKnxDatapointTypeFactory::createType(int mainType, int subTyp
 
 /*!
     Returns a new instance of a \l QKnxDatapointType subclass. The instantiation
-    of the subclass depends on the \a type given as argument to this function.
+    of the subclass depends on the \a type given as an argument to this
+    function.
 
-    Note: Ownership of the created object remains with the programmer.
+    \note The ownership of the created object remains with the programmer.
 */
 QKnxDatapointType *QKnxDatapointTypeFactory::createType(QKnxDatapointType::Type type) const
 {
@@ -139,7 +155,7 @@ QList<int> QKnxDatapointTypeFactory::mainTypes() const
 
 /*!
     Queries the factory for a the given \a mainType and if it is registered,
-    returns true; false otherwise.
+    returns \c true; \c false otherwise.
 */
 bool QKnxDatapointTypeFactory::containsMainType(int mainType) const
 {
@@ -159,7 +175,7 @@ QList<int> QKnxDatapointTypeFactory::subTypes(int mainType) const
 
 /*!
     Queries the factory for a the given \a mainType and \a subType and if the
-    type is registered, returns true; false otherwise.
+    type is registered, returns \c true; \c false otherwise.
 */
 bool QKnxDatapointTypeFactory::containsSubType(int mainType, int subType) const
 {
