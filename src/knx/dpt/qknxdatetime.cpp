@@ -481,11 +481,11 @@ QKnxDateTime::Attributes QKnxDateTime::attributes() const
 {
     return Attributes().setFlag(Attribute::Fault, QKnxDatapointType::testBit(byte(7), 7))
         .setFlag(Attribute::WorkingDay, QKnxDatapointType::testBit(byte(7), 6))
-        .setFlag(Attribute::WorkingDay, QKnxDatapointType::testBit(byte(7), 5))
-        .setFlag(Attribute::YearInvalid, QKnxDatapointType::testBit(byte(7), 4))
-        .setFlag(Attribute::DateInvalid, QKnxDatapointType::testBit(byte(7), 3))
-        .setFlag(Attribute::DayOfWeekInvalid, QKnxDatapointType::testBit(byte(7), 2))
-        .setFlag(Attribute::TimeInvalid, QKnxDatapointType::testBit(byte(7), 1))
+        .setFlag(Attribute::NoWorkingDay, QKnxDatapointType::testBit(byte(7), 5))
+        .setFlag(Attribute::NoYear, QKnxDatapointType::testBit(byte(7), 4))
+        .setFlag(Attribute::NoDate, QKnxDatapointType::testBit(byte(7), 3))
+        .setFlag(Attribute::NoDayOfWeek, QKnxDatapointType::testBit(byte(7), 2))
+        .setFlag(Attribute::NoTime, QKnxDatapointType::testBit(byte(7), 1))
         .setFlag(Attribute::StandardSummerTime, QKnxDatapointType::testBit(byte(7), 0));
 }
 
@@ -498,11 +498,11 @@ void QKnxDateTime::setAttributes(Attributes attributes)
     quint8 byte = 0x00;
     byte = QKnxDatapointType::setBit(byte, attributes.testFlag(Attribute::Fault), 7);
     byte = QKnxDatapointType::setBit(byte, attributes.testFlag(Attribute::WorkingDay), 6);
-    byte = QKnxDatapointType::setBit(byte, attributes.testFlag(Attribute::WorkingDayInvalid), 5);
-    byte = QKnxDatapointType::setBit(byte, attributes.testFlag(Attribute::YearInvalid), 4);
-    byte = QKnxDatapointType::setBit(byte, attributes.testFlag(Attribute::DateInvalid), 3);
-    byte = QKnxDatapointType::setBit(byte, attributes.testFlag(Attribute::DayOfWeekInvalid), 2);
-    byte = QKnxDatapointType::setBit(byte, attributes.testFlag(Attribute::TimeInvalid), 1);
+    byte = QKnxDatapointType::setBit(byte, attributes.testFlag(Attribute::NoWorkingDay), 5);
+    byte = QKnxDatapointType::setBit(byte, attributes.testFlag(Attribute::NoYear), 4);
+    byte = QKnxDatapointType::setBit(byte, attributes.testFlag(Attribute::NoDate), 3);
+    byte = QKnxDatapointType::setBit(byte, attributes.testFlag(Attribute::NoDayOfWeek), 2);
+    byte = QKnxDatapointType::setBit(byte, attributes.testFlag(Attribute::NoTime), 1);
     byte = QKnxDatapointType::setBit(byte, attributes.testFlag(Attribute::StandardSummerTime), 0);
     setByte(6, byte);
 }

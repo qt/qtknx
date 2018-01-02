@@ -102,11 +102,11 @@ public:
     {
         Fault = 0x00,
         WorkingDay = 0x01,
-        WorkingDayInvalid = 0x02,
-        YearInvalid = 0x04,
-        DateInvalid = 0x08,
-        DayOfWeekInvalid = 0x10,
-        TimeInvalid = 0x20,
+        NoWorkingDay = 0x02,
+        NoYear = 0x04,
+        NoDate = 0x08,
+        NoDayOfWeek = 0x10,
+        NoTime = 0x20,
         StandardSummerTime = 0x40
     };
     Q_ENUM(Attribute)
