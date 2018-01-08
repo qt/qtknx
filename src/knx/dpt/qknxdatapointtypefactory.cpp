@@ -312,6 +312,8 @@ QKnxDatapointTypeFactory::QKnxDatapointTypeFactory()
     registerType<QKnxAmountRain>();
     registerType<QKnxTemperatureFahrenheit>();
     registerType<QKnxWindSpeedKmPerHour>();
+    registerType<QKnxValueAbsoluteHumidity>();
+    registerType<QKnxConcentration>();
 
     // DPT-10
     registerType<QKnxTimeOfDay>();

@@ -81,7 +81,7 @@ public:
             DptWindSpeed, DptPressure, DptHumidity, DptAirQuality, DptAirFlow, DptTimeSecond,
             DptTimeMilliSecond, DptVoltage = 900020, DptCurrent, DptPowerDensity,
             DptKelvinPerPercent, DptPower, DptVolumeFlow, DptAmountRain, DptTemperatureFahrenheit,
-            DptWindSpeedKmPerHour,
+            DptWindSpeedKmPerHour, DptValueAbsoluteHumidity, DptConcentration,
         Dpt10_TimeOfDay = 1000000,
             DptTimeOfDay = 1000001,
         Dpt11_Date = 1100000,

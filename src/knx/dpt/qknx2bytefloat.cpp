@@ -146,6 +146,14 @@ QT_BEGIN_NAMESPACE
         \li \c QKnxWindSpeedKmPerHour
         \li Wind speed in kilometers per hour (km/h).
         \li 0 - 670760.96
+    \row
+        \li \c QKnxValueAbsoluteHumidity
+        \li Absolute air humidity in grams per cubic meter (g/m3).
+        \li 0 - 670760.96
+    \row
+        \li \c QKnxConcentration
+        \li Air pollution in micrograms per cubic meter (micro-g/m3).
+        \li 0 - 670760.96
     \endtable
 
     \sa QKnxDatapointType, {Qt KNX Datapoint Type Classes}
@@ -287,6 +295,10 @@ CREATE_CLASS_BODY(QKnxTemperatureFahrenheit, "Temperature in Fahrenheit",
     "Minimum Value, -459.6", "Maximum Value, 670 760", "degree F", -459.6, 670760.96)
 CREATE_CLASS_BODY(QKnxWindSpeedKmPerHour, "Wind Speed in kilometer per hour",
     "Minimum Value, 0", "Maximum Value, 670 760.96", "km/h", 0, 670760.96)
+CREATE_CLASS_BODY(QKnxValueAbsoluteHumidity, "Absolute air humidity in grams per cubic meter",
+    "Minimum Value, 0", "Maximum Value, 670 760.96", "g/m3", 0, 670760.96)
+CREATE_CLASS_BODY(QKnxConcentration, "Air pollution in micrograms per cubic meter",
+    "Minimum Value, 0", "Maximum Value, 670 760.96", "micro-g/m3", 0, 670760.96)
 
 #undef CREATE_CLASS_BODY
 

@@ -296,6 +296,10 @@ QT_BEGIN_NAMESPACE
            Stores the temperature in degrees Fahrenheit.
     \value DptWindSpeedKmPerHour
            Stores the wind speed in kilometers per hour (km/h).
+    \value DptValueAbsoluteHumidity
+           Absolute air humidity in grams per cubic meter (g/m3).
+    \value DptConcentration
+           Air pollution in micrograms per cubic meter (micro-g/m3).
     \value Dpt10_TimeOfDay
            A fixed size datapoint type with the length of 3 bytes.
     \value DptTimeOfDay
