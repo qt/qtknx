@@ -439,6 +439,36 @@ public:
     bool setType(Type type);
 };
 
+class Q_KNX_EXPORT QKnxCloudCover : public QKnx1Byte
+{
+    Q_GADGET
+
+public:
+    enum class Scale : quint8
+    {
+        Cloudless = 0x00,
+        Sunny = 0x01,
+        Sunshiny = 0x02,
+        LightlyCloudy = 0x03,
+        ScatteredClouds = 0x04,
+        Cloudy = 0x05,
+        VeryCloudy = 0x06,
+        AlmostOvercast = 0x07,
+        Overcast = 0x08,
+        ObstructedFromView = 0x09,
+        Invalid = 0xff
+    };
+    Q_ENUM(Scale)
+
+    QKnxCloudCover();
+    explicit QKnxCloudCover(Scale scale);
+
+    static const constexpr int SubType = 0x15;
+
+    Scale cloudCover() const;
+    bool setCloudCover(Scale scale);
+};
+
 QT_END_NAMESPACE
 
 #endif

@@ -451,6 +451,7 @@ QKnxDatapointTypeFactory::QKnxDatapointTypeFactory()
     registerType<QKnxBeaufortWindForceScale>();
     registerType<QKnxSensorSelect>();
     registerType<QKnxActuatorConnectType>();
+    registerType<QKnxCloudCover>();
 
     // DPT-21
     registerType<QKnx8BitSet>();

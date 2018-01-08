@@ -131,7 +131,7 @@ public:
             DptScloMode, DptBuildingMode, DptOccMode, DptPriority, DptLightApplicationMode,
             DptApplicationArea, DptAlarmClassType, DptPsuMode, DptErrorClassSystem = 2000011,
             DptErrorClassHvac, DptTimeDelay, DptBeaufortWindForceScale, DptSensorSelect = 2000017,
-            DptActuatorConnectType = 2000020, DptCommandMode = 2001000,
+            DptActuatorConnectType = 2000020, DptCloudCover, DptCommandMode = 2001000,
             DptAdditionalInfoTypes = 2001001,
         Dpt21_8BitSet = 2100000,
             DptGeneralStatus, DptDeviceControl,

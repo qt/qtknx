@@ -1350,6 +1350,102 @@ QKnxActuatorConnectType::Type QKnxActuatorConnectType::type() const
     return Type::Invalid;
 }
 
+
+/*!
+    \class QKnxCloudCover
+    \inherits QKnx1Byte
+    \inmodule QtKnx
+    \ingroup qtknx-datapoint-types
+
+    \brief The QKnxCloudCover class is a datapoint type for storing the
+    scale of the sky obscured by clouds when observed from a particular
+    location.
+
+    \e Okta is the usual unit of measurement of the cloud cover. The cloud
+    cover is correlated to the sunshine duration as the least cloudy locales
+    are the sunniest ones while the cloudiest areas are the least sunny places.
+
+    This is a fixed size datapoint type with the length of 1 byte.
+
+    \sa QKnxDatapointType, QKnx1Byte, {Qt KNX Datapoint Type Classes}
+*/
+
+/*!
+    \enum QKnxCloudCover::Scale
+
+    This enum holds the unit of measurement (Okta) used to describe the
+    amount of cloud cover at any given location. Sky conditions are estimated
+    in terms of how many eighths of the sky are covered in cloud, ranging from
+    completely clear sky through to completely overcast.
+
+    \value Cloudless
+            Denotes a sky that is completely clear.
+    \value Sunny
+            Denotes a cloud amount of 1/8 or less, but not \c Cloudless.
+    \value Sunshiny
+            Denotes a cloud amount of 2/8 or less, but not \c Sunny.
+    \value LightlyCloudy
+            Denotes a cloud amount of 3/8 or less, but not \c Sunshiny.
+    \value ScatteredClouds
+            Denotes a cloud amount of 4/8, so the sky is half cloudy.
+    \value Cloudy
+            Denotes a cloud amount of 5/8 or more, but not \c VeryCloudy.
+    \value VeryCloudy
+            Denotes a cloud amount of 6/8 or more, but not \c AlmostOvercast.
+    \value AlmostOvercast
+            Denotes a cloud amount of 7/8 or more, but not \c Overcast.
+    \value Overcast
+            Denotes a sky with full cloud cover and no breaks.
+    \value ObstructedFromView
+            Denotes a sky obscured by fog or other meteorological phenomena.
+    \value Invalid
+            The value is invalid.
+*/
+
+/*!
+    Creates a fixed size datapoint type with the cloud cover scale set to
+    \c Cloudless.
+*/
+QKnxCloudCover::QKnxCloudCover()
+    : QKnxCloudCover(Scale::Cloudless)
+{}
+
+/*!
+    Creates a fixed size datapoint type with the cloud cover scale set to
+    \a scale.
+*/
+QKnxCloudCover::QKnxCloudCover(Scale scale)
+    : QKnx1Byte(SubType, 0)
+{
+    setDescription(tr("Cloud cover"));
+    setRange(QVariant(0x00), QVariant(0x09));
+    setRangeText(tr("Cloudless, 0"), tr("Sky is obstructed from view, 9"));
+    setCloudCover(scale);
+}
+
+/*!
+    Sets the cloud cover scale stored in the datapoint type to \a scale.
+
+    Returns \c true if the \a scale was set; otherwise returns \c false.
+*/
+bool QKnxCloudCover::setCloudCover(Scale scale)
+{
+    if (scale <= Scale::ObstructedFromView)
+        return setByte(0, quint8(scale));
+    return false;
+}
+
+/*!
+    Returns the cloud cover scale stored in the datapoint type.
+*/
+QKnxCloudCover::Scale QKnxCloudCover::cloudCover() const
+{
+    auto scale = QKnxCloudCover::Scale(value());
+    if (scale <= Scale::ObstructedFromView)
+        return scale;
+    return Scale::Invalid;
+}
+
 #include "moc_qknx1byte.cpp"
 
 QT_END_NAMESPACE

@@ -548,6 +548,9 @@ QT_BEGIN_NAMESPACE
     \value DptActuatorConnectType
            Stores the actuator connection type. An actuator can be connected to
            a sensor or a controller.
+    \value DptCloudCover
+           Stores the scale of the sky obscured by clouds when observed from
+           a particular location.
     \value DptCommandMode
     \value DptAdditionalInfoTypes
     \value Dpt21_8BitSet

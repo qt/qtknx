@@ -1700,6 +1700,59 @@ void tst_QKnxDatapointType::dpt20_1Byte()
     QCOMPARE(dptConnectBis.isValid(), true);
     QCOMPARE(dptConnectBis.type(), QKnxActuatorConnectType::Type::ControllerConnection);
     QCOMPARE(dptConnectBis.value(), quint8(2));
+
+    QKnxCloudCover dptCloud;
+    QCOMPARE(dptCloud.size(), 1);
+    QCOMPARE(dptCloud.mainType(), 20);
+    QCOMPARE(dptCloud.subType(), 21);
+    QCOMPARE(dptCloud.isValid(), true);
+    QCOMPARE(dptCloud.cloudCover(), QKnxCloudCover::Scale::Cloudless);
+    QCOMPARE(dptCloud.value(), quint8(0));
+    dptCloud.setCloudCover(QKnxCloudCover::Scale::Sunny);
+    QCOMPARE(dptCloud.cloudCover(), QKnxCloudCover::Scale::Sunny);
+    QCOMPARE(dptCloud.value(), quint8(1));
+    dptCloud.setCloudCover(QKnxCloudCover::Scale::Sunshiny);
+    QCOMPARE(dptCloud.cloudCover(), QKnxCloudCover::Scale::Sunshiny);
+    QCOMPARE(dptCloud.value(), quint8(2));
+    dptCloud.setCloudCover(QKnxCloudCover::Scale::LightlyCloudy);
+    QCOMPARE(dptCloud.cloudCover(), QKnxCloudCover::Scale::LightlyCloudy);
+    QCOMPARE(dptCloud.value(), quint8(3));
+    dptCloud.setCloudCover(QKnxCloudCover::Scale::ScatteredClouds);
+    QCOMPARE(dptCloud.cloudCover(), QKnxCloudCover::Scale::ScatteredClouds);
+    QCOMPARE(dptCloud.value(), quint8(4));
+    dptCloud.setCloudCover(QKnxCloudCover::Scale::Cloudy);
+    QCOMPARE(dptCloud.cloudCover(), QKnxCloudCover::Scale::Cloudy);
+    QCOMPARE(dptCloud.value(), quint8(5));
+    dptCloud.setCloudCover(QKnxCloudCover::Scale::VeryCloudy);
+    QCOMPARE(dptCloud.cloudCover(), QKnxCloudCover::Scale::VeryCloudy);
+    QCOMPARE(dptCloud.value(), quint8(6));
+    dptCloud.setCloudCover(QKnxCloudCover::Scale::AlmostOvercast);
+    QCOMPARE(dptCloud.cloudCover(), QKnxCloudCover::Scale::AlmostOvercast);
+    QCOMPARE(dptCloud.value(), quint8(7));
+    dptCloud.setCloudCover(QKnxCloudCover::Scale::Overcast);
+    QCOMPARE(dptCloud.cloudCover(), QKnxCloudCover::Scale::Overcast);
+    QCOMPARE(dptCloud.value(), quint8(8));
+    dptCloud.setCloudCover(QKnxCloudCover::Scale::ObstructedFromView);
+    QCOMPARE(dptCloud.cloudCover(), QKnxCloudCover::Scale::ObstructedFromView);
+    QCOMPARE(dptCloud.value(), quint8(9));
+    dptCloud.setCloudCover(QKnxCloudCover::Scale::Invalid);
+    QCOMPARE(dptCloud.cloudCover(), QKnxCloudCover::Scale::ObstructedFromView);
+    QCOMPARE(dptCloud.value(), quint8(9));
+
+    dptCloud.setValue(1);
+    QCOMPARE(dptCloud.isValid(), true);
+    QCOMPARE(dptCloud.cloudCover(), QKnxCloudCover::Scale::Sunny);
+    QCOMPARE(dptCloud.value(), quint8(1));
+    dptCloud.setValue(10);
+    QCOMPARE(dptCloud.isValid(), false);
+    QCOMPARE(dptCloud.cloudCover(), QKnxCloudCover::Scale::Invalid);
+    QCOMPARE(dptCloud.value(), quint8(10));
+    dptCloud.setByte(0, 10);
+
+    QKnxCloudCover dptCloudCover(QKnxCloudCover::Scale::Sunny);
+    QCOMPARE(dptCloudCover.isValid(), true);
+    QCOMPARE(dptCloudCover.cloudCover(), QKnxCloudCover::Scale::Sunny);
+    QCOMPARE(dptCloudCover.value(), quint8(1));
 }
 
 void tst_QKnxDatapointType::dpt21_8BitSet()
