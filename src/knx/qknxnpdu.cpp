@@ -197,14 +197,14 @@ QKnxNpdu::TransportControlField QKnxNpdu::transportControlField() const
     if (size() < 2)
         return TransportControlField::Invalid;
 
-    if (isBitSet(byte(1), 6))                                // T_DATA_CONNECTED, mask out the APCI
-        return TransportControlField((byte(1) & 0xfc) & 0xc3); // and the sequence number
+    if (isBitSet(byte(1), 7) && isBitSet(byte(1), 6))      // T_ACK/ T_NACK
+        return TransportControlField(byte(1) & 0xc3); // no APCI, mask out sequence number
 
     if (isBitSet(byte(1), 7) && (!isBitSet(byte(1), 6))) // T_CONNECT/ T_DISCONNECT
         return TransportControlField(byte(1)); // no APCI, no sequence number
 
-    if (isBitSet(byte(1), 7) && isBitSet(byte(1), 6))      // T_ACK/ T_NACK
-        return TransportControlField(byte(1) & 0xc3); // no APCI, mask out sequence number
+    if (isBitSet(byte(1), 6))                                // T_DATA_CONNECTED, mask out the APCI
+        return TransportControlField((byte(1) & 0xfc) & 0xc3); // and the sequence number
 
     return TransportControlField(byte(1) & 0xfc); // mask out the APCI
 }
@@ -305,8 +305,17 @@ QKnxNpdu::QKnxNpdu(TransportControlField tpci, ApplicationControlField apci, qui
  */
 bool QKnxNpdu::isValid() const
 {
-    if (transportControlField() == TransportControlField::Invalid)
+    switch (transportControlField()) {
+    case TransportControlField::Invalid:
         return false;
+    case TransportControlField::Connect:
+    case TransportControlField::Disconnect:
+    case TransportControlField::Acknowledge:
+    case TransportControlField::NoAcknowledge:
+        return size() == 2;
+    default:
+        break;
+    }
 
 #define HEADER_SIZE 3 // [size][TCPI|APCI][APCI] 3 bytes
 #define L_DATA_PAYLOAD 14 // 3_02_02 Communication Medium TP1, Paragraph 2.2.4.1
