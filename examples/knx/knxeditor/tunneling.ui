@@ -13,9 +13,9 @@
   <property name="windowTitle">
    <string>Form</string>
   </property>
-  <layout class="QVBoxLayout" name="verticalLayout_4">
+  <layout class="QVBoxLayout" name="verticalLayout_4" stretch="0,0,0,1,0">
    <item>
-    <layout class="QHBoxLayout" name="horizontalLayout_3">
+    <layout class="QHBoxLayout" name="horizontalLayout_3" stretch="0,1,0,0,0,0,0">
      <item>
       <widget class="QLabel" name="label">
        <property name="sizePolicy">
@@ -32,7 +32,7 @@
      <item>
       <widget class="QComboBox" name="mc">
        <property name="sizePolicy">
-        <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+        <sizepolicy hsizetype="Preferred" vsizetype="MinimumExpanding">
          <horstretch>0</horstretch>
          <verstretch>0</verstretch>
         </sizepolicy>
@@ -52,6 +52,49 @@
        </property>
       </spacer>
      </item>
+     <item>
+      <widget class="QLabel" name="label_14">
+       <property name="text">
+        <string>Source address:</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLineEdit" name="sourceAddress">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="text">
+        <string>0.0.0</string>
+       </property>
+       <property name="maxLength">
+        <number>9</number>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLabel" name="label_15">
+       <property name="text">
+        <string>Destination address:</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLineEdit" name="destAddress">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="text">
+        <string>0/0/0</string>
+       </property>
+      </widget>
+     </item>
     </layout>
    </item>
    <item>
@@ -64,29 +107,6 @@
           <string>Control field</string>
          </property>
          <layout class="QGridLayout" name="gridLayout">
-          <item row="0" column="0">
-           <spacer name="horizontalSpacer">
-            <property name="orientation">
-             <enum>Qt::Horizontal</enum>
-            </property>
-            <property name="sizeType">
-             <enum>QSizePolicy::Fixed</enum>
-            </property>
-            <property name="sizeHint" stdset="0">
-             <size>
-              <width>20</width>
-              <height>20</height>
-             </size>
-            </property>
-           </spacer>
-          </item>
-          <item row="0" column="1">
-           <widget class="QLabel" name="label_7">
-            <property name="text">
-             <string>Frame type:</string>
-            </property>
-           </widget>
-          </item>
           <item row="0" column="2">
            <widget class="QComboBox" name="frameType">
             <property name="currentIndex">
@@ -114,7 +134,7 @@
           <item row="3" column="2">
            <widget class="QComboBox" name="priority">
             <property name="currentIndex">
-             <number>3</number>
+             <number>0</number>
             </property>
             <item>
              <property name="text">
@@ -138,11 +158,93 @@
             </item>
            </widget>
           </item>
+          <item row="5" column="2">
+           <widget class="QComboBox" name="confirm">
+            <item>
+             <property name="text">
+              <string>No error</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>Error</string>
+             </property>
+            </item>
+           </widget>
+          </item>
+          <item row="2" column="2">
+           <widget class="QComboBox" name="broadcast">
+            <property name="currentIndex">
+             <number>1</number>
+            </property>
+            <item>
+             <property name="text">
+              <string>System</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>Domain</string>
+             </property>
+            </item>
+           </widget>
+          </item>
+          <item row="2" column="1">
+           <widget class="QLabel" name="label_8">
+            <property name="text">
+             <string>Broadcast:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="5" column="1">
+           <widget class="QLabel" name="label_12">
+            <property name="text">
+             <string>Confirm:</string>
+            </property>
+           </widget>
+          </item>
           <item row="1" column="1">
            <widget class="QLabel" name="label_9">
             <property name="text">
              <string>Repeat:</string>
             </property>
+           </widget>
+          </item>
+          <item row="0" column="1">
+           <widget class="QLabel" name="label_7">
+            <property name="text">
+             <string>Frame type:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="0">
+           <spacer name="horizontalSpacer">
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+            <property name="sizeType">
+             <enum>QSizePolicy::Fixed</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>20</width>
+              <height>20</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+          <item row="4" column="2">
+           <widget class="QComboBox" name="acknowledge">
+            <item>
+             <property name="text">
+              <string>Not requested</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>Requested</string>
+             </property>
+            </item>
            </widget>
           </item>
           <item row="1" column="2">
@@ -169,77 +271,21 @@
             </property>
            </widget>
           </item>
-          <item row="4" column="2">
-           <widget class="QComboBox" name="acknowledge">
-            <item>
-             <property name="text">
-              <string>Not requested</string>
-             </property>
-            </item>
-            <item>
-             <property name="text">
-              <string>Requested</string>
-             </property>
-            </item>
-           </widget>
-          </item>
-          <item row="2" column="1">
-           <widget class="QLabel" name="label_8">
-            <property name="text">
-             <string>Broadcast:</string>
+          <item row="6" column="1">
+           <spacer name="verticalSpacer_2">
+            <property name="orientation">
+             <enum>Qt::Vertical</enum>
             </property>
-           </widget>
-          </item>
-          <item row="2" column="2">
-           <widget class="QComboBox" name="broadcast">
-            <item>
-             <property name="text">
-              <string>System</string>
-             </property>
-            </item>
-            <item>
-             <property name="text">
-              <string>Domain</string>
-             </property>
-            </item>
-           </widget>
-          </item>
-          <item row="5" column="1">
-           <widget class="QLabel" name="label_12">
-            <property name="text">
-             <string>Confirm:</string>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>20</width>
+              <height>40</height>
+             </size>
             </property>
-           </widget>
-          </item>
-          <item row="5" column="2">
-           <widget class="QComboBox" name="confirm">
-            <item>
-             <property name="text">
-              <string>No error</string>
-             </property>
-            </item>
-            <item>
-             <property name="text">
-              <string>Error</string>
-             </property>
-            </item>
-           </widget>
+           </spacer>
           </item>
          </layout>
         </widget>
-       </item>
-       <item>
-        <spacer name="verticalSpacer_2">
-         <property name="orientation">
-          <enum>Qt::Vertical</enum>
-         </property>
-         <property name="sizeHint" stdset="0">
-          <size>
-           <width>20</width>
-           <height>40</height>
-          </size>
-         </property>
-        </spacer>
        </item>
       </layout>
      </item>
@@ -251,6 +297,27 @@
           <string>Extended control field</string>
          </property>
          <layout class="QGridLayout" name="gridLayout_2">
+          <item row="2" column="2">
+           <widget class="QComboBox" name="extFrameFormat">
+            <item>
+             <property name="text">
+              <string>Standard</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>LTE</string>
+             </property>
+            </item>
+           </widget>
+          </item>
+          <item row="0" column="1">
+           <widget class="QLabel" name="label_5">
+            <property name="text">
+             <string>Destination address type:</string>
+            </property>
+           </widget>
+          </item>
           <item row="0" column="0">
            <spacer name="horizontalSpacer_4">
             <property name="orientation">
@@ -267,13 +334,6 @@
             </property>
            </spacer>
           </item>
-          <item row="0" column="1">
-           <widget class="QLabel" name="label_5">
-            <property name="text">
-             <string>Destination address type:</string>
-            </property>
-           </widget>
-          </item>
           <item row="0" column="2">
            <widget class="QComboBox" name="destAddrType">
             <item>
@@ -286,6 +346,13 @@
               <string>Individual</string>
              </property>
             </item>
+           </widget>
+          </item>
+          <item row="2" column="1">
+           <widget class="QLabel" name="label_6">
+            <property name="text">
+             <string>Extended frame format:</string>
+            </property>
            </widget>
           </item>
           <item row="1" column="1">
@@ -305,42 +372,21 @@
             </property>
            </widget>
           </item>
-          <item row="2" column="1">
-           <widget class="QLabel" name="label_6">
-            <property name="text">
-             <string>Extended frame format:</string>
+          <item row="3" column="1">
+           <spacer name="verticalSpacer">
+            <property name="orientation">
+             <enum>Qt::Vertical</enum>
             </property>
-           </widget>
-          </item>
-          <item row="2" column="2">
-           <widget class="QComboBox" name="extFrameFormat">
-            <item>
-             <property name="text">
-              <string>Standard</string>
-             </property>
-            </item>
-            <item>
-             <property name="text">
-              <string>LTE</string>
-             </property>
-            </item>
-           </widget>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>20</width>
+              <height>40</height>
+             </size>
+            </property>
+           </spacer>
           </item>
          </layout>
         </widget>
-       </item>
-       <item>
-        <spacer name="verticalSpacer">
-         <property name="orientation">
-          <enum>Qt::Vertical</enum>
-         </property>
-         <property name="sizeHint" stdset="0">
-          <size>
-           <width>20</width>
-           <height>40</height>
-          </size>
-         </property>
-        </spacer>
        </item>
       </layout>
      </item>
@@ -496,64 +542,87 @@
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout_5">
      <item>
-      <widget class="QLabel" name="label_14">
-       <property name="text">
-        <string>Source address:</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QLineEdit" name="sourceAddress">
+      <widget class="QLabel" name="label_3">
        <property name="sizePolicy">
-        <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
+        <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
          <horstretch>0</horstretch>
          <verstretch>0</verstretch>
         </sizepolicy>
        </property>
        <property name="text">
-        <string>0.0.0</string>
-       </property>
-       <property name="maxLength">
-        <number>9</number>
+        <string>TPCI:</string>
        </property>
       </widget>
      </item>
      <item>
-      <widget class="QLabel" name="label_15">
-       <property name="text">
-        <string>Destination address:</string>
-       </property>
-      </widget>
+      <widget class="QComboBox" name="tpci"/>
      </item>
      <item>
-      <widget class="QLineEdit" name="destAddress">
+      <widget class="QLabel" name="label_2">
        <property name="sizePolicy">
-        <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
+        <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
          <horstretch>0</horstretch>
          <verstretch>0</verstretch>
         </sizepolicy>
        </property>
        <property name="text">
-        <string>0/0/0</string>
+        <string>APCI:</string>
        </property>
       </widget>
+     </item>
+     <item>
+      <widget class="QComboBox" name="apci"/>
      </item>
      <item>
       <widget class="QLabel" name="label_16">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
        <property name="text">
-        <string>NPDU:</string>
+        <string>Data:</string>
        </property>
       </widget>
      </item>
      <item>
-      <widget class="QLineEdit" name="npdu"/>
+      <widget class="QLineEdit" name="data">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="minimumSize">
+        <size>
+         <width>300</width>
+         <height>0</height>
+        </size>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+      </widget>
      </item>
     </layout>
    </item>
    <item>
     <widget class="QTextEdit" name="textOuputTunneling">
      <property name="focusPolicy">
-      <enum>Qt::NoFocus</enum>
+      <enum>Qt::StrongFocus</enum>
+     </property>
+     <property name="contextMenuPolicy">
+      <enum>Qt::DefaultContextMenu</enum>
+     </property>
+     <property name="acceptDrops">
+      <bool>false</bool>
+     </property>
+     <property name="undoRedoEnabled">
+      <bool>false</bool>
+     </property>
+     <property name="readOnly">
+      <bool>true</bool>
      </property>
     </widget>
    </item>
@@ -596,7 +665,7 @@
       </widget>
      </item>
      <item>
-      <widget class="QLineEdit" name="m_cemiFrame">
+      <widget class="QLineEdit" name="cemiFrame">
        <property name="enabled">
         <bool>true</bool>
        </property>
@@ -651,26 +720,25 @@
  </widget>
  <tabstops>
   <tabstop>mc</tabstop>
+  <tabstop>sourceAddress</tabstop>
+  <tabstop>destAddress</tabstop>
   <tabstop>frameType</tabstop>
-  <tabstop>priority</tabstop>
   <tabstop>repeat</tabstop>
-  <tabstop>acknowledge</tabstop>
   <tabstop>broadcast</tabstop>
+  <tabstop>priority</tabstop>
+  <tabstop>acknowledge</tabstop>
   <tabstop>confirm</tabstop>
   <tabstop>destAddrType</tabstop>
   <tabstop>hopCount</tabstop>
   <tabstop>extFrameFormat</tabstop>
   <tabstop>additionalInfoTypes</tabstop>
   <tabstop>additionallnfoData</tabstop>
-  <tabstop>additionalInfosList</tabstop>
   <tabstop>addAdditionalInfo</tabstop>
   <tabstop>removeAdditionalInfo</tabstop>
-  <tabstop>sourceAddress</tabstop>
-  <tabstop>destAddress</tabstop>
-  <tabstop>npdu</tabstop>
-  <tabstop>textOuputTunneling</tabstop>
+  <tabstop>tpci</tabstop>
+  <tabstop>apci</tabstop>
+  <tabstop>data</tabstop>
   <tabstop>manualInput</tabstop>
-  <tabstop>m_cemiFrame</tabstop>
   <tabstop>tunnelingSendRequest</tabstop>
   <tabstop>connectTunneling</tabstop>
   <tabstop>disconnectTunneling</tabstop>
@@ -736,8 +804,8 @@
      <y>362</y>
     </hint>
     <hint type="destinationlabel">
-     <x>229</x>
-     <y>116</y>
+     <x>462</x>
+     <y>143</y>
     </hint>
    </hints>
   </connection>
@@ -752,8 +820,8 @@
      <y>359</y>
     </hint>
     <hint type="destinationlabel">
-     <x>107</x>
-     <y>247</y>
+     <x>576</x>
+     <y>29</y>
     </hint>
    </hints>
   </connection>
@@ -768,8 +836,8 @@
      <y>360</y>
     </hint>
     <hint type="destinationlabel">
-     <x>17</x>
-     <y>246</y>
+     <x>402</x>
+     <y>29</y>
     </hint>
    </hints>
   </connection>
@@ -784,8 +852,8 @@
      <y>364</y>
     </hint>
     <hint type="destinationlabel">
-     <x>290</x>
-     <y>246</y>
+     <x>706</x>
+     <y>29</y>
     </hint>
    </hints>
   </connection>
@@ -800,8 +868,8 @@
      <y>357</y>
     </hint>
     <hint type="destinationlabel">
-     <x>427</x>
-     <y>245</y>
+     <x>845</x>
+     <y>29</y>
     </hint>
    </hints>
   </connection>
@@ -816,15 +884,15 @@
      <y>355</y>
     </hint>
     <hint type="destinationlabel">
-     <x>577</x>
-     <y>247</y>
+     <x>181</x>
+     <y>256</y>
     </hint>
    </hints>
   </connection>
   <connection>
    <sender>manualInput</sender>
    <signal>clicked(bool)</signal>
-   <receiver>npdu</receiver>
+   <receiver>data</receiver>
    <slot>setDisabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
@@ -834,6 +902,70 @@
     <hint type="destinationlabel">
      <x>680</x>
      <y>250</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>manualInput</sender>
+   <signal>clicked(bool)</signal>
+   <receiver>label_2</receiver>
+   <slot>setDisabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>12</x>
+     <y>365</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>19</x>
+     <y>251</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>manualInput</sender>
+   <signal>clicked(bool)</signal>
+   <receiver>apci</receiver>
+   <slot>setDisabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>15</x>
+     <y>369</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>116</x>
+     <y>245</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>manualInput</sender>
+   <signal>clicked(bool)</signal>
+   <receiver>label_3</receiver>
+   <slot>setDisabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>51</x>
+     <y>363</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>416</x>
+     <y>256</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>manualInput</sender>
+   <signal>clicked(bool)</signal>
+   <receiver>tpci</receiver>
+   <slot>setDisabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>51</x>
+     <y>363</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>472</x>
+     <y>256</y>
     </hint>
    </hints>
   </connection>

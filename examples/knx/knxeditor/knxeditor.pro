@@ -1,7 +1,7 @@
 TEMPLATE = app
+CONFIG += c++11
 INCLUDEPATH += .
 TARGET = knxeditor
-CONFIG += c++11 console
 QT += knx widgets network core
 
 FORMS += mainwindow.ui \

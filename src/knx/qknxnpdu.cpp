@@ -502,4 +502,6 @@ void QKnxNpdu::setData(const QByteArray &data)
     setByte(0, quint8(size() - 2));
 }
 
+#include "moc_qknxnpdu.cpp"
+
 QT_END_NAMESPACE

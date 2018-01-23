@@ -196,7 +196,7 @@
       </widget>
      </item>
      <item>
-      <widget class="QLineEdit" name="m_cemiFrame">
+      <widget class="QLineEdit" name="cemiFrame">
        <property name="enabled">
         <bool>true</bool>
        </property>
@@ -222,7 +222,7 @@
       </widget>
      </item>
      <item>
-      <widget class="QLineEdit" name="m_cemiData">
+      <widget class="QLineEdit" name="cemiData">
        <property name="enabled">
         <bool>false</bool>
        </property>
@@ -246,7 +246,19 @@
    <item>
     <widget class="QTextEdit" name="textOuputDeviceManagement">
      <property name="focusPolicy">
-      <enum>Qt::NoFocus</enum>
+      <enum>Qt::StrongFocus</enum>
+     </property>
+     <property name="contextMenuPolicy">
+      <enum>Qt::DefaultContextMenu</enum>
+     </property>
+     <property name="acceptDrops">
+      <bool>false</bool>
+     </property>
+     <property name="undoRedoEnabled">
+      <bool>false</bool>
+     </property>
+     <property name="readOnly">
+      <bool>true</bool>
      </property>
     </widget>
    </item>
@@ -291,8 +303,8 @@
   <tabstop>noe</tabstop>
   <tabstop>startIndex</tabstop>
   <tabstop>manualInput</tabstop>
-  <tabstop>m_cemiFrame</tabstop>
-  <tabstop>m_cemiData</tabstop>
+  <tabstop>cemiFrame</tabstop>
+  <tabstop>cemiData</tabstop>
   <tabstop>deviceManagementSendRequest</tabstop>
   <tabstop>textOuputDeviceManagement</tabstop>
   <tabstop>connectRequestDeviceManagement</tabstop>

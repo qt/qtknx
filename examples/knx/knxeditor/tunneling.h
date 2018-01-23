@@ -73,36 +73,8 @@ class KnxAddressValidator : public QValidator
     Q_OBJECT
 
 public:
-    KnxAddressValidator(QLatin1Char delimiter, QObject *parent = nullptr)
-        : QValidator(parent)
-        , m_delimiter(delimiter)
-        , m_expr(QString::fromLatin1("^(\\d{0,2})\\%1(\\d{0,2})\\%1(\\d{0,3})$")
-            .arg(delimiter))
-    {}
-
-    QValidator::State validate(QString &input, int &) const override
-    {
-        if (input.isEmpty())
-            return State::Intermediate;
-
-        QStringList number = input.split(m_delimiter);
-        if (number.value(0).length() > 2)
-            return State::Invalid;
-        if (number.value(1).length() > 2)
-            return State::Invalid;
-        if (number.value(2).length() > 3)
-            return State::Invalid;
-
-        auto match = m_expr.match(input);
-        if (!match.hasMatch())
-            return State::Invalid;
-
-        if (match.captured(1).toInt() <= 15 && match.captured(2).toInt() <= 15 &&
-            match.captured(3) <= 255) {
-            return State::Acceptable;
-        }
-        return State::Invalid;
-    }
+    KnxAddressValidator(QLatin1Char delimiter, QObject *parent = nullptr);
+    QValidator::State validate(QString &input, int &) const override;
 
 private:
     QChar m_delimiter;
@@ -132,6 +104,7 @@ private slots:
     void on_manualInput_clicked(bool checked);
 
 private:
+    void setupApciTpciComboBox();
     void setupMessageCodeComboBox();
     void updateAdditionalInfoTypesComboBox();
 

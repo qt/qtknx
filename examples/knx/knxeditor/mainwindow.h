@@ -76,8 +76,10 @@ private slots:
 
 private:
     void fillLocalIpBox();
+    static void messageHandler(QtMsgType type, const QMessageLogContext &ctx, const QString &msg);
 
 private:
+    static Ui::MainWindow *s_ui;
     Ui::MainWindow *ui { nullptr };
 
     QKnxNetIpServerInfo m_server;

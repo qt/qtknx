@@ -51,30 +51,33 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
+#include <QElapsedTimer>
 #include <QNetworkInterface>
 #include <QStandardItem>
+
+Ui::MainWindow *MainWindow::s_ui { nullptr };
 
 static QString familieToString(QKnxNetIpServiceFamiliesDib::ServiceFamilieId id)
 {
     switch (id) {
     case QKnxNetIpServiceFamiliesDib::ServiceFamilieId::Core:
-        return "Core";
+        return MainWindow::tr("Core");
     case QKnxNetIpServiceFamiliesDib::ServiceFamilieId::DeviceManagement:
-        return "Device Management";
+        return MainWindow::tr("Device Management");
     case QKnxNetIpServiceFamiliesDib::ServiceFamilieId::IpTunneling:
-        return "Tunnel";
+        return MainWindow::tr("Tunnel");
     case QKnxNetIpServiceFamiliesDib::ServiceFamilieId::IpRouting:
-        return "Routing";
+        return MainWindow::tr("Routing");
     case QKnxNetIpServiceFamiliesDib::ServiceFamilieId::RemoteLogging:
-        return "Remote Logging";
+        return MainWindow::tr("Remote Logging");
     case QKnxNetIpServiceFamiliesDib::ServiceFamilieId::RemoteConfigAndDiagnosis:
-        return "Remote Configuration";
+        return MainWindow::tr("Remote Configuration");
     case QKnxNetIpServiceFamiliesDib::ServiceFamilieId::ObjectServer:
-        return "Object Server";
+        return MainWindow::tr("Object Server");
     default:
         break;
     }
-    return "Unknown";
+    return MainWindow::tr("Unknown");
 }
 
 MainWindow::MainWindow(QWidget *parent)
@@ -96,7 +99,11 @@ MainWindow::MainWindow(QWidget *parent)
         ui->serverDescription->clear();
 
         ui->serverBox->clear();
-        ui->serverBox->addItem(QString("Select a KNX server(s)"));
+        ui->serverBox->setEnabled(false);
+
+        auto firstItem = new QStandardItem(tr("Select a KNX server(s)"));
+        qobject_cast<QStandardItemModel*>(ui->serverBox->model())->appendRow(firstItem);
+        firstItem->setSelectable(false);
     });
     connect(&m_discoveryAgent, &QKnxNetIpServerDiscoveryAgent::finished, this, [&] {
         ui->scanButton->setEnabled(true);
@@ -104,6 +111,11 @@ MainWindow::MainWindow(QWidget *parent)
 
         if (ui->serverBox->count() <= 1)
             ui->serverBox->setItemText(0, tr("Press Scan button to discover KNX server(s)"));
+        else if (ui->serverBox->count() == 2)
+            ui->serverBox->setCurrentIndex(1);
+
+        ui->serverBox->setEnabled(true);
+        newServerSelected(ui->serverBox->currentIndex());
     });
     connect(&m_discoveryAgent, &QKnxNetIpServerDiscoveryAgent::deviceDiscovered, this,
         &MainWindow::showServerAndServices);
@@ -131,10 +143,18 @@ MainWindow::MainWindow(QWidget *parent)
         &LocalDeviceManagement::clearLogging);
     connect(ui->actionClear_All, &QAction::triggered, ui->outputEdit, &QTextEdit::clear);
     connect(ui->actionClear_All, &QAction::triggered, ui->tunneling, &Tunneling::clearLogging);
+    if (ui->localIpBox->count() == 2) {
+        ui->localIpBox->setCurrentIndex(1);
+        newIPAddressSelected(ui->localIpBox->currentIndex());
+    }
+
+    s_ui = ui;
+    qInstallMessageHandler(MainWindow::messageHandler);
 }
 
 MainWindow::~MainWindow()
 {
+    s_ui = 0;
     delete ui;
 }
 
@@ -160,22 +180,20 @@ void MainWindow::newServerSelected(int serverBoxIndex)
         .arg(info.individualAddress().toString())
         .arg(info.controlEndpointAddress().toString()).arg(info.controlEndpointPort())
         .arg([&info]() -> QString {
-        QString value;
-        auto services = info.supportedServices();
-        for (auto it = services.constBegin(); it != services.constEnd(); ++it) {
-            value.append(tr("<tr><td class=\"padding\">%1</td></th>")
-                .arg(tr("KNXnet/IP %1, Version: %2")
-                    .arg(familieToString(it.key())).arg(it.value())));
-        }
-        return value;
-    }())
+            QString value;
+            auto services = info.supportedServices();
+            for (auto it = services.constBegin(); it != services.constEnd(); ++it) {
+                value.append(tr("<tr><td class=\"padding\">%1</td></th>")
+                    .arg(tr("KNXnet/IP %1, Version: %2")
+                        .arg(familieToString(it.key())).arg(it.value())));
+            }
+            return value;
+        }())
     );
 
     const auto &endpoint = info.endpoint();
-    if (endpoint.hostProtocol() != QKnxNetIp::HostProtocol::IpV4_Udp) {
-        qDebug() << "Host Protocol not supported. This Server can't be selected.";
+    if (endpoint.hostProtocol() != QKnxNetIp::HostProtocol::IpV4_Udp)
         return;
-    }
 
     if (info.endpoint().isValid() && m_server != info) {
         m_server = info;
@@ -195,7 +213,7 @@ void MainWindow::newIPAddressSelected(int localIpBoxIndex)
 
     auto newAddress = QHostAddress(ui->localIpBox->itemData(localIpBoxIndex).toString());
     if (newAddress.isNull()) {
-        ui->outputEdit->append("Selected IP address is not valid");
+        ui->outputEdit->append(tr("Selected IP address is not valid"));
         return;
     }
 
@@ -203,7 +221,7 @@ void MainWindow::newIPAddressSelected(int localIpBoxIndex)
         return;
 
     ui->scanButton->setEnabled(true);
-    ui->outputEdit->append("Selected IP address: " + newAddress.toString());
+    ui->outputEdit->append(tr("Selected IP address: ") + newAddress.toString());
 
     m_discoveryAgent.stop();
     m_discoveryAgent.setLocalAddress(newAddress);
@@ -214,13 +232,13 @@ void MainWindow::newIPAddressSelected(int localIpBoxIndex)
 
 void MainWindow::showServerAndServices(const QKnxNetIpServerInfo &info)
 {
-    ui->outputEdit->append("Server Endpoint found");
+    ui->outputEdit->append(tr("Server Endpoint found"));
     ui->outputEdit->append(info.endpoint().toString());
-    ui->outputEdit->append("Server's Multicast Address");
+    ui->outputEdit->append(tr("Server's Multicast Address"));
     ui->outputEdit->append(info.controlEndpointAddress().toString());
-    ui->outputEdit->append("Server's Port");
+    ui->outputEdit->append(tr("Server's Port"));
     ui->outputEdit->append(QString::number(info.controlEndpointPort()));
-    ui->outputEdit->append("The following services are supported:");
+    ui->outputEdit->append(tr("The following services are supported:"));
     auto services = info.supportedServices();
     for (auto it = std::begin(services); it != std::end(services); ++it) {
         ui->outputEdit->append(tr("    KNXnet/IP %1, Version: %2").arg(familieToString(it.key()))
@@ -233,7 +251,7 @@ void MainWindow::showServerAndServices(const QKnxNetIpServerInfo &info)
 
 void MainWindow::fillLocalIpBox()
 {
-    auto firstItem = new QStandardItem("Interface: IP address --Select One--");
+    auto firstItem = new QStandardItem(tr("Interface: IP address --Select One--"));
     qobject_cast<QStandardItemModel*>(ui->localIpBox->model())->appendRow(firstItem);
     firstItem->setSelectable(false);
 
@@ -241,11 +259,35 @@ void MainWindow::fillLocalIpBox()
     for (int i = 0; i < networkInterfaces.size(); i++) {
         auto addressList = networkInterfaces[i].addressEntries();
         for (int j = 0; j < addressList.size(); j++) {
-            auto ip = addressList[j].ip();
-            if (ip.toIPv4Address() == 0)
+            auto address = addressList[j].ip();
+            if (address.isLoopback() || address.toIPv4Address() == 0)
                 continue;
-            auto ipAddress = ip.toString();
+            auto ipAddress = address.toString();
             ui->localIpBox->addItem(networkInterfaces[i].name() + ": " + ipAddress, ipAddress);
         }
+    }
+}
+
+void MainWindow::messageHandler(QtMsgType type, const QMessageLogContext &ctx, const QString &msg)
+{
+    class Uptime : public QElapsedTimer
+    {
+    public:
+        Uptime() { start(); }
+        quint64 lastEvent { 0 };
+    };
+    static Uptime uptime;
+
+    auto msec = uptime.elapsed();
+    if (s_ui) {
+        s_ui->outputEdit->append(QStringLiteral("[elapsed: %1 msec, diff: %2 msec]\n    %3")
+            .arg(msec) .arg(msec - uptime.lastEvent).arg(msg));
+    }
+    uptime.lastEvent = msec;
+
+    if (type == QtFatalMsg) {
+        auto oldMsgHandler = qInstallMessageHandler(0);
+        qt_message_output(type, ctx, msg);
+        qInstallMessageHandler(oldMsgHandler);
     }
 }

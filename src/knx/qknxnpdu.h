@@ -43,18 +43,22 @@ class QKnxNpduFactory;
 
 class Q_KNX_EXPORT QKnxNpdu final : private QKnxByteStore
 {
+    Q_GADGET
+
 public:
     enum class ErrorCode : quint8
     {
         NoError = 0x00,
         Error   = 0x01
     };
+    Q_ENUM(ErrorCode)
 
     enum class ResetType : quint8
     {
         BasicRestart  = 0x00,
         MasterRestart = 0x01
     };
+    Q_ENUM(ResetType)
 
     enum class EraseCode : quint8
     {
@@ -68,6 +72,7 @@ public:
         ResetWithoutIa,
         Invalid
     };
+    Q_ENUM(EraseCode)
 
     enum class LinkWriteFlags : quint8
     {
@@ -76,6 +81,7 @@ public:
         AddNotSendingGroupAddress = 0x00,
         DeleteGroupAddress = 0x02,
     };
+    Q_ENUM(LinkWriteFlags)
 
     enum class TransportControlField : quint8
     {
@@ -91,6 +97,8 @@ public:
         NoAcknowledge = 0xc3,
         Invalid = 0xfc
     };
+    Q_ENUM(TransportControlField)
+
     TransportControlField transportControlField() const;
     void setTransportControlField(TransportControlField tpci);
 
@@ -155,6 +163,8 @@ public:
 
         Invalid = 0xffff
     };
+    Q_ENUM(ApplicationControlField)
+
     ApplicationControlField applicationControlField() const;
     void setApplicationControlField(ApplicationControlField apci);
 

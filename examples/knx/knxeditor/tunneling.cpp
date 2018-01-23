@@ -56,11 +56,36 @@
 #include <QStandardItemModel>
 #include <QTreeView>
 
+// -- KnxAddressValidator
+
+KnxAddressValidator::KnxAddressValidator(QLatin1Char delimiter, QObject *parent)
+    : QValidator(parent)
+    , m_delimiter(delimiter)
+    , m_expr(QString::fromLatin1("[^0-9\\%1]").arg(delimiter))
+{}
+
+QValidator::State KnxAddressValidator::validate(QString & input, int &) const
+{
+    auto result = m_expr.match(input);
+    if (result.hasMatch())
+        return State::Invalid;
+
+    auto n = input.split(m_delimiter);
+    if (n.value(0).toInt() > 15 || n.value(1).toInt() > 15 || n.value(2).toInt() > 255)
+        return State::Invalid;
+    return State::Intermediate;
+}
+
+
+// -- Tunneling
+
 Tunneling::Tunneling(QWidget* parent)
     : QWidget(parent)
     , ui(new Ui::Tunneling)
 {
     ui->setupUi(this);
+
+    setupApciTpciComboBox();
     setupMessageCodeComboBox();
     updateAdditionalInfoTypesComboBox();
 
@@ -73,9 +98,9 @@ Tunneling::Tunneling(QWidget* parent)
         ui->connectTunneling->setEnabled(false);
         ui->disconnectTunneling->setEnabled(true);
         ui->tunnelingSendRequest->setEnabled(true);
-        ui->textOuputTunneling->append("Successful connected to: " + m_server
-            .controlEndpointAddress().toString() + " on port: " + QString::number(m_server
-                .controlEndpointPort()));
+        ui->sourceAddress->setText(m_tunnel.individualAddress().toString());
+        ui->textOuputTunneling->append(tr("Successful connected to: %1 on port: %2").arg(m_server
+            .controlEndpointAddress().toString()).arg(m_server.controlEndpointPort()));
     });
 
     connect(ui->disconnectTunneling, &QPushButton::clicked, this, [&]() {
@@ -86,32 +111,29 @@ Tunneling::Tunneling(QWidget* parent)
         ui->connectTunneling->setEnabled(true);
         ui->disconnectTunneling->setEnabled(false);
         ui->tunnelingSendRequest->setEnabled(false);
-        ui->textOuputTunneling->append(QStringLiteral("Successfully disconnected from: %1"
-            " on port: %2\n").arg(m_server.controlEndpointAddress().toString())
-            .arg(m_server.controlEndpointPort()));
+        ui->textOuputTunneling->append(tr("Successfully disconnected from: %1 on port: %2\n")
+            .arg(m_server.controlEndpointAddress().toString()).arg(m_server.controlEndpointPort()));
     });
 
     connect(ui->tunnelingSendRequest, &QPushButton::clicked, this, [&]() {
-        ui->textOuputTunneling->append("Send tunnel frame with cEMI payload: "
-            + ui->m_cemiFrame->text());
-        auto data = QByteArray::fromHex(ui->m_cemiFrame->text().toLatin1());
+        ui->textOuputTunneling->append(tr("Send tunnel frame with cEMI payload: ")
+            + ui->cemiFrame->text());
+        auto data = QByteArray::fromHex(ui->cemiFrame->text().toLatin1());
         m_tunnel.sendTunnelFrame(QKnxCemiFrame::fromBytes(data, 0, data.size()));
     });
 
     connect(&m_tunnel, &QKnxNetIpTunnelConnection::receivedTunnelFrame, this,
         [&](QKnxTunnelFrame frame) {
-        ui->textOuputTunneling->append(QString::fromLatin1("Source address: %1").arg(frame
-            .sourceAddress().toString()));
-        ui->textOuputTunneling->append(QString::fromLatin1("Destination address: %1").arg(frame
-            .destinationAddress().toString()));
-        ui->textOuputTunneling->append(QString::fromLatin1("Received tunnel frame with cEMI "
-            "payload: " + frame.bytes().toHex()));
+        ui->textOuputTunneling->append(tr("Source address: %1").arg(frame.sourceAddress()
+            .toString()));
+        ui->textOuputTunneling->append(tr("Destination address: %1").arg(frame.destinationAddress()
+            .toString()));
+        ui->textOuputTunneling->append(tr("Received tunnel frame with cEMI payload: "
+            + frame.bytes().toHex()));
     });
 
     updateControlField();
     updateExtendedControlField();
-
-    connect(ui->mc, &QComboBox::currentTextChanged, this, &Tunneling::updateFrame);
 
     connect(ui->frameType, &QComboBox::currentTextChanged, this, [&](const QString &text) {
         if (text == "Extended") {
@@ -158,7 +180,7 @@ Tunneling::Tunneling(QWidget* parent)
             .toLatin1()));
         if (info.isValid()) {
             m_frame.addAdditionalInfo(info);
-            ui->m_cemiFrame->setText(m_frame.bytes().toHex());
+            ui->cemiFrame->setText(m_frame.bytes().toHex());
             ui->additionalInfosList->addItem(new QListWidgetItem(info.bytes().toHex()));
         }
     });
@@ -169,24 +191,35 @@ Tunneling::Tunneling(QWidget* parent)
             auto currentItem = ui->additionalInfosList->item(index.row());
             auto b = currentItem->text().toLatin1();
             m_frame.removeAdditionalInfo(QKnxAdditionalInfo::fromBytes(QByteArray::fromHex(b), 0));
-            ui->m_cemiFrame->setText(m_frame.bytes().toHex());
+            ui->cemiFrame->setText(m_frame.bytes().toHex());
             delete ui->additionalInfosList->takeItem(index.row());
         }
     });
 
+    connect(ui->mc, &QComboBox::currentTextChanged, this, &Tunneling::updateFrame);
     connect(ui->sourceAddress, &QLineEdit::textChanged, this, &Tunneling::updateFrame);
     connect(ui->destAddress, &QLineEdit::textChanged, this, &Tunneling::updateFrame);
-    connect(ui->npdu, &QLineEdit::textChanged, this, &Tunneling::updateFrame);
+    connect(ui->apci, &QComboBox::currentTextChanged, this, &Tunneling::updateFrame);
+    connect(ui->tpci, &QComboBox::currentTextChanged, this, &Tunneling::updateFrame);
+    connect(ui->data, &QLineEdit::textChanged, this, &Tunneling::updateFrame);
 
     connect(ui->manualInput, &QCheckBox::clicked, this, [&](bool checked) {
+        bool disable = checked;
         if (!checked)
-            checked = ui->frameType->currentText() == "Standard";
-        ui->additionalInfo->setDisabled(checked);
+            disable = ui->frameType->currentText() == "Standard";
+        ui->additionalInfo->setDisabled(disable);
+
+        if (!checked) {
+            disable = ui->tpci->itemData(ui->tpci->currentIndex())
+                .value<QKnxNpdu::TransportControlField>() >= QKnxNpdu::TransportControlField::Connect;
+        }
+        ui->apci->setDisabled(disable);
+        ui->data->setDisabled(disable);
     });
 
     ui->destAddress->setValidator(new KnxAddressValidator(QLatin1Char('/')));
     ui->sourceAddress->setValidator(new KnxAddressValidator(QLatin1Char('.')));
-    ui->npdu->setValidator(new QRegExpValidator(QRegExp("[0-9a-fA-F]+")));
+    ui->data->setValidator(new QRegExpValidator(QRegExp("[0-9a-fA-F]+")));
     ui->additionallnfoData->setValidator(new QRegExpValidator(QRegExp("[0-9a-fA-F]+")));
 }
 
@@ -231,9 +264,23 @@ void Tunneling::updateFrame()
     m_frame.setSourceAddress({ QKnxAddress::Type::Individual, ui->sourceAddress->text() });
     m_frame.setDestinationAddress({ m_extCtrl.destinationAddressType(), ui->destAddress->text() });
 
-    auto npdu = QByteArray::fromHex(ui->npdu->text().toLatin1());
-    m_frame.setNpdu(QKnxNpdu::fromBytes(npdu, 0, npdu.size()));
-    ui->m_cemiFrame->setText(m_frame.bytes().toHex());
+    auto npdu = QKnxNpdu { ui->tpci->itemData(ui->tpci->currentIndex())
+        .value<QKnxNpdu::TransportControlField>() };
+
+    if (npdu.transportControlField() < QKnxNpdu::TransportControlField::Connect) {
+        ui->apci->setEnabled(true);
+        ui->data->setEnabled(true);
+        npdu.setApplicationControlField(ui->apci->itemData(ui->apci->currentIndex())
+            .value<QKnxNpdu::ApplicationControlField>());
+        npdu.setData(QByteArray::fromHex(ui->data->text().toLatin1()));
+    } else {
+        ui->apci->setEnabled(false);
+        ui->data->setEnabled(false);
+    }
+    m_frame.setNpdu(npdu);
+    ui->cemiFrame->setText(m_frame.bytes().toHex());
+
+    ui->tunnelingSendRequest->setEnabled(m_frame.isValid());
 }
 
 void Tunneling::updateControlField()
@@ -259,9 +306,36 @@ void Tunneling::updateExtendedControlField()
 
 void Tunneling::on_manualInput_clicked(bool checked)
 {
-    ui->m_cemiFrame->setReadOnly(!checked);
-    ui->m_cemiFrame->setMaxLength(SHRT_MAX);
-    ui->m_cemiFrame->setFocus();
+    ui->cemiFrame->setReadOnly(!checked);
+    ui->cemiFrame->setMaxLength(SHRT_MAX);
+    ui->cemiFrame->setFocus();
+}
+
+void Tunneling::setupApciTpciComboBox()
+{
+    int index = QKnxNpdu::staticMetaObject.indexOfEnumerator("ApplicationControlField");
+    auto typeEnum = QKnxNpdu::staticMetaObject.enumerator(index);
+    if (!typeEnum.isValid())
+        return;
+
+    QRegularExpression regexp("[A-Z]");
+    for (auto i = 0; i < typeEnum.keyCount() - 1; ++i) {
+        auto string = QString::fromLatin1(typeEnum.key(i));
+        auto index = string.lastIndexOf(regexp);
+        if (index > 0) string.insert(index, QLatin1Char('_'));
+        ui->apci->addItem(QStringLiteral("A_") + string, typeEnum.value(i));
+    }
+
+    index = QKnxNpdu::staticMetaObject.indexOfEnumerator("TransportControlField");
+    typeEnum = QKnxNpdu::staticMetaObject.enumerator(index);
+    if (!typeEnum.isValid())
+        return;
+
+    regexp = QRegularExpression("(?=[A-Z])");
+    for (auto i = 0; i < typeEnum.keyCount() - 1; ++i) {
+        auto string = QString::fromLatin1(typeEnum.key(i)).split(regexp, QString::SkipEmptyParts);
+        ui->tpci->addItem("T_" + string.join(QLatin1Char('_')), typeEnum.value(i));
+    }
 }
 
 void Tunneling::setupMessageCodeComboBox()
@@ -270,12 +344,8 @@ void Tunneling::setupMessageCodeComboBox()
         quint8(QKnxTunnelFrame::MessageCode::DataRequest));
     ui->mc->addItem("L_Raw.req",
         quint8(QKnxTunnelFrame::MessageCode::RawRequest));
-    ui->mc->addItem("L_Poll_Data.req",
-        quint8(QKnxTunnelFrame::MessageCode::PollDataRequest));
-    ui->mc->addItem("T_Data_Connected.req",
-        quint8(QKnxTunnelFrame::MessageCode::DataConnectedRequest));
-    ui->mc->addItem("T_Data_Individual.req",
-        quint8(QKnxTunnelFrame::MessageCode::DataIndividualRequest));
+    ui->mc->addItem("M_Reset.req",
+        quint8(QKnxTunnelFrame::MessageCode::ResetRequest));
 }
 
 void Tunneling::updateAdditionalInfoTypesComboBox()

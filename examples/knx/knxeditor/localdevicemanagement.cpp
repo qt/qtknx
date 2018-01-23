@@ -88,9 +88,8 @@ LocalDeviceManagement::LocalDeviceManagement(QWidget* parent)
         ui->deviceManagementSendRequest->setEnabled(true);
         ui->connectRequestDeviceManagement->setEnabled(false);
         ui->disconnectRequestDeviceManagement->setEnabled(true);
-        ui->textOuputDeviceManagement->append("Successful connected to: " + m_server
-            .controlEndpointAddress().toString() + " on port: " + QString::number(m_server
-                .controlEndpointPort()));
+        ui->textOuputDeviceManagement->append(tr("Successful connected to: %1 on port: %2")
+            .arg(m_server.controlEndpointAddress().toString()).arg(m_server.controlEndpointPort()));
 
         m_management.sendDeviceManagementFrame(QKnxLocalDeviceManagementFrameFactory::PropertyRead
             ::createRequest(QKnxInterfaceObjectType::System::Device, 1,
@@ -107,31 +106,30 @@ LocalDeviceManagement::LocalDeviceManagement(QWidget* parent)
         ui->connectRequestDeviceManagement->setEnabled(true);
         ui->disconnectRequestDeviceManagement->setEnabled(false);
         setupComboBox(ui->objectType, QKnxInterfaceObjectType::staticMetaObject);
-        ui->textOuputDeviceManagement->append(QStringLiteral("Successfully disconnected from: %1"
-            " on port: %2\n").arg(m_server.controlEndpointAddress().toString())
-            .arg(m_server.controlEndpointPort()));
+        ui->textOuputDeviceManagement->append(tr("Successfully disconnected from: %1 on port: %2\n")
+            .arg(m_server.controlEndpointAddress().toString()).arg(m_server.controlEndpointPort()));
     });
 
     connect(ui->deviceManagementSendRequest, &QPushButton::clicked, this, [&]() {
-        ui->textOuputDeviceManagement->append("Send device management frame with cEMI payload: "
-            + ui->m_cemiFrame->text());
-        auto data = QByteArray::fromHex(ui->m_cemiFrame->text().toUtf8());
-        if (ui->m_cemiData->isEnabled())
-            data.append(QByteArray::fromHex(ui->m_cemiData->text().toUtf8()));
+        ui->textOuputDeviceManagement->append(tr("Send device management frame with cEMI payload: ")
+            + ui->cemiFrame->text());
+        auto data = QByteArray::fromHex(ui->cemiFrame->text().toUtf8());
+        if (ui->cemiData->isEnabled())
+            data.append(QByteArray::fromHex(ui->cemiData->text().toUtf8()));
         m_management.sendDeviceManagementFrame(QKnxCemiFrame::fromBytes(data, 0, data.size()));
     });
 
     connect(&m_management, &QKnxNetIpDeviceManagementConnection::receivedDeviceManagementFrame,
         this, [&](QKnxLocalDeviceManagementFrame frame) {
-        ui->textOuputDeviceManagement->append(QString::fromUtf8("Received device management "
-            "frame with cEMI payload: " + frame.bytes().toHex()));
+        ui->textOuputDeviceManagement->append(tr("Received device management frame with cEMI "
+            "payload: " + frame.bytes().toHex()));
 
         if (m_awaitIoListResponse)
             handleIoListResponse(frame);
     });
 
-    ui->m_cemiData->setValidator(new QRegExpValidator(QRegExp("[0-9a-fA-F]+")));
-    ui->m_cemiFrame->setValidator(new QRegExpValidator(QRegExp("[0-9a-fA-F]+")));
+    ui->cemiData->setValidator(new QRegExpValidator(QRegExp("[0-9a-fA-F]+")));
+    ui->cemiFrame->setValidator(new QRegExpValidator(QRegExp("[0-9a-fA-F]+")));
 }
 
 LocalDeviceManagement::~LocalDeviceManagement()
@@ -169,8 +167,8 @@ void LocalDeviceManagement::clearLogging()
 
 void LocalDeviceManagement::on_mc_currentIndexChanged(int index)
 {
-    if (ui->m_cemiFrame->text().size() > 2)
-        m_fullCemiFrame = ui->m_cemiFrame->text();
+    if (ui->cemiFrame->text().size() > 2)
+        m_fullCemiFrame = ui->cemiFrame->text();
 
     int maxLength = 10;
     bool dataEnabled = true;
@@ -198,9 +196,9 @@ void LocalDeviceManagement::on_mc_currentIndexChanged(int index)
     default:
         break;
     }
-    ui->m_cemiFrame->setMaxLength(maxLength);
-    ui->m_cemiFrame->setText(cemiFrame);
-    ui->m_cemiData->setEnabled(dataEnabled);
+    ui->cemiFrame->setMaxLength(maxLength);
+    ui->cemiFrame->setText(cemiFrame);
+    ui->cemiData->setEnabled(dataEnabled);
 }
 
 void LocalDeviceManagement::on_objectType_currentTextChanged(const QString &type)
@@ -208,9 +206,9 @@ void LocalDeviceManagement::on_objectType_currentTextChanged(const QString &type
     bool keyExists = false;
     quint16 value = keyToValue(QKnxInterfaceObjectType::staticMetaObject, type, &keyExists);
     if (keyExists) {
-        auto text = ui->m_cemiFrame->text();
-        ui->m_cemiFrame->setText(text.left(2) + QString("%1").arg(value, 4, 16, QLatin1Char('0'))
-            + text.mid(6));
+        auto text = ui->cemiFrame->text();
+        ui->cemiFrame->setText(text.left(2) + QStringLiteral("%1").arg(value, 4, 16,
+            QLatin1Char('0')) + text.mid(6));
         updatePropertyTypeCombobox(type);
     }
 }
@@ -220,44 +218,45 @@ void LocalDeviceManagement::on_property_currentTextChanged(const QString &proper
     bool keyExists = false;
     quint8 value = keyToValue(QKnxInterfaceObjectProperty::staticMetaObject, property, &keyExists);
     if (keyExists) {
-        auto text = ui->m_cemiFrame->text();
-        ui->m_cemiFrame->setText(text.left(8) + QString("%1").arg(value, 2, 16, QLatin1Char('0'))
-            + text.mid(10));
+        auto text = ui->cemiFrame->text();
+        ui->cemiFrame->setText(text.left(8) + QStringLiteral("%1").arg(value, 2, 16,
+            QLatin1Char('0')) + text.mid(10));
     }
 }
 
 void LocalDeviceManagement::on_noe_valueChanged(int value)
 {
-    auto text = ui->m_cemiFrame->text();
-    ui->m_cemiFrame->setText(text.left(10) + QString("%1").arg(value, 1, 16, QLatin1Char('0'))
-        + text.mid(11));
+    auto text = ui->cemiFrame->text();
+    ui->cemiFrame->setText(text.left(10) + QStringLiteral("%1").arg(value, 1,
+        16, QLatin1Char('0')) + text.mid(11));
 }
 
 void LocalDeviceManagement::on_startIndex_valueChanged(int value)
 {
-    auto text = ui->m_cemiFrame->text();
-    ui->m_cemiFrame->setText(text.left(11) + QString("%1").arg(value, 3, 16, QLatin1Char('0')));
+    auto text = ui->cemiFrame->text();
+    ui->cemiFrame->setText(text.left(11) + QStringLiteral("%1").arg(value, 3, 16,
+        QLatin1Char('0')));
 }
 
 void LocalDeviceManagement::on_objectInstance_valueChanged(int value)
 {
-    auto text = ui->m_cemiFrame->text();
-    ui->m_cemiFrame->setText(text.left(6) + QString("%1").arg(value, 2, 16, QLatin1Char('0'))
-        + text.mid(8));
+    auto text = ui->cemiFrame->text();
+    ui->cemiFrame->setText(text.left(6) + QStringLiteral("%1").arg(value, 2, 16,
+        QLatin1Char('0')) + text.mid(8));
 }
 
 void LocalDeviceManagement::on_manualInput_clicked(bool checked)
 {
-    ui->m_cemiData->setEnabled(checked);
-    ui->m_cemiFrame->setReadOnly(!checked);
-    ui->m_cemiFrame->setMaxLength(SHRT_MAX);
-    ui->m_cemiFrame->setFocus();
+    ui->cemiData->setEnabled(checked);
+    ui->cemiFrame->setReadOnly(!checked);
+    ui->cemiFrame->setMaxLength(SHRT_MAX);
+    ui->cemiFrame->setFocus();
 
     if (checked) {
         if (ui->mc->currentIndex() != ui->mc->count() -1)
-            m_fullCemiFrame = ui->m_cemiFrame->text();
+            m_fullCemiFrame = ui->cemiFrame->text();
     } else {
-        ui->m_cemiFrame->setText(m_fullCemiFrame);
+        ui->cemiFrame->setText(m_fullCemiFrame);
         on_mc_currentIndexChanged(ui->mc->currentIndex());
     }
 }
