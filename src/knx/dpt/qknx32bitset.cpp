@@ -38,10 +38,12 @@ QT_BEGIN_NAMESPACE
     \inherits QKnxFixedSizeDatapointType
     \inmodule QtKnx
 
-    \brief The QKnx32BitSet class is a datapoint type with binary-coded values
-    in all fields.
+    \brief The QKnx32BitSet class is a datapoint type with the 32-bit set.
 
     This is a fixed size datapoint type with the length of 4 bytes.
+
+    The acceptable values are \c {No bits set} (\c 0x00) and \c {All bits set}
+    (\c 0xffffffff).
 
     There is only one class inheriting QKnx32BitSet: \l QKnxCombinedInfoOnOff.
 
@@ -50,14 +52,24 @@ QT_BEGIN_NAMESPACE
 
 // -- QKnx32BitSet
 
+/*!
+    Creates a fixed size datapoint type with the 32-bit set to \c 0.
+*/
 QKnx32BitSet::QKnx32BitSet()
     : QKnx32BitSet(0)
 {}
 
+/*!
+    Creates a fixed size datapoint type with the value \a value.
+*/
 QKnx32BitSet::QKnx32BitSet(quint32 value)
     : QKnx32BitSet(SubType, value)
 {}
 
+/*!
+    Creates a fixed size datapoint with the subtype \a subType and the value
+    \a value.
+*/
 QKnx32BitSet::QKnx32BitSet(int subType, quint32 value)
     : QKnxFixedSizeDatapointType(MainType, subType, TypeSize)
 {
@@ -67,11 +79,17 @@ QKnx32BitSet::QKnx32BitSet(int subType, quint32 value)
     setValue(value);
 }
 
+/*!
+    Returns the value stored in the datapoint type.
+*/
 quint32 QKnx32BitSet::value() const
 {
     return QKnxUtils::QUint32::fromBytes(bytes());
 }
 
+/*!
+    Sets the value of the datapoint type to \a value.
+*/
 bool QKnx32BitSet::setValue(quint32 value)
 {
     return setBytes(QKnxUtils::QUint32::bytes(value), 0, 4);
@@ -79,11 +97,74 @@ bool QKnx32BitSet::setValue(quint32 value)
 
 
 // -- QKnxCombinedInfoOnOff
+/*!
+    \class QKnxCombinedInfoOnOff
+    \inherits QKnx32BitSet
+    \inmodule QtKnx
 
+    \brief The QKnxCombinedInfoOnOff class is a datapoint type for combined
+    information about the on and off states.
+
+    This is a fixed size datapoint type with the length of 4 bytes.
+
+    \sa QKnx32BitSet, QKnxDatapointType
+*/
+
+/*!
+
+    \enum QKnxCombinedInfoOnOff::Output
+
+    This enum type holds the output of the datapoint type.
+    \value First
+    \value Second
+    \value Third
+    \value Fourth
+    \value Fifth
+    \value Sixth
+    \value Seventh
+    \value Eighth
+    \value Ninth
+    \value Tenth
+    \value Eleventh
+    \value Twelfth
+    \value Thirteenth
+    \value Fourteenth
+    \value Fifteenth
+    \value Sixteenth
+*/
+
+/*!
+
+    \enum QKnxCombinedInfoOnOff::OutputState
+
+    This enum type holds the state of the output of the datapoint type.
+
+    \value Off
+    \value On
+*/
+
+/*!
+
+    \enum QKnxCombinedInfoOnOff::OutputValidity
+
+    This enum type holds the validity of the output of the datapoint type.
+
+    \value Invalid
+    \value Valid
+*/
+
+/*!
+    Creates a fixed size datapoint type with output set to
+    QKnxCombinedInfoOnOff::First, output state to QKnxCombinedInfoOnOff::Off,
+    and output validity to QKnxCombinedInfoOnOff::Invalid.
+*/
 QKnxCombinedInfoOnOff::QKnxCombinedInfoOnOff()
     : QKnxCombinedInfoOnOff(Output::First, OutputState::Off, OutputValidity::Invalid)
 {}
 
+/*!
+    Creates a fixed size datapoint type with the output information \a infos.
+*/
 QKnxCombinedInfoOnOff::QKnxCombinedInfoOnOff(const QVector<OutputInfo> &infos)
     : QKnx32BitSet(SubType, 0)
 {
@@ -93,15 +174,29 @@ QKnxCombinedInfoOnOff::QKnxCombinedInfoOnOff(const QVector<OutputInfo> &infos)
         setValue(info.Output, info.OutputState, info.OutputValidity);
 }
 
+/*!
+    Creates a fixed size datapoint type with the output \a output, output
+    state \a state, and output validity \a validity.
+*/
 QKnxCombinedInfoOnOff::QKnxCombinedInfoOnOff(Output output, OutputState state, OutputValidity validity)
     : QKnxCombinedInfoOnOff({ { output, state, validity } })
 {}
 
+/*!
+    Returns the state of \a output.
+*/
 QKnxCombinedInfoOnOff::OutputState QKnxCombinedInfoOnOff::state(Output output) const
 {
     return OutputState(QKnxDatapointType::testBit(value(), quint8(output)));
 }
 
+/*!
+    Sets the datapoint type's output to \a output and its output state to
+    \a state.
+
+    If the value is outside the allowed range, returns \c false and does not set
+    the value.
+*/
 bool QKnxCombinedInfoOnOff::setState(Output output, OutputState state)
 {
     if (output > Output::Sixteenth || state > OutputState::On)
@@ -109,11 +204,21 @@ bool QKnxCombinedInfoOnOff::setState(Output output, OutputState state)
     return QKnx32BitSet::setValue(QKnxDatapointType::setBit(value(), bool(state), quint8(output)));
 }
 
+/*!
+    Returns the validity of \a output.
+*/
 QKnxCombinedInfoOnOff::OutputValidity QKnxCombinedInfoOnOff::validity(Output output) const
 {
     return OutputValidity(QKnxDatapointType::testBit(value(), quint8(output) + 16));
 }
 
+/*!
+    Sets the datapoint type's output to \a output and its output validity to
+    \a validity.
+
+    If the value is outside the allowed range, returns \c false and does not set
+    the value.
+*/
 bool QKnxCombinedInfoOnOff::setValidity(Output output, OutputValidity validity)
 {
     if (output > Output::Sixteenth || validity > OutputValidity::Valid)
@@ -122,6 +227,11 @@ bool QKnxCombinedInfoOnOff::setValidity(Output output, OutputValidity validity)
         quint8(output) + 16));
 }
 
+/*!
+    Sets the value of the datapoint type to \a infos.
+
+    Returns \c true if the value was set successfully.
+*/
 bool QKnxCombinedInfoOnOff::setValue(const QVector<OutputInfo>& infos)
 {
     bool success = true;
@@ -130,6 +240,10 @@ bool QKnxCombinedInfoOnOff::setValue(const QVector<OutputInfo>& infos)
     return success;
 }
 
+/*!
+    Sets the output of the datapoint type to \a output, its output state to
+    \a state, and its output validity to \a validity.
+*/
 bool QKnxCombinedInfoOnOff::setValue(Output output, OutputState state, OutputValidity validity)
 {
     return setState(output, state) && setValidity(output, validity);

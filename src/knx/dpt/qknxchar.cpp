@@ -40,23 +40,36 @@ QT_BEGIN_NAMESPACE
     \brief The QKnxChar class is a datapoint type that encodes a character.
 
     The encoding of the character is specified in \l QKnxCharASCII and
-    \l QKnxChar88591 that inherit this class.
+    \l QKnxChar88591.
 
     This is a fixed size datapoint type with the length of 1 byte.
+
+    The range for the value is from \c 0 to \c 255.
 
     \sa QKnxDatapointType
 */
 
 // -- QKnxChar
 
+/*!
+    Creates a fixed size datapoint type with the value set to \c 0.
+*/
 QKnxChar::QKnxChar()
     : QKnxChar(0)
 {}
 
+/*!
+    Creates a fixed size datapoint type with the value \a value.
+
+*/
 QKnxChar::QKnxChar(unsigned char value)
     : QKnxChar(SubType, value)
 {}
 
+/*!
+    Creates a fixed size datapoint with the subtype \a subType and the value
+    \a value.
+*/
 QKnxChar::QKnxChar(int subType, unsigned char value)
     : QKnxFixedSizeDatapointType(MainType, subType, TypeSize)
 {
@@ -67,11 +80,20 @@ QKnxChar::QKnxChar(int subType, unsigned char value)
     setValue(value);
 }
 
+/*!
+    Returns the value stored in the datapoint type.
+*/
 unsigned char QKnxChar::value() const
 {
     return byte(0);
 }
 
+/*!
+    Sets the value of the datapoint type to \a value.
+
+    If the value is outside the allowed range, returns \c false and does not set
+    the value.
+*/
 bool QKnxChar::setValue(unsigned char value)
 {
     if (value > maximum().toUInt())
@@ -88,7 +110,22 @@ bool QKnxChar::isValid() const
 }
 
 // -- QKnxCharASCII
+/*!
+    \class QKnxCharASCII
+    \inherits QKnxChar
+    \inmodule QtKnx
 
+    \brief The QKnxCharASCII class is a datapoint type that encodes an ASCII
+    character.
+
+    This is a fixed size datapoint type with the length of 1 byte.
+
+    \sa QKnxChar, QKnxDatapointType
+*/
+
+/*!
+    Creates a fixed size datapoint type with the value set to \c 0.
+*/
 QKnxCharASCII::QKnxCharASCII()
     : QKnxChar(SubType, 0)
 {
@@ -96,17 +133,27 @@ QKnxCharASCII::QKnxCharASCII()
     setRange(QVariant(0x00), QVariant(0x7f));
 }
 
+/*!
+    Creates a fixed size datapoint type with the character \a value.
+
+*/
 QKnxCharASCII::QKnxCharASCII(char value)
     : QKnxCharASCII()
 {
     setCharacter(value);
 }
 
+/*!
+    Returns the character stored in the datapoint type.
+*/
 char QKnxCharASCII::character() const
 {
     return char(value());
 }
 
+/*!
+    Sets the character of the datapoint type to \a value.
+*/
 bool QKnxCharASCII::setCharacter(char value)
 {
     return setValue(value);
@@ -114,6 +161,22 @@ bool QKnxCharASCII::setCharacter(char value)
 
 // -- QKnxChar88591
 
+/*!
+    \class QKnxChar88591
+    \inherits QKnxChar
+    \inmodule QtKnx
+
+    \brief The QKnxChar88591 class is a datapoint type that encodes an
+    ISO 8859-1 character.
+
+    This is a fixed size datapoint type with the length of 1 byte.
+
+    \sa QKnxChar, QKnxDatapointType
+*/
+
+/*!
+    Creates a fixed size datapoint type with the value set to \c 0.
+*/
 QKnxChar88591::QKnxChar88591()
     : QKnxChar(SubType, 0)
 {
@@ -121,17 +184,27 @@ QKnxChar88591::QKnxChar88591()
     setRange(QVariant(0x00), QVariant(0xff));
 }
 
+/*!
+    Creates a fixed size datapoint type with the character \a character.
+
+*/
 QKnxChar88591::QKnxChar88591(unsigned char character)
     : QKnxChar88591()
 {
     setCharacter(character);
 }
 
+/*!
+    Returns the character stored in the datapoint type.
+*/
 unsigned char QKnxChar88591::character() const
 {
     return value();
 }
 
+/*!
+    Sets the character of the datapoint type to \a value.
+*/
 bool QKnxChar88591::setCharacter(unsigned char value)
 {
     return setValue(value);

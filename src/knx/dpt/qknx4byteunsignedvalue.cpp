@@ -50,14 +50,24 @@ QT_BEGIN_NAMESPACE
     \sa QKnxDatapointType
 */
 
+/*!
+    Creates a fixed size datapoint type with the value set to \c 0.
+*/
 QKnx4ByteUnsignedValue::QKnx4ByteUnsignedValue()
     : QKnx4ByteUnsignedValue(0)
 {}
 
+/*!
+    Creates a fixed size datapoint type with the value \a value.
+*/
 QKnx4ByteUnsignedValue::QKnx4ByteUnsignedValue(quint32 value)
     : QKnx4ByteUnsignedValue(SubType, value)
 {}
 
+/*!
+    Creates a fixed size datapoint type with the subtype \a subType and value
+    \a value.
+*/
 QKnx4ByteUnsignedValue::QKnx4ByteUnsignedValue(int subType, quint32 value)
     : QKnxFixedSizeDatapointType(MainType, subType, TypeSize)
 {
@@ -67,21 +77,49 @@ QKnx4ByteUnsignedValue::QKnx4ByteUnsignedValue(int subType, quint32 value)
     setValue(value);
 }
 
+/*!
+    \class QKnxValue4UCount
+    \inherits QKnx4ByteUnsignedValue
+    \inmodule QtKnx
+
+    \brief The QKnxValue4UCount class is a datapoint type with a 4-byte
+    unsigned value.
+
+    This is a fixed size datapoint type with the length of 4 bytes.
+
+    \sa QKnx4ByteUnsignedValue, QKnxDatapointType
+*/
+
+/*!
+    Creates a fixed size datapoint type with the value set to \c 0.
+*/
 QKnxValue4UCount::QKnxValue4UCount()
     : QKnxValue4UCount(0)
 {}
 
+/*!
+    Creates a fixed size datapoint type with the value \a value.
+*/
 QKnxValue4UCount::QKnxValue4UCount(quint32 value)
     : QKnx4ByteUnsignedValue(SubType, value)
 {
     setUnit(tr("counter pulses"));
 }
 
+/*!
+    Returns the value stored in the datapoint type.
+*/
 quint32 QKnx4ByteUnsignedValue::value() const
 {
     return QKnxUtils::QUint32::fromBytes(bytes());
 }
 
+/*!
+    Sets the value of the datapoint type to \a value.
+
+    If the value is outside the allowed range, returns \c false and does not set
+    the value.
+*/
 bool QKnx4ByteUnsignedValue::setValue(quint32 value)
 {
     if (value <= maximum().toUInt() && value >= minimum().toUInt())

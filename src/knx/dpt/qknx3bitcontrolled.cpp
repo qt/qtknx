@@ -44,21 +44,51 @@ QT_BEGIN_NAMESPACE
     4 bits are used by the actual implementation.
 
     Of the 4 bits, 3 bits are reserved for the step code and 1 bit for the
-    control part.
+    control part. The step code allows for the calculation of the number of
+    intervals, so that numberOfIntervals() equals \c 2^(step code -1).
+
+    To set this datapoint type, the control and the NumberOfIntervals have to
+    be set.
 
     \sa QKnxDatapointType
 */
 
+/*!
+    \enum QKnx3BitControlled::NumberOfIntervals
+
+    This enum type holds the allowed number of intervals for the datapoint type.
+
+    \value Break
+    \value One
+    \value Two
+    \value Four
+    \value Eight
+    \value Sixteen
+    \value ThirtyTwo
+*/
+
 // -- QKnx3BitControlled
 
+/*!
+    Creates a fixed size datapoint type with the control part set to \c false
+    and the number of intervals set to \c Break.
+*/
 QKnx3BitControlled::QKnx3BitControlled()
     : QKnx3BitControlled(false, NumberOfIntervals::Break)
 {}
 
+/*!
+    Creates a fixed size datapoint type with the control \a control and the
+    number of intervals \a n.
+*/
 QKnx3BitControlled::QKnx3BitControlled(bool control, NumberOfIntervals n)
     : QKnx3BitControlled(SubType, control, n)
 {}
 
+/*!
+    Creates a fixed size datapoint type with subtype \a subType, control
+    \a control, and number of intervals \a n.
+*/
 QKnx3BitControlled::QKnx3BitControlled(int subType, bool control, NumberOfIntervals n)
     : QKnxFixedSizeDatapointType(MainType, subType, TypeSize)
 {
@@ -70,16 +100,27 @@ QKnx3BitControlled::QKnx3BitControlled(int subType, bool control, NumberOfInterv
     setNumberOfIntervals(n);
 }
 
+/*!
+    Returns the control stored in the datapoint type.
+*/
 bool QKnx3BitControlled::controlBit() const
 {
     return QKnxDatapointType::testBit(byte(0), 3);
 }
+/*!
+    Sets the control part of the datapoint type to \a value.
 
+    If the value is outside the allowed range, returns \c false and does not set
+    the value.
+*/
 void QKnx3BitControlled::setControlBit(bool value)
 {
     setByte(0, QKnxDatapointType::setBit(byte(0), value, 3));
 }
 
+/*!
+    Sets the number of intervals to \a n.
+*/
 bool QKnx3BitControlled::setNumberOfIntervals(NumberOfIntervals n)
 {
     if (n > NumberOfIntervals::ThirtyTwo)
@@ -91,6 +132,9 @@ bool QKnx3BitControlled::setNumberOfIntervals(NumberOfIntervals n)
     return setByte(0, (byte(0) & 0x08) | stepCode);
 }
 
+/*!
+    Returns the number of intervals stored in the datapoint type.
+*/
 QKnx3BitControlled::NumberOfIntervals QKnx3BitControlled::numberOfIntervals() const
 {
     quint8 stepCode = quint8(byte(0) & 0x07);
@@ -108,10 +152,41 @@ bool QKnx3BitControlled::isValid() const
 
 // -- QKnxControlDimming
 
+/*!
+    \class QKnxControlDimming
+    \inherits QKnx3BitControlled
+    \inmodule QtKnx
+
+    \brief The QKnxControlDimming class is a datapoint type for controlling
+    dimming.
+
+    To set this datapoint type, \l{QKnxControlDimming::}{Control} and
+    \l{QKnx3BitControlled::}{NumberOfIntervals} have to be set.
+
+    \sa QKnx3BitControlled
+*/
+
+/*!
+    \enum QKnxControlDimming::Control
+
+    This enum type holds whether dimming decreases or increases.
+
+    \value Decrease
+    \value Increase
+*/
+
+/*!
+    Creates a fixed size datapoint type with the control set to \c Decrease and
+    the number of intervals set to \c Break.
+*/
 QKnxControlDimming::QKnxControlDimming()
     : QKnxControlDimming(Control::Decrease, NumberOfIntervals::Break)
 {}
 
+/*!
+    Creates a fixed size datapoint type with the control \a control and the
+    number of intervals \a interval.
+*/
 QKnxControlDimming::QKnxControlDimming(Control control, NumberOfIntervals interval)
     : QKnx3BitControlled(SubType, bool(control), interval)
 {
@@ -119,11 +194,17 @@ QKnxControlDimming::QKnxControlDimming(Control control, NumberOfIntervals interv
     setRangeText(tr("Decrease, Break"), tr("Increase, 32 intervals"));
 }
 
+/*!
+    Sets the control part of the datapoint type to \a control.
+*/
 void QKnxControlDimming::setControl(Control control)
 {
     QKnx3BitControlled::setControlBit(bool(control));
 }
 
+/*!
+    Returns the control stored in the datapoint type.
+*/
 QKnxControlDimming::Control QKnxControlDimming::control() const
 {
     return Control(QKnx3BitControlled::controlBit());
@@ -132,10 +213,43 @@ QKnxControlDimming::Control QKnxControlDimming::control() const
 
 // -- QKnxControlBlinds
 
+/*!
+    \class QKnxControlBlinds
+    \inherits QKnx3BitControlled
+    \inmodule QtKnx
+
+    \brief The QKnxControlBlinds class is a datapoint type for controlling
+    blinds.
+
+    To set this datapoint type, \l{QKnxControlBlinds::}{Control} and
+    \l{QKnx3BitControlled::}{NumberOfIntervals} have to be set.
+
+    \sa QKnx3BitControlled
+*/
+
+/*!
+    \enum QKnxControlBlinds::Control
+
+    This enum type holds whether the blinds are being raised or lowered.
+
+    \value Up
+           Blinds are being raised.
+    \value Down
+           Blinds are being lowered.
+*/
+
+/*!
+    Creates a fixed size boolean datapoint type with the control set to \c Up
+    and the number of intervals set to \c Break.
+*/
 QKnxControlBlinds::QKnxControlBlinds()
     : QKnxControlBlinds(Control::Up, NumberOfIntervals::Break)
 {}
 
+/*!
+    Creates a fixed size datapoint type with the control \a control and the
+    number of intervals \a interval.
+*/
 QKnxControlBlinds::QKnxControlBlinds(Control control, NumberOfIntervals interval)
     : QKnx3BitControlled (SubType, bool(control), interval)
 {
@@ -143,11 +257,17 @@ QKnxControlBlinds::QKnxControlBlinds(Control control, NumberOfIntervals interval
     setRangeText(tr("Up, Break"), tr("Down, 32 intervals"));
 }
 
+/*!
+    Sets the control part of the datapoint type to \a control.
+*/
 void QKnxControlBlinds::setControl(Control control)
 {
     QKnx3BitControlled::setControlBit(bool(control));
 }
 
+/*!
+    Returns the control stored in the datapoint type.
+*/
 QKnxControlBlinds::Control QKnxControlBlinds::control() const
 {
     return Control(QKnx3BitControlled::controlBit());
