@@ -87,15 +87,15 @@ public:
                 "error handling not implemented yet.");
             // TODO: Maybe implement 03_08_04 Tunnelling v01.05.03 AS.pdf, paragraph 3.3
         }
-        QKnxNetIpEndpointConnectionPrivate::process(response, dg);
 
         Q_Q(QKnxNetIpTunnelConnection);
-        if (q->state() == QKnxNetIpTunnelConnection::Connected)
-            m_individualAddress = response.responseData().individualAddress();
+        if (q->state() != QKnxNetIpTunnelConnection::Connected)
+            m_address = response.responseData().individualAddress();
+        QKnxNetIpEndpointConnectionPrivate::process(response, dg);
     }
 
 private:
-    QKnxAddress m_individualAddress;
+    QKnxAddress m_address;
     QKnxNetIp::TunnelingLayer m_layer { QKnxNetIp::TunnelingLayer::Unknown };
 };
 
@@ -122,7 +122,7 @@ QKnxNetIpTunnelConnection::QKnxNetIpTunnelConnection(const QHostAddress &localAd
 
 QKnxAddress QKnxNetIpTunnelConnection::individualAddress() const
 {
-    return d_func()->m_individualAddress;
+    return d_func()->m_address;
 }
 
 void QKnxNetIpTunnelConnection::setIndividualAddress(const QKnxAddress &address)
