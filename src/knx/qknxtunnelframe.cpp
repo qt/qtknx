@@ -82,11 +82,28 @@ bool QKnxTunnelFrame::isValid() const
 {
     // TODO: Make sure all constraints from 3.3.2 paragraph 2.2 L_Data is checked here
 
+    auto tmpNpdu = npdu();
+    if (!tmpNpdu.isValid())
+        return false;
+
+    switch (tmpNpdu.transportControlField()) {
+    case QKnxNpdu::TransportControlField::DataConnected:
+    case QKnxNpdu::TransportControlField::Connect:
+    case QKnxNpdu::TransportControlField::Disconnect:
+    case QKnxNpdu::TransportControlField::Acknowledge:
+    case QKnxNpdu::TransportControlField::NoAcknowledge:
+        if (destinationAddress().type() != QKnxAddress::Type::Individual)
+            return false;
+        if (extendedControlField().destinationAddressType() != QKnxAddress::Type::Individual)
+            return false;
+    // TODO: not sure how to handle this
+    //case QKnxNpdu::TransportControlField::DataIndividual:
+    default:
+        break;
+    }
+
     //Extended control field destination address type corresponds to the destination address
     if (destinationAddress().type() != extendedControlField().destinationAddressType())
-        return false;
-    // Npdu is valid
-    if (! npdu().isValid())
         return false;
 
     switch (messageCode()) {
