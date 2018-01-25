@@ -14,48 +14,59 @@ include(tlstm/tlstm.pri)
 DEFINES += QT_NO_CAST_FROM_ASCII
 
 PUBLIC_HEADERS += \
-    qknxglobal.h \
-    qknxaddress.h \
     qknxadditionalinfo.h \
-    qknxtraits.h \
-    qknxcontrolfield.h \
-    qknxextendedcontrolfield.h \
-    qknxutils.h \
+    qknxaddress.h \
     qknxbytestore.h \
     qknxbytestoreref.h \
-    qknxcemiframe.h \
-    qknxtunnelframe.h \
     qknxcemi.h \
-    qknxnpdu.h \
-    qknxnpdufactory.h \
-    qknxinterfaceobjecttype.h \
+    qknxcemiframe.h \
+    qknxconnectioninfo.h \
+    qknxcontrolfield.h \
+    qknxdeviceconfiguration.h \
+    qknxextendedcontrolfield.h \
+    qknxglobal.h \
     qknxinterfaceobjectproperty.h \
+    qknxinterfaceobjectpropertydatatype.h \
+    qknxinterfaceobjecttype.h \
+    qknxlinklayerdevice.h \
     qknxlocaldevicemanagementframe.h \
     qknxlocaldevicemanagementframefactory.h \
+    qknxnamespace.h \
+    qknxnpdu.h \
+    qknxnpdufactory.h \
+    qknxtraits.h \
+    qknxtransportlayer.h \
+    qknxtunnelframe.h \
     qknxtunnelframefactory.h \
-    qknxinterfaceobjectpropertydatatype.h
+    qknxutils.h
 
-PRIVATE_HEADERS +=
+PRIVATE_HEADERS += \
+    qknxlinklayerdevice_p.h \
+    qknxtransportlayer_p.h
 
 SOURCES += \
-    qknxaddress.cpp \
     qknxadditionalinfo.cpp \
-    qknxcontrolfield.cpp \
-    qknxextendedcontrolfield.cpp \
-    qknxbytestoreref.cpp \
+    qknxaddress.cpp \
     qknxbytestore.cpp \
+    qknxbytestoreref.cpp \
     qknxcemiframe.cpp \
-    qknxtunnelframe.cpp \
-    qknxnpdu.cpp \
-    qknxnpdufactory_p2p.cpp \
-    qknxinterfaceobjecttype.cpp \
+    qknxconnectioninfo.cpp \
+    qknxcontrolfield.cpp \
+    qknxdeviceconfiguration.cpp \
+    qknxextendedcontrolfield.cpp \
     qknxinterfaceobjectproperty.cpp \
+    qknxinterfaceobjectpropertydatatype.cpp \
+    qknxinterfaceobjecttype.cpp \
+    qknxlinklayerdevice.cpp \
     qknxlocaldevicemanagementframe.cpp \
     qknxlocaldevicemanagementframefactory.cpp \
-    qknxinterfaceobjectpropertydatatype.cpp \
+    qknxnpdu.cpp \
+    qknxnpdufactory_broadcast.cpp \
     qknxnpdufactory_multicast.cpp \
-    qknxtunnelframefactory.cpp \
-    qknxnpdufactory_broadcast.cpp
+    qknxnpdufactory_p2p.cpp \
+    qknxtransportlayer.cpp \
+    qknxtunnelframe.cpp \
+    qknxtunnelframefactory.cpp
 
 HEADERS += $$PUBLIC_HEADERS $$PRIVATE_HEADERS
 

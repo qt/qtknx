@@ -37,6 +37,7 @@
 #include <QtCore/qvector.h>
 #include <QtKnx/qknxaddress.h>
 #include <QtKnx/qknxglobal.h>
+#include <QtKnx/qknxnamespace.h>
 #include <QtKnx/qknxnetipstruct.h>
 #include <QtKnx/qknxtraits.h>
 #include <QtNetwork/qhostaddress.h>
@@ -46,14 +47,6 @@ QT_BEGIN_NAMESPACE
 class Q_KNX_EXPORT QKnxNetIpDeviceDib final : public QKnxNetIpDescriptionTypeStruct
 {
 public:
-    enum class Medium : quint8
-    {
-        Tp1 = 0x02,
-        Pl110 = 0x04,
-        Rf = 0x10,
-        Ip = 0x20
-    };
-    QKnxNetIpDeviceDib::Medium medium() const;
 
     // 4.20 Programming Mode (prog_mode)
     // referred to by 7.5.4.2 Device information DIB device status
@@ -67,7 +60,7 @@ public:
     QKnxNetIpDeviceDib() = default;
     ~QKnxNetIpDeviceDib() override = default;
 
-    QKnxNetIpDeviceDib(Medium mediumCode,
+    QKnxNetIpDeviceDib(QKnx::MediumType mediumType,
                        DeviceStatus deviceStatus,
                        const QKnxAddress &address,
                        quint16 projectId,
@@ -82,6 +75,7 @@ public:
             QKnxNetIp::DescriptionType::DeviceInfo);
     }
 
+    QKnx::MediumType mediumType() const;
     QKnxNetIp::DescriptionType descriptionType() const;
     QKnxAddress individualAddress() const;
     quint16 projectInstallationIdentfier() const;

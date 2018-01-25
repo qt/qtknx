@@ -43,7 +43,7 @@ class tst_QKnxNetIpDeviceDib : public QObject
 private slots:
     void testConstructor()
     {
-        QKnxNetIpDeviceDib deviceDib(QKnxNetIpDeviceDib::Medium::Ip,
+        QKnxNetIpDeviceDib deviceDib(QKnx::MediumType::NetIP,
                                      QKnxNetIpDeviceDib::DeviceStatus::ActiveProgrammingMode,
                                      QKnxAddress::Individual::Unregistered,
                                      0x1111,
@@ -52,7 +52,7 @@ private slots:
                                      QByteArray::fromHex("bcaec56690f9"),
                                      QByteArray("qt.io KNX device"));
 
-        QCOMPARE(deviceDib.medium(), QKnxNetIpDeviceDib::Medium::Ip);
+        QCOMPARE(deviceDib.mediumType(), QKnx::MediumType::NetIP);
         QCOMPARE(deviceDib.descriptionType(), QKnxNetIp::DescriptionType::DeviceInfo);
         QCOMPARE(deviceDib.deviceStatus(), QKnxNetIpDeviceDib::DeviceStatus::ActiveProgrammingMode);
         QCOMPARE(deviceDib.individualAddress().toString(), QKnxAddress::Individual::Unregistered.toString());
@@ -94,7 +94,7 @@ private slots:
     qDebug() << QKnxNetIpDeviceDib();
     QCOMPARE(s_msg, QString::fromLatin1("0x1nv4l1d"));
 
-    qDebug() << QKnxNetIpDeviceDib(QKnxNetIpDeviceDib::Medium::Ip,
+    qDebug() << QKnxNetIpDeviceDib(QKnx::MediumType::NetIP,
                                    QKnxNetIpDeviceDib::DeviceStatus::ActiveProgrammingMode,
                                    QKnxAddress::Individual::Unregistered,
                                    0x1111,
@@ -110,7 +110,7 @@ private slots:
     {
         QByteArray byteArray;
         QDataStream out(&byteArray, QIODevice::WriteOnly);
-        out << QKnxNetIpDeviceDib(QKnxNetIpDeviceDib::Medium::Ip,
+        out << QKnxNetIpDeviceDib(QKnx::MediumType::NetIP,
                                   QKnxNetIpDeviceDib::DeviceStatus::ActiveProgrammingMode,
                                   QKnxAddress::Individual::Unregistered,
                                   0x1111,

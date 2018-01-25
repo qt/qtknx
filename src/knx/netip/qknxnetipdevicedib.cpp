@@ -44,12 +44,12 @@ QKnxNetIpDeviceDib::QKnxNetIpDeviceDib(const QKnxNetIpDescriptionTypeStruct &oth
     : QKnxNetIpDescriptionTypeStruct(other)
 {}
 
-QKnxNetIpDeviceDib::QKnxNetIpDeviceDib(Medium mediumCode, DeviceStatus deviceStatus,
+QKnxNetIpDeviceDib::QKnxNetIpDeviceDib(QKnx::MediumType mediumType, DeviceStatus deviceStatus,
         const QKnxAddress &individualAddress, quint16 projectId, const QByteArray &serialNumber,
         const QHostAddress &multicastAddress, const QByteArray &macAddress, const QByteArray deviceName)
     : QKnxNetIpDescriptionTypeStruct(QKnxNetIp::DescriptionType::DeviceInfo)
 {
-    QKnxNetIpPayload payload((quint8) mediumCode);
+    QKnxNetIpPayload payload((quint8) mediumType);
 
     if (deviceStatus > DeviceStatus::ActiveProgrammingMode)
         return;
@@ -79,9 +79,9 @@ QKnxNetIp::DescriptionType QKnxNetIpDeviceDib::descriptionType() const
     return code();
 }
 
-QKnxNetIpDeviceDib::Medium QKnxNetIpDeviceDib::medium() const
+QKnx::MediumType QKnxNetIpDeviceDib::mediumType() const
 {
-    return QKnxNetIpDeviceDib::Medium(payloadRef().byte(0));
+    return QKnx::MediumType(payloadRef().byte(0));
 }
 
 QKnxNetIpDeviceDib::DeviceStatus QKnxNetIpDeviceDib::deviceStatus() const

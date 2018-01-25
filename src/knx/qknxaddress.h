@@ -100,6 +100,9 @@ private:
     qint32 m_address = -1;
     QKnxAddress::Type m_type = static_cast<QKnxAddress::Type>(0xff);
 };
+
+Q_KNX_EXPORT Q_DECL_PURE_FUNCTION uint qHash(const QKnxAddress &key, uint seed = 0) Q_DECL_NOTHROW;
+
 Q_KNX_EXPORT QDebug operator<<(QDebug debug, const QKnxAddress &address);
 Q_KNX_EXPORT QDataStream &operator<<(QDataStream &stream, const QKnxAddress &address);
 

@@ -57,13 +57,6 @@
 #include <QtCore/QSharedPointer>
 #include <QtKnx/QKnxAddress>
 
-QT_BEGIN_NAMESPACE
-inline uint qHash(const QKnxAddress &key, uint seed)
-{
-    return qHash(key.toString(), seed);
-};
-QT_END_NAMESPACE
-
 class EtsDevelopmentBoard
 {
 public:

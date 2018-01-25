@@ -59,7 +59,7 @@ void tst_QKnxNetIpSearchResponse::testDefaultConstructor()
 void tst_QKnxNetIpSearchResponse::testConstructor()
 {
     QKnxNetIpHpai endpoint(QKnxNetIp::HostProtocol::IpV4_Udp, QHostAddress::LocalHost, 3671);
-    QKnxNetIpDeviceDib hardware(QKnxNetIpDeviceDib::Medium::Ip,
+    QKnxNetIpDeviceDib hardware(QKnx::MediumType::NetIP,
                                 QKnxNetIpDeviceDib::DeviceStatus::ActiveProgrammingMode,
                                 QKnxAddress::Individual::Unregistered,
                                 0x1111,
@@ -126,7 +126,7 @@ void tst_QKnxNetIpSearchResponse::testDebugStream()
     QCOMPARE(s_msg, QString::fromLatin1("0x1nv4l1d"));
 
     QKnxNetIpHpai endpoint(QKnxNetIp::HostProtocol::IpV4_Udp, QHostAddress::LocalHost, 3671);
-    QKnxNetIpDeviceDib hardware(QKnxNetIpDeviceDib::Medium::Ip,
+    QKnxNetIpDeviceDib hardware(QKnx::MediumType::NetIP,
                                 QKnxNetIpDeviceDib::DeviceStatus::ActiveProgrammingMode,
                                 QKnxAddress::Individual::Unregistered,
                                 0x1111,
@@ -147,7 +147,7 @@ void tst_QKnxNetIpSearchResponse::testDataStream()
     QDataStream out(&byteArray, QIODevice::WriteOnly);
 
     QKnxNetIpHpai endpoint(QKnxNetIp::HostProtocol::IpV4_Udp, QHostAddress::LocalHost, 3671);
-    QKnxNetIpDeviceDib hardware(QKnxNetIpDeviceDib::Medium::Ip,
+    QKnxNetIpDeviceDib hardware(QKnx::MediumType::NetIP,
                                 QKnxNetIpDeviceDib::DeviceStatus::ActiveProgrammingMode,
                                 QKnxAddress::Individual::Unregistered,
                                 0x1111,

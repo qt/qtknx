@@ -27,6 +27,7 @@
 ******************************************************************************/
 
 #include <QtCore/qdebug.h>
+#include <QtKnx/qknxnamespace.h>
 #include <QtKnx/qknxnetipdescriptionresponse.h>
 #include <QtTest/qtest.h>
 
@@ -58,7 +59,7 @@ private:
 void tst_QKnxNetIpDescriptionResponse::initTestCase()
 {
     m_sf = { QKnxNetIpServiceFamiliesDib::ServiceFamilieId::IpTunneling, 0x04 };
-    m_deviceHardware = { QKnxNetIpDeviceDib::Medium::Ip,
+    m_deviceHardware = { QKnx::MediumType::NetIP,
                          QKnxNetIpDeviceDib::DeviceStatus::ActiveProgrammingMode,
                          QKnxAddress::Individual::Unregistered,
                          0x1111,
@@ -110,7 +111,7 @@ void tst_QKnxNetIpDescriptionResponse::testDeviceHardwareAccessor()
 
     auto hardware = descriptionResponse.deviceHardware();
     QCOMPARE(hardware.isValid(), m_deviceHardware.isValid());
-    QCOMPARE(hardware.medium(), m_deviceHardware.medium());
+    QCOMPARE(hardware.mediumType(), m_deviceHardware.mediumType());
     QCOMPARE(hardware.descriptionType(), m_deviceHardware.descriptionType());
     QCOMPARE(hardware.deviceStatus(), m_deviceHardware.deviceStatus());
     QCOMPARE(hardware.individualAddress().toString(),
@@ -282,7 +283,7 @@ void tst_QKnxNetIpDescriptionResponse::testDebugStream()
     qDebug() << QKnxNetIpDescriptionResponse();
     QCOMPARE(s_msg, QString::fromLatin1("0x1nv4l1d"));
 
-    QKnxNetIpDeviceDib hardware(QKnxNetIpDeviceDib::Medium::Ip,
+    QKnxNetIpDeviceDib hardware(QKnx::MediumType::NetIP,
         QKnxNetIpDeviceDib::DeviceStatus::ActiveProgrammingMode,
         QKnxAddress::Individual::Unregistered,
         0x1111,
@@ -302,7 +303,7 @@ void tst_QKnxNetIpDescriptionResponse::testDataStream()
     QByteArray byteArray;
     QDataStream out(&byteArray, QIODevice::WriteOnly);
 
-    QKnxNetIpDeviceDib hardware(QKnxNetIpDeviceDib::Medium::Ip,
+    QKnxNetIpDeviceDib hardware(QKnx::MediumType::NetIP,
         QKnxNetIpDeviceDib::DeviceStatus::ActiveProgrammingMode,
         QKnxAddress::Individual::Unregistered,
         0x1111,
