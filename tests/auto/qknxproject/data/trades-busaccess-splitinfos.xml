@@ -1,0 +1,68 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<KNX xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+     CreatedBy="ETS5"
+     ToolVersion="5.5.952.23148"
+     xmlns="http://knx.org/xml/project/13">
+    <Project Id="ProjectId">
+        <Installations>
+            <Installation Name="Installation"
+                          BCUKey="4294967295"
+                          DefaultLine="P-01EB-0_L-3"
+                          IPRoutingLatencyTolerance="2000"
+                          CompletionStatus="Undefined"
+                          InstallationId="1"
+                          IPRoutingBackboneKey="12345"
+                          IPRoutingBackboneSecurity="On"
+                          IPRoutingMulticastAddress="192.168.2.1"
+                          IPSyncLatencyFraction="2"
+                          MulticastTTL="25"
+                          SplitType="Master">
+                <Trades>
+                    <Trade Comment="Comment"
+                           CompletionStatus="FinishedDesign"
+                           Description="Description"
+                           Id="Id"
+                           Name="Name"
+                           Number="Number"
+                           Puid="1"/>
+                    <Trade Comment="Comment2"
+                           CompletionStatus="FinishedDesign"
+                           Description="Description2"
+                           Id="Id2"
+                           Name="Name2"
+                           Number="Number2"
+                           Puid="2">
+                        <Trade Comment="Comment3"
+                               CompletionStatus="FinishedDesign"
+                               Description="Description3"
+                               Id="Id3"
+                               Name="Name3"
+                               Number="Number3"
+                               Puid="3" />
+                        <Trade Comment="Comment4"
+                               CompletionStatus="FinishedDesign"
+                               Description="Description4"
+                               Id="Id4"
+                               Name="Name4"
+                               Number="Number4"
+                               Puid="4" >
+                            <DeviceInstanceRef RefId="RefId3"/>
+                        </Trade>
+                        <DeviceInstanceRef RefId="RefId"/>
+                        <DeviceInstanceRef RefId="RefId2"/>
+                    </Trade>
+                </Trades>
+                <BusAccess Edi="{B3326C29-C90B-44C1-BA62-4A2A063764E1}"
+                           Name="Name"
+                           Parameter="Parameter"/>
+                <SplitInfos>
+                    <SplitInfo Cookie="B3326C29-C90B-44C1-BA62-4A2A063764E1"
+                               ObjectPath="ObjectPath"/>
+                    <SplitInfo Cookie="B3326C29-C90B-44C1-BA62-4A2A063764E2"
+                               ObjectPath="ObjectPath2"/>
+                </SplitInfos>
+            </Installation>
+        </Installations>
+    </Project>
+</KNX>

@@ -8,6 +8,7 @@ QMAKE_DOCS = $$PWD/doc/qtknx.qdocconf
 
 include(dpt/dpt.pri)
 include(netip/netip.pri)
+include(knxproj/knxproj.pri)
 
 DEFINES += QT_NO_CAST_FROM_ASCII
 

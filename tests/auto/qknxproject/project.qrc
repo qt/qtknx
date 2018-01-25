@@ -1,0 +1,10 @@
+<RCC>
+    <qresource prefix="/">
+        <file>data/projectinformation.xml</file>
+        <file>data/trades-busaccess-splitinfos.xml</file>
+        <file>data/groupaddresses.xml</file>
+        <file>data/buildings.xml</file>
+        <file>data/topology.xml</file>
+        <file>data/unassigneddevices.xml</file>
+    </qresource>
+</RCC>

@@ -1,0 +1,114 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<KNX xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+     CreatedBy="ETS5"
+     ToolVersion="5.5.952.23148"
+     xmlns="http://knx.org/xml/project/13">
+    <Project Id="ProjectId">
+        <Installations>
+            <Installation Name="Installation"
+                          BCUKey="4294967295"
+                          DefaultLine="P-01EB-0_L-3"
+                          IPRoutingLatencyTolerance="2000"
+                          CompletionStatus="Undefined"
+                          InstallationId="1"
+                          IPRoutingBackboneKey="12345"
+                          IPRoutingBackboneSecurity="On"
+                          IPRoutingMulticastAddress="192.168.2.1"
+                          IPSyncLatencyFraction="2"
+                          MulticastTTL="25"
+                          SplitType="Master">
+                <Buildings>
+                    <BuildingPart Comment="Comment"
+                                  CompletionStatus="Undefined"
+                                  DefaultLine="1"
+                                  Description="Description"
+                                  Id="Id"
+                                  Name="Name"
+                                  Number="Number"
+                                  Puid="1"
+                                  Type="Building">
+                        <BuildingPart Comment="Comment2"
+                                      CompletionStatus="Editing"
+                                      DefaultLine="2"
+                                      Description="Description2"
+                                      Id="Id2"
+                                      Name="Name2"
+                                      Number="Number2"
+                                      Puid="2"
+                                      Type="BuildingPart">
+                            <DeviceInstanceRef RefId="RefId" />
+                            <DeviceInstanceRef RefId="RefId2" />
+                            <Function Comment="Comment"
+                                      CompletionStatus="Editing"
+                                      DefaultGroupRange="DefaultGroupRange"
+                                      Description="Description"
+                                      Id="Id3"
+                                      Name="Name"
+                                      Number="Number"
+                                      Puid="3"
+                                      Type="Type">
+                                <GroupAddressRef Id="Id4"
+                                                 Name="Name"
+                                                 Puid="4"
+                                                 RefId="RefId3"
+                                                 Role="Role"/>
+                                <GroupAddressRef Id="Id5"
+                                                 Name="Name2"
+                                                 Puid="5"
+                                                 RefId="RefId4"
+                                                 Role="Role2"/>
+                            </Function>
+                        </BuildingPart>
+                        <DeviceInstanceRef RefId="RefId5" />
+                        <DeviceInstanceRef RefId="RefId6" />
+                        <Function Comment="Comment6"
+                                  CompletionStatus="Editing"
+                                  DefaultGroupRange="DefaultGroupRange6"
+                                  Description="Description6"
+                                  Id="Id6"
+                                  Name="Name6"
+                                  Number="Number6"
+                                  Puid="6"
+                                  Type="Type6">
+                            <GroupAddressRef Id="Id7"
+                                             Name="Name7"
+                                             Puid="7"
+                                             RefId="RefId7"
+                                             Role="Role7"/>
+                            <GroupAddressRef Id="Id8"
+                                             Name="Name8"
+                                             Puid="8"
+                                             RefId="RefId8"
+                                             Role="Role8"/>
+                        </Function>
+                        <Function Comment="Comment9"
+                                  CompletionStatus="Editing"
+                                  DefaultGroupRange="DefaultGroupRange9"
+                                  Description="Description9"
+                                  Id="Id9"
+                                  Name="Name9"
+                                  Number="Number9"
+                                  Puid="9"
+                                  Type="Type9">
+                            <GroupAddressRef Id="Id10"
+                                             Name="Name10"
+                                             Puid="10"
+                                             RefId="RefId10"
+                                             Role="Role10"/>
+                            <GroupAddressRef Id="Id11"
+                                             Name="Name11"
+                                             Puid="11"
+                                             RefId="RefId11"
+                                             Role="Role11"/>
+                        </Function>
+                    </BuildingPart>
+                    <BuildingPart Id="Id100"
+                                  Name="Name100"
+                                  Type="Building"
+                                  Puid="100" />
+                </Buildings>
+            </Installation>
+        </Installations>
+    </Project>
+</KNX>

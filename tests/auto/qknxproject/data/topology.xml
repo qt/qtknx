@@ -1,0 +1,136 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<KNX xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+     CreatedBy="ETS5"
+     ToolVersion="5.5.952.23148"
+     xmlns="http://knx.org/xml/project/13">
+    <Project Id="ProjectId">
+        <Installations>
+            <Installation Name="Installation"
+                          BCUKey="4294967295"
+                          DefaultLine="P-01EB-0_L-3"
+                          IPRoutingLatencyTolerance="2000"
+                          CompletionStatus="Undefined"
+                          InstallationId="1"
+                          IPRoutingBackboneKey="12345"
+                          IPRoutingBackboneSecurity="On"
+                          IPRoutingMulticastAddress="192.168.2.1"
+                          IPSyncLatencyFraction="2"
+                          MulticastTTL="25"
+                          SplitType="Master">
+                <Topology>
+                    <Area Address="1"
+                          Comment="Comment1"
+                          CompletionStatus="Editing"
+                          Description="Description1"
+                          Id="Id1"
+                          Name="Name1"
+                          Puid="1">
+                        <Line Address="2"
+                              Comment="Comment2"
+                              CompletionStatus="FinishedDesign"
+                              Description="Description2"
+                              DomainAddress="22"
+                              Id="Id2"
+                              MediumTypeRefId="MediumTypeRefId2"
+                              Name="Name2"
+                              Puid="222">
+                            <DeviceInstance Address="3"
+                                            ApplicationProgramLoaded="false"
+                                            Broken="true"
+                                            CheckSums="Q2hlY2tTdW1zMw=="
+                                            Comment="Comment3"
+                                            CommunicationPartLoaded="true"
+                                            CompletionStatus="Editing"
+                                            Description="Description3"
+                                            Hardware2ProgramRefId="Hardware2ProgramRefId3"
+                                            Id="Id3"
+                                            IndividualAddressLoaded="true"
+                                            InstallationHints="InstallationHints3"
+                                            IsCommunicationObjectVisibilityCalculated="false"
+                                            IsRFRetransmitter="false"
+                                            LastDownload="2003-11-23T15:02:26.2503409Z"
+                                            LastModified="2017-03-23T15:02:26.2503409Z"
+                                            LastUsedAPDULength="3"
+                                            LoadedImage="TG9hZGVkSW1hZ2Uz"
+                                            MediumConfigLoaded="true"
+                                            Name="Name3"
+                                            ParametersLoaded="true"
+                                            ProductRefId="ProductRefId3"
+                                            Puid="33"
+                                            ReadMaxAPDULength="333"
+                                            ReadMaxRoutingAPDULength="3333"
+                                            SerialNumber="U2VyaWFsTnVtYmVyMw=="
+                                            UniqueId="{33333333-3333-3333-3333-333333333333}">
+                                <AdditionalAddresses>
+                                    <Address Address="4"
+                                             Comment="Comment4"
+                                             Description="Description4"
+                                             Name="Name4" />
+                                    <Address Address="5"
+                                             Comment="Comment5"
+                                             Description="Description5"
+                                             Name="Name5" />
+                                </AdditionalAddresses>
+                                <BinaryData>
+                                    <BinaryData Id="Id6"
+                                                Name="Name6"
+                                                RefId="RefId6">
+                                        <Data></Data>
+                                    </BinaryData>
+                                    <BinaryData Id="Id7"
+                                                Name="Name7"
+                                                RefId="RefId7">
+                                        <Data></Data>
+                                    </BinaryData>
+                                </BinaryData>
+                                <IPConfig Assign="Auto"
+                                          DefaultGateway="8.8.8.8"
+                                          IPAddress="88.88.88.88"
+                                          MACAddress="88-88-88-88-88-88"
+                                          SubnetMask="255.255.255.0"/>
+                                <Security DeviceAuthenticationCode="AuthenticationCode9"
+                                          DeviceManagementPassword="ManagementPassword9"
+                                          LoadedDeviceAuthenticationCode="LoadedAutCode9"
+                                          LoadedDeviceManagementPassword="LoadedMngmtPassword9"
+                                          LoadedIPRoutingBackboneKey="LoadedIPRoutingBackboneKey9"
+                                          LoadedToolKey="LoadedToolKey9"
+                                          SequenceNumber="9"
+                                          SequenceNumberTimestamp="2009-09-09T15:02:26.2503409Z"
+                                          ToolKey="ToolKey9"/>
+                                <BusInterfaces>
+                                    <BusInterface Comment="Comment10"
+                                                  Description="Description10"
+                                                  Name="Name10"
+                                                  Password="Password10">
+                                        <Connectors>
+                                            <Connector GroupAddressRefId="GroupAddressRefId11" />
+                                            <Connector GroupAddressRefId="GroupAddressRefId1111" />
+                                        </Connectors>
+                                    </BusInterface>
+                                    <BusInterface Comment="Comment12"
+                                                  Description="Description12"
+                                                  Name="Name12"
+                                                  Password="Password12">
+                                        <Connectors>
+                                            <Connector GroupAddressRefId="GroupAddressRefId13" />
+                                            <Connector GroupAddressRefId="GroupAddressRefId1313" />
+                                        </Connectors>
+                                    </BusInterface>
+                                </BusInterfaces>
+                            </DeviceInstance>
+                            <BusAccess Edi="{14141414-1414-1414-1414-141414141414}"
+                                       Name="Name14"
+                                       Parameter="Parameter14" />
+                            <AdditionalGroupAddresses>
+                                <GroupAddress Address="15" />
+                                <GroupAddress Address="16" />
+                            </AdditionalGroupAddresses>
+                        </Line>
+                    </Area>
+                </Topology>
+            </Installation>
+        </Installations>
+    </Project>
+</KNX>
+

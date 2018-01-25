@@ -1,0 +1,79 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<KNX xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+     CreatedBy="ETS5"
+     ToolVersion="5.5.952.23148"
+     xmlns="http://knx.org/xml/project/13">
+    <Project Id="ProjectId">
+        <ProjectInformation Name="Name"
+                            GroupAddressStyle="ThreeLevel"
+                            ProjectNumber="123456789"
+                            ContractNumber="987654321"
+                            LastModified="2017-11-27T09:40:34.6799941Z"
+                            ProjectStart="2017-11-01T00:00:00Z"
+                            ProjectEnd="2017-11-30T00:00:00Z"
+                            ProjectId="123"
+                            ProjectPassword="ProjectPassword"
+                            Comment="Comment"
+                            CompletionStatus="Editing"
+                            ProjectTracingLevel="OperationUsed"
+                            ProjectTracingPassword="TracingPassword"
+                            Hide16BitGroupsFromLegacyPlugins="true"
+                            CodePage="us-ascii"
+                            BusAccessLegacyMode="true"
+                            Guid="eae8eae4-34f3-433b-bb22-5acdba366889"
+                            LastUsedPuid="47"
+                            DeviceCount="6" >
+            <HistoryEntries>
+                <HistoryEntry Date="2017-11-23T15:02:26.2503409Z"
+                              User="User"
+                              Text="Text"
+                              Detail="Detail" />
+                <HistoryEntry Date="2017-11-23T16:13:38.5091389Z"
+                              User="User2"
+                              Text="Text2"
+                              Detail="Detail2" />
+            </HistoryEntries>
+            <ToDoItems>
+                <ToDoItem Description="Description"
+                          ObjectPath="ObjectPath"
+                          Status="Open" />
+                <ToDoItem Description="Description2"
+                          ObjectPath="ObjectPath2"
+                          Status="Accomplished" />
+            </ToDoItems>
+            <ProjectTraces>
+                <ProjectTrace Comment="Comment"
+                              UserName="UserName"
+                              Date="2017-11-23T16:13:38.5091389Z"/>
+                <ProjectTrace Comment="Comment2"
+                              UserName="UserName2"
+                              Date="2017-11-23T16:13:38.5091389Z"/>
+            </ProjectTraces>
+            <DeviceCertificates>
+                <DeviceCertificate FDSK="FDSK"
+                                   SerialNumber="U2VyaWFsTnVtYmVy"/>
+                <DeviceCertificate FDSK="FDSK2"
+                                   SerialNumber="U2VyaWFsTnVtYmVyMg=="/>
+            </DeviceCertificates>
+            <UserFiles>
+                <UserFile Filename="Filename"
+                          Comment="Comment"/>
+                <UserFile Filename="Filename2"
+                          Comment="Comment2"/>
+            </UserFiles>
+        </ProjectInformation>
+        <UserFiles>
+            <UserFile Filename="Filename"
+                      Comment="Comment"/>
+            <UserFile Filename="Filename2"
+                      Comment="Comment2"/>
+        </UserFiles>
+        <AddinData>
+            <AddinData AddinId="AddinId"
+                       Name="Name" />
+            <AddinData AddinId="AddinId2"
+                       Name="Name2" />
+        </AddinData>
+    </Project>
+</KNX>

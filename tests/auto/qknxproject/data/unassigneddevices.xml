@@ -1,0 +1,159 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<KNX xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+     CreatedBy="ETS5"
+     ToolVersion="5.5.952.23148"
+     xmlns="http://knx.org/xml/project/13">
+    <Project Id="ProjectId">
+        <Installations>
+            <Installation Name="Installation"
+                          BCUKey="4294967295"
+                          DefaultLine="P-01EB-0_L-3"
+                          IPRoutingLatencyTolerance="2000"
+                          CompletionStatus="Undefined"
+                          InstallationId="1"
+                          IPRoutingBackboneKey="12345"
+                          IPRoutingBackboneSecurity="On"
+                          IPRoutingMulticastAddress="192.168.2.1"
+                          IPSyncLatencyFraction="2"
+                          MulticastTTL="25"
+                          SplitType="Master">
+                <Topology>
+                    <UnassignedDevices>
+                        <DeviceInstance Address="3"
+                                        ApplicationProgramLoaded="false"
+                                        Broken="true"
+                                        CheckSums=""
+                                        Comment="Comment"
+                                        CommunicationPartLoaded="true"
+                                        CompletionStatus="Editing"
+                                        Description="Description"
+                                        Hardware2ProgramRefId="Hardware2ProgramRefId"
+                                        Id="Id3"
+                                        IndividualAddressLoaded="true"
+                                        InstallationHints="InstallationHints"
+                                        IsCommunicationObjectVisibilityCalculated="false"
+                                        IsRFRetransmitter="false"
+                                        LastDownload=""
+                                        LastModified=""
+                                        LastUsedAPDULength="40"
+                                        LoadedImage=""
+                                        MediumConfigLoaded="true"
+                                        Name="Name"
+                                        ParametersLoaded="true"
+                                        ProductRefId="ProductRefId"
+                                        Puid="3"
+                                        ReadMaxAPDULength="50"
+                                        ReadMaxRoutingAPDULength="60"
+                                        SerialNumber="U2VyaWFsTnVtYmVyMw=="
+                                        UniqueId="{12345678-1234-1234-1234-123456789123}">
+                            <ParameterInstanceRefs>
+                                <ParameterInstanceRef Id="Id15"
+                                                      RefId="Refid15"
+                                                      Value="Value15" />
+                                <ParameterInstanceRef Id="Id16"
+                                                      RefId="Refid16"
+                                                      Value="Value16" />
+                            </ParameterInstanceRefs>
+                            <ComObjectInstanceRefs>
+                                <ComObjectInstanceRef ChannelId="ChannelId"
+                                                      CommunicationFlag="Enabled"
+                                                      DatapointType="Dpt-1-1"
+                                                      Description="Description"
+                                                      FunctionText="FunctionText"
+                                                      Id="Id12346"
+                                                      IsActive="false"
+                                                      Priority="High"
+                                                      ReadFlag="Enabled"
+                                                      ReadOnInitFlag="Enabled"
+                                                      RefId="RefId123456"
+                                                      Text="Text"
+                                                      TransmitFlag="Disabled"
+                                                      UpdateFlag="Enabled"
+                                                      WriteFlag="Disabled">
+                                    <Connectors>
+                                        <Send Acknowledge="true"
+                                              GroupAddressRefId="GroupAddressRefId" />
+                                        <Receive Acknowledge="true"
+                                                 GroupAddressRefId="GroupAddressRefId2" />
+                                        <Receive Acknowledge="false"
+                                                 GroupAddressRefId="GroupAddressRefId3" />
+                                    </Connectors>
+                                </ComObjectInstanceRef>
+                            </ComObjectInstanceRefs>
+                            <ChannelInstances>
+                                <ChannelInstance Description="Description"
+                                                 Id="Id1297"
+                                                 IsActive="false"
+                                                 Name="Name"
+                                                 RefId="RefId099787" />
+                                <ChannelInstance Description="Description2"
+                                                 Id="Id12972"
+                                                 IsActive="true"
+                                                 Name="Name2"
+                                                 RefId="RefId0997872" />
+                            </ChannelInstances>
+                            <AdditionalAddresses>
+                                <Address Address="6"
+                                         Comment="Comment"
+                                         Description="Description"
+                                         Name="Name" />
+                                <Address Address="7"
+                                         Comment="Comment2"
+                                         Description="Description2"
+                                         Name="Name2" />
+                            </AdditionalAddresses>
+                            <BinaryData>
+                                <BinaryData Id="Id4"
+                                            Name="Name"
+                                            RefId="RefId">
+                                    <Data></Data>
+                                </BinaryData>
+                                <BinaryData Id="Id5"
+                                            Name="Name2"
+                                            RefId="RefId2">
+                                    <Data></Data>
+                                </BinaryData>
+                            </BinaryData>
+                            <IPConfig Assign="Auto"
+                                      DefaultGateway="192.168.2.1"
+                                      IPAddress="192.168.2.254"
+                                      MACAddress="00-0E-2E-B3-6C-FA"
+                                      SubnetMask="255.255.255.0"/>
+                            <Security DeviceAuthenticationCode="AuthenticationCode"
+                                      DeviceManagementPassword="ManagementPassword"
+                                      LoadedDeviceAuthenticationCode="LoadedAutCode"
+                                      LoadedDeviceManagementPassword="LoadedMngmtPassword"
+                                      LoadedIPRoutingBackboneKey="LoadedIPRoutingBackboneKey"
+                                      LoadedToolKey="LoadedToolKey"
+                                      SequenceNumber="12345"
+                                      SequenceNumberTimestamp=""
+                                      ToolKey="ToolKey"/>
+                            <BusInterfaces>
+                                <BusInterface Comment="Comment"
+                                              Description="Description"
+                                              Name="Name"
+                                              Password="Password">
+                                    <Connectors>
+                                        <Connector GroupAddressRefId="GroupAddressRefId2" />
+                                        <Connector GroupAddressRefId="GroupAddressRefId3" />
+                                    </Connectors>
+                                </BusInterface>
+                                <BusInterface Comment="Comment2"
+                                              Description="Description2"
+                                              Name="Name2"
+                                              Password="Password2">
+                                    <Connectors>
+                                        <Connector GroupAddressRefId="GroupAddressRefId4" />
+                                        <Connector GroupAddressRefId="GroupAddressRefId5" />
+                                    </Connectors>
+                                </BusInterface>
+                            </BusInterfaces>
+                        </DeviceInstance>
+                    </UnassignedDevices>
+                </Topology>
+            </Installation>
+        </Installations>
+    </Project>
+</KNX>
+
