@@ -365,24 +365,36 @@ bool QKnxDate::isValid() const
 
     This enum type holds the date attributes.
 
-    \value Fault
-    \value WorkingDay
-    \value WorkingDayInvalid
-    \value YearInvalid
-    \value DateInvalid
-    \value DayOfWeekInvalid
-    \value TimeInvalid
-    \value StandardSummerTime
+    \value Fault              Set if one or more supported fields of the date
+        and time information are corrupted.
+    \value WorkingDay         Set to indicate a working day.
+    \value NoWorkingDay       Set if the Working day field is not valid.
+    \value NoYear             Set if the Year field is not valid.
+    \value NoDate             Set if the Month and Day of the Month field are
+        not valid.
+    \value NoDayOfWeek        Set if the Day of week field is not valid.
+    \value NoTime             Set if the Hour of day, Minutes and Seconds
+        fields are not valid.
+    \value StandardSummerTime Standard Summer Time is only an attribute for
+        information and visualization. In the hour field, summer-time correction
+        is already considered. Therefore, no hour offset shall be added by the
+        receiver if Standard Summer Time Information is set.
 */
 
 /*!
     \enum QKnxDateTime::ClockQuality
 
-    This enum type holds whether the clock sends extended synchronization
-    signals.
+    This enum type holds whether the device sending date and time information
+    sends signals which are synchronized (time to time) with external date and
+    time information source.
 
-    \value WithoutExtendedSyncSignal
-    \value WithExtendedSyncSignal
+    \value WithoutExtendedSyncSignal  Clock without an external synchronization
+        signal. The device sending date & time information has a local clock,
+        which can be inaccurate.
+    \value WithExtendedSyncSignal     Clock with an external synchronization
+        signal (like DCF77, videotext). Also an externally synchronized
+        clock should send CLQ = 0 after start-up (until reception of first
+        synchronization signal) or after a synchronization timeout.
 */
 
 // -- QKnxDateTime
@@ -475,7 +487,8 @@ bool QKnxDateTime::setTime(const QKnxTime24 &time)
 }
 
 /*!
-    Returns the additional information stored in the datapoint type as a list of attributes.
+    Returns the additional information stored in the datapoint type as a list
+    of attributes.
 */
 QKnxDateTime::Attributes QKnxDateTime::attributes() const
 {
@@ -490,8 +503,8 @@ QKnxDateTime::Attributes QKnxDateTime::attributes() const
 }
 
 /*!
-    Sets the additional information of the datapoint type to the list of attributes specified by
-    \a attributes.
+    Sets the additional information of the datapoint type to the list of
+    attributes specified by \a attributes.
 */
 void QKnxDateTime::setAttributes(Attributes attributes)
 {
