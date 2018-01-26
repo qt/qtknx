@@ -7,8 +7,9 @@ QT_FOR_PRIVATE += network core-private
 QMAKE_DOCS = $$PWD/doc/qtknx.qdocconf
 
 include(dpt/dpt.pri)
-include(netip/netip.pri)
 include(knxproj/knxproj.pri)
+include(netip/netip.pri)
+include(tlstm/tlstm.pri)
 
 DEFINES += QT_NO_CAST_FROM_ASCII
 

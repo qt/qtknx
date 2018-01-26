@@ -36,4 +36,5 @@ SUBDIRS += cmake \
     qknxcontrolfield \
     qknxtunnelframefactory \
     qknxdatapointtype \
-    qknxproject
+    qknxproject \
+    qknxtransportlayerstatemachine
