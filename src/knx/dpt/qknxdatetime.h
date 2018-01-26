@@ -103,7 +103,7 @@ public:
         Fault = 0x00,
         WorkingDay = 0x01,
         WorkingDayInvalid = 0x02,
-        YearInvalild = 0x04,
+        YearInvalid = 0x04,
         DateInvalid = 0x08,
         DayOfWeekInvalid = 0x10,
         TimeInvalid = 0x20,
