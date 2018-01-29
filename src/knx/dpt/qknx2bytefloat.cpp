@@ -79,7 +79,7 @@ QT_BEGIN_NAMESPACE
         \li -671088.64 - 670760.96
     \row
         \li \c QKnxCurrent
-        \li Current in milli-ampers (mA).
+        \li Current in milliampere (mA).
         \li -670760 - 670760
     \row
         \li \c QKnxHumidity
@@ -119,7 +119,7 @@ QT_BEGIN_NAMESPACE
         \li -670760 - 670760
     \row
         \li \c QKnxTimeMilliSecond
-        \li Time in milli-seconds (ms).
+        \li Time in milliseconds (ms).
         \li -670760 - 670760
     \row
         \li \c QKnxTimeSecond

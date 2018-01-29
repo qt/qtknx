@@ -85,7 +85,7 @@ public:
         if (response.status() == QKnxNetIp::Error::NoMoreUniqueConnections) {
             Q_ASSERT_X(false, "QKnxNetIpTunnelConnectionPrivate::process", "NoMoreUniqueConnections "
                 "error handling not implemented yet.");
-            // TODO: Maybe implement 03_08_04 Tunnelling v01.05.03 AS.pdf, paragraph 3.3
+            // TODO: Maybe implement 03_08_04 Tunneling v01.05.03 AS.pdf, paragraph 3.3
         }
 
         Q_Q(QKnxNetIpTunnelConnection);
@@ -130,7 +130,7 @@ void QKnxNetIpTunnelConnection::setIndividualAddress(const QKnxAddress &address)
     Q_ASSERT_X(false, "QKnxNetIpTunnelClient::setIndividualAddress", "Setting the individual "
         "address used for tunnel connections not implemented yet.");
 
-    Q_UNUSED(address) // TODO: Maybe implement 03_08_04 Tunnelling v01.05.03 AS.pdf, paragraph 3.2
+    Q_UNUSED(address) // TODO: Maybe implement 03_08_04 Tunneling v01.05.03 AS.pdf, paragraph 3.2
 }
 
 QKnxNetIp::TunnelingLayer QKnxNetIpTunnelConnection::layer() const
@@ -152,7 +152,7 @@ bool QKnxNetIpTunnelConnection::sendTunnelFrame(const QKnxTunnelFrame &frame)
 
     Q_D(QKnxNetIpTunnelConnection);
     if (d->m_layer == QKnxNetIp::TunnelingLayer::Busmonitor)
-        return false; // 03_08_04 Tunnelling v01.05.03, paragraph 2.4
+        return false; // 03_08_04 Tunneling v01.05.03, paragraph 2.4
 
     return d->sendTunnelingRequest(frame);
 }

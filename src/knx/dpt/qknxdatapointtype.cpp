@@ -50,13 +50,13 @@ QT_BEGIN_NAMESPACE
     for fixed length datapoint types and \l QKnxVariableSizeDatapointType for
     variable length datapoint types.
 
-    A datapoint type is identified by its main number and a subnumber. Each
+    A datapoint type is identified by its main number and a sub number. Each
     main number corresponds to a datapoint type with a particular structure.
-    The subnumbers correspond to different interpretations or naming of this
+    The sub numbers correspond to different interpretations or naming of this
     structure.
 
     The Qt KNX module provides a class for each datapoint type with the main
-    number less than 30 and subnumber less than 100. All datapoint types with
+    number less than 30 and sub number less than 100. All datapoint types with
     the same main number inherit from a datapoint type class representing the
     main number datapoint type characteristics.
 
@@ -87,7 +87,7 @@ QT_BEGIN_NAMESPACE
 
     This enum type holds the type of the datapoint type.
 
-    \value Unknow
+    \value Unknown
             An unknown datapoint type.
     \value Dpt1_1Bit
             A fixed size datapoint type with the length of 1 bit. This is a
@@ -462,7 +462,7 @@ QKnxDatapointType::QKnxDatapointType(Type type, int size)
     bool okMain = false, okSub = false;
 
     // Datapoint Type shall be identified by a 16 bit main number separated
-    // by a dot from a 16 bit subnumber. The assumption being made is that
+    // by a dot from a 16 bit sub number. The assumption being made is that
     // QKnxDatapointType::Type is encoded in that way while omitting the dot.
     int mainType = number.left(number.size() - 5).toInt(&okMain);
     int subType = number.right(5).toInt(&okSub);

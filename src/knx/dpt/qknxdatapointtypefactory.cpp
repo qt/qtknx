@@ -127,7 +127,7 @@ QKnxDatapointType *QKnxDatapointTypeFactory::createType(QKnxDatapointType::Type 
     bool okMain = false, okSub = false;
 
     // Datapoint Type shall be identified by a 16 bit main number separated by a dot from a 16 bit
-    // subnumber. The assumption being made is that QKnxDatapointType::Type is encoded in that way
+    // sub number. The assumption being made is that QKnxDatapointType::Type is encoded in that way
     // while omitting the dot.
     int mainType = number.left(number.size() - 5).toInt(&okMain);
     int subType = number.right(5).toInt(&okSub);
