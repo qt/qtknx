@@ -76,7 +76,7 @@ public:
             DptDeltaTimeSec, DptDeltaTimeMin, DptDeltaTimeHrs, DptPercentV16 = 800010,
             DptRotationAngle,
         Dpt9_2ByteFloat = 900000,
-        DptTemperatureCelcius, DptTemperatureKelvin, DptTemperatureChange, DptValueLux,
+        DptTemperatureCelsius, DptTemperatureKelvin, DptTemperatureChange, DptValueLux,
             DptWindSpeed, DptPressure, DptHumidity, DptAirQuality, DptAirFlow, DptTimeSecond,
             DptTimeMilliSecond, DptVoltage = 900020, DptCurrent, DptPowerDensity,
             DptKelvinPerPercent, DptPower, DptVolumeFlow, DptAmountRain, DptTemperatureFahrenheit,

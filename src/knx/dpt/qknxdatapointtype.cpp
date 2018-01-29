@@ -175,7 +175,7 @@ QT_BEGIN_NAMESPACE
     \value DptPercentV16
     \value DptRotationAngle
     \value Dpt9_2ByteFloat
-    \value DptTemperatureCelcius
+    \value DptTemperatureCelsius
     \value DptTemperatureKelvin
     \value DptTemperatureChange
     \value DptValueLux

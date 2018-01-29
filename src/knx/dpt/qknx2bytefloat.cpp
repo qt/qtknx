@@ -102,8 +102,8 @@ QT_BEGIN_NAMESPACE
         \li Pressure in Pascal (Pa).
         \li 0 - 670760
     \row
-        \li \c QKnxTemperatureCelcius
-        \li Temperature in degrees Celcius.
+        \li \c QKnxTemperatureCelsius
+        \li Temperature in degrees Celsius.
         \li -273 - 670760
     \row
         \li \c QKnxTemperatureChange
@@ -246,8 +246,8 @@ CLASS::CLASS(float value) \
     setValue(value); \
 }
 
-CREATE_CLASS_BODY(QKnxTemperatureCelcius, "Temperature in degree Celcius",
-    "Minimum Value, -273", "Maximum Value, 670 760","degree Celcius", -273, 670760)
+CREATE_CLASS_BODY(QKnxTemperatureCelsius, "Temperature in degree Celsius",
+    "Minimum Value, -273", "Maximum Value, 670 760","degree Celsius", -273, 670760)
 CREATE_CLASS_BODY(QKnxTemperatureKelvin, "Temperature in degree Kelvin",
     "Minimum Value, -670 760", "Maximum Value, 670 760", "degree Kelvin", -670760, 670760)
 CREATE_CLASS_BODY(QKnxTemperatureChange, "Change in Temperature (K) per hour",

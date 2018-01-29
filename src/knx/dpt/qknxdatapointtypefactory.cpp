@@ -283,7 +283,7 @@ QKnxDatapointTypeFactory::QKnxDatapointTypeFactory()
 
     // DPT-9
     registerType<QKnx2ByteFloat>();
-    registerType<QKnxTemperatureCelcius>();
+    registerType<QKnxTemperatureCelsius>();
     registerType<QKnxTemperatureKelvin>();
     registerType<QKnxTemperatureChange>();
     registerType<QKnxValueLux>();
