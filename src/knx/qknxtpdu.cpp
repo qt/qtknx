@@ -27,57 +27,56 @@
 **
 ******************************************************************************/
 
-#include "qknxnpdu.h"
+#include "qknxtpdu.h"
 #include "qknxutils.h"
 
 QT_BEGIN_NAMESPACE
 
 /*!
-    \class QKnxNpdu
+    \class QKnxTpdu
 
     \inmodule QtKnx
     \brief This class represents the part of the \l QKnxCemiFrame to be read by
     the network, transport and application layers.
 
-    To build a valid NPDU it is recommended to use the \l QKnxNpduFactory.
-    Reading the bytes from left to right, a NPDU is composed of the following
+    To build a valid TPDU it is recommended to use the \l QKnxTpduFactory.
+    Reading the bytes from left to right, a TPDU is composed of the following
     information:
 
     \list
-        \li The length of the payload (full size of NPDU - 2)
         \li The transport layer code \l TransportControlField,
         \li The application layer service code \l ApplicationControlField
     \endlist
 
-    If applicable, the T_CONNECT NPDU holds no application layer service for
+    If applicable, the T_CONNECT TPDU holds no application layer service for
     example, and the data and other information (if applicable, depending on
     the chosen service).
 */
 
 /*!
-    \enum QKnxNpdu::ErrorCode
+    \enum QKnxTpdu::ErrorCode
 
     This enum describes the possible error codes needing in the building
-    of NPDU with service \l QKnxNpdu::FunctionPropertyStateResponse or
-    \l QKnxNpdu::Restart
+    of TPDU with service \l QKnxTpdu::FunctionPropertyStateResponse or
+    \l QKnxTpdu::Restart
 
     \value NoError
     \value Error
 */
 
 /*!
-    \enum QKnxNpdu::ResetType
+    \enum QKnxTpdu::ResetType
     This enum describes the possible reset types needing in the building of
-    NPDU with service \l QKnxNpdu::Restart.
+    TPDU with service \l QKnxTpdu::Restart.
 
     \value BasicRestart
     \value MasterRestart
 */
 
 /*!
-    \enum QKnxNpdu::EraseCode
+    \enum QKnxTpdu::EraseCode
     This enum describes the possible erase codes needing in the building of
-    NPDU with service \l QKnxNpdu::Restart.
+    TPDU with service \l QKnxTpdu::Restart.
 
     \value Reserved
     \value ConfirmedRestart
@@ -91,9 +90,9 @@ QT_BEGIN_NAMESPACE
 */
 
 /*!
-    \enum QKnxNpdu::LinkWriteFlags
+    \enum QKnxTpdu::LinkWriteFlags
     This enum describes the possible link write flags needing in the building
-    of NPDU with service \l QKnxNpdu::LinkWrite.
+    of TPDU with service \l QKnxTpdu::LinkWrite.
 
     \value AddGroupAddress
     \value AddSendingGroupAddress
@@ -102,7 +101,7 @@ QT_BEGIN_NAMESPACE
 */
 
 /*!
-    \enum QKnxNpdu::TransportControlField
+    \enum QKnxTpdu::TransportControlField
     This enum describes the possible message code dedicated to the transport
     layer.
 
@@ -120,7 +119,7 @@ QT_BEGIN_NAMESPACE
 */
 
 /*!
-    \enum QKnxNpdu::ApplicationControlField
+    \enum QKnxTpdu::ApplicationControlField
     This enum describes the message code dedicated to the application and
     representing an application service.
 
@@ -190,46 +189,64 @@ static bool isBitSet(quint8 byteToTest, quint8 bit)
 };
 
 /*!
-    Returns the Transport layer control field of the \c QKnxNpdu.
+    Returns the Transport layer control field of the \c QKnxTpdu.
 */
-QKnxNpdu::TransportControlField QKnxNpdu::transportControlField() const
+QKnxTpdu::TransportControlField QKnxTpdu::transportControlField() const
 {
-    if (size() < 2)
+    if (size() < 1)
         return TransportControlField::Invalid;
+    if (isBitSet(byte(0), 7) && isBitSet(byte(0), 6) && isBitSet(byte(0), 1)) // T_ACK/ T_NACK
+        return TransportControlField(byte(0) & 0xc3); // no APCI, mask out sequence number
 
-    if (isBitSet(byte(1), 7) && isBitSet(byte(1), 6))      // T_ACK/ T_NACK
-        return TransportControlField(byte(1) & 0xc3); // no APCI, mask out sequence number
+    if (isBitSet(byte(0), 7) && (!isBitSet(byte(0), 6))) // T_CONNECT/ T_DISCONNECT
+        return TransportControlField(byte(0)); // no APCI, no sequence number
 
-    if (isBitSet(byte(1), 7) && (!isBitSet(byte(1), 6))) // T_CONNECT/ T_DISCONNECT
-        return TransportControlField(byte(1)); // no APCI, no sequence number
+    if (isBitSet(byte(0), 6) && (!isBitSet(byte(0), 7)))// T_DATA_CONNECTED, mask out the APCI
+        return TransportControlField((byte(0) & 0xfc) & 0xc3); // and the sequence number
 
-    if (isBitSet(byte(1), 6))                                // T_DATA_CONNECTED, mask out the APCI
-        return TransportControlField((byte(1) & 0xfc) & 0xc3); // and the sequence number
-
-    return TransportControlField(byte(1) & 0xfc); // mask out the APCI
+    return TransportControlField(byte(0) & 0xfc); // mask out the APCI
 }
 
 /*!
     Sets the Transport layer control field to \a tpci.
 */
-void QKnxNpdu::setTransportControlField(TransportControlField tpci)
+void QKnxTpdu::setTransportControlField(TransportControlField tpci)
 {
-    if (size() < 2)
-        resize(2);
-    setByte(1, (byte(1) & 0x03) | quint8(tpci));
-    setByte(0, quint8(qMax<quint16>(0u, size() - 2)));
+    if (size() < 1)
+        resize(1);
+
+    switch (tpci ) {
+    case TransportControlField::DataBroadcast:
+    //case TransportControlField::DataGroup:
+    case TransportControlField::DataTagGroup:
+    //case TransportControlField::DataIndividual:
+        setByte(0, (byte(0) & 0x03) | quint8(tpci)); // keep the APCI
+        break;
+    case TransportControlField::Acknowledge:
+    case TransportControlField::NoAcknowledge:
+        setByte(0, (byte(0) & 0x3c) | quint8(tpci)); // keep the sequence number
+        break;
+    case TransportControlField::DataConnected:
+        setByte(0, (byte(0) & 0x3F) | quint8(tpci)); // keep the APCI and the sequence number
+        break;
+    case TransportControlField::Connect:
+    case TransportControlField::Disconnect:
+    case TransportControlField::Invalid:
+    default:
+        setByte(0, quint8(tpci)); // replace everything
+    }
 }
 
 /*!
-    Returns the Application layer control field of the \c QKnxNpdu.
+    Returns the Application layer control field of the \c QKnxTpdu.
 */
-QKnxNpdu::ApplicationControlField QKnxNpdu::applicationControlField() const
+QKnxTpdu::ApplicationControlField QKnxTpdu::applicationControlField() const
 {
-    if (size() < 3)
+    if (size() < 2)
         return ApplicationControlField::Invalid;
 
-    std::bitset<8> apciHigh = byte(1) & 0x03; // mask out all bits except the first two
-    std::bitset<8> apciLow = byte(2) & 0xc0;  // mask out all bits except the last two
+    std::bitset<8> apciHigh = byte(0) & 0x03; // mask out all bits except the first two
+    std::bitset<8> apciLow = byte(1) & 0xc0;  // mask out all bits except the last two
 
     const auto fourBitsApci = [&apciHigh, &apciLow]() {
         QVector<quint8> apciBytes = { { quint8(apciHigh.to_ulong()), quint8(apciLow.to_ulong()) } };
@@ -241,9 +258,9 @@ QKnxNpdu::ApplicationControlField QKnxNpdu::applicationControlField() const
     };
 
     if ((apciHigh[0] == 0 && apciHigh[1] == 0) || (apciHigh[0] == 1 && apciHigh[1] == 1)) {
-        std::bitset<8> octet7 = byte(2);
+        std::bitset<8> octet7 = byte(1);
         if (octet7[7] == 1 && octet7[6] == 1)
-            return tenBitsApci(byte(2));
+            return tenBitsApci(byte(1));
         return fourBitsApci();
     }
 
@@ -251,59 +268,57 @@ QKnxNpdu::ApplicationControlField QKnxNpdu::applicationControlField() const
         // connection oriented, it's one of the A_ADC service
         if (quint8(transportControlField()) > 0)
             return fourBitsApci();
-        return tenBitsApci(byte(2));
+        return tenBitsApci(byte(1));
     }
 
-    // it's one of the A_Memory Service (only the 2 last bits of octet 6 are needed for the apci)
+    // it's one of the A_Memory Service (only the 2 last bits of octet 6 are needed for the APCI)
     if (apciLow[7] == 0 || apciLow[6] == 0)
         return fourBitsApci();
-    return tenBitsApci(byte(2));
+    return tenBitsApci(byte(1));
 }
 
 /*!
     Sets the Application layer control field to \a apci.
 */
-void QKnxNpdu::setApplicationControlField(ApplicationControlField apci)
+void QKnxTpdu::setApplicationControlField(ApplicationControlField apci)
 {
-    if (size() < 3)
-        resize(3);
-
+    if (size() < 2)
+        resize(2);
     auto tmp = QKnxUtils::QUint16::bytes(quint16(apci));
-    setByte(0, qMax<quint16>(1u, size() - 2));
-    setByte(1, (byte(1) & 0xfc) | tmp[0]);
-    setByte(2, (byte(2) & 0x3f) | tmp[1]);
+    setByte(0, (byte(0) & 0xfc) | tmp[0]);
+    setByte(1, (byte(1) & 0x3f) | tmp[1]);
 }
 
-QKnxNpdu::QKnxNpdu(TransportControlField tpci)
+QKnxTpdu::QKnxTpdu(TransportControlField tpci)
 {
     setTransportControlField(tpci);
 }
 
-QKnxNpdu::QKnxNpdu(TransportControlField tpci, ApplicationControlField apci)
+QKnxTpdu::QKnxTpdu(TransportControlField tpci, ApplicationControlField apci)
 {
     setTransportControlField(tpci);
     setApplicationControlField(apci);
 }
 
-QKnxNpdu::QKnxNpdu(TransportControlField tpci, ApplicationControlField apci, const QByteArray &data)
-    : QKnxNpdu(tpci, apci, 0, data)
+QKnxTpdu::QKnxTpdu(TransportControlField tpci, ApplicationControlField apci, const QByteArray &data)
+    : QKnxTpdu(tpci, apci, 0, data)
 {}
 
-QKnxNpdu::QKnxNpdu(TransportControlField tpci, ApplicationControlField apci, quint8 seqNumber,
+QKnxTpdu::QKnxTpdu(TransportControlField tpci, ApplicationControlField apci, quint8 seqNumber,
         const QByteArray &data)
-    : QKnxNpdu(tpci, apci)
+    : QKnxTpdu(tpci, apci)
 {
     setSequenceNumber(seqNumber);
     setData(data);
 }
 
 /*!
-    Returns true if the current NPDU is valid.
+    Returns true if the current TPDU is valid.
 
     \note This function is not implemented for every services.
-    To make sure your NPDU is correct, use the \l QKnxNpduFactory.
+    To make sure your TPDU is correct, use the \l QKnxTpduFactory.
  */
-bool QKnxNpdu::isValid() const
+bool QKnxTpdu::isValid() const
 {
     switch (transportControlField()) {
     case TransportControlField::Invalid:
@@ -312,12 +327,12 @@ bool QKnxNpdu::isValid() const
     case TransportControlField::Disconnect:
     case TransportControlField::Acknowledge:
     case TransportControlField::NoAcknowledge:
-        return size() == 2;
+        return size() == 1;
     default:
         break;
     }
 
-#define HEADER_SIZE 3 // [size][TCPI|APCI][APCI] 3 bytes
+#define HEADER_SIZE 2 // [TCPI|APCI][APCI] 2 bytes
 #define L_DATA_PAYLOAD 14 // 3_02_02 Communication Medium TP1, Paragraph 2.2.4.1
 #define L_DATA_EXTENDED_PAYLOAD 253 // 3_02_02 Communication Medium TP1, Paragraph 2.2.5.1
 
@@ -368,7 +383,7 @@ bool QKnxNpdu::isValid() const
        return (size() == HEADER_SIZE + 2) || (size() == HEADER_SIZE + 6); // 2 or 6 byteToTest domain address
     case ApplicationControlField::DomainAddressSelectiveRead:
         if (size() >= HEADER_SIZE) // 03_05_02 Management Procedures
-            return size() == (byte(3) == 0x00 ? 8 : 14); // Paragraph: 2.12.1.1/2.12.1.2
+            return size() == (byte(2) == 0x00 ? 8 : 14); // Paragraph: 2.12.1.1/2.12.1.2
         return false;
 
     case ApplicationControlField::DomainAddressSerialNumberResponse:
@@ -414,35 +429,35 @@ bool QKnxNpdu::isValid() const
 #undef L_DATA_EXTENDED_PAYLOAD
 }
 
-quint8 QKnxNpdu::dataSize() const
+quint8 QKnxTpdu::dataSize() const
 {
-    return byte(0);
+    return (size() - 1); // data size start after the TPCI/APCI byte.
 }
 
-quint8 QKnxNpdu::sequenceNumber() const
+quint8 QKnxTpdu::sequenceNumber() const
 {
-    if (isBitSet(byte(1), 6))
-        return quint8((byte(1) & 0x3c) >> 2);
+    if (isBitSet(byte(0), 6))
+        return quint8((byte(0) & 0x3c) >> 2);
     return 0;
 }
 
-void QKnxNpdu::setSequenceNumber(quint8 seqNumber)
+void QKnxTpdu::setSequenceNumber(quint8 seqNumber)
 {
-    if ((seqNumber > 15) || (!isBitSet(byte(1), 6)))
+    if ((seqNumber > 15) || (!isBitSet(byte(0), 6)))
         return;
-    setByte(1, (byte(1) & 0xc3) | quint8(seqNumber << 2));
+    setByte(0, (byte(0) & 0xc3) | quint8(seqNumber << 2));
 }
 
-QByteArray QKnxNpdu::data() const
+QByteArray QKnxTpdu::data() const
 {
-    if (size() < 3)
+    if (size() < 2)
         return {};
 
     QByteArray bytes;
     switch (applicationControlField()) {
     case ApplicationControlField::GroupValueResponse:
     case ApplicationControlField::GroupValueWrite:
-        if (size() > 3)
+        if (size() > 2)
             break;
 
     case ApplicationControlField::AdcRead:
@@ -453,28 +468,39 @@ QByteArray QKnxNpdu::data() const
     case ApplicationControlField::DeviceDescriptorRead:
     case ApplicationControlField::DeviceDescriptorResponse:
     case ApplicationControlField::Restart:
-        bytes = QKnxUtils::QUint8::bytes(quint8(byte(2) & 0x3f)); // 6 bits from an optimized NPDU
+        bytes = QKnxUtils::QUint8::bytes(quint8(byte(1) & 0x3f)); // 6 bits from an optimized TPDU
 
     default:
         break;
     }
 
-    const auto &tmp = ref(3);
+    const auto &tmp = ref(2);
     return bytes + tmp.bytes<QByteArray>(0, tmp.size());
 }
 
-void QKnxNpdu::setData(const QByteArray &data)
+void QKnxTpdu::setData(const QByteArray &data)
 {
+    // In those cases there should be no data.
+    switch (transportControlField()) {
+    case TransportControlField::Invalid:
+        return;
+    case TransportControlField::Connect:
+    case TransportControlField::Disconnect:
+    case TransportControlField::Acknowledge:
+    case TransportControlField::NoAcknowledge:
+        return;
+    default:
+        break;
+    }
+
     auto apci = applicationControlField();
     auto apciBytes = QKnxUtils::QUint16::bytes<QVector<quint8>>(quint16(apci));
 
-    resize(3); // always resize to minimum size
-    setByte(2, apciBytes[1]); // and clear the possible 6 bits of the upper APCI byteToTest
+    resize(2); // always resize to minimum size
+    setByte(1, apciBytes[1]); // and clear the possible 6 bits of the upper APCI byteToTest
 
-    if (data.isEmpty()) {
-        setByte(0, quint8(size() - 2));
+    if (data.isEmpty())
         return; // no data, bytes got cleared before
-    }
 
     auto remainingData = data;
     switch (apci) {
@@ -491,17 +517,15 @@ void QKnxNpdu::setData(const QByteArray &data)
     case ApplicationControlField::DeviceDescriptorRead:
     case ApplicationControlField::DeviceDescriptorResponse:
     case ApplicationControlField::Restart:
-        setByte(2, apciBytes[1] | quint8(data[0]));
+        setByte(1, apciBytes[1] | quint8(data[0]));
         remainingData = data.mid(1); Q_FALLTHROUGH();
 
     default:
         break;
     }
-
     appendBytes(remainingData);
-    setByte(0, quint8(size() - 2));
 }
 
-#include "moc_qknxnpdu.cpp"
+#include "moc_qknxtpdu.cpp"
 
 QT_END_NAMESPACE

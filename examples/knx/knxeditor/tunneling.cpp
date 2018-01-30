@@ -211,7 +211,7 @@ Tunneling::Tunneling(QWidget* parent)
 
         if (!checked) {
             disable = ui->tpci->itemData(ui->tpci->currentIndex())
-                .value<QKnxNpdu::TransportControlField>() >= QKnxNpdu::TransportControlField::Connect;
+                .value<QKnxTpdu::TransportControlField>() >= QKnxTpdu::TransportControlField::Connect;
         }
         ui->apci->setDisabled(disable);
         ui->data->setDisabled(disable);
@@ -264,20 +264,20 @@ void Tunneling::updateFrame()
     m_frame.setSourceAddress({ QKnxAddress::Type::Individual, ui->sourceAddress->text() });
     m_frame.setDestinationAddress({ m_extCtrl.destinationAddressType(), ui->destAddress->text() });
 
-    auto npdu = QKnxNpdu { ui->tpci->itemData(ui->tpci->currentIndex())
-        .value<QKnxNpdu::TransportControlField>() };
+    auto tpdu = QKnxTpdu { ui->tpci->itemData(ui->tpci->currentIndex())
+        .value<QKnxTpdu::TransportControlField>() };
 
-    if (npdu.transportControlField() < QKnxNpdu::TransportControlField::Connect) {
+    if (tpdu.transportControlField() < QKnxTpdu::TransportControlField::Connect) {
         ui->apci->setEnabled(true);
         ui->data->setEnabled(true);
-        npdu.setApplicationControlField(ui->apci->itemData(ui->apci->currentIndex())
-            .value<QKnxNpdu::ApplicationControlField>());
-        npdu.setData(QByteArray::fromHex(ui->data->text().toLatin1()));
+        tpdu.setApplicationControlField(ui->apci->itemData(ui->apci->currentIndex())
+            .value<QKnxTpdu::ApplicationControlField>());
+        tpdu.setData(QByteArray::fromHex(ui->data->text().toLatin1()));
     } else {
         ui->apci->setEnabled(false);
         ui->data->setEnabled(false);
     }
-    m_frame.setNpdu(npdu);
+    m_frame.setTpdu(tpdu);
     ui->cemiFrame->setText(m_frame.bytes().toHex());
 
     ui->tunnelingSendRequest->setEnabled(m_frame.isValid());
@@ -313,8 +313,8 @@ void Tunneling::on_manualInput_clicked(bool checked)
 
 void Tunneling::setupApciTpciComboBox()
 {
-    int index = QKnxNpdu::staticMetaObject.indexOfEnumerator("ApplicationControlField");
-    auto typeEnum = QKnxNpdu::staticMetaObject.enumerator(index);
+    int index = QKnxTpdu::staticMetaObject.indexOfEnumerator("ApplicationControlField");
+    auto typeEnum = QKnxTpdu::staticMetaObject.enumerator(index);
     if (!typeEnum.isValid())
         return;
 
@@ -326,8 +326,8 @@ void Tunneling::setupApciTpciComboBox()
         ui->apci->addItem(QStringLiteral("A_") + string, typeEnum.value(i));
     }
 
-    index = QKnxNpdu::staticMetaObject.indexOfEnumerator("TransportControlField");
-    typeEnum = QKnxNpdu::staticMetaObject.enumerator(index);
+    index = QKnxTpdu::staticMetaObject.indexOfEnumerator("TransportControlField");
+    typeEnum = QKnxTpdu::staticMetaObject.enumerator(index);
     if (!typeEnum.isValid())
         return;
 

@@ -49,7 +49,8 @@ QT_BEGIN_NAMESPACE
         \li The \l QKnxExtendedControlField
         \li The \l QKnxAddress source address
         \li The \l QKnxAddress destination address
-        \li The \l QKnxNpdu NPDU (payload)
+        \li Depends on the medium and frame: Address type, LSDU, TPDU Length
+        \li The \l QKnxTpdu TPDU (payload)
     \endlist
 */
 

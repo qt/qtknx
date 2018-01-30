@@ -28,7 +28,7 @@
 ******************************************************************************/
 
 #include "qknxtunnelframefactory.h"
-#include "qknxnpdufactory.h"
+#include "qknxtpdufactory.h"
 
 QT_BEGIN_NAMESPACE
 
@@ -63,7 +63,7 @@ static QKnxControlField setupControlField(
 
 static QKnxTunnelFrame createFrame(QKnxTunnelFrame::MessageCode code, const QKnxControlField &ctrl,
     const QKnxExtendedControlField &extCtrl, const QKnxAddress &src, const QKnxAddress &dest,
-    const QKnxNpdu &npdu)
+    const QKnxTpdu &tpdu)
 {
     if (dest.type() != extCtrl.destinationAddressType())
         return {};
@@ -74,7 +74,7 @@ static QKnxTunnelFrame createFrame(QKnxTunnelFrame::MessageCode code, const QKnx
     frame.setSourceAddress(src);
     frame.setControlField(ctrl);
     frame.setExtendedControlField(extCtrl);
-    frame.setNpdu(npdu);
+    frame.setTpdu(tpdu);
     return frame;
 }
 
@@ -102,7 +102,7 @@ QKnxTunnelFrame QKnxTunnelFrameFactory::GroupValue::createReadRequest(const QKnx
         return {};
 
     return createFrame(QKnxTunnelFrame::MessageCode::DataRequest, ctrl, extCtrl, src, dest,
-        QKnxNpduFactory::Multicast::createGroupValueReadNpdu());
+        QKnxTpduFactory::Multicast::createGroupValueReadTpdu());
 }
 
 QKnxTunnelFrame QKnxTunnelFrameFactory::GroupValue::createReadConfirmation(const QKnxAddress &src,
@@ -119,7 +119,7 @@ QKnxTunnelFrame QKnxTunnelFrameFactory::GroupValue::createReadConfirmation(const
         return {};
 
     return createFrame(QKnxTunnelFrame::MessageCode::DataConfirmation, ctrl, extCtrl, src, dest,
-        QKnxNpduFactory::Multicast::createGroupValueReadNpdu());
+        QKnxTpduFactory::Multicast::createGroupValueReadTpdu());
 }
 
 QKnxTunnelFrame QKnxTunnelFrameFactory::GroupValue::createReadIndication(const QKnxAddress &src,
@@ -136,7 +136,7 @@ QKnxTunnelFrame QKnxTunnelFrameFactory::GroupValue::createReadIndication(const Q
         return {};
 
     return createFrame(QKnxTunnelFrame::MessageCode::DataIndication, ctrl, extCtrl, src, dest,
-        QKnxNpduFactory::Multicast::createGroupValueReadNpdu());
+        QKnxTpduFactory::Multicast::createGroupValueReadTpdu());
 }
 
 
@@ -156,11 +156,11 @@ QKnxTunnelFrame QKnxTunnelFrameFactory::GroupValue::createResponseRequest(const 
     if (!groupValueArgumentsValid(src, dest, extCtrl))
         return {};
 
-    auto npdu = QKnxNpduFactory::Multicast::createGroupValueResponseNpdu(data);
-    if (!npdu.isValid())
+    auto tpdu = QKnxTpduFactory::Multicast::createGroupValueResponseTpdu(data);
+    if (!tpdu.isValid())
         return {};
 
-    return createFrame(QKnxTunnelFrame::MessageCode::DataRequest, ctrl, extCtrl, src, dest, npdu);
+    return createFrame(QKnxTunnelFrame::MessageCode::DataRequest, ctrl, extCtrl, src, dest, tpdu);
 }
 
 QKnxTunnelFrame QKnxTunnelFrameFactory::GroupValue::createResponseConfirmation(const QKnxAddress &src,
@@ -177,12 +177,12 @@ QKnxTunnelFrame QKnxTunnelFrameFactory::GroupValue::createResponseConfirmation(c
     if (!groupValueArgumentsValid(src, dest, extCtrl))
         return {};
 
-    auto npdu = QKnxNpduFactory::Multicast::createGroupValueResponseNpdu(data);
-    if (!npdu.isValid())
+    auto tpdu = QKnxTpduFactory::Multicast::createGroupValueResponseTpdu(data);
+    if (!tpdu.isValid())
         return {};
 
     return createFrame(QKnxTunnelFrame::MessageCode::DataConfirmation, ctrl, extCtrl, src, dest,
-        npdu);
+        tpdu);
 }
 
 QKnxTunnelFrame QKnxTunnelFrameFactory::GroupValue::createResponseIndication(const QKnxAddress &src,
@@ -199,12 +199,12 @@ QKnxTunnelFrame QKnxTunnelFrameFactory::GroupValue::createResponseIndication(con
     if (!groupValueArgumentsValid(src, dest, extCtrl))
         return {};
 
-    auto npdu = QKnxNpduFactory::Multicast::createGroupValueResponseNpdu(data);
-    if (!npdu.isValid())
+    auto tpdu = QKnxTpduFactory::Multicast::createGroupValueResponseTpdu(data);
+    if (!tpdu.isValid())
         return {};
 
     return createFrame(QKnxTunnelFrame::MessageCode::DataIndication, ctrl, extCtrl, src, dest,
-        npdu);
+        tpdu);
 }
 
 
@@ -224,11 +224,11 @@ QKnxTunnelFrame QKnxTunnelFrameFactory::GroupValue::createWriteRequest(const QKn
     if (!groupValueArgumentsValid(src, dest, extCtrl))
         return {};
 
-    auto npdu = QKnxNpduFactory::Multicast::createGroupValueWriteNpdu(data);
-    if (!npdu.isValid())
+    auto tpdu = QKnxTpduFactory::Multicast::createGroupValueWriteTpdu(data);
+    if (!tpdu.isValid())
         return {};
 
-    return createFrame(QKnxTunnelFrame::MessageCode::DataRequest, ctrl, extCtrl, src, dest, npdu);
+    return createFrame(QKnxTunnelFrame::MessageCode::DataRequest, ctrl, extCtrl, src, dest, tpdu);
 }
 
 QKnxTunnelFrame QKnxTunnelFrameFactory::GroupValue::createWriteConfirmation(const QKnxAddress &src,
@@ -245,12 +245,12 @@ QKnxTunnelFrame QKnxTunnelFrameFactory::GroupValue::createWriteConfirmation(cons
     if (!groupValueArgumentsValid(src, dest, extCtrl))
         return {};
 
-    auto npdu = QKnxNpduFactory::Multicast::createGroupValueWriteNpdu(data);
-    if (!npdu.isValid())
+    auto tpdu = QKnxTpduFactory::Multicast::createGroupValueWriteTpdu(data);
+    if (!tpdu.isValid())
         return {};
 
     return createFrame(QKnxTunnelFrame::MessageCode::DataConfirmation, ctrl, extCtrl, src, dest,
-        npdu);
+        tpdu);
 }
 
 QKnxTunnelFrame QKnxTunnelFrameFactory::GroupValue::createWriteIndication(const QKnxAddress &src,
@@ -267,12 +267,12 @@ QKnxTunnelFrame QKnxTunnelFrameFactory::GroupValue::createWriteIndication(const 
     if (!groupValueArgumentsValid(src, dest, extCtrl))
         return {};
 
-    auto npdu = QKnxNpduFactory::Multicast::createGroupValueWriteNpdu(data);
-    if (!npdu.isValid())
+    auto tpdu = QKnxTpduFactory::Multicast::createGroupValueWriteTpdu(data);
+    if (!tpdu.isValid())
         return {};
 
     return createFrame(QKnxTunnelFrame::MessageCode::DataIndication, ctrl, extCtrl, src, dest,
-        npdu);
+        tpdu);
 }
 
 

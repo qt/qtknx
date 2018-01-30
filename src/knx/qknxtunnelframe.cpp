@@ -59,12 +59,12 @@ QT_BEGIN_NAMESPACE
     connection, so only the previously mentioned message code should be used.
 
     The message code is also to be chosen depending on the application service
-    (encoded with the \l QKnxNpdu::ApplicationControlField) hold in the \l QKnxNpdu.
-    In the \l QKnxNpduFactory, the application services are split into categories
+    (encoded with the \l QKnxTpdu::ApplicationControlField) hold in the \l QKnxTpdu.
+    In the \l QKnxTpduFactory, the application services are split into categories
     depending on the addressing method.
 
     The most basic functionalities are to be addressed with set of services built
-    in \l QKnxNpduFactory::Multicast. For those services one should use
+    in \l QKnxTpduFactory::Multicast. For those services one should use
     DataRequest (L_Data.req), DataConfirmation (L_Data.con) or DataIndication
     (L_Data.ind) as QKnxTunnelFrame message code.
 */
@@ -85,8 +85,8 @@ bool QKnxTunnelFrame::isValid() const
     //Extended control field destination address type corresponds to the destination address
     if (destinationAddress().type() != extendedControlField().destinationAddressType())
         return false;
-    // Npdu is valid
-    if (! npdu().isValid())
+    // Tpdu is valid
+    if (! tpdu().isValid())
         return false;
 
     switch (messageCode()) {
@@ -100,13 +100,13 @@ bool QKnxTunnelFrame::isValid() const
     default:
         break;
     }
-    // TODO: check NPDU size, several cases need to be taken into account:
-    // 1; Information-Length (max. value is 255); number of NPDU octets, TPCI octet not included!
+    // TODO: check NPDU/ TPDU size, several cases need to be taken into account:
+    // 1; Information-Length (max. value is 255); number of TPDU octets, TPCI octet not included!
     if (controlField().frameType() == QKnxControlField::FrameType::Extended
-        && npdu().size() > 257)
+        && tpdu().size() > 257)
         return false;
     // Low Priority is Mandatory for long frame 3.3.2 paragraph 2.2.3
-    if (npdu().size() > 17 && controlField().priority() != QKnxControlField::Priority::Low)
+    if (tpdu().size() > 17 && controlField().priority() != QKnxControlField::Priority::Low)
         return false;
     // 2; Check presence of Pl/RF medium information in the additional info -> size always needs
     //    to be greater then 15 bytes because both need additional information.
@@ -116,7 +116,7 @@ bool QKnxTunnelFrame::isValid() const
     // 4; 03_03_02 Data Link Layer General v01.02.02 AS.pdf page 12 paragraph 2.2.5
     // control field frame type standard -> max. length value is 15
     if (controlField().frameType() == QKnxControlField::FrameType::Standard
-        && npdu().byte(0) > 15)
+        && tpdu().byte(0) > 15)
         return false;
     //  control field frame type extended -> max. length value is 255
 
@@ -256,21 +256,22 @@ void QKnxTunnelFrame::setDestinationAddress(const QKnxAddress &destination)
     setServiceInformation(payload);
 }
 
-QKnxNpdu QKnxTunnelFrame::npdu() const
+QKnxTpdu QKnxTunnelFrame::tpdu() const
 {
     // TODO: In RF-Frames the length field is set to 0x00, figure out how this fits in here.
     // See 03_06_03 EMI_IMI, paragraph 4.1.5.3.1 Implementation and usage, page 75, Note 1,2,3
 
     // length field + ctrl + extCtrl + 2 * KNX address -> 7 bytes
-    const quint8 npduOffset = additionalInfosSize() + 7 /* bytes */;
-    return QKnxNpdu::fromBytes(serviceInformationRef(), npduOffset, (size() - 1) - npduOffset);
+    const quint8 tpduOffset = additionalInfosSize() + 7 + 1/* bytes */;
+    return QKnxTpdu::fromBytes(serviceInformationRef(), tpduOffset, (size() - 1) - tpduOffset);
 }
 
-void QKnxTunnelFrame::setNpdu(const QKnxNpdu &npdu)
+void QKnxTunnelFrame::setTpdu(const QKnxTpdu &tpdu)
 {
     auto info = serviceInformation();
     info.resize(additionalInfosSize() + 7); // length field + ctrl + extCtrl + 2 * KNX address
-    info.appendBytes(npdu.bytes());
+    info.setByte(additionalInfosSize() + 7, tpdu.dataSize());
+    info.appendBytes(tpdu.bytes());
     setServiceInformation(info);
 }
 

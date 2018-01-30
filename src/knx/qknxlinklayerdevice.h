@@ -36,10 +36,9 @@
 #include <QtKnx/qknxaddress.h>
 #include <QtKnx/qknxconnectioninfo.h>
 #include <QtKnx/qknxdeviceconfiguration.h>
-#include <QtKnx/qknxnpdu.h>
+#include <QtKnx/qknxtpdu.h>
 #include <QtKnx/qknxtunnelframe.h>
 
-using QKnxTpdu = QKnxNpdu;
 using QKnxLinkLayerFrame = QKnxTunnelFrame;
 
 QT_BEGIN_NAMESPACE

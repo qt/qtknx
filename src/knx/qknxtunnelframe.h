@@ -36,7 +36,7 @@
 #include <QtKnx/qknxcontrolfield.h>
 #include <QtKnx/qknxextendedcontrolfield.h>
 #include <QtKnx/qknxglobal.h>
-#include <QtKnx/qknxnpdu.h>
+#include <QtKnx/qknxtpdu.h>
 
 QT_BEGIN_NAMESPACE
 
@@ -92,8 +92,8 @@ public:
     const QKnxAddress destinationAddress() const;
     void setDestinationAddress(const QKnxAddress &address);
 
-    QKnxNpdu npdu() const;
-    void setNpdu(const QKnxNpdu &npdu);
+    QKnxTpdu tpdu() const;
+    void setTpdu(const QKnxTpdu &tpdu);
 
     QKnxTunnelFrame(const QKnxCemiFrame &other);
 };

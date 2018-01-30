@@ -34,11 +34,9 @@
 
 #include <QtKnx/qknxaddress.h>
 #include <QtKnx/qknxlinklayerdevice.h>
-#include <QtKnx/qknxnpdu.h>
+#include <QtKnx/qknxtpdu.h>
 #include <QtKnx/qknxconnectioninfo.h>
 #include <QtKnx/qknxdeviceconfiguration.h>
-
-using QKnxTpdu = QKnxNpdu;
 
 QT_BEGIN_NAMESPACE
 

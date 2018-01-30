@@ -27,8 +27,8 @@
 **
 ******************************************************************************/
 
-#ifndef QKNXNPDU_H
-#define QKNXNPDU_H
+#ifndef QKNXTPDU_H
+#define QKNXTPDU_H
 
 #include <QtCore/qbytearray.h>
 #include <QtCore/qvector.h>
@@ -39,9 +39,9 @@
 
 QT_BEGIN_NAMESPACE
 
-class QKnxNpduFactory;
+class QKnxTpduFactory;
 
-class Q_KNX_EXPORT QKnxNpdu final : private QKnxByteStore
+class Q_KNX_EXPORT QKnxTpdu final : private QKnxByteStore
 {
     Q_GADGET
 
@@ -161,20 +161,19 @@ public:
         DomainAddressSerialNumberWrite = 0x03ee,
         FileStreamInfoReport = 0x03f0,
 
-        Invalid = 0xffff
+        Invalid = 0x00ff
     };
     Q_ENUM(ApplicationControlField)
 
     ApplicationControlField applicationControlField() const;
     void setApplicationControlField(ApplicationControlField apci);
 
-    QKnxNpdu() = default;
-    ~QKnxNpdu() override = default;
+    ~QKnxTpdu() override = default;
 
-    explicit QKnxNpdu(TransportControlField tpci);
-    QKnxNpdu(TransportControlField tpci, ApplicationControlField apci);
-    QKnxNpdu(TransportControlField tpci, ApplicationControlField apci, const QByteArray &data);
-    QKnxNpdu(TransportControlField tpci, ApplicationControlField apci, quint8 seqNumber,
+    explicit QKnxTpdu(TransportControlField tpci);
+    QKnxTpdu(TransportControlField tpci, ApplicationControlField apci);
+    QKnxTpdu(TransportControlField tpci, ApplicationControlField apci, const QByteArray &data);
+    QKnxTpdu(TransportControlField tpci, ApplicationControlField apci, quint8 seqNumber,
         const QByteArray &data = {});
 
     bool isValid() const;
@@ -187,25 +186,22 @@ public:
     void setData(const QByteArray &data);
 
     template <typename T, std::size_t S = 0>
-        static QKnxNpdu fromBytes(const T &type, quint16 index, quint8 size = 0)
+        static QKnxTpdu fromBytes(const T &data, quint16 index, quint8 size)
     {
         static_assert(is_type<T, QByteArray, QVector<quint8>, QKnxByteStoreRef, std::deque<quint8>,
             std::vector<quint8>, std::array<quint8, S>>::value, "Type not supported.");
 
-        const qint32 availableSize = type.size() - index;
-        if (availableSize < 1) // size field is missing
-            return {};
-
-        // see 03_06_03 EMI_IMI, paragraph 4.1.5.3.1 Implementation and usage
-        // read NPDU size, can be 0x00 in case of RF-frames and then the size needs to be passed
-        quint8 npduSize = qMax<quint8>(type[index] + 2, size); // TODO: RF-frame handling
-        if (npduSize == 255 || npduSize > availableSize) // 255 escape-code, or missing bytes
-            return {};
-
-        QKnxNpdu npdu;
-        auto begin = std::next(std::begin(type), index);
-        npdu.setBytes(begin, std::next(begin, npduSize));
-        return npdu;
+        const qint32 availableSize = (data.size() - index) - size;
+        // data is not big enough according to the given size to be read
+        // data is too big (bigger than an extended frame) 255 = 254(max length) + 1 byte(TPCI/APCI)
+        if (availableSize < 0 || size > 255)
+            return {QKnxTpdu::TransportControlField::Invalid,
+                QKnxTpdu::ApplicationControlField::Invalid};
+        QKnxTpdu tpdu{QKnxTpdu::TransportControlField::Invalid,
+            QKnxTpdu::ApplicationControlField::Invalid};
+        auto begin = std::next(std::begin(data), index);
+        tpdu.setBytes(begin, std::next(begin, size));
+        return tpdu;
     }
 
     using QKnxByteStore::size;
@@ -213,12 +209,12 @@ public:
     using QKnxByteStore::bytes;
     using QKnxByteStore::toString;
 };
-Q_DECLARE_TYPEINFO(QKnxNpdu::ErrorCode, Q_PRIMITIVE_TYPE);
-Q_DECLARE_TYPEINFO(QKnxNpdu::ResetType, Q_PRIMITIVE_TYPE);
-Q_DECLARE_TYPEINFO(QKnxNpdu::EraseCode, Q_PRIMITIVE_TYPE);
-Q_DECLARE_TYPEINFO(QKnxNpdu::LinkWriteFlags, Q_PRIMITIVE_TYPE);
-Q_DECLARE_TYPEINFO(QKnxNpdu::TransportControlField, Q_PRIMITIVE_TYPE);
-Q_DECLARE_TYPEINFO(QKnxNpdu::ApplicationControlField, Q_PRIMITIVE_TYPE);
+Q_DECLARE_TYPEINFO(QKnxTpdu::ErrorCode, Q_PRIMITIVE_TYPE);
+Q_DECLARE_TYPEINFO(QKnxTpdu::ResetType, Q_PRIMITIVE_TYPE);
+Q_DECLARE_TYPEINFO(QKnxTpdu::EraseCode, Q_PRIMITIVE_TYPE);
+Q_DECLARE_TYPEINFO(QKnxTpdu::LinkWriteFlags, Q_PRIMITIVE_TYPE);
+Q_DECLARE_TYPEINFO(QKnxTpdu::TransportControlField, Q_PRIMITIVE_TYPE);
+Q_DECLARE_TYPEINFO(QKnxTpdu::ApplicationControlField, Q_PRIMITIVE_TYPE);
 
 QT_END_NAMESPACE
 

@@ -43,7 +43,7 @@ QT_BEGIN_NAMESPACE
     functionality. It describes the data, setting the rules about the format
     and values to be allowed, and it holds the bytes containing the data.
 
-    This data is used in the data part of the \l QKnxNpdu class. To retrieve
+    This data is used in the data part of the \l QKnxTpdu class. To retrieve
     the data of a data point type, call bytes().
 
     There are two types of a QKnxDatapointType: \l QKnxFixedSizeDatapointType

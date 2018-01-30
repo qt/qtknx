@@ -28,7 +28,7 @@
 
 #include <QtCore/qdebug.h>
 #include <QtKnx/qknxtunnelframe.h>
-#include <QtKnx/qknxnpdufactory.h>
+#include <QtKnx/qknxtpdufactory.h>
 #include <QtTest/qtest.h>
 
 static QString s_msg;
@@ -81,7 +81,7 @@ private slots:
         QCOMPARE(frame.destinationAddress().bytes(), QKnxAddress::Group::Broadcast.bytes());
     }
 
-    void testNpduFetcher()
+    void testTpduFetcher()
     {
         QVector<QKnxAdditionalInfo> addInfos = {
             { QKnxAdditionalInfo::Type::BiBatInformation, QByteArray::fromHex("1020") },
@@ -96,21 +96,21 @@ private slots:
         frame.setSourceAddress(QKnxAddress::Individual::Unregistered);
         frame.setDestinationAddress(QKnxAddress::Group::Broadcast);
 
-        QKnxNpdu npdu = QKnxNpduFactory::Multicast::createGroupValueWriteNpdu(
+        QKnxTpdu tpdu = QKnxTpduFactory::Multicast::createGroupValueWriteTpdu(
             QByteArray::fromHex("01"));
-        QCOMPARE(npdu.bytes(), QByteArray::fromHex("010081"));
-        frame.setNpdu(npdu);
-        QCOMPARE(frame.npdu().bytes(), QByteArray::fromHex("010081"));
-        QKnxNpdu npdu2 = QKnxNpduFactory::Multicast::createGroupValueWriteNpdu(
+        QCOMPARE(tpdu.bytes(), QByteArray::fromHex("0081"));
+        frame.setTpdu(tpdu);
+        QCOMPARE(frame.tpdu().bytes(), QByteArray::fromHex("0081"));
+        QKnxTpdu tpdu2 = QKnxTpduFactory::Multicast::createGroupValueWriteTpdu(
             QByteArray::fromHex("0101"));
-        QCOMPARE(npdu2.bytes(), QByteArray::fromHex("0300800101"));
-        frame.setNpdu(npdu2);
-        QCOMPARE(frame.npdu().bytes(), QByteArray::fromHex("0300800101"));
-        QKnxNpdu npdu4 = QKnxNpduFactory::Multicast::createGroupValueWriteNpdu(
+        QCOMPARE(tpdu2.bytes(), QByteArray::fromHex("00800101"));
+        frame.setTpdu(tpdu2);
+        QCOMPARE(frame.tpdu().bytes(), QByteArray::fromHex("00800101"));
+        QKnxTpdu tpdu4 = QKnxTpduFactory::Multicast::createGroupValueWriteTpdu(
             QByteArray::fromHex("ff"));
-        QCOMPARE(npdu4.bytes(), QByteArray::fromHex("020080ff"));
-        frame.setNpdu(npdu4);
-        QCOMPARE(frame.npdu().bytes(), QByteArray::fromHex("020080ff"));
+        QCOMPARE(tpdu4.bytes(), QByteArray::fromHex("0080ff"));
+        frame.setTpdu(tpdu4);
+        QCOMPARE(frame.tpdu().bytes(), QByteArray::fromHex("0080ff"));
     }
 
     void testDebugStream()

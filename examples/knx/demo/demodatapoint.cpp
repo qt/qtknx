@@ -53,8 +53,8 @@
 #include <QtCore/QTimer>
 #include <QtGui/QColor>
 #include <QtKnx/QKnx1Bit>
-#include <QtKnx/QKnxNpdu>
-#include <QtKnx/QKnxNpduFactory>
+#include <QtKnx/QKnxTpdu>
+#include <QtKnx/QKnxTpduFactory>
 #include <QtKnx/QKnxTunnelFrame>
 
 const QByteArray DemoDataPoint::BytesOn = QByteArray::fromHex("0x1");
@@ -99,7 +99,7 @@ bool DemoColorLed::updateDataPointState(const QKnxTunnelFrame &frame)
     }
 
     QKnxSwitch dpt;
-    dpt.setBytes(frame.npdu().data(), 0, 1);
+    dpt.setBytes(frame.tpdu().data(), 0, 1);
     int value = (dpt.value() == QKnxSwitch::State::On ? 255 : 0);
 
     auto dstAddress = frame.destinationAddress();
@@ -178,12 +178,12 @@ void DemoBlindDataPoint::chooseTimeoutHandle(bool blindUp)
 
 bool DemoBlindDataPoint::updateDataPointState(const QKnxTunnelFrame &frame)
 {
-    auto npdu = frame.npdu();
+    auto tpdu = frame.tpdu();
     if (frame.destinationAddress().toString() == "1/0/0") {
         stopBlind();
 
         QKnx1Bit dpt;
-        dpt.setBytes(frame.npdu().data(), 0, 1);
+        dpt.setBytes(frame.tpdu().data(), 0, 1);
 
         chooseTimeoutHandle(dpt.bit());
         reenableTimer();

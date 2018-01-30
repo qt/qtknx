@@ -54,9 +54,9 @@
 #include "demodatapoint.h"
 
 #include <QtKnx/QKnxAddress>
-#include <QtKnx/QKnxNpduFactory>
+#include <QtKnx/QKnxTpduFactory>
 
-QKnxTunnelFrame createRequestFrame(const QKnxAddress &address, const QKnxNpdu &npdu,
+QKnxTunnelFrame createRequestFrame(const QKnxAddress &address, const QKnxTpdu &tpdu,
     quint8 ctrl = 0xac, quint8 extCtrl = 0xe0)
 {
     QKnxTunnelFrame frame(QKnxTunnelFrame::MessageCode::DataRequest);
@@ -64,7 +64,7 @@ QKnxTunnelFrame createRequestFrame(const QKnxAddress &address, const QKnxNpdu &n
     frame.setExtendedControlField(QKnxExtendedControlField(extCtrl));
     frame.setSourceAddress({ QKnxAddress::Type::Group, 0 });
     frame.setDestinationAddress(address);
-    frame.setNpdu(npdu);
+    frame.setTpdu(tpdu);
     return frame;
 }
 
@@ -72,26 +72,26 @@ void sendGroupValueWrite(QmlKnxTunnel &tunnel, const QKnxAddress &address,
     const QByteArray &data, quint8 ctrl = 0xa4, quint8 extCtrl = 0xe0)
 {
     tunnel.sendTunnelFrame(createRequestFrame(address,
-        QKnxNpduFactory::Multicast::createGroupValueWriteNpdu(data), ctrl, extCtrl));
+        QKnxTpduFactory::Multicast::createGroupValueWriteTpdu(data), ctrl, extCtrl));
 }
 
 void sendColorLedGroupValueWriteFrames(QmlKnxTunnel &tunnel, const DemoColorLed *const dpt)
 {
     if (dpt) {
         tunnel.sendTunnelFrame(createRequestFrame(QKnxAddress::createGroup(0, 0, 12),
-            QKnxNpduFactory::Multicast::createGroupValueWriteNpdu(dpt->redBytes())));
+            QKnxTpduFactory::Multicast::createGroupValueWriteTpdu(dpt->redBytes())));
 
         tunnel.sendTunnelFrame(createRequestFrame(QKnxAddress::createGroup(0, 0, 13),
-            QKnxNpduFactory::Multicast::createGroupValueWriteNpdu(dpt->greenBytes())));
+            QKnxTpduFactory::Multicast::createGroupValueWriteTpdu(dpt->greenBytes())));
 
         tunnel.sendTunnelFrame(createRequestFrame(QKnxAddress::createGroup(0, 0, 14),
-            QKnxNpduFactory::Multicast::createGroupValueWriteNpdu(dpt->blueBytes())));
+            QKnxTpduFactory::Multicast::createGroupValueWriteTpdu(dpt->blueBytes())));
     }
 }
 
 void initBoard(EtsDevelopmentBoard &board, QmlKnxTunnel &tunnel)
 {
-    auto npdu = QKnxNpduFactory::Multicast::createGroupValueReadNpdu();
+    auto tpdu = QKnxTpduFactory::Multicast::createGroupValueReadTpdu();
     for (int i = 1; i <= board.size(); ++i) {
         if (i >= 9 && i <= 12)
             continue; // skip red leds readings because they are not indicating the state!
@@ -99,11 +99,11 @@ void initBoard(EtsDevelopmentBoard &board, QmlKnxTunnel &tunnel)
             continue; // skip checking blinds state
 
         if (QKnxAddress::createGroup(0, 0, 12) == board.getAddress(i)) {
-            tunnel.sendTunnelFrame(createRequestFrame(QKnxAddress::createGroup(0, 0, 12), npdu));
-            tunnel.sendTunnelFrame(createRequestFrame(QKnxAddress::createGroup(0, 0, 13), npdu));
-            tunnel.sendTunnelFrame(createRequestFrame(QKnxAddress::createGroup(0, 0, 14), npdu));
+            tunnel.sendTunnelFrame(createRequestFrame(QKnxAddress::createGroup(0, 0, 12), tpdu));
+            tunnel.sendTunnelFrame(createRequestFrame(QKnxAddress::createGroup(0, 0, 13), tpdu));
+            tunnel.sendTunnelFrame(createRequestFrame(QKnxAddress::createGroup(0, 0, 14), tpdu));
         } else {
-            tunnel.sendTunnelFrame(createRequestFrame(board.getAddress(i), npdu, 0xa4));
+            tunnel.sendTunnelFrame(createRequestFrame(board.getAddress(i), tpdu, 0xa4));
         }
     }
 }
