@@ -143,14 +143,14 @@ QKnxTunnelFrame QKnxTunnelFrameFactory::GroupValue::createReadIndication(const Q
 // -- A_GroupValueResponse
 
 QKnxTunnelFrame QKnxTunnelFrameFactory::GroupValue::createResponseRequest(const QKnxAddress &src,
-    const QKnxAddress &dest, const QByteArray &data)
+    const QKnxAddress &dest, const QVector<quint8> &data)
 {
     return createResponseRequest(src, dest, data, createRequestControlField(),
         createExtentedControlField());
 }
 
 QKnxTunnelFrame QKnxTunnelFrameFactory::GroupValue::createResponseRequest(const QKnxAddress &src,
-    const QKnxAddress &dest, const QByteArray &data, const QKnxControlField &ctrl,
+    const QKnxAddress &dest, const QVector<quint8> &data, const QKnxControlField &ctrl,
     const QKnxExtendedControlField &extCtrl)
 {
     if (!groupValueArgumentsValid(src, dest, extCtrl))
@@ -164,14 +164,14 @@ QKnxTunnelFrame QKnxTunnelFrameFactory::GroupValue::createResponseRequest(const 
 }
 
 QKnxTunnelFrame QKnxTunnelFrameFactory::GroupValue::createResponseConfirmation(const QKnxAddress &src,
-    const QKnxAddress &dest, const QByteArray &data, QKnxControlField::Confirm status)
+    const QKnxAddress &dest, const QVector<quint8> &data, QKnxControlField::Confirm status)
 {
     return createResponseConfirmation(src, dest, data, createConfirmationControlField(status),
         createExtentedControlField());
 }
 
 QKnxTunnelFrame QKnxTunnelFrameFactory::GroupValue::createResponseConfirmation(const QKnxAddress &src,
-    const QKnxAddress &dest, const QByteArray &data, const QKnxControlField &ctrl,
+    const QKnxAddress &dest, const QVector<quint8> &data, const QKnxControlField &ctrl,
     const QKnxExtendedControlField &extCtrl)
 {
     if (!groupValueArgumentsValid(src, dest, extCtrl))
@@ -186,14 +186,14 @@ QKnxTunnelFrame QKnxTunnelFrameFactory::GroupValue::createResponseConfirmation(c
 }
 
 QKnxTunnelFrame QKnxTunnelFrameFactory::GroupValue::createResponseIndication(const QKnxAddress &src,
-    const QKnxAddress &dest, const QByteArray &data)
+    const QKnxAddress &dest, const QVector<quint8> &data)
 {
     return createResponseIndication(src, dest, data, createIndicationControlField(),
         createExtentedControlField());
 }
 
 QKnxTunnelFrame QKnxTunnelFrameFactory::GroupValue::createResponseIndication(const QKnxAddress &src,
-    const QKnxAddress &dest, const QByteArray &data, const QKnxControlField &ctrl,
+    const QKnxAddress &dest, const QVector<quint8> &data, const QKnxControlField &ctrl,
     const QKnxExtendedControlField &extCtrl)
 {
     if (!groupValueArgumentsValid(src, dest, extCtrl))
@@ -211,14 +211,14 @@ QKnxTunnelFrame QKnxTunnelFrameFactory::GroupValue::createResponseIndication(con
 // -- A_GroupValueWrite
 
 QKnxTunnelFrame QKnxTunnelFrameFactory::GroupValue::createWriteRequest(const QKnxAddress &src,
-    const QKnxAddress &dest, const QByteArray &data)
+    const QKnxAddress &dest, const QVector<quint8> &data)
 {
     return createWriteRequest(src, dest, data, createRequestControlField(),
         createExtentedControlField());
 }
 
 QKnxTunnelFrame QKnxTunnelFrameFactory::GroupValue::createWriteRequest(const QKnxAddress &src,
-    const QKnxAddress &dest, const QByteArray &data, const QKnxControlField &ctrl,
+    const QKnxAddress &dest, const QVector<quint8> &data, const QKnxControlField &ctrl,
     const QKnxExtendedControlField &extCtrl)
 {
     if (!groupValueArgumentsValid(src, dest, extCtrl))
@@ -232,14 +232,14 @@ QKnxTunnelFrame QKnxTunnelFrameFactory::GroupValue::createWriteRequest(const QKn
 }
 
 QKnxTunnelFrame QKnxTunnelFrameFactory::GroupValue::createWriteConfirmation(const QKnxAddress &src,
-    const QKnxAddress &dest, const QByteArray &data, QKnxControlField::Confirm status)
+    const QKnxAddress &dest, const QVector<quint8> &data, QKnxControlField::Confirm status)
 {
     return createWriteConfirmation(src, dest, data, createConfirmationControlField(status),
         createExtentedControlField());
 }
 
 QKnxTunnelFrame QKnxTunnelFrameFactory::GroupValue::createWriteConfirmation(const QKnxAddress &src,
-    const QKnxAddress &dest, const QByteArray &data, const QKnxControlField &ctrl,
+    const QKnxAddress &dest, const QVector<quint8> &data, const QKnxControlField &ctrl,
     const QKnxExtendedControlField &extCtrl)
 {
     if (!groupValueArgumentsValid(src, dest, extCtrl))
@@ -254,14 +254,14 @@ QKnxTunnelFrame QKnxTunnelFrameFactory::GroupValue::createWriteConfirmation(cons
 }
 
 QKnxTunnelFrame QKnxTunnelFrameFactory::GroupValue::createWriteIndication(const QKnxAddress &src,
-    const QKnxAddress &dest, const QByteArray &data)
+    const QKnxAddress &dest, const QVector<quint8> &data)
 {
     return createWriteIndication(src, dest, data, createIndicationControlField(),
         createExtentedControlField());
 }
 
 QKnxTunnelFrame QKnxTunnelFrameFactory::GroupValue::createWriteIndication(const QKnxAddress &src,
-    const QKnxAddress &dest, const QByteArray &data, const QKnxControlField &ctrl,
+    const QKnxAddress &dest, const QVector<quint8> &data, const QKnxControlField &ctrl,
     const QKnxExtendedControlField &extCtrl)
 {
     if (!groupValueArgumentsValid(src, dest, extCtrl))

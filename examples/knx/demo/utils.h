@@ -69,7 +69,7 @@ QKnxTunnelFrame createRequestFrame(const QKnxAddress &address, const QKnxTpdu &t
 }
 
 void sendGroupValueWrite(QmlKnxTunnel &tunnel, const QKnxAddress &address,
-    const QByteArray &data, quint8 ctrl = 0xa4, quint8 extCtrl = 0xe0)
+    const QVector<quint8> &data, quint8 ctrl = 0xa4, quint8 extCtrl = 0xe0)
 {
     tunnel.sendTunnelFrame(createRequestFrame(address,
         QKnxTpduFactory::Multicast::createGroupValueWriteTpdu(data), ctrl, extCtrl));

@@ -66,21 +66,22 @@ void tst_QKnxTunnelFrameFactory::testGroupValueRead()
 
 void tst_QKnxTunnelFrameFactory::testGroupValueResponse()
 {
-    QByteArray data = QByteArray::fromHex("01");
     QKnxAddress src { QKnxAddress::Type::Individual, QString("1.1.1") };
     QKnxAddress destination { QKnxAddress::Type::Group, QString("0/0/2") };
     auto frame = QKnxTunnelFrameFactory::GroupValue::createResponseIndication(src, destination,
-        data);
+        QVector<quint8>(1, 0x01));
     QCOMPARE(frame.bytes(), QByteArray::fromHex("2900b4e011010002010041"));
     QCOMPARE(frame.extendedControlField().destinationAddressType(), QKnxAddress::Type::Group);
     QCOMPARE(frame.controlField().frameType(), QKnxControlField::FrameType::Standard);
 
-    frame = QKnxTunnelFrameFactory::GroupValue::createResponseRequest(src, destination, data);
+    frame = QKnxTunnelFrameFactory::GroupValue::createResponseRequest(src, destination,
+        QVector<quint8>(1, 0x01));
     QCOMPARE(frame.bytes(), QByteArray::fromHex("1100b4e011010002010041"));
     QCOMPARE(frame.extendedControlField().destinationAddressType(), QKnxAddress::Type::Group);
     QCOMPARE(frame.controlField().frameType(), QKnxControlField::FrameType::Standard);
 
-    frame = QKnxTunnelFrameFactory::GroupValue::createResponseConfirmation(src, destination, data);
+    frame = QKnxTunnelFrameFactory::GroupValue::createResponseConfirmation(src, destination,
+        QVector<quint8>(1, 0x01));
     QCOMPARE(frame.bytes(), QByteArray::fromHex("2e00b4e011010002010041"));
     QCOMPARE(frame.extendedControlField().destinationAddressType(), QKnxAddress::Type::Group);
     QCOMPARE(frame.controlField().frameType(), QKnxControlField::FrameType::Standard);
@@ -88,21 +89,22 @@ void tst_QKnxTunnelFrameFactory::testGroupValueResponse()
 
 void tst_QKnxTunnelFrameFactory::testGroupValueWrite()
 {
-    QByteArray data = QByteArray::fromHex("01");
     QKnxAddress source { QKnxAddress::Type::Individual, QString("1.1.1") };
     QKnxAddress destination { QKnxAddress::Type::Group, QString("0/0/2") };
     auto frame = QKnxTunnelFrameFactory::GroupValue::createWriteIndication(source, destination,
-        data);
+        QVector<quint8>(1, 0x01));
     QCOMPARE(frame.bytes(), QByteArray::fromHex("2900b4e011010002010081"));
     QCOMPARE(frame.extendedControlField().destinationAddressType(), QKnxAddress::Type::Group);
     QCOMPARE(frame.controlField().frameType(), QKnxControlField::FrameType::Standard);
 
-    frame = QKnxTunnelFrameFactory::GroupValue::createWriteRequest(source, destination, data);
+    frame = QKnxTunnelFrameFactory::GroupValue::createWriteRequest(source, destination,
+        QVector<quint8>(1, 0x01));
     QCOMPARE(frame.bytes(), QByteArray::fromHex("1100b4e011010002010081"));
     QCOMPARE(frame.extendedControlField().destinationAddressType(), QKnxAddress::Type::Group);
     QCOMPARE(frame.controlField().frameType(), QKnxControlField::FrameType::Standard);
 
-    frame = QKnxTunnelFrameFactory::GroupValue::createWriteConfirmation(source, destination, data);
+    frame = QKnxTunnelFrameFactory::GroupValue::createWriteConfirmation(source, destination,
+        QVector<quint8>(1, 0x01));
     QCOMPARE(frame.bytes(), QByteArray::fromHex("2e00b4e011010002010081"));
     QCOMPARE(frame.extendedControlField().destinationAddressType(), QKnxAddress::Type::Group);
     QCOMPARE(frame.controlField().frameType(), QKnxControlField::FrameType::Standard);

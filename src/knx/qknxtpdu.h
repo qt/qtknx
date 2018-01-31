@@ -173,9 +173,9 @@ public:
 
     explicit QKnxTpdu(TransportControlField tpci);
     QKnxTpdu(TransportControlField tpci, ApplicationControlField apci);
-    QKnxTpdu(TransportControlField tpci, ApplicationControlField apci, const QByteArray &data);
+    QKnxTpdu(TransportControlField tpci, ApplicationControlField apci, const QVector<quint8> &data);
     QKnxTpdu(TransportControlField tpci, ApplicationControlField apci, quint8 seqNumber,
-        const QByteArray &data = {});
+        const QVector<quint8> &data = {});
 
     QKnxTpdu(const QKnxTpdu &o);
     QKnxTpdu &operator=(const QKnxTpdu &o);
@@ -187,7 +187,7 @@ public:
     void setSequenceNumber(quint8 seqNumber);
 
     QVector<quint8> data() const;
-    void setData(const QByteArray &data);
+    void setData(const QVector<quint8> &data);
 
     static QKnxTpdu fromBytes(const QVector<quint8> &data, quint16 index, quint8 size)
     {

@@ -57,8 +57,8 @@
 #include <QtKnx/QKnxTpduFactory>
 #include <QtKnx/QKnxTunnelFrame>
 
-const QByteArray DemoDataPoint::BytesOn = QByteArray::fromHex("0x1");
-const QByteArray DemoDataPoint::BytesOff = QByteArray::fromHex("0x0");
+const QVector<quint8> DemoDataPoint::BytesOn = QVector<quint8>(1, 0x01);
+const QVector<quint8> DemoDataPoint::BytesOff = QVector<quint8>(1, 0x00);
 
 bool DemoSwitchDataPoint::updateDataPointState(const QKnxTunnelFrame &frame)
 {
@@ -77,7 +77,7 @@ bool DemoSwitchDataPoint::isOn() const
     return m_state;
 }
 
-QByteArray DemoSwitchDataPoint::bytes() const
+QVector<quint8> DemoSwitchDataPoint::bytes() const
 {
     if (m_state)
         return DemoDataPoint::BytesOn;
@@ -119,21 +119,21 @@ bool DemoColorLed::updateDataPointState(const QKnxTunnelFrame &frame)
     return false;
 }
 
-QByteArray DemoColorLed::redBytes() const
+QVector<quint8> DemoColorLed::redBytes() const
 {
     if (m_stateColor.red() > 0)
         return DemoDataPoint::BytesOn;
     return DemoDataPoint::BytesOff;
 }
 
-QByteArray DemoColorLed::greenBytes() const
+QVector<quint8> DemoColorLed::greenBytes() const
 {
     if (m_stateColor.green() > 0)
         return DemoDataPoint::BytesOn;
     return DemoDataPoint::BytesOff;
 }
 
-QByteArray DemoColorLed::blueBytes() const
+QVector<quint8> DemoColorLed::blueBytes() const
 {
     if (m_stateColor.blue() > 0)
         return DemoDataPoint::BytesOn;
@@ -227,19 +227,19 @@ void DemoBlindDataPoint::stopBlind()
         m_timer.stop();
 }
 
-QByteArray DemoBlindDataPoint::moveUpBytes() const
+QVector<quint8> DemoBlindDataPoint::moveUpBytes() const
 {
     // send a 0 to move up
     return DemoDataPoint::BytesOff;
 }
 
-QByteArray DemoBlindDataPoint::moveDownBytes() const
+QVector<quint8> DemoBlindDataPoint::moveDownBytes() const
 {
     // send a 1 to move down
     return DemoDataPoint::BytesOn;
 }
 
-QByteArray DemoBlindDataPoint::stopBytes() const
+QVector<quint8> DemoBlindDataPoint::stopBytes() const
 {
     // send a 1 to stop
     return DemoDataPoint::BytesOn;

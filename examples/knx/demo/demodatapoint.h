@@ -60,7 +60,7 @@ class DemoDataPoint
 public:
     virtual ~DemoDataPoint() = default;
 
-    virtual QByteArray bytes() const { return QByteArray(); }
+    virtual QVector<quint8> bytes() const { return QVector<quint8>(); }
     virtual bool updateDataPointState(const QKnxTunnelFrame &frame) = 0;
 
     int position() const { return m_position; }
@@ -69,8 +69,8 @@ public:
 protected:
     int m_position { 0 };
 
-    static const QByteArray BytesOn;
-    static const QByteArray BytesOff;
+    static const QVector<quint8> BytesOn;
+    static const QVector<quint8> BytesOff;
 };
 
 class DemoSwitchDataPoint : public DemoDataPoint
@@ -79,7 +79,7 @@ public:
     DemoSwitchDataPoint() = default;
     ~DemoSwitchDataPoint() override = default;
 
-    QByteArray bytes() const override;
+    QVector<quint8> bytes() const override;
     bool updateDataPointState(const QKnxTunnelFrame &frame) override;
 
     void uiToggle();
@@ -102,9 +102,9 @@ public:
     QColor currentColor() const;
     void setCurrentColor(QColor color);
 
-    QByteArray redBytes() const;
-    QByteArray greenBytes() const;
-    QByteArray blueBytes() const;
+    QVector<quint8> redBytes() const;
+    QVector<quint8> greenBytes() const;
+    QVector<quint8> blueBytes() const;
 
     bool isOn() const;
 
@@ -138,9 +138,9 @@ public:
 
     bool updateDataPointState(const QKnxTunnelFrame &frame) override;
 
-    QByteArray moveUpBytes() const;
-    QByteArray moveDownBytes() const;
-    QByteArray stopBytes() const;
+    QVector<quint8> moveUpBytes() const;
+    QVector<quint8> moveDownBytes() const;
+    QVector<quint8> stopBytes() const;
 
 public slots:
     void moveBlindUp();

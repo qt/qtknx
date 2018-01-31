@@ -200,7 +200,7 @@ public:
     void setApci();
     void setTpci();
     void setByte(quint16 index, quint8 byte);
-    void appendBytes(const QByteArray &bytesToAppend);
+    void appendBytes(const QVector<quint8> &bytesToAppend);
 };
 
 void QKnxTpduPrivate::setByte(quint16 index, quint8 byte)
@@ -272,8 +272,7 @@ void QKnxTpduPrivate::setTpci()
     return;
 }
 
-//TODO : replace QByteArray with QVector
-void QKnxTpduPrivate::appendBytes(const QByteArray &bytesToAppend)
+void QKnxTpduPrivate::appendBytes(const QVector<quint8> &bytesToAppend)
 {
     quint16 pos = quint16(m_tpduBytes.size());
     if (bytesToAppend.size() <= 0)
@@ -411,12 +410,12 @@ QKnxTpdu::QKnxTpdu(TransportControlField tpci, ApplicationControlField apci)
     setApplicationControlField(apci);
 }
 
-QKnxTpdu::QKnxTpdu(TransportControlField tpci, ApplicationControlField apci, const QByteArray &data)
+QKnxTpdu::QKnxTpdu(TransportControlField tpci, ApplicationControlField apci, const QVector<quint8> &data)
     : QKnxTpdu(tpci, apci, 0, data)
 {}
 
 QKnxTpdu::QKnxTpdu(TransportControlField tpci, ApplicationControlField apci, quint8 seqNumber,
-        const QByteArray &data)
+        const QVector<quint8> &data)
     : QKnxTpdu(tpci, apci)
 {
     setSequenceNumber(seqNumber);
@@ -597,7 +596,7 @@ QVector<quint8> QKnxTpdu::data() const
     return dataApci + bytes(2, dataSize() - 1);
 }
 
-void QKnxTpdu::setData(const QByteArray &data)
+void QKnxTpdu::setData(const QVector<quint8> &data)
 {
     // In those cases there should be no data.
     switch (transportControlField()) {

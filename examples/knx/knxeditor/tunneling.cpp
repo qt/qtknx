@@ -272,7 +272,10 @@ void Tunneling::updateFrame()
         ui->data->setEnabled(true);
         tpdu.setApplicationControlField(ui->apci->itemData(ui->apci->currentIndex())
             .value<QKnxTpdu::ApplicationControlField>());
-        tpdu.setData(QByteArray::fromHex(ui->data->text().toLatin1()));
+        QByteArray dataText = QByteArray::fromHex(ui->data->text().toLatin1());
+        QVector<quint8> foo(dataText.size(), 0);
+        std::copy(foo.begin(), foo.end(), dataText.begin());
+        tpdu.setData(foo);
     } else {
         ui->apci->setEnabled(false);
         ui->data->setEnabled(false);

@@ -62,41 +62,41 @@ public:
                             const QKnxExtendedControlField &extCtrl);
 
         static QKnxTunnelFrame createResponseRequest(const QKnxAddress &src,
-                            const QKnxAddress &dest, const QByteArray &data);
+                            const QKnxAddress &dest, const QVector<quint8> &data);
         static QKnxTunnelFrame createResponseRequest(const QKnxAddress &src,
-                            const QKnxAddress &dest, const QByteArray &data,
+                            const QKnxAddress &dest, const QVector<quint8> &data,
                             const QKnxControlField &ctrl, const QKnxExtendedControlField &extCtrl);
 
         static QKnxTunnelFrame createResponseConfirmation(const QKnxAddress &src,
-                            const QKnxAddress &dest, const QByteArray &data,
+                            const QKnxAddress &dest, const QVector<quint8> &data,
                             QKnxControlField::Confirm status = QKnxControlField::Confirm::NoError);
         static QKnxTunnelFrame createResponseConfirmation(const QKnxAddress &src,
-                            const QKnxAddress &dest, const QByteArray &data,
+                            const QKnxAddress &dest, const QVector<quint8> &data,
                             const QKnxControlField &ctrl, const QKnxExtendedControlField &extCtrl);
 
         static QKnxTunnelFrame createResponseIndication(const QKnxAddress &src,
-                            const QKnxAddress &dest, const QByteArray &data);
+                            const QKnxAddress &dest, const QVector<quint8> &data);
         static QKnxTunnelFrame createResponseIndication(const QKnxAddress &src,
-                            const QKnxAddress &dest, const QByteArray &data,
+                            const QKnxAddress &dest, const QVector<quint8> &data,
                             const QKnxControlField &ctrl, const QKnxExtendedControlField &extCtrl);
 
         static QKnxTunnelFrame createWriteRequest(const QKnxAddress &src, const QKnxAddress &dest,
-                            const QByteArray &data);
+                            const QVector<quint8> &data);
         static QKnxTunnelFrame createWriteRequest(const QKnxAddress &src, const QKnxAddress &dest,
-                            const QByteArray &data, const QKnxControlField &ctrl,
+                            const QVector<quint8> &data, const QKnxControlField &ctrl,
                             const QKnxExtendedControlField &extCtrl);
 
         static QKnxTunnelFrame createWriteConfirmation(const QKnxAddress &src,
-                            const QKnxAddress &dest, const QByteArray &data,
+                            const QKnxAddress &dest, const QVector<quint8> &data,
                             QKnxControlField::Confirm status = QKnxControlField::Confirm::NoError);
         static QKnxTunnelFrame createWriteConfirmation(const QKnxAddress &src,
-                            const QKnxAddress &dest, const QByteArray &data,
+                            const QKnxAddress &dest, const QVector<quint8> &data,
                             const QKnxControlField &ctrl, const QKnxExtendedControlField &extCtrl);
 
         static QKnxTunnelFrame createWriteIndication(const QKnxAddress &src,
-                            const QKnxAddress &dest, const QByteArray &data);
+                            const QKnxAddress &dest, const QVector<quint8> &data);
         static QKnxTunnelFrame createWriteIndication(const QKnxAddress &src,
-                            const QKnxAddress &dest, const QByteArray &data,
+                            const QKnxAddress &dest, const QVector<quint8> &data,
                             const QKnxControlField &ctrl, const QKnxExtendedControlField &extCtrl);
 
         static QKnxControlField createRequestControlField(

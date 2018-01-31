@@ -49,8 +49,8 @@ public:
         Multicast() = delete;
 
         static QKnxTpdu createGroupValueReadTpdu();
-        static QKnxTpdu createGroupValueResponseTpdu(const QByteArray &data);
-        static QKnxTpdu createGroupValueWriteTpdu(const QByteArray &data);
+        static QKnxTpdu createGroupValueResponseTpdu(const QVector<quint8> &data);
+        static QKnxTpdu createGroupValueWriteTpdu(const QVector<quint8> &data);
 
         static QKnxTpdu createGroupPropertyValueReadTpdu(QKnxInterfaceObjectType object,
                                                      quint8 objectInstance,
@@ -58,15 +58,15 @@ public:
         static QKnxTpdu createGroupPropertyValueResponseTpdu(QKnxInterfaceObjectType object,
                                                      quint8 objectInstance,
                                                      QKnxInterfaceObjectProperty property,
-                                                     const QByteArray &data);
+                                                     const QVector<quint8> &data);
         static QKnxTpdu createGroupPropertyValueWriteTpdu(QKnxInterfaceObjectType object,
                                                      quint8 objectInstance,
                                                      QKnxInterfaceObjectProperty property,
-                                                     const QByteArray &data);
+                                                     const QVector<quint8> &data);
         static QKnxTpdu createGroupPropertyValueInfoReportTpdu(QKnxInterfaceObjectType object,
                                                      quint8 objectInstance,
                                                      QKnxInterfaceObjectProperty property,
-                                                     const QByteArray &data);
+                                                     const QVector<quint8> &data);
     };
 
     struct Q_KNX_EXPORT Broadcast
@@ -75,55 +75,55 @@ public:
 
         static QKnxTpdu createNetworkParameterReadTpdu(QKnxInterfaceObjectType object,
                                                      QKnxInterfaceObjectProperty property,
-                                                     const QByteArray &testInfo);
+                                                     const QVector<quint8> &testInfo);
         static QKnxTpdu createNetworkParameterResponseTpdu(QKnxInterfaceObjectType object,
                                                      QKnxInterfaceObjectProperty property,
-                                                     const QByteArray &testInfo,
-                                                     const QByteArray &testResult);
+                                                     const QVector<quint8> &testInfo,
+                                                     const QVector<quint8> &testResult);
         static QKnxTpdu createNetworkParameterWriteTpdu(QKnxInterfaceObjectType object,
                                                      QKnxInterfaceObjectProperty property,
-                                                     const QByteArray &value);
+                                                     const QVector<quint8> &value);
         static QKnxTpdu createNetworkParameterInfoReportTpdu(QKnxInterfaceObjectType object,
                                                      QKnxInterfaceObjectProperty property,
-                                                     const QByteArray &testInfo,
-                                                     const QByteArray &testResult);
+                                                     const QVector<quint8> &testInfo,
+                                                     const QVector<quint8> &testResult);
 
         static QKnxTpdu createSystemNetworkParameterReadTpdu(QKnxInterfaceObjectType object,
                                                      quint16 property,
-                                                     const QByteArray &testInfo);
+                                                     const QVector<quint8> &testInfo);
         static QKnxTpdu createSystemNetworkParameterResponseTpdu(QKnxInterfaceObjectType object,
                                                      quint16 property,
-                                                     const QByteArray &testInfo,
-                                                     const QByteArray &testResult);
+                                                     const QVector<quint8> &testInfo,
+                                                     const QVector<quint8> &testResult);
         static QKnxTpdu createSystemNetworkParameterWriteTpdu(QKnxInterfaceObjectType object,
                                                      quint16 property,
-                                                     const QByteArray &value);
+                                                     const QVector<quint8> &value);
 
         static QKnxTpdu createIndividualAddressReadTpdu();
         static QKnxTpdu createIndividualAddressResponseTpdu();
         static QKnxTpdu createIndividualAddressWriteTpdu(const QKnxAddress &newAddress);
 
-        static QKnxTpdu createIndividualAddressSerialNumberReadTpdu(const QByteArray &sn);
-        static QKnxTpdu createIndividualAddressSerialNumberResponseTpdu(const QByteArray &sn,
+        static QKnxTpdu createIndividualAddressSerialNumberReadTpdu(const QVector<quint8> &sn);
+        static QKnxTpdu createIndividualAddressSerialNumberResponseTpdu(const QVector<quint8> &sn,
                                                      const QKnxAddress &domainAddress);
-        static QKnxTpdu createIndividualAddressSerialNumberWriteTpdu(const QByteArray &sn,
+        static QKnxTpdu createIndividualAddressSerialNumberWriteTpdu(const QVector<quint8> &sn,
                                                      const QKnxAddress &newAddress);
 
         static QKnxTpdu createDomainAddressReadTpdu();
-        static QKnxTpdu createDomainAddressResponseTpdu(const QByteArray &domainAddress);
-        static QKnxTpdu createDomainAddressWriteTpdu(const QByteArray &domainAddress);
+        static QKnxTpdu createDomainAddressResponseTpdu(const QVector<quint8> &domainAddress);
+        static QKnxTpdu createDomainAddressWriteTpdu(const QVector<quint8> &domainAddress);
 
-        static QKnxTpdu createDomainAddressSerialNumberReadTpdu(const QByteArray &serialNumber);
-        static QKnxTpdu createDomainAddressSerialNumberResponseTpdu(const QByteArray &serialNumber,
-                                                     const QByteArray &domainAddress);
-        static QKnxTpdu createDomainAddressSerialNumberWriteTpdu(const QByteArray &serialNumber,
-                                                     const QByteArray &domainAddress);
+        static QKnxTpdu createDomainAddressSerialNumberReadTpdu(const QVector<quint8> &serialNumber);
+        static QKnxTpdu createDomainAddressSerialNumberResponseTpdu(const QVector<quint8> &serialNumber,
+                                                     const QVector<quint8> &domainAddress);
+        static QKnxTpdu createDomainAddressSerialNumberWriteTpdu(const QVector<quint8> &serialNumber,
+                                                     const QVector<quint8> &domainAddress);
 
         static QKnxTpdu createPll110DomainAddressSelectiveReadTpdu(quint8 domainAddress,
                                                      const QKnxAddress &startAddress,
                                                      quint8 range);
-        static QKnxTpdu createRfDomainAddressSelectiveReadTpdu(const QByteArray &startAddress,
-                                                     const QByteArray &endAddress);
+        static QKnxTpdu createRfDomainAddressSelectiveReadTpdu(const QVector<quint8> &startAddress,
+                                                     const QVector<quint8> &endAddress);
 
         static QKnxTpdu createFeDomainAddressSelectiveReadTpdu(quint16 manufacturerId,
                                                      QKnxInterfaceObjectType object,
@@ -144,25 +144,25 @@ public:
         static QKnxTpdu createMemoryReadTpdu(Mode mode, quint8 number, quint16 address,
                                                      quint8 seqNumber = 0);
         static QKnxTpdu createMemoryResponseTpdu(Mode mode, quint8 number, quint16 address,
-                                                     const QByteArray &data, quint8 seqNumber = 0);
+                                                     const QVector<quint8> &data, quint8 seqNumber = 0);
         static QKnxTpdu createMemoryWriteTpdu(Mode mode, quint8 number, quint16 address,
-                                                     const QByteArray &data, quint8 seqNumber = 0);
+                                                     const QVector<quint8> &data, quint8 seqNumber = 0);
 
         static QKnxTpdu createFunctionPropertyCommandTpdu(Mode mode, quint8 objectIndex,
                                                      QKnxInterfaceObjectProperty property,
-                                                     const QByteArray &data, quint8 seqNumber = 0);
+                                                     const QVector<quint8> &data, quint8 seqNumber = 0);
         static QKnxTpdu createFunctionPropertyStateReadTpdu(Mode mode, quint8 objectIndex,
                                                      QKnxInterfaceObjectProperty property,
-                                                     const QByteArray &data, quint8 seqNumber = 0);
+                                                     const QVector<quint8> &data, quint8 seqNumber = 0);
         static QKnxTpdu createFunctionPropertyStateResponseTpdu(Mode mode, quint8 objectIndex,
                                                      QKnxInterfaceObjectProperty property,
                                                      QKnxTpdu::ErrorCode code,
-                                                     const QByteArray &data, quint8 seqNumber = 0);
+                                                     const QVector<quint8> &data, quint8 seqNumber = 0);
 
         static QKnxTpdu createDeviceDescriptorReadTpdu(Mode mode, quint8 descriptorType,
                                                      quint8 seqNumber = 0);
         static QKnxTpdu createDeviceDescriptorResponseTpdu(Mode mode, quint8 descriptorType,
-                                                     const QByteArray &deviceDescriptor,
+                                                     const QVector<quint8> &deviceDescriptor,
                                                      quint8 seqNumber = 0);
 
         static QKnxTpdu createRestartTpdu(Mode mode, QKnxTpdu::ResetType type,
@@ -179,11 +179,11 @@ public:
         static QKnxTpdu createPropertyValueResponseTpdu(Mode mode, quint8 objectIndex,
                                                      QKnxInterfaceObjectProperty property,
                                                      quint8 nbElement, quint16 startIndex,
-                                                     const QByteArray &data, quint8 seqNumber = 0);
+                                                     const QVector<quint8> &data, quint8 seqNumber = 0);
         static QKnxTpdu createPropertyValueWriteTpdu(Mode mode, quint8 objectIndex,
                                                      QKnxInterfaceObjectProperty property,
                                                      quint8 nbElement, quint16 startIndex,
-                                                     const QByteArray &data, quint8 seqNumber = 0);
+                                                     const QVector<quint8> &data, quint8 seqNumber = 0);
 
         static QKnxTpdu createPropertyDescriptionReadTpdu(Mode mode, quint8 objectIndex,
                                                      QKnxInterfaceObjectProperty property,
@@ -208,7 +208,7 @@ public:
 
         static QKnxTpdu createFileStreamInfoReportTpdu(Mode mode, quint8 fileHandle,
                                                      quint8 fileBlockSeqNumber,
-                                                     const QByteArray &data, quint8 seqNumber = 0);
+                                                     const QVector<quint8> &data, quint8 seqNumber = 0);
     };
 
     struct Q_KNX_EXPORT PointToPointConnectionless
@@ -217,11 +217,11 @@ public:
 
         static QKnxTpdu createNetworkParameterResponseTpdu(QKnxInterfaceObjectType object,
                                                      QKnxInterfaceObjectProperty property,
-                                                     const QByteArray &testInfo,
-                                                     const QByteArray &testResult);
+                                                     const QVector<quint8> &testInfo,
+                                                     const QVector<quint8> &testResult);
         static QKnxTpdu createNetworkParameterWriteTpdu(QKnxInterfaceObjectType objectType,
                                                      QKnxInterfaceObjectProperty property,
-                                                     const QByteArray &value);
+                                                     const QVector<quint8> &value);
     };
 
     struct Q_KNX_EXPORT PointToPointConnectionOriented
@@ -235,11 +235,11 @@ public:
         static QKnxTpdu createUserMemoryReadTpdu(quint8 addressExtention, quint8 number,
                                                      quint16 address, quint8 seqNumber);
         static QKnxTpdu createUserMemoryResponseTpdu(quint8 addressExtention, quint8 number,
-                                                     quint16 address, const QByteArray &data,
+                                                     quint16 address, const QVector<quint8> &data,
                                                      quint8 seqNumber);
         static QKnxTpdu createUserMemoryWriteTpdu(quint8 addressExtention, quint8 number,
                                                      quint16 address,
-                                                     const QByteArray &data, quint8 seqNumber);
+                                                     const QVector<quint8> &data, quint8 seqNumber);
 
         static QKnxTpdu createUserManufacturerInfoReadTpdu(quint8 seqNumber);
         static QKnxTpdu createUserManufacturerInfoResponseTpdu(quint8 manufacturerId,
