@@ -98,19 +98,19 @@ private slots:
 
         QKnxTpdu tpdu = QKnxTpduFactory::Multicast::createGroupValueWriteTpdu(
             QByteArray::fromHex("01"));
-        QCOMPARE(tpdu.bytes(), QByteArray::fromHex("0081"));
+        QCOMPARE(tpdu.bytes(), QVector<quint8>({ 0x00, 0x81 }));
         frame.setTpdu(tpdu);
-        QCOMPARE(frame.tpdu().bytes(), QByteArray::fromHex("0081"));
+        QCOMPARE(frame.tpdu().bytes(), QVector<quint8>({ 0x00, 0x81 }));
         QKnxTpdu tpdu2 = QKnxTpduFactory::Multicast::createGroupValueWriteTpdu(
             QByteArray::fromHex("0101"));
-        QCOMPARE(tpdu2.bytes(), QByteArray::fromHex("00800101"));
+        QCOMPARE(tpdu2.bytes(), QVector<quint8>({ 0x00, 0x80, 0x01, 0x01 }));
         frame.setTpdu(tpdu2);
-        QCOMPARE(frame.tpdu().bytes(), QByteArray::fromHex("00800101"));
+        QCOMPARE(frame.tpdu().bytes(), QVector<quint8>({ 0x00, 0x80, 0x01, 0x01 }));
         QKnxTpdu tpdu4 = QKnxTpduFactory::Multicast::createGroupValueWriteTpdu(
             QByteArray::fromHex("ff"));
-        QCOMPARE(tpdu4.bytes(), QByteArray::fromHex("0080ff"));
+        QCOMPARE(tpdu4.bytes(), QVector<quint8>({ 0x00, 0x80, 0xff }));
         frame.setTpdu(tpdu4);
-        QCOMPARE(frame.tpdu().bytes(), QByteArray::fromHex("0080ff"));
+        QCOMPARE(frame.tpdu().bytes(), QVector<quint8>({ 0x00, 0x80, 0xff }));
     }
 
     void testDebugStream()

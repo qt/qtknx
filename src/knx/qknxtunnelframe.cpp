@@ -263,7 +263,8 @@ QKnxTpdu QKnxTunnelFrame::tpdu() const
 
     // length field + ctrl + extCtrl + 2 * KNX address -> 7 bytes
     const quint8 tpduOffset = additionalInfosSize() + 7 + 1/* bytes */;
-    return QKnxTpdu::fromBytes(serviceInformationRef(), tpduOffset, (size() - 1) - tpduOffset);
+    return QKnxTpdu::fromBytes(serviceInformationRef().bytes<QVector<quint8>>(),
+        tpduOffset, (size() - 1) - tpduOffset);
 }
 
 void QKnxTunnelFrame::setTpdu(const QKnxTpdu &tpdu)

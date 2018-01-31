@@ -32,7 +32,7 @@
 
 #include <QtCore/qbytearray.h>
 #include <QtCore/qvector.h>
-#include <QtKnx/qknxbytestore.h>
+#include <QtCore/qshareddata.h>
 #include <QtKnx/qknxglobal.h>
 #include <QtKnx/qknxtraits.h>
 #include <QtKnx/qknxbytestore.h>
@@ -40,8 +40,9 @@
 QT_BEGIN_NAMESPACE
 
 class QKnxTpduFactory;
+class QKnxTpduPrivate;
 
-class Q_KNX_EXPORT QKnxTpdu final : private QKnxByteStore
+class Q_KNX_EXPORT QKnxTpdu final
 {
     Q_GADGET
 
@@ -49,13 +50,13 @@ public:
     enum class ErrorCode : quint8
     {
         NoError = 0x00,
-        Error   = 0x01
+        Error = 0x01
     };
     Q_ENUM(ErrorCode)
 
     enum class ResetType : quint8
     {
-        BasicRestart  = 0x00,
+        BasicRestart = 0x00,
         MasterRestart = 0x01
     };
     Q_ENUM(ResetType)
@@ -165,10 +166,10 @@ public:
     };
     Q_ENUM(ApplicationControlField)
 
-    ApplicationControlField applicationControlField() const;
+        ApplicationControlField applicationControlField() const;
     void setApplicationControlField(ApplicationControlField apci);
 
-    ~QKnxTpdu() override = default;
+    ~QKnxTpdu();
 
     explicit QKnxTpdu(TransportControlField tpci);
     QKnxTpdu(TransportControlField tpci, ApplicationControlField apci);
@@ -176,38 +177,41 @@ public:
     QKnxTpdu(TransportControlField tpci, ApplicationControlField apci, quint8 seqNumber,
         const QByteArray &data = {});
 
+    QKnxTpdu(const QKnxTpdu &o);
+    QKnxTpdu &operator=(const QKnxTpdu &o);
+
     bool isValid() const;
     quint8 dataSize() const;
 
     quint8 sequenceNumber() const;
     void setSequenceNumber(quint8 seqNumber);
 
-    QByteArray data() const;
+    QVector<quint8> data() const;
     void setData(const QByteArray &data);
 
-    template <typename T, std::size_t S = 0>
-        static QKnxTpdu fromBytes(const T &data, quint16 index, quint8 size)
+    static QKnxTpdu fromBytes(const QVector<quint8> &data, quint16 index, quint8 size)
     {
-        static_assert(is_type<T, QByteArray, QVector<quint8>, QKnxByteStoreRef, std::deque<quint8>,
-            std::vector<quint8>, std::array<quint8, S>>::value, "Type not supported.");
+        auto tpdu = QKnxTpdu { TransportControlField::Invalid, ApplicationControlField::Invalid };
 
-        const qint32 availableSize = (data.size() - index) - size;
         // data is not big enough according to the given size to be read
-        // data is too big (bigger than an extended frame) 255 = 254(max length) + 1 byte(TPCI/APCI)
-        if (availableSize < 0 || size > 255)
-            return {QKnxTpdu::TransportControlField::Invalid,
-                QKnxTpdu::ApplicationControlField::Invalid};
-        QKnxTpdu tpdu{QKnxTpdu::TransportControlField::Invalid,
-            QKnxTpdu::ApplicationControlField::Invalid};
+        const qint32 availableSize = (data.size() - index) - size;
+        if (availableSize < 0)
+            return tpdu;
+
         auto begin = std::next(std::begin(data), index);
         tpdu.setBytes(begin, std::next(begin, size));
         return tpdu;
     }
 
-    using QKnxByteStore::size;
-    using QKnxByteStore::byte;
-    using QKnxByteStore::bytes;
-    using QKnxByteStore::toString;
+    quint16 size() const;
+    quint8 byte(quint16 index) const;
+    QVector<quint8> bytes() const;
+    QVector<quint8> bytes(quint16 start, quint16 count) const;
+    void setBytes(QVector<quint8>::const_iterator begin, QVector<quint8>::const_iterator end);
+    QString toString() const;
+
+private:
+    QSharedDataPointer<QKnxTpduPrivate> d_ptr;
 };
 Q_DECLARE_TYPEINFO(QKnxTpdu::ErrorCode, Q_PRIMITIVE_TYPE);
 Q_DECLARE_TYPEINFO(QKnxTpdu::ResetType, Q_PRIMITIVE_TYPE);
