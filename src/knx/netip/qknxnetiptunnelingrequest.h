@@ -30,7 +30,6 @@
 #ifndef QKNXNETIPTUNNELINGREQUEST_H
 #define QKNXNETIPTUNNELINGREQUEST_H
 
-#include <QtKnx/qknxcemiframe.h>
 #include <QtKnx/qknxnetip.h>
 #include <QtKnx/qknxnetipconnectionheaderframe.h>
 #include <QtKnx/qknxglobal.h>

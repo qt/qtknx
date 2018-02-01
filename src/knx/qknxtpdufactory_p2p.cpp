@@ -72,7 +72,8 @@ static QKnxTpdu::TransportControlField tpci(QKnxTpduFactory::PointToPoint::Mode 
     point to point connection.
 
     Those services are accessed using the individual address of the device
-    (\l QKnxAddress::Individual) in the source address part of the \l QKnxCemiFrame.
+    (\l QKnxAddress::Individual) in the source address part of the
+    \l QKnxLinkLayerFrame.
     They can be used in \l QKnxTpduFactory::PointToPoint::ConnectionOriented or
     \l QKnxTpduFactory::PointToPoint::Connectionless, that is with or without a
     transport layer connection, respectively.
@@ -374,7 +375,7 @@ QKnxTpdu QKnxTpduFactory::PointToPoint::createFileStreamInfoReportTpdu(Mode mode
 
     Those services are accessed using the individual address of the device
     (\l QKnxAddress::Individual) in the source address part of the
-    \l QKnxCemiFrame.
+    \l QKnxLinkLayerFrame.
 */
 
 static QKnxTpdu createNetworkParameterTpduP2P(QKnxTpdu::ApplicationControlField apci,
@@ -433,7 +434,7 @@ QKnxTpduFactory::PointToPointConnectionless::createNetworkParameterWriteTpdu(QKn
 
     Those services are accessed using the individual address of the device
     (\l QKnxAddress::Individual) in the source address part of the
-    \l QKnxCemiFrame. To be successful, the CEMI frame containing those
+    \l QKnxLinkLayerFrame. To be successful, the CEMI frame containing those
     TPDU need to be send within the frame work of a transport layer connection.
 */
 

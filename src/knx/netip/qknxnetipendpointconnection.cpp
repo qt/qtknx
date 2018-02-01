@@ -289,7 +289,10 @@ void QKnxNetIpEndpointConnectionPrivate::sendStateRequest()
     m_connectionStateTimer->start(QKnxNetIp::ConnectionStateRequestTimeout);
 }
 
-void QKnxNetIpEndpointConnectionPrivate::process(const QKnxCemiFrame &)
+void QKnxNetIpEndpointConnectionPrivate::process(const QKnxLinkLayerFrame &)
+{}
+
+void QKnxNetIpEndpointConnectionPrivate::process(const QKnxLocalDeviceManagementFrame &)
 {}
 
 void QKnxNetIpEndpointConnectionPrivate::process(const QKnxNetIpTunnelingRequest &request)
@@ -384,7 +387,7 @@ void QKnxNetIpEndpointConnectionPrivate::process(const QKnxNetIpDeviceConfigurat
                 m_sendCount++;
                 m_cemiRequests = 0;
                 if (!m_lastReceivedCemiRequest.isEmpty()) {
-                     process(QKnxCemiFrame::fromBytes(m_lastReceivedCemiRequest, 0,
+                     process(QKnxLocalDeviceManagementFrame::fromBytes(m_lastReceivedCemiRequest, 0,
                          m_lastReceivedCemiRequest.size()));
                      m_lastReceivedCemiRequest.clear();
                 }

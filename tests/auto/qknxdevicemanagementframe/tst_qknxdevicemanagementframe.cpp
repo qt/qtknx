@@ -66,7 +66,7 @@ private slots:
         QKnxLocalDeviceManagementFrame frame = QKnxLocalDeviceManagementFrame::fromBytes(objectTypeProperty,
             0, objectTypeProperty.size());
 
-        QCOMPARE(frame.messageCode(), QKnxCemiFrame::MessageCode::PropertyReadRequest);
+        QCOMPARE(frame.messageCode(), QKnxLocalDeviceManagementFrame::MessageCode::PropertyReadRequest);
         QCOMPARE(quint16(frame.objectType()), quint16(QKnxInterfaceObjectType::CemiServer));
         QCOMPARE(frame.objectInstance(), quint8(1));
         QCOMPARE(quint8(frame.property()), quint8(QKnxInterfaceObjectProperty::ObjectType));

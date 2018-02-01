@@ -68,7 +68,7 @@ class QmlKnxTunnel : public QObject
 
 public:
     QmlKnxTunnel(QmlKnxDemo *demo);
-    void sendTunnelFrame(const QKnxCemiFrame &frame);
+    void sendTunnelFrame(const QKnxLinkLayerFrame &frame);
     void changeIp(const QString &ip, quint16 port = 3671);
 
 public slots:
@@ -80,7 +80,7 @@ private:
     void autoDiscoverKnxServers();
 
 private:
-    QQueue<QKnxCemiFrame> m_frames;
+    QQueue<QKnxLinkLayerFrame> m_frames;
     QKnxNetIpTunnelConnection m_connection;
     QKnxNetIpServerDiscoveryAgent m_discoveryAgent;
 

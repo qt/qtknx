@@ -20,7 +20,6 @@ PUBLIC_HEADERS += \
     qknxbytestore.h \
     qknxbytestoreref.h \
     qknxcemi.h \
-    qknxcemiframe.h \
     qknxconnectioninfo.h \
     qknxcontrolfield.h \
     qknxdeviceconfiguration.h \
@@ -52,7 +51,6 @@ SOURCES += \
     qknxaddress.cpp \
     qknxbytestore.cpp \
     qknxbytestoreref.cpp \
-    qknxcemiframe.cpp \
     qknxconnectioninfo.cpp \
     qknxcontrolfield.cpp \
     qknxdeviceconfiguration.cpp \

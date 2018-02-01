@@ -105,7 +105,7 @@ int main(int argc, char *argv[])
         auto bytes = input.readLine().toLatin1();
         if (bytes != "quit") {
             bytes = QByteArray::fromHex(bytes);
-            tunnel.sendTunnelFrame(QKnxCemiFrame::fromBytes(bytes, 0, bytes.size()));
+            tunnel.sendTunnelFrame(QKnxLinkLayerFrame::fromBytes(bytes, 0, bytes.size()));
         } else {
             tunnel.disconnectFromHost();
         }

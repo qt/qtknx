@@ -116,7 +116,7 @@ LocalDeviceManagement::LocalDeviceManagement(QWidget* parent)
         auto data = QByteArray::fromHex(ui->cemiFrame->text().toUtf8());
         if (ui->cemiData->isEnabled())
             data.append(QByteArray::fromHex(ui->cemiData->text().toUtf8()));
-        m_management.sendDeviceManagementFrame(QKnxCemiFrame::fromBytes(data, 0, data.size()));
+        m_management.sendDeviceManagementFrame(QKnxLocalDeviceManagementFrame::fromBytes(data, 0, data.size()));
     });
 
     connect(&m_management, &QKnxNetIpDeviceManagementConnection::receivedDeviceManagementFrame,
@@ -175,20 +175,20 @@ void LocalDeviceManagement::on_mc_currentIndexChanged(int index)
     auto cemiFrame = m_fullCemiFrame;
 
     quint8 data = ui->mc->itemData(index).toUInt();
-    switch (QKnxCemiFrame::MessageCode(data)) {
-    case QKnxCemiFrame::MessageCode::PropertyReadRequest:
+    switch (QKnxLocalDeviceManagementFrame::MessageCode(data)) {
+    case QKnxLocalDeviceManagementFrame::MessageCode::PropertyReadRequest:
         dataEnabled = false;
-    case QKnxCemiFrame::MessageCode::PropertyWriteRequest:
+    case QKnxLocalDeviceManagementFrame::MessageCode::PropertyWriteRequest:
         maxLength = 14;
-    case QKnxCemiFrame::MessageCode::FunctionPropertyCommandRequest:
-    case QKnxCemiFrame::MessageCode::FunctionPropertyStateReadRequest:
+    case QKnxLocalDeviceManagementFrame::MessageCode::FunctionPropertyCommandRequest:
+    case QKnxLocalDeviceManagementFrame::MessageCode::FunctionPropertyStateReadRequest:
         if (cemiFrame.size() < maxLength) {
             cemiFrame.append(QStringLiteral("%1").arg(ui->noe->value(), 1, 16, QLatin1Char('0')));
             cemiFrame.append(QStringLiteral("%1").arg(ui->startIndex->value(), 3, 16, QLatin1Char('0')));
         }
         cemiFrame = QStringLiteral("%1").arg(data, 2, 16, QLatin1Char('0')) + cemiFrame.mid(2);
         break;
-    case QKnxCemiFrame::MessageCode::ResetRequest:
+    case QKnxLocalDeviceManagementFrame::MessageCode::ResetRequest:
         maxLength = 2;
         dataEnabled = false;
         cemiFrame = QStringLiteral("%1").arg(data, 2, 16, QLatin1Char('0'));

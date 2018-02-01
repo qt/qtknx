@@ -220,8 +220,8 @@ void QmlKnxDemo::handleFrame(const QKnxLinkLayerFrame &frame)
     auto str = frame.serviceInformation().bytes().toHex();
     auto dstAdd = frame.destinationAddress().toString();
 
-    if (QKnxCemiFrame::MessageCode::DataConfirmation == frame.messageCode()
-        || QKnxCemiFrame::MessageCode::DataIndication == frame.messageCode()) {
+    if (QKnxLinkLayerFrame::MessageCode::DataConfirmation == frame.messageCode()
+        || QKnxLinkLayerFrame::MessageCode::DataIndication == frame.messageCode()) {
         // data indication come from pushing buttons on the Board
         // data confirmation are responses to App UI requests
         bool boardStateChanged = false;
@@ -272,7 +272,7 @@ QmlKnxTunnel::QmlKnxTunnel(QmlKnxDemo *demo)
     autoDiscoverKnxServers();
 }
 
-void QmlKnxTunnel::sendTunnelFrame(const QKnxCemiFrame &frame)
+void QmlKnxTunnel::sendTunnelFrame(const QKnxLinkLayerFrame &frame)
 {
     if (frame.size() == 0)
         return;
@@ -332,13 +332,13 @@ void QmlKnxDemo::test()
 {
     // red
     auto data = QByteArray::fromHex("0x00bce01105000c010081");
-    handleFrame(QKnxCemiFrame::fromBytes(data, 0, data.size()));
+    handleFrame(QKnxLinkLayerFrame::fromBytes(data, 0, data.size()));
 
     // blue
     data = QByteArray::fromHex("0x00bce01105000e010081");
-    handleFrame(QKnxCemiFrame::fromBytes(data, 0, data.size()));
+    handleFrame(QKnxLinkLayerFrame::fromBytes(data, 0, data.size()));
 
     // green
     data = QByteArray::fromHex("0x00bce01105000d010081");
-    handleFrame(QKnxCemiFrame::fromBytes(data, 0, data.size()));
+    handleFrame(QKnxLinkLayerFrame::fromBytes(data, 0, data.size()));
 }

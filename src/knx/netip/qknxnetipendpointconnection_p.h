@@ -118,7 +118,8 @@ public:
     bool sendCemiRequest();
     void sendStateRequest();
 
-    virtual void process(const QKnxCemiFrame &frame);
+    virtual void process(const QKnxLinkLayerFrame &frame);
+    virtual void process(const QKnxLocalDeviceManagementFrame &frame);
 
     // datapoint related processing
     bool sendTunnelingRequest(const QKnxLinkLayerFrame &frame);

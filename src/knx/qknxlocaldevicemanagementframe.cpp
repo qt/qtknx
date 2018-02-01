@@ -44,15 +44,48 @@ QT_BEGIN_NAMESPACE
     device management CEMI frames.
 */
 
-QKnxLocalDeviceManagementFrame::QKnxLocalDeviceManagementFrame(QKnxCemiFrame::MessageCode code)
-    : QKnxCemiFrame(code)
+/*!
+    \enum QKnxLocalDeviceManagementFrame::MessageCode
+    This enum describes the different message codes of the Local Device Management frame.
+
+    \value Unknown
+    \value PropertyReadRequest                        M_PropRead.req
+    \value PropertyReadConfirmation                   M_PropRead.con
+    \value PropertyWriteRequest                       M_PropWrite.req
+    \value PropertyWriteConfirmation                  M_PropWrite.con
+    \value PropertyInfoIndication                     M_PropInfo.ind
+    \value FunctionPropertyCommandRequest             M_FuncPropCommand.req
+    \value FunctionPropertyStateReadRequest           M_FuncPropStateRead.req
+    \value FunctionPropertyCommandConfirmation        M_FuncPropCommand.con
+    \value FunctionPropertyStateReadConfirmation      M_FuncPropStateRead.con
+    \value ResetRequest                               M_Reset.req
+    \value ResetIndication                            M_Reset.ind
+*/
+
+/*!
+    Constructs a LocalDeviceManagement frame starting with \a messageCode.
+
+    \note The LocalDeviceManagement frame will be other wise empty and needs to be set by hand.
+*/
+QKnxLocalDeviceManagementFrame::QKnxLocalDeviceManagementFrame(MessageCode code)
+    : m_code(code)
 {
-    if (code != QKnxCemiFrame::MessageCode::ResetRequest
-        && code != QKnxCemiFrame::MessageCode::ResetIndication) {
+    if (code != MessageCode::ResetRequest
+        && code != MessageCode::ResetIndication) {
         static const constexpr quint8 data[6] = { 0xff, 0xff, 0x00, 0x00, 0x00, 0x00 };
         setServiceInformation({ data, 6 });
     }
 }
+/*!
+    Constructs a LocalDeviceManagement frame starting with \a messageCode and with a \l QKnxLocalDeviceManagementPayload \a payload.
+*/
+QKnxLocalDeviceManagementFrame::QKnxLocalDeviceManagementFrame(
+    QKnxLocalDeviceManagementFrame::MessageCode messageCode,
+    const QKnxLocalDeviceManagementPayLoad &payload)
+    : m_code(messageCode)
+    , m_serviceInformation(payload)
+{}
+
 
 /*!
     Returns true if the current CEMI frame is valid.
@@ -60,35 +93,35 @@ QKnxLocalDeviceManagementFrame::QKnxLocalDeviceManagementFrame(QKnxCemiFrame::Me
 bool QKnxLocalDeviceManagementFrame::isValid() const
 {
     switch (messageCode()) {
-    case QKnxCemiFrame::MessageCode::PropertyReadRequest:
+    case MessageCode::PropertyReadRequest:
         if (size() != 7) // 4.1.7.3.2 The request shall not contain any further data.
             return false;
         break;
-    case QKnxCemiFrame::MessageCode::PropertyReadConfirmation:  // 4.1.7.3.3
-    case QKnxCemiFrame::MessageCode::PropertyWriteRequest:      // 4.1.7.3.4
+    case MessageCode::PropertyReadConfirmation:  // 4.1.7.3.3
+    case MessageCode::PropertyWriteRequest:      // 4.1.7.3.4
         if (size() < 8)     // The frame shall contain further data, at minimum one quint8.
             return false;   // For 4.1.7.3.3 it shall be (NoE) or error code (negative response).
         break;
-    case QKnxCemiFrame::MessageCode::PropertyWriteConfirmation:
+    case MessageCode::PropertyWriteConfirmation:
         if ((numberOfElements() >= 1 && size() != 7) || (numberOfElements() == 0 && size() != 8))
             return false; // 4.1.7.3.5 size == (write request - data) or negative confirmation
         break;
-    case QKnxCemiFrame::MessageCode::PropertyInfoIndication:
+    case MessageCode::PropertyInfoIndication:
         if (size() < 7)
             return false;
         break;
-    case QKnxCemiFrame::MessageCode::FunctionPropertyCommandRequest:
-    case QKnxCemiFrame::MessageCode::FunctionPropertyStateReadRequest:
+    case MessageCode::FunctionPropertyCommandRequest:
+    case MessageCode::FunctionPropertyStateReadRequest:
         if (size() < 6)
             return false;
         break;
-    case QKnxCemiFrame::MessageCode::FunctionPropertyCommandConfirmation:
-//  case QKnxCemiFrame::MessageCode::FunctionPropertyStateReadConfirmation: (same value as above)
+    case MessageCode::FunctionPropertyCommandConfirmation:
+//  case MessageCode::FunctionPropertyStateReadConfirmation: (same value as above)
         if (size() < 5)     // 4.1.7.4.5 Error and exception handling for cEMI Function Properties
             return false;   // return code and data are omitted on error.
         break;
-    case QKnxCemiFrame::MessageCode::ResetRequest:
-    case QKnxCemiFrame::MessageCode::ResetIndication:
+    case MessageCode::ResetRequest:
+    case MessageCode::ResetIndication:
         return size() == 1;
     default:
         return false;
@@ -109,14 +142,14 @@ bool QKnxLocalDeviceManagementFrame::isValid() const
 bool QKnxLocalDeviceManagementFrame::isNegativeConfirmation() const
 {
     switch (messageCode()) {
-    case QKnxCemiFrame::MessageCode::PropertyReadConfirmation:
-    case QKnxCemiFrame::MessageCode::PropertyWriteConfirmation:
+    case MessageCode::PropertyReadConfirmation:
+    case MessageCode::PropertyWriteConfirmation:
         // 4.1.7.3.3 Property read / 4.1.7.3.5 Property write confirmation
         // The confirmation indicates an error with number of elements == 0.
         return numberOfElements() == 0;
 
-    //case QKnxCemiFrame::MessageCode::FunctionPropertyStateReadConfirmation:
-    case QKnxCemiFrame::MessageCode::FunctionPropertyCommandConfirmation:
+    //case MessageCode::FunctionPropertyStateReadConfirmation:
+    case MessageCode::FunctionPropertyCommandConfirmation:
         // 4.1.7.4.5 The confirmation indicates error by omitting return code
         return size() == 5; // and data
     default:
@@ -198,8 +231,8 @@ void QKnxLocalDeviceManagementFrame::setStartIndex(quint16 index)
 QKnx::CemiServer::Error QKnxLocalDeviceManagementFrame::error() const
 {
     switch (messageCode()) {
-    case QKnxCemiFrame::MessageCode::PropertyReadConfirmation:
-    case QKnxCemiFrame::MessageCode::PropertyWriteConfirmation:
+    case MessageCode::PropertyReadConfirmation:
+    case MessageCode::PropertyWriteConfirmation:
         if (numberOfElements() == 0) {
             auto err = data();
             if (err.size() < 1)
@@ -216,8 +249,8 @@ void QKnxLocalDeviceManagementFrame::setError(QKnx::CemiServer::Error error)
 {
     // Set error code on confirmed messages only. See paragraph 4.1.7.3.7.1
     switch (messageCode()) {
-    case QKnxCemiFrame::MessageCode::PropertyReadConfirmation:
-    case QKnxCemiFrame::MessageCode::PropertyWriteConfirmation: {
+    case MessageCode::PropertyReadConfirmation:
+    case MessageCode::PropertyWriteConfirmation: {
         auto sf = serviceInformation();
         if (sf.size() < 7)
             sf.resize(7);
@@ -232,8 +265,8 @@ void QKnxLocalDeviceManagementFrame::setError(QKnx::CemiServer::Error error)
 QKnx::CemiServer::ReturnCode QKnxLocalDeviceManagementFrame::returnCode() const
 {
     switch (messageCode()) {
-    //case QKnxCemiFrame::MessageCode::FunctionPropertyStateReadConfirmation:
-    case QKnxCemiFrame::MessageCode::FunctionPropertyCommandConfirmation:
+    //case MessageCode::FunctionPropertyStateReadConfirmation:
+    case MessageCode::FunctionPropertyCommandConfirmation:
         if (size() >= 6)
             return QKnx::CemiServer::ReturnCode(serviceInformationRef().byte(5));
     default:
@@ -245,8 +278,8 @@ QKnx::CemiServer::ReturnCode QKnxLocalDeviceManagementFrame::returnCode() const
 void QKnxLocalDeviceManagementFrame::setReturnCode(QKnx::CemiServer::ReturnCode code)
 {
     switch (messageCode()) {
-    //case QKnxCemiFrame::MessageCode::FunctionPropertyStateReadConfirmation:
-    case QKnxCemiFrame::MessageCode::FunctionPropertyCommandConfirmation:
+    //case MessageCode::FunctionPropertyStateReadConfirmation:
+    case MessageCode::FunctionPropertyCommandConfirmation:
         break;
     default:
         return;
@@ -259,8 +292,73 @@ void QKnxLocalDeviceManagementFrame::setReturnCode(QKnx::CemiServer::ReturnCode 
     setServiceInformation(sf);
 }
 
-QKnxLocalDeviceManagementFrame::QKnxLocalDeviceManagementFrame(const QKnxCemiFrame &other)
-    : QKnxCemiFrame(other)
-{}
+QKnxLocalDeviceManagementFrame::QKnxLocalDeviceManagementFrame(const QKnxLocalDeviceManagementFrame &other)
+{
+    m_code = other.messageCode();
+    m_serviceInformation = other.serviceInformation();
+}
+
+/*!
+    Sets the \l QKnxLinkLayerPayload \a serviceInformation of the DeviceManagement frame.
+*/
+void QKnxLocalDeviceManagementFrame::setServiceInformation(const QKnxLocalDeviceManagementPayLoad &serviceInformation)
+{
+    m_serviceInformation = serviceInformation;
+}
+
+/*!
+    Returns a \l QString representing the bytes of the LocalDeviceManagement frame
+*/
+QString QKnxLocalDeviceManagementFrame::toString() const
+{
+    QString tmp;
+    for (quint8 byte : m_serviceInformation.ref())
+        tmp += QStringLiteral("0x%1, ").arg(byte, 2, 16, QLatin1Char('0'));
+    tmp.chop(2);
+
+    return QStringLiteral("Message code: { 0x%1 }, Service information: { 0x%2 }")
+        .arg(quint8(m_code), 2, 16, QLatin1Char('0')).arg(tmp);
+}
+
+/*!
+    Returns the number of bytes of the LocalDeviceManagement frame.
+*/
+quint16 QKnxLocalDeviceManagementFrame::size() const
+{
+    return m_serviceInformation.size() + 1 /* message code */;
+}
+
+/*!
+      Returns the \l QKnxLocalDeviceManagementPayload.
+      This is the LocalDeviceManagement frame without the message code.
+*/
+QKnxLocalDeviceManagementPayLoad QKnxLocalDeviceManagementFrame::serviceInformation() const
+{
+    return m_serviceInformation;
+}
+
+/*!
+    Returns a \l QKnxLocalDeviceManagementPayloadRef at the given \a index of the LocalDeviceManagement frame
+    payload.
+*/
+QKnxLocalDeviceManagementPayLoadRef QKnxLocalDeviceManagementFrame::serviceInformationRef(quint16 index) const
+{
+    return m_serviceInformation.ref(index);
+}
+/*!
+    Returns the message code of the LocalDeviceManagement frame.
+*/
+QKnxLocalDeviceManagementFrame::MessageCode QKnxLocalDeviceManagementFrame::messageCode() const
+{
+    return m_code;
+}
+
+/*!
+    Sets the message code of the LocalDeviceManagement frame with \a code.
+*/
+void QKnxLocalDeviceManagementFrame::setMessageCode(QKnxLocalDeviceManagementFrame::MessageCode code)
+{
+    m_code = code;
+}
 
 QT_END_NAMESPACE

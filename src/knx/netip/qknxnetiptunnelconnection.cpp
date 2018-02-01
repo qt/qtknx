@@ -74,7 +74,7 @@ public:
         , m_layer(l)
     {}
 
-    void process(const QKnxCemiFrame &frame) override
+    void process(const QKnxLinkLayerFrame &frame) override
     {
         Q_Q(QKnxNetIpTunnelConnection);
         emit q->receivedTunnelFrame(frame);

@@ -37,12 +37,12 @@ QT_BEGIN_NAMESPACE
     \class QKnxLinkLayerFrame
 
     \inmodule QtKnx
-    \brief The QKnxLinkLayerFrame is a CEMI frame meant to be sent via a
-    \l QKnxNetIpTunnelConnection between a client and a KNXnet/IP server.
+    \brief The QKnxLinkLayerFrame is a frame meant to be sent via a
+    \l QKnxLinkLayerConnection between a client and a KNXnet/IP server.
 
     Following the KNXnet/IP tunneling specifications, only the
-    \l QKnxCemiFrame::MessageCode listed below are valid QKnxLinkLayerFrame message
-    code to be sent via KNXnet/IP tunnel connection:
+    \l QKnxLinkLayerFrame::MessageCode listed below are valid QKnxLinkLayerFrame
+    message code to be sent via KNXnet/IP tunnel connection:
 
     \list
         \li DataRequest (L_Data.req)
@@ -69,10 +69,45 @@ QT_BEGIN_NAMESPACE
     (L_Data.ind) as QKnxLinkLayerFrame message code.
 */
 
+/*!
+    \enum QKnxLinkLayerFrame::MessageCode
+    This enum describes the different message codes of the LinkLayer frame.
+
+    \value Unknown
+    \value BusmonitorIndication                       L_Busmon.ind
+    \value DataRequest                                L_Data.req
+    \value DataConfirmation                           L_Data.con
+    \value DataIndication                             L_Data.ind
+    \value RawRequest                                 L_Raw.req
+    \value RawIndication                              L_Raw.ind
+    \value RawConfirmation                            L_Raw.con
+    \value PollDataRequest                            L_Poll_Data.req
+    \value PollDataConfirmation                       L_Poll_Data.con
+    \value DataConnectedRequest                       T_Data_Connected.req
+    \value DataConnectedIndication                    T_Data_Connected.ind
+    \value DataIndividualRequest                      T_Data_Individual.req
+    \value DataIndividualIndication                   T_Data_Individual.ind
+*/
+
+/*!
+    Constructs a LinkLayer frame starting with \a messageCode.
+
+    \note The LinkLayer frame will be other wise empty and needs to be set by hand.
+*/
 QKnxLinkLayerFrame::QKnxLinkLayerFrame(QKnxLinkLayerFrame::MessageCode messageCode)
-    : QKnxCemiFrame(messageCode)
+    : m_code(messageCode)
 {}
 
+/*!
+    Constructs a LinkLayer frame starting with \a messageCode and with a \l QKnxLinkLayerPayload \a payload.
+*/
+QKnxLinkLayerFrame::QKnxLinkLayerFrame(QKnxLinkLayerFrame::MessageCode messageCode, const QKnxLinkLayerPayload &payload)
+    : m_code(messageCode)
+    , m_serviceInformation(payload)
+{}
+
+
+// TODO, adapt so that it's not only valid for the netIptunnel frame
 /*!
   Returns true if the message code is valid.
 
@@ -80,6 +115,9 @@ QKnxLinkLayerFrame::QKnxLinkLayerFrame(QKnxLinkLayerFrame::MessageCode messageCo
 */
 bool QKnxLinkLayerFrame::isValid() const
 {
+    if (!isMessageCodeValid())
+    return false;
+
     // TODO: Make sure all constraints from 3.3.2 paragraph 2.2 L_Data is checked here
 
     //Extended control field destination address type corresponds to the destination address
@@ -119,8 +157,37 @@ bool QKnxLinkLayerFrame::isValid() const
         && tpdu().byte(0) > 15)
         return false;
     //  control field frame type extended -> max. length value is 255
+    return true;
+}
 
-    return QKnxCemiFrame::isValid();
+// TODO, also check against the Medium Type
+/*!
+    Return \c true if the Message Code of the LinkLayer frame is valid; \c false otherwise.
+
+    \note It only checks that the given code is a correct LinkLayer frame code. It
+    does not check the validity of the payload.
+*/
+bool QKnxLinkLayerFrame::isMessageCodeValid() const
+{
+    switch (m_code) {
+    case MessageCode::BusmonitorIndication:
+    case MessageCode::DataRequest:
+    case MessageCode::DataConfirmation:
+    case MessageCode::DataIndication:
+    case MessageCode::RawRequest:
+    case MessageCode::RawIndication:
+    case MessageCode::RawConfirmation:
+    case MessageCode::PollDataRequest:
+    case MessageCode::PollDataConfirmation:
+    case MessageCode::DataConnectedRequest:
+    case MessageCode::DataConnectedIndication:
+    case MessageCode::DataIndividualRequest:
+    case MessageCode::DataIndividualIndication:
+        return true;
+    default:
+        break;
+    }
+    return false;
 }
 
 QKnxControlField QKnxLinkLayerFrame::controlField() const
@@ -181,7 +248,7 @@ void QKnxLinkLayerFrame::removeAdditionalInfo(QKnxAdditionalInfo::Type type)
     if (oldSize == 0)
         return;
 
-    QKnxCemiPayload payload(oldSize);
+    QKnxLinkLayerPayload payload(oldSize);
 
     auto infos = additionalInfos();
     for (auto &info : qAsConst(infos)) {
@@ -202,7 +269,7 @@ void QKnxLinkLayerFrame::removeAdditionalInfo(const QKnxAdditionalInfo &info)
     if (oldSize == 0)
         return;
 
-    QKnxCemiPayload payload(oldSize);
+    QKnxLinkLayerPayload payload(oldSize);
 
     auto infos = additionalInfos();
     for (auto &tmp : qAsConst(infos)) {
@@ -225,7 +292,7 @@ void QKnxLinkLayerFrame::clearAdditionalInfos()
     if (oldSize == 0)
         return;
 
-    QKnxCemiPayload payload(0x00);
+    QKnxLinkLayerPayload payload(0x00);
     payload.appendBytes(serviceInformationRef(oldSize + 1).bytes<QByteArray>());
     setServiceInformation(payload);
 }
@@ -276,8 +343,75 @@ void QKnxLinkLayerFrame::setTpdu(const QKnxTpdu &tpdu)
     setServiceInformation(info);
 }
 
-QKnxLinkLayerFrame::QKnxLinkLayerFrame(const QKnxCemiFrame &other)
-    : QKnxCemiFrame(other)
-{}
+QKnxLinkLayerFrame::QKnxLinkLayerFrame(const QKnxLinkLayerFrame &other)
+{
+    m_code = other.messageCode();
+    m_serviceInformation = other.serviceInformation();
+
+}
+/*!
+    Returns the number of bytes of the LinkLayer frame.
+*/
+quint16 QKnxLinkLayerFrame::size() const
+{
+    return m_serviceInformation.size() + 1 /* message code */;
+}
+
+/*!
+      Returns the \l QKnxLinkLayerPayload.
+      This is the CEMI frame without the message code.
+*/
+QKnxLinkLayerPayload QKnxLinkLayerFrame::serviceInformation() const
+{
+    return m_serviceInformation;
+}
+
+/*!
+    Returns a \l QKnxLinkLayerPayloadRef at the given \a index of the LinkLayer frame
+    payload.
+*/
+QKnxLinkLayerPayloadRef QKnxLinkLayerFrame::serviceInformationRef(quint16 index) const
+{
+    return m_serviceInformation.ref(index);
+}
+
+
+/*!
+    Returns a \l QString representing the bytes of the LinkLayer frame
+*/
+QString QKnxLinkLayerFrame::toString() const
+{
+    QString tmp;
+    for (quint8 byte : m_serviceInformation.ref())
+        tmp += QStringLiteral("0x%1, ").arg(byte, 2, 16, QLatin1Char('0'));
+    tmp.chop(2);
+
+    return QStringLiteral("Message code: { 0x%1 }, Service information: { 0x%2 }")
+        .arg(quint8(m_code), 2, 16, QLatin1Char('0')).arg(tmp);
+}
+
+/*!
+    Sets the \l QKnxLinkLayerPayload \a serviceInformation of the LinkLayer frame.
+*/
+void QKnxLinkLayerFrame::setServiceInformation(const QKnxLinkLayerPayload &serviceInformation)
+{
+    m_serviceInformation = serviceInformation;
+}
+
+/*!
+    Returns the message code of the LinkLayer frame.
+*/
+QKnxLinkLayerFrame::MessageCode QKnxLinkLayerFrame::messageCode() const
+{
+    return m_code;
+}
+
+/*!
+    Sets the message code of the LinkLayer frame with \a code.
+*/
+void QKnxLinkLayerFrame::setMessageCode(QKnxLinkLayerFrame::MessageCode code)
+{
+    m_code = code;
+}
 
 QT_END_NAMESPACE

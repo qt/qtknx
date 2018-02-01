@@ -31,24 +31,24 @@
 
 QT_BEGIN_NAMESPACE
 
-QKnxNetIpRoutingIndication::QKnxNetIpRoutingIndication(const QKnxCemiFrame &cemi)
+QKnxNetIpRoutingIndication::QKnxNetIpRoutingIndication(const QKnxLinkLayerFrame &frame)
     : QKnxNetIpFrame(QKnxNetIp::ServiceType::RoutingIndication)
 {
-    setCemi(cemi);
+    setLinkLayerFrame(frame);
 }
 
 QKnxNetIpRoutingIndication::QKnxNetIpRoutingIndication(const QKnxNetIpFrame &other)
     : QKnxNetIpFrame(other)
 {}
 
-QKnxCemiFrame QKnxNetIpRoutingIndication::cemi() const
+QKnxLinkLayerFrame QKnxNetIpRoutingIndication::linkLayerFrame() const
 {
-    return QKnxCemiFrame::fromBytes(payloadRef(), 0, payloadRef().size());
+    return QKnxLinkLayerFrame::fromBytes(payloadRef(), 0, payloadRef().size());
 }
 
-void QKnxNetIpRoutingIndication::setCemi(const QKnxCemiFrame &cemi)
+void QKnxNetIpRoutingIndication::setLinkLayerFrame(const QKnxLinkLayerFrame &frame)
 {
-    setPayload(QKnxNetIpPayload::fromBytes(cemi.bytes(), 0, cemi.size()));
+    setPayload(QKnxNetIpPayload::fromBytes(frame.bytes(), 0, frame.size()));
 }
 
 bool QKnxNetIpRoutingIndication::isValid() const

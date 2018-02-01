@@ -36,8 +36,8 @@ QT_BEGIN_NAMESPACE
     \class QKnxTpdu
 
     \inmodule QtKnx
-    \brief This class represents the part of the \l QKnxCemiFrame to be read by
-    the network, transport and application layers.
+    \brief This class represents the part of the \l QKnxLinkLayerFrame to be
+    read by the network, transport and application layers.
 
     To build a valid TPDU it is recommended to use the \l QKnxTpduFactory.
     Reading the bytes from left to right, a TPDU is composed of the following

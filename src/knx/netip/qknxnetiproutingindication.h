@@ -30,7 +30,7 @@
 #ifndef QKNXNETIPROUTINGINDICATION_H
 #define QKNXNETIPROUTINGINDICATION_H
 
-#include <QtKnx/qknxcemiframe.h>
+#include <QtKnx/qknxlinklayerframe.h>
 #include <QtKnx/qknxnetip.h>
 #include <QtKnx/qknxnetipframe.h>
 #include <QtKnx/qknxglobal.h>
@@ -43,7 +43,7 @@ public:
     QKnxNetIpRoutingIndication() = default;
     ~QKnxNetIpRoutingIndication() override = default;
 
-    explicit QKnxNetIpRoutingIndication(const QKnxCemiFrame &cemi);
+    explicit QKnxNetIpRoutingIndication(const QKnxLinkLayerFrame &cemi);
 
     template <typename T>
         static QKnxNetIpRoutingIndication fromBytes(const T &bytes, quint16 index)
@@ -52,8 +52,8 @@ public:
             QKnxNetIp::ServiceType::RoutingIndication);
     }
 
-    QKnxCemiFrame cemi() const;
-    void setCemi(const QKnxCemiFrame &cemi);
+    QKnxLinkLayerFrame linkLayerFrame() const;
+    void setLinkLayerFrame(const QKnxLinkLayerFrame &cemi);
 
     bool isValid() const override;
 

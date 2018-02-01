@@ -119,7 +119,7 @@ Tunneling::Tunneling(QWidget* parent)
         ui->textOuputTunneling->append(tr("Send tunnel frame with cEMI payload: ")
             + ui->cemiFrame->text());
         auto data = QByteArray::fromHex(ui->cemiFrame->text().toLatin1());
-        m_tunnel.sendTunnelFrame(QKnxCemiFrame::fromBytes(data, 0, data.size()));
+        m_tunnel.sendTunnelFrame(QKnxLinkLayerFrame::fromBytes(data, 0, data.size()));
     });
 
     connect(&m_tunnel, &QKnxNetIpTunnelConnection::receivedTunnelFrame, this,
@@ -258,7 +258,7 @@ void Tunneling::clearLogging()
 
 void Tunneling::updateFrame()
 {
-    m_frame.setMessageCode(QKnxCemiFrame::MessageCode(ui->mc->currentData().toUInt()));
+    m_frame.setMessageCode(QKnxLinkLayerFrame::MessageCode(ui->mc->currentData().toUInt()));
     m_frame.setControlField(m_ctrl);
     m_frame.setExtendedControlField(m_extCtrl);
     m_frame.setSourceAddress({ QKnxAddress::Type::Individual, ui->sourceAddress->text() });

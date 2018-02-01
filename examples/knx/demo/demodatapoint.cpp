@@ -88,12 +88,12 @@ bool DemoColorLed::updateDataPointState(const QKnxLinkLayerFrame &frame)
 {
     bool notifyUI = false;
     numMsgConfirmation++;
-    if (frame.messageCode() == QKnxCemiFrame::MessageCode::DataConfirmation) {
+    if (frame.messageCode() == QKnxLinkLayerFrame::MessageCode::DataConfirmation) {
         // response to request from UI
         // wait for three color confirmation to signal UI
         if (numMsgConfirmation == 3)
             notifyUI = true;
-    } else if (frame.messageCode() == QKnxCemiFrame::MessageCode::DataIndication) {
+    } else if (frame.messageCode() == QKnxLinkLayerFrame::MessageCode::DataIndication) {
         // response to request from Board
         notifyUI = true;
     }
