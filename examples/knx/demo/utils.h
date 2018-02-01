@@ -59,7 +59,7 @@
 QKnxLinkLayerFrame createRequestFrame(const QKnxAddress &address, const QKnxTpdu &tpdu,
     quint8 ctrl = 0xac, quint8 extCtrl = 0xe0)
 {
-    QKnxLinkLayerFrame frame(QKnxLinkLayerFrame::MessageCode::DataRequest);
+    QKnxLinkLayerFrame frame(QKnx::MediumType::NetIP, QKnxLinkLayerFrame::MessageCode::DataRequest);
     frame.setControlField(QKnxControlField(ctrl));
     frame.setExtendedControlField(QKnxExtendedControlField(extCtrl));
     frame.setSourceAddress({ QKnxAddress::Type::Group, 0 });

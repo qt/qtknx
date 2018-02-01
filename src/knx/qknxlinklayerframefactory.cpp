@@ -30,6 +30,12 @@
 #include "qknxlinklayerframefactory.h"
 #include "qknxtpdufactory.h"
 
+// TODO: introduce QKnx::MediumType dependency. The LinkLayer Frame look different
+// depending on the chosen medium. For the moment only netIp Tunneling is taken care of.
+// But GroupValue service can be send via L_Data (netIp) or L_Data_Standard / L_Data_Extended
+// if medium is TP of PL. Maybe transform this factory into a builder, somehow "linked" to
+// the LinkLayerFrame, so that the MediumType is known.
+
 QT_BEGIN_NAMESPACE
 
 /*!
@@ -274,7 +280,6 @@ QKnxLinkLayerFrame QKnxLinkLayerFrameFactory::GroupValue::createWriteIndication(
     return createFrame(QKnxLinkLayerFrame::MessageCode::DataIndication, ctrl, extCtrl, src, dest,
         tpdu);
 }
-
 
 
 // -- A_GroupValue Tools

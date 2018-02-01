@@ -94,20 +94,29 @@ QT_BEGIN_NAMESPACE
 
     \note The LinkLayer frame will be other wise empty and needs to be set by hand.
 */
-QKnxLinkLayerFrame::QKnxLinkLayerFrame(QKnxLinkLayerFrame::MessageCode messageCode)
+QKnxLinkLayerFrame::QKnxLinkLayerFrame(QKnx::MediumType mediumType,
+    QKnxLinkLayerFrame::MessageCode messageCode)
     : m_code(messageCode)
+    , m_mediumType(mediumType)
 {}
 
 /*!
     Constructs a LinkLayer frame starting with \a messageCode and with a \l QKnxLinkLayerPayload \a payload.
 */
-QKnxLinkLayerFrame::QKnxLinkLayerFrame(QKnxLinkLayerFrame::MessageCode messageCode, const QKnxLinkLayerPayload &payload)
+QKnxLinkLayerFrame::QKnxLinkLayerFrame(QKnx::MediumType mediumType,
+    QKnxLinkLayerFrame::MessageCode messageCode, const QKnxLinkLayerPayload &payload)
     : m_code(messageCode)
+    , m_mediumType(mediumType)
     , m_serviceInformation(payload)
 {}
 
+/*!
+    Constructs an empty LinkLayer frame. The MediumType is set.
+*/
+QKnxLinkLayerFrame::QKnxLinkLayerFrame(QKnx::MediumType mediumType)
+    : m_mediumType(mediumType)
+{}
 
-// TODO, adapt so that it's not only valid for the netIptunnel frame
 /*!
   Returns true if the message code is valid.
 
@@ -115,52 +124,62 @@ QKnxLinkLayerFrame::QKnxLinkLayerFrame(QKnxLinkLayerFrame::MessageCode messageCo
 */
 bool QKnxLinkLayerFrame::isValid() const
 {
+    // TODO, adapt so that it's not only valid for the netIptunnel frame
     if (!isMessageCodeValid())
     return false;
 
-    // TODO: Make sure all constraints from 3.3.2 paragraph 2.2 L_Data is checked here
-
-    //Extended control field destination address type corresponds to the destination address
-    if (destinationAddress().type() != extendedControlField().destinationAddressType())
-        return false;
     // Tpdu is valid
     if (! tpdu().isValid())
         return false;
 
-    switch (messageCode()) {
-    // L_Data
-    case MessageCode::DataRequest:
-    case MessageCode::DataConfirmation:
-    case MessageCode::DataIndication:
-        // From 3.3.2 paragraph 2.2.1
-        if (sourceAddress().type() != QKnxAddress::Type::Individual)
+    // For the moment we only check for netIp Tunnel
+    // TP and PL send L_Data_Standard and L_Data_Extended
+    // TODO: Make the check more general (maybe other MediumType could use the following check)
+    if (m_mediumType == QKnx::MediumType::NetIP) {
+        // TODO: Make sure all constraints from 3.3.2 paragraph 2.2 L_Data is checked here
+
+        //Extended control field destination address type corresponds to the destination address
+        if (destinationAddress().type() != extendedControlField().destinationAddressType())
             return false;
-    default:
-        break;
+
+        switch (messageCode()) {
+        // L_Data
+        case MessageCode::DataRequest:
+        case MessageCode::DataConfirmation:
+        case MessageCode::DataIndication:
+            // From 3.3.2 paragraph 2.2.1
+            if (sourceAddress().type() != QKnxAddress::Type::Individual)
+                return false;
+        default:
+            break;
+        }
+        // TODO: check NPDU/ TPDU size, several cases need to be taken into account:
+        // 1; Information-Length (max. value is 255); number of TPDU octets, TPCI octet not included!
+        if (controlField().frameType() == QKnxControlField::FrameType::Extended
+            && tpdu().size() > 256)
+            return false;
+        // Low Priority is Mandatory for long frame 3.3.2 paragraph 2.2.3
+        if (tpdu().size() > 16 && controlField().priority() != QKnxControlField::Priority::Low)
+            return false;
+        // 2; Check presence of Pl/RF medium information in the additional info -> size always needs
+        //    to be greater then 15 bytes because both need additional information.
+        //    03_06_03 EMI_IMI v01.03.03 AS.pdf page 76 Table(Use of flags in control field)
+        // 3; RF frames do not include a length field at all, it is supposed to be set to 0x00.
+        //    03_06_03 EMI_IMI v01.03.03 AS.pdf page 75 NOTE 1
+        // 4; 03_03_02 Data Link Layer General v01.02.02 AS.pdf page 12 paragraph 2.2.5
+        // control field frame type standard -> max. length value is 15
+        if (controlField().frameType() == QKnxControlField::FrameType::Standard
+            && tpdu().byte(0) > 15)
+            return false;
+        //  control field frame type extended -> max. length value is 255
+        return true;
     }
-    // TODO: check NPDU/ TPDU size, several cases need to be taken into account:
-    // 1; Information-Length (max. value is 255); number of TPDU octets, TPCI octet not included!
-    if (controlField().frameType() == QKnxControlField::FrameType::Extended
-        && tpdu().size() > 257)
-        return false;
-    // Low Priority is Mandatory for long frame 3.3.2 paragraph 2.2.3
-    if (tpdu().size() > 17 && controlField().priority() != QKnxControlField::Priority::Low)
-        return false;
-    // 2; Check presence of Pl/RF medium information in the additional info -> size always needs
-    //    to be greater then 15 bytes because both need additional information.
-    //    03_06_03 EMI_IMI v01.03.03 AS.pdf page 76 Table(Use of flags in control field)
-    // 3; RF frames do not include a length field at all, it is supposed to be set to 0x00.
-    //    03_06_03 EMI_IMI v01.03.03 AS.pdf page 75 NOTE 1
-    // 4; 03_03_02 Data Link Layer General v01.02.02 AS.pdf page 12 paragraph 2.2.5
-    // control field frame type standard -> max. length value is 15
-    if (controlField().frameType() == QKnxControlField::FrameType::Standard
-        && tpdu().byte(0) > 15)
-        return false;
-    //  control field frame type extended -> max. length value is 255
-    return true;
+
+    // TODO: implement checks for other medium type
+    return false;
+
 }
 
-// TODO, also check against the Medium Type
 /*!
     Return \c true if the Message Code of the LinkLayer frame is valid; \c false otherwise.
 
@@ -169,6 +188,10 @@ bool QKnxLinkLayerFrame::isValid() const
 */
 bool QKnxLinkLayerFrame::isMessageCodeValid() const
 {
+    // TODO: extend the medium type check
+    // TODO: some message code could be valide for other MediumType as well.
+    // Adapt the function when other Medium type get implemented.
+
     switch (m_code) {
     case MessageCode::BusmonitorIndication:
     case MessageCode::DataRequest:
@@ -177,13 +200,17 @@ bool QKnxLinkLayerFrame::isMessageCodeValid() const
     case MessageCode::RawRequest:
     case MessageCode::RawIndication:
     case MessageCode::RawConfirmation:
+    case MessageCode::ResetRequest:
+         // For the moment the QKnxLinkLayerFrameFactory is not setting the MediumType
+        if (m_mediumType == QKnx::MediumType::Unknown)
+            return (guessMediumType(m_code) == QKnx::MediumType::NetIP);
+        return (m_mediumType == QKnx::MediumType::NetIP);
     case MessageCode::PollDataRequest:
     case MessageCode::PollDataConfirmation:
     case MessageCode::DataConnectedRequest:
     case MessageCode::DataConnectedIndication:
     case MessageCode::DataIndividualRequest:
     case MessageCode::DataIndividualIndication:
-        return true;
     default:
         break;
     }
@@ -412,6 +439,22 @@ QKnxLinkLayerFrame::MessageCode QKnxLinkLayerFrame::messageCode() const
 void QKnxLinkLayerFrame::setMessageCode(QKnxLinkLayerFrame::MessageCode code)
 {
     m_code = code;
+}
+
+/*!
+    Returns the medium type to be used to send the LinkLayer frame.
+*/
+QKnx::MediumType QKnxLinkLayerFrame::mediumType() const
+{
+    return m_mediumType;
+}
+
+/*!
+    Sets the medium type to be used to send the LinkLayer frame with \a type.
+*/
+void QKnxLinkLayerFrame::setMediumType(QKnx::MediumType type)
+{
+    m_mediumType = type;
 }
 
 QT_END_NAMESPACE

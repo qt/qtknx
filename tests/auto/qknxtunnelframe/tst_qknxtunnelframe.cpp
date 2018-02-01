@@ -50,7 +50,7 @@ private slots:
             { QKnxAdditionalInfo::Type::ManufactorSpecificData, QByteArray::fromHex("708090") }
         };
 
-        QKnxLinkLayerFrame frame(QKnxLinkLayerFrame::MessageCode::DataRequest);
+        QKnxLinkLayerFrame frame(QKnx::MediumType::NetIP, QKnxLinkLayerFrame::MessageCode::DataRequest);
         frame.setControlField(QKnxControlField(1));
         frame.setExtendedControlField(QKnxExtendedControlField(2));
         frame.addAdditionalInfo(addInfos.first());
@@ -89,7 +89,7 @@ private slots:
             { QKnxAdditionalInfo::Type::ManufactorSpecificData, QByteArray::fromHex("708090") }
         };
 
-        QKnxLinkLayerFrame frame(QKnxLinkLayerFrame::MessageCode::DataRequest);
+        QKnxLinkLayerFrame frame(QKnx::MediumType::NetIP, QKnxLinkLayerFrame::MessageCode::DataRequest);
         frame.setControlField(QKnxControlField(1));
         frame.setExtendedControlField(QKnxExtendedControlField(2));
         frame.addAdditionalInfo(addInfos.first());

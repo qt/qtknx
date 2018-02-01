@@ -37,6 +37,7 @@
 #include <QtKnx/qknxglobal.h>
 #include <QtKnx/qknxtpdu.h>
 #include <QtKnx/qknxnetippayload.h>
+#include <QtKnx/qknxnamespace.h>
 
 QT_BEGIN_NAMESPACE
 
@@ -76,12 +77,15 @@ public:
     Q_ENUM(MessageCode)
     MessageCode messageCode() const;
     void setMessageCode(MessageCode code);
+    QKnx::MediumType mediumType() const;
+    void setMediumType(QKnx::MediumType mediumType);
 
 
     QKnxLinkLayerFrame() = default;
     ~QKnxLinkLayerFrame() = default;
 
-    explicit QKnxLinkLayerFrame(QKnxLinkLayerFrame::MessageCode messageCode);
+    explicit QKnxLinkLayerFrame(QKnx::MediumType mediumType);
+    QKnxLinkLayerFrame(QKnx::MediumType mediumType, QKnxLinkLayerFrame::MessageCode messageCode);
     QKnxLinkLayerFrame(const QKnxLinkLayerFrame &other);
 
     quint16 size() const;
@@ -105,7 +109,8 @@ public:
     }
 
     template <typename T, std::size_t S = 0>
-        static QKnxLinkLayerFrame fromBytes(const T &type, quint16 index, quint16 size)
+        static QKnxLinkLayerFrame fromBytes(const T &type, quint16 index, quint16 size,
+        QKnx::MediumType mediumType = QKnx::MediumType::Unknown)
     {
         static_assert(is_type<T, QByteArray, QVector<quint8>, QKnxByteStoreRef, std::deque<quint8>,
             std::vector<quint8>, std::array<quint8, S>>::value, "Type not supported.");
@@ -116,7 +121,12 @@ public:
         QKnxLinkLayerPayload payload;
         auto begin = std::next(std::begin(type), index);
         payload.setBytes(std::next(begin, 1), std::next(begin, size));
-        return QKnxLinkLayerFrame(MessageCode(QKnxUtils::QUint8::fromBytes(type, index)), payload);
+
+        MessageCode code = MessageCode(QKnxUtils::QUint8::fromBytes(type, index));
+        if (mediumType == QKnx::MediumType::Unknown)
+            mediumType = guessMediumType(code);
+
+        return QKnxLinkLayerFrame(mediumType, code, payload);
     }
 
     // Parts of the LinkLayer frame alway there (regardless of the MessageCode/Frame Type)
@@ -167,12 +177,43 @@ public:
     void clearAdditionalInfos();
 
 protected:
-    QKnxLinkLayerFrame(QKnxLinkLayerFrame::MessageCode messageCode, const QKnxLinkLayerPayload &payload);
+    QKnxLinkLayerFrame(QKnx::MediumType mediumType, QKnxLinkLayerFrame::MessageCode messageCode, const QKnxLinkLayerPayload &payload);
     void setServiceInformation(const QKnxLinkLayerPayload &serviceInformation);
 
 private:
-    MessageCode m_code;
+    // TODO: introduce d pointer
+    MessageCode m_code = MessageCode::Unknown;
+    QKnx::MediumType m_mediumType = QKnx::MediumType::Unknown;
     QKnxLinkLayerPayload m_serviceInformation;
+
+    // TODO: Move into .cpp file once ::fromBytes is there as well.
+    static QKnx::MediumType guessMediumType(MessageCode messageCode)
+    {
+        switch (messageCode) {
+        case MessageCode::BusmonitorIndication:
+        case MessageCode::DataRequest:
+        case MessageCode::DataConfirmation:
+        case MessageCode::DataIndication:
+        case MessageCode::RawRequest:
+        case MessageCode::RawIndication:
+        case MessageCode::RawConfirmation:
+        case MessageCode::ResetRequest:
+            return QKnx::MediumType::NetIP;
+        // The following message code are not part of what netIp/Tunneling can send
+        // Not quite sure to which medium they can be associated
+        // TODO: associate those message code to a give MediumType
+        case MessageCode::PollDataRequest:
+        case MessageCode::PollDataConfirmation:
+        case MessageCode::DataConnectedRequest:
+        case MessageCode::DataConnectedIndication:
+        case MessageCode::DataIndividualRequest:
+        case MessageCode::DataIndividualIndication:
+        default:
+            break;
+        }
+        return QKnx::MediumType::Unknown;
+
+    }
 };
 
 QT_END_NAMESPACE
