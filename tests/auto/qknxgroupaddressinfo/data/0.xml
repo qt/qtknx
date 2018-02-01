@@ -1,0 +1,145 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<KNX xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+     CreatedBy="ETS5"
+     ToolVersion="5.5.952.23148"
+     xmlns="http://knx.org/xml/project/13">
+    <Project Id="ProjectId">
+        <Installations>
+            <Installation Name="Installation"
+                          BCUKey="4294967295"
+                          DefaultLine="P-01EB-0_L-3"
+                          IPRoutingLatencyTolerance="2000"
+                          CompletionStatus="Undefined"
+                          InstallationId="1"
+                          IPRoutingBackboneKey="12345"
+                          IPRoutingBackboneSecurity="On"
+                          IPRoutingMulticastAddress="192.168.2.1"
+                          IPSyncLatencyFraction="2"
+                          MulticastTTL="25"
+                          SplitType="Master">
+                <GroupAddresses>
+                    <GroupRanges>
+                        <GroupRange Id="P-050F-0_GR-1"
+                                    RangeStart="1"
+                                    RangeEnd="2047"
+                                    Name="GroupRange"
+                                    Puid="58"
+                                    Unfiltered="false"
+                                    Description="Description"
+                                    Comment="Comment"
+                                    Security="Auto">
+                            <GroupRange Id="P-050F-0_GR-16"
+                                        RangeStart="1"
+                                        RangeEnd="255"
+                                        Name="GroupRange2"
+                                        Puid="308">
+                                <GroupAddress Id="P-050F-0_GA-355"
+                                              Address="1"
+                                              Name="Name"
+                                              Description="Description"
+                                              DatapointType="DPST-1-1"
+                                              Puid="436"
+                                              Unfiltered="false"
+                                              Central="true"
+                                              Global="false"
+                                              Comment="Comment"
+                                              Key="Key"
+                                              Security="Auto"/>
+                                <GroupAddress Id="P-050F-0_GA-356"
+                                              Address="2"
+                                              Name="Name2"
+                                              Description="Description2"
+                                              DatapointType="DPST-20-102"
+                                              Puid="437"
+                                              Unfiltered="false"
+                                              Central="true"
+                                              Global="false"
+                                              Comment="Comment"
+                                              Key="Key"
+                                              Security="Auto"/>
+                            </GroupRange>
+                        </GroupRange>
+                        <GroupRange Id="P-050F-0_GR-2"
+                                    RangeStart="2048"
+                                    RangeEnd="4095"
+                                    Name="GroupRange3"
+                                    Puid="59"
+                                    Unfiltered="false"
+                                    Description="Description"
+                                    Comment="Comment"
+                                    Security="Auto">
+                            <GroupAddress Id="P-050F-0_GA-261"
+                                          Address="2048"
+                                          Name="Name3"
+                                          Description="Description3"
+                                          DatapointType="DPST-1-1"
+                                          Puid="342"
+                                          Unfiltered="false"
+                                          Central="true"
+                                          Global="false"
+                                          Comment="Comment3"
+                                          Key="Key3"
+                                          Security="Auto"/>
+                            <GroupRange Id="P-050F-0_GR-17"
+                                        RangeStart="2048"
+                                        RangeEnd="2303"
+                                        Name="GroupRange4"
+                                        Puid="309"
+                                        Unfiltered="false"
+                                        Description="Description"
+                                        Comment="Comment"
+                                        Security="Auto">
+                                <GroupAddress Id="P-050F-0_GA-262"
+                                              Address="2049"
+                                              Name="Name4"
+                                              Description="Description4"
+                                              DatapointType="DPST-1-1"
+                                              Puid="343"
+                                              Unfiltered="false"
+                                              Central="true"
+                                              Global="false"
+                                              Comment="Comment4"
+                                              Key="Key4"
+                                              Security="Auto"/>
+                            </GroupRange>
+                            <GroupRange Id="P-050F-0_GR-18"
+                                        RangeStart="2304"
+                                        RangeEnd="2559"
+                                        Name="GroupRange5"
+                                        Puid="310"
+                                        Unfiltered="false"
+                                        Description="Description5"
+                                        Comment="Comment5"
+                                        Security="Auto">
+                                <GroupAddress Id="P-050F-0_GA-358"
+                                              Address="2304"
+                                              Name="Name5"
+                                              Description="Description5"
+                                              DatapointType="DPST-1-1"
+                                              Puid="439"
+                                              Unfiltered="false"
+                                              Central="true"
+                                              Global="false"
+                                              Comment="Comment5"
+                                              Key="Key5"
+                                              Security="Auto"/>
+                                <GroupAddress Id="P-050F-0_GA-359"
+                                              Address="2305"
+                                              Name="Name6"
+                                              Description="Description6"
+                                              Puid="440"
+                                              Unfiltered="false"
+                                              Central="true"
+                                              Global="false"
+                                              Comment="Comment6"
+                                              Key="Key6"
+                                              Security="Auto"/>
+                            </GroupRange>
+                        </GroupRange>
+                    </GroupRanges>
+                </GroupAddresses>
+            </Installation>
+        </Installations>
+    </Project>
+</KNX>

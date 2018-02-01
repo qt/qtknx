@@ -41,6 +41,10 @@ struct Q_KNX_EXPORT QKnxGroupAddress
     Q_DECLARE_TR_FUNCTIONS(QKnxGroupAddress)
 
 public:
+    QKnxGroupAddress() = default;
+    QKnxGroupAddress(const QString &id, quint32 address, const QString &name, qint32 puid)
+        : Id(id), Address(address), Name(name), Puid(puid)
+    {}
     QString Id; // non-colonized name, pattern [\i-[:]][\c-[:]]*
     quint32 Address; // min. value 1, 65535 value max.
     QString Name; // 255 character max.
@@ -55,6 +59,27 @@ public:
     QString Security { QLatin1String("Auto") }; // optional, Auto, On, Off
 
     bool parseElement(QXmlStreamReader *reader, bool pedantic);
+
+    bool operator==(const QKnxGroupAddress &other) const
+    {
+        return Id == other.Id
+            && Address == other.Address
+            && Name == other.Name
+            && Unfiltered == other.Unfiltered
+            && Central == other.Central
+            && Global == other.Global
+            && DatapointType == other.DatapointType
+            && Description == other.Description
+            && Comment == other.Comment
+            && Puid == other.Puid
+            && Key == other.Key
+            && Security == other.Security;
+    }
+
+    bool operator!=(const QKnxGroupAddress &other) const
+    {
+        return !operator==(other);
+    }
 };
 
 struct Q_KNX_EXPORT QKnxGroupRange

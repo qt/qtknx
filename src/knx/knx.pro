@@ -38,7 +38,9 @@ PUBLIC_HEADERS += \
     qknxtransportlayer.h \
     qknxtunnelframe.h \
     qknxtunnelframefactory.h \
-    qknxutils.h
+    qknxutils.h \
+    qknxgroupaddressinfos.h \
+    qknxgroupaddressinfo.h
 
 PRIVATE_HEADERS += \
     qknxlinklayerdevice_p.h \
@@ -66,7 +68,9 @@ SOURCES += \
     qknxnpdufactory_p2p.cpp \
     qknxtransportlayer.cpp \
     qknxtunnelframe.cpp \
-    qknxtunnelframefactory.cpp
+    qknxtunnelframefactory.cpp \
+    qknxgroupaddressinfos.cpp \
+    qknxgroupaddressinfo.cpp
 
 HEADERS += $$PUBLIC_HEADERS $$PRIVATE_HEADERS
 

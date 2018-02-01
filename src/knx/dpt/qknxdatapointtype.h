@@ -273,6 +273,11 @@ private:
     using QKnxDatapointType::resize;
 };
 
+inline uint qHash(const QKnxDatapointType::Type &key, uint seed)
+{
+    return qHash(quint32(key), seed);
+}
+
 class Q_KNX_EXPORT QKnxVariableSizeDatapointType : public QKnxDatapointType
 {
 public:
