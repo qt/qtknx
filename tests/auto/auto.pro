@@ -38,4 +38,5 @@ SUBDIRS += cmake \
     qknxdatapointtype \
     qknxproject \
     qknxtransportlayerstatemachine \
-    qknxgroupaddressinfo
+    qknxgroupaddressinfo \
+    qknxbytearray

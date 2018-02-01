@@ -8,7 +8,7 @@ SOURCES += \
     $$PWD/qknxtransportlayerstate.cpp \
     $$PWD/qknxtransportlayerstatemachine.cpp
 
-    PRIVATE_HEADERS += \
+PRIVATE_HEADERS += \
     $$PWD/qknxtransportlayerclosedstate_p.h \
     $$PWD/qknxtransportlayerconnectingstate_p.h \
     $$PWD/qknxtransportlayeropenidlestate_p.h \
