@@ -195,7 +195,7 @@ void QKnxLocalDeviceManagementFrame::setStartIndex(quint16 index)
     setServiceInformation(si);
 }
 
-QKnxCemi::Server::Error QKnxLocalDeviceManagementFrame::error() const
+QKnx::CemiServer::Error QKnxLocalDeviceManagementFrame::error() const
 {
     switch (messageCode()) {
     case QKnxCemiFrame::MessageCode::PropertyReadConfirmation:
@@ -203,16 +203,16 @@ QKnxCemi::Server::Error QKnxLocalDeviceManagementFrame::error() const
         if (numberOfElements() == 0) {
             auto err = data();
             if (err.size() < 1)
-                return QKnxCemi::Server::Error::Unspecified;
-            return QKnxCemi::Server::Error(quint8(err[0]));
+                return QKnx::CemiServer::Error::Unspecified;
+            return QKnx::CemiServer::Error(quint8(err[0]));
         }
     default:
         break;
     }
-    return QKnxCemi::Server::Error::None;
+    return QKnx::CemiServer::Error::None;
 }
 
-void QKnxLocalDeviceManagementFrame::setError(QKnxCemi::Server::Error error)
+void QKnxLocalDeviceManagementFrame::setError(QKnx::CemiServer::Error error)
 {
     // Set error code on confirmed messages only. See paragraph 4.1.7.3.7.1
     switch (messageCode()) {
@@ -229,20 +229,20 @@ void QKnxLocalDeviceManagementFrame::setError(QKnxCemi::Server::Error error)
     }
 }
 
-QKnxCemi::Server::ReturnCode QKnxLocalDeviceManagementFrame::returnCode() const
+QKnx::CemiServer::ReturnCode QKnxLocalDeviceManagementFrame::returnCode() const
 {
     switch (messageCode()) {
     //case QKnxCemiFrame::MessageCode::FunctionPropertyStateReadConfirmation:
     case QKnxCemiFrame::MessageCode::FunctionPropertyCommandConfirmation:
         if (size() >= 6)
-            return QKnxCemi::Server::ReturnCode(serviceInformationRef().byte(5));
+            return QKnx::CemiServer::ReturnCode(serviceInformationRef().byte(5));
     default:
         break;
     }
-    return QKnxCemi::Server::ReturnCode::Error;
+    return QKnx::CemiServer::ReturnCode::Error;
 }
 
-void QKnxLocalDeviceManagementFrame::setReturnCode(QKnxCemi::Server::ReturnCode code)
+void QKnxLocalDeviceManagementFrame::setReturnCode(QKnx::CemiServer::ReturnCode code)
 {
     switch (messageCode()) {
     //case QKnxCemiFrame::MessageCode::FunctionPropertyStateReadConfirmation:

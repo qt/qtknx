@@ -30,11 +30,11 @@
 #ifndef QKNXLOCALDEVICEMANAGEMENTFRAME_H
 #define QKNXLOCALDEVICEMANAGEMENTFRAME_H
 
-#include <QtKnx/qknxcemi.h>
 #include <QtKnx/qknxcemiframe.h>
 #include <QtKnx/qknxglobal.h>
 #include <QtKnx/qknxinterfaceobjectproperty.h>
 #include <QtKnx/qknxinterfaceobjecttype.h>
+#include <QtKnx/qknxnamespace.h>
 
 QT_BEGIN_NAMESPACE
 
@@ -66,11 +66,11 @@ public:
     quint16 startIndex() const;
     void setStartIndex(quint16 index);
 
-    QKnxCemi::Server::Error error() const;
-    void setError(QKnxCemi::Server::Error error);
+    QKnx::CemiServer::Error error() const;
+    void setError(QKnx::CemiServer::Error error);
 
-    QKnxCemi::Server::ReturnCode returnCode() const;
-    void setReturnCode(QKnxCemi::Server::ReturnCode code);
+    QKnx::CemiServer::ReturnCode returnCode() const;
+    void setReturnCode(QKnx::CemiServer::ReturnCode code);
 
     template <typename T = QByteArray> auto data() const -> decltype(T())
     {

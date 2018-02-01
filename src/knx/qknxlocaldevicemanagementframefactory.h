@@ -62,7 +62,7 @@ public:
             QKnxInterfaceObjectProperty pid,
             quint8 numberOfElements,
             quint16 startIndex,
-            QKnxCemi::Server::Error error = QKnxCemi::Server::Error::None);
+            QKnx::CemiServer::Error error = QKnx::CemiServer::Error::None);
 
         static QKnxLocalDeviceManagementFrame createConfirmation(
             const QKnxLocalDeviceManagementFrame &request,
@@ -70,7 +70,7 @@ public:
 
         static QKnxLocalDeviceManagementFrame createConfirmation(
             const QKnxLocalDeviceManagementFrame &request,
-            QKnxCemi::Server::Error error);
+            QKnx::CemiServer::Error error);
     };
 
     struct Q_KNX_EXPORT PropertyWrite final
@@ -89,11 +89,11 @@ public:
             QKnxInterfaceObjectProperty pid,
             quint8 numberOfElements,
             quint16 startIndex,
-            QKnxCemi::Server::Error error = QKnxCemi::Server::Error::None);
+            QKnx::CemiServer::Error error = QKnx::CemiServer::Error::None);
 
         static QKnxLocalDeviceManagementFrame createConfirmation(
             const QKnxLocalDeviceManagementFrame &request,
-            QKnxCemi::Server::Error error = QKnxCemi::Server::Error::None);
+            QKnx::CemiServer::Error error = QKnx::CemiServer::Error::None);
     };
 
     struct Q_KNX_EXPORT PropertyInfo final
@@ -124,7 +124,7 @@ public:
         static QKnxLocalDeviceManagementFrame createConfirmation(QKnxInterfaceObjectType type,
             quint8 instance,
             QKnxInterfaceObjectProperty pid,
-            QKnxCemi::Server::ReturnCode code,
+            QKnx::CemiServer::ReturnCode code,
             const QVector<quint8> &data);
 
         static QKnxLocalDeviceManagementFrame createConfirmation(
@@ -132,7 +132,7 @@ public:
 
         static QKnxLocalDeviceManagementFrame createConfirmation(
             const QKnxLocalDeviceManagementFrame &request,
-            QKnxCemi::Server::ReturnCode code,
+            QKnx::CemiServer::ReturnCode code,
             const QVector<quint8> &data);
     };
 
@@ -157,7 +157,7 @@ public:
         static QKnxLocalDeviceManagementFrame createConfirmation(QKnxInterfaceObjectType type,
             quint8 instance,
             QKnxInterfaceObjectProperty pid,
-            QKnxCemi::Server::ReturnCode code,
+            QKnx::CemiServer::ReturnCode code,
             const QVector<quint8> &data);
 
         static QKnxLocalDeviceManagementFrame createConfirmation(
@@ -165,7 +165,7 @@ public:
 
         static QKnxLocalDeviceManagementFrame createConfirmation(
             const QKnxLocalDeviceManagementFrame &request,
-            QKnxCemi::Server::ReturnCode code,
+            QKnx::CemiServer::ReturnCode code,
             const QVector<quint8> &data);
     };
 
