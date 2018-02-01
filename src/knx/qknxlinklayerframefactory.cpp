@@ -27,7 +27,7 @@
 **
 ******************************************************************************/
 
-#include "qknxtunnelframefactory.h"
+#include "qknxlinklayerframefactory.h"
 #include "qknxtpdufactory.h"
 
 QT_BEGIN_NAMESPACE

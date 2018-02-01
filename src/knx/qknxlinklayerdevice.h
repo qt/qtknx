@@ -37,7 +37,7 @@
 #include <QtKnx/qknxconnectioninfo.h>
 #include <QtKnx/qknxdeviceconfiguration.h>
 #include <QtKnx/qknxtpdu.h>
-#include <QtKnx/qknxtunnelframe.h>
+#include <QtKnx/qknxlinklayerframe.h>
 
 using QKnxLinkLayerFrame = QKnxTunnelFrame;
 

@@ -33,7 +33,7 @@
 #include <QtKnx/qknxaddress.h>
 #include <QtKnx/qknxglobal.h>
 #include <QtKnx/qknxnetipendpointconnection.h>
-#include <QtKnx/qknxtunnelframe.h>
+#include <QtKnx/qknxlinklayerframe.h>
 
 QT_BEGIN_NAMESPACE
 

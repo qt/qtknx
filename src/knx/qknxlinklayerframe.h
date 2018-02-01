@@ -27,8 +27,8 @@
 **
 ******************************************************************************/
 
-#ifndef QKNXTUNNELFRAME_H
-#define QKNXTUNNELFRAME_H
+#ifndef QKNXLINKLAYERFRAME_H
+#define QKNXLINKLAYERFRAME_H
 
 #include <QtKnx/qknxadditionalinfo.h>
 #include <QtKnx/qknxaddress.h>

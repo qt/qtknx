@@ -25,10 +25,14 @@ PUBLIC_HEADERS += \
     qknxdeviceconfiguration.h \
     qknxextendedcontrolfield.h \
     qknxglobal.h \
+    qknxgroupaddressinfo.h \
+    qknxgroupaddressinfos.h \
     qknxinterfaceobjectproperty.h \
     qknxinterfaceobjectpropertydatatype.h \
     qknxinterfaceobjecttype.h \
     qknxlinklayerdevice.h \
+    qknxlinklayerframe.h \
+    qknxlinklayerframefactory.h \
     qknxlocaldevicemanagementframe.h \
     qknxlocaldevicemanagementframefactory.h \
     qknxnamespace.h \
@@ -36,11 +40,7 @@ PUBLIC_HEADERS += \
     qknxtpdufactory.h \
     qknxtraits.h \
     qknxtransportlayer.h \
-    qknxtunnelframe.h \
-    qknxtunnelframefactory.h \
-    qknxutils.h \
-    qknxgroupaddressinfos.h \
-    qknxgroupaddressinfo.h
+    qknxutils.h
 
 PRIVATE_HEADERS += \
     qknxlinklayerdevice_p.h \
@@ -56,21 +56,21 @@ SOURCES += \
     qknxcontrolfield.cpp \
     qknxdeviceconfiguration.cpp \
     qknxextendedcontrolfield.cpp \
+    qknxgroupaddressinfo.cpp \
+    qknxgroupaddressinfos.cpp \
     qknxinterfaceobjectproperty.cpp \
     qknxinterfaceobjectpropertydatatype.cpp \
     qknxinterfaceobjecttype.cpp \
     qknxlinklayerdevice.cpp \
+    qknxlinklayerframe.cpp \
+    qknxlinklayerframefactory.cpp \
     qknxlocaldevicemanagementframe.cpp \
     qknxlocaldevicemanagementframefactory.cpp \
     qknxtpdu.cpp \
     qknxtpdufactory_broadcast.cpp \
     qknxtpdufactory_multicast.cpp \
     qknxtpdufactory_p2p.cpp \
-    qknxtransportlayer.cpp \
-    qknxtunnelframe.cpp \
-    qknxtunnelframefactory.cpp \
-    qknxgroupaddressinfos.cpp \
-    qknxgroupaddressinfo.cpp
+    qknxtransportlayer.cpp
 
 HEADERS += $$PUBLIC_HEADERS $$PRIVATE_HEADERS
 

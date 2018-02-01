@@ -28,7 +28,7 @@
 
 #include <QtKnx/qknxcharstring.h>
 #include <QtKnx/qknxtpdufactory.h>
-#include <QtKnx/qknxtunnelframe.h>
+#include <QtKnx/qknxlinklayerframe.h>
 #include <QtTest/qtest.h>
 
 class tst_QKnxTpduFactory : public QObject

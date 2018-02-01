@@ -27,7 +27,7 @@
 ******************************************************************************/
 
 #include <QtCore/qdebug.h>
-#include <QtKnx/qknxtunnelframe.h>
+#include <QtKnx/qknxlinklayerframe.h>
 #include <QtKnx/qknxtpdufactory.h>
 #include <QtTest/qtest.h>
 

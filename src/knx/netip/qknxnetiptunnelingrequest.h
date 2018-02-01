@@ -34,7 +34,7 @@
 #include <QtKnx/qknxnetip.h>
 #include <QtKnx/qknxnetipconnectionheaderframe.h>
 #include <QtKnx/qknxglobal.h>
-#include <QtKnx/qknxtunnelframe.h>
+#include <QtKnx/qknxlinklayerframe.h>
 
 QT_BEGIN_NAMESPACE
 

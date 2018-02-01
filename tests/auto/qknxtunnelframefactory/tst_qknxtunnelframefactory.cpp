@@ -26,7 +26,7 @@
 **
 ******************************************************************************/
 
-#include <QtKnx/qknxtunnelframefactory.h>
+#include <QtKnx/qknxlinklayerframefactory.h>
 #include <QtKnx/qknxextendedcontrolfield.h>
 #include <QtTest/qtest.h>
 

@@ -47,7 +47,7 @@
 #include <QtKnx/qknxnetipendpointconnection.h>
 #include <QtNetwork/qhostaddress.h>
 #include <QtKnx/qknxlocaldevicemanagementframe.h>
-#include <QtKnx/qknxtunnelframe.h>
+#include <QtKnx/qknxlinklayerframe.h>
 
 #include <private/qobject_p.h>
 
