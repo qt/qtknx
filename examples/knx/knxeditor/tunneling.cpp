@@ -123,7 +123,7 @@ Tunneling::Tunneling(QWidget* parent)
     });
 
     connect(&m_tunnel, &QKnxNetIpTunnelConnection::receivedTunnelFrame, this,
-        [&](QKnxTunnelFrame frame) {
+        [&](QKnxLinkLayerFrame frame) {
         ui->textOuputTunneling->append(tr("Source address: %1").arg(frame.sourceAddress()
             .toString()));
         ui->textOuputTunneling->append(tr("Destination address: %1").arg(frame.destinationAddress()
@@ -344,11 +344,11 @@ void Tunneling::setupApciTpciComboBox()
 void Tunneling::setupMessageCodeComboBox()
 {
     ui->mc->addItem("L_Data.req",
-        quint8(QKnxTunnelFrame::MessageCode::DataRequest));
+        quint8(QKnxLinkLayerFrame::MessageCode::DataRequest));
     ui->mc->addItem("L_Raw.req",
-        quint8(QKnxTunnelFrame::MessageCode::RawRequest));
+        quint8(QKnxLinkLayerFrame::MessageCode::RawRequest));
     ui->mc->addItem("M_Reset.req",
-        quint8(QKnxTunnelFrame::MessageCode::ResetRequest));
+        quint8(QKnxLinkLayerFrame::MessageCode::ResetRequest));
 }
 
 void Tunneling::updateAdditionalInfoTypesComboBox()

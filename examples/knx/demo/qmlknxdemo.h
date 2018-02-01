@@ -58,7 +58,7 @@
 #include <QtGui/QColor>
 #include <QtKnx/QKnxNetIpServerDiscoveryAgent>
 #include <QtKnx/QKnxNetIpTunnelConnection>
-#include <QtKnx/QKnxTunnelFrame>
+#include <QtKnx/QKnxLinkLayerFrame>
 
 class QmlKnxDemo;
 class QmlKnxTunnel : public QObject
@@ -124,7 +124,7 @@ Q_SIGNALS:
     void colorLedChange(QColor color);
 
 public slots:
-    void handleFrame(const QKnxTunnelFrame &frame);
+    void handleFrame(const QKnxLinkLayerFrame &frame);
 
 private:
     void checkLightStatusOn();

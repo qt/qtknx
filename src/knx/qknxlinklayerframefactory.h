@@ -36,66 +36,66 @@
 
 QT_BEGIN_NAMESPACE
 
-class Q_KNX_EXPORT QKnxTunnelFrameFactory final
+class Q_KNX_EXPORT QKnxLinkLayerFrameFactory final
 {
 public:
-    QKnxTunnelFrameFactory() = delete;
+    QKnxLinkLayerFrameFactory() = delete;
 
     struct Q_KNX_EXPORT GroupValue
     {
         GroupValue() = delete;
 
-        static QKnxTunnelFrame createReadRequest(const QKnxAddress &src, const QKnxAddress &dest);
-        static QKnxTunnelFrame createReadRequest(const QKnxAddress &src, const QKnxAddress &dest,
+        static QKnxLinkLayerFrame createReadRequest(const QKnxAddress &src, const QKnxAddress &dest);
+        static QKnxLinkLayerFrame createReadRequest(const QKnxAddress &src, const QKnxAddress &dest,
                             const QKnxControlField &ctrl, const QKnxExtendedControlField &extCtrl);
 
-        static QKnxTunnelFrame createReadConfirmation(const QKnxAddress &src, const QKnxAddress &dest,
+        static QKnxLinkLayerFrame createReadConfirmation(const QKnxAddress &src, const QKnxAddress &dest,
                             QKnxControlField::Confirm status = QKnxControlField::Confirm::NoError);
-        static QKnxTunnelFrame createReadConfirmation(const QKnxAddress &src,
+        static QKnxLinkLayerFrame createReadConfirmation(const QKnxAddress &src,
                             const QKnxAddress &dest, const QKnxControlField &ctrl,
                             const QKnxExtendedControlField &extCtrl);
 
-        static QKnxTunnelFrame createReadIndication(const QKnxAddress &src,
+        static QKnxLinkLayerFrame createReadIndication(const QKnxAddress &src,
                             const QKnxAddress &dest);
-        static QKnxTunnelFrame createReadIndication(const QKnxAddress &src,
+        static QKnxLinkLayerFrame createReadIndication(const QKnxAddress &src,
                             const QKnxAddress &dest, const QKnxControlField &ctrl,
                             const QKnxExtendedControlField &extCtrl);
 
-        static QKnxTunnelFrame createResponseRequest(const QKnxAddress &src,
+        static QKnxLinkLayerFrame createResponseRequest(const QKnxAddress &src,
                             const QKnxAddress &dest, const QVector<quint8> &data);
-        static QKnxTunnelFrame createResponseRequest(const QKnxAddress &src,
+        static QKnxLinkLayerFrame createResponseRequest(const QKnxAddress &src,
                             const QKnxAddress &dest, const QVector<quint8> &data,
                             const QKnxControlField &ctrl, const QKnxExtendedControlField &extCtrl);
 
-        static QKnxTunnelFrame createResponseConfirmation(const QKnxAddress &src,
+        static QKnxLinkLayerFrame createResponseConfirmation(const QKnxAddress &src,
                             const QKnxAddress &dest, const QVector<quint8> &data,
                             QKnxControlField::Confirm status = QKnxControlField::Confirm::NoError);
-        static QKnxTunnelFrame createResponseConfirmation(const QKnxAddress &src,
+        static QKnxLinkLayerFrame createResponseConfirmation(const QKnxAddress &src,
                             const QKnxAddress &dest, const QVector<quint8> &data,
                             const QKnxControlField &ctrl, const QKnxExtendedControlField &extCtrl);
 
-        static QKnxTunnelFrame createResponseIndication(const QKnxAddress &src,
+        static QKnxLinkLayerFrame createResponseIndication(const QKnxAddress &src,
                             const QKnxAddress &dest, const QVector<quint8> &data);
-        static QKnxTunnelFrame createResponseIndication(const QKnxAddress &src,
+        static QKnxLinkLayerFrame createResponseIndication(const QKnxAddress &src,
                             const QKnxAddress &dest, const QVector<quint8> &data,
                             const QKnxControlField &ctrl, const QKnxExtendedControlField &extCtrl);
 
-        static QKnxTunnelFrame createWriteRequest(const QKnxAddress &src, const QKnxAddress &dest,
+        static QKnxLinkLayerFrame createWriteRequest(const QKnxAddress &src, const QKnxAddress &dest,
                             const QVector<quint8> &data);
-        static QKnxTunnelFrame createWriteRequest(const QKnxAddress &src, const QKnxAddress &dest,
+        static QKnxLinkLayerFrame createWriteRequest(const QKnxAddress &src, const QKnxAddress &dest,
                             const QVector<quint8> &data, const QKnxControlField &ctrl,
                             const QKnxExtendedControlField &extCtrl);
 
-        static QKnxTunnelFrame createWriteConfirmation(const QKnxAddress &src,
+        static QKnxLinkLayerFrame createWriteConfirmation(const QKnxAddress &src,
                             const QKnxAddress &dest, const QVector<quint8> &data,
                             QKnxControlField::Confirm status = QKnxControlField::Confirm::NoError);
-        static QKnxTunnelFrame createWriteConfirmation(const QKnxAddress &src,
+        static QKnxLinkLayerFrame createWriteConfirmation(const QKnxAddress &src,
                             const QKnxAddress &dest, const QVector<quint8> &data,
                             const QKnxControlField &ctrl, const QKnxExtendedControlField &extCtrl);
 
-        static QKnxTunnelFrame createWriteIndication(const QKnxAddress &src,
+        static QKnxLinkLayerFrame createWriteIndication(const QKnxAddress &src,
                             const QKnxAddress &dest, const QVector<quint8> &data);
-        static QKnxTunnelFrame createWriteIndication(const QKnxAddress &src,
+        static QKnxLinkLayerFrame createWriteIndication(const QKnxAddress &src,
                             const QKnxAddress &dest, const QVector<quint8> &data,
                             const QKnxControlField &ctrl, const QKnxExtendedControlField &extCtrl);
 

@@ -55,7 +55,7 @@
 #include <QKnxExtendedControlField>
 #include <QKnxNetIpTunnelConnection>
 #include <QKnxNetIpServerInfo>
-#include <QKnxTunnelFrame>
+#include <QKnxLinkLayerFrame>
 #include <QValidator>
 #include <QRegularExpression>
 #include <QWidget>
@@ -114,7 +114,7 @@ private:
     QKnxControlField m_ctrl;
     QKnxExtendedControlField m_extCtrl;
 
-    QKnxTunnelFrame m_frame;
+    QKnxLinkLayerFrame m_frame;
     QKnxNetIpTunnelConnection m_tunnel;
     QKnxNetIpServerInfo m_server;
 };

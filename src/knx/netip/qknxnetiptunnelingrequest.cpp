@@ -32,7 +32,7 @@
 QT_BEGIN_NAMESPACE
 
 QKnxNetIpTunnelingRequest::QKnxNetIpTunnelingRequest(quint8 id, quint8 sequenceCount,
-        const QKnxTunnelFrame &cemi)
+        const QKnxLinkLayerFrame &cemi)
     : QKnxNetIpConnectionHeaderFrame(QKnxNetIp::ServiceType::TunnelingRequest)
 {
     setConnectionHeader({ id, sequenceCount });
@@ -53,10 +53,10 @@ quint8 QKnxNetIpTunnelingRequest::sequenceCount() const
     return connectionHeader().sequenceCount();
 }
 
-QKnxTunnelFrame QKnxNetIpTunnelingRequest::cemi() const
+QKnxLinkLayerFrame QKnxNetIpTunnelingRequest::cemi() const
 {
     auto ref = payloadRef(connectionHeaderSize());
-    return QKnxTunnelFrame::fromBytes(ref.bytes<QByteArray>(), 0, ref.size());
+    return QKnxLinkLayerFrame::fromBytes(ref.bytes<QByteArray>(), 0, ref.size());
 }
 
 bool QKnxNetIpTunnelingRequest::isValid() const

@@ -34,14 +34,14 @@ QT_BEGIN_NAMESPACE
 // List of Message code for Tunneling from 3.8.4 paragraph 2.2.1
 
 /*!
-    \class QKnxTunnelFrame
+    \class QKnxLinkLayerFrame
 
     \inmodule QtKnx
-    \brief The QKnxTunnelFrame is a CEMI frame meant to be sent via a
+    \brief The QKnxLinkLayerFrame is a CEMI frame meant to be sent via a
     \l QKnxNetIpTunnelConnection between a client and a KNXnet/IP server.
 
     Following the KNXnet/IP tunneling specifications, only the
-    \l QKnxCemiFrame::MessageCode listed below are valid QKnxTunnelFrame message
+    \l QKnxCemiFrame::MessageCode listed below are valid QKnxLinkLayerFrame message
     code to be sent via KNXnet/IP tunnel connection:
 
     \list
@@ -66,10 +66,10 @@ QT_BEGIN_NAMESPACE
     The most basic functionalities are to be addressed with set of services built
     in \l QKnxTpduFactory::Multicast. For those services one should use
     DataRequest (L_Data.req), DataConfirmation (L_Data.con) or DataIndication
-    (L_Data.ind) as QKnxTunnelFrame message code.
+    (L_Data.ind) as QKnxLinkLayerFrame message code.
 */
 
-QKnxTunnelFrame::QKnxTunnelFrame(QKnxTunnelFrame::MessageCode messageCode)
+QKnxLinkLayerFrame::QKnxLinkLayerFrame(QKnxLinkLayerFrame::MessageCode messageCode)
     : QKnxCemiFrame(messageCode)
 {}
 
@@ -78,7 +78,7 @@ QKnxTunnelFrame::QKnxTunnelFrame(QKnxTunnelFrame::MessageCode messageCode)
 
   \note This function needs to be extended.
 */
-bool QKnxTunnelFrame::isValid() const
+bool QKnxLinkLayerFrame::isValid() const
 {
     // TODO: Make sure all constraints from 3.3.2 paragraph 2.2 L_Data is checked here
 
@@ -123,37 +123,37 @@ bool QKnxTunnelFrame::isValid() const
     return QKnxCemiFrame::isValid();
 }
 
-QKnxControlField QKnxTunnelFrame::controlField() const
+QKnxControlField QKnxLinkLayerFrame::controlField() const
 {
     return QKnxControlField { serviceInformationRef(additionalInfosSize() + 1).byte(0) };
 }
 
-void QKnxTunnelFrame::setControlField(const QKnxControlField &controlField)
+void QKnxLinkLayerFrame::setControlField(const QKnxControlField &controlField)
 {
     auto payload = serviceInformation();
     payload.setByte(additionalInfosSize() + 1, controlField.bytes());
     setServiceInformation(payload);
 }
 
-QKnxExtendedControlField QKnxTunnelFrame::extendedControlField() const
+QKnxExtendedControlField QKnxLinkLayerFrame::extendedControlField() const
 {
     return QKnxExtendedControlField { serviceInformationRef(additionalInfosSize() + 1).byte(1) };
 }
 
-void QKnxTunnelFrame::setExtendedControlField(const QKnxExtendedControlField &controlFieldEx)
+void QKnxLinkLayerFrame::setExtendedControlField(const QKnxExtendedControlField &controlFieldEx)
 {
     auto payload = serviceInformation();
     payload.setByte(additionalInfosSize() + 2, controlFieldEx.bytes());
     setServiceInformation(payload);
 }
 
-quint8 QKnxTunnelFrame::additionalInfosSize() const
+quint8 QKnxLinkLayerFrame::additionalInfosSize() const
 {
     auto size = serviceInformationRef().byte(0);
     return (size < 0xff ? size : 0u); // 0xff is reserved for future use
 }
 
-void QKnxTunnelFrame::addAdditionalInfo(const QKnxAdditionalInfo &info)
+void QKnxLinkLayerFrame::addAdditionalInfo(const QKnxAdditionalInfo &info)
 {
     auto payload = serviceInformation();
 
@@ -175,7 +175,7 @@ void QKnxTunnelFrame::addAdditionalInfo(const QKnxAdditionalInfo &info)
     setServiceInformation(payload);
 }
 
-void QKnxTunnelFrame::removeAdditionalInfo(QKnxAdditionalInfo::Type type)
+void QKnxLinkLayerFrame::removeAdditionalInfo(QKnxAdditionalInfo::Type type)
 {
     quint8 oldSize = additionalInfosSize();
     if (oldSize == 0)
@@ -196,7 +196,7 @@ void QKnxTunnelFrame::removeAdditionalInfo(QKnxAdditionalInfo::Type type)
     setServiceInformation(payload);
 }
 
-void QKnxTunnelFrame::removeAdditionalInfo(const QKnxAdditionalInfo &info)
+void QKnxLinkLayerFrame::removeAdditionalInfo(const QKnxAdditionalInfo &info)
 {
     quint8 oldSize = additionalInfosSize();
     if (oldSize == 0)
@@ -219,7 +219,7 @@ void QKnxTunnelFrame::removeAdditionalInfo(const QKnxAdditionalInfo &info)
     setServiceInformation(payload);
 }
 
-void QKnxTunnelFrame::clearAdditionalInfos()
+void QKnxLinkLayerFrame::clearAdditionalInfos()
 {
     quint8 oldSize = additionalInfosSize();
     if (oldSize == 0)
@@ -230,33 +230,33 @@ void QKnxTunnelFrame::clearAdditionalInfos()
     setServiceInformation(payload);
 }
 
-const QKnxAddress QKnxTunnelFrame::sourceAddress() const
+const QKnxAddress QKnxLinkLayerFrame::sourceAddress() const
 {
     return { QKnxAddress::Type::Individual, serviceInformationRef(additionalInfosSize() + 1)
         .bytes(2, 2) };
 }
 
-void QKnxTunnelFrame::setSourceAddress(const QKnxAddress &source)
+void QKnxLinkLayerFrame::setSourceAddress(const QKnxAddress &source)
 {
     auto payload = serviceInformation();
     payload.replaceBytes(additionalInfosSize() + 3, source.bytes());
     setServiceInformation(payload);
 }
 
-const QKnxAddress QKnxTunnelFrame::destinationAddress() const
+const QKnxAddress QKnxLinkLayerFrame::destinationAddress() const
 {
     return { extendedControlField().destinationAddressType(),
         serviceInformationRef(additionalInfosSize() + 1).bytes(4, 2) };
 }
 
-void QKnxTunnelFrame::setDestinationAddress(const QKnxAddress &destination)
+void QKnxLinkLayerFrame::setDestinationAddress(const QKnxAddress &destination)
 {
     auto payload = serviceInformation();
     payload.replaceBytes(additionalInfosSize() + 5, destination.bytes());
     setServiceInformation(payload);
 }
 
-QKnxTpdu QKnxTunnelFrame::tpdu() const
+QKnxTpdu QKnxLinkLayerFrame::tpdu() const
 {
     // TODO: In RF-Frames the length field is set to 0x00, figure out how this fits in here.
     // See 03_06_03 EMI_IMI, paragraph 4.1.5.3.1 Implementation and usage, page 75, Note 1,2,3
@@ -267,7 +267,7 @@ QKnxTpdu QKnxTunnelFrame::tpdu() const
         tpduOffset, (size() - 1) - tpduOffset);
 }
 
-void QKnxTunnelFrame::setTpdu(const QKnxTpdu &tpdu)
+void QKnxLinkLayerFrame::setTpdu(const QKnxTpdu &tpdu)
 {
     auto info = serviceInformation();
     info.resize(additionalInfosSize() + 7); // length field + ctrl + extCtrl + 2 * KNX address
@@ -276,7 +276,7 @@ void QKnxTunnelFrame::setTpdu(const QKnxTpdu &tpdu)
     setServiceInformation(info);
 }
 
-QKnxTunnelFrame::QKnxTunnelFrame(const QKnxCemiFrame &other)
+QKnxLinkLayerFrame::QKnxLinkLayerFrame(const QKnxCemiFrame &other)
     : QKnxCemiFrame(other)
 {}
 

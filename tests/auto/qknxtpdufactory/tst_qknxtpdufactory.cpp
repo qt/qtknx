@@ -105,7 +105,7 @@ void tst_QKnxTpduFactory::testTpdu()
         QKnxTpdu::ApplicationControlField::GroupValueWrite);
     tpdu1.setData(QVector<quint8>(1, 0x01));
 
-    QKnxTunnelFrame frame;
+    QKnxLinkLayerFrame frame;
     frame.setTpdu(tpdu1);
     QCOMPARE(tpdu1.applicationControlField(), QKnxTpdu::ApplicationControlField::GroupValueWrite);
     QCOMPARE(frame.tpdu().data(), QVector<quint8>(1, 0x01));

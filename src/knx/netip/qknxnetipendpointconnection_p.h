@@ -121,7 +121,7 @@ public:
     virtual void process(const QKnxCemiFrame &frame);
 
     // datapoint related processing
-    bool sendTunnelingRequest(const QKnxTunnelFrame &frame);
+    bool sendTunnelingRequest(const QKnxLinkLayerFrame &frame);
     virtual void process(const QKnxNetIpTunnelingRequest &);
     virtual void process(const QKnxNetIpTunnelingAcknowledge &);
 

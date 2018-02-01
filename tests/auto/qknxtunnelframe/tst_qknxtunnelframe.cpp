@@ -37,7 +37,7 @@ static void myMessageHandler(QtMsgType, const QMessageLogContext &, const QStrin
     s_msg = msg;
 }
 
-class tst_QKnxTunnelFrame : public QObject
+class tst_QKnxLinkLayerFrame : public QObject
 {
     Q_OBJECT
 
@@ -50,7 +50,7 @@ private slots:
             { QKnxAdditionalInfo::Type::ManufactorSpecificData, QByteArray::fromHex("708090") }
         };
 
-        QKnxTunnelFrame frame(QKnxTunnelFrame::MessageCode::DataRequest);
+        QKnxLinkLayerFrame frame(QKnxLinkLayerFrame::MessageCode::DataRequest);
         frame.setControlField(QKnxControlField(1));
         frame.setExtendedControlField(QKnxExtendedControlField(2));
         frame.addAdditionalInfo(addInfos.first());
@@ -89,7 +89,7 @@ private slots:
             { QKnxAdditionalInfo::Type::ManufactorSpecificData, QByteArray::fromHex("708090") }
         };
 
-        QKnxTunnelFrame frame(QKnxTunnelFrame::MessageCode::DataRequest);
+        QKnxLinkLayerFrame frame(QKnxLinkLayerFrame::MessageCode::DataRequest);
         frame.setControlField(QKnxControlField(1));
         frame.setExtendedControlField(QKnxExtendedControlField(2));
         frame.addAdditionalInfo(addInfos.first());
@@ -133,6 +133,6 @@ private slots:
     //TO DO: test the isValid function
 };
 
-QTEST_MAIN(tst_QKnxTunnelFrame)
+QTEST_MAIN(tst_QKnxLinkLayerFrame)
 
 #include "tst_qknxtunnelframe.moc"

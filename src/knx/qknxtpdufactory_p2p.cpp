@@ -37,7 +37,7 @@ QT_BEGIN_NAMESPACE
 
     \inmodule QtKnx
     \brief The QKnxTpduFactory class is used to create a valid Transport protocol
-    data unit (\l QKnxTpdu) to be used in an \l QKnxTunnelFrame.
+    data unit (\l QKnxTpdu) to be used in an \l QKnxLinkLayerFrame.
 
     One builds a TPDU to trigger a given application service. The factory is
     organized according to the general category the service we want to trigger

@@ -61,10 +61,10 @@ public:
     QKnxNetIp::TunnelingLayer layer() const;
     void setTunnelingLayer(QKnxNetIp::TunnelingLayer layer);
 
-    bool sendTunnelFrame(const QKnxTunnelFrame &frame);
+    bool sendTunnelFrame(const QKnxLinkLayerFrame &frame);
 
 Q_SIGNALS:
-    void receivedTunnelFrame(QKnxTunnelFrame frame);
+    void receivedTunnelFrame(QKnxLinkLayerFrame frame);
 };
 
 QT_END_NAMESPACE

@@ -55,12 +55,12 @@
 #include <QtKnx/QKnx1Bit>
 #include <QtKnx/QKnxTpdu>
 #include <QtKnx/QKnxTpduFactory>
-#include <QtKnx/QKnxTunnelFrame>
+#include <QtKnx/QKnxLinkLayerFrame>
 
 const QVector<quint8> DemoDataPoint::BytesOn = QVector<quint8>(1, 0x01);
 const QVector<quint8> DemoDataPoint::BytesOff = QVector<quint8>(1, 0x00);
 
-bool DemoSwitchDataPoint::updateDataPointState(const QKnxTunnelFrame &frame)
+bool DemoSwitchDataPoint::updateDataPointState(const QKnxLinkLayerFrame &frame)
 {
     auto str = frame.serviceInformation().bytes().toHex();
     m_state = (str[str.size() - 1] == '1');
@@ -84,7 +84,7 @@ QVector<quint8> DemoSwitchDataPoint::bytes() const
     return DemoDataPoint::BytesOff;
 }
 
-bool DemoColorLed::updateDataPointState(const QKnxTunnelFrame &frame)
+bool DemoColorLed::updateDataPointState(const QKnxLinkLayerFrame &frame)
 {
     bool notifyUI = false;
     numMsgConfirmation++;
@@ -155,7 +155,7 @@ bool DemoColorLed::isOn() const
     return (m_stateColor != Qt::black);
 }
 
-bool DemoRockerDataPoint::updateDataPointState(const QKnxTunnelFrame &frame)
+bool DemoRockerDataPoint::updateDataPointState(const QKnxLinkLayerFrame &frame)
 {
     auto str = frame.serviceInformation().bytes().toHex();
     QString s = str.mid(20, 4);
@@ -176,7 +176,7 @@ void DemoBlindDataPoint::chooseTimeoutHandle(bool blindUp)
     }
 }
 
-bool DemoBlindDataPoint::updateDataPointState(const QKnxTunnelFrame &frame)
+bool DemoBlindDataPoint::updateDataPointState(const QKnxLinkLayerFrame &frame)
 {
     auto tpdu = frame.tpdu();
     if (frame.destinationAddress().toString() == "1/0/0") {

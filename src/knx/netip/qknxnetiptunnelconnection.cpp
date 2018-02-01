@@ -44,7 +44,7 @@ QT_BEGIN_NAMESPACE
     The QKnxNetIpTunnelConnection is a data connection between a client and a
     KNXnet/IP server endpoint. This is used to access functionalities of devices
     on a KNX bus. The IP address of the client must be set. It is then possible
-    to connect to a chosen KNXnet/IP server and to send \l QKnxTunnelFrame
+    to connect to a chosen KNXnet/IP server and to send \l QKnxLinkLayerFrame
     frames to the KNXnet/IP server.
 
     The class takes care of connecting to the server, asking for a data
@@ -59,7 +59,7 @@ QT_BEGIN_NAMESPACE
         quint16 knxNetIpServerDataEndPointPort = ...
         tunnel.connectToHost(knxNetIpServerAddress, knxNetIpServerDataEndPointPort);
 
-        QKnxTunnelFrame frame = ...
+        QKnxLinkLayerFrame frame = ...
         tunnel.sendTunnelFrame(frame);
     \endcode
 */
@@ -145,7 +145,7 @@ void QKnxNetIpTunnelConnection::setTunnelingLayer(QKnxNetIp::TunnelingLayer laye
     d_func()->m_layer = layer;
 }
 
-bool QKnxNetIpTunnelConnection::sendTunnelFrame(const QKnxTunnelFrame &frame)
+bool QKnxNetIpTunnelConnection::sendTunnelFrame(const QKnxLinkLayerFrame &frame)
 {
     if (state() != State::Connected)
         return false;

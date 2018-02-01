@@ -339,7 +339,7 @@ void QKnxNetIpEndpointConnectionPrivate::process(const QKnxNetIpTunnelingAcknowl
     }
 }
 
-bool QKnxNetIpEndpointConnectionPrivate::sendTunnelingRequest(const QKnxTunnelFrame &frame)
+bool QKnxNetIpEndpointConnectionPrivate::sendTunnelingRequest(const QKnxLinkLayerFrame &frame)
 {
     m_lastSendCemiRequest = QKnxNetIpTunnelingRequest(m_channelId, m_sendCount, frame).bytes();
     qDebug().noquote().nospace() << "Sending tunneling request: 0x" << m_lastSendCemiRequest.toHex();

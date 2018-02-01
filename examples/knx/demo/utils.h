@@ -56,10 +56,10 @@
 #include <QtKnx/QKnxAddress>
 #include <QtKnx/QKnxTpduFactory>
 
-QKnxTunnelFrame createRequestFrame(const QKnxAddress &address, const QKnxTpdu &tpdu,
+QKnxLinkLayerFrame createRequestFrame(const QKnxAddress &address, const QKnxTpdu &tpdu,
     quint8 ctrl = 0xac, quint8 extCtrl = 0xe0)
 {
-    QKnxTunnelFrame frame(QKnxTunnelFrame::MessageCode::DataRequest);
+    QKnxLinkLayerFrame frame(QKnxLinkLayerFrame::MessageCode::DataRequest);
     frame.setControlField(QKnxControlField(ctrl));
     frame.setExtendedControlField(QKnxExtendedControlField(extCtrl));
     frame.setSourceAddress({ QKnxAddress::Type::Group, 0 });

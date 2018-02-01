@@ -53,7 +53,7 @@
 
 #include <QtCore/QTimer>
 #include <QtGui/QColor>
-#include <QtKnx/QKnxTunnelFrame>
+#include <QtKnx/QKnxLinkLayerFrame>
 
 class DemoDataPoint
 {
@@ -61,7 +61,7 @@ public:
     virtual ~DemoDataPoint() = default;
 
     virtual QVector<quint8> bytes() const { return QVector<quint8>(); }
-    virtual bool updateDataPointState(const QKnxTunnelFrame &frame) = 0;
+    virtual bool updateDataPointState(const QKnxLinkLayerFrame &frame) = 0;
 
     int position() const { return m_position; }
     void setPosition(int pos) { m_position = pos; }
@@ -80,7 +80,7 @@ public:
     ~DemoSwitchDataPoint() override = default;
 
     QVector<quint8> bytes() const override;
-    bool updateDataPointState(const QKnxTunnelFrame &frame) override;
+    bool updateDataPointState(const QKnxLinkLayerFrame &frame) override;
 
     void uiToggle();
     bool isOn() const;
@@ -97,7 +97,7 @@ public:
     DemoColorLed() = default;
     ~DemoColorLed() override = default;
 
-    bool updateDataPointState(const QKnxTunnelFrame &frame) override;
+    bool updateDataPointState(const QKnxLinkLayerFrame &frame) override;
 
     QColor currentColor() const;
     void setCurrentColor(QColor color);
@@ -123,7 +123,7 @@ public:
     DemoRockerDataPoint() = default;
     virtual ~DemoRockerDataPoint() override = default;
 
-    bool updateDataPointState(const QKnxTunnelFrame &frame) override;
+    bool updateDataPointState(const QKnxLinkLayerFrame &frame) override;
 
 Q_SIGNALS:
     void rockerChange(int position);
@@ -136,7 +136,7 @@ public:
     DemoBlindDataPoint() = default;
     ~DemoBlindDataPoint() override = default;
 
-    bool updateDataPointState(const QKnxTunnelFrame &frame) override;
+    bool updateDataPointState(const QKnxLinkLayerFrame &frame) override;
 
     QVector<quint8> moveUpBytes() const;
     QVector<quint8> moveDownBytes() const;

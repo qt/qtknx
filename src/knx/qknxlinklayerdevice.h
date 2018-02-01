@@ -39,8 +39,6 @@
 #include <QtKnx/qknxtpdu.h>
 #include <QtKnx/qknxlinklayerframe.h>
 
-using QKnxLinkLayerFrame = QKnxTunnelFrame;
-
 QT_BEGIN_NAMESPACE
 
 class QKnxLinkLayerDevicePrivate;

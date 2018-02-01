@@ -215,7 +215,7 @@ void QmlKnxDemo::stopBlind()
         sendGroupValueWrite(m_tunnel, m_etsBoard.getAddress(index), dpt->stopBytes(), 0xac);
 }
 
-void QmlKnxDemo::handleFrame(const QKnxTunnelFrame &frame)
+void QmlKnxDemo::handleFrame(const QKnxLinkLayerFrame &frame)
 {
     auto str = frame.serviceInformation().bytes().toHex();
     auto dstAdd = frame.destinationAddress().toString();

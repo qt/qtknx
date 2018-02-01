@@ -40,13 +40,13 @@
 
 QT_BEGIN_NAMESPACE
 
-class Q_KNX_EXPORT QKnxTunnelFrame final : public QKnxCemiFrame
+class Q_KNX_EXPORT QKnxLinkLayerFrame final : public QKnxCemiFrame
 {
 public:
-    QKnxTunnelFrame() = default;
-    ~QKnxTunnelFrame() override = default;
+    QKnxLinkLayerFrame() = default;
+    ~QKnxLinkLayerFrame() override = default;
 
-    explicit QKnxTunnelFrame(QKnxTunnelFrame::MessageCode messageCode);
+    explicit QKnxLinkLayerFrame(QKnxLinkLayerFrame::MessageCode messageCode);
 
     bool isValid() const override;
 
@@ -95,7 +95,7 @@ public:
     QKnxTpdu tpdu() const;
     void setTpdu(const QKnxTpdu &tpdu);
 
-    QKnxTunnelFrame(const QKnxCemiFrame &other);
+    QKnxLinkLayerFrame(const QKnxCemiFrame &other);
 };
 
 QT_END_NAMESPACE
