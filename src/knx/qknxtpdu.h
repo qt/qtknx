@@ -169,6 +169,7 @@ public:
         ApplicationControlField applicationControlField() const;
     void setApplicationControlField(ApplicationControlField apci);
 
+     QKnxTpdu();
     ~QKnxTpdu();
 
     explicit QKnxTpdu(TransportControlField tpci);

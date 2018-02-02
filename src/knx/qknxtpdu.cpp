@@ -195,8 +195,8 @@ public:
     ~QKnxTpduPrivate() = default;
 
     QVector<quint8> m_tpduBytes;
-    qint32 m_apci;
-    qint16 m_tpci;
+    qint32 m_apci = -1;
+    qint16 m_tpci = -1;
     void setApci();
     void setTpci();
     void setByte(quint16 index, quint8 byte);
@@ -391,6 +391,11 @@ void QKnxTpdu::setApplicationControlField(ApplicationControlField apci)
     auto tmp = QKnxUtils::QUint16::bytes(quint16(apci));
     d_ptr->setByte(0, (byte(0) & 0xfc) | tmp[0]);
     d_ptr->setByte(1, (byte(1) & 0x3f) | tmp[1]);
+}
+
+QKnxTpdu::QKnxTpdu()
+    : d_ptr(new QKnxTpduPrivate)
+{
 }
 
 QKnxTpdu::~QKnxTpdu()
