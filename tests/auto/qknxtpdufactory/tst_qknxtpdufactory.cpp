@@ -681,8 +681,8 @@ void tst_QKnxTpduFactory::testMemoryRead()
     quint8 sequenceNumber = 2;
     quint8 number = 2;
     quint16 memoryAddress = 0xabcd;
-    auto tpdu = QKnxTpduFactory::PointToPoint::createMemoryReadTpdu(QKnxTpduFactory::PointToPoint
-        ::Mode::ConnectionOriented, number, memoryAddress, sequenceNumber);
+    auto tpdu = QKnxTpduFactory::PointToPointConnectionOriented::createMemoryReadTpdu(number,
+        memoryAddress, sequenceNumber);
 
     QCOMPARE(tpdu.size(), quint16(4));
     QCOMPARE(tpdu.sequenceNumber(), sequenceNumber);
@@ -695,9 +695,8 @@ void tst_QKnxTpduFactory::testMemoryWrite()
     quint8 sequenceNumber = 2;
     quint8 number = 2;
     quint16 memoryAddress = 0x1502;
-    auto tpdu = QKnxTpduFactory::PointToPoint::createMemoryWriteTpdu(QKnxTpduFactory::PointToPoint
-    ::Mode::ConnectionOriented, number, memoryAddress,
-        QVector<quint8>({ 0x01, 0x02, 0x03, 0x04, 0x05 }), sequenceNumber);
+    auto tpdu = QKnxTpduFactory::PointToPointConnectionOriented::createMemoryWriteTpdu(number,
+        memoryAddress, QVector<quint8>({ 0x01, 0x02, 0x03, 0x04, 0x05 }), sequenceNumber);
 
     QCOMPARE(tpdu.size(), quint16(9));
     QCOMPARE(tpdu.sequenceNumber(), sequenceNumber);

@@ -41,6 +41,21 @@ class Q_KNX_EXPORT QKnxLinkLayerFrameFactory final
 public:
     QKnxLinkLayerFrameFactory() = delete;
 
+    static QKnxControlField createRequestControlField(
+        QKnxControlField::Acknowledge acknowledge = QKnxControlField::Acknowledge::NotRequested,
+        QKnxControlField::Priority priority = QKnxControlField::Priority::Normal);
+
+    static QKnxControlField createConfirmationControlField(QKnxControlField::Confirm status,
+        QKnxControlField::Acknowledge acknowledge = QKnxControlField::Acknowledge::NotRequested,
+        QKnxControlField::Priority priority = QKnxControlField::Priority::Normal);
+
+    static QKnxControlField createIndicationControlField(
+        QKnxControlField::Priority priority = QKnxControlField::Priority::Normal);
+
+    static QKnxExtendedControlField createExtentedControlField(QKnxAddress::Type type,
+        quint8 hopCount = 6, QKnxExtendedControlField::ExtendedFrameFormat format =
+            QKnxExtendedControlField::ExtendedFrameFormat::Standard);
+
     struct Q_KNX_EXPORT GroupValue
     {
         GroupValue() = delete;
@@ -98,21 +113,75 @@ public:
         static QKnxLinkLayerFrame createWriteIndication(const QKnxAddress &src,
                             const QKnxAddress &dest, const QVector<quint8> &data,
                             const QKnxControlField &ctrl, const QKnxExtendedControlField &extCtrl);
+    };
 
-        static QKnxControlField createRequestControlField(
-            QKnxControlField::Acknowledge acknowledge = QKnxControlField::Acknowledge::NotRequested,
-            QKnxControlField::Priority priority = QKnxControlField::Priority::Normal);
+    struct Q_KNX_EXPORT Memory
+    {
+        Memory() = delete;
+        static QKnxLinkLayerFrame createReadRequest(const QKnxAddress &src, const QKnxAddress &dest,
+            quint16 memoryAddress, quint8 number, quint8 sequenceNumber = 0);
+        static QKnxLinkLayerFrame createReadRequest(const QKnxAddress &src, const QKnxAddress &dest,
+            quint16 memoryAddress, quint8 number, const QKnxControlField &ctrl,
+            const QKnxExtendedControlField &extCtrl, quint8 sequenceNumber = 0);
 
-        static QKnxControlField createConfirmationControlField(QKnxControlField::Confirm status,
-            QKnxControlField::Acknowledge acknowledge = QKnxControlField::Acknowledge::NotRequested,
-            QKnxControlField::Priority priority = QKnxControlField::Priority::Normal);
+        static QKnxLinkLayerFrame createReadConfirmation(const QKnxAddress &src, const QKnxAddress &dest,
+            quint16 memoryAddress, quint8 number, quint8 sequenceNumber = 0,
+            QKnxControlField::Confirm status = QKnxControlField::Confirm::NoError);
+        static QKnxLinkLayerFrame createReadConfirmation(const QKnxAddress &src, const QKnxAddress &dest,
+            quint16 memoryAddress, quint8 number, const QKnxControlField &ctrl,
+            const QKnxExtendedControlField &extCtrl, quint8 sequenceNumber = 0);
 
-        static QKnxControlField createIndicationControlField(
-            QKnxControlField::Priority priority = QKnxControlField::Priority::Normal);
+        static QKnxLinkLayerFrame createReadIndication(const QKnxAddress &src, const QKnxAddress &dest,
+            quint16 memoryAddress, quint8 number, quint8 sequenceNumber = 0);
+        static QKnxLinkLayerFrame createReadIndication(const QKnxAddress &src, const QKnxAddress &dest,
+            quint16 memoryAddress, quint8 number, const QKnxControlField &ctrl,
+            const QKnxExtendedControlField &extCtrl, quint8 sequenceNumber = 0);
 
-        static QKnxExtendedControlField createExtentedControlField(quint8 hopCount = 6,
-            QKnxExtendedControlField::ExtendedFrameFormat format =
-                QKnxExtendedControlField::ExtendedFrameFormat::Standard);
+        static QKnxLinkLayerFrame createResponseRequest(const QKnxAddress &src, const QKnxAddress &dest,
+            quint16 memoryAddress, quint8 number, const QVector<quint8> &data,
+            quint8 sequenceNumber = 0);
+        static QKnxLinkLayerFrame createResponseRequest(const QKnxAddress &src, const QKnxAddress &dest,
+            quint16 memoryAddress, quint8 number, const QVector<quint8> &data,
+            const QKnxControlField &ctrl, const QKnxExtendedControlField &extCtrl,
+            quint8 sequenceNumber = 0);
+
+        static QKnxLinkLayerFrame createResponseConfirmation(const QKnxAddress &src, const QKnxAddress &dest,
+            quint16 memoryAddress, quint8 number, const QVector<quint8> &data, quint8 sequenceNumber = 0,
+            QKnxControlField::Confirm status = QKnxControlField::Confirm::NoError);
+        static QKnxLinkLayerFrame createResponseConfirmation(const QKnxAddress &src, const QKnxAddress &dest,
+            quint16 memoryAddress, quint8 number, const QVector<quint8> &data,
+            const QKnxControlField &ctrl, const QKnxExtendedControlField &extCtrl,
+            quint8 sequenceNumber = 0);
+
+        static QKnxLinkLayerFrame createResponseIndication(const QKnxAddress &src, const QKnxAddress &dest,
+            quint16 memoryAddress, quint8 number, const QVector<quint8> &data, quint8 sequenceNumber = 0);
+        static QKnxLinkLayerFrame createResponseIndication(const QKnxAddress &src, const QKnxAddress &dest,
+            quint16 memoryAddress, quint8 number, const QVector<quint8> &data,
+            const QKnxControlField &ctrl, const QKnxExtendedControlField &extCtrl,
+            quint8 sequenceNumber = 0);
+
+        static QKnxLinkLayerFrame createWriteRequest(const QKnxAddress &src, const QKnxAddress &dest,
+            quint16 memoryAddress, quint8 number, const QVector<quint8> &data,
+            quint8 sequenceNumber = 0);
+        static QKnxLinkLayerFrame createWriteRequest(const QKnxAddress &src, const QKnxAddress &dest,
+            quint16 memoryAddress, quint8 number, const QVector<quint8> &data,
+            const QKnxControlField &ctrl, const QKnxExtendedControlField &extCtrl,
+            quint8 sequenceNumber = 0);
+
+        static QKnxLinkLayerFrame createWriteConfirmation(const QKnxAddress &src, const QKnxAddress &dest,
+            quint16 memoryAddress, quint8 number, const QVector<quint8> &data, quint8 sequenceNumber = 0,
+            QKnxControlField::Confirm status = QKnxControlField::Confirm::NoError);
+        static QKnxLinkLayerFrame createWriteConfirmation(const QKnxAddress &src, const QKnxAddress &dest,
+            quint16 memoryAddress, quint8 number, const QVector<quint8> &data,
+            const QKnxControlField &ctrl, const QKnxExtendedControlField &extCtrl,
+            quint8 sequenceNumber = 0);
+
+        static QKnxLinkLayerFrame createWriteIndication(const QKnxAddress &src, const QKnxAddress &dest,
+            quint16 memoryAddress, quint8 number, const QVector<quint8> &data, quint8 sequenceNumber = 0);
+        static QKnxLinkLayerFrame createWriteIndication(const QKnxAddress &src, const QKnxAddress &dest,
+            quint16 memoryAddress, quint8 number, const QVector<quint8> &data,
+            const QKnxControlField &ctrl, const QKnxExtendedControlField &extCtrl,
+            quint8 sequenceNumber = 0);
     };
 };
 

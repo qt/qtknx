@@ -454,6 +454,7 @@ bool QKnxTpdu::isValid() const
 
 #define HEADER_SIZE 2 // [TCPI|APCI][APCI] 2 bytes
 #define L_DATA_PAYLOAD 14 // 3_02_02 Communication Medium TP1, Paragraph 2.2.4.1
+#define L_DATA_MEMORY_PAYLOAD 66 // Max APDU + 2 bites for the address AN177 Table 1
 #define L_DATA_EXTENDED_PAYLOAD 253 // 3_02_02 Communication Medium TP1, Paragraph 2.2.5.1
 
     switch (applicationControlField()) {
@@ -464,12 +465,16 @@ bool QKnxTpdu::isValid() const
     case ApplicationControlField::DomainAddressRead:
         return size() == HEADER_SIZE;
 
+    case ApplicationControlField::MemoryRead:
     case ApplicationControlField::IndividualAddressWrite:
         return size() == HEADER_SIZE + 2; // 2 bytes individual address
 
     case ApplicationControlField::GroupValueResponse:
     case ApplicationControlField::GroupValueWrite:
         return (size() >= HEADER_SIZE) && (size() <= HEADER_SIZE + L_DATA_PAYLOAD);
+    case ApplicationControlField::MemoryResponse:
+    case ApplicationControlField::MemoryWrite:
+        return (size() >= HEADER_SIZE) && (size() <= HEADER_SIZE + L_DATA_MEMORY_PAYLOAD);
 
     case ApplicationControlField::GroupPropValueResponse:
     case ApplicationControlField::GroupPropValueWrite:
@@ -512,9 +517,6 @@ bool QKnxTpdu::isValid() const
 
     case ApplicationControlField::AdcRead:
     case ApplicationControlField::AdcResponse:
-    case ApplicationControlField::MemoryRead:
-    case ApplicationControlField::MemoryResponse:
-    case ApplicationControlField::MemoryWrite:
     case ApplicationControlField::UserMemoryRead:
     case ApplicationControlField::UserMemoryResponse:
     case ApplicationControlField::UserMemoryWrite:

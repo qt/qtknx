@@ -141,13 +141,6 @@ public:
             ConnectionOriented
         };
 
-        static QKnxTpdu createMemoryReadTpdu(Mode mode, quint8 number, quint16 address,
-                                                     quint8 seqNumber = 0);
-        static QKnxTpdu createMemoryResponseTpdu(Mode mode, quint8 number, quint16 address,
-                                                     const QVector<quint8> &data, quint8 seqNumber = 0);
-        static QKnxTpdu createMemoryWriteTpdu(Mode mode, quint8 number, quint16 address,
-                                                     const QVector<quint8> &data, quint8 seqNumber = 0);
-
         static QKnxTpdu createFunctionPropertyCommandTpdu(Mode mode, quint8 objectIndex,
                                                      QKnxInterfaceObjectProperty property,
                                                      const QVector<quint8> &data, quint8 seqNumber = 0);
@@ -231,6 +224,12 @@ public:
         static QKnxTpdu createAdcReadTpdu(quint8 channel, quint8 readCount, quint8 seqNumber);
         static QKnxTpdu createAdcResponseTpdu(quint8 channel, quint8 readCount, quint16 sumOfAdc,
                                                      quint8 seqNumber);
+
+        static QKnxTpdu createMemoryReadTpdu(quint8 number, quint16 address, quint8 seqNumber = 0);
+        static QKnxTpdu createMemoryResponseTpdu(quint8 number, quint16 address,
+                                                     const QVector<quint8> &data, quint8 seqNumber = 0);
+        static QKnxTpdu createMemoryWriteTpdu(quint8 number, quint16 address,
+                                                     const QVector<quint8> &data, quint8 seqNumber = 0);
 
         static QKnxTpdu createUserMemoryReadTpdu(quint8 addressExtention, quint8 number,
                                                      quint16 address, quint8 seqNumber);

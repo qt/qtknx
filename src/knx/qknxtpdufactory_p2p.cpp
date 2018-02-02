@@ -86,47 +86,6 @@ static QKnxTpdu::TransportControlField tpci(QKnxTpduFactory::PointToPoint::Mode 
     \value ConnectionOriented
 */
 
-/*!
-    Returns a TPDU for Memory Read Application Service with the given \a number,
-    \a address and sequence number \a seqNumber set. Depending on the parameter
-    \a mode the TPDU shall be used in a connection oriented or connectionless
-    service.
-*/
-QKnxTpdu QKnxTpduFactory::PointToPoint::createMemoryReadTpdu(Mode mode, quint8 number,
-    quint16 address, quint8 seqNumber)
-{
-    return { tpci(mode, seqNumber), QKnxTpdu::ApplicationControlField::MemoryRead, seqNumber,
-        QKnxUtils::QUint8::bytes<QVector<quint8>>(number) + QKnxUtils::QUint16::bytes<QVector<quint8>>(address) };
-}
-
-QKnxTpdu QKnxTpduFactory::PointToPoint::createMemoryResponseTpdu(Mode mode, quint8 number,
-    quint16 address, const QVector<quint8> &data, quint8 seqNumber)
-{
-    if (data.size() > 251)
-        return {QKnxTpdu::TransportControlField::Invalid,
-            QKnxTpdu::ApplicationControlField::Invalid}; // L_Data_Extended -> max 254 Bytes payload, 4 Bytes already taken
-
-    return { tpci(mode, seqNumber), QKnxTpdu::ApplicationControlField::MemoryResponse, seqNumber,
-        QKnxUtils::QUint8::bytes<QVector<quint8>>(number) + QKnxUtils::QUint16::bytes<QVector<quint8>>(address) + data };
-}
-
-/*!
-    Returns a TPDU for Memory Write Application Service with the given
-    \a number, \a address, \a data and sequence number \a seqNumber set.
-    Depending on the parameter \a mode the TPDU shall be used in a connection
-    oriented or connectionless service.
-*/
-QKnxTpdu QKnxTpduFactory::PointToPoint::createMemoryWriteTpdu(Mode mode, quint8 number,
-    quint16 address, const QVector<quint8> &data, quint8 seqNumber)
-{
-    if (data.size() > 251)
-        return {QKnxTpdu::TransportControlField::Invalid,
-            QKnxTpdu::ApplicationControlField::Invalid}; // L_Data_Extended -> max 254 Bytes payload, 4 Bytes already taken
-
-    return { tpci(mode, seqNumber), QKnxTpdu::ApplicationControlField::MemoryWrite, seqNumber,
-        QKnxUtils::QUint8::bytes<QVector<quint8>>(number) + QKnxUtils::QUint16::bytes<QVector<quint8>>(address) + data };
-}
-
 QKnxTpdu QKnxTpduFactory::PointToPoint::createFunctionPropertyCommandTpdu(Mode mode,
     quint8 objIndex, QKnxInterfaceObjectProperty property, const QVector<quint8> &data, quint8 seqNumber)
 {
@@ -437,6 +396,50 @@ QKnxTpduFactory::PointToPointConnectionless::createNetworkParameterWriteTpdu(QKn
     \l QKnxLinkLayerFrame. To be successful, the CEMI frame containing those
     TPDU need to be send within the frame work of a transport layer connection.
 */
+
+/*!
+    Returns a TPDU for Memory Read Application Service with the given \a number,
+    \a address and sequence number \a seqNumber set.
+*/
+QKnxTpdu QKnxTpduFactory::PointToPointConnectionOriented::createMemoryReadTpdu(quint8 number,
+    quint16 address, quint8 seqNumber)
+{
+    const PointToPoint::Mode mode = PointToPoint::Mode::ConnectionOriented;
+    return { tpci(mode, seqNumber), QKnxTpdu::ApplicationControlField::MemoryRead, seqNumber,
+        QKnxUtils::QUint8::bytes<QVector<quint8>>(number) + QKnxUtils::QUint16::bytes<QVector<quint8>>(address) };
+}
+
+/*!
+    Returns a TPDU for Memory Response Application Service with the given
+    \a number, \a address, \a data and sequence number \a seqNumber set.
+*/
+QKnxTpdu QKnxTpduFactory::PointToPointConnectionOriented::createMemoryResponseTpdu(quint8 number,
+    quint16 address, const QVector<quint8> &data, quint8 seqNumber)
+{
+    if (data.size() > 251)
+        return {QKnxTpdu::TransportControlField::Invalid,
+            QKnxTpdu::ApplicationControlField::Invalid}; // L_Data_Extended -> max 254 Bytes payload, 4 Bytes already taken
+
+    const PointToPoint::Mode mode = PointToPoint::Mode::ConnectionOriented;
+    return { tpci(mode, seqNumber), QKnxTpdu::ApplicationControlField::MemoryResponse, seqNumber,
+        QKnxUtils::QUint8::bytes<QVector<quint8>>(number) + QKnxUtils::QUint16::bytes<QVector<quint8>>(address) + data };
+}
+
+/*!
+    Returns a TPDU for Memory Write Application Service with the given
+    \a number, \a address, \a data and sequence number \a seqNumber set.
+*/
+QKnxTpdu QKnxTpduFactory::PointToPointConnectionOriented::createMemoryWriteTpdu(quint8 number,
+    quint16 address, const QVector<quint8> &data, quint8 seqNumber)
+{
+    if (data.size() > 251)
+        return {QKnxTpdu::TransportControlField::Invalid,
+            QKnxTpdu::ApplicationControlField::Invalid}; // L_Data_Extended -> max 254 Bytes payload, 4 Bytes already taken
+
+    const PointToPoint::Mode mode = PointToPoint::Mode::ConnectionOriented;
+    return { tpci(mode, seqNumber), QKnxTpdu::ApplicationControlField::MemoryWrite, seqNumber,
+        QKnxUtils::QUint8::bytes<QVector<quint8>>(number) + QKnxUtils::QUint16::bytes<QVector<quint8>>(address) + data };
+}
 
 /*!
     Returns a \l QKnxTpdu for ADC Read Application Service with the given

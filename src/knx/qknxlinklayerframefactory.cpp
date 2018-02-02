@@ -78,10 +78,62 @@ static QKnxLinkLayerFrame createFrame(QKnxLinkLayerFrame::MessageCode code, cons
     frame.setMessageCode(code);
     frame.setDestinationAddress(dest);
     frame.setSourceAddress(src);
-    frame.setControlField(ctrl);
+    QKnxControlField temp = ctrl;
+    if (tpdu.dataSize() > 14)
+        temp.setFrameType(QKnxControlField::FrameType::Extended);
+    frame.setControlField(temp);
     frame.setExtendedControlField(extCtrl);
     frame.setTpdu(tpdu);
     return frame;
+}
+
+
+// -- Tools
+
+QKnxControlField
+QKnxLinkLayerFrameFactory::createRequestControlField(QKnxControlField::Acknowledge ack,
+    QKnxControlField::Priority priority)
+{
+    auto controlField = setupControlField();
+    controlField.setAcknowledge(ack);
+    controlField.setPriority(priority);
+    // TODO: is this correct for Memory Services?
+    controlField.setBroadcast(QKnxControlField::Broadcast::Domain);
+    return controlField;
+}
+
+QKnxControlField
+QKnxLinkLayerFrameFactory::createConfirmationControlField(QKnxControlField::Confirm status,
+    QKnxControlField::Acknowledge acknowledge, QKnxControlField::Priority priority)
+{
+    auto controlField = setupControlField();
+    controlField.setConfirm(status);
+    controlField.setAcknowledge(acknowledge);
+    controlField.setPriority(priority);
+    // TODO: is this correct for Memory Services?
+    controlField.setBroadcast(QKnxControlField::Broadcast::Domain);
+    return controlField;
+}
+
+QKnxControlField
+QKnxLinkLayerFrameFactory::createIndicationControlField(QKnxControlField::Priority priority)
+{
+    auto controlField = setupControlField();
+    controlField.setPriority(priority);
+    // TODO: is this correct for Memory Services?
+    controlField.setBroadcast(QKnxControlField::Broadcast::Domain);
+    return controlField;
+}
+
+QKnxExtendedControlField
+QKnxLinkLayerFrameFactory::createExtentedControlField(QKnxAddress::Type type, quint8 hopCount,
+    QKnxExtendedControlField::ExtendedFrameFormat format)
+{
+    QKnxExtendedControlField ctrl;
+    ctrl.setDestinationAddressType(type);
+    ctrl.setHopCount(hopCount);
+    ctrl.setFormat(format);
+    return ctrl;
 }
 
 
@@ -98,7 +150,8 @@ static bool groupValueArgumentsValid(const QKnxAddress &src, const QKnxAddress &
 QKnxLinkLayerFrame QKnxLinkLayerFrameFactory::GroupValue::createReadRequest(const QKnxAddress &src,
     const QKnxAddress &dest)
 {
-    return createReadRequest(src, dest, createRequestControlField(), createExtentedControlField());
+    return createReadRequest(src, dest, createRequestControlField(),
+        createExtentedControlField(QKnxAddress::Type::Group));
 }
 
 QKnxLinkLayerFrame QKnxLinkLayerFrameFactory::GroupValue::createReadRequest(const QKnxAddress &src,
@@ -115,7 +168,7 @@ QKnxLinkLayerFrame QKnxLinkLayerFrameFactory::GroupValue::createReadConfirmation
     const QKnxAddress &dest, QKnxControlField::Confirm status)
 {
     return createReadConfirmation(src, dest, createConfirmationControlField(status),
-        createExtentedControlField());
+        createExtentedControlField(QKnxAddress::Type::Group));
 }
 
 QKnxLinkLayerFrame QKnxLinkLayerFrameFactory::GroupValue::createReadConfirmation(const QKnxAddress &src,
@@ -132,7 +185,7 @@ QKnxLinkLayerFrame QKnxLinkLayerFrameFactory::GroupValue::createReadIndication(c
     const QKnxAddress &dest)
 {
     return createReadIndication(src, dest, createIndicationControlField(),
-        createExtentedControlField());
+        createExtentedControlField(QKnxAddress::Type::Group));
 }
 
 QKnxLinkLayerFrame QKnxLinkLayerFrameFactory::GroupValue::createReadIndication(const QKnxAddress &src,
@@ -152,7 +205,7 @@ QKnxLinkLayerFrame QKnxLinkLayerFrameFactory::GroupValue::createResponseRequest(
     const QKnxAddress &dest, const QVector<quint8> &data)
 {
     return createResponseRequest(src, dest, data, createRequestControlField(),
-        createExtentedControlField());
+        createExtentedControlField(QKnxAddress::Type::Group));
 }
 
 QKnxLinkLayerFrame QKnxLinkLayerFrameFactory::GroupValue::createResponseRequest(const QKnxAddress &src,
@@ -173,7 +226,7 @@ QKnxLinkLayerFrame QKnxLinkLayerFrameFactory::GroupValue::createResponseConfirma
     const QKnxAddress &dest, const QVector<quint8> &data, QKnxControlField::Confirm status)
 {
     return createResponseConfirmation(src, dest, data, createConfirmationControlField(status),
-        createExtentedControlField());
+        createExtentedControlField(QKnxAddress::Type::Group));
 }
 
 QKnxLinkLayerFrame QKnxLinkLayerFrameFactory::GroupValue::createResponseConfirmation(const QKnxAddress &src,
@@ -195,7 +248,7 @@ QKnxLinkLayerFrame QKnxLinkLayerFrameFactory::GroupValue::createResponseIndicati
     const QKnxAddress &dest, const QVector<quint8> &data)
 {
     return createResponseIndication(src, dest, data, createIndicationControlField(),
-        createExtentedControlField());
+        createExtentedControlField(QKnxAddress::Type::Group));
 }
 
 QKnxLinkLayerFrame QKnxLinkLayerFrameFactory::GroupValue::createResponseIndication(const QKnxAddress &src,
@@ -220,7 +273,7 @@ QKnxLinkLayerFrame QKnxLinkLayerFrameFactory::GroupValue::createWriteRequest(con
     const QKnxAddress &dest, const QVector<quint8> &data)
 {
     return createWriteRequest(src, dest, data, createRequestControlField(),
-        createExtentedControlField());
+        createExtentedControlField(QKnxAddress::Type::Group));
 }
 
 QKnxLinkLayerFrame QKnxLinkLayerFrameFactory::GroupValue::createWriteRequest(const QKnxAddress &src,
@@ -241,7 +294,7 @@ QKnxLinkLayerFrame QKnxLinkLayerFrameFactory::GroupValue::createWriteConfirmatio
     const QKnxAddress &dest, const QVector<quint8> &data, QKnxControlField::Confirm status)
 {
     return createWriteConfirmation(src, dest, data, createConfirmationControlField(status),
-        createExtentedControlField());
+        createExtentedControlField(QKnxAddress::Type::Group));
 }
 
 QKnxLinkLayerFrame QKnxLinkLayerFrameFactory::GroupValue::createWriteConfirmation(const QKnxAddress &src,
@@ -263,7 +316,7 @@ QKnxLinkLayerFrame QKnxLinkLayerFrameFactory::GroupValue::createWriteIndication(
     const QKnxAddress &dest, const QVector<quint8> &data)
 {
     return createWriteIndication(src, dest, data, createIndicationControlField(),
-        createExtentedControlField());
+        createExtentedControlField(QKnxAddress::Type::Group));
 }
 
 QKnxLinkLayerFrame QKnxLinkLayerFrameFactory::GroupValue::createWriteIndication(const QKnxAddress &src,
@@ -282,49 +335,255 @@ QKnxLinkLayerFrame QKnxLinkLayerFrameFactory::GroupValue::createWriteIndication(
 }
 
 
-// -- A_GroupValue Tools
+// -- A_Memory Tools
 
-QKnxControlField
-QKnxLinkLayerFrameFactory::GroupValue::createRequestControlField(QKnxControlField::Acknowledge ack,
-    QKnxControlField::Priority priority)
+// Point to point connection oriented. A_MemoryRead/Write/Response
+// This is Tunnel frame factory, so the message code has to be:
+// L_Data.req or L_Data.con or L_Data.ind (never mind the L_Raw, LReaset and L_Busmon here)
+// In doc 3/3/7 Application Layers 3.5.3, they talk about T_Data_Connected instead of L_Data,
+// but this is because they are talking about exchange of a message at a deeper level
+
+static bool memoryArgumentsValid(const QKnxAddress &src, const QKnxAddress &dest,
+    const QKnxExtendedControlField &extCtrl, quint8 number, quint8 sequenceNumber)
 {
-    auto controlField = setupControlField();
-    controlField.setAcknowledge(ack);
-    controlField.setPriority(priority);
-    controlField.setBroadcast(QKnxControlField::Broadcast::Domain);
-    return controlField;
+    return src.isValid() && src.type() == QKnxAddress::Type::Individual
+        && dest.isValid() && dest.type() == QKnxAddress::Type::Individual
+        && extCtrl.hopCount() < 7
+        && extCtrl.destinationAddressType() == QKnxAddress::Type::Individual
+        && number < 64 && sequenceNumber <= 15;
 }
 
-QKnxControlField
-QKnxLinkLayerFrameFactory::GroupValue::createConfirmationControlField(QKnxControlField::Confirm status,
-    QKnxControlField::Acknowledge acknowledge, QKnxControlField::Priority priority)
+static bool memoryArgumentsValid(const QKnxAddress &src, const QKnxAddress &dest,
+    const QKnxExtendedControlField &extCtrl, quint8 number, quint8 sequenceNumber,
+    const QVector<quint8> &data)
 {
-    auto controlField = setupControlField();
-    controlField.setConfirm(status);
-    controlField.setAcknowledge(acknowledge);
-    controlField.setPriority(priority);
-    controlField.setBroadcast(QKnxControlField::Broadcast::Domain);
-    return controlField;
+    return memoryArgumentsValid(src, dest, extCtrl, number, sequenceNumber)
+        && number == data.size();
 }
 
-QKnxControlField
-QKnxLinkLayerFrameFactory::GroupValue::createIndicationControlField(QKnxControlField::Priority priority)
+
+// -- A_Memory_Read
+
+QKnxLinkLayerFrame QKnxLinkLayerFrameFactory::Memory::createReadRequest(const QKnxAddress &src,
+    const QKnxAddress &dest, quint16 memoryAddress, quint8 number, quint8 sequenceNumber)
 {
-    auto controlField = setupControlField();
-    controlField.setPriority(priority);
-    controlField.setBroadcast(QKnxControlField::Broadcast::Domain);
-    return controlField;
+    return createReadRequest(src, dest, memoryAddress, number, createRequestControlField(),
+        createExtentedControlField(QKnxAddress::Type::Individual), sequenceNumber);
 }
 
-QKnxExtendedControlField
-QKnxLinkLayerFrameFactory::GroupValue::createExtentedControlField(quint8 hopCount,
-    QKnxExtendedControlField::ExtendedFrameFormat format)
+QKnxLinkLayerFrame QKnxLinkLayerFrameFactory::Memory::createReadRequest(const QKnxAddress &src,
+    const QKnxAddress &dest, quint16 memoryAddress, quint8 number, const QKnxControlField &ctrl,
+    const QKnxExtendedControlField &extCtrl, quint8 sequenceNumber)
 {
-    QKnxExtendedControlField ctrl;
-    ctrl.setDestinationAddressType(QKnxAddress::Type::Group);
-    ctrl.setHopCount(hopCount);
-    ctrl.setFormat(format);
-    return ctrl;
+    if (!memoryArgumentsValid(src, dest, extCtrl, number, sequenceNumber))
+        return {};
+
+    auto tpdu = QKnxTpduFactory::PointToPointConnectionOriented::createMemoryReadTpdu(number,
+        memoryAddress, sequenceNumber);
+    if (!tpdu.isValid())
+        return {};
+
+    return createFrame(QKnxLinkLayerFrame::MessageCode::DataRequest, ctrl, extCtrl, src, dest, tpdu);
+}
+
+QKnxLinkLayerFrame QKnxLinkLayerFrameFactory::Memory::createReadConfirmation(const QKnxAddress &src,
+    const QKnxAddress &dest, quint16 memoryAddress, quint8 number, quint8 sequenceNumber,
+    QKnxControlField::Confirm status)
+{
+    return createReadConfirmation(src, dest, memoryAddress, number,
+        createConfirmationControlField(status),
+        createExtentedControlField(QKnxAddress::Type::Individual), sequenceNumber);
+}
+
+QKnxLinkLayerFrame QKnxLinkLayerFrameFactory::Memory::createReadConfirmation(const QKnxAddress &src,
+    const QKnxAddress &dest, quint16 memoryAddress, quint8 number, const QKnxControlField &ctrl,
+    const QKnxExtendedControlField &extCtrl, quint8 sequenceNumber)
+{
+    if (!memoryArgumentsValid(src, dest, extCtrl, number, sequenceNumber))
+        return {};
+
+    auto tpdu = QKnxTpduFactory::PointToPointConnectionOriented::createMemoryReadTpdu(number,
+        memoryAddress, sequenceNumber);
+    if (!tpdu.isValid())
+        return {};
+
+    return createFrame(QKnxLinkLayerFrame::MessageCode::DataConfirmation, ctrl, extCtrl, src, dest,
+        tpdu);
+}
+
+QKnxLinkLayerFrame QKnxLinkLayerFrameFactory::Memory::createReadIndication(const QKnxAddress &src,
+    const QKnxAddress &dest, quint16 memoryAddress, quint8 number, quint8 sequenceNumber)
+{
+    return createReadIndication(src, dest, memoryAddress, number, createIndicationControlField(),
+        createExtentedControlField(QKnxAddress::Type::Individual), sequenceNumber);
+}
+
+QKnxLinkLayerFrame QKnxLinkLayerFrameFactory::Memory::createReadIndication(const QKnxAddress &src,
+    const QKnxAddress &dest, quint16 memoryAddress, quint8 number, const QKnxControlField &ctrl,
+    const QKnxExtendedControlField &extCtrl, quint8 sequenceNumber)
+{
+    if (!memoryArgumentsValid(src, dest, extCtrl, number, sequenceNumber))
+        return {};
+
+    auto tpdu = QKnxTpduFactory::PointToPointConnectionOriented::createMemoryReadTpdu(number,
+        memoryAddress, sequenceNumber);
+    if (!tpdu.isValid())
+        return {};
+
+    return createFrame(QKnxLinkLayerFrame::MessageCode::DataIndication, ctrl, extCtrl, src, dest,
+        tpdu);
+}
+
+
+// -- A_Memory_Response
+
+QKnxLinkLayerFrame QKnxLinkLayerFrameFactory::Memory::createResponseRequest(const QKnxAddress &src,
+    const QKnxAddress &dest, quint16 memoryAddress, quint8 number, const QVector<quint8> &data,
+    quint8 sequenceNumber)
+{
+    return createResponseRequest(src, dest, memoryAddress, number, data, createRequestControlField(),
+        createExtentedControlField(QKnxAddress::Type::Individual), sequenceNumber);
+}
+
+QKnxLinkLayerFrame QKnxLinkLayerFrameFactory::Memory::createResponseRequest(const QKnxAddress &src,
+    const QKnxAddress &dest, quint16 memoryAddress, quint8 number, const QVector<quint8> &data,
+    const QKnxControlField &ctrl, const QKnxExtendedControlField &extCtrl, quint8 sequenceNumber)
+{
+    if (!memoryArgumentsValid(src, dest, extCtrl, number, sequenceNumber, data))
+        return {};
+
+    auto tpdu = QKnxTpduFactory::PointToPointConnectionOriented::createMemoryResponseTpdu(number,
+        memoryAddress, data, sequenceNumber);
+    if (!tpdu.isValid())
+        return {};
+
+    return createFrame(QKnxLinkLayerFrame::MessageCode::DataRequest, ctrl, extCtrl, src, dest, tpdu);
+}
+
+QKnxLinkLayerFrame QKnxLinkLayerFrameFactory::Memory::createResponseConfirmation(const QKnxAddress &src,
+    const QKnxAddress &dest, quint16 memoryAddress, quint8 number, const QVector<quint8> &data,
+    quint8 sequenceNumber, QKnxControlField::Confirm status)
+{
+    return createResponseConfirmation(src, dest, memoryAddress, number, data,
+        createConfirmationControlField(status),
+        createExtentedControlField(QKnxAddress::Type::Individual), sequenceNumber);
+}
+
+QKnxLinkLayerFrame QKnxLinkLayerFrameFactory::Memory::createResponseConfirmation(const QKnxAddress &src,
+    const QKnxAddress &dest, quint16 memoryAddress, quint8 number, const QVector<quint8> &data,
+    const QKnxControlField &ctrl, const QKnxExtendedControlField &extCtrl, quint8 sequenceNumber)
+{
+    if (!memoryArgumentsValid(src, dest, extCtrl, number, sequenceNumber, data))
+        return {};
+
+    auto tpdu = QKnxTpduFactory::PointToPointConnectionOriented::createMemoryResponseTpdu(number,
+        memoryAddress, data, sequenceNumber);
+    if (!tpdu.isValid())
+        return {};
+
+    return createFrame(QKnxLinkLayerFrame::MessageCode::DataConfirmation, ctrl, extCtrl, src, dest,
+        tpdu);
+}
+
+QKnxLinkLayerFrame QKnxLinkLayerFrameFactory::Memory::createResponseIndication(const QKnxAddress &src,
+    const QKnxAddress &dest, quint16 memoryAddress, quint8 number, const QVector<quint8> &data,
+    quint8 sequenceNumber)
+{
+    return createResponseIndication(src, dest, memoryAddress, number, data,
+        createIndicationControlField(), createExtentedControlField(QKnxAddress::Type::Individual),
+        sequenceNumber);
+}
+
+QKnxLinkLayerFrame QKnxLinkLayerFrameFactory::Memory::createResponseIndication(const QKnxAddress &src,
+    const QKnxAddress &dest, quint16 memoryAddress, quint8 number, const QVector<quint8> &data,
+    const QKnxControlField &ctrl, const QKnxExtendedControlField &extCtrl, quint8 sequenceNumber)
+{
+    if (!memoryArgumentsValid(src, dest, extCtrl, number, sequenceNumber, data))
+        return {};
+
+    auto tpdu = QKnxTpduFactory::PointToPointConnectionOriented::createMemoryResponseTpdu(number,
+        memoryAddress, data, sequenceNumber);
+    if (!tpdu.isValid())
+        return {};
+
+    return createFrame(QKnxLinkLayerFrame::MessageCode::DataIndication, ctrl, extCtrl, src, dest,
+        tpdu);
+}
+
+
+// -- A_MemoryWrite
+
+QKnxLinkLayerFrame QKnxLinkLayerFrameFactory::Memory::createWriteRequest(const QKnxAddress &src,
+    const QKnxAddress &dest, quint16 memoryAddress, quint8 number, const QVector<quint8> &data,
+    quint8 sequenceNumber)
+{
+    return createWriteRequest(src, dest, memoryAddress, number, data, createRequestControlField(),
+        createExtentedControlField(QKnxAddress::Type::Individual), sequenceNumber);
+}
+
+QKnxLinkLayerFrame QKnxLinkLayerFrameFactory::Memory::createWriteRequest(const QKnxAddress &src,
+    const QKnxAddress &dest, quint16 memoryAddress, quint8 number, const QVector<quint8> &data,
+    const QKnxControlField &ctrl, const QKnxExtendedControlField &extCtrl, quint8 sequenceNumber)
+{
+    if (!memoryArgumentsValid(src, dest, extCtrl, number, sequenceNumber, data))
+        return {};
+
+    auto tpdu = QKnxTpduFactory::PointToPointConnectionOriented::createMemoryWriteTpdu(number,
+        memoryAddress, data, sequenceNumber);
+    if (!tpdu.isValid())
+        return {};
+
+    return createFrame(QKnxLinkLayerFrame::MessageCode::DataRequest, ctrl, extCtrl, src, dest, tpdu);
+}
+
+QKnxLinkLayerFrame QKnxLinkLayerFrameFactory::Memory::createWriteConfirmation(const QKnxAddress &src,
+    const QKnxAddress &dest, quint16 memoryAddress, quint8 number, const QVector<quint8> &data,
+    quint8 sequenceNumber, QKnxControlField::Confirm status)
+{
+    return createWriteConfirmation(src, dest, memoryAddress, number, data,
+        createConfirmationControlField(status),
+        createExtentedControlField(QKnxAddress::Type::Individual), sequenceNumber);
+}
+
+QKnxLinkLayerFrame QKnxLinkLayerFrameFactory::Memory::createWriteConfirmation(const QKnxAddress &src,
+    const QKnxAddress &dest, quint16 memoryAddress, quint8 number, const QVector<quint8> &data,
+    const QKnxControlField &ctrl, const QKnxExtendedControlField &extCtrl, quint8 sequenceNumber)
+{
+    if (!memoryArgumentsValid(src, dest, extCtrl, number, sequenceNumber, data))
+        return {};
+
+    auto tpdu = QKnxTpduFactory::PointToPointConnectionOriented::createMemoryWriteTpdu(number,
+        memoryAddress, data, sequenceNumber);
+    if (!tpdu.isValid())
+        return {};
+
+    return createFrame(QKnxLinkLayerFrame::MessageCode::DataConfirmation, ctrl, extCtrl, src, dest,
+        tpdu);
+}
+
+QKnxLinkLayerFrame QKnxLinkLayerFrameFactory::Memory::createWriteIndication(const QKnxAddress &src,
+    const QKnxAddress &dest, quint16 memoryAddress, quint8 number, const QVector<quint8> &data,
+    quint8 sequenceNumber)
+{
+    return createWriteIndication(src, dest, memoryAddress, number, data,
+        createIndicationControlField(), createExtentedControlField(QKnxAddress::Type::Individual),
+        sequenceNumber);
+}
+
+QKnxLinkLayerFrame QKnxLinkLayerFrameFactory::Memory::createWriteIndication(const QKnxAddress &src,
+    const QKnxAddress &dest, quint16 memoryAddress, quint8 number, const QVector<quint8> &data,
+    const QKnxControlField &ctrl, const QKnxExtendedControlField &extCtrl, quint8 sequenceNumber)
+{
+    if (!memoryArgumentsValid(src, dest, extCtrl, number, sequenceNumber, data))
+        return {};
+
+    auto tpdu = QKnxTpduFactory::PointToPointConnectionOriented::createMemoryWriteTpdu(number,
+        memoryAddress, data, sequenceNumber);
+    if (!tpdu.isValid())
+        return {};
+
+    return createFrame(QKnxLinkLayerFrame::MessageCode::DataIndication, ctrl, extCtrl, src, dest,
+        tpdu);
 }
 
 QT_END_NAMESPACE
