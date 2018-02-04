@@ -33,6 +33,7 @@
 #include <QtKnx/qknxaddress.h>
 #include <QtKnx/qknxglobal.h>
 #include <QtKnx/qknxlinklayerframe.h>
+#include <QtKnx/qknxtpdufactory.h>
 
 QT_BEGIN_NAMESPACE
 
@@ -43,14 +44,17 @@ public:
 
     static QKnxControlField createRequestControlField(
         QKnxControlField::Acknowledge acknowledge = QKnxControlField::Acknowledge::NotRequested,
-        QKnxControlField::Priority priority = QKnxControlField::Priority::Normal);
+        QKnxControlField::Priority priority = QKnxControlField::Priority::Normal,
+         QKnxControlField::Broadcast broadcast = QKnxControlField::Broadcast::Domain);
 
     static QKnxControlField createConfirmationControlField(QKnxControlField::Confirm status,
         QKnxControlField::Acknowledge acknowledge = QKnxControlField::Acknowledge::NotRequested,
-        QKnxControlField::Priority priority = QKnxControlField::Priority::Normal);
+        QKnxControlField::Priority priority = QKnxControlField::Priority::Normal,
+        QKnxControlField::Broadcast broadcast = QKnxControlField::Broadcast::Domain);
 
     static QKnxControlField createIndicationControlField(
-        QKnxControlField::Priority priority = QKnxControlField::Priority::Normal);
+        QKnxControlField::Priority priority = QKnxControlField::Priority::Normal,
+        QKnxControlField::Broadcast broadcast = QKnxControlField::Broadcast::Domain);
 
     static QKnxExtendedControlField createExtentedControlField(QKnxAddress::Type type,
         quint8 hopCount = 6, QKnxExtendedControlField::ExtendedFrameFormat format =
@@ -182,6 +186,70 @@ public:
             quint16 memoryAddress, quint8 number, const QVector<quint8> &data,
             const QKnxControlField &ctrl, const QKnxExtendedControlField &extCtrl,
             quint8 sequenceNumber = 0);
+    };
+
+
+    struct Q_KNX_EXPORT DeviceDescriptor
+    {
+        DeviceDescriptor() = delete;
+
+        // TODO: add InfoReport, this one is system broadcast, be careful to get the first control
+        // field right
+
+        static QKnxLinkLayerFrame createReadRequest(const QKnxAddress &src, const QKnxAddress &dest,
+            quint8 descriptorType, QKnxTpduFactory::PointToPoint::Mode mode =
+            QKnxTpduFactory::PointToPoint::Mode::Connectionless, quint8 seqNumber = 0);
+        static QKnxLinkLayerFrame createReadRequest(const QKnxAddress &src, const QKnxAddress &dest,
+            quint8 descriptorType, const QKnxControlField &ctrl,
+            const QKnxExtendedControlField &extCtrl, QKnxTpduFactory::PointToPoint::Mode mode =
+            QKnxTpduFactory::PointToPoint::Mode::Connectionless, quint8 seqNumber = 0);
+
+        static QKnxLinkLayerFrame createReadConfirmation(const QKnxAddress &src,
+            const QKnxAddress &dest, quint8 descriptorType, QKnxTpduFactory::PointToPoint::Mode mode =
+            QKnxTpduFactory::PointToPoint::Mode::Connectionless, quint8 seqNumber = 0,
+            QKnxControlField::Confirm status = QKnxControlField::Confirm::NoError);
+        static QKnxLinkLayerFrame createReadConfirmation(const QKnxAddress &src,
+            const QKnxAddress &dest, quint8 descriptorType, const QKnxControlField &ctrl,
+            const QKnxExtendedControlField &extCtrl, QKnxTpduFactory::PointToPoint::Mode mode =
+            QKnxTpduFactory::PointToPoint::Mode::Connectionless, quint8 seqNumber = 0);
+
+        static QKnxLinkLayerFrame createReadIndication(const QKnxAddress &src,
+            const QKnxAddress &dest, quint8 descriptorType, QKnxTpduFactory::PointToPoint::Mode mode =
+            QKnxTpduFactory::PointToPoint::Mode::Connectionless, quint8 seqNumber = 0);
+        static QKnxLinkLayerFrame createReadIndication(const QKnxAddress &src,
+            const QKnxAddress &dest, quint8 descriptorType, const QKnxControlField &ctrl,
+            const QKnxExtendedControlField &extCtrl, QKnxTpduFactory::PointToPoint::Mode mode =
+            QKnxTpduFactory::PointToPoint::Mode::Connectionless, quint8 seqNumber = 0);
+
+        static QKnxLinkLayerFrame createResponseRequest(const QKnxAddress &src,
+            const QKnxAddress &dest, quint8 deciveDescriptor, const QVector<quint8> &descriptor,
+            QKnxTpduFactory::PointToPoint::Mode mode = QKnxTpduFactory::PointToPoint::Mode::Connectionless,
+            quint8 seqNumber = 0);
+        static QKnxLinkLayerFrame createResponseRequest(const QKnxAddress &src,
+            const QKnxAddress &dest, quint8 deviceDescriptor, const QVector<quint8> &descriptor,
+            const QKnxControlField &ctrl, const QKnxExtendedControlField &extCtrl,
+            QKnxTpduFactory::PointToPoint::Mode mode = QKnxTpduFactory::PointToPoint::Mode::Connectionless,
+            quint8 seqNumber = 0);
+
+        static QKnxLinkLayerFrame createResponseConfirmation(const QKnxAddress &src,
+            const QKnxAddress &dest, quint8 deviceDescriptor, const QVector<quint8> &descriptor,
+            QKnxTpduFactory::PointToPoint::Mode mode = QKnxTpduFactory::PointToPoint::Mode::Connectionless,
+            quint8 seqNumber = 0, QKnxControlField::Confirm status = QKnxControlField::Confirm::NoError);
+        static QKnxLinkLayerFrame createResponseConfirmation(const QKnxAddress &src,
+            const QKnxAddress &dest, quint8 deviceDescriptor, const QVector<quint8> &descriptor,
+            const QKnxControlField &ctrl, const QKnxExtendedControlField &extCtrl,
+            QKnxTpduFactory::PointToPoint::Mode mode = QKnxTpduFactory::PointToPoint::Mode::Connectionless,
+            quint8 seqNumber = 0);
+
+        static QKnxLinkLayerFrame createResponseIndication(const QKnxAddress &src,
+            const QKnxAddress &dest, quint8 deviceDescriptor, const QVector<quint8> &descriptor,
+            QKnxTpduFactory::PointToPoint::Mode mode = QKnxTpduFactory::PointToPoint::Mode::Connectionless,
+            quint8 seqNumber = 0);
+        static QKnxLinkLayerFrame createResponseIndication(const QKnxAddress &src,
+            const QKnxAddress &dest, quint8 deviceDescriptor, const QVector<quint8> &descriptor,
+            const QKnxControlField &ctrl, const QKnxExtendedControlField &extCtrl,
+            QKnxTpduFactory::PointToPoint::Mode mode = QKnxTpduFactory::PointToPoint::Mode::Connectionless,
+            quint8 seqNumber = 0);
     };
 };
 

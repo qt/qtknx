@@ -465,6 +465,7 @@ bool QKnxTpdu::isValid() const
     switch (applicationControlField()) {
     case ApplicationControlField::GroupValueRead:
     case ApplicationControlField::GroupPropValueRead:
+    case ApplicationControlField::DeviceDescriptorRead:
     case ApplicationControlField::IndividualAddressRead:
     case ApplicationControlField::IndividualAddressResponse:
     case ApplicationControlField::DomainAddressRead:
@@ -489,6 +490,7 @@ bool QKnxTpdu::isValid() const
     case ApplicationControlField::SystemNetworkParameterRead:
     case ApplicationControlField::SystemNetworkParameterResponse:
     case ApplicationControlField::SystemNetworkParameterWrite:
+    case ApplicationControlField::DeviceDescriptorResponse:
         // 3_02_02 Paragraph 2.2.5.1: L_Data_Extended -> max 254 bytes
         return (size() >= HEADER_SIZE) && (size() <= HEADER_SIZE + L_DATA_EXTENDED_PAYLOAD);
 
@@ -530,8 +532,6 @@ bool QKnxTpdu::isValid() const
     case ApplicationControlField::FunctionPropertyCommand:
     case ApplicationControlField::FunctionPropertyStateRead:
     case ApplicationControlField::FunctionPropertyStateResponse:
-    case ApplicationControlField::DeviceDescriptorRead:
-    case ApplicationControlField::DeviceDescriptorResponse:
     case ApplicationControlField::Restart:
     case ApplicationControlField::AuthorizeRequest:
     case ApplicationControlField::AuthorizeResponse:

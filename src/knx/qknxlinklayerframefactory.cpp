@@ -28,7 +28,6 @@
 ******************************************************************************/
 
 #include "qknxlinklayerframefactory.h"
-#include "qknxtpdufactory.h"
 
 // TODO: introduce QKnx::MediumType dependency. The LinkLayer Frame look different
 // depending on the chosen medium. For the moment only netIp Tunneling is taken care of.
@@ -79,8 +78,10 @@ static QKnxLinkLayerFrame createFrame(QKnxLinkLayerFrame::MessageCode code, cons
     frame.setDestinationAddress(dest);
     frame.setSourceAddress(src);
     QKnxControlField temp = ctrl;
-    if (tpdu.dataSize() > 14)
+    if (tpdu.dataSize() > 15) {
         temp.setFrameType(QKnxControlField::FrameType::Extended);
+        temp.setPriority(QKnxControlField::Priority::Low);
+    }
     frame.setControlField(temp);
     frame.setExtendedControlField(extCtrl);
     frame.setTpdu(tpdu);
@@ -92,36 +93,35 @@ static QKnxLinkLayerFrame createFrame(QKnxLinkLayerFrame::MessageCode code, cons
 
 QKnxControlField
 QKnxLinkLayerFrameFactory::createRequestControlField(QKnxControlField::Acknowledge ack,
-    QKnxControlField::Priority priority)
+    QKnxControlField::Priority priority, QKnxControlField::Broadcast broadcast)
 {
     auto controlField = setupControlField();
     controlField.setAcknowledge(ack);
     controlField.setPriority(priority);
-    // TODO: is this correct for Memory Services?
-    controlField.setBroadcast(QKnxControlField::Broadcast::Domain);
+    controlField.setBroadcast(broadcast); // TODO: Is Domain correct for Memory Services?
     return controlField;
 }
 
 QKnxControlField
 QKnxLinkLayerFrameFactory::createConfirmationControlField(QKnxControlField::Confirm status,
-    QKnxControlField::Acknowledge acknowledge, QKnxControlField::Priority priority)
+    QKnxControlField::Acknowledge acknowledge, QKnxControlField::Priority priority,
+    QKnxControlField::Broadcast broadcast)
 {
     auto controlField = setupControlField();
     controlField.setConfirm(status);
     controlField.setAcknowledge(acknowledge);
     controlField.setPriority(priority);
-    // TODO: is this correct for Memory Services?
-    controlField.setBroadcast(QKnxControlField::Broadcast::Domain);
+    controlField.setBroadcast(broadcast); // TODO: Is Domain correct for Memory Services?
     return controlField;
 }
 
 QKnxControlField
-QKnxLinkLayerFrameFactory::createIndicationControlField(QKnxControlField::Priority priority)
+QKnxLinkLayerFrameFactory::createIndicationControlField(QKnxControlField::Priority priority,
+    QKnxControlField::Broadcast broadcast)
 {
     auto controlField = setupControlField();
     controlField.setPriority(priority);
-    // TODO: is this correct for Memory Services?
-    controlField.setBroadcast(QKnxControlField::Broadcast::Domain);
+    controlField.setBroadcast(broadcast); // TODO: Is Domain correct for Memory Services?
     return controlField;
 }
 
@@ -584,6 +584,189 @@ QKnxLinkLayerFrame QKnxLinkLayerFrameFactory::Memory::createWriteIndication(cons
 
     return createFrame(QKnxLinkLayerFrame::MessageCode::DataIndication, ctrl, extCtrl, src, dest,
         tpdu);
+}
+
+
+// -- A_DeviceDescriptor Tools
+
+static bool deviceDescriptorArgumentsValid(const QKnxAddress &src, const QKnxAddress &dest,
+    const QKnxExtendedControlField &extCtrl, quint8 descriptorType, quint8 seqNumber,
+    QKnxTpduFactory::PointToPoint::Mode mode)
+{
+    return src.isValid() && src.type() == QKnxAddress::Type::Individual
+        && dest.isValid() && dest.type() == QKnxAddress::Type::Individual
+        && extCtrl.hopCount() < 7
+        && extCtrl.destinationAddressType() == QKnxAddress::Type::Individual
+        && descriptorType < 64 && seqNumber <= 15
+        && (mode == QKnxTpduFactory::PointToPoint::Mode::Connectionless
+            || mode == QKnxTpduFactory::PointToPoint::ConnectionOriented);
+}
+
+
+// -- A_DeviceDescriptorRead
+
+QKnxLinkLayerFrame QKnxLinkLayerFrameFactory::DeviceDescriptor::createReadRequest(const QKnxAddress &src,
+    const QKnxAddress &dest, quint8 descriptorType, QKnxTpduFactory::PointToPoint::Mode mode,
+    quint8 seqNumber)
+{
+    return createReadRequest(src, dest, descriptorType, createRequestControlField(),
+        createExtentedControlField(QKnxAddress::Type::Individual), mode, seqNumber);
+}
+
+QKnxLinkLayerFrame QKnxLinkLayerFrameFactory::DeviceDescriptor::createReadRequest(const QKnxAddress &src,
+    const QKnxAddress &dest, quint8 descriptorType, const QKnxControlField &ctrl,
+    const QKnxExtendedControlField &extCtrl, QKnxTpduFactory::PointToPoint::Mode mode,
+    quint8 seqNumber)
+{
+    if (!deviceDescriptorArgumentsValid(src, dest, extCtrl, descriptorType, seqNumber, mode))
+        return {};
+    auto tpdu = QKnxTpduFactory::PointToPoint::createDeviceDescriptorReadTpdu(mode, descriptorType,
+        seqNumber);
+    if (!tpdu.isValid())
+        return {};
+
+    return createFrame(QKnxLinkLayerFrame::MessageCode::DataRequest, ctrl, extCtrl, src, dest, tpdu);
+}
+
+QKnxLinkLayerFrame QKnxLinkLayerFrameFactory::DeviceDescriptor::createReadConfirmation(const QKnxAddress &src,
+    const QKnxAddress &dest, quint8 descriptorType, QKnxTpduFactory::PointToPoint::Mode mode,
+    quint8 seqNumber, QKnxControlField::Confirm status)
+{
+    return createReadConfirmation(src, dest, descriptorType, createConfirmationControlField(status),
+        createExtentedControlField(QKnxAddress::Type::Individual), mode, seqNumber);
+}
+
+QKnxLinkLayerFrame QKnxLinkLayerFrameFactory::DeviceDescriptor::createReadConfirmation(const QKnxAddress &src,
+    const QKnxAddress &dest, quint8 descriptorType, const QKnxControlField &ctrl,
+    const QKnxExtendedControlField &extCtrl, QKnxTpduFactory::PointToPoint::Mode mode,
+    quint8 seqNumber)
+{
+    if (!deviceDescriptorArgumentsValid(src, dest, extCtrl, descriptorType, seqNumber, mode))
+        return {};
+
+    auto tpdu = QKnxTpduFactory::PointToPoint::createDeviceDescriptorReadTpdu(mode, descriptorType,
+        seqNumber);
+    if (!tpdu.isValid())
+        return {};
+
+    return createFrame(QKnxLinkLayerFrame::MessageCode::DataConfirmation, ctrl, extCtrl, src, dest,
+        tpdu);
+}
+
+QKnxLinkLayerFrame QKnxLinkLayerFrameFactory::DeviceDescriptor::createReadIndication(const QKnxAddress &src,
+    const QKnxAddress &dest, quint8 descriptorType, QKnxTpduFactory::PointToPoint::Mode mode, quint8 seqNumber)
+{
+    return createReadIndication(src, dest, descriptorType, createIndicationControlField(),
+        createExtentedControlField(QKnxAddress::Type::Individual), mode, seqNumber);
+}
+
+QKnxLinkLayerFrame QKnxLinkLayerFrameFactory::DeviceDescriptor::createReadIndication(
+    const QKnxAddress &src, const QKnxAddress &dest, quint8 descriptorType,
+    const QKnxControlField &ctrl, const QKnxExtendedControlField &extCtrl,
+    QKnxTpduFactory::PointToPoint::Mode mode, quint8 seqNumber)
+{
+    if (!deviceDescriptorArgumentsValid(src, dest, extCtrl, descriptorType, seqNumber, mode))
+        return {};
+
+    auto tpdu = QKnxTpduFactory::PointToPoint::createDeviceDescriptorReadTpdu(mode, descriptorType,
+        seqNumber);
+    if (!tpdu.isValid())
+        return {};
+
+    return createFrame(QKnxLinkLayerFrame::MessageCode::DataIndication, ctrl, extCtrl, src, dest, tpdu);
+}
+
+
+// -- A_DeviceDescriptorResponse
+
+QKnxLinkLayerFrame QKnxLinkLayerFrameFactory::DeviceDescriptor::createResponseRequest(
+    const QKnxAddress &src, const QKnxAddress &dest, quint8 descriptorType,
+    const QVector<quint8> &descriptor, QKnxTpduFactory::PointToPoint::Mode mode,
+    quint8 seqNumber)
+{
+    auto ctrl = createRequestControlField();
+    if (descriptor.size() > 15)
+        ctrl.setPriority(QKnxControlField::Priority::Low);
+
+    return createResponseRequest(src, dest, descriptorType, descriptor, ctrl,
+        createExtentedControlField(QKnxAddress::Type::Individual), mode, seqNumber);
+}
+
+QKnxLinkLayerFrame QKnxLinkLayerFrameFactory::DeviceDescriptor::createResponseRequest(
+    const QKnxAddress &src, const QKnxAddress &dest, quint8 descriptorType,
+    const QVector<quint8> &descriptor, const QKnxControlField &ctrl,
+    const QKnxExtendedControlField &extCtrl, QKnxTpduFactory::PointToPoint::Mode mode,
+    quint8 seqNumber)
+{
+    if (!deviceDescriptorArgumentsValid(src, dest, extCtrl, descriptorType, seqNumber, mode))
+        return {};
+
+    auto tpdu = QKnxTpduFactory::PointToPoint::createDeviceDescriptorResponseTpdu(mode,
+        descriptorType, descriptor, seqNumber);
+    if (!tpdu.isValid())
+        return {};
+
+    return createFrame(QKnxLinkLayerFrame::MessageCode::DataRequest, ctrl, extCtrl, src, dest, tpdu);
+}
+
+QKnxLinkLayerFrame QKnxLinkLayerFrameFactory::DeviceDescriptor::createResponseConfirmation(
+    const QKnxAddress &src, const QKnxAddress &dest, quint8 descriptorType,
+    const QVector<quint8> &descriptor, QKnxTpduFactory::PointToPoint::Mode mode, quint8 seqNumber,
+    QKnxControlField::Confirm status)
+{
+    auto ctrl = createConfirmationControlField(status);
+    if (descriptor.size() > 15)
+        ctrl.setPriority(QKnxControlField::Priority::Low);
+
+    return createResponseConfirmation(src, dest, descriptorType, descriptor,
+        ctrl, createExtentedControlField(QKnxAddress::Type::Individual), mode, seqNumber);
+}
+
+QKnxLinkLayerFrame QKnxLinkLayerFrameFactory::DeviceDescriptor::createResponseConfirmation(
+    const QKnxAddress &src, const QKnxAddress &dest, quint8 descriptorType,
+    const QVector<quint8> &descriptor, const QKnxControlField &ctrl,
+    const QKnxExtendedControlField &extCtrl, QKnxTpduFactory::PointToPoint::Mode mode,
+    quint8 seqNumber)
+{
+    if (!deviceDescriptorArgumentsValid(src, dest, extCtrl, descriptorType, seqNumber, mode))
+        return {};
+
+    auto tpdu = QKnxTpduFactory::PointToPoint::createDeviceDescriptorResponseTpdu(mode,
+        descriptorType, descriptor, seqNumber);
+    if (!tpdu.isValid())
+        return {};
+
+    return createFrame(QKnxLinkLayerFrame::MessageCode::DataConfirmation, ctrl, extCtrl, src, dest,
+        tpdu);
+}
+
+QKnxLinkLayerFrame QKnxLinkLayerFrameFactory::DeviceDescriptor::createResponseIndication(
+    const QKnxAddress &src, const QKnxAddress &dest, quint8 descriptorType,
+    const QVector<quint8> &descriptor, QKnxTpduFactory::PointToPoint::Mode mode, quint8 seqNumber)
+{
+    auto ctrl = createIndicationControlField();
+    if (descriptor.size() > 15)
+        ctrl.setPriority(QKnxControlField::Priority::Low);
+
+    return createResponseIndication(src, dest, descriptorType, descriptor,
+        ctrl, createExtentedControlField(QKnxAddress::Type::Individual), mode, seqNumber);
+}
+
+QKnxLinkLayerFrame QKnxLinkLayerFrameFactory::DeviceDescriptor::createResponseIndication(
+    const QKnxAddress &src, const QKnxAddress &dest, quint8 descriptorType,
+    const QVector<quint8> &descriptor, const QKnxControlField &ctrl,
+    const QKnxExtendedControlField &extCtrl, QKnxTpduFactory::PointToPoint::Mode mode,
+    quint8 seqNumber)
+{
+    if (!deviceDescriptorArgumentsValid(src, dest, extCtrl, descriptorType, seqNumber, mode))
+        return {};
+
+    auto tpdu = QKnxTpduFactory::PointToPoint::createDeviceDescriptorResponseTpdu(mode,
+        descriptorType, descriptor, seqNumber);
+    if (!tpdu.isValid())
+        return {};
+
+    return createFrame(QKnxLinkLayerFrame::MessageCode::DataIndication, ctrl, extCtrl, src, dest, tpdu);
 }
 
 QT_END_NAMESPACE
