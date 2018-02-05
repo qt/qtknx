@@ -39,21 +39,36 @@ QT_BEGIN_NAMESPACE
     \brief The QKnx8BitSet class is a datapoint type with binary-coded values in
     all fields.
 
-    This is a fixed size datapoint type with the length of 1 byte.
+    This is a fixed size datapoint type with the length of 1 byte and the 8-bit
+    set.
+
+    The possible values are: \c{No bits set} (\c 0x00) and \c{All bits set}
+    (\c 0xff).
 
     \sa QKnxDatapointType
 */
 
 // -- QKnx8BitSet
 
+
+/*!
+    Creates a fixed size datapoint type with the 8-bit set to \c {0}.
+*/
 QKnx8BitSet::QKnx8BitSet()
     : QKnx8BitSet(0)
 {}
 
+/*!
+    Creates a fixed size datapoint type with the value \a value.
+*/
 QKnx8BitSet::QKnx8BitSet(quint8 value)
     : QKnx8BitSet(SubType, value)
 {}
 
+/*!
+    Creates a fixed size datapoint with the subtype \a subType and the value
+    \a value.
+*/
 QKnx8BitSet::QKnx8BitSet(int subType, quint8 value)
     : QKnxFixedSizeDatapointType(MainType, subType, TypeSize)
 {
@@ -64,20 +79,33 @@ QKnx8BitSet::QKnx8BitSet(int subType, quint8 value)
     setByte(value);
 }
 
+/*!
+    Returns \c true if the bit at \a index is set, \c false otherwise.
+*/
 bool QKnx8BitSet::bit(int index) const
 {
     return QKnxDatapointType::testBit(byte(), index);
 }
 
+/*!
+    Sets the bit at \a index to \a value.
+*/
 void QKnx8BitSet::setBit(bool value, int index)
 {
     setByte(QKnxDatapointType::setBit(byte(), value, index));
 }
 
+/*!
+    Creates a fixed size datapoint type with the value set to \c {0}.
+*/
 quint8 QKnx8BitSet::byte() const
 {
     return QKnxDatapointType::byte(0);
 }
+
+/*!
+    Sets the value of the datapoint type to \a value.
+*/
 
 bool QKnx8BitSet::setByte(quint8 value)
 {
@@ -95,10 +123,43 @@ bool QKnx8BitSet::isValid() const
 
 // -- QKnxGeneralStatus
 
+/*!
+    \class QKnxGeneralStatus
+    \inherits QKnx8BitSet
+    \inmodule QtKnx
+    \brief The QKnxGeneralStatus class is a datapoint type for general status.
+
+    This is a fixed size datapoint type with the length of 1 byte.
+
+    The possible values are combinations of the attributes specified by
+    QKnxGeneralStatus::Attribute.
+
+    \sa QKnx8BitSet, QKnxDatapointType
+*/
+
+/*!
+    \enum QKnxGeneralStatus::Attribute
+
+    This enum type holds the status attributes.
+
+    \value OutOfService
+    \value Fault
+    \value Overridden
+    \value InAlarm
+    \value AlarmUnacknowledged
+
+*/
+
+/*!
+    Creates a fixed size datapoint type with an empty list of  attributes.
+*/
 QKnxGeneralStatus::QKnxGeneralStatus()
     : QKnxGeneralStatus(Attributes())
 {}
 
+/*!
+    Creates a fixed size datapoint type with the attributes \a attributes.
+*/
 QKnxGeneralStatus::QKnxGeneralStatus(Attributes attributes)
     : QKnx8BitSet(SubType, 0)
 {
@@ -107,6 +168,9 @@ QKnxGeneralStatus::QKnxGeneralStatus(Attributes attributes)
     setValue(attributes);
 }
 
+/*!
+    Returns the value stored in the datapoint type as a list of attributes.
+*/
 QKnxGeneralStatus::Attributes QKnxGeneralStatus::value() const
 {
     auto value = byte();
@@ -117,6 +181,10 @@ QKnxGeneralStatus::Attributes QKnxGeneralStatus::value() const
         .setFlag(Attribute::AlarmUnacknowledged, QKnxDatapointType::testBit(value, 4));
 }
 
+/*!
+    Sets the value of the datapoint type to the list of attributes specified by
+    \a attributes.
+*/
 bool QKnxGeneralStatus::setValue(Attributes attributes)
 {
     quint8 value = byte();
@@ -128,16 +196,25 @@ bool QKnxGeneralStatus::setValue(Attributes attributes)
     return setByte(value);
 }
 
+/*!
+    Returns whether the attribute \a attribute is set in the datapoint type.
+*/
 bool QKnxGeneralStatus::isSet(Attribute attribute) const
 {
     return value().testFlag(attribute);
 }
 
+/*!
+    Sets the attribute \a attribute within the value of the datapoint type.
+*/
 bool QKnxGeneralStatus::setAttribute(Attribute attribute)
 {
     return setValue(value() | attribute);
 }
 
+/*!
+    Removes the attribute \a attribute from the value of the datapoint type.
+*/
 bool QKnxGeneralStatus::removeAttribute(Attribute attribute)
 {
     return setValue(value() &~ attribute);
@@ -146,10 +223,41 @@ bool QKnxGeneralStatus::removeAttribute(Attribute attribute)
 
 // -- QKnxDeviceControl
 
+/*!
+    \class QKnxDeviceControl
+    \inherits QKnx8BitSet
+    \inmodule QtKnx
+    \brief The QKnxDeviceControl class is a datapoint type for device control.
+
+    This is a fixed size datapoint type with the length of 1 byte.
+
+    The possible values are combinations of the attributes specified by
+    QKnxGeneralStatus::Attribute.
+
+    \sa QKnx8BitSet, QKnxDatapointType
+*/
+
+/*!
+    \enum QKnxDeviceControl::Attribute
+
+    This enum type holds the control attributes.
+
+    \value UserStopped
+    \value OwnIA
+    \value VerifyMode
+    \value SafeState
+*/
+
+/*!
+    Creates a fixed size datapoint type with an empty list of attributes.
+*/
 QKnxDeviceControl::QKnxDeviceControl()
     : QKnxDeviceControl(Attributes())
 {}
 
+/*!
+    Creates a fixed size datapoint type with the attributes \a attributes.
+*/
 QKnxDeviceControl::QKnxDeviceControl(Attributes attributes)
     : QKnx8BitSet(SubType, 0)
 {
@@ -158,6 +266,9 @@ QKnxDeviceControl::QKnxDeviceControl(Attributes attributes)
     setValue(attributes);
 }
 
+/*!
+    Returns the value stored in the datapoint type as a list of attributes.
+*/
 QKnxDeviceControl::Attributes QKnxDeviceControl::value() const
 {
     auto value = byte();
@@ -167,6 +278,10 @@ QKnxDeviceControl::Attributes QKnxDeviceControl::value() const
         .setFlag(Attribute::SafeState, QKnxDatapointType::testBit(value, 3));
 }
 
+/*!
+    Sets the value of the datapoint type to the list of attributes specified by
+    \a attributes.
+*/
 bool QKnxDeviceControl::setValue(Attributes attributes)
 {
     quint8 value = byte();
@@ -177,16 +292,25 @@ bool QKnxDeviceControl::setValue(Attributes attributes)
     return setByte(value);
 }
 
+/*!
+    Returns whether the attribute \a attribute is set in the datapoint type.
+*/
 bool QKnxDeviceControl::isSet(Attribute attribute) const
 {
     return value().testFlag(attribute);
 }
 
+/*!
+    Sets the attribute \a attribute within the value of the datapoint type.
+*/
 bool QKnxDeviceControl::setAttribute(Attribute attribute)
 {
     return setValue(value() | attribute);
 }
 
+/*!
+    Removes the attribute \a attribute from the value of the datapoint type.
+*/
 bool QKnxDeviceControl::removeAttribute(Attribute attribute)
 {
     return setValue(value() &~ attribute);

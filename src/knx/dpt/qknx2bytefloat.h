@@ -65,7 +65,7 @@ public: \
     static const constexpr int SubType = SUB_TYPE; \
 };
 
-CREATE_CLASS_DECLARATION(QKnxTemperatureCelcius, 0x01)
+CREATE_CLASS_DECLARATION(QKnxTemperatureCelsius, 0x01)
 CREATE_CLASS_DECLARATION(QKnxTemperatureKelvin, 0x02)
 CREATE_CLASS_DECLARATION(QKnxTemperatureChange, 0x03)
 CREATE_CLASS_DECLARATION(QKnxValueLux, 0x04)

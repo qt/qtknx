@@ -44,17 +44,39 @@ QT_BEGIN_NAMESPACE
 
     This is a fixed size datapoint type with the length of 8 bytes.
 
+    It is a base class for the following classes:
+
+    \list
+        \li \c QKnxActiveEnergyV64 - Active energy in Wh.
+        \li \c QKnxApparentEnergyV64 - Active energy in VAh.
+        \li \c QKnxReactiveEnergyV64 - Active energy in VARh.
+    \endlist
+
+    The range for the value is from \c {-9 223 372 036 854 775 808} to
+    \c {9 223 372 036 854 775 807}.
+
     \sa QKnxDatapointType
 */
 
+/*!
+    Creates a fixed size datapoint type with the value set to \c 0.
+*/
 QKnxElectricalEnergy::QKnxElectricalEnergy()
     : QKnxElectricalEnergy(0)
 {}
 
+/*!
+    Creates a fixed size datapoint type with the value \a value.
+*/
 QKnxElectricalEnergy::QKnxElectricalEnergy(qint64 value)
     : QKnxElectricalEnergy(SubType, value)
 {}
 
+/*!
+    Creates a fixed size datapoint with the subtype \a subType and the value
+    \a value.
+
+*/
 QKnxElectricalEnergy::QKnxElectricalEnergy(int subType, qint64 value)
     : QKnxFixedSizeDatapointType(MainType, subType, TypeSize)
 {
@@ -66,11 +88,20 @@ QKnxElectricalEnergy::QKnxElectricalEnergy(int subType, qint64 value)
     setValue(value);
 }
 
+/*!
+    Returns the value stored in the datapoint type.
+*/
 qint64 QKnxElectricalEnergy::value() const
 {
     return qint64(QKnxUtils::QUint64::fromBytes(bytes()));
 }
 
+/*!
+    Sets the value of the datapoint type to \a value.
+
+    If the value is outside the allowed range, returns \c false and does not set
+    the value.
+*/
 bool QKnxElectricalEnergy::setValue(qint64 value)
 {
     if (value <= maximum().toLongLong() && value >= minimum().toLongLong())
@@ -78,6 +109,9 @@ bool QKnxElectricalEnergy::setValue(qint64 value)
     return false;
 }
 
+/*!
+    \reimp
+*/
 bool QKnxElectricalEnergy::isValid() const
 {
     return QKnxDatapointType::isValid()

@@ -43,17 +43,117 @@ QT_BEGIN_NAMESPACE
 
     This is fixed size datapoint type with the length of 4 bytes.
 
+    The range for the value of this datapoint type is from \c {-3.40282e+38} to
+    \c {3.40282e+38}.
+
+    This class is a base class for the following datapoint types:
+
+    \list
+        \li \c QKnxValueAbsoluteTemperature - Absolute temperature in K.
+        \li \c QKnxValueAcceleration - Acceleration in m/s2.
+        \li \c QKnxValueAccelerationAngular - Angular Acceleration in rad/s2.
+        \li \c QKnxValueActivationEnergy - Activation Energy in J/mol.
+        \li \c QKnxValueActivity - Radioactive activity in 1/s.
+        \li \c QKnxValueAngleDeg - Angle in degrees.
+        \li \c QKnxValueAngleRad - Angle in radian.
+        \li \c QKnxValueAmplitude - Amplitude.
+        \li \c QKnxValueAngularFrequency - Angular frequency in rad/s.
+        \li \c QKnxValueAngularMomentum - Angular momentum in Js.
+        \li \c QKnxValueAngularVelocity - Angular velocity in rad/s.
+        \li \c QKnxValueArea - Area in m2.
+        \li \c QKnxValueCapacitance - Capacitance in F.
+        \li \c QKnxValueChargeDensitySurface - Flux density in C/m2.
+        \li \c QKnxValueChargeDensityVolume - Charge density in C/m3.
+        \li \c QKnxValueCompressibility - Compressibility in m2/N.
+        \li \c QKnxValueCommonTemperature - Temperature in degrees Celsius.
+        \li \c QKnxValueConductance - Conductance in S.
+        \li \c QKnxValueDensity - Density in kg/m3.
+        \li \c QKnxValueElectricalConductivity - Conductivity in S/m.
+        \li \c QKnxValueElectricCharge - Electric charge in C.
+        \li \c QKnxValueElectricCurrent - Electric current in A.
+        \li \c QKnxValueElectricCurrentDensity - Electric current density in
+            A/m2.
+        \li \c QKnxValueElectricDipoleMoment - Electric dipole moment in Cm.
+        \li \c QKnxValueElectricDisplacement - Electric displacement in C/m2.
+        \li \c QKnxValueElectricFieldStrength - Electric field strength in V/m.
+        \li \c QKnxValueElectricFlux - Electric flux in C.
+        \li \c QKnxValueElectricFluxDensity - Electric flux density in C/m2.
+        \li \c QKnxValueElectricPolarization - Electric polarization in C/m2.
+        \li \c QKnxValueElectricPotential - Electric potential in V.
+        \li \c QKnxValueElectricPotentialDifference - Electric potential
+            difference in V.
+        \li \c QKnxValueElectromagneticMoment - Electromagnetic moment in Am2.
+        \li \c QKnxValueElectromotiveForce - Electromotive force in V.
+        \li \c QKnxValueEnergy - Energy in J.
+        \li \c QKnxValueForce - Force in N.
+        \li \c QKnxValueFrequency - Frequency in Hz.
+        \li \c QKnxValueHeatCapacity - Heat capacity in J/K.
+        \li \c QKnxValueHeatFlowRate - Heat flow rate in W.
+        \li \c QKnxValueHeatQuantity - Heat quantity in J.
+        \li \c QKnxValueImpedance - Impedance in Ohm.
+        \li \c QKnxValueLength - Length in m.
+        \li \c QKnxValueLightQuantity - Light quantity in J.
+        \li \c QKnxValueLuminance - Luminance in cd/m2.
+        \li \c QKnxValueLuminousFlux - Luminous flux in lm.
+        \li \c QKnxValueLuminousIntensity - Luminous intensity in cd.
+        \li \c QKnxValueMagneticFieldStrength - Magnetic field strength in A/m.
+        \li \c QKnxValueMagneticFlux - Magnetic flux in Wb.
+        \li \c QKnxValueMagneticFluxDensity - Magnetic flux density in T.
+        \li \c QKnxValueMagneticMoment - Magnetic moment in Am2.
+        \li \c QKnxValueMagneticPolarization - Magnetic polarization in T.
+        \li \c QKnxValueMagnetization - Magnetization in A/m.
+        \li \c QKnxValueMagnetomotiveForce - Magnetomotive force in A.
+        \li \c QKnxValueMass - Mass in kg.
+        \li \c QKnxValueMassFlux - Mass flux in kg/s.
+        \li \c QKnxValueMol - Amount of substance in mol.
+        \li \c QKnxValueMomentum - Momentum in N/s.
+        \li \c QKnxValuePhaseAngleDeg - Phase angle in degrees.
+        \li \c QKnxValuePhaseAngleRad - Phase angle in radian.
+        \li \c QKnxValuePower - Power in W.
+        \li \c QKnxValuePowerFactor - Power factor in cos Phi.
+        \li \c QKnxValuePressure - Pressure in Pa.
+        \li \c QKnxValueReactance - Reactance in Ohm.
+        \li \c QKnxValueResistance - Resistance in Ohm.
+        \li \c QKnxValueResistivity - Resistivity in Ohm*m.
+        \li \c QKnxValueSelfInductance - Self inductance in H.
+        \li \c QKnxValueSolidAngle - Solid angle in sr.
+        \li \c QKnxValueSoundIntensity - Sound intensity in W/m2.
+        \li \c QKnxValueSpeed - Speed in m/s.
+        \li \c QKnxValueStress - Stress in Pa.
+        \li \c QKnxValueSurfaceTension - Surface tension in N/m.
+        \li \c QKnxValueTemperatureDifference - Temperature difference in K.
+        \li \c QKnxValueThermalCapacity - Thermal capacity in J/K.
+        \li \c QKnxValueThermalConductivity - Thermal conductivity in W/mk.
+        \li \c QKnxValueThermoelectricPower - Thermoelectric power in V/K.
+        \li \c QKnxValueTime - Time in seconds.
+        \li \c QKnxValueTorque - Torque in Nm.
+        \li \c QKnxValueVolume - Volume in m3.
+        \li \c QKnxValueVolumeFlux - Volume flux in m3/s.
+        \li \c QKnxValueWeight - Weight in N.
+        \li \c QKnxValueWork - Work in J.
+    \endlist
+
     \sa QKnxDatapointType
 */
 
+/*!
+    Creates a fixed size datapoint type with the value set to \c {0.0}.
+*/
 QKnx4ByteFloat::QKnx4ByteFloat()
     : QKnx4ByteFloat(0.0)
 {}
 
+/*!
+    Creates a fixed size datapoint type with the float \a value.
+*/
 QKnx4ByteFloat::QKnx4ByteFloat(float value)
     : QKnx4ByteFloat(SubType, value)
 {}
 
+/*!
+    Creates a fixed size datapoint type with the subtype \a subType and float
+    \a value.
+*/
 QKnx4ByteFloat::QKnx4ByteFloat(int subType, float value)
     : QKnxFixedSizeDatapointType(MainType, subType, TypeSize)
 {
@@ -65,6 +165,9 @@ QKnx4ByteFloat::QKnx4ByteFloat(int subType, float value)
     setValue(value);
 }
 
+/*!
+    Returns the value stored in the datapoint type.
+*/
 float QKnx4ByteFloat::value() const
 {
     quint32 temp = QKnxUtils::QUint32::fromBytes(bytes());
@@ -73,6 +176,12 @@ float QKnx4ByteFloat::value() const
     return value;
 }
 
+/*!
+    Sets the float of the datapoint type to \a value.
+
+    If the value is outside the allowed range, returns \c false and does not set
+    the value.
+*/
 void QKnx4ByteFloat::setValue(float value)
 {
     quint32 tmp;
@@ -170,12 +279,12 @@ CREATE_CLASS_BODY(QKnxValueSoundIntensity, "Sound intensity (W/m2)", "W/m2")
 CREATE_CLASS_BODY(QKnxValueSpeed, "Speed (m/s)", "m/s")
 CREATE_CLASS_BODY(QKnxValueStress, "Stress (Pa)", "Pa")
 CREATE_CLASS_BODY(QKnxValueSurfaceTension, "Surface tension (N/m)", "N/m")
-CREATE_CLASS_BODY(QKnxValueCommonTemperature, "Temperature (degree Celcius)", "degree Celcius")
+CREATE_CLASS_BODY(QKnxValueCommonTemperature, "Temperature (degree Celsius)", "degree Celsius")
 CREATE_CLASS_BODY(QKnxValueAbsoluteTemperature, "Absolute temperature (K)", "K")
 CREATE_CLASS_BODY(QKnxValueTemperatureDifference, "Temperature difference (K)", "K")
 CREATE_CLASS_BODY(QKnxValueThermalCapacity, "Thermal capacity (J/K)", "J/K")
 CREATE_CLASS_BODY(QKnxValueThermalConductivity, "Thermal conductivity (W/mk)", "W/mk")
-CREATE_CLASS_BODY(QKnxValueThermoelectricPower, "Thermoelectic poser (V/K)", "V/K")
+CREATE_CLASS_BODY(QKnxValueThermoelectricPower, "Thermoelectric power (V/K)", "V/K")
 CREATE_CLASS_BODY(QKnxValueTime, "Time (s)", "s")
 CREATE_CLASS_BODY(QKnxValueTorque, "Torque (Nm)", "Nm")
 CREATE_CLASS_BODY(QKnxValueVolume, "Volume (m3)", "m3")
