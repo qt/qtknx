@@ -546,7 +546,7 @@ void tst_QKnxDatapointType::dpt9_2ByteFloat()
     QCOMPARE(dpt.isValid(), true);
     QCOMPARE(dpt.value(), 670760.96f);
 
-    QKnxTemperatureCelcius dptTemp;
+    QKnxTemperatureCelsius dptTemp;
     QCOMPARE(dptTemp.size(), 2);
     QCOMPARE(dptTemp.mainType(), 9);
     QCOMPARE(dptTemp.subType(), 1);
@@ -912,11 +912,11 @@ void tst_QKnxDatapointType::dpt19_DateTime()
     QKnxDateTime::Attributes testAttributes =
         QKnxDateTime::Attributes().setFlag(QKnxDateTime::Attribute::Fault, false)
             .setFlag(QKnxDateTime::Attribute::WorkingDay, false)
-            .setFlag(QKnxDateTime::Attribute::WorkingDay, false)
-            .setFlag(QKnxDateTime::Attribute::YearInvalild, false)
-            .setFlag(QKnxDateTime::Attribute::DateInvalid, false)
-            .setFlag(QKnxDateTime::Attribute::DayOfWeekInvalid, false)
-            .setFlag(QKnxDateTime::Attribute::TimeInvalid, false)
+            .setFlag(QKnxDateTime::Attribute::NoWorkingDay, false)
+            .setFlag(QKnxDateTime::Attribute::NoYear, false)
+            .setFlag(QKnxDateTime::Attribute::NoDate, false)
+            .setFlag(QKnxDateTime::Attribute::NoDayOfWeek, false)
+            .setFlag(QKnxDateTime::Attribute::NoTime, false)
             .setFlag(QKnxDateTime::Attribute::StandardSummerTime, false);
     QCOMPARE(dt.attributes(), testAttributes);
     QCOMPARE(dt.clockQuality(), QKnxDateTime::ClockQuality::WithoutExtendedSyncSignal);

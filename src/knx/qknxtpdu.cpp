@@ -494,7 +494,7 @@ bool QKnxTpdu::isValid() const
         // 3_02_02 Paragraph 2.2.5.1: L_Data_Extended -> max 254 bytes
         return (size() >= HEADER_SIZE) && (size() <= HEADER_SIZE + L_DATA_EXTENDED_PAYLOAD);
 
-     // To properly jude that next two one needs to know the type of cEMI frame.
+     // To properly judge that next two one needs to know the type of cEMI frame.
     case ApplicationControlField::NetworkParameterResponse: // L_Data
         //return (size() >= HEADER_SIZE) && (size() <= HEADER_SIZE + L_DATA_PAYLOAD);
     // case ApplicationLayerControlField::NetworkParameterInfoReport: // L_Data_Extended

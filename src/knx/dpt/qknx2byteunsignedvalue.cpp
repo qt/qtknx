@@ -55,7 +55,7 @@ QT_BEGIN_NAMESPACE
         \li \c QKnxTimePeriodMin - Time in minutes
         \li \c QKnxTimePeriodMsec - Time in milliseconds
         \li \c QKnxTimePeriodSec - Time in seconds
-        \li \c QKnxUEICurrentMilliA - Current in milliampers (no bus poser
+        \li \c QKnxUEICurrentMilliA - Current in milliampere (no bus poser
             supply functionality available)
         \li \c QKnxValue2Ucount - Pulses
     \endlist
