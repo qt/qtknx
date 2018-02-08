@@ -809,6 +809,31 @@ bool QKnxDatapointType::operator!=(const QKnxDatapointType &other) const
     return !operator==(other);
 }
 
+/*!
+    Converts a KNX datapoint type \a dpt of the format \c DPT-* or \c DPST-*-*
+    into a \l {QKnxDatapointType::Type} enumeration used throughout the QtKnx
+    API.
+*/
+QKnxDatapointType::Type QKnxDatapointType::toType(const QString & dpt)
+{
+    QKnxDatapointTypePrivate dtp;
+    auto match = dtp.m_dpt.match(dpt);
+    if (!match.hasMatch())
+        return QKnxDatapointType::Type::Unknown;
+
+    QString subType = QStringLiteral("0");
+    auto mainType = match.captured(QStringLiteral("MainOnly"));
+    if (mainType.isEmpty()) {
+        subType = match.captured(QStringLiteral("SubType"));
+        mainType = match.captured(QStringLiteral("MainType"));
+    }
+
+    quint32 type;
+    if (dtp.toType(mainType, subType, &type))
+        return static_cast<Type> (type);
+    return QKnxDatapointType::Type::Unknown;
+}
+
 
 // -- private
 

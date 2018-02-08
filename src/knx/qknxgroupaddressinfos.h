@@ -30,81 +30,83 @@
 #ifndef QKNXGROUPADDRESSINFOS_H
 #define QKNXGROUPADDRESSINFOS_H
 
-#include <QtCore/qhash.h>
-#include <QtCore/qlist.h>
 #include <QtKnx/qknxaddress.h>
 #include <QtKnx/qknxdatapointtype.h>
 #include <QtKnx/qknxgroupaddressinfo.h>
-#include <QtKnx/qknxinstallation.h>
-#include <QtKnx/qknxprojectroot.h>
 
 QT_BEGIN_NAMESPACE
 
 class QKnxGroupAddressInfosPrivate;
-
-class Q_KNX_EXPORT QKnxGroupAddressInfos
+class Q_KNX_EXPORT QKnxGroupAddressInfos final
 {
+    Q_DECLARE_TR_FUNCTIONS(QKnxGroupAddressInfos)
+
 public:
+    enum class Status : quint8
+    {
+        NoError,
+        FileError,
+        ProjectError,
+        ParseError
+    };
+
     QKnxGroupAddressInfos();
     ~QKnxGroupAddressInfos();
 
-    explicit QKnxGroupAddressInfos(const QString &knxProjectFile, const QString &projectId);
+    explicit QKnxGroupAddressInfos(const QString &projectFile);
 
-    // TODO: adapt this ReadStatus to want is needed
-    enum ReadStatus {
-        NoError,
-        FileReadError,
-        FileNameError,
-        FileProjectReadError,
-        FileProjectSizeError,
-        FileProjectError,
-        FileInstallationSizeError,
-        FileGroupAddressesSizeError,
-        FileGroupRangesSizeError,
-        FileGroupAddressSizeError,
-        FileOpenError,
-        FilePermissionsError,
-        FileError
-    };
+    QString projectFile() const;
+    void setProjectFile(const QString &projectFile);
 
-    ReadStatus readStatus() const;
+    bool parse();
+    void clear();
 
-    ReadStatus readFile(const QString &knxProjectFile, const QString &projectId);
-    ReadStatus readFile();
-    void clearInfos();
+    Status status() const;
+    QString errorString() const;
 
-    QString knxProjectFileName() const;
-    QString knxProjectId() const;
-    QList<QString> installationsName() const;
+    QVector<QString> projectIds() const;
+    QString projectName(const QString &projectId) const;
 
-    QMultiHash<QKnxAddress, QKnxGroupAddressInfo>
-        groupAddressesFullDescription(const QString &installationName) const;
+    QVector<QString> installations(const QString &projectId) const;
 
-    QMultiHash<QKnxDatapointType::Type, QKnxAddress>
-        datapointTypeGroupAddresses(const QString &installationName) const;
+    qint32 infoCount(const QString &projectId, const QString &installation = {}) const;
 
-    QKnxDatapointType::Type dptType(const QKnxAddress &groupAddress,
-        const QString &installationName) const;
+    QVector<QKnxGroupAddressInfo> addressInfos(const QString &projectId,
+        const QString &installation = {}) const;
+    QVector<QKnxGroupAddressInfo> addressInfos(const QKnxAddress &address,
+        const QString &projectId, const QString &installation = {}) const;
+    QVector<QKnxGroupAddressInfo> addressInfos(QKnxDatapointType::Type type,
+        const QString &projectId, const QString &installation = {}) const;
 
-    QList<QKnxAddress> groupAddresses(const QString &installationName) const;
+    void add(const QKnxGroupAddressInfo &info, const QString &projectId);
+    void add(const QString &name, const QKnxAddress &address, QKnxDatapointType::Type type,
+        const QString &description, const QString &projectId, const QString &installation = {});
+    void add(const QString &name, const QKnxAddress &address, const QString &datapointType,
+        const QString &description, const QString &projectId, const QString &installation = {});
 
-    QList<QKnxAddress> groupAddresses(const QKnxDatapointType::Type &dptType,
-        const QString &installationName) const;
+    void remove(const QKnxAddress &address, const QString &projectId,
+        const QString &installation = {});
+    void remove(const QKnxGroupAddressInfo &info, const QString &projectId);
 
-    QKnxGroupAddressInfo groupAddressInfo(const QKnxAddress &groupAddress,
-        const QString &installationName) const;
+    QKnxGroupAddressInfos(const QKnxGroupAddressInfos &other);
+    QKnxGroupAddressInfos &operator=(const QKnxGroupAddressInfos &other);
 
-    QKnxGroupAddressInfos(const QKnxGroupAddressInfos &o);
-    QKnxGroupAddressInfos &operator=(const QKnxGroupAddressInfos &o);
+    QKnxGroupAddressInfos(QKnxGroupAddressInfos &&other) Q_DECL_NOTHROW;
+    QKnxGroupAddressInfos &operator=(QKnxGroupAddressInfos &&other) Q_DECL_NOTHROW;
 
-    bool addEntry(const QKnxGroupAddressInfo &list,
-        const QString &installationName = QLatin1String(""), bool overwrite = false);
+    void swap(QKnxGroupAddressInfos &other) Q_DECL_NOTHROW;
+
+    bool operator==(const QKnxGroupAddressInfos &other) const;
+    bool operator!=(const QKnxGroupAddressInfos &other) const;
 
 private:
-    QKnxGroupAddressInfosPrivate *d { nullptr };
+    explicit QKnxGroupAddressInfos(QKnxGroupAddressInfosPrivate &dd);
+
+private:
+    QSharedDataPointer<QKnxGroupAddressInfosPrivate> d_ptr;
 };
 
-Q_KNX_EXPORT QDebug operator<<(QDebug debug, const QKnxGroupAddressInfos &groupAddressesInfo);
+Q_KNX_EXPORT QDebug operator<<(QDebug debug, const QKnxGroupAddressInfos &infos);
 
 QT_END_NAMESPACE
 

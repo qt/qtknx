@@ -1,5 +1,6 @@
 <RCC>
     <qresource prefix="/">
         <file>data/0.xml</file>
+        <file>data/qt.io.knxproj</file>
     </qresource>
 </RCC>

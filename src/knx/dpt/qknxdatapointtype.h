@@ -158,7 +158,7 @@ public:
         Dpt232_3ByteColourRGB = 23200000,
             DptColourRGB = 23200600
     };
-    Q_ENUMS(Type)
+    Q_ENUM(Type)
     Type type() const;
 
     virtual ~QKnxDatapointType();
@@ -237,6 +237,7 @@ public:
         return (value ? byteToSet | (T(1) << bit) : byteToSet & ~(T(1) << bit));
     }
 
+    static Type toType(const QString &dpt);
     static const constexpr int SubType = 0x00;
 
 protected:
