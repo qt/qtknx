@@ -89,6 +89,8 @@ Tunneling::Tunneling(QWidget* parent)
     setupMessageCodeComboBox();
     updateAdditionalInfoTypesComboBox();
 
+    m_frame.setMediumType(QKnx::MediumType::NetIP);
+
     connect(ui->connectTunneling, &QPushButton::clicked, this, [&]() {
         m_tunnel.setLocalPort(0);
         m_tunnel.connectToHost(m_server.controlEndpointAddress(), m_server.controlEndpointPort());
@@ -272,10 +274,11 @@ void Tunneling::updateFrame()
         ui->data->setEnabled(true);
         tpdu.setApplicationControlField(ui->apci->itemData(ui->apci->currentIndex())
             .value<QKnxTpdu::ApplicationControlField>());
-        QByteArray dataText = QByteArray::fromHex(ui->data->text().toLatin1());
-        QVector<quint8> foo(dataText.size(), 0);
-        std::copy(foo.begin(), foo.end(), dataText.begin());
-        tpdu.setData(foo);
+
+        auto hex = QByteArray::fromHex(ui->data->text().toLatin1());
+        QVector<quint8> payload(hex.size());
+        std::copy(hex.begin(), hex.end(), payload.begin());
+        tpdu.setData(payload);
     } else {
         ui->apci->setEnabled(false);
         ui->data->setEnabled(false);
