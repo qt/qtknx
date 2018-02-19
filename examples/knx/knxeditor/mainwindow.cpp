@@ -93,6 +93,9 @@ MainWindow::MainWindow(QWidget *parent)
 
     m_discoveryAgent.setTimeout(5000);
     connect(&m_discoveryAgent, &QKnxNetIpServerDiscoveryAgent::started, this, [&] {
+        if (!ui)
+            return;
+
         ui->scanButton->setEnabled(false);
         ui->checkboxNat->setEnabled(false);
 
@@ -106,6 +109,9 @@ MainWindow::MainWindow(QWidget *parent)
         firstItem->setSelectable(false);
     });
     connect(&m_discoveryAgent, &QKnxNetIpServerDiscoveryAgent::finished, this, [&] {
+        if (!ui)
+            return;
+
         ui->scanButton->setEnabled(true);
         ui->checkboxNat->setEnabled(true);
 
@@ -126,6 +132,9 @@ MainWindow::MainWindow(QWidget *parent)
         QOverload<>::of(&QKnxNetIpServerDiscoveryAgent::start));
 
     connect(ui->checkboxNat, &QCheckBox::toggled, this, [&](bool checked) {
+        if (!ui)
+            return;
+
         ui->tunneling->setNatAware(checked);
         m_discoveryAgent.setNatAware(checked);
         ui->deviceManagement->setNatAware(checked);
@@ -154,8 +163,9 @@ MainWindow::MainWindow(QWidget *parent)
 
 MainWindow::~MainWindow()
 {
-    s_ui = 0;
+    s_ui = nullptr;
     delete ui;
+    ui = nullptr;
 }
 
 void MainWindow::newServerSelected(int serverBoxIndex)
