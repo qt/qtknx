@@ -30,6 +30,8 @@
 #include "qknxnetipserverdiscoveryagent.h"
 #include "qknxnetipserverdiscoveryagent_p.h"
 
+#include <QtNetwork/qnetworkinterface.h>
+
 QT_BEGIN_NAMESPACE
 
 /*!
@@ -91,7 +93,25 @@ void QKnxNetIpServerDiscoveryAgentPrivate::setupSocket()
             setAndEmitStateChanged(QKnxNetIpServerDiscoveryAgent::State::Running);
 
             if (type == QKnxNetIpServerDiscoveryAgent::ResponseType::Multicast) {
-                if (socket->joinMulticastGroup(multicastAddress)) {
+                QNetworkInterface mni;
+                const auto interfaces = QNetworkInterface::allInterfaces();
+                for (const auto &iface : interfaces) {
+                    if (!iface.flags().testFlag(QNetworkInterface::CanMulticast))
+                        continue;
+
+                    const auto entries = iface.addressEntries();
+                    for (const auto &entry : entries) {
+                        auto ip = entry.ip();
+                        if (ip.protocol() != QAbstractSocket::NetworkLayerProtocol::IPv4Protocol)
+                            continue;
+                        if (ip != address)
+                            continue;
+                        mni = iface;
+                        break;
+                    }
+                }
+
+                if (socket->joinMulticastGroup(multicastAddress, mni)) {
                     usedPort = multicastPort;
                     usedAddress = multicastAddress;
                 } else {
