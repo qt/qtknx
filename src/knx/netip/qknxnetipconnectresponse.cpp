@@ -31,57 +31,82 @@
 
 QT_BEGIN_NAMESPACE
 
-QKnxNetIpConnectResponse::QKnxNetIpConnectResponse(QKnxNetIp::Error status)
-    : QKnxNetIpFrame(QKnxNetIp::ServiceType::ConnectResponse)
-{
-    QKnxNetIpPayload payload;
-    payload.setByte(1, quint8(status));
-    setPayload(payload);
-}
-
-QKnxNetIpConnectResponse::QKnxNetIpConnectResponse(quint8 channelId, QKnxNetIp::Error status,
-        const QKnxNetIpHpai &dataEndpoint, const QKnxNetIpCrd &responseData)
-    : QKnxNetIpFrame(QKnxNetIp::ServiceType::ConnectResponse)
-{
-    QKnxNetIpPayload payload(channelId);
-    payload.setByte(1, quint8(status));
-    payload.appendBytes(dataEndpoint.bytes());
-    payload.appendBytes(responseData.bytes());
-    setPayload(payload);
-}
-
-QKnxNetIpConnectResponse::QKnxNetIpConnectResponse(const QKnxNetIpFrame &other)
-    : QKnxNetIpFrame(other)
+QKnxNetIpConnectResponse::QKnxNetIpConnectResponse(const QKnxNetIpFrameEx &frame)
+    : m_frame(frame)
 {}
+
+bool QKnxNetIpConnectResponse::isValid() const
+{
+    return m_frame.isValid() && m_frame.serviceType() == QKnxNetIp::ServiceType::ConnectResponse
+        && (status() == QKnxNetIp::Error::None ? m_frame.size() >= 18 : true);
+}
 
 quint8 QKnxNetIpConnectResponse::channelId() const
 {
-    return payloadRef().byte(0);
+    return m_frame.constData().value(0);
 }
 
 QKnxNetIp::Error QKnxNetIpConnectResponse::status() const
 {
-    return QKnxNetIp::Error(payloadRef().byte(1));
+    return QKnxNetIp::Error(m_frame.constData().value(1));
 }
 
 QKnxNetIpHpai QKnxNetIpConnectResponse::dataEndpoint() const
 {
     if (status() != QKnxNetIp::Error::None)
         return {};
-    return QKnxNetIpHpai::fromBytes(payloadRef().bytes(0), 2);
+    return QKnxNetIpHpai::fromBytes(m_frame.constData(), 2);
 }
 
 QKnxNetIpCrd QKnxNetIpConnectResponse::responseData() const
 {
     if (status() != QKnxNetIp::Error::None)
         return {};
-    return QKnxNetIpCrd::fromBytes(payloadRef().bytes(0), 10);
+    return QKnxNetIpCrd::fromBytes(m_frame.constData(), 10);
 }
 
-bool QKnxNetIpConnectResponse::isValid() const
+QKnxNetIpConnectResponse::Builder QKnxNetIpConnectResponse::builder()
 {
-    return QKnxNetIpFrame::isValid() && code() == QKnxNetIp::ServiceType::ConnectResponse
-        && (status() == QKnxNetIp::Error::None ? size() >= 18 : true);
+    return QKnxNetIpConnectResponse::Builder();
+}
+
+
+// -- QKnxNetIpConnectResponse::Builder
+
+QKnxNetIpConnectResponse::Builder &
+    QKnxNetIpConnectResponse::Builder::setChannelId(quint8 channelId)
+{
+    m_channelId = channelId;
+    return *this;
+}
+
+QKnxNetIpConnectResponse::Builder &
+    QKnxNetIpConnectResponse::Builder::setStatus(QKnxNetIp::Error status)
+{
+    m_status = status;
+    return *this;
+}
+
+QKnxNetIpConnectResponse::Builder &
+    QKnxNetIpConnectResponse::Builder::setDataEndpoint(const QKnxNetIpHpai &hpai)
+{
+    m_hpai = hpai;
+    return *this;
+}
+
+QKnxNetIpConnectResponse::Builder &
+    QKnxNetIpConnectResponse::Builder::setResponseData(const QKnxNetIpCrd &crd)
+{
+    m_crd = crd;
+    return *this;
+}
+
+QKnxNetIpFrameEx QKnxNetIpConnectResponse::Builder::create() const
+{
+    QKnxByteArray data { m_channelId, quint8(m_status) };
+    if (m_status == QKnxNetIp::Error::None)
+        data += m_hpai.bytes() + m_crd.bytes();
+    return { QKnxNetIp::ServiceType::ConnectResponse, data };
 }
 
 QT_END_NAMESPACE

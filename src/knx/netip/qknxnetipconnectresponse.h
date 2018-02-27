@@ -38,34 +38,42 @@
 
 QT_BEGIN_NAMESPACE
 
-class Q_KNX_EXPORT QKnxNetIpConnectResponse final : public QKnxNetIpFrame
+class Q_KNX_EXPORT QKnxNetIpConnectResponse final
 {
 public:
-    QKnxNetIpConnectResponse() = default;
-    ~QKnxNetIpConnectResponse() override = default;
+    QKnxNetIpConnectResponse() = delete;
+    ~QKnxNetIpConnectResponse() = default;
 
-    QKnxNetIpConnectResponse(quint8 channelId,
-                             QKnxNetIp::Error status,
-                             const QKnxNetIpHpai &dataEndpoint,
-                             const QKnxNetIpCrd &responseData);
+    QKnxNetIpConnectResponse(const QKnxNetIpFrameEx &&) = delete;
+    explicit QKnxNetIpConnectResponse(const QKnxNetIpFrameEx &frame);
 
-    explicit QKnxNetIpConnectResponse(QKnxNetIp::Error status);
-
-    static QKnxNetIpConnectResponse fromBytes(const QKnxByteArray &bytes, quint16 index)
-    {
-        return QKnxNetIpFrameHelper::fromBytes(bytes, index,
-            QKnxNetIp::ServiceType::ConnectResponse);
-    }
+    bool isValid() const;
 
     quint8 channelId() const;
     QKnxNetIp::Error status() const;
     QKnxNetIpHpai dataEndpoint() const;
     QKnxNetIpCrd responseData() const;
 
-    bool isValid() const override;
+    class Q_KNX_EXPORT Builder final
+    {
+    public:
+        Builder &setChannelId(quint8 channelId);
+        Builder &setStatus(QKnxNetIp::Error status);
+        Builder &setDataEndpoint(const QKnxNetIpHpai &hpai);
+        Builder &setResponseData(const QKnxNetIpCrd &crd);
+
+        QKnxNetIpFrameEx create() const;
+
+    private:
+        quint8 m_channelId;
+        QKnxNetIp::Error m_status { QKnxNetIp::Error::None };
+        QKnxNetIpHpai m_hpai;
+        QKnxNetIpCrd m_crd;
+    };
+    static QKnxNetIpConnectResponse::Builder builder();
 
 private:
-    QKnxNetIpConnectResponse(const QKnxNetIpFrame &other);
+    const QKnxNetIpFrameEx &m_frame;
 };
 
 QT_END_NAMESPACE

@@ -31,34 +31,52 @@
 
 QT_BEGIN_NAMESPACE
 
-QKnxNetIpConnectionStateRequest::QKnxNetIpConnectionStateRequest(quint8 channelId,
-        const QKnxNetIpHpai &controlEndpoint)
-    : QKnxNetIpFrame(QKnxNetIp::ServiceType::ConnectionStateRequest)
-{
-    QKnxNetIpPayload payload(channelId);
-    payload.setByte(1, 0x00); // reserved
-    payload.appendBytes(controlEndpoint.bytes());
-    setPayload(payload);
-}
-
-QKnxNetIpConnectionStateRequest::QKnxNetIpConnectionStateRequest(const QKnxNetIpFrame &other)
-    : QKnxNetIpFrame(other)
+QKnxNetIpConnectionStateRequest::QKnxNetIpConnectionStateRequest(const QKnxNetIpFrameEx &frame)
+    : m_frame(frame)
 {}
 
 quint8 QKnxNetIpConnectionStateRequest::channelId() const
 {
-    return payloadRef().byte(0);
+    return m_frame.constData().value(0);
 }
 
 QKnxNetIpHpai QKnxNetIpConnectionStateRequest::controlEndpoint() const
 {
-    return QKnxNetIpHpai::fromBytes(payloadRef().bytes(0), 2);
+    return QKnxNetIpHpai::fromBytes(m_frame.constData(), 2);
 }
 
 bool QKnxNetIpConnectionStateRequest::isValid() const
 {
-    return QKnxNetIpFrame::isValid() && size() == 16
-        && code() == QKnxNetIp::ServiceType::ConnectionStateRequest;
+    return m_frame.isValid() && m_frame.size() == 16
+         && m_frame.serviceType() == QKnxNetIp::ServiceType::ConnectionStateRequest;
+}
+
+QKnxNetIpConnectionStateRequest::Builder QKnxNetIpConnectionStateRequest::builder()
+{
+    return QKnxNetIpConnectionStateRequest::Builder();
+}
+
+
+// -- QKnxNetIpConnectionStateRequest::Builder
+
+QKnxNetIpConnectionStateRequest::Builder &
+    QKnxNetIpConnectionStateRequest::Builder::setChannelId(quint8 channelId)
+{
+    m_channelId = channelId;
+    return *this;
+}
+
+QKnxNetIpConnectionStateRequest::Builder &
+    QKnxNetIpConnectionStateRequest::Builder::setControlEndpoint(const QKnxNetIpHpai &hpai)
+{
+    m_hpai = hpai;
+    return *this;
+}
+
+QKnxNetIpFrameEx QKnxNetIpConnectionStateRequest::Builder::create() const
+{
+    return { QKnxNetIp::ServiceType::ConnectionStateRequest, QKnxByteArray { m_channelId, 0x00 }
+        + m_hpai.bytes() };
 }
 
 QT_END_NAMESPACE

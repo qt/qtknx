@@ -36,27 +36,36 @@
 
 QT_BEGIN_NAMESPACE
 
-class Q_KNX_EXPORT QKnxNetIpConnectionStateRequest final : public QKnxNetIpFrame
+class Q_KNX_EXPORT QKnxNetIpConnectionStateRequest final
 {
 public:
-    QKnxNetIpConnectionStateRequest() = default;
-    ~QKnxNetIpConnectionStateRequest() override = default;
+    QKnxNetIpConnectionStateRequest() = delete;
+    ~QKnxNetIpConnectionStateRequest() = default;
 
-    QKnxNetIpConnectionStateRequest(quint8 channelId, const QKnxNetIpHpai &controlEndpoint);
+    QKnxNetIpConnectionStateRequest(const QKnxNetIpFrameEx &&) = delete;
+    explicit QKnxNetIpConnectionStateRequest(const QKnxNetIpFrameEx &frame);
 
-    static QKnxNetIpConnectionStateRequest fromBytes(const QKnxByteArray &bytes, quint16 index)
-    {
-        return QKnxNetIpFrameHelper::fromBytes(bytes, index,
-            QKnxNetIp::ServiceType::ConnectionStateRequest);
-    }
+    bool isValid() const;
 
     quint8 channelId() const;
     QKnxNetIpHpai controlEndpoint() const;
 
-    bool isValid() const override;
+    class Q_KNX_EXPORT Builder final
+    {
+    public:
+        Builder &setChannelId(quint8 channelId);
+        Builder &setControlEndpoint(const QKnxNetIpHpai &hpai);
+
+        QKnxNetIpFrameEx create() const;
+
+    private:
+        quint8 m_channelId;
+        QKnxNetIpHpai m_hpai;
+    };
+    static QKnxNetIpConnectionStateRequest::Builder builder();
 
 private:
-    QKnxNetIpConnectionStateRequest(const QKnxNetIpFrame &other);
+    const QKnxNetIpFrameEx &m_frame;
 };
 
 QT_END_NAMESPACE

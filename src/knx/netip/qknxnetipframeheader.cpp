@@ -285,4 +285,22 @@ QKnxNetIpFrameHeader QKnxNetIpFrameHeader::fromBytes(const QKnxByteArray &bytes,
         - headerSize) };
 }
 
+/*!
+    Returns \c true if this object and the given \a other are equal; otherwise
+    returns \c false.
+*/
+bool QKnxNetIpFrameHeader::operator==(const QKnxNetIpFrameHeader &other) const
+{
+    return m_bytes == other.m_bytes;
+}
+
+/*!
+    Returns \c true if this object and the given \a other are not equal;
+    otherwise returns \c false.
+*/
+bool QKnxNetIpFrameHeader::operator!=(const QKnxNetIpFrameHeader &other) const
+{
+    return !operator==(other);
+}
+
 QT_END_NAMESPACE

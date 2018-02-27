@@ -30,10 +30,11 @@
 #ifndef QKNXNETIPDESCRIPTIONRESPONSE_H
 #define QKNXNETIPDESCRIPTIONRESPONSE_H
 
+#include <QtCore/qvector.h>
+
 #include <QtKnx/qknxnetipdevicedib.h>
 #include <QtKnx/qknxnetipframe.h>
 #include <QtKnx/qknxnetipservicefamiliesdib.h>
-#include <QtCore/qvector.h>
 #include <QtKnx/qknxglobal.h>
 #include <QtKnx/qknxnetipconfigdib.h>
 #include <QtKnx/qknxnetipcurrentconfigdib.h>
@@ -45,20 +46,16 @@
 
 QT_BEGIN_NAMESPACE
 
-class Q_KNX_EXPORT QKnxNetIpDescriptionResponse final : public QKnxNetIpFrame
+class Q_KNX_EXPORT QKnxNetIpDescriptionResponse final
 {
 public:
-    QKnxNetIpDescriptionResponse() = default;
-    ~QKnxNetIpDescriptionResponse() override = default;
+    QKnxNetIpDescriptionResponse() = delete;
+    ~QKnxNetIpDescriptionResponse() = default;
 
-    QKnxNetIpDescriptionResponse(const QKnxNetIpDeviceDib &deviceHardware,
-                                 const QKnxNetIpServiceFamiliesDib &supportedFamilies);
+    QKnxNetIpDescriptionResponse(const QKnxNetIpFrameEx &&) = delete;
+    explicit QKnxNetIpDescriptionResponse(const QKnxNetIpFrameEx &frame);
 
-    static QKnxNetIpDescriptionResponse fromBytes(const QKnxByteArray &bytes, quint16 index)
-    {
-        return QKnxNetIpFrameHelper::fromBytes(bytes, index,
-            QKnxNetIp::ServiceType::DescriptionResponse);
-    }
+    bool isValid() const;
 
     QKnxNetIpDeviceDib deviceHardware() const;
     QKnxNetIpServiceFamiliesDib supportedFamilies() const;
@@ -86,37 +83,49 @@ public:
             return QKnxNetIpStructRef::Type::Null;
         };
 
-        const auto &ref = payloadRef().bytes(0);
-        auto header = QKnxNetIpStructHeader<QKnxNetIp::DescriptionType>::fromBytes(ref, 0);
+        const auto &data = m_frame.constData();
+        auto header = QKnxNetIpStructHeader<QKnxNetIp::DescriptionType>::fromBytes(data, 0);
         quint16 index = header.totalSize(); // total size of device DIB
 
-        header = QKnxNetIpStructHeader<QKnxNetIp::DescriptionType>::fromBytes(ref, index);
+        header = QKnxNetIpStructHeader<QKnxNetIp::DescriptionType>::fromBytes(data, index);
         index += header.totalSize(); // advance of total size of families DIB
 
         QVector<QKnxNetIpStructRef> dibs;
-        while (index < ref.size()) {
-            header = QKnxNetIpStructHeader<QKnxNetIp::DescriptionType>::fromBytes(ref, index);
-            dibs.push_back(QKnxNetIpStructRef(payloadRef(index), codeToType(header.code())));
+        while (index < data.size()) {
+            header = QKnxNetIpStructHeader<QKnxNetIp::DescriptionType>::fromBytes(data, index);
+            dibs.push_back(QKnxNetIpStructRef(data.mid(index, header.totalSize()),
+                codeToType(header.code())));
             index += header.totalSize(); // advance of total size of last read DIB
         }
         return dibs;
     }
 
-    template <typename T> void addOptionalDib(const T &dib)
+    class Q_KNX_EXPORT Builder final
     {
-        static_assert(is_type<T, QKnxNetIpDeviceDib, QKnxNetIpConfigDib, QKnxNetIpCurrentConfigDib,
-            QKnxNetIpKnxAddressesDib, QKnxNetIpManufacturerDib, QKnxNetIpServiceFamiliesDib>::value,
-            "Type not supported.");
+    public:
+        Builder &setDeviceHardware(const QKnxNetIpDeviceDib &ddib);
+        Builder &setSupportedFamilies(const QKnxNetIpServiceFamiliesDib &sdib);
 
-        auto load = payload();
-        load.appendBytes(dib.bytes());
-        setPayload(load);
-    }
+        template <typename T> void addOptionalDib(const T &dib)
+        {
+            static_assert(is_type<T, QKnxNetIpDeviceDib, QKnxNetIpConfigDib,
+                QKnxNetIpCurrentConfigDib, QKnxNetIpKnxAddressesDib, QKnxNetIpManufacturerDib,
+                QKnxNetIpServiceFamiliesDib>::value,
+                "QKnxNetIpDescriptionResponse::Builder::addOptionalDib - Type not supported.");
+            m_optionalDibs += dib.bytes();
+        }
 
-    bool isValid() const override;
+        QKnxNetIpFrameEx create() const;
+
+    private:
+        QKnxNetIpDeviceDib m_ddib;
+        QKnxNetIpServiceFamiliesDib m_sdib;
+        QKnxByteArray m_optionalDibs;
+    };
+    static QKnxNetIpDescriptionResponse::Builder builder();
 
 private:
-    QKnxNetIpDescriptionResponse(const QKnxNetIpFrame &other);
+    const QKnxNetIpFrameEx &m_frame;
 };
 
 QT_END_NAMESPACE

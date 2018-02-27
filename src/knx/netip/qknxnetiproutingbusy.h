@@ -36,30 +36,39 @@
 
 QT_BEGIN_NAMESPACE
 
-class Q_KNX_EXPORT QKnxNetIpRoutingBusy final : public QKnxNetIpFrame
+class Q_KNX_EXPORT QKnxNetIpRoutingBusy final
 {
 public:
-    QKnxNetIpRoutingBusy() = default;
-    ~QKnxNetIpRoutingBusy() override = default;
+    QKnxNetIpRoutingBusy() = delete;
+    ~QKnxNetIpRoutingBusy() = default;
 
-    explicit QKnxNetIpRoutingBusy(QKnxNetIp::DeviceState state);
-    QKnxNetIpRoutingBusy(QKnxNetIp::DeviceState state, quint8 routingBusyWaitTime,
-        quint16 routingBusyControl);
+    QKnxNetIpRoutingBusy(const QKnxNetIpFrameEx &&) = delete;
+    explicit QKnxNetIpRoutingBusy(const QKnxNetIpFrameEx &frame);
 
-    static QKnxNetIpRoutingBusy fromBytes(const QKnxByteArray &bytes, quint16 index)
-    {
-        return QKnxNetIpFrameHelper::fromBytes(bytes, index, QKnxNetIp::ServiceType::RoutingBusy);
-    }
+    bool isValid() const;
 
     QKnxNetIp::DeviceState deviceState() const;
-    quint8 routingBusyWaitTime() const;
+    quint16 routingBusyWaitTime() const;
     quint16 routingBusyControl() const;
 
-    bool isValid() const override;
+    class Q_KNX_EXPORT Builder final
+    {
+    public:
+        Builder &setDeviceState(QKnxNetIp::DeviceState state);
+        Builder &setRoutingBusyWaitTime(quint16 waitTime);
+        Builder &setRoutingBusyControl(quint16 busyControl);
+
+        QKnxNetIpFrameEx create() const;
+
+    private:
+        QKnxNetIp::DeviceState m_state { QKnxNetIp::DeviceState::KnxFault };
+        quint16 m_waitTime { 100 };
+        quint16 m_busyControl { 0x0000 };
+    };
+    static QKnxNetIpRoutingBusy::Builder builder();
 
 private:
-    QKnxNetIpRoutingBusy(const QKnxNetIpFrame &other);
-};
+    const QKnxNetIpFrameEx &m_frame;};
 
 QT_END_NAMESPACE
 

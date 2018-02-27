@@ -36,24 +36,31 @@
 
 QT_BEGIN_NAMESPACE
 
-class Q_KNX_EXPORT QKnxNetIpSearchRequest final : public QKnxNetIpFrame
+class Q_KNX_EXPORT QKnxNetIpSearchRequest final
 {
 public:
-    QKnxNetIpSearchRequest() = default;
-    ~QKnxNetIpSearchRequest() override = default;
+    QKnxNetIpSearchRequest() = delete;
+    ~QKnxNetIpSearchRequest() = default;
 
-    explicit QKnxNetIpSearchRequest(const QKnxNetIpHpai &discoveryEndpoint);
+    QKnxNetIpSearchRequest(const QKnxNetIpFrameEx &&) = delete;
+    explicit QKnxNetIpSearchRequest(const QKnxNetIpFrameEx &frame);
 
-    static QKnxNetIpSearchRequest fromBytes(const QKnxByteArray &bytes, quint16 index)
-    {
-        return QKnxNetIpFrameHelper::fromBytes(bytes, index, QKnxNetIp::ServiceType::SearchRequest);
-    }
-
-    bool isValid() const override;
+    bool isValid() const;
     QKnxNetIpHpai discoveryEndpoint() const;
 
+    class Q_KNX_EXPORT Builder final
+    {
+    public:
+        Builder &setDiscoveryEndpoint(const QKnxNetIpHpai &hpai);
+        QKnxNetIpFrameEx create() const;
+
+    private:
+        QKnxNetIpHpai m_hpai;
+    };
+    static QKnxNetIpSearchRequest::Builder builder();
+
 private:
-    QKnxNetIpSearchRequest(const QKnxNetIpFrame &other);
+    const QKnxNetIpFrameEx &m_frame;
 };
 
 QT_END_NAMESPACE

@@ -44,12 +44,13 @@ private slots:
     void testDefaultConstructor();
     void testConstructor();
     void testDebugStream();
-    void testDataStream();
 };
 
 void tst_QKnxNetIpDisconnectRequest::testDefaultConstructor()
 {
-    QKnxNetIpDisconnectRequest request;
+    QKnxNetIpFrameEx frame;
+    QKnxNetIpDisconnectRequest request(frame);
+
     QCOMPARE(request.isValid(), false);
     QCOMPARE(request.channelId(), quint8(0));
     QCOMPARE(request.controlEndpoint().isValid(), false);
@@ -57,17 +58,17 @@ void tst_QKnxNetIpDisconnectRequest::testDefaultConstructor()
 
 void tst_QKnxNetIpDisconnectRequest::testConstructor()
 {
-    QKnxNetIpHpai endpoint(QKnxNetIp::HostProtocol::IpV4_Udp, QHostAddress::LocalHost, 3671);
-    QKnxNetIpDisconnectRequest request(quint8(200), endpoint);
+    auto frame = QKnxNetIpDisconnectRequest::builder()
+        .setChannelId(200)
+        .setControlEndpoint({ QKnxNetIp::HostProtocol::IpV4_Udp, QHostAddress::LocalHost, 3671 })
+        .create();
+    QKnxNetIpDisconnectRequest request(frame);
 
     QCOMPARE(request.isValid(), true);
-    QCOMPARE(request.size(), quint16(16));
-    QCOMPARE(request.bytes(), QKnxByteArray::fromHex("061002090010c80008017f0000010e57"));
-    QCOMPARE(request.payload().size(), quint16(10));
-    QCOMPARE(request.payload().bytes(), QKnxByteArray::fromHex("c80008017f0000010e57"));
-    QCOMPARE(request.toString(), QString::fromLatin1("Header size { 0x06 }, "
-            "Version { 0x10 }, Service type { 0x209 }, Total size { 0x10 }, "
-            "Bytes { 0xc8, 0x00, 0x08, 0x01, 0x7f, 0x00, 0x00, 0x01, 0x0e, 0x57 }"));
+    QCOMPARE(frame.size(), quint16(16));
+    QCOMPARE(frame.bytes(), QKnxByteArray::fromHex("061002090010c80008017f0000010e57"));
+    QCOMPARE(frame.data().size(), quint16(10));
+    QCOMPARE(frame.data(), QKnxByteArray::fromHex("c80008017f0000010e57"));
 
     QCOMPARE(request.channelId(), quint8(200));
     QCOMPARE(request.controlEndpoint().isValid(), true);
@@ -86,23 +87,16 @@ void tst_QKnxNetIpDisconnectRequest::testDebugStream()
         QtMessageHandler oldMessageHandler;
     } _(myMessageHandler);
 
-    qDebug() << QKnxNetIpDisconnectRequest();
-    QCOMPARE(s_msg, QString::fromLatin1("0x1nv4l1d"));
+    qDebug() << QKnxNetIpDisconnectRequest::builder().create();
+    QCOMPARE(s_msg, QString::fromLatin1("0x0610020900080000"));
 
-    QKnxNetIpHpai endpoint(QKnxNetIp::HostProtocol::IpV4_Udp, QHostAddress::LocalHost, 3671);
-    qDebug() << QKnxNetIpDisconnectRequest(quint8(200), endpoint);
+    qDebug() << QKnxNetIpDisconnectRequest::builder()
+        .setChannelId(200)
+        .setControlEndpoint({ QKnxNetIp::HostProtocol::IpV4_Udp, QHostAddress::LocalHost, 3671 })
+        .create();
     QCOMPARE(s_msg, QString::fromLatin1("0x061002090010c80008017f0000010e57"));
 }
 
-void tst_QKnxNetIpDisconnectRequest::testDataStream()
-{
-    QByteArray byteArray;
-    QDataStream out(&byteArray, QIODevice::WriteOnly);
-
-    QKnxNetIpHpai endpoint(QKnxNetIp::HostProtocol::IpV4_Udp, QHostAddress::LocalHost, 3671);
-    out << QKnxNetIpDisconnectRequest(quint8(200), endpoint);
-    QCOMPARE(byteArray, QByteArray::fromHex("061002090010c80008017f0000010e57"));
-}
 
 QTEST_APPLESS_MAIN(tst_QKnxNetIpDisconnectRequest)
 

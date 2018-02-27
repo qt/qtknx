@@ -172,6 +172,18 @@ public:
         return { code, quint16(totalSize - headerSize) };
     }
 
+    bool operator==(const QKnxNetIpStructHeader &other) const
+    {
+        if (sizeof(m_bytes) != sizeof(other.m_bytes))
+            return false;
+        return memcmp(m_bytes, other.m_bytes, sizeof(m_bytes)) == 0;
+    }
+
+    bool operator!=(const QKnxNetIpStructHeader &other) const
+    {
+        return !operator==(other);
+    }
+
 private:
     void setSize(quint8 size)
     {

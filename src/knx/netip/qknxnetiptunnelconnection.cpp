@@ -80,8 +80,9 @@ public:
         emit q->receivedTunnelFrame(frame);
     }
 
-    void process(const QKnxNetIpConnectResponse &response, const QNetworkDatagram &dg) override
+    void processConnectResponse(const QKnxNetIpFrameEx &frame, const QNetworkDatagram &dg) override
     {
+        QKnxNetIpConnectResponse response(frame);
         if (response.status() == QKnxNetIp::Error::NoMoreUniqueConnections) {
             Q_ASSERT_X(false, "QKnxNetIpTunnelConnectionPrivate::process", "NoMoreUniqueConnections "
                 "error handling not implemented yet.");
@@ -91,7 +92,7 @@ public:
         Q_Q(QKnxNetIpTunnelConnection);
         if (q->state() != QKnxNetIpTunnelConnection::Connected)
             m_address = response.responseData().individualAddress();
-        QKnxNetIpEndpointConnectionPrivate::process(response, dg);
+        QKnxNetIpEndpointConnectionPrivate::processConnectResponse(frame, dg);
     }
 
 private:

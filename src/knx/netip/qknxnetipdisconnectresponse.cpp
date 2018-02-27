@@ -31,32 +31,52 @@
 
 QT_BEGIN_NAMESPACE
 
-QKnxNetIpDisconnectResponse::QKnxNetIpDisconnectResponse(quint8 channelId, QKnxNetIp::Error status)
-    : QKnxNetIpFrame(QKnxNetIp::ServiceType::DisconnectResponse)
-{
-    QKnxNetIpPayload payload(channelId);
-    payload.setByte(1, quint8(status));
-    setPayload(payload);
-}
-
-QKnxNetIpDisconnectResponse::QKnxNetIpDisconnectResponse(const QKnxNetIpFrame &other)
-    : QKnxNetIpFrame(other)
+QKnxNetIpDisconnectResponse::QKnxNetIpDisconnectResponse(const QKnxNetIpFrameEx &frame)
+    : m_frame(frame)
 {}
 
 quint8 QKnxNetIpDisconnectResponse::channelId() const
 {
-    return payloadRef().byte(0);
+    return m_frame.constData().value(0);
 }
 
 QKnxNetIp::Error QKnxNetIpDisconnectResponse::status() const
 {
-    return QKnxNetIp::Error(payloadRef().byte(1));
+    return QKnxNetIp::Error(m_frame.constData().value(1));
 }
 
 bool QKnxNetIpDisconnectResponse::isValid() const
 {
-    return QKnxNetIpFrame::isValid() && size() == 8
-        && code() == QKnxNetIp::ServiceType::DisconnectResponse;
+    return m_frame.isValid() && m_frame.size() == 8
+        && m_frame.serviceType() == QKnxNetIp::ServiceType::DisconnectResponse;
+}
+
+QKnxNetIpDisconnectResponse::Builder QKnxNetIpDisconnectResponse::builder()
+{
+    return QKnxNetIpDisconnectResponse::Builder();
+}
+
+
+// -- QKnxNetIpDisconnectResponse::Builder
+
+QKnxNetIpDisconnectResponse::Builder &
+    QKnxNetIpDisconnectResponse::Builder::setChannelId(quint8 channelId)
+{
+    m_channelId = channelId;
+    return *this;
+}
+
+QKnxNetIpDisconnectResponse::Builder &
+    QKnxNetIpDisconnectResponse::Builder::setStatus(QKnxNetIp::Error status)
+{
+    m_status = status;
+    return *this;
+}
+
+QKnxNetIpFrameEx QKnxNetIpDisconnectResponse::Builder::create() const
+{
+    return { QKnxNetIp::ServiceType::DisconnectResponse, QKnxByteArray { m_channelId,
+        quint8(m_status) } };
 }
 
 QT_END_NAMESPACE

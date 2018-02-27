@@ -36,28 +36,39 @@
 
 QT_BEGIN_NAMESPACE
 
-class Q_KNX_EXPORT QKnxNetIpTunnelingAcknowledge final : public QKnxNetIpConnectionHeaderFrame
+class Q_KNX_EXPORT QKnxNetIpTunnelingAcknowledge final
 {
 public:
-    QKnxNetIpTunnelingAcknowledge() = default;
-    ~QKnxNetIpTunnelingAcknowledge() override = default;
+    QKnxNetIpTunnelingAcknowledge() = delete;
+    ~QKnxNetIpTunnelingAcknowledge() = default;
 
-    QKnxNetIpTunnelingAcknowledge(quint8 channelId, quint8 sequenceCount, QKnxNetIp::Error status);
+    QKnxNetIpTunnelingAcknowledge(const QKnxNetIpFrameEx &&) = delete;
+    explicit QKnxNetIpTunnelingAcknowledge(const QKnxNetIpFrameEx &frame);
 
-    static QKnxNetIpTunnelingAcknowledge fromBytes(const QKnxByteArray &bytes, quint16 index)
-    {
-        return QKnxNetIpConnectionHeaderFrameHelper::fromBytes(bytes, index,
-            QKnxNetIp::ServiceType::TunnelingAcknowledge);
-    }
+    bool isValid() const;
 
     quint8 channelId() const;
-    quint8 sequenceCount() const;
+    quint8 sequenceNumber() const;
     QKnxNetIp::Error status() const;
 
-    bool isValid() const override;
+    class Q_KNX_EXPORT Builder final
+    {
+    public:
+        Builder &setChannelId(quint8 channelId);
+        Builder &setSequenceNumber(quint8 sequenceNumber);
+        Builder &setStatus(QKnxNetIp::Error status);
+
+        QKnxNetIpFrameEx create() const;
+
+    private:
+        quint8 m_channelId;
+        quint8 m_sequenceNumber;
+        QKnxNetIp::Error m_status;
+    };
+    static QKnxNetIpTunnelingAcknowledge::Builder builder();
 
 private:
-    QKnxNetIpTunnelingAcknowledge(const QKnxNetIpConnectionHeaderFrame &other);
+    const QKnxNetIpFrameEx &m_frame;
 };
 
 QT_END_NAMESPACE

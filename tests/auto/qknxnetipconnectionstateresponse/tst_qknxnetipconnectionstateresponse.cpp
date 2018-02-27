@@ -44,12 +44,13 @@ private slots:
     void testDefaultConstructor();
     void testConstructor();
     void testDebugStream();
-    void testDataStream();
 };
 
 void tst_QKnxNetIpConnectionStateResponse::testDefaultConstructor()
 {
-    QKnxNetIpConnectionStateResponse connectionStateResponse;
+    QKnxNetIpFrameEx frame;
+    QKnxNetIpConnectionStateResponse connectionStateResponse(frame);
+
     QCOMPARE(connectionStateResponse.isValid(), false);
     QCOMPARE(connectionStateResponse.channelId(), quint8(0));
     QCOMPARE(connectionStateResponse.status(), QKnxNetIp::Error::None);
@@ -58,18 +59,18 @@ void tst_QKnxNetIpConnectionStateResponse::testDefaultConstructor()
 void tst_QKnxNetIpConnectionStateResponse::testConstructor()
 {
     quint8 channelId = 200;
-    QKnxNetIpConnectionStateResponse connectionStateResponse(channelId,
-        QKnxNetIp::Error::ConnectionId);
+    auto frame = QKnxNetIpConnectionStateResponse::builder()
+        .setChannelId(channelId)
+        .setStatus(QKnxNetIp::Error::ConnectionId)
+        .create();
+    QKnxNetIpConnectionStateResponse connectionStateResponse(frame);
+
     QCOMPARE(connectionStateResponse.isValid(), true);
-    QCOMPARE(connectionStateResponse.size(), quint16(8));
-    QCOMPARE(connectionStateResponse.bytes(),
-        QKnxByteArray({ 0x06, 0x10, 0x02, 0x08, 0x00, 0x08, 0xc8, 0x21 }));
-    QCOMPARE(connectionStateResponse.payload().size(), quint16(2));
-    QCOMPARE(connectionStateResponse.payload().bytes(), QKnxByteArray({ 0xc8, 0x21 }));
-    QCOMPARE(connectionStateResponse.toString(), QString::fromLatin1("Header size { 0x06 }, "
-            "Version { 0x10 }, Service type { 0x208 }, Total size { 0x08 }, "
-            "Bytes { 0xc8, 0x21 }"));
-    QCOMPARE(connectionStateResponse.channelId(), quint8(200));
+    QCOMPARE(frame.size(), quint16(8));
+    QCOMPARE(frame.bytes(), QKnxByteArray({ 0x06, 0x10, 0x02, 0x08, 0x00, 0x08, 0xc8, 0x21 }));
+    QCOMPARE(frame.data().size(), quint16(2));
+    QCOMPARE(frame.data(), QKnxByteArray({ 0xc8, 0x21 }));
+    QCOMPARE(connectionStateResponse.channelId(), channelId);
     QCOMPARE(connectionStateResponse.status(), QKnxNetIp::Error::ConnectionId);
 }
 
@@ -85,19 +86,14 @@ void tst_QKnxNetIpConnectionStateResponse::testDebugStream()
         QtMessageHandler oldMessageHandler;
     } _(myMessageHandler);
 
-    qDebug() << QKnxNetIpConnectionStateResponse();
-    QCOMPARE(s_msg, QString::fromLatin1("0x1nv4l1d"));
+    qDebug() << QKnxNetIpConnectionStateResponse::builder().create();
+    QCOMPARE(s_msg, QString::fromLatin1("0x0610020800080000"));
 
-    qDebug() << QKnxNetIpConnectionStateResponse(quint8(200), QKnxNetIp::Error::ConnectionId);
+    qDebug() << QKnxNetIpConnectionStateResponse::builder()
+        .setChannelId(200)
+        .setStatus(QKnxNetIp::Error::ConnectionId)
+        .create();
     QCOMPARE(s_msg, QString::fromLatin1("0x061002080008c821"));
-}
-
-void tst_QKnxNetIpConnectionStateResponse::testDataStream()
-{
-    QByteArray byteArray;
-    QDataStream out(&byteArray, QIODevice::WriteOnly);
-    out << QKnxNetIpConnectionStateResponse(quint8(200), QKnxNetIp::Error::ConnectionId);
-    QCOMPARE(byteArray, QByteArray::fromHex("061002080008c821"));
 }
 
 QTEST_APPLESS_MAIN(tst_QKnxNetIpConnectionStateResponse)

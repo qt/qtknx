@@ -37,29 +37,39 @@
 
 QT_BEGIN_NAMESPACE
 
-class Q_KNX_EXPORT QKnxNetIpConnectRequest final : public QKnxNetIpFrame
+class Q_KNX_EXPORT QKnxNetIpConnectRequest final
 {
 public:
-    QKnxNetIpConnectRequest() = default;
-    ~QKnxNetIpConnectRequest() override = default;
+    QKnxNetIpConnectRequest() = delete;
+    ~QKnxNetIpConnectRequest() = default;
 
-    QKnxNetIpConnectRequest(const QKnxNetIpHpai &controlEndpoint,
-                            const QKnxNetIpHpai &dataEndpoint,
-                            const QKnxNetIpCri &requestInformation);
+    QKnxNetIpConnectRequest(const QKnxNetIpFrameEx &&) = delete;
+    explicit QKnxNetIpConnectRequest(const QKnxNetIpFrameEx &frame);
 
-    static QKnxNetIpConnectRequest fromBytes(const QKnxByteArray &bytes, quint16 index)
-    {
-        return QKnxNetIpFrameHelper::fromBytes(bytes, index, QKnxNetIp::ServiceType::ConnectRequest);
-    }
+    bool isValid() const;
 
     QKnxNetIpHpai controlEndpoint() const;
     QKnxNetIpHpai dataEndpoint() const;
     QKnxNetIpCri requestInformation() const;
 
-    bool isValid() const override;
+    class Q_KNX_EXPORT Builder final
+    {
+    public:
+        Builder &setControlEndpoint(const QKnxNetIpHpai &hpai);
+        Builder &setDataEndpoint(const QKnxNetIpHpai &hpai);
+        Builder &setRequestInformation(const QKnxNetIpCri &cri);
+
+        QKnxNetIpFrameEx create() const;
+
+    private:
+        QKnxNetIpHpai m_ceHpai;
+        QKnxNetIpHpai m_deHpai;
+        QKnxNetIpCri m_cri;
+    };
+    static QKnxNetIpConnectRequest::Builder builder();
 
 private:
-    QKnxNetIpConnectRequest(const QKnxNetIpFrame &other);
+    const QKnxNetIpFrameEx &m_frame;
 };
 
 QT_END_NAMESPACE

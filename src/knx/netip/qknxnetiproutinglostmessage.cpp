@@ -32,33 +32,52 @@
 
 QT_BEGIN_NAMESPACE
 
-QKnxNetIpRoutingLostMessage::QKnxNetIpRoutingLostMessage(QKnxNetIp::DeviceState state,
-        quint16 lostMessageCount)
-    : QKnxNetIpFrame(QKnxNetIp::ServiceType::RoutingLostMessage)
-{
-    QKnxNetIpPayload payload((quint8) state);
-    payload.appendBytes(QKnxUtils::QUint16::bytes(lostMessageCount));
-    setPayload(payload);
-}
-
-QKnxNetIpRoutingLostMessage::QKnxNetIpRoutingLostMessage(const QKnxNetIpFrame &other)
-    : QKnxNetIpFrame(other)
+QKnxNetIpRoutingLostMessage::QKnxNetIpRoutingLostMessage(const QKnxNetIpFrameEx &frame)
+    : m_frame(frame)
 {}
 
 QKnxNetIp::DeviceState QKnxNetIpRoutingLostMessage::deviceState() const
 {
-    return QKnxNetIp::DeviceState(payloadRef().byte(0));
+    return QKnxNetIp::DeviceState(m_frame.constData().value(1));
 }
 
 quint16 QKnxNetIpRoutingLostMessage::lostMessageCount() const
 {
-    return QKnxUtils::QUint16::fromBytes(payloadRef().bytes(0), 1);
+    return QKnxUtils::QUint16::fromBytes(m_frame.constData(), 2);
 }
 
 bool QKnxNetIpRoutingLostMessage::isValid() const
 {
-    return QKnxNetIpFrame::isValid() && size() == 10
-        && code() == QKnxNetIp::ServiceType::RoutingLostMessage;
+    return m_frame.isValid() && m_frame.size() == 10
+        && m_frame.serviceType() == QKnxNetIp::ServiceType::RoutingLostMessage;
+}
+
+QKnxNetIpRoutingLostMessage::Builder QKnxNetIpRoutingLostMessage::builder()
+{
+    return QKnxNetIpRoutingLostMessage::Builder();
+}
+
+
+// -- QKnxNetIpRoutingLostMessage::Builder
+
+QKnxNetIpRoutingLostMessage::Builder &
+    QKnxNetIpRoutingLostMessage::Builder::setDeviceState(QKnxNetIp::DeviceState state)
+{
+    m_state = state;
+    return *this;
+}
+
+QKnxNetIpRoutingLostMessage::Builder &
+    QKnxNetIpRoutingLostMessage::Builder::setLostMessageCount(quint16 messageCount)
+{
+    m_lostMessageCount = messageCount;
+    return *this;
+}
+
+QKnxNetIpFrameEx QKnxNetIpRoutingLostMessage::Builder::create() const
+{
+    return { QKnxNetIp::ServiceType::RoutingLostMessage, QKnxByteArray { 0x04, quint8(m_state) }
+        + QKnxUtils::QUint16::bytes(m_lostMessageCount) };
 }
 
 QT_END_NAMESPACE

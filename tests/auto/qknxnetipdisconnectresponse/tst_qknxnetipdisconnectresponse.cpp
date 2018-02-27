@@ -45,12 +45,13 @@ private slots:
     void testConstructor();
     void testConstructorNoError();
     void testDebugStream();
-    void testDataStream();
 };
 
 void tst_QKnxNetIpDisconnectResponse::testDefaultConstructor()
 {
-    QKnxNetIpDisconnectResponse response;
+    QKnxNetIpFrameEx frame;
+    QKnxNetIpDisconnectResponse response(frame);
+
     QCOMPARE(response.isValid(), false);
     QCOMPARE(response.channelId(), quint8(0));
     QCOMPARE(response.status(), QKnxNetIp::Error::None);
@@ -58,15 +59,17 @@ void tst_QKnxNetIpDisconnectResponse::testDefaultConstructor()
 
 void tst_QKnxNetIpDisconnectResponse::testConstructor()
 {
+    auto frame = QKnxNetIpDisconnectResponse::builder()
+        .setChannelId(200)
+        .setStatus(QKnxNetIp::Error::NoMoreConnections)
+        .create();
+    QKnxNetIpDisconnectResponse response(frame);
 
-    QKnxNetIpDisconnectResponse response(quint8(200), QKnxNetIp::Error::NoMoreConnections);
     QCOMPARE(response.isValid(), true);
-    QCOMPARE(response.size(), quint16(8));
-    QCOMPARE(response.bytes(), QKnxByteArray::fromHex("0610020a0008c824"));
-    QCOMPARE(response.payload().size(), quint16(2));
-    QCOMPARE(response.payload().bytes(), QKnxByteArray::fromHex("c824"));
-    QCOMPARE(response.toString(), QString::fromLatin1("Header size { 0x06 }, "
-            "Version { 0x10 }, Service type { 0x20a }, Total size { 0x08 }, Bytes { 0xc8, 0x24 }"));
+    QCOMPARE(frame.size(), quint16(8));
+    QCOMPARE(frame.bytes(), QKnxByteArray::fromHex("0610020a0008c824"));
+    QCOMPARE(frame.data().size(), quint16(2));
+    QCOMPARE(frame.data(), QKnxByteArray::fromHex("c824"));
 
     QCOMPARE(response.channelId(), quint8(200));
     QCOMPARE(response.status(), QKnxNetIp::Error::NoMoreConnections);
@@ -74,15 +77,17 @@ void tst_QKnxNetIpDisconnectResponse::testConstructor()
 
 void tst_QKnxNetIpDisconnectResponse::testConstructorNoError()
 {
+    auto frame = QKnxNetIpDisconnectResponse::builder()
+        .setChannelId(200)
+        .setStatus(QKnxNetIp::Error::None)
+        .create();
+    QKnxNetIpDisconnectResponse response(frame);
 
-    QKnxNetIpDisconnectResponse response(quint8(200), QKnxNetIp::Error::None);
     QCOMPARE(response.isValid(), true);
-    QCOMPARE(response.size(), quint16(8));
-    QCOMPARE(response.bytes(), QKnxByteArray::fromHex("0610020a0008c800"));
-    QCOMPARE(response.payload().size(), quint16(2));
-    QCOMPARE(response.payload().bytes(), QKnxByteArray::fromHex("c800"));
-    QCOMPARE(response.toString(), QString::fromLatin1("Header size { 0x06 }, "
-            "Version { 0x10 }, Service type { 0x20a }, Total size { 0x08 }, Bytes { 0xc8, 0x00 }"));
+    QCOMPARE(frame.size(), quint16(8));
+    QCOMPARE(frame.bytes(), QKnxByteArray::fromHex("0610020a0008c800"));
+    QCOMPARE(frame.data().size(), quint16(2));
+    QCOMPARE(frame.data(), QKnxByteArray::fromHex("c800"));
 
     QCOMPARE(response.channelId(), quint8(200));
     QCOMPARE(response.status(), QKnxNetIp::Error::None);
@@ -100,20 +105,14 @@ void tst_QKnxNetIpDisconnectResponse::testDebugStream()
         QtMessageHandler oldMessageHandler;
     } _(myMessageHandler);
 
-    qDebug() << QKnxNetIpDisconnectResponse();
-    QCOMPARE(s_msg, QString::fromLatin1("0x1nv4l1d"));
+    qDebug() << QKnxNetIpDisconnectResponse::builder().create();
+    QCOMPARE(s_msg, QString::fromLatin1("0x0610020a00080000"));
 
-    qDebug() << QKnxNetIpDisconnectResponse(quint8(200), QKnxNetIp::Error::None);
+    qDebug() << QKnxNetIpDisconnectResponse::builder()
+        .setChannelId(200)
+        .setStatus(QKnxNetIp::Error::None)
+        .create();
     QCOMPARE(s_msg, QString::fromLatin1("0x0610020a0008c800"));
-}
-
-void tst_QKnxNetIpDisconnectResponse::testDataStream()
-{
-    QByteArray byteArray;
-    QDataStream out(&byteArray, QIODevice::WriteOnly);
-
-    out << QKnxNetIpDisconnectResponse(quint8(200), QKnxNetIp::Error::None);
-    QCOMPARE(byteArray, QByteArray::fromHex("0610020a0008c800"));
 }
 
 QTEST_APPLESS_MAIN(tst_QKnxNetIpDisconnectResponse)

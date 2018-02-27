@@ -31,34 +31,52 @@
 
 QT_BEGIN_NAMESPACE
 
-QKnxNetIpDescriptionResponse::QKnxNetIpDescriptionResponse(const QKnxNetIpDeviceDib &deviceHardware,
-        const QKnxNetIpServiceFamiliesDib &supportedFamilies)
-    : QKnxNetIpFrame(QKnxNetIp::ServiceType::DescriptionResponse)
-{
-    QKnxNetIpPayload payload;
-    payload.setBytes(deviceHardware.bytes());
-    payload.appendBytes(supportedFamilies.bytes());
-    setPayload(payload);
-}
-
-QKnxNetIpDescriptionResponse::QKnxNetIpDescriptionResponse(const QKnxNetIpFrame &other)
-    : QKnxNetIpFrame(other)
+QKnxNetIpDescriptionResponse::QKnxNetIpDescriptionResponse(const QKnxNetIpFrameEx &frame)
+    : m_frame(frame)
 {}
 
 QKnxNetIpDeviceDib QKnxNetIpDescriptionResponse::deviceHardware() const
 {
-    return QKnxNetIpDeviceDib::fromBytes(payloadRef().bytes(0), 0);
+    return QKnxNetIpDeviceDib::fromBytes(m_frame.constData(), 0);
 }
 
 QKnxNetIpServiceFamiliesDib QKnxNetIpDescriptionResponse::supportedFamilies() const
 {
-    return QKnxNetIpServiceFamiliesDib::fromBytes(payloadRef().bytes(0), 54);
+    return QKnxNetIpServiceFamiliesDib::fromBytes(m_frame.constData(), 54);
 }
 
 bool QKnxNetIpDescriptionResponse::isValid() const
 {
-    return QKnxNetIpFrame::isValid() && size() >= 64
-        && code() == QKnxNetIp::ServiceType::DescriptionResponse;
+    return m_frame.isValid() && m_frame.size() >= 64
+        && m_frame.serviceType() == QKnxNetIp::ServiceType::DescriptionResponse;
+}
+
+QKnxNetIpDescriptionResponse::Builder QKnxNetIpDescriptionResponse::builder()
+{
+    return QKnxNetIpDescriptionResponse::Builder();
+}
+
+
+// -- QKnxNetIpSearchResponse::Builder
+
+QKnxNetIpDescriptionResponse::Builder &
+QKnxNetIpDescriptionResponse::Builder::setDeviceHardware(const QKnxNetIpDeviceDib &ddib)
+{
+    m_ddib = ddib;
+    return *this;
+}
+
+QKnxNetIpDescriptionResponse::Builder &
+    QKnxNetIpDescriptionResponse::Builder::setSupportedFamilies(const QKnxNetIpServiceFamiliesDib &sdib)
+{
+    m_sdib = sdib;
+    return *this;
+}
+
+QKnxNetIpFrameEx QKnxNetIpDescriptionResponse::Builder::create() const
+{
+    return { QKnxNetIp::ServiceType::DescriptionResponse, m_ddib.bytes() + m_sdib.bytes()
+        + m_optionalDibs };
 }
 
 QT_END_NAMESPACE

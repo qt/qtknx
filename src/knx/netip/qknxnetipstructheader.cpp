@@ -173,4 +173,18 @@ QT_BEGIN_NAMESPACE
     \sa isNull(), isValid()
 */
 
+/*!
+    \fn  bool QKnxNetIpStructHeader::operator==(const QKnxNetIpStructHeader &other) const
+
+    Returns \c true if this object and the given \a other are equal; otherwise
+    returns \c false.
+*/
+
+/*!
+    \fn  bool QKnxNetIpStructHeader::operator!=(const QKnxNetIpStructHeader &other) const
+
+    Returns \c true if this object and the given \a other are not equal;
+    otherwise returns \c false.
+*/
+
 QT_END_NAMESPACE

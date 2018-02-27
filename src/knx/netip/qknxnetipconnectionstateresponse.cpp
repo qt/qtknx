@@ -31,42 +31,62 @@
 
 QT_BEGIN_NAMESPACE
 
-QKnxNetIpConnectionStateResponse::QKnxNetIpConnectionStateResponse(quint8 channelId,
-        QKnxNetIp::Error status)
-    : QKnxNetIpFrame(QKnxNetIp::ServiceType::ConnectionStateResponse)
-{
-    switch (status) {
-    case QKnxNetIp::Error::None:
-    case QKnxNetIp::Error::ConnectionId:
-    case QKnxNetIp::Error::DataConnection:
-    case QKnxNetIp::Error::KnxConnection:
-    {
-        QKnxNetIpPayload payload(channelId);
-        payload.setByte(1, quint8(status));
-        setPayload(payload);
-    };
-    default: break;
-    };
-}
-
-QKnxNetIpConnectionStateResponse::QKnxNetIpConnectionStateResponse(const QKnxNetIpFrame &other)
-    : QKnxNetIpFrame(other)
+QKnxNetIpConnectionStateResponse::QKnxNetIpConnectionStateResponse(const QKnxNetIpFrameEx &frame)
+    : m_frame(frame)
 {}
 
 quint8 QKnxNetIpConnectionStateResponse::channelId() const
 {
-    return payloadRef().byte(0);
+    return m_frame.constData().value(0);
 }
 
 QKnxNetIp::Error QKnxNetIpConnectionStateResponse::status() const
 {
-    return QKnxNetIp::Error(payloadRef().byte(1));
+    return QKnxNetIp::Error(m_frame.constData().value(1));
 }
 
 bool QKnxNetIpConnectionStateResponse::isValid() const
 {
-    return QKnxNetIpFrame::isValid() && size() == 8
-        && code() == QKnxNetIp::ServiceType::ConnectionStateResponse;
+    return m_frame.isValid() && m_frame.size() == 8
+        && m_frame.serviceType() == QKnxNetIp::ServiceType::ConnectionStateResponse;
+}
+
+QKnxNetIpConnectionStateResponse::Builder QKnxNetIpConnectionStateResponse::builder()
+{
+    return QKnxNetIpConnectionStateResponse::Builder();
+}
+
+
+// -- QKnxNetIpConnectionStateResponse::Builder
+
+QKnxNetIpConnectionStateResponse::Builder &
+    QKnxNetIpConnectionStateResponse::Builder::setChannelId(quint8 channelId)
+{
+    m_channelId = channelId;
+    return *this;
+}
+
+QKnxNetIpConnectionStateResponse::Builder &
+    QKnxNetIpConnectionStateResponse::Builder::setStatus(QKnxNetIp::Error status)
+{
+    m_status = status;
+    return *this;
+}
+
+QKnxNetIpFrameEx QKnxNetIpConnectionStateResponse::Builder::create() const
+{
+    QKnxByteArray data;
+    switch (m_status) {
+    case QKnxNetIp::Error::None:
+    case QKnxNetIp::Error::ConnectionId:
+    case QKnxNetIp::Error::DataConnection:
+    case QKnxNetIp::Error::KnxConnection:
+        data = { m_channelId, quint8(m_status) };
+        break;
+    default:
+        break;
+    };
+    return { QKnxNetIp::ServiceType::ConnectionStateResponse, data };
 }
 
 QT_END_NAMESPACE

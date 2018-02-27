@@ -123,18 +123,18 @@ public:
 
     // datapoint related processing
     bool sendTunnelingRequest(const QKnxLinkLayerFrame &frame);
-    virtual void process(const QKnxNetIpTunnelingRequest &);
-    virtual void process(const QKnxNetIpTunnelingAcknowledge &);
+    virtual void processTunnelingRequest(const QKnxNetIpFrameEx &frame);
+    virtual void processTunnelingAcknowledge(const QKnxNetIpFrameEx &frame);
 
     bool sendDeviceConfigurationRequest(const QKnxLocalDeviceManagementFrame &frame);
-    virtual void process(const QKnxNetIpDeviceConfigurationRequest &);
-    virtual void process(const QKnxNetIpDeviceConfigurationAcknowledge &);
+    virtual void processDeviceConfigurationRequest(const QKnxNetIpFrameEx &frame);
+    virtual void processDeviceConfigurationAcknowledge(const QKnxNetIpFrameEx &frame);
 
     // endpoint related processing
-    virtual void process(const QKnxNetIpConnectResponse &response, const QNetworkDatagram &dg);
-    virtual void process(const QKnxNetIpConnectionStateResponse &response);
-    virtual void process(const QKnxNetIpDisconnectRequest &request);
-    virtual void process(const QKnxNetIpDisconnectResponse &response);
+    virtual void processConnectResponse(const QKnxNetIpFrameEx &frame, const QNetworkDatagram &dg);
+    virtual void processConnectionStateResponse(const QKnxNetIpFrameEx &frame);
+    virtual void processDisconnectRequest(const QKnxNetIpFrameEx &frame);
+    virtual void processDisconnectResponse(const QKnxNetIpFrameEx &frame);
 
     virtual void processDatagram(QKnxNetIpEndpointConnection::EndpointType, const QNetworkDatagram &);
 
@@ -159,12 +159,12 @@ private:
     const int m_maxCemiRequest { 0 };
     const int m_acknowledgeTimeout { 0 };
 
-    QKnxByteArray m_lastSendCemiRequest {};
-    QKnxByteArray m_lastReceivedCemiRequest {};
+    QKnxNetIpFrameEx m_lastSendCemiRequest {};
+    QKnxNetIpFrameEx m_lastReceivedCemiRequest {};
 
     int m_stateRequests { 0 };
     const int m_maxStateRequests = { 3 };
-    QKnxByteArray m_lastStateRequest {};
+    QKnxNetIpFrameEx m_lastStateRequest {};
 
     bool m_nat { false };
     quint32 m_heartbeatTimeout { QKnxNetIp::HeartbeatTimeout };

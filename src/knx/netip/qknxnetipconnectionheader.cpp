@@ -263,4 +263,22 @@ QKnxNetIpConnectionHeader QKnxNetIpConnectionHeader::fromBytes(const QKnxByteArr
     return hdr;
 }
 
+/*!
+    Returns \c true if this object and the given \a other are equal; otherwise
+    returns \c false.
+*/
+bool QKnxNetIpConnectionHeader::operator==(const QKnxNetIpConnectionHeader &other) const
+{
+    return m_bytes == other.m_bytes;
+}
+
+/*!
+    Returns \c true if this object and the given \a other are not equal;
+    otherwise returns \c false.
+*/
+bool QKnxNetIpConnectionHeader::operator!=(const QKnxNetIpConnectionHeader &other) const
+{
+    return !operator==(other);
+}
+
 QT_END_NAMESPACE

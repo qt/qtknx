@@ -49,7 +49,6 @@ private slots:
     void testSupportedFamiliesAccessor();
     void testOptionalDibs();
     void testDebugStream();
-    void testDataStream();
 
 private:
     QKnxNetIpServiceFamiliesDib m_sf;
@@ -72,46 +71,47 @@ void tst_QKnxNetIpDescriptionResponse::initTestCase()
 
 void tst_QKnxNetIpDescriptionResponse::testDefaultConstructor()
 {
-    QKnxNetIpDescriptionResponse descriptionResponseDefault;
+    QKnxNetIpFrameEx frame;
+    QKnxNetIpDescriptionResponse descriptionResponseDefault(frame);
+
     QCOMPARE(descriptionResponseDefault.isValid(), false);
-    QCOMPARE(descriptionResponseDefault.size(), quint16(0));
-    QCOMPARE(descriptionResponseDefault.bytes(),QKnxByteArray {});
-    QCOMPARE(descriptionResponseDefault.payload().size(), quint16(0));
-    QCOMPARE(descriptionResponseDefault.payload().bytes(),QKnxByteArray {});
-    QCOMPARE(descriptionResponseDefault.toString(), QString::fromLatin1("Header size { 0x00 }, "
-            "Version { 0x00 }, Service type { 0x00 }, Total size { 0x00 }, Bytes {  }"));
+    QCOMPARE(frame.size(), quint16(0));
+    QCOMPARE(frame.bytes(),QKnxByteArray {});
+    QCOMPARE(frame.data().size(), quint16(0));
+    QCOMPARE(frame.data(),QKnxByteArray {});
 }
 
 void tst_QKnxNetIpDescriptionResponse::testConstructorWithArguments()
 {
-    QKnxNetIpDescriptionResponse descriptionResponse(m_deviceHardware, m_sf);
+    auto frame = QKnxNetIpDescriptionResponse::builder()
+        .setDeviceHardware(m_deviceHardware)
+        .setSupportedFamilies(m_sf)
+        .create();
+    QKnxNetIpDescriptionResponse descriptionResponse(frame);
 
     QCOMPARE(descriptionResponse.isValid(), true);
-    QCOMPARE(descriptionResponse.size(), quint16(m_deviceHardware.size() + m_sf.size() + 6));
-    QCOMPARE(descriptionResponse.payload().size(), quint16(m_deviceHardware.size() + m_sf.size()));
-    QCOMPARE(descriptionResponse.bytes(), QKnxByteArray::fromHex("061002040040")
+    QCOMPARE(frame.size(), quint16(m_deviceHardware.size() + m_sf.size() + 6));
+    QCOMPARE(frame.data().size(), quint16(m_deviceHardware.size() + m_sf.size()));
+    QCOMPARE(frame.bytes(), QKnxByteArray::fromHex("061002040040")
         + QKnxByteArray::fromHex("36012001ffff111112345612345600000000bcaec56690f9")
         + QKnxByteArray("qt.io KNX device", 16)
         + QKnxByteArray::fromHex("0000000000000000000000000000")
         + QKnxByteArray::fromHex("04020404"));
 
-    QCOMPARE(descriptionResponse.payload().bytes(),
+    QCOMPARE(frame.data(),
         QKnxByteArray::fromHex("36012001ffff111112345612345600000000bcaec56690f9")
         + QKnxByteArray("qt.io KNX device", 16)
         + QKnxByteArray::fromHex("0000000000000000000000000000")
         + QKnxByteArray::fromHex("04020404"));
-
-    QCOMPARE(descriptionResponse.toString(), QString::fromLatin1("Header size { 0x06 }, "
-            "Version { 0x10 }, Service type { 0x204 }, Total size { 0x40 }, Bytes { 0x36, 0x01, 0x20, "
-            "0x01, 0xff, 0xff, 0x11, 0x11, 0x12, 0x34, 0x56, 0x12, 0x34, 0x56, 0x00, 0x00, 0x00, "
-            "0x00, 0xbc, 0xae, 0xc5, 0x66, 0x90, 0xf9, 0x71, 0x74, 0x2e, 0x69, 0x6f, 0x20, 0x4b, "
-            "0x4e, 0x58, 0x20, 0x64, 0x65, 0x76, 0x69, 0x63, 0x65, 0x00, 0x00, 0x00, 0x00, 0x00, "
-            "0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x04, 0x02, 0x04, 0x04 }"));
 }
 
 void tst_QKnxNetIpDescriptionResponse::testDeviceHardwareAccessor()
 {
-    QKnxNetIpDescriptionResponse descriptionResponse(m_deviceHardware, m_sf);
+    auto frame = QKnxNetIpDescriptionResponse::builder()
+        .setDeviceHardware(m_deviceHardware)
+        .setSupportedFamilies(m_sf)
+        .create();
+    QKnxNetIpDescriptionResponse descriptionResponse(frame);
 
     auto hardware = descriptionResponse.deviceHardware();
     QCOMPARE(hardware.isValid(), m_deviceHardware.isValid());
@@ -137,7 +137,11 @@ void tst_QKnxNetIpDescriptionResponse::testDeviceHardwareAccessor()
 
 void tst_QKnxNetIpDescriptionResponse::testSupportedFamiliesAccessor()
 {
-    QKnxNetIpDescriptionResponse descriptionResponse(m_deviceHardware, m_sf);
+    auto frame = QKnxNetIpDescriptionResponse::builder()
+        .setDeviceHardware(m_deviceHardware)
+        .setSupportedFamilies(m_sf)
+        .create();
+    QKnxNetIpDescriptionResponse descriptionResponse(frame);
 
     auto familie = descriptionResponse.supportedFamilies();
     QCOMPARE(familie.isValid(), m_sf.isValid());
@@ -151,39 +155,43 @@ void tst_QKnxNetIpDescriptionResponse::testSupportedFamiliesAccessor()
 
 void tst_QKnxNetIpDescriptionResponse::testOptionalDibs()
 {
-    QKnxNetIpDescriptionResponse descriptionResponse(m_deviceHardware, m_sf);
-
-    QCOMPARE(descriptionResponse.isValid(), true);
+    auto builder = QKnxNetIpDescriptionResponse::builder()
+        .setDeviceHardware(m_deviceHardware)
+        .setSupportedFamilies(m_sf);
 
     QKnxNetIpConfigDib configDib(QHostAddress("192.168.2.12"),
         QHostAddress("255.255.255.0"),
         QHostAddress("192.168.2.1"),
         QKnxNetIpConfigDib::Capability::AutoIp,
         QKnxNetIpConfigDib::AssignmentMethod::Manual);
-    descriptionResponse.addOptionalDib<QKnxNetIpConfigDib>(configDib);
+    builder.addOptionalDib(configDib);
 
     QKnxNetIpCurrentConfigDib currentConfigDib(QHostAddress("192.168.2.13"),
         QHostAddress("255.255.255.1"),
         QHostAddress("192.168.2.1"),
         QHostAddress("192.168.2.2"),
         QKnxNetIpCurrentConfigDib::AssignmentMethod::BootP);
-    descriptionResponse.addOptionalDib<QKnxNetIpCurrentConfigDib>(currentConfigDib);
+    builder.addOptionalDib(currentConfigDib);
 
     QVector<QKnxAddress> qknxAdresses;
     qknxAdresses.append(QKnxAddress::createIndividual(1, 1, 0));
     qknxAdresses.append(QKnxAddress::createIndividual(1, 2, 5));
     qknxAdresses.append(QKnxAddress::createIndividual(2, 3, 8));
     QKnxNetIpKnxAddressesDib knxAddressDib(qknxAdresses);
-    descriptionResponse.addOptionalDib<QKnxNetIpKnxAddressesDib>(knxAddressDib);
+    builder.addOptionalDib(knxAddressDib);
 
     QKnxByteArray byteArray(5, 8);
     QKnxNetIpManufacturerDib manufacturerDib(256, byteArray);
-    descriptionResponse.addOptionalDib<QKnxNetIpManufacturerDib>(manufacturerDib);
+    builder.addOptionalDib(manufacturerDib);
 
     QKnxNetIpServiceFamiliesDib sfDib(
         QKnxNetIpServiceFamiliesDib::ServiceFamilieId::RemoteConfigAndDiagnosis, 3);
-    descriptionResponse.addOptionalDib<QKnxNetIpServiceFamiliesDib>(sfDib);
+    builder.addOptionalDib(sfDib);
 
+    auto frame = builder.create();
+    QKnxNetIpDescriptionResponse descriptionResponse(frame);
+
+    QCOMPARE(descriptionResponse.isValid(), true);
     auto optionalDib = descriptionResponse.optionalDibs();
 
     auto ref = optionalDib[0]; // Checking optional Dib 1: QKnxNetIpConfigDib
@@ -284,41 +292,22 @@ void tst_QKnxNetIpDescriptionResponse::testDebugStream()
         QtMessageHandler oldMessageHandler;
     } _(myMessageHandler);
 
-    qDebug() << QKnxNetIpDescriptionResponse();
-    QCOMPARE(s_msg, QString::fromLatin1("0x1nv4l1d"));
+    qDebug() << QKnxNetIpDescriptionResponse::builder().create();
+    QCOMPARE(s_msg, QString::fromLatin1("0x0610020400080202"));
 
-    QKnxNetIpDeviceDib hardware(QKnx::MediumType::NetIP,
-        QKnxNetIpDeviceDib::DeviceStatus::ActiveProgrammingMode,
-        QKnxAddress::Individual::Unregistered,
-        0x1111,
-        QKnxByteArray::fromHex("123456123456"),
-        QHostAddress::AnyIPv4,
-        QKnxByteArray::fromHex("bcaec56690f9"),
-        QKnxByteArray("qt.io KNX device", 16));
-    const QKnxNetIpServiceFamiliesDib supportedFamilies(
-        QKnxNetIpServiceFamiliesDib::ServiceFamilieId::IpTunneling, 0x04);
-    qDebug() << QKnxNetIpDescriptionResponse(hardware, supportedFamilies);
+    qDebug() << QKnxNetIpDescriptionResponse::builder()
+        .setSupportedFamilies({ QKnxNetIpServiceFamiliesDib::ServiceFamilieId::IpTunneling, 0x04 })
+        .setDeviceHardware({
+            QKnx::MediumType::NetIP,
+            QKnxNetIpDeviceDib::DeviceStatus::ActiveProgrammingMode,
+            QKnxAddress::Individual::Unregistered,
+            0x1111,
+            QKnxByteArray::fromHex("123456123456"),
+            QHostAddress::AnyIPv4,
+            QKnxByteArray::fromHex("bcaec56690f9"),
+            QKnxByteArray("qt.io KNX device", 16)
+        }).create();
     QCOMPARE(s_msg, QString::fromLatin1("0x06100204004036012001ffff111112345612345600000000bc"
-            "aec56690f971742e696f204b4e5820646576696365000000000000000000000000000004020404"));
-}
-
-void tst_QKnxNetIpDescriptionResponse::testDataStream()
-{
-    QByteArray byteArray;
-    QDataStream out(&byteArray, QIODevice::WriteOnly);
-
-    QKnxNetIpDeviceDib hardware(QKnx::MediumType::NetIP,
-        QKnxNetIpDeviceDib::DeviceStatus::ActiveProgrammingMode,
-        QKnxAddress::Individual::Unregistered,
-        0x1111,
-        QKnxByteArray::fromHex("123456123456"),
-        QHostAddress::AnyIPv4,
-        QKnxByteArray::fromHex("bcaec56690f9"),
-        QKnxByteArray("qt.io KNX device", 16));
-    const QKnxNetIpServiceFamiliesDib supportedFamilies(
-        QKnxNetIpServiceFamiliesDib::ServiceFamilieId::IpTunneling, 0x04);
-    out << QKnxNetIpDescriptionResponse(hardware, supportedFamilies);
-    QCOMPARE(byteArray, QByteArray::fromHex("06100204004036012001ffff111112345612345600000000bc"
             "aec56690f971742e696f204b4e5820646576696365000000000000000000000000000004020404"));
 }
 

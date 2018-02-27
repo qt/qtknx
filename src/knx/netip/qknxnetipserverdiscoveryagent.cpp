@@ -127,12 +127,15 @@ void QKnxNetIpServerDiscoveryAgentPrivate::setupSocket()
             if (q->state() == QKnxNetIpServerDiscoveryAgent::State::Running) {
                 servers.clear();
 
-                auto data = QKnxNetIpSearchRequest({
-                    (nat ? QHostAddress::AnyIPv4 : usedAddress),
-                    (nat ? quint16(0u) : usedPort)
-                }).bytes();
-                socket->writeDatagram((const char*) data.constData(), data.size(),
-                    multicastAddress, multicastPort);
+                auto frame = QKnxNetIpSearchRequest::builder()
+                    .setDiscoveryEndpoint(
+                        {
+                            (nat ? QHostAddress::AnyIPv4 : usedAddress),
+                            (nat ? quint16(0u) : usedPort)
+                        }
+                    ).create();
+                socket->writeDatagram(static_cast<QByteArray> (frame.bytes()), multicastAddress,
+                    multicastPort);
 
                 setupAndStartReceiveTimer();
                 setupAndStartFrequencyTimer();
@@ -165,7 +168,8 @@ void QKnxNetIpServerDiscoveryAgentPrivate::setupSocket()
             if (!header.isValid() || header.serviceType() != QKnxNetIp::ServiceType::SearchResponse)
                 continue;
 
-            auto response = QKnxNetIpSearchResponse::fromBytes(data, 0);
+            auto frame = QKnxNetIpFrameEx::fromBytes(data);
+            auto response = QKnxNetIpSearchResponse(frame);
             if (!response.isValid())
                 continue;
 
@@ -216,12 +220,16 @@ void QKnxNetIpServerDiscoveryAgentPrivate::setupAndStartFrequencyTimer()
             if (q->state() == QKnxNetIpServerDiscoveryAgent::State::Running) {
                 servers.clear();
 
-                auto data = QKnxNetIpSearchRequest({
-                    (nat ? QHostAddress::AnyIPv4 : address),
-                    (nat ? quint16(0u) : port)
-                }).bytes();
-                socket->writeDatagram((const char*) data.constData(), data.size(),
-                    multicastAddress, multicastPort);
+                auto frame = QKnxNetIpSearchRequest::builder()
+                    .setDiscoveryEndpoint(
+                        {
+                            (nat ? QHostAddress::AnyIPv4 : address),
+                            (nat ? quint16(0u) : port)
+                        }
+                    ).create();
+
+                socket->writeDatagram(static_cast<QByteArray> (frame.bytes()), multicastAddress,
+                    multicastPort);
             }
         });
     }

@@ -68,6 +68,9 @@ public:
 
     static QKnxNetIpConnectionHeader fromBytes(const QKnxByteArray &bytes, quint16 index = 0);
 
+    bool operator==(const QKnxNetIpConnectionHeader &other) const;
+    bool operator!=(const QKnxNetIpConnectionHeader &other) const;
+
 private:
     QKnxByteArray m_bytes { 0x00, 0x00, 0x00, 0x00 };
 };

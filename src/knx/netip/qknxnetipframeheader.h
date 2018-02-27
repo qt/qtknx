@@ -75,6 +75,9 @@ public:
 
     static QKnxNetIpFrameHeader fromBytes(const QKnxByteArray &bytes, quint16 index = 0);
 
+    bool operator==(const QKnxNetIpFrameHeader &other) const;
+    bool operator!=(const QKnxNetIpFrameHeader &other) const;
+
 private:
     quint8 m_bytes[6] { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
 };

@@ -29,6 +29,7 @@
 #include <QtCore/qdebug.h>
 #include <QtTest/qtest.h>
 #include <QtKnx/qknxnetipdeviceconfigurationrequest.h>
+#include <QtKnx/qknxlocaldevicemanagementframefactory.h>
 
 static QString s_msg;
 static void myMessageHandler(QtMsgType, const QMessageLogContext &, const QString &msg)
@@ -44,25 +45,34 @@ private slots:
     void testDefaultConstructor();
     void testConstructor();
     void testDebugStream();
-    void testDataStream();
 };
 
 void tst_QKnxNetIpDeviceConfigurationRequest::testDefaultConstructor()
 {
-    QKnxNetIpDeviceConfigurationRequest configuration;
+    QKnxNetIpFrameEx frame;
+    QKnxNetIpDeviceConfigurationRequest configuration(frame);
+
     QCOMPARE(configuration.isValid(), false);
 }
 
 void tst_QKnxNetIpDeviceConfigurationRequest::testConstructor()
 {
-    auto ba = QKnxByteArray::fromHex("fc000001531001");
-    QKnxNetIpDeviceConfigurationRequest request(1, 1, QKnxLocalDeviceManagementFrame::fromBytes(ba, 0, ba.size()));
+    auto cemi = QKnxLocalDeviceManagementFrameFactory::PropertyRead
+        ::createRequest(QKnxInterfaceObjectType::KnxNetIpParameter, 1,
+            QKnxInterfaceObjectProperty::FriendlyName, 1, 0);
+    auto frame = QKnxNetIpDeviceConfigurationRequest::builder()
+        .setChannelId(1)
+        .setSequenceNumber(1)
+        .setCemi(cemi)
+        .create();
+
+    QKnxNetIpDeviceConfigurationRequest request(frame);
     QCOMPARE(request.isValid(), true);
-    QCOMPARE(request.size(), quint16(17));
+    QCOMPARE(frame.size(), quint16(17));
 
     QCOMPARE(request.channelId(), quint8(1));
-    QCOMPARE(request.sequenceCount(), quint8(1));
-    QCOMPARE(request.cemi().bytes(), ba);
+    QCOMPARE(request.sequenceNumber(), quint8(1));
+    QCOMPARE(request.cemi().bytes(), cemi.bytes());
 }
 
 void tst_QKnxNetIpDeviceConfigurationRequest::testDebugStream()
@@ -77,31 +87,18 @@ void tst_QKnxNetIpDeviceConfigurationRequest::testDebugStream()
         QtMessageHandler oldMessageHandler;
     } _(myMessageHandler);
 
-    qDebug() << QKnxNetIpDeviceConfigurationRequest();
-    QCOMPARE(s_msg, QString::fromLatin1("0x1nv4l1d"));
+    qDebug() << QKnxNetIpDeviceConfigurationRequest::builder().create();
+    QCOMPARE(s_msg, QString::fromLatin1("0x06100310000b0400000000"));
 
-    auto ba = QKnxByteArray::fromHex("06100310001104020000fc000001531001");
-    qDebug() << QKnxNetIpDeviceConfigurationRequest::fromBytes(ba, 0);
+    auto cemi = QKnxLocalDeviceManagementFrameFactory::PropertyRead
+        ::createRequest(QKnxInterfaceObjectType::System::Device, 1,
+            QKnxInterfaceObjectProperty::Device::DeviceDescriptor, 1, 1);
+    qDebug() << QKnxNetIpDeviceConfigurationRequest::builder()
+        .setChannelId(2)
+        .setSequenceNumber(0)
+        .setCemi(cemi)
+        .create();
     QCOMPARE(s_msg, QString::fromLatin1("0x06100310001104020000fc000001531001"));
-}
-
-void tst_QKnxNetIpDeviceConfigurationRequest::testDataStream()
-{
-    {
-        QByteArray byteArray;
-        QDataStream out(&byteArray, QIODevice::WriteOnly);
-        out << QKnxNetIpDeviceConfigurationRequest();
-        QCOMPARE(byteArray, QByteArray::fromHex(""));
-    }
-
-    {
-        QByteArray byteArray;
-        QDataStream out(&byteArray, QIODevice::WriteOnly);
-
-        auto ba = QKnxByteArray::fromHex("06100310001104020000fc000001531001");
-        out << QKnxNetIpDeviceConfigurationRequest::fromBytes(ba, 0);
-        QCOMPARE(byteArray, QByteArray::fromHex("06100310001104020000fc000001531001"));
-    }
 }
 
 QTEST_APPLESS_MAIN(tst_QKnxNetIpDeviceConfigurationRequest)
