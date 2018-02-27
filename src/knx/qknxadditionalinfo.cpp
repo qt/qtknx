@@ -28,6 +28,9 @@
 ******************************************************************************/
 
 #include "qknxadditionalinfo.h"
+#include "qknxutils.h"
+
+#include <array>
 
 QT_BEGIN_NAMESPACE
 
@@ -66,43 +69,63 @@ QT_BEGIN_NAMESPACE
 */
 
 /*!
-    Returns the additional info \l Type.
-*/
-QKnxAdditionalInfo::Type QKnxAdditionalInfo::type() const
-{
-    return QKnxAdditionalInfo::Type(byte(0));
-}
-
-/*!
     \fn QKnxAdditionalInfo::QKnxAdditionalInfo()
 
     Constructs an new, empty, invalid additional info object.
 */
 
 /*!
-    Constructs an new additional info object and sets its \l Type to \a type and
-    data to \a data.
+    \fn QKnxAdditionalInfo::~QKnxAdditionalInfo()
+
+    Destroys the additional info object and releases all allocated resources.
+*/
+
+/*!
+    Constructs an new additional info object and sets its \l Type to \a type
+    and data to \a data.
+
+    \note The KNX specification limits the size of the data to a maximum
+    of 252 bytes. The class implementation acknowledges this and silently
+    truncates the data stored in the additional info object.
+
+    \sa isNull(), isValid()
 */
 QKnxAdditionalInfo::QKnxAdditionalInfo(QKnxAdditionalInfo::Type type, const QKnxByteArray &data)
 {
-    setByte(0, quint8(type));
-    setByte(1, quint8(data.size()));
-    appendBytes(data);
-    if (!isValid()) resize(0);
+    m_bytes[0] = quint8(type);
+    m_bytes[1] = quint8(qMin(data.size(), 252));
+    m_bytes += data.mid(0, m_bytes[1]);
 }
 
 /*!
-    \overload
+    If this is an additional info object that is constructed by default,
+    returns \c true, otherwise returns \c false. An additional info's object
+    is considered null if it contains no initialized type value.
 
+    \sa isValid()
+*/
+bool QKnxAdditionalInfo::isNull() const
+{
+    return (m_bytes[0] == 0x00);
+}
+
+/*!
     Returns \c true if this is a valid additional info object; \c false
     otherwise.
 */
 bool QKnxAdditionalInfo::isValid() const
 {
-    if (size() > 254)
+    if (isNull())
         return false;
 
-    const auto type = QKnxAdditionalInfo::Type(byte(0));
+    if ((size() != m_bytes.size()) || (size() > 254))
+        return false;
+
+    const auto type = QKnxAdditionalInfo::Type(m_bytes[0]);
+    const auto expectedSize = expectedDataSize(type);
+    if (expectedSize < 0)
+        return false;
+
     switch (type) {
     case QKnxAdditionalInfo::Type::PlMediumInformation:
     case QKnxAdditionalInfo::Type::RfMediumInformation:
@@ -113,26 +136,89 @@ bool QKnxAdditionalInfo::isValid() const
     case QKnxAdditionalInfo::Type::BiBatInformation:
     case QKnxAdditionalInfo::Type::RfMultiInformation:
     case QKnxAdditionalInfo::Type::PreambleAndPostamble:
-        return qint16(dataSize()) == expectedDataSize(type);
+        return dataSize() == quint8(expectedSize);
     case QKnxAdditionalInfo::Type::RfFastAckInformation:
-        return (qint16(dataSize()) >= expectedDataSize(type)) && ((qint16(dataSize()) % 2) == 0);
+        return (dataSize() >= quint8(expectedSize)) && ((dataSize() % 2) == 0);
     case QKnxAdditionalInfo::Type::ManufactorSpecificData:
-        return qint16(dataSize()) >= expectedDataSize(type);
-    default:
+        return dataSize() >= quint8(expectedSize);
+    case QKnxAdditionalInfo::Type::Reserved:
+    case QKnxAdditionalInfo::Type::EscCode:
         break;
     }
     return false;
 }
 
 /*!
-    Returns the number of bytes representing the additional info, excluding the
+    Returns the number of bytes representing the additional info, including the
     byte for \l Type id and the byte for length information.
+*/
+quint8 QKnxAdditionalInfo::size() const
+{
+    if (isNull())
+        return 0;
+    return m_bytes[1] + 2; // 2 -> type and length byte
+}
+
+/*!
+    Returns the additional info's type and length and the data as string. Type,
+    length, and data are formatted in hexadecimal notation.
+*/
+QString QKnxAdditionalInfo::toString() const
+{
+    QString data;
+    for (int i = 2; i < m_bytes.size(); ++i)
+        data += QStringLiteral("0x%1, ").arg(m_bytes[i], 2, 16, QLatin1Char('0'));
+    data.chop(2);
+
+    return QStringLiteral("Type { 0x%1 }, Data size { 0x%2 }, Data { %3 }")
+        .arg(quint8(type()), 2, 16, QLatin1Char('0'))
+        .arg(dataSize(), 2, 16, QLatin1Char('0')).arg(data);
+}
+
+/*!
+    Returns the additional info \l Type.
+*/
+QKnxAdditionalInfo::Type QKnxAdditionalInfo::type() const
+{
+    return QKnxAdditionalInfo::Type(m_bytes[0]);
+}
+
+/*!
+    Sets the additional info type to \a type.
+*/
+void QKnxAdditionalInfo::setType(QKnxAdditionalInfo::Type type)
+{
+    m_bytes[0] = quint8(type);
+}
+
+/*!
+    Returns the additional info's object data.
+*/
+QKnxByteArray QKnxAdditionalInfo::data() const
+{
+    return m_bytes.mid(2);
+}
+
+/*!
+    Sets the additional info's object data to \a data.
+
+    \note The KNX specification limits the size of the data to a maximum
+    of 252 bytes. The class implementation acknowledges this and silently
+    truncates the data stored in the additional info object.
+*/
+void QKnxAdditionalInfo::setData(const QKnxByteArray &data)
+{
+    m_bytes[1] = quint8(qMin(data.size(), 252));
+    m_bytes.resize(2);
+    m_bytes += data.mid(0, m_bytes[1]);
+}
+
+/*!
+    Returns the number of bytes representing the additional info's data.
 */
 quint8 QKnxAdditionalInfo::dataSize() const
 {
-    if (size() >= 2)
-        return size() - 2;
-    return 0;
+    return m_bytes[1];
 }
 
 /*!
@@ -171,32 +257,42 @@ qint32 QKnxAdditionalInfo::expectedDataSize(QKnxAdditionalInfo::Type type, bool 
 }
 
 /*!
-    Returns the additional info's type, length and the data as string. Type,
-    length and data are formatted in hexadecimal notation. If the additional
-    info is invalid, an empty string is returned.
+    Returns the byte at position \a index in the additional info's object.
 */
-QString QKnxAdditionalInfo::toString() const
+quint8 QKnxAdditionalInfo::byte(quint8 index) const
 {
-    if (!isValid())
-        return QString();
-
-    QString data;
-    for (quint8 byte : ref(2))
-        data += QStringLiteral("0x%1, ").arg(byte, 2, 16, QLatin1Char('0'));
-    data.chop(2);
-
-    return QStringLiteral("Type { 0x%1 }, Size { 0x%2 }, Data { %3 }")
-        .arg(static_cast<quint8> (byte(0)), 2, 16, QLatin1Char('0'))
-        .arg(byte(1), 2, 16, QLatin1Char('0')).arg(data);
+    Q_ASSERT_X(index < size(), "QKnxAdditionalInfo::byte", "index out of range");
+    return m_bytes[index];
 }
 
 /*!
-    \fn QKnxByteArray QKnxAdditionalInfo::bytes() const
-
-    Returns the additional info as range of bytes if the information is valid;
-    otherwise an byte array. The bytes include the type id, the size of the
-    actual data and the data itself.
+    Returns an array of bytes that represent the additional info's object.
 */
+QKnxByteArray QKnxAdditionalInfo::bytes() const
+{
+    if (!isValid())
+        return {};
+    return m_bytes;
+}
+
+/*!
+    Constructs the additional info object from the byte array \a bytes starting
+    at position \a index inside the array.
+
+    \sa isNull(), isValid()
+*/
+QKnxAdditionalInfo QKnxAdditionalInfo::fromBytes(const QKnxByteArray &bytes, quint16 index)
+{
+    const qint32 availableSize = bytes.size() - index;
+    if (availableSize < 2)
+        return {}; // size missing
+
+    quint16 size = QKnxUtils::QUint8::fromBytes(bytes, index + 1) + 2; // type + size => 2
+    if (availableSize < size)
+        return {};
+
+    return { QKnxAdditionalInfo::Type(bytes[index]), bytes.mid(index + 2, bytes[index + 1]) };
+}
 
 /*!
     \relates QKnxAdditionalInfo

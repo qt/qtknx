@@ -46,28 +46,31 @@ private slots:
         QKnxAdditionalInfo info;
         QCOMPARE(info.type(), QKnxAdditionalInfo::Type::Reserved);
         QCOMPARE(info.isValid(), false);
-        QCOMPARE(info.toString(), QStringLiteral(""));
+        QCOMPARE(info.toString(), QStringLiteral("Type { 0x00 }, Data size { 0x00 }, Data {  }"));
         QCOMPARE(info.bytes(), QKnxByteArray {});
 
         info = QKnxAdditionalInfo(QKnxAdditionalInfo::Type::BiBatInformation,
             QKnxByteArray { 0x10, 0x20 });
         QCOMPARE(info.type(), QKnxAdditionalInfo::Type::BiBatInformation);
         QCOMPARE(info.isValid(), true);
-        QCOMPARE(info.toString(), QStringLiteral("Type { 0x07 }, Size { 0x02 }, Data { 0x10, 0x20 }"));
+        QCOMPARE(info.toString(), QStringLiteral("Type { 0x07 }, Data size { 0x02 }, Data { 0x10, "
+            "0x20 }"));
         QCOMPARE(info.bytes(), QKnxByteArray({ 0x07, 0x02, 0x10, 0x20 }));
 
         info = QKnxAdditionalInfo(QKnxAdditionalInfo::Type::BiBatInformation,
             QKnxByteArray { 0x10, 0x20, 0x30 });
-        QCOMPARE(info.type(), QKnxAdditionalInfo::Type::Reserved);
+        QCOMPARE(info.type(), QKnxAdditionalInfo::Type::BiBatInformation);
         QCOMPARE(info.isValid(), false);
-        QCOMPARE(info.toString(), QStringLiteral(""));
+        QCOMPARE(info.toString(), QStringLiteral("Type { 0x07 }, Data size { 0x03 }, Data { 0x10, "
+            "0x20, 0x30 }"));
         QCOMPARE(info.bytes(), QKnxByteArray {});
 
         info = QKnxAdditionalInfo(QKnxAdditionalInfo::Type(0xaa),
             QKnxByteArray { 0x10, 0x20, 0x30 });
-        QCOMPARE(info.type(), QKnxAdditionalInfo::Type::Reserved);
+        QCOMPARE(info.type(), QKnxAdditionalInfo::Type(0xaa));
         QCOMPARE(info.isValid(), false);
-        QCOMPARE(info.toString(), QStringLiteral(""));
+        QCOMPARE(info.toString(), QStringLiteral("Type { 0xaa }, Data size { 0x03 }, Data { 0x10, "
+            "0x20, 0x30 }"));
         QCOMPARE(info.bytes(), QKnxByteArray {});
     }
 
@@ -84,7 +87,7 @@ private slots:
             QKnxByteArray({ 0x10, 0x20, 0x30, 0x40 }) };
         QCOMPARE(info.isValid(), true);
 
-        QKnxByteArray data { { 0x10, 0x20 } };
+        QKnxByteArray data { 0x10, 0x20 };
         info = { QKnxAdditionalInfo::Type::ManufactorSpecificData, data };
         QCOMPARE(info.isValid(), false);
 
@@ -177,7 +180,7 @@ private slots:
         auto info = QKnxAdditionalInfo::fromBytes({ 0x07, 0x02, 0x10, 0x20 }, 0);
         QCOMPARE(info.type(), QKnxAdditionalInfo::Type::BiBatInformation);
         QCOMPARE(info.isValid(), true);
-        QCOMPARE(info.toString(), QStringLiteral("Type { 0x07 }, Size { 0x02 }, Data { 0x10, 0x20 }"));
+        QCOMPARE(info.toString(), QStringLiteral("Type { 0x07 }, Data size { 0x02 }, Data { 0x10, 0x20 }"));
         QCOMPARE(info.bytes(), QKnxByteArray({ 0x07, 0x02, 0x10, 0x20 }));
     }
 
@@ -196,7 +199,7 @@ private slots:
         qDebug() << QKnxAdditionalInfo();
         QCOMPARE(s_msg, QString::fromLatin1("0x1nv4l1d"));
 
-        QKnxByteArray data { { 0x10, 0x20 } };
+        QKnxByteArray data({ 0x10, 0x20 });
         qDebug() << QKnxAdditionalInfo(QKnxAdditionalInfo::Type::BiBatInformation, data);
         QCOMPARE(s_msg, QString::fromLatin1("0x07021020"));
     }
@@ -204,7 +207,7 @@ private slots:
     void testDataStream()
     {
         QByteArray byteArray;
-        QKnxByteArray data { { 0x10, 0x20 } };
+        QKnxByteArray data({ 0x10, 0x20 });
 
         QDataStream out(&byteArray, QIODevice::WriteOnly);
         out << QKnxAdditionalInfo(QKnxAdditionalInfo::Type::BiBatInformation, data);
@@ -215,7 +218,7 @@ private slots:
 
         QCOMPARE(info.type(), QKnxAdditionalInfo::Type::BiBatInformation);
         QCOMPARE(info.isValid(), true);
-        QCOMPARE(info.toString(), QStringLiteral("Type { 0x07 }, Size { 0x02 }, Data { 0x10, 0x20 }"));
+        QCOMPARE(info.toString(), QStringLiteral("Type { 0x07 }, Data size { 0x02 }, Data { 0x10, 0x20 }"));
         QCOMPARE(info.bytes(), QKnxByteArray({ 0x07, 0x02, 0x10, 0x20 }));
     }
 };
