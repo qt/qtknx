@@ -31,16 +31,15 @@
     \brief Provides classes and functions to make KNX programming simple and
     portable.
 
-    \note The Qt KNX module is currently available as a Technology Preview and
-    therefore the API and functionality provided by the module may be subject
-    to change at any time without prior notice.
-
     The Qt KNX module implements the client side of a connection between a
     client and a KNXnet/IP server. This connection can be used to send messages
     to the KNX bus and to control the functionalities of the KNX devices.
 
     Only local device management procedures and KNX application services working
     with group addressing are fully supported.
+
+    \note Qt KNX is part of the Qt for Automation offering and not Qt. For further
+    details please see \l {Qt for Automation}.
 
     \section1 Getting Started
 
