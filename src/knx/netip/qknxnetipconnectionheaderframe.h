@@ -76,7 +76,7 @@ protected:
 
     void setConnectionHeader(const QKnxNetIpConnectionHeader &connHeader)
     {
-        QKnxNetIpPayload payload(connHeader.ref().bytes(), connHeader.size());
+        QKnxNetIpPayload payload(connHeader.bytes());
         payload.appendBytes(payloadRef(m_connectionHeader.size()).bytes(0));
         Package::setPayload(payload);
 

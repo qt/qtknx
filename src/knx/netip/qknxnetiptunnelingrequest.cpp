@@ -50,7 +50,7 @@ quint8 QKnxNetIpTunnelingRequest::channelId() const
 
 quint8 QKnxNetIpTunnelingRequest::sequenceCount() const
 {
-    return connectionHeader().sequenceCount();
+    return connectionHeader().sequenceNumber();
 }
 
 QKnxLinkLayerFrame QKnxNetIpTunnelingRequest::cemi() const

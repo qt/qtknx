@@ -1,6 +1,6 @@
 /******************************************************************************
 **
-** Copyright (C) 2017 The Qt Company Ltd.
+** Copyright (C) 2018 The Qt Company Ltd.
 ** Contact: https://www.qt.io/licensing/
 **
 ** This file is part of the QtKnx module.
@@ -30,62 +30,46 @@
 #ifndef QKNXNETIPCONNECTIONHEADER_H
 #define QKNXNETIPCONNECTIONHEADER_H
 
-#include <QtCore/qdatastream.h>
-#include <QtCore/qdebug.h>
 #include <QtCore/qstring.h>
-#include <QtCore/qvector.h>
-#include <QtKnx/qknxbytestore.h>
-#include <QtKnx/qknxglobal.h>
-#include <QtKnx/qknxtraits.h>
-#include <QtKnx/qknxutils.h>
+
+#include <QtKnx/qknxbytearray.h>
 
 QT_BEGIN_NAMESPACE
 
-using QKnxNetIpQKnxNetIpConnectionHeaderRef = QKnxByteStoreRef;
-
-class Q_KNX_EXPORT QKnxNetIpConnectionHeader final : private QKnxByteStore
+class Q_KNX_EXPORT QKnxNetIpConnectionHeader final
 {
-    using QKnxByteStore::QKnxByteStore;
-
 public:
     QKnxNetIpConnectionHeader() = default;
-    ~QKnxNetIpConnectionHeader() override = default;
+    ~QKnxNetIpConnectionHeader() = default;
 
-    QKnxNetIpConnectionHeader(quint8 channelId, quint8 sequenceCount, quint8 serviceTypeSpecificValue = 0);
+    QKnxNetIpConnectionHeader(quint8 channelId, quint8 seqNumber);
+    QKnxNetIpConnectionHeader(quint8 channelId, quint8 seqNumber, quint8 serviceTypeSpecificValue);
 
+    bool isNull() const;
     bool isValid() const;
 
-    quint8 channelId() const;
-    void setChannelId(quint8 id);
+    quint8 size() const;
+    QString toString() const;
 
-    quint8 sequenceCount() const;
-    void setSequenceCount(quint8 count);
+    quint8 channelId() const;
+    void setChannelId(quint8 channelId);
+
+    quint8 sequenceNumber() const;
+    void setSequenceNumber(quint8 seqNumber);
 
     quint8 serviceTypeSpecificValue() const;
     void setServiceTypeSpecificValue(quint8 value);
 
-    QKnxByteArray connectionTypeSpecificHeaderItems() const
-    {
-        return bytes(4, size() - 4);
-    }
+    QKnxByteArray connectionTypeSpecificHeaderItems() const;
+    void setConnectionTypeSpecificHeaderItems(const QKnxByteArray &items);
 
-    void setConnectionTypeSpecificHeaderItems(const QKnxByteArray &items)
-    {
-        insertBytes(4, items);
-        setByte(0, quint8(items.size()) + 4);
-    }
+    quint8 byte(quint8 index) const;
+    QKnxByteArray bytes() const;
 
-    QString toString() const override;
-    QKnxNetIpQKnxNetIpConnectionHeaderRef ref() const;
-
-    using QKnxByteStore::size;
-    using QKnxByteStore::byte;
-    using QKnxByteStore::bytes;
-
-    static QKnxNetIpConnectionHeader fromBytes(const QKnxByteArray &bytes, quint16 index);
+    static QKnxNetIpConnectionHeader fromBytes(const QKnxByteArray &bytes, quint16 index = 0);
 
 private:
-    quint8 m_isValid = 0;
+    QKnxByteArray m_bytes { 0x00, 0x00, 0x00, 0x00 };
 };
 
 QT_END_NAMESPACE

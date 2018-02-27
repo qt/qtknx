@@ -50,7 +50,7 @@ quint8 QKnxNetIpDeviceConfigurationAcknowledge::channelId() const
 
 quint8 QKnxNetIpDeviceConfigurationAcknowledge::sequenceCount() const
 {
-    return connectionHeader().sequenceCount();
+    return connectionHeader().sequenceNumber();
 }
 
 QKnxNetIp::Error QKnxNetIpDeviceConfigurationAcknowledge::status() const

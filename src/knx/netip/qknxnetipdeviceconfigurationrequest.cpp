@@ -51,7 +51,7 @@ quint8 QKnxNetIpDeviceConfigurationRequest::channelId() const
 
 quint8 QKnxNetIpDeviceConfigurationRequest::sequenceCount() const
 {
-    return connectionHeader().sequenceCount();
+    return connectionHeader().sequenceNumber();
 }
 
 QKnxLocalDeviceManagementFrame QKnxNetIpDeviceConfigurationRequest::cemi() const
