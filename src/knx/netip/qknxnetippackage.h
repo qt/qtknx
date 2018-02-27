@@ -118,20 +118,20 @@ protected:
         m_header.setCode(code);
     }
 
-    quint16 payloadSize() const
+    quint16 dataSize() const
     {
-        return m_header.payloadSize();
+        return m_header.dataSize();
     }
 
-    void setPayloadSize(quint16 payloadSize)
+    void setDataSize(quint16 dataSize)
     {
-        m_header.setPayloadSize(payloadSize);
+        m_header.setDataSize(dataSize);
     }
 
     virtual void setPayload(const QKnxNetIpPayload &payload)
     {
         m_payload = payload;
-        setPayloadSize(payload.size());
+        setDataSize(payload.size());
     }
 
 private:

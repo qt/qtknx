@@ -49,7 +49,7 @@ struct QKnxNetIpStructHelper
             return {};
 
         return QKnxNetIpStruct<NetIpType>(header, QKnxNetIpPayload::fromBytes(bytes,
-            index + header.size(), header.payloadSize()));
+            index + header.size(), header.dataSize()));
     }
 };
 

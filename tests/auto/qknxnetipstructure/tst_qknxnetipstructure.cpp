@@ -92,7 +92,7 @@ private slots:
         QCOMPARE(header.code(), QKnxNetIp::HostProtocol(0));
         QCOMPARE(header.size(), quint16(0));
         QCOMPARE(header.totalSize(), quint16(0));
-        QCOMPARE(header.payloadSize(), quint16(0));
+        QCOMPARE(header.dataSize(), quint16(0));
         QCOMPARE(header.bytes(), QKnxByteArray {});
         QCOMPARE(header.toString(), QString("Total size { 0x00 }, Code { 0x00 }"));
 
@@ -116,7 +116,7 @@ private slots:
         QCOMPARE(header.code(), QKnxNetIp::HostProtocol(0));
         QCOMPARE(header.size(), quint16(2));
         QCOMPARE(header.totalSize(), quint16(2));
-        QCOMPARE(header.payloadSize(), quint16(0));
+        QCOMPARE(header.dataSize(), quint16(0));
         QCOMPARE(header.bytes(), QKnxByteArray({ 0x02, 0x00 }));
         QCOMPARE(header.toString(), QString("Total size { 0x02 }, Code { 0x00 }"));
 
@@ -137,7 +137,7 @@ private slots:
         QCOMPARE(header.code(), QKnxNetIp::HostProtocol(0x01));
         QCOMPARE(header.size(), quint16(2));
         QCOMPARE(header.totalSize(), quint16(2));
-        QCOMPARE(header.payloadSize(), quint16(0));
+        QCOMPARE(header.dataSize(), quint16(0));
         QCOMPARE(header.bytes(), QKnxByteArray({ 0x02, 0x01 }));
         QCOMPARE(header.toString(), QString("Total size { 0x02 }, Code { 0x01 }"));
 
@@ -163,7 +163,7 @@ private slots:
         QCOMPARE(header.code(), QKnxNetIp::HostProtocol(0));
         QCOMPARE(header.size(), quint16(2));
         QCOMPARE(header.totalSize(), quint16(2));
-        QCOMPARE(header.payloadSize(), quint16(0));
+        QCOMPARE(header.dataSize(), quint16(0));
         QCOMPARE(header.bytes(), QKnxByteArray({ 0x02, 0x00 }));
         QCOMPARE(header.toString(), QString("Total size { 0x02 }, Code { 0x00 }"));
 
@@ -174,7 +174,7 @@ private slots:
 
         payload.setBytes(QKnxByteArray { 0x00, 0x01, 0x02, 0x03, 0x04, 0x05 });
         header = QKnxNetIpStructHeader<QKnxNetIp::HostProtocol>(QKnxNetIp::HostProtocol::IpV4_Udp);
-        header.setPayloadSize(payload.size());
+        header.setDataSize(payload.size());
 
         test = TestStructure(header, payload);
         QCOMPARE(test.isValid(), true);
@@ -188,7 +188,7 @@ private slots:
         QCOMPARE(header.code(), QKnxNetIp::HostProtocol(0x01));
         QCOMPARE(header.size(), quint16(2));
         QCOMPARE(header.totalSize(), quint16(8));
-        QCOMPARE(header.payloadSize(), quint16(6));
+        QCOMPARE(header.dataSize(), quint16(6));
         QCOMPARE(header.bytes(), QKnxByteArray({ 0x08, 0x01 }));
         QCOMPARE(header.toString(), QString("Total size { 0x08 }, Code { 0x01 }"));
 
@@ -206,7 +206,7 @@ private slots:
         payload.setBytes(ba);
 
         auto header = QKnxNetIpStructHeader<QKnxNetIp::HostProtocol>(QKnxNetIp::HostProtocol::IpV4_Udp);
-        header.setPayloadSize(payload.size());
+        header.setDataSize(payload.size());
 
         TestStructure test(header, payload);
         QCOMPARE(test.size(), quint16(0xfe));
@@ -218,7 +218,7 @@ private slots:
         QCOMPARE(test.payload().size(), quint16(0xfc));
         QCOMPARE(test.payload().bytes(), ba);
 
-        ba += { { 0x00, 0x11, 0x22, 0x33, 0x44, 0x66, 0x77, 0x88, 0x99 }};
+        ba += { 0x00, 0x11, 0x22, 0x33, 0x44, 0x66, 0x77, 0x88, 0x99 };
         payload.setBytes(ba);
 
         test.setPayload(payload);
@@ -241,8 +241,8 @@ private slots:
         QCOMPARE(test.toString(), QString("Total size { 0x02 }, Code { 0x01 }, Bytes {  }"));
 
         QKnxNetIpPayload payload;
-        payload.setBytes({ { 0x00, 0x11, 0x22, 0x33, 0x44, 0x66, 0x77, 0x88, 0x99, 0xaa, 0xbb,
-            0xcc, 0xdd, 0xee, 0xff } });
+        payload.setBytes({ 0x00, 0x11, 0x22, 0x33, 0x44, 0x66, 0x77, 0x88, 0x99, 0xaa, 0xbb,
+            0xcc, 0xdd, 0xee, 0xff });
         test.setPayload(payload);
 
         QCOMPARE(test.toString(), QString("Total size { 0x11 }, Code { 0x01 }, Bytes { 0x00, "
