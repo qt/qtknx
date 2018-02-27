@@ -56,10 +56,10 @@ void tst_QKnxNetIpHpai::testConstructor()
     QCOMPARE(hpai.port(), quint16(3671));
 
     QCOMPARE(hpai.payload().size(), quint16(6));
-    QCOMPARE(hpai.payload().bytes<QByteArray>(), QByteArray::fromHex("7f0000010e57"));
+    QCOMPARE(hpai.payload().bytes(), QKnxByteArray::fromHex("7f0000010e57"));
 
     QCOMPARE(hpai.size(), quint16(8));
-    QCOMPARE(hpai.bytes<QByteArray>(), QByteArray::fromHex("08017f0000010e57"));
+    QCOMPARE(hpai.bytes(), QKnxByteArray::fromHex("08017f0000010e57"));
 
     QCOMPARE(hpai.toString(), QString::fromLatin1("Total size { 0x08 }, Code { 0x01 }, "
             "Bytes { 0x7f, 0x00, 0x00, 0x01, 0x0e, 0x57 }"));
@@ -78,10 +78,10 @@ void tst_QKnxNetIpHpai::testSetFunctions()
         QCOMPARE(hpai.port(), quint16(3671));
 
         QCOMPARE(hpai.payload().size(), quint16(6));
-        QCOMPARE(hpai.payload().bytes<QByteArray>(), QByteArray::fromHex("7f0000010e57"));
+        QCOMPARE(hpai.payload().bytes(), QKnxByteArray::fromHex("7f0000010e57"));
 
         QCOMPARE(hpai.size(), quint16(8));
-        QCOMPARE(hpai.bytes<QByteArray>(), QByteArray::fromHex("08017f0000010e57"));
+        QCOMPARE(hpai.bytes(), QKnxByteArray::fromHex("08017f0000010e57"));
 
         QCOMPARE(hpai.toString(), QString::fromLatin1("Total size { 0x08 }, Code { 0x01 }, "
                 "Bytes { 0x7f, 0x00, 0x00, 0x01, 0x0e, 0x57 }"));

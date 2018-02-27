@@ -30,7 +30,6 @@
 #ifndef QKNXNETIPSTRUCTHEADER_H
 #define QKNXNETIPSTRUCTHEADER_H
 
-#include <QtCore/qbytearray.h>
 #include <QtCore/qdatastream.h>
 #include <QtCore/qdebug.h>
 #include <QtCore/qstring.h>
@@ -126,12 +125,8 @@ public:
     using QKnxByteStore::byte;
     using QKnxByteStore::bytes;
 
-    template <typename T, std::size_t S = 0>
-        static QKnxNetIpStructHeader fromBytes(const T &bytes, quint16 index)
+    static QKnxNetIpStructHeader fromBytes(const QKnxByteArray &bytes, quint16 index = 0)
     {
-        static_assert(is_type<T, QByteArray, QKnxByteStoreRef, QVector<quint8>, std::deque<quint8>,
-            std::vector<quint8>, std::array<quint8, S>>::value, "Type not supported.");
-
         const qint32 availableSize = bytes.size() - index;
         if (availableSize < 1)
             return {}; // total size missing

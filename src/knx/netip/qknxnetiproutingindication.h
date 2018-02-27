@@ -45,8 +45,7 @@ public:
 
     explicit QKnxNetIpRoutingIndication(const QKnxLinkLayerFrame &cemi);
 
-    template <typename T>
-        static QKnxNetIpRoutingIndication fromBytes(const T &bytes, quint16 index)
+    static QKnxNetIpRoutingIndication fromBytes(const QKnxByteArray &bytes, quint16 index)
     {
         return QKnxNetIpFrameHelper::fromBytes(bytes, index,
             QKnxNetIp::ServiceType::RoutingIndication);

@@ -63,7 +63,7 @@ QT_BEGIN_NAMESPACE
     the header and the payload.
 */
 
-static QDebug stream(QDebug debug, const QVector<quint8> &bytes)
+static QDebug stream(QDebug debug, const QKnxByteArray &bytes)
 {
     QDebug &dbg = debug.nospace().noquote() << "0x" << hex << qSetFieldWidth(2)
         << qSetPadChar(QLatin1Char('0'));
@@ -72,7 +72,7 @@ static QDebug stream(QDebug debug, const QVector<quint8> &bytes)
     return debug;
 }
 
-static QDataStream &stream(QDataStream &out, const QByteArray &bytes)
+static QDataStream &stream(QDataStream &out, const QKnxByteArray &bytes)
 {
     for (quint8 byte : qAsConst(bytes))
         out << byte;
@@ -87,7 +87,7 @@ static QDataStream &stream(QDataStream &out, const QByteArray &bytes)
 QDebug operator<<(QDebug debug, const QKnxNetIpHostProtocolStruct &package)
 {
     QDebugStateSaver _(debug);
-    return package.isValid() ? stream(debug, package.bytes<QVector<quint8>>())
+    return package.isValid() ? stream(debug, package.bytes())
         : debug.nospace().noquote() << "0x1nv4l1d";
 }
 
@@ -110,7 +110,7 @@ QDataStream &operator<<(QDataStream &out, const QKnxNetIpHostProtocolStruct &pac
 QDebug operator<<(QDebug debug, const QKnxNetIpConnectionTypeStruct &package)
 {
     QDebugStateSaver _(debug);
-    return package.isValid() ? stream(debug, package.bytes<QVector<quint8>>())
+    return package.isValid() ? stream(debug, package.bytes())
         : debug.nospace().noquote() << "0x1nv4l1d";
 }
 
@@ -133,7 +133,7 @@ QDataStream &operator<<(QDataStream &out, const QKnxNetIpConnectionTypeStruct &p
 QDebug operator<<(QDebug debug, const QKnxNetIpDescriptionTypeStruct &package)
 {
     QDebugStateSaver _(debug);
-    return package.isValid() ? stream(debug, package.bytes<QVector<quint8>>())
+    return package.isValid() ? stream(debug, package.bytes())
         : debug.nospace().noquote() << "0x1nv4l1d";
 }
 

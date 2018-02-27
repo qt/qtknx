@@ -58,19 +58,7 @@ QKnxControlField::QKnxControlField(quint8 data)
 
     \note The byte array must contain at least one elements.
 */
-QKnxControlField::QKnxControlField(const QByteArray &data)
-{
-    if (data.size() > 0)
-        m_ctrl1 = quint8(data[0]);
-}
-
-/*!
-    Creates a new control field from the first byte of the \a data vector.
-    Hexadecimal, octal and decimal notation are supported.
-
-    \note The vector must contain at least one elements.
-*/
-QKnxControlField::QKnxControlField(const QVector<quint8> &data)
+QKnxControlField::QKnxControlField(const QKnxByteArray &data)
 {
     if (data.size() > 0)
         m_ctrl1 = quint8(data[0]);
@@ -115,18 +103,7 @@ QString QKnxControlField::toString() const
 /*!
     \fn quint8 QKnxControlField::bytes() const
 
-    Returns the control field as byte or range of bytes.
-
-    \note \c quint8, \c QByteArray and \c QVector<quint8> as well as
-    std::vector<quint8> and std::deque<quint8> are supported as return type.
-
-    \code
-        QKnxControlField ctrl;
-
-        quint8 byte = ctrl.bytes();
-        auto byteArray = ctrl.bytes<QByteArray>();
-        auto vector = ctrl.bytes<QVector<quint8>>();
-    \endcode
+    Returns the control field as range of bytes.
 */
 
 /*!

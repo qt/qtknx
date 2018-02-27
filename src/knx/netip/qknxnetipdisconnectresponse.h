@@ -44,8 +44,7 @@ public:
 
     QKnxNetIpDisconnectResponse(quint8 channelId, QKnxNetIp::Error status);
 
-    template <typename T>
-        static QKnxNetIpDisconnectResponse fromBytes(const T &bytes, quint16 index)
+    static QKnxNetIpDisconnectResponse fromBytes(const QKnxByteArray &bytes, quint16 index)
     {
         return QKnxNetIpFrameHelper::fromBytes(bytes, index,
             QKnxNetIp::ServiceType::DisconnectResponse);

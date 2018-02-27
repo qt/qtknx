@@ -98,6 +98,7 @@ public:
     inline void squeeze();
 
     explicit operator QByteArray() const;
+    static QKnxByteArray fromByteArray(const QByteArray &ba);
 
     inline quint8 *data();
     inline const quint8 *data() const;
@@ -107,6 +108,9 @@ public:
     void clear();
 
     inline quint8 at(int i) const;
+    inline quint8 value(int i) const;
+    inline quint8 value(int i, quint8 defaultValue) const;
+
     inline quint8 operator[](int i) const;
     inline quint8 operator[](uint i) const;
     inline QKnxByteRef operator[](int i);
@@ -183,6 +187,8 @@ public:
     static QKnxByteArray fromRawData(const quint8 *, int size);
 
     QKnxByteArray toHex(quint8 separator = '\0') const;
+
+    static QKnxByteArray fromHex(const QByteArray &hexEncoded);
     static QKnxByteArray fromHex(const QKnxByteArray &hexEncoded);
 
     typedef quint8 *iterator;
@@ -282,6 +288,17 @@ inline quint8 QKnxByteArray::at(int i) const
 {
     Q_ASSERT(uint(i) < uint(size())); return d->data()[i];
 }
+inline quint8 QKnxByteArray::value(int i) const
+{
+    if (uint(i) >= uint(d->size))
+        return {};
+    return d->data()[i];
+}
+inline quint8 QKnxByteArray::value(int i, quint8 defaultValue) const
+{
+    return (uint(i) >= uint(d->size) ? defaultValue : d->data()[i]);
+}
+
 inline quint8 QKnxByteArray::operator[](int i) const
 {
     Q_ASSERT(uint(i) < uint(size())); return d->data()[i];
@@ -492,10 +509,6 @@ inline bool operator!=(const QKnxByteArray &a1, const QKnxByteArray &a2) Q_DECL_
     return !(a1 == a2);
 }
 
-Q_KNX_EXPORT QDebug operator<<(QDebug debug, const QKnxByteArray &);
-
-#if !defined(QT_USE_QSTRINGBUILDER)
-
 inline const QKnxByteArray operator+(const QKnxByteArray &a1, const QKnxByteArray &a2)
 {
     return QKnxByteArray(a1) += a2;
@@ -509,8 +522,8 @@ inline const QKnxByteArray operator+(quint8 a1, const QKnxByteArray &a2)
     return QKnxByteArray(1, a1) += a2;
 }
 
-#endif // QT_USE_QSTRINGBUILDER
-
+Q_KNX_EXPORT QDebug operator<<(QDebug debug, const QKnxByteArray &);
+Q_KNX_EXPORT Q_DECL_PURE_FUNCTION uint qHash(const QKnxByteArray &ba, uint seed = 0) Q_DECL_NOTHROW;
 
 #if !defined(QT_NO_DATASTREAM)
 

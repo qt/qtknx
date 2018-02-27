@@ -30,7 +30,6 @@
 #ifndef QKNXNETIPCRI_H
 #define QKNXNETIPCRI_H
 
-#include <QtCore/qbytearray.h>
 #include <QtCore/qdatastream.h>
 #include <QtCore/qdebug.h>
 #include <QtCore/qstring.h>
@@ -51,7 +50,7 @@ public:
     explicit QKnxNetIpCri(QKnxNetIp::TunnelingLayer layer);
     explicit QKnxNetIpCri(QKnxNetIp::ConnectionType connectionType);
 
-    template <typename T> static QKnxNetIpCri fromBytes(const T &bytes, quint16 index)
+    static QKnxNetIpCri fromBytes(const QKnxByteArray &bytes, quint16 index)
     {
         auto code = QKnxNetIpStructHeader<QKnxNetIp::ConnectionType>::fromBytes(bytes, index).code();
         if (!QKnxNetIp::isStructType(code))

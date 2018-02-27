@@ -126,10 +126,13 @@ void QKnxNetIpServerDiscoveryAgentPrivate::setupSocket()
 
             if (q->state() == QKnxNetIpServerDiscoveryAgent::State::Running) {
                 servers.clear();
-                socket->writeDatagram(QKnxNetIpSearchRequest({
+
+                auto data = QKnxNetIpSearchRequest({
                     (nat ? QHostAddress::AnyIPv4 : usedAddress),
                     (nat ? quint16(0u) : usedPort)
-                }).bytes(), multicastAddress, multicastPort);
+                }).bytes();
+                socket->writeDatagram((const char*) data.constData(), data.size(),
+                    multicastAddress, multicastPort);
 
                 setupAndStartReceiveTimer();
                 setupAndStartFrequencyTimer();
@@ -156,12 +159,13 @@ void QKnxNetIpServerDiscoveryAgentPrivate::setupSocket()
             if (q->state() != QKnxNetIpServerDiscoveryAgent::State::Running)
                 break;
 
-            auto datagram = socket->receiveDatagram();
-            const auto header = QKnxNetIpFrameHeader::fromBytes(datagram.data(), 0);
+            auto ba = socket->receiveDatagram().data();
+            QKnxByteArray data(ba.constData(), ba.size());
+            const auto header = QKnxNetIpFrameHeader::fromBytes(data, 0);
             if (!header.isValid() || header.code() != QKnxNetIp::ServiceType::SearchResponse)
                 continue;
 
-            auto response = QKnxNetIpSearchResponse::fromBytes(datagram.data(), 0);
+            auto response = QKnxNetIpSearchResponse::fromBytes(data, 0);
             if (!response.isValid())
                 continue;
 
@@ -211,10 +215,13 @@ void QKnxNetIpServerDiscoveryAgentPrivate::setupAndStartFrequencyTimer()
             Q_Q(QKnxNetIpServerDiscoveryAgent);
             if (q->state() == QKnxNetIpServerDiscoveryAgent::State::Running) {
                 servers.clear();
-                socket->writeDatagram(QKnxNetIpSearchRequest({
+
+                auto data = QKnxNetIpSearchRequest({
                     (nat ? QHostAddress::AnyIPv4 : address),
                     (nat ? quint16(0u) : port)
-                }).bytes(), multicastAddress, multicastPort);
+                }).bytes();
+                socket->writeDatagram((const char*) data.constData(), data.size(),
+                    multicastAddress, multicastPort);
             }
         });
     }

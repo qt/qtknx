@@ -46,7 +46,7 @@ public:
     QKnxNetIpRoutingBusy(QKnxNetIp::DeviceState state, quint8 routingBusyWaitTime,
         quint16 routingBusyControl);
 
-    template <typename T> static QKnxNetIpRoutingBusy fromBytes(const T &bytes, quint16 index)
+    static QKnxNetIpRoutingBusy fromBytes(const QKnxByteArray &bytes, quint16 index)
     {
         return QKnxNetIpFrameHelper::fromBytes(bytes, index, QKnxNetIp::ServiceType::RoutingBusy);
     }

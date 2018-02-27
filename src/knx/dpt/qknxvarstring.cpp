@@ -78,7 +78,7 @@ bool QKnxVarString::setString(QLatin1String string)
 
 bool QKnxVarString::setString(const char *string, int size)
 {
-    auto null = QByteArray::fromHex("00");
+    auto null = QKnxByteArray::fromHex("00");
     if (!string)
         return setBytes(null, 0, 1);
 
@@ -88,7 +88,7 @@ bool QKnxVarString::setString(const char *string, int size)
 
     if (size >= USHRT_MAX)
         return false;
-    return setBytes(QByteArray(QByteArray::fromRawData(string, size) + null), 0, size + 1);
+    return setBytes(QKnxByteArray(string, size) + null, 0, size + 1);
 }
 
 bool QKnxVarString::isValid() const

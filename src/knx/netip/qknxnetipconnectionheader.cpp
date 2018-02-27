@@ -120,4 +120,23 @@ QKnxNetIpQKnxNetIpConnectionHeaderRef QKnxNetIpConnectionHeader::ref() const
     return QKnxByteStore::ref(0);
 }
 
+QKnxNetIpConnectionHeader QKnxNetIpConnectionHeader::fromBytes(const QKnxByteArray &bytes, quint16 index)
+{
+    const qint32 availableSize = bytes.size() - index;
+    if (availableSize < 1)
+        return {}; // total size missing
+
+    const quint8 totalSize = QKnxUtils::QUint8::fromBytes(bytes, index);
+    if (availableSize < totalSize)
+        return {}; // header might be corrupted
+
+    const quint8 channelId = QKnxUtils::QUint8::fromBytes(bytes, index + 1);
+    const quint8 sequenceCount = QKnxUtils::QUint8::fromBytes(bytes, index + 2);
+    const quint8 serviceTypeSpecificValue = QKnxUtils::QUint8::fromBytes(bytes, index + 3);
+    QKnxNetIpConnectionHeader header(channelId, sequenceCount, serviceTypeSpecificValue);
+    if (totalSize > 4)
+        header.setConnectionTypeSpecificHeaderItems(bytes.mid(index + 4, totalSize - 4));
+    return header;
+}
+
 QT_END_NAMESPACE

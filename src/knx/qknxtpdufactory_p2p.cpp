@@ -87,38 +87,38 @@ static QKnxTpdu::TransportControlField tpci(QKnxTpduFactory::PointToPoint::Mode 
 */
 
 QKnxTpdu QKnxTpduFactory::PointToPoint::createFunctionPropertyCommandTpdu(Mode mode,
-    quint8 objIndex, QKnxInterfaceObjectProperty property, const QVector<quint8> &data, quint8 seqNumber)
+    quint8 objIndex, QKnxInterfaceObjectProperty property, const QKnxByteArray &data, quint8 seqNumber)
 {
     if (data.size() > 251)
         return {QKnxTpdu::TransportControlField::Invalid,
             QKnxTpdu::ApplicationControlField::Invalid}; // L_Data_Extended -> max 254 Bytes payload, 4 Bytes already taken
 
     return { tpci(mode, seqNumber), QKnxTpdu::ApplicationControlField::FunctionPropertyCommand,
-        seqNumber, QKnxUtils::QUint8::bytes<QVector<quint8>>(objIndex) + QKnxUtils::QUint8::bytes<QVector<quint8>>(property) + data };
+        seqNumber, QKnxUtils::QUint8::bytes(objIndex) + QKnxUtils::QUint8::bytes(property) + data };
 }
 
 QKnxTpdu QKnxTpduFactory::PointToPoint::createFunctionPropertyStateReadTpdu(Mode mode,
-    quint8 objIndex, QKnxInterfaceObjectProperty property, const QVector<quint8> &data, quint8 seqNumber)
+    quint8 objIndex, QKnxInterfaceObjectProperty property, const QKnxByteArray &data, quint8 seqNumber)
 {
     if (data.size() > 251)
         return {QKnxTpdu::TransportControlField::Invalid,
             QKnxTpdu::ApplicationControlField::Invalid}; // L_Data_Extended -> max 254 Bytes payload, 4 Bytes already taken
 
     return { tpci(mode, seqNumber), QKnxTpdu::ApplicationControlField::FunctionPropertyStateRead,
-        seqNumber, QKnxUtils::QUint8::bytes<QVector<quint8>>(objIndex) + QKnxUtils::QUint8::bytes<QVector<quint8>>(property) + data };
+        seqNumber, QKnxUtils::QUint8::bytes(objIndex) + QKnxUtils::QUint8::bytes(property) + data };
 }
 
 QKnxTpdu QKnxTpduFactory::PointToPoint::createFunctionPropertyStateResponseTpdu(Mode mode,
     quint8 objectIndex, QKnxInterfaceObjectProperty property, QKnxTpdu::ErrorCode code,
-    const QVector<quint8> &data, quint8 seqNumber)
+    const QKnxByteArray &data, quint8 seqNumber)
 {
     if (data.size() > 250)
         return {QKnxTpdu::TransportControlField::Invalid,
             QKnxTpdu::ApplicationControlField::Invalid}; // L_Data_Extended -> max 254 Bytes payload, 5 Bytes already taken
 
     return { tpci(mode, seqNumber), QKnxTpdu::ApplicationControlField::FunctionPropertyStateResponse,
-        seqNumber, QKnxUtils::QUint8::bytes<QVector<quint8>>(objectIndex) + QKnxUtils::QUint8::bytes<QVector<quint8>>(property)
-        + QKnxUtils::QUint8::bytes<QVector<quint8>>(quint8(code)) + data };
+        seqNumber, QKnxUtils::QUint8::bytes(objectIndex) + QKnxUtils::QUint8::bytes(property)
+        + QKnxUtils::QUint8::bytes(quint8(code)) + data };
 }
 
 QKnxTpdu QKnxTpduFactory::PointToPoint::createDeviceDescriptorReadTpdu(Mode mode,
@@ -130,18 +130,18 @@ QKnxTpdu QKnxTpduFactory::PointToPoint::createDeviceDescriptorReadTpdu(Mode mode
     }
 
     return { tpci(mode, seqNumber), QKnxTpdu::ApplicationControlField::DeviceDescriptorRead,
-        seqNumber, QKnxUtils::QUint8::bytes<QVector<quint8>>(descriptorType) };
+        seqNumber, QKnxUtils::QUint8::bytes(descriptorType) };
 }
 
 QKnxTpdu QKnxTpduFactory::PointToPoint::createDeviceDescriptorResponseTpdu(Mode mode,
-    quint8 descriptorType, const QVector<quint8> &deviceDescriptor, quint8 seqNumber)
+    quint8 descriptorType, const QKnxByteArray &deviceDescriptor, quint8 seqNumber)
 {
     if (descriptorType >= 64 || deviceDescriptor.size() > 254)
         return {QKnxTpdu::TransportControlField::Invalid,
             QKnxTpdu::ApplicationControlField::Invalid};
 
     return { tpci(mode, seqNumber), QKnxTpdu::ApplicationControlField::DeviceDescriptorResponse,
-        seqNumber, QKnxUtils::QUint8::bytes<QVector<quint8>>(descriptorType)  + deviceDescriptor };
+        seqNumber, QKnxUtils::QUint8::bytes(descriptorType)  + deviceDescriptor };
 }
 
 QKnxTpdu QKnxTpduFactory::PointToPoint::createRestartTpdu(Mode mode, QKnxTpdu::ResetType type,
@@ -162,8 +162,8 @@ QKnxTpdu QKnxTpduFactory::PointToPoint::createRestartTpdu(Mode mode, QKnxTpdu::R
     }
 
     return { tpci(mode, seqNumber), QKnxTpdu::ApplicationControlField::Restart, seqNumber,
-        QKnxUtils::QUint8::bytes<QVector<quint8>>(0x01) + QKnxUtils::QUint8::bytes<QVector<quint8>>(quint8(eraseCode))
-        + QKnxUtils::QUint8::bytes<QVector<quint8>>(channelNumber) };
+        QKnxUtils::QUint8::bytes(0x01) + QKnxUtils::QUint8::bytes(quint8(eraseCode))
+        + QKnxUtils::QUint8::bytes(channelNumber) };
 }
 
 QKnxTpdu QKnxTpduFactory::PointToPoint::createRestartResponseTpdu(Mode mode, QKnxTpdu::ResetType type,
@@ -174,14 +174,14 @@ QKnxTpdu QKnxTpduFactory::PointToPoint::createRestartResponseTpdu(Mode mode, QKn
             QKnxTpdu::ApplicationControlField::Invalid};
 
     return { tpci(mode, seqNumber), QKnxTpdu::ApplicationControlField::Restart, seqNumber,
-        QKnxUtils::QUint8::bytes<QVector<quint8>>(0x21) + QKnxUtils::QUint8::bytes<QVector<quint8>>(quint8(code))
-        + QKnxUtils::QUint16::bytes<QVector<quint8>>(processTime) };
+        QKnxUtils::QUint8::bytes(0x21) + QKnxUtils::QUint8::bytes(quint8(code))
+        + QKnxUtils::QUint16::bytes(processTime) };
 }
 
 static QKnxTpdu createPropertyValueTpdu(QKnxTpduFactory::PointToPoint::Mode mode, quint8 seqNumber,
                                         QKnxTpdu::ApplicationControlField apci,
                                         quint8 objectIndex, quint8 property, quint8 nbElement,
-                                        quint16 startIndex, const QVector<quint8> &data = {})
+                                        quint16 startIndex, const QKnxByteArray &data = {})
 {
     if (data.size() > 249) // L_Data_Extended -> max 254 bytes payload
         return {QKnxTpdu::TransportControlField::Invalid,
@@ -191,10 +191,10 @@ static QKnxTpdu createPropertyValueTpdu(QKnxTpduFactory::PointToPoint::Mode mode
         return {QKnxTpdu::TransportControlField::Invalid,
             QKnxTpdu::ApplicationControlField::Invalid};
 
-    auto tmp = QKnxUtils::QUint16::bytes<QVector<quint8>>(startIndex);
+    auto tmp = QKnxUtils::QUint16::bytes(startIndex);
     tmp[0] = quint8(quint8(nbElement << 4) | quint8(tmp[0]));
-    return { tpci(mode, seqNumber), apci, seqNumber, QKnxUtils::QUint8::bytes<QVector<quint8>>(objectIndex)
-        + QKnxUtils::QUint8::bytes<QVector<quint8>>(property) + tmp + data };
+    return { tpci(mode, seqNumber), apci, seqNumber, QKnxUtils::QUint8::bytes(objectIndex)
+        + QKnxUtils::QUint8::bytes(property) + tmp + data };
 }
 
 QKnxTpdu QKnxTpduFactory::PointToPoint::createPropertyValueReadTpdu(Mode mode, quint8 objectIndex,
@@ -207,7 +207,7 @@ QKnxTpdu QKnxTpduFactory::PointToPoint::createPropertyValueReadTpdu(Mode mode, q
 
 QKnxTpdu QKnxTpduFactory::PointToPoint::createPropertyValueResponseTpdu(Mode mode,
     quint8 objectIndex, QKnxInterfaceObjectProperty property, quint8 nbElement, quint16 startIndex,
-    const QVector<quint8> &data, quint8 seqNumber)
+    const QKnxByteArray &data, quint8 seqNumber)
 {
     return createPropertyValueTpdu(mode, seqNumber,
         QKnxTpdu::ApplicationControlField::PropertyValueResponse, objectIndex, quint8(property),
@@ -216,7 +216,7 @@ QKnxTpdu QKnxTpduFactory::PointToPoint::createPropertyValueResponseTpdu(Mode mod
 
 QKnxTpdu QKnxTpduFactory::PointToPoint::createPropertyValueWriteTpdu(Mode mode, quint8 objectIndex,
     QKnxInterfaceObjectProperty property, quint8 nbElement, quint16 startIndex,
-    const QVector<quint8> &data, quint8 seqNumber)
+    const QKnxByteArray &data, quint8 seqNumber)
 {
     return createPropertyValueTpdu(mode, seqNumber,
         QKnxTpdu::ApplicationControlField::PropertyValueWrite, objectIndex, quint8(property),
@@ -228,8 +228,8 @@ QKnxTpdu QKnxTpduFactory::PointToPoint::createPropertyDescriptionReadTpdu(Mode m
     quint8 seqNumber)
 {
     return { tpci(mode, seqNumber), QKnxTpdu::ApplicationControlField::PropertyDescriptionRead,
-        seqNumber, QKnxUtils::QUint8::bytes<QVector<quint8>>(objectIndex)
-        + QKnxUtils::QUint8::bytes<QVector<quint8>>(quint8(property)) + QKnxUtils::QUint8::bytes<QVector<quint8>>(propertyIndex) };
+        seqNumber, QKnxUtils::QUint8::bytes(objectIndex)
+        + QKnxUtils::QUint8::bytes(quint8(property)) + QKnxUtils::QUint8::bytes(propertyIndex) };
 }
 
 QKnxTpdu QKnxTpduFactory::PointToPoint::createPropertyDescriptionResponseTpdu(Mode mode,
@@ -246,12 +246,12 @@ QKnxTpdu QKnxTpduFactory::PointToPoint::createPropertyDescriptionResponseTpdu(Mo
             QKnxTpdu::ApplicationControlField::Invalid};
 
     return { tpci(mode, seqNumber), QKnxTpdu::ApplicationControlField::PropertyDescriptionResponse,
-          seqNumber, QKnxUtils::QUint8::bytes<QVector<quint8>>(objectIndex)
-        + QKnxUtils::QUint8::bytes<QVector<quint8>>(quint8(property))
-        + QKnxUtils::QUint8::bytes<QVector<quint8>>(propertyIndex)
-        + QKnxUtils::QUint8::bytes<QVector<quint8>>(quint8(writeable ? 0x80 : 0x00) | quint8(quint8(type) & 0x3f))
-        + QKnxUtils::QUint16::bytes<QVector<quint8>>(maxSize)
-        + QKnxUtils::QUint8::bytes<QVector<quint8>>(quint8(read << 4) | quint8(write & 0x0f)) };
+          seqNumber, QKnxUtils::QUint8::bytes(objectIndex)
+        + QKnxUtils::QUint8::bytes(quint8(property))
+        + QKnxUtils::QUint8::bytes(propertyIndex)
+        + QKnxUtils::QUint8::bytes(quint8(writeable ? 0x80 : 0x00) | quint8(quint8(type) & 0x3f))
+        + QKnxUtils::QUint16::bytes(maxSize)
+        + QKnxUtils::QUint8::bytes(quint8(read << 4) | quint8(write & 0x0f)) };
 }
 
 QKnxTpdu QKnxTpduFactory::PointToPoint::createLinkReadTpdu(Mode mode, quint8 groupObjectNumber,
@@ -262,7 +262,7 @@ QKnxTpdu QKnxTpduFactory::PointToPoint::createLinkReadTpdu(Mode mode, quint8 gro
             QKnxTpdu::ApplicationControlField::Invalid};
 
     return { tpci(mode, seqNumber), QKnxTpdu::ApplicationControlField::LinkRead, seqNumber,
-        QKnxUtils::QUint8::bytes<QVector<quint8>>(groupObjectNumber) + QKnxUtils::QUint8::bytes<QVector<quint8>>(startIndex) };
+        QKnxUtils::QUint8::bytes(groupObjectNumber) + QKnxUtils::QUint8::bytes(startIndex) };
 }
 
 QKnxTpdu QKnxTpduFactory::PointToPoint::createLinkResponseTpdu(Mode mode, quint8 groupObjectNumber,
@@ -282,12 +282,12 @@ QKnxTpdu QKnxTpduFactory::PointToPoint::createLinkResponseTpdu(Mode mode, quint8
     }
 
     return { tpci(mode, seqNumber), QKnxTpdu::ApplicationControlField::LinkResponse, seqNumber,
-          QKnxUtils::QUint8::bytes<QVector<quint8>>(groupObjectNumber)
-        + QKnxUtils::QUint8::bytes<QVector<quint8>>(quint8(sendingAddress << 4) | quint8(startAddress & 0x0f))
-        + [&]() -> QVector<quint8> {
-            QVector<quint8> ba;
+          QKnxUtils::QUint8::bytes(groupObjectNumber)
+        + QKnxUtils::QUint8::bytes(quint8(sendingAddress << 4) | quint8(startAddress & 0x0f))
+        + [&]() -> QKnxByteArray {
+            QKnxByteArray ba;
             for (auto address : qAsConst(addresses))
-                ba += address.bytes<QVector<quint8>>();
+                ba += address.bytes();
             return ba;
         }() };
 }
@@ -300,12 +300,12 @@ QKnxTpdu QKnxTpduFactory::PointToPoint::createLinkWriteTpdu(Mode mode, quint8 gr
             QKnxTpdu::ApplicationControlField::Invalid};
     }
     return { tpci(mode, seqNumber), QKnxTpdu::ApplicationControlField::LinkWrite, seqNumber,
-        QKnxUtils::QUint8::bytes<QVector<quint8>>(groupObjectNumber) + QKnxUtils::QUint8::bytes<QVector<quint8>>(quint8(flags))
-        + groupAddress.bytes<QVector<quint8>>() };
+        QKnxUtils::QUint8::bytes(groupObjectNumber) + QKnxUtils::QUint8::bytes(quint8(flags))
+        + groupAddress.bytes() };
 }
 
 QKnxTpdu QKnxTpduFactory::PointToPoint::createFileStreamInfoReportTpdu(Mode mode, quint8 fileHandle,
-    quint8 fileBlockSeqNumber, const QVector<quint8> &data, quint8 seqNumber)
+    quint8 fileBlockSeqNumber, const QKnxByteArray &data, quint8 seqNumber)
 {
     if (fileHandle > 15 || fileBlockSeqNumber > 15)
         return {QKnxTpdu::TransportControlField::Invalid,
@@ -316,7 +316,7 @@ QKnxTpdu QKnxTpduFactory::PointToPoint::createFileStreamInfoReportTpdu(Mode mode
             QKnxTpdu::ApplicationControlField::Invalid};
 
     return { tpci(mode, seqNumber), QKnxTpdu::ApplicationControlField::FileStreamInfoReport,
-        seqNumber, QKnxUtils::QUint8::bytes<QVector<quint8>>(quint8(fileHandle << 4) | quint8(fileBlockSeqNumber & 0x0f))
+        seqNumber, QKnxUtils::QUint8::bytes(quint8(fileHandle << 4) | quint8(fileBlockSeqNumber & 0x0f))
         + data };
 }
 
@@ -340,21 +340,21 @@ QKnxTpdu QKnxTpduFactory::PointToPoint::createFileStreamInfoReportTpdu(Mode mode
 static QKnxTpdu createNetworkParameterTpduP2P(QKnxTpdu::ApplicationControlField apci,
                                               QKnxInterfaceObjectType object,
                                               QKnxInterfaceObjectProperty property,
-                                              const QVector<quint8> &data, // aka. testInfo
-                                              const QVector<quint8> &testResult = {})
+                                              const QKnxByteArray &data, // aka. testInfo
+                                              const QKnxByteArray &testResult = {})
 {
     if (!QKnxInterfaceObjectType::isMatch(object, property))
         return {QKnxTpdu::TransportControlField::Invalid,
             QKnxTpdu::ApplicationControlField::Invalid};
 
-    QVector<quint8> objectVector = QKnxUtils::QUint16::bytes<QVector<quint8>>(quint16(object));
+    QKnxByteArray objectVector = QKnxUtils::QUint16::bytes(quint16(object));
     objectVector.append(quint8(property));
     return { QKnxTpdu::TransportControlField::DataIndividual, apci, objectVector + data + testResult };
 }
 
 QKnxTpdu
 QKnxTpduFactory::PointToPointConnectionless::createNetworkParameterResponseTpdu(QKnxInterfaceObjectType object,
-    QKnxInterfaceObjectProperty property, const QVector<quint8> &testInfo, const QVector<quint8> &testResult)
+    QKnxInterfaceObjectProperty property, const QKnxByteArray &testInfo, const QKnxByteArray &testResult)
 {
     if (testResult.size() > 21) //3.7.7 paragraph 3.2.6 Figure 16
         return {QKnxTpdu::TransportControlField::Invalid,
@@ -369,7 +369,7 @@ QKnxTpduFactory::PointToPointConnectionless::createNetworkParameterResponseTpdu(
 
 QKnxTpdu
 QKnxTpduFactory::PointToPointConnectionless::createNetworkParameterWriteTpdu(QKnxInterfaceObjectType object,
-    QKnxInterfaceObjectProperty property, const QVector<quint8> &value)
+    QKnxInterfaceObjectProperty property, const QKnxByteArray &value)
 {
     if (value.size() > 250) // L_Data_Extended -> max 254 bytes payload
         return {QKnxTpdu::TransportControlField::Invalid,
@@ -406,7 +406,7 @@ QKnxTpdu QKnxTpduFactory::PointToPointConnectionOriented::createMemoryReadTpdu(q
 {
     const PointToPoint::Mode mode = PointToPoint::Mode::ConnectionOriented;
     return { tpci(mode, seqNumber), QKnxTpdu::ApplicationControlField::MemoryRead, seqNumber,
-        QKnxUtils::QUint8::bytes<QVector<quint8>>(number) + QKnxUtils::QUint16::bytes<QVector<quint8>>(address) };
+        QKnxUtils::QUint8::bytes(number) + QKnxUtils::QUint16::bytes(address) };
 }
 
 /*!
@@ -414,7 +414,7 @@ QKnxTpdu QKnxTpduFactory::PointToPointConnectionOriented::createMemoryReadTpdu(q
     \a number, \a address, \a data and sequence number \a seqNumber set.
 */
 QKnxTpdu QKnxTpduFactory::PointToPointConnectionOriented::createMemoryResponseTpdu(quint8 number,
-    quint16 address, const QVector<quint8> &data, quint8 seqNumber)
+    quint16 address, const QKnxByteArray &data, quint8 seqNumber)
 {
     if (data.size() > 251)
         return {QKnxTpdu::TransportControlField::Invalid,
@@ -422,7 +422,7 @@ QKnxTpdu QKnxTpduFactory::PointToPointConnectionOriented::createMemoryResponseTp
 
     const PointToPoint::Mode mode = PointToPoint::Mode::ConnectionOriented;
     return { tpci(mode, seqNumber), QKnxTpdu::ApplicationControlField::MemoryResponse, seqNumber,
-        QKnxUtils::QUint8::bytes<QVector<quint8>>(number) + QKnxUtils::QUint16::bytes<QVector<quint8>>(address) + data };
+        QKnxUtils::QUint8::bytes(number) + QKnxUtils::QUint16::bytes(address) + data };
 }
 
 /*!
@@ -430,7 +430,7 @@ QKnxTpdu QKnxTpduFactory::PointToPointConnectionOriented::createMemoryResponseTp
     \a number, \a address, \a data and sequence number \a seqNumber set.
 */
 QKnxTpdu QKnxTpduFactory::PointToPointConnectionOriented::createMemoryWriteTpdu(quint8 number,
-    quint16 address, const QVector<quint8> &data, quint8 seqNumber)
+    quint16 address, const QKnxByteArray &data, quint8 seqNumber)
 {
     if (data.size() > 251)
         return {QKnxTpdu::TransportControlField::Invalid,
@@ -438,7 +438,7 @@ QKnxTpdu QKnxTpduFactory::PointToPointConnectionOriented::createMemoryWriteTpdu(
 
     const PointToPoint::Mode mode = PointToPoint::Mode::ConnectionOriented;
     return { tpci(mode, seqNumber), QKnxTpdu::ApplicationControlField::MemoryWrite, seqNumber,
-        QKnxUtils::QUint8::bytes<QVector<quint8>>(number) + QKnxUtils::QUint16::bytes<QVector<quint8>>(address) + data };
+        QKnxUtils::QUint8::bytes(number) + QKnxUtils::QUint16::bytes(address) + data };
 }
 
 /*!
@@ -454,7 +454,7 @@ QKnxTpdu QKnxTpduFactory::PointToPointConnectionOriented::createAdcReadTpdu(quin
 
     const PointToPoint::Mode mode = PointToPoint::Mode::ConnectionOriented;
     return { tpci(mode, seqNumber), QKnxTpdu::ApplicationControlField::AdcRead, seqNumber,
-        QKnxUtils::QUint8::bytes<QVector<quint8>>(channel) + QKnxUtils::QUint8::bytes<QVector<quint8>>(readCount) };
+        QKnxUtils::QUint8::bytes(channel) + QKnxUtils::QUint8::bytes(readCount) };
 }
 
 QKnxTpdu QKnxTpduFactory::PointToPointConnectionOriented::createAdcResponseTpdu(quint8 channel,
@@ -466,8 +466,8 @@ QKnxTpdu QKnxTpduFactory::PointToPointConnectionOriented::createAdcResponseTpdu(
 
     const PointToPoint::Mode mode = PointToPoint::Mode::ConnectionOriented;
     return { tpci(mode, seqNumber), QKnxTpdu::ApplicationControlField::AdcRead, seqNumber,
-        QKnxUtils::QUint8::bytes<QVector<quint8>>(channel) + QKnxUtils::QUint8::bytes<QVector<quint8>>(readCount)
-        + QKnxUtils::QUint16::bytes<QVector<quint8>>(sumOfAdc) };
+        QKnxUtils::QUint8::bytes(channel) + QKnxUtils::QUint8::bytes(readCount)
+        + QKnxUtils::QUint16::bytes(sumOfAdc) };
 }
 
 /*!
@@ -485,13 +485,13 @@ QKnxTpduFactory::PointToPointConnectionOriented::createUserMemoryReadTpdu(quint8
 
     const PointToPoint::Mode mode = PointToPoint::Mode::ConnectionOriented;
     return { tpci(mode, seqNumber), QKnxTpdu::ApplicationControlField::UserMemoryRead, seqNumber,
-        QKnxUtils::QUint8::bytes<QVector<quint8>>(quint8(addressExtention << 4) | quint8(number & 0x0f))
-        + QKnxUtils::QUint16::bytes<QVector<quint8>>(address) };
+        QKnxUtils::QUint8::bytes(quint8(addressExtention << 4) | quint8(number & 0x0f))
+        + QKnxUtils::QUint16::bytes(address) };
 }
 
 QKnxTpdu
 QKnxTpduFactory::PointToPointConnectionOriented::createUserMemoryResponseTpdu(quint8 addressExtention,
-    quint8 number, quint16 address, const QVector<quint8> &data, quint8 seqNumber)
+    quint8 number, quint16 address, const QKnxByteArray &data, quint8 seqNumber)
 {
     // TODO: Figure out if data is supposed to be of a given size.
     if (addressExtention > 15 || number > 15 || data.size() <= 0 || data.size() > 250)
@@ -500,8 +500,8 @@ QKnxTpduFactory::PointToPointConnectionOriented::createUserMemoryResponseTpdu(qu
 
     const PointToPoint::Mode mode = PointToPoint::Mode::ConnectionOriented;
     return { tpci(mode, seqNumber), QKnxTpdu::ApplicationControlField::UserMemoryResponse, seqNumber,
-        QKnxUtils::QUint8::bytes<QVector<quint8>>(quint8(addressExtention << 4) | quint8(number & 0x0f))
-        + QKnxUtils::QUint16::bytes<QVector<quint8>>(address) + data };
+        QKnxUtils::QUint8::bytes(quint8(addressExtention << 4) | quint8(number & 0x0f))
+        + QKnxUtils::QUint16::bytes(address) + data };
 }
 
 /*!
@@ -511,7 +511,7 @@ QKnxTpduFactory::PointToPointConnectionOriented::createUserMemoryResponseTpdu(qu
 */
 QKnxTpdu
 QKnxTpduFactory::PointToPointConnectionOriented::createUserMemoryWriteTpdu(quint8 addressExtention,
-    quint8 number, quint16 address, const QVector<quint8> &data, quint8 seqNumber)
+    quint8 number, quint16 address, const QKnxByteArray &data, quint8 seqNumber)
 {
     // TODO: Figure out if data is supposed to be of a given size.
     if (addressExtention > 15 || number > 15 || data.size() <= 0 || data.size() > 250)
@@ -520,8 +520,8 @@ QKnxTpduFactory::PointToPointConnectionOriented::createUserMemoryWriteTpdu(quint
 
     const PointToPoint::Mode mode = PointToPoint::Mode::ConnectionOriented;
     return { tpci(mode, seqNumber), QKnxTpdu::ApplicationControlField::UserMemoryWrite, seqNumber,
-        QKnxUtils::QUint8::bytes<QVector<quint8>>(quint8(addressExtention << 4) | quint8(number & 0x0f))
-        + QKnxUtils::QUint16::bytes<QVector<quint8>>(address) + data };
+        QKnxUtils::QUint8::bytes(quint8(addressExtention << 4) | quint8(number & 0x0f))
+        + QKnxUtils::QUint16::bytes(address) + data };
 }
 
 /*!
@@ -542,7 +542,7 @@ QKnxTpduFactory::PointToPointConnectionOriented::createUserManufacturerInfoRespo
 {
     const PointToPoint::Mode mode = PointToPoint::Mode::ConnectionOriented;
     return { tpci(mode, seqNumber), QKnxTpdu::ApplicationControlField::UserManufacturerInfoResponse,
-        seqNumber, QKnxUtils::QUint8::bytes<QVector<quint8>>(id) + QKnxUtils::QUint16::bytes<QVector<quint8>>(manufacturerSpecific) };
+        seqNumber, QKnxUtils::QUint8::bytes(id) + QKnxUtils::QUint16::bytes(manufacturerSpecific) };
 }
 
 QKnxTpdu QKnxTpduFactory::PointToPointConnectionOriented::createAuthorizeRequestTpdu(quint32 key,
@@ -550,7 +550,7 @@ QKnxTpdu QKnxTpduFactory::PointToPointConnectionOriented::createAuthorizeRequest
 {
     const PointToPoint::Mode mode = PointToPoint::Mode::ConnectionOriented;
     return { tpci(mode, seqNumber), QKnxTpdu::ApplicationControlField::AuthorizeRequest, seqNumber,
-        QKnxUtils::QUint8::bytes<QVector<quint8>>(0u) + QKnxUtils::QUint32::bytes<QVector<quint8>>(key) };
+        QKnxUtils::QUint8::bytes(0u) + QKnxUtils::QUint32::bytes(key) };
 }
 
 QKnxTpdu QKnxTpduFactory::PointToPointConnectionOriented::createAuthorizeResponseTpdu(quint8 level,
@@ -558,7 +558,7 @@ QKnxTpdu QKnxTpduFactory::PointToPointConnectionOriented::createAuthorizeRespons
 {
     const PointToPoint::Mode mode = PointToPoint::Mode::ConnectionOriented;
     return { tpci(mode, seqNumber), QKnxTpdu::ApplicationControlField::AuthorizeResponse, seqNumber,
-        QKnxUtils::QUint8::bytes<QVector<quint8>>(level) };
+        QKnxUtils::QUint8::bytes(level) };
 }
 
 QKnxTpdu QKnxTpduFactory::PointToPointConnectionOriented::createKeyWriteTpdu(quint8 level,
@@ -566,7 +566,7 @@ QKnxTpdu QKnxTpduFactory::PointToPointConnectionOriented::createKeyWriteTpdu(qui
 {
     const PointToPoint::Mode mode = PointToPoint::Mode::ConnectionOriented;
     return { tpci(mode, seqNumber), QKnxTpdu::ApplicationControlField::KeyWrite, seqNumber,
-        QKnxUtils::QUint8::bytes<QVector<quint8>>(level) + QKnxUtils::QUint32::bytes<QVector<quint8>>(key) };
+        QKnxUtils::QUint8::bytes(level) + QKnxUtils::QUint32::bytes(key) };
 }
 
 QKnxTpdu QKnxTpduFactory::PointToPointConnectionOriented::createKeyResponseTpdu(quint8 level,
@@ -574,7 +574,7 @@ QKnxTpdu QKnxTpduFactory::PointToPointConnectionOriented::createKeyResponseTpdu(
 {
     const PointToPoint::Mode mode = PointToPoint::Mode::ConnectionOriented;
     return { tpci(mode, seqNumber), QKnxTpdu::ApplicationControlField::KeyResponse, seqNumber,
-        QKnxUtils::QUint8::bytes<QVector<quint8>>(level) };
+        QKnxUtils::QUint8::bytes(level) };
 }
 
 QT_END_NAMESPACE

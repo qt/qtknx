@@ -30,11 +30,7 @@
 #ifndef QKNXBYTESTOREREF_H
 #define QKNXBYTESTOREREF_H
 
-#include <QtCore/qbytearray.h>
-#include <QtCore/qdatastream.h>
-#include <QtCore/qdebug.h>
-#include <QtCore/qstring.h>
-#include <QtCore/qvector.h>
+#include <QtKnx/qknxbytearray.h>
 #include <QtKnx/qknxglobal.h>
 #include <QtKnx/qknxtraits.h>
 
@@ -64,20 +60,14 @@ public:
         return {};
     }
 
-    template <typename T = QByteArray> auto bytes() const -> decltype(T())
+    QKnxByteArray bytes(quint16 start, qint32 count = -1) const
     {
-        return bytes<T>(0, size());
-    }
-
-    template <typename T = QByteArray> auto bytes(quint16 start, quint16 count) const -> decltype(T())
-    {
-        static_assert(is_type<T, QByteArray, QVector<quint8>, std::deque<quint8>,
-            std::vector<quint8>>::value, "Type not supported.");
-
+        if (count <= -1)
+            count = size();
         if (size() < start + count)
             return {};
 
-        T t(count, 0);
+        QKnxByteArray t(count, 0);
         std::copy_n(std::next(bytes(), start), count, std::begin(t));
         return t;
     }

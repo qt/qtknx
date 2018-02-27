@@ -51,8 +51,7 @@ public:
 
     explicit QKnxNetIpConnectResponse(QKnxNetIp::Error status);
 
-    template <typename T>
-        static QKnxNetIpConnectResponse fromBytes(const T &bytes, quint16 index)
+    static QKnxNetIpConnectResponse fromBytes(const QKnxByteArray &bytes, quint16 index)
     {
         return QKnxNetIpFrameHelper::fromBytes(bytes, index,
             QKnxNetIp::ServiceType::ConnectResponse);

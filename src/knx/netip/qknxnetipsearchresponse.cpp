@@ -48,17 +48,17 @@ QKnxNetIpSearchResponse::QKnxNetIpSearchResponse(const QKnxNetIpFrame &other)
 
 QKnxNetIpHpai QKnxNetIpSearchResponse::controlEndpoint() const
 {
-    return QKnxNetIpHpai::fromBytes(payloadRef(), 0);
+    return QKnxNetIpHpai::fromBytes(payloadRef().bytes(0), 0);
 }
 
 QKnxNetIpDeviceDib QKnxNetIpSearchResponse::deviceHardware() const
 {
-    return QKnxNetIpDeviceDib::fromBytes(payloadRef(), 8);
+    return QKnxNetIpDeviceDib::fromBytes(payloadRef().bytes(0), 8);
 }
 
 QKnxNetIpServiceFamiliesDib QKnxNetIpSearchResponse::supportedFamilies() const
 {
-    return QKnxNetIpServiceFamiliesDib::fromBytes(payloadRef(), 62);
+    return QKnxNetIpServiceFamiliesDib::fromBytes(payloadRef().bytes(0), 62);
 }
 
 bool QKnxNetIpSearchResponse::isValid() const

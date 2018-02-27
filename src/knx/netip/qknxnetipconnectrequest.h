@@ -47,8 +47,7 @@ public:
                             const QKnxNetIpHpai &dataEndpoint,
                             const QKnxNetIpCri &requestInformation);
 
-    template <typename T>
-        static QKnxNetIpConnectRequest fromBytes(const T &bytes, quint16 index)
+    static QKnxNetIpConnectRequest fromBytes(const QKnxByteArray &bytes, quint16 index)
     {
         return QKnxNetIpFrameHelper::fromBytes(bytes, index, QKnxNetIp::ServiceType::ConnectRequest);
     }

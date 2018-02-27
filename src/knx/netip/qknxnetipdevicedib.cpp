@@ -45,8 +45,8 @@ QKnxNetIpDeviceDib::QKnxNetIpDeviceDib(const QKnxNetIpDescriptionTypeStruct &oth
 {}
 
 QKnxNetIpDeviceDib::QKnxNetIpDeviceDib(QKnx::MediumType mediumType, DeviceStatus deviceStatus,
-        const QKnxAddress &individualAddress, quint16 projectId, const QByteArray &serialNumber,
-        const QHostAddress &multicastAddress, const QByteArray &macAddress, const QByteArray deviceName)
+        const QKnxAddress &individualAddress, quint16 projectId, const QKnxByteArray &serialNumber,
+        const QHostAddress &multicastAddress, const QKnxByteArray &macAddress, const QKnxByteArray &deviceName)
     : QKnxNetIpDescriptionTypeStruct(QKnxNetIp::DescriptionType::DeviceInfo)
 {
     QKnxNetIpPayload payload((quint8) mediumType);
@@ -91,32 +91,32 @@ QKnxNetIpDeviceDib::DeviceStatus QKnxNetIpDeviceDib::deviceStatus() const
 
 QKnxAddress QKnxNetIpDeviceDib::individualAddress() const
 {
-    return { QKnxAddress::Type::Individual, payloadRef().bytes<QByteArray>(2, 2) };
+    return { QKnxAddress::Type::Individual, payloadRef().bytes(2, 2) };
 }
 
 quint16 QKnxNetIpDeviceDib::projectInstallationIdentfier() const
 {
-    return QKnxUtils::QUint16::fromBytes(payloadRef(), 4);
+    return QKnxUtils::QUint16::fromBytes(payloadRef().bytes(0), 4);
 }
 
-QByteArray QKnxNetIpDeviceDib::serialNumber() const
+QKnxByteArray QKnxNetIpDeviceDib::serialNumber() const
 {
-    return payloadRef().bytes<QByteArray>(6, 6);
+    return payloadRef().bytes(6, 6);
 }
 
 QHostAddress QKnxNetIpDeviceDib::multicastAddress() const
 {
-    return QKnxUtils::HostAddress::fromBytes(payloadRef(), 12);
+    return QKnxUtils::HostAddress::fromBytes(payloadRef().bytes(0), 12);
 }
 
-QByteArray QKnxNetIpDeviceDib::macAddress() const
+QKnxByteArray QKnxNetIpDeviceDib::macAddress() const
 {
-    return payloadRef().bytes<QByteArray>(16, 6);
+    return payloadRef().bytes(16, 6);
 }
 
-QByteArray QKnxNetIpDeviceDib::deviceName() const
+QKnxByteArray QKnxNetIpDeviceDib::deviceName() const
 {
-    return QByteArray(payloadRef().bytes<QByteArray>(22, 30).constData());
+    return QKnxByteArray::fromByteArray((const char *) payloadRef().bytes(22, 30).constData());
 }
 
 bool QKnxNetIpDeviceDib::isValid() const

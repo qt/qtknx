@@ -39,8 +39,7 @@ using QKnxNetIpFrame = QKnxNetIpPackage<QKnxNetIp::ServiceType, QKnxNetIpFrameHe
 
 struct QKnxNetIpFrameHelper
 {
-    template <typename T, std::size_t S = 0>
-        static QKnxNetIpFrame fromBytes(const T &bytes, quint16 index, QKnxNetIp::ServiceType sType)
+    static QKnxNetIpFrame fromBytes(const QKnxByteArray &bytes, quint16 index, QKnxNetIp::ServiceType sType)
     {
         auto header = QKnxNetIpFrameHeader::fromBytes(bytes, index);
         if (!header.isValid() || header.code() != sType)

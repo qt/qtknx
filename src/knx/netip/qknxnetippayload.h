@@ -30,7 +30,6 @@
 #ifndef QKNXNETIPPAYLOAD_H
 #define QKNXNETIPPAYLOAD_H
 
-#include <QtCore/qbytearray.h>
 #include <QtCore/qdatastream.h>
 #include <QtCore/qdebug.h>
 #include <QtCore/qstring.h>
@@ -51,6 +50,7 @@ public:
     ~QKnxNetIpPayload() override = default;
 
     explicit QKnxNetIpPayload(quint8 byte);
+    explicit QKnxNetIpPayload(const QKnxByteArray &ba);
     QKnxNetIpPayload(const quint8 *data, quint16 size);
 
     QKnxNetIpPayloadRef ref(quint16 index = 0) const;
@@ -67,12 +67,8 @@ public:
     using QKnxByteStore::insertBytes;
     using QKnxByteStore::replaceBytes;
 
-    template <typename T, std::size_t S = 0>
-        static QKnxNetIpPayload fromBytes(const T &type, quint16 index, quint16 size)
+    static QKnxNetIpPayload fromBytes(const QKnxByteArray &type, quint16 index, quint16 size)
     {
-        static_assert(is_type<T, QByteArray, QVector<quint8>, QKnxByteStoreRef, std::deque<quint8>,
-            std::vector<quint8>, std::array<quint8, S>>::value, "Type not supported.");
-
         QKnxNetIpPayload payload;
         auto begin = std::next(std::begin(type), index);
         payload.setBytes(begin, std::next(begin, size));

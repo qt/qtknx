@@ -70,12 +70,12 @@ QHostAddress QKnxNetIpConfigDib::ipAddress() const
 
 QHostAddress QKnxNetIpConfigDib::subnetMask() const
 {
-    return QKnxUtils::HostAddress::fromBytes(payloadRef(), 4);
+    return QKnxUtils::HostAddress::fromBytes(payloadRef().bytes(0), 4);
 }
 
 QHostAddress QKnxNetIpConfigDib::defaultGateway() const
 {
-    return QKnxUtils::HostAddress::fromBytes(payloadRef(), 8);
+    return QKnxUtils::HostAddress::fromBytes(payloadRef().bytes(0), 8);
 }
 
 QKnxNetIpConfigDib::Capabilities QKnxNetIpConfigDib::capabilities() const

@@ -44,8 +44,7 @@ public:
 
     QKnxNetIpTunnelingAcknowledge(quint8 channelId, quint8 sequenceCount, QKnxNetIp::Error status);
 
-    template <typename T>
-        static QKnxNetIpTunnelingAcknowledge fromBytes(const T &bytes, quint16 index)
+    static QKnxNetIpTunnelingAcknowledge fromBytes(const QKnxByteArray &bytes, quint16 index)
     {
         return QKnxNetIpConnectionHeaderFrameHelper::fromBytes(bytes, index,
             QKnxNetIp::ServiceType::TunnelingAcknowledge);

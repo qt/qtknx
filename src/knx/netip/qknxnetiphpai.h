@@ -30,7 +30,6 @@
 #ifndef QKNXNETIPHPAI_H
 #define QKNXNETIPHPAI_H
 
-#include <QtCore/qbytearray.h>
 #include <QtCore/qdatastream.h>
 #include <QtCore/qdebug.h>
 #include <QtCore/qstring.h>
@@ -51,7 +50,7 @@ public:
     QKnxNetIpHpai(const QHostAddress &address, quint16 port);
     QKnxNetIpHpai(QKnxNetIp::HostProtocol hpc, const QHostAddress &address, quint16 port);
 
-    template <typename T> static QKnxNetIpHpai fromBytes(const T &bytes, quint16 index)
+    static QKnxNetIpHpai fromBytes(const QKnxByteArray &bytes, quint16 index)
     {
         auto code = QKnxNetIpStructHeader<QKnxNetIp::HostProtocol>::fromBytes(bytes, index).code();
         if (!QKnxNetIp::isStructType(code))

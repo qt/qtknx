@@ -48,17 +48,17 @@ QKnxNetIpConnectRequest::QKnxNetIpConnectRequest(const QKnxNetIpFrame &other)
 
 QKnxNetIpHpai QKnxNetIpConnectRequest::controlEndpoint() const
 {
-    return QKnxNetIpHpai::fromBytes(payloadRef(), 0);
+    return QKnxNetIpHpai::fromBytes(payloadRef().bytes(0), 0);
 }
 
 QKnxNetIpHpai QKnxNetIpConnectRequest::dataEndpoint() const
 {
-    return QKnxNetIpHpai::fromBytes(payloadRef(), 8);
+    return QKnxNetIpHpai::fromBytes(payloadRef().bytes(0), 8);
 }
 
 QKnxNetIpCri QKnxNetIpConnectRequest::requestInformation() const
 {
-    return QKnxNetIpCri::fromBytes(payloadRef(), 16);
+    return QKnxNetIpCri::fromBytes(payloadRef().bytes(0), 16);
 }
 
 bool QKnxNetIpConnectRequest::isValid() const

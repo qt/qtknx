@@ -77,7 +77,7 @@ protected:
     void setConnectionHeader(const QKnxNetIpConnectionHeader &connHeader)
     {
         QKnxNetIpPayload payload(connHeader.ref().bytes(), connHeader.size());
-        payload.appendBytes(payloadRef(m_connectionHeader.size()).bytes<QByteArray>());
+        payload.appendBytes(payloadRef(m_connectionHeader.size()).bytes(0));
         Package::setPayload(payload);
 
         m_connectionHeader = connHeader;
@@ -96,8 +96,7 @@ private:
 
 struct QKnxNetIpConnectionHeaderFrameHelper
 {
-    template <typename T, std::size_t S = 0>
-        static QKnxNetIpConnectionHeaderFrame fromBytes(const T &bytes, quint16 index,
+    static QKnxNetIpConnectionHeaderFrame fromBytes(const QKnxByteArray &bytes, quint16 index,
             QKnxNetIp::ServiceType sType)
     {
         auto header = QKnxNetIpFrameHeader::fromBytes(bytes, index);

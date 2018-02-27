@@ -35,6 +35,11 @@ QKnxNetIpPayload::QKnxNetIpPayload(quint8 byte)
     : QKnxByteStore(byte)
 {}
 
+QKnxNetIpPayload::QKnxNetIpPayload(const QKnxByteArray &ba)
+{
+    setBytes(ba);
+}
+
 QKnxNetIpPayload::QKnxNetIpPayload(const quint8 *data, quint16 size)
     : QKnxByteStore(data, size)
 {}

@@ -30,7 +30,6 @@
 #ifndef QKNXNETIPDEVICEDIB_H
 #define QKNXNETIPDEVICEDIB_H
 
-#include <QtCore/qbytearray.h>
 #include <QtCore/qdatastream.h>
 #include <QtCore/qdebug.h>
 #include <QtCore/qstring.h>
@@ -64,12 +63,12 @@ public:
                        DeviceStatus deviceStatus,
                        const QKnxAddress &address,
                        quint16 projectId,
-                       const QByteArray &serialNumber,
+                       const QKnxByteArray &serialNumber,
                        const QHostAddress &multicastAddress,
-                       const QByteArray &macAddress,
-                       const QByteArray deviceName);
+                       const QKnxByteArray &macAddress,
+                       const QKnxByteArray &deviceName);
 
-    template <typename T> static QKnxNetIpDeviceDib fromBytes(const T &bytes, quint16 index)
+    static QKnxNetIpDeviceDib fromBytes(const QKnxByteArray &bytes, quint16 index)
     {
         return QKnxNetIpStructHelper::fromBytes(bytes, index,
             QKnxNetIp::DescriptionType::DeviceInfo);
@@ -79,10 +78,10 @@ public:
     QKnxNetIp::DescriptionType descriptionType() const;
     QKnxAddress individualAddress() const;
     quint16 projectInstallationIdentfier() const;
-    QByteArray serialNumber() const;
+    QKnxByteArray serialNumber() const;
     QHostAddress multicastAddress() const;
-    QByteArray macAddress() const;
-    QByteArray deviceName() const;
+    QKnxByteArray macAddress() const;
+    QKnxByteArray deviceName() const;
 
     bool isValid() const override;
 

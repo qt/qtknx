@@ -43,7 +43,7 @@ QKnxNetIpRoutingIndication::QKnxNetIpRoutingIndication(const QKnxNetIpFrame &oth
 
 QKnxLinkLayerFrame QKnxNetIpRoutingIndication::linkLayerFrame() const
 {
-    return QKnxLinkLayerFrame::fromBytes(payloadRef(), 0, payloadRef().size());
+    return QKnxLinkLayerFrame::fromBytes(payloadRef().bytes(0), 0, payloadRef().size());
 }
 
 void QKnxNetIpRoutingIndication::setLinkLayerFrame(const QKnxLinkLayerFrame &frame)

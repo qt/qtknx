@@ -62,11 +62,9 @@ void tst_QKnxNetIpDisconnectResponse::testConstructor()
     QKnxNetIpDisconnectResponse response(quint8(200), QKnxNetIp::Error::NoMoreConnections);
     QCOMPARE(response.isValid(), true);
     QCOMPARE(response.size(), quint16(8));
-    QCOMPARE(response.bytes<QByteArray>(),
-        QByteArray::fromHex("0610020a0008c824"));
+    QCOMPARE(response.bytes(), QKnxByteArray::fromHex("0610020a0008c824"));
     QCOMPARE(response.payload().size(), quint16(2));
-    QCOMPARE(response.payload().bytes<QByteArray>(),
-        QByteArray::fromHex("c824"));
+    QCOMPARE(response.payload().bytes(), QKnxByteArray::fromHex("c824"));
     QCOMPARE(response.toString(), QString::fromLatin1("Header size { 0x06 }, "
             "Version { 0x10 }, Code { 0x20a }, Total size { 0x08 }, Bytes { 0xc8, 0x24 }"));
 
@@ -80,11 +78,9 @@ void tst_QKnxNetIpDisconnectResponse::testConstructorNoError()
     QKnxNetIpDisconnectResponse response(quint8(200), QKnxNetIp::Error::None);
     QCOMPARE(response.isValid(), true);
     QCOMPARE(response.size(), quint16(8));
-    QCOMPARE(response.bytes<QByteArray>(),
-        QByteArray::fromHex("0610020a0008c800"));
+    QCOMPARE(response.bytes(), QKnxByteArray::fromHex("0610020a0008c800"));
     QCOMPARE(response.payload().size(), quint16(2));
-    QCOMPARE(response.payload().bytes<QByteArray>(),
-        QByteArray::fromHex("c800"));
+    QCOMPARE(response.payload().bytes(), QKnxByteArray::fromHex("c800"));
     QCOMPARE(response.toString(), QString::fromLatin1("Header size { 0x06 }, "
             "Version { 0x10 }, Code { 0x20a }, Total size { 0x08 }, Bytes { 0xc8, 0x00 }"));
 

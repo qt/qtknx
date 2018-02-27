@@ -30,7 +30,6 @@
 #ifndef QKNXNETIPSERVICEFAMILIESDIB_H
 #define QKNXNETIPSERVICEFAMILIESDIB_H
 
-#include <QtCore/qbytearray.h>
 #include <QtCore/qdatastream.h>
 #include <QtCore/qdebug.h>
 #include <QtCore/qmap.h>
@@ -63,7 +62,7 @@ public:
     QKnxNetIpServiceFamiliesDib(ServiceFamilieId id, quint8 version);
     QKnxNetIpServiceFamiliesDib(const ServiceFamilyIdVersions &families);
 
-    template <typename T> static QKnxNetIpServiceFamiliesDib fromBytes(const T &bytes, quint16 index)
+    static QKnxNetIpServiceFamiliesDib fromBytes(const QKnxByteArray &bytes, quint16 index)
     {
         return QKnxNetIpStructHelper::fromBytes(bytes, index,
             QKnxNetIp::DescriptionType::SupportedServiceFamilies);

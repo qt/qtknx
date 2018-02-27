@@ -83,19 +83,7 @@ QKnxAdditionalInfo::Type QKnxAdditionalInfo::type() const
     Constructs an new additional info object and sets its \l Type to \a type and
     data to \a data.
 */
-QKnxAdditionalInfo::QKnxAdditionalInfo(QKnxAdditionalInfo::Type type, const QByteArray &data)
-{
-    setByte(0, quint8(type));
-    setByte(1, quint8(data.size()));
-    appendBytes(data);
-    if (!isValid()) resize(0);
-}
-
-/*!
-    Constructs an new additional info object and sets its \l Type to \a type and
-    data to \a data.
-*/
-QKnxAdditionalInfo::QKnxAdditionalInfo(QKnxAdditionalInfo::Type type, const QVector<quint8> &data)
+QKnxAdditionalInfo::QKnxAdditionalInfo(QKnxAdditionalInfo::Type type, const QKnxByteArray &data)
 {
     setByte(0, quint8(type));
     setByte(1, quint8(data.size()));
@@ -203,13 +191,11 @@ QString QKnxAdditionalInfo::toString() const
 }
 
 /*!
-    \fn auto QKnxAdditionalInfo::bytes() const
+    \fn QKnxByteArray QKnxAdditionalInfo::bytes() const
 
     Returns the additional info as range of bytes if the information is valid;
-    otherwise an empty vector. The vector includes the type id, the size of the
+    otherwise an byte array. The bytes include the type id, the size of the
     actual data and the data itself.
-
-    \note Only QByteArray and QVector<quint8> are supported as return type.
 */
 
 /*!
@@ -243,8 +229,8 @@ QDataStream &operator>>(QDataStream &stream, QKnxAdditionalInfo &info)
     quint8 type, size;
     stream >> type >> size;
 
-    QByteArray ba(size, Qt::Uninitialized);
-    stream.readRawData(ba.data(), size);
+    QKnxByteArray ba(size, Qt::Uninitialized);
+    stream.readRawData((char *) ba.data(), size);
     info = QKnxAdditionalInfo(QKnxAdditionalInfo::Type(type), ba);
     return stream;
 }

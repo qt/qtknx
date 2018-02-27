@@ -185,7 +185,7 @@ namespace QKnxPrivate
         if (ref.m_type != QKnxNetIpStructRef::Type::REF_TYPE) \
             return {}; \
         if (ref.m_isByteStoreRef) \
-            return REF_TYPE::fromBytes(ref.m_byteStoreRef, 0); \
+            return REF_TYPE::fromBytes(ref.m_byteStoreRef.bytes(0), 0); \
     } while (0)
 
     template<typename T> struct QKnxNetIpStructTypeHelper {};

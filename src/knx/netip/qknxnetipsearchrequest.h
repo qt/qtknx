@@ -44,7 +44,7 @@ public:
 
     explicit QKnxNetIpSearchRequest(const QKnxNetIpHpai &discoveryEndpoint);
 
-    template <typename T> static QKnxNetIpSearchRequest fromBytes(const T &bytes, quint16 index)
+    static QKnxNetIpSearchRequest fromBytes(const QKnxByteArray &bytes, quint16 index)
     {
         return QKnxNetIpFrameHelper::fromBytes(bytes, index, QKnxNetIp::ServiceType::SearchRequest);
     }

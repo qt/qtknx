@@ -48,7 +48,7 @@ QT_BEGIN_NAMESPACE
 int qFindByteArray(const quint8 *haystack0, int haystackLen, int from, const quint8 *needle0,
     int needleLen);
 
-QKnxByteArray &QKnxByteArray::operator=(const QKnxByteArray & other) Q_DECL_NOTHROW
+QKnxByteArray &QKnxByteArray::operator=(const QKnxByteArray &other) Q_DECL_NOTHROW
 {
     other.d->ref.ref();
     if (!d->ref.deref())
@@ -913,6 +913,11 @@ QKnxByteArray QKnxByteArray::toHex(quint8 separator) const
     return hex;
 }
 
+QKnxByteArray QKnxByteArray::fromHex(const QByteArray &hexEncoded)
+{
+    return QKnxByteArray::fromHex(QKnxByteArray { hexEncoded.constData(), hexEncoded.size() });
+}
+
 QKnxByteArray QKnxByteArray::fromHex(const QKnxByteArray &hexEncoded)
 {
     QKnxByteArray res((hexEncoded.size() + 1) / 2, Qt::Uninitialized);
@@ -943,6 +948,11 @@ QKnxByteArray::operator QByteArray() const
     return { (const char*) data(), size() };
 }
 
+QKnxByteArray QKnxByteArray::fromByteArray(const QByteArray &ba)
+{
+    return QKnxByteArray(ba.constData(), ba.size());
+}
+
 /*!
     \relates QKnxByteArray
 
@@ -951,6 +961,11 @@ QKnxByteArray::operator QByteArray() const
 QDebug operator<<(QDebug debug, const QKnxByteArray &byteArray)
 {
     debug << static_cast<QByteArray> (byteArray); return debug;
+}
+
+uint qHash(const QKnxByteArray &ba, uint seed) Q_DECL_NOTHROW
+{
+    return qHash(static_cast<QByteArray> (ba), seed);
 }
 
 QT_END_NAMESPACE

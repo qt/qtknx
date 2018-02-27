@@ -44,8 +44,7 @@ public:
 
     QKnxNetIpRoutingLostMessage(QKnxNetIp::DeviceState state, quint16 lostMessageCount);
 
-    template <typename T>
-        static QKnxNetIpRoutingLostMessage fromBytes(const T &bytes, quint16 index)
+    static QKnxNetIpRoutingLostMessage fromBytes(const QKnxByteArray &bytes, quint16 index)
     {
         return QKnxNetIpFrameHelper::fromBytes(bytes, index,
             QKnxNetIp::ServiceType::RoutingLostMessage);

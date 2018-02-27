@@ -68,7 +68,7 @@ struct UserProperties
     quint16 port { 0 };
     bool natAware { false };
     QHostAddress address { QHostAddress::LocalHost };
-    QVector<quint8> supportedVersions  { QKnxNetIpFrameHeader::KnxNetIpVersion10 };
+    QKnxByteArray supportedVersions  { QKnxNetIpFrameHeader::KnxNetIpVersion10 };
 };
 
 struct Endpoint final
@@ -159,16 +159,16 @@ private:
     const int m_maxCemiRequest { 0 };
     const int m_acknowledgeTimeout { 0 };
 
-    QByteArray m_lastSendCemiRequest {};
-    QByteArray m_lastReceivedCemiRequest {};
+    QKnxByteArray m_lastSendCemiRequest {};
+    QKnxByteArray m_lastReceivedCemiRequest {};
 
     int m_stateRequests { 0 };
     const int m_maxStateRequests = { 3 };
-    QByteArray m_lastStateRequest {};
+    QKnxByteArray m_lastStateRequest {};
 
     bool m_nat { false };
     quint32 m_heartbeatTimeout { QKnxNetIp::HeartbeatTimeout };
-    QVector<quint8> m_supportedVersions { QKnxNetIpFrameHeader::KnxNetIpVersion10 };
+    QKnxByteArray m_supportedVersions { QKnxNetIpFrameHeader::KnxNetIpVersion10 };
 
     QString m_errorString;
     quint8 m_dataEndpointVersion = QKnxNetIpFrameHeader::KnxNetIpVersion10;

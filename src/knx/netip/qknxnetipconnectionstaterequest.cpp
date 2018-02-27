@@ -52,7 +52,7 @@ quint8 QKnxNetIpConnectionStateRequest::channelId() const
 
 QKnxNetIpHpai QKnxNetIpConnectionStateRequest::controlEndpoint() const
 {
-    return QKnxNetIpHpai::fromBytes(payloadRef(), 2);
+    return QKnxNetIpHpai::fromBytes(payloadRef().bytes(0), 2);
 }
 
 bool QKnxNetIpConnectionStateRequest::isValid() const

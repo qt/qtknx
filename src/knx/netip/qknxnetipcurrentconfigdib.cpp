@@ -72,17 +72,17 @@ QHostAddress QKnxNetIpCurrentConfigDib::ipAddress() const
 
 QHostAddress QKnxNetIpCurrentConfigDib::subnetMask() const
 {
-    return QKnxUtils::HostAddress::fromBytes(payloadRef(), 4);
+    return QKnxUtils::HostAddress::fromBytes(payloadRef().bytes(0), 4);
 }
 
 QHostAddress QKnxNetIpCurrentConfigDib::defaultGateway() const
 {
-    return QKnxUtils::HostAddress::fromBytes(payloadRef(), 8);
+    return QKnxUtils::HostAddress::fromBytes(payloadRef().bytes(0), 8);
 }
 
 QHostAddress QKnxNetIpCurrentConfigDib::dhcpOrBootP() const
 {
-    return QKnxUtils::HostAddress::fromBytes(payloadRef(), 12);
+    return QKnxUtils::HostAddress::fromBytes(payloadRef().bytes(0), 12);
 }
 
 QKnxNetIpCurrentConfigDib::AssignmentMethod QKnxNetIpCurrentConfigDib::assignmentMethod() const

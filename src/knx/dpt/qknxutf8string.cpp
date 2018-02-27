@@ -68,7 +68,8 @@ QKnxUtf8String::QKnxUtf8String(int subType, const char *string, int size)
 
 QString QKnxUtf8String::string() const
 {
-    return QString::fromUtf8(bytes());
+    auto data = bytes(); // TODO: fix this
+    return QString::fromUtf8((const char*) data.constData(), data.size() - 1);
 }
 
 bool QKnxUtf8String::setString(const QString &string)
@@ -77,12 +78,13 @@ bool QKnxUtf8String::setString(const QString &string)
         return false;
 
     auto utf8 = string.toUtf8();
-    return setBytes(QByteArray(utf8 + QByteArray::fromHex("00")), 0, utf8.size() + 1);
+    return setBytes(QKnxByteArray(utf8.constData(), utf8.size()) + QKnxByteArray::fromHex("00"), 0,
+        utf8.size() + 1);
 }
 
 bool QKnxUtf8String::setString(const char *string, int size)
 {
-    auto null = QByteArray::fromHex("00");
+    auto null = QKnxByteArray::fromHex("00");
     if (!string)
         return setBytes(null, 0, 1);
 

@@ -47,28 +47,28 @@ private slots:
         QCOMPARE(info.type(), QKnxAdditionalInfo::Type::Reserved);
         QCOMPARE(info.isValid(), false);
         QCOMPARE(info.toString(), QStringLiteral(""));
-        QCOMPARE(info.bytes<QVector<quint8>>(), QVector<quint8> {});
+        QCOMPARE(info.bytes(), QKnxByteArray {});
 
         info = QKnxAdditionalInfo(QKnxAdditionalInfo::Type::BiBatInformation,
-            QByteArray::fromHex("1020"));
+            QKnxByteArray { 0x10, 0x20 });
         QCOMPARE(info.type(), QKnxAdditionalInfo::Type::BiBatInformation);
         QCOMPARE(info.isValid(), true);
         QCOMPARE(info.toString(), QStringLiteral("Type { 0x07 }, Size { 0x02 }, Data { 0x10, 0x20 }"));
-        QCOMPARE(info.bytes<QByteArray>(), QByteArray::fromHex("07021020"));
+        QCOMPARE(info.bytes(), QKnxByteArray({ 0x07, 0x02, 0x10, 0x20 }));
 
         info = QKnxAdditionalInfo(QKnxAdditionalInfo::Type::BiBatInformation,
-            QVector<quint8>({ 0x10, 0x20, 0x30 }));
+            QKnxByteArray { 0x10, 0x20, 0x30 });
         QCOMPARE(info.type(), QKnxAdditionalInfo::Type::Reserved);
         QCOMPARE(info.isValid(), false);
         QCOMPARE(info.toString(), QStringLiteral(""));
-        QCOMPARE(info.bytes<QVector<quint8>>(), QVector<quint8> {});
+        QCOMPARE(info.bytes(), QKnxByteArray {});
 
         info = QKnxAdditionalInfo(QKnxAdditionalInfo::Type(0xaa),
-            QVector<quint8>({ 0x10, 0x20, 0x30 }));
+            QKnxByteArray { 0x10, 0x20, 0x30 });
         QCOMPARE(info.type(), QKnxAdditionalInfo::Type::Reserved);
         QCOMPARE(info.isValid(), false);
         QCOMPARE(info.toString(), QStringLiteral(""));
-        QCOMPARE(info.bytes<QVector<quint8>>(), QVector<quint8> {});
+        QCOMPARE(info.bytes(), QKnxByteArray {});
     }
 
     void testIsValid()
@@ -77,31 +77,31 @@ private slots:
         QCOMPARE(info.isValid(), false);
 
         info = { QKnxAdditionalInfo::Type::RfFastAckInformation,
-            QVector<quint8>({ 0x10, 0x20, 0x30 }) };
+            QKnxByteArray({ 0x10, 0x20, 0x30 }) };
         QCOMPARE(info.isValid(), false);
 
         info = { QKnxAdditionalInfo::Type::RfFastAckInformation,
-            QVector<quint8>({ 0x10, 0x20, 0x30, 0x40 }) };
+            QKnxByteArray({ 0x10, 0x20, 0x30, 0x40 }) };
         QCOMPARE(info.isValid(), true);
 
-        QByteArray data(2, Qt::Uninitialized); data[0] = 0x10, data[1] = 0x20;
+        QKnxByteArray data { { 0x10, 0x20 } };
         info = { QKnxAdditionalInfo::Type::ManufactorSpecificData, data };
         QCOMPARE(info.isValid(), false);
 
         info = { QKnxAdditionalInfo::Type::ManufactorSpecificData,
-            QVector<quint8>({ 0x10, 0x20, 0x30 }) };
+            QKnxByteArray({ 0x10, 0x20, 0x30 }) };
         QCOMPARE(info.isValid(), true);
 
         info = { QKnxAdditionalInfo::Type::RfMediumInformation,
-            QByteArray::fromHex("1020303040506070") };
+            { 0x10, 0x20, 0x30, 0x30, 0x40, 0x50, 0x60, 0x70 } };
         QCOMPARE(info.isValid(), true);
-        QCOMPARE(info.bytes<QVector<quint8>>(),
-            QVector<quint8> ({ 0x02, 0x08, 0x10, 0x20, 0x30, 0x30, 0x40, 0x50, 0x60, 0x70 }));
+        QCOMPARE(info.bytes(),
+            QKnxByteArray ({ 0x02, 0x08, 0x10, 0x20, 0x30, 0x30, 0x40, 0x50, 0x60, 0x70 }));
 
         // the passed data container has not a valid length
-        info = { QKnxAdditionalInfo::Type::RfMediumInformation, QVector<quint8>(0x100, 0xff) };
+        info = { QKnxAdditionalInfo::Type::RfMediumInformation, QKnxByteArray(0x100, 0xff) };
         QCOMPARE(info.isValid(), false);
-        QCOMPARE(info.bytes<QVector<quint8>>(), {});
+        QCOMPARE(info.bytes(), QKnxByteArray {});
     }
 
     void testExpectedDataSize()
@@ -165,20 +165,20 @@ private slots:
     void testData()
     {
         QKnxAdditionalInfo info = { QKnxAdditionalInfo::Type::RfMediumInformation,
-            QByteArray::fromHex("1020303040506070") };
+            { 0x10, 0x20, 0x30, 0x30, 0x40, 0x50, 0x60, 0x70 } };
         QCOMPARE(info.isValid(), true);
-        QCOMPARE(info.bytes<QVector<quint8>>(),
-            QVector<quint8> ({ 0x02, 0x08, 0x10, 0x20, 0x30, 0x30, 0x40, 0x50, 0x60, 0x70 }));
-        QCOMPARE(info.data<QByteArray>(), QByteArray::fromHex("1020303040506070"));
+        QCOMPARE(info.bytes(),
+            QKnxByteArray({ 0x02, 0x08, 0x10, 0x20, 0x30, 0x30, 0x40, 0x50, 0x60, 0x70 }));
+        QCOMPARE(info.data(), QKnxByteArray({ 0x10, 0x20, 0x30, 0x30, 0x40, 0x50, 0x60, 0x70 }));
     }
 
     void testFromBytes()
     {
-        auto info = QKnxAdditionalInfo::fromBytes(QByteArray::fromHex("07021020"), 0);
+        auto info = QKnxAdditionalInfo::fromBytes({ 0x07, 0x02, 0x10, 0x20 }, 0);
         QCOMPARE(info.type(), QKnxAdditionalInfo::Type::BiBatInformation);
         QCOMPARE(info.isValid(), true);
         QCOMPARE(info.toString(), QStringLiteral("Type { 0x07 }, Size { 0x02 }, Data { 0x10, 0x20 }"));
-        QCOMPARE(info.bytes<QByteArray>(), QByteArray::fromHex("07021020"));
+        QCOMPARE(info.bytes(), QKnxByteArray({ 0x07, 0x02, 0x10, 0x20 }));
     }
 
     void testDebugStream()
@@ -196,7 +196,7 @@ private slots:
         qDebug() << QKnxAdditionalInfo();
         QCOMPARE(s_msg, QString::fromLatin1("0x1nv4l1d"));
 
-        QByteArray data(2, Qt::Uninitialized); data[0] = 0x10, data[1] = 0x20;
+        QKnxByteArray data { { 0x10, 0x20 } };
         qDebug() << QKnxAdditionalInfo(QKnxAdditionalInfo::Type::BiBatInformation, data);
         QCOMPARE(s_msg, QString::fromLatin1("0x07021020"));
     }
@@ -204,7 +204,7 @@ private slots:
     void testDataStream()
     {
         QByteArray byteArray;
-        QByteArray data(2, Qt::Uninitialized); data[0] = 0x10, data[1] = 0x20;
+        QKnxByteArray data { { 0x10, 0x20 } };
 
         QDataStream out(&byteArray, QIODevice::WriteOnly);
         out << QKnxAdditionalInfo(QKnxAdditionalInfo::Type::BiBatInformation, data);
@@ -216,7 +216,7 @@ private slots:
         QCOMPARE(info.type(), QKnxAdditionalInfo::Type::BiBatInformation);
         QCOMPARE(info.isValid(), true);
         QCOMPARE(info.toString(), QStringLiteral("Type { 0x07 }, Size { 0x02 }, Data { 0x10, 0x20 }"));
-        QCOMPARE(info.bytes<QVector<quint8>>(), QVector<quint8> ({ 0x07, 0x02, 0x10, 0x20 }));
+        QCOMPARE(info.bytes(), QKnxByteArray({ 0x07, 0x02, 0x10, 0x20 }));
     }
 };
 

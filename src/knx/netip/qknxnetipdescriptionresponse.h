@@ -54,8 +54,7 @@ public:
     QKnxNetIpDescriptionResponse(const QKnxNetIpDeviceDib &deviceHardware,
                                  const QKnxNetIpServiceFamiliesDib &supportedFamilies);
 
-    template <typename T>
-        static QKnxNetIpDescriptionResponse fromBytes(const T &bytes, quint16 index)
+    static QKnxNetIpDescriptionResponse fromBytes(const QKnxByteArray &bytes, quint16 index)
     {
         return QKnxNetIpFrameHelper::fromBytes(bytes, index,
             QKnxNetIp::ServiceType::DescriptionResponse);
@@ -64,11 +63,8 @@ public:
     QKnxNetIpDeviceDib deviceHardware() const;
     QKnxNetIpServiceFamiliesDib supportedFamilies() const;
 
-    template <typename T = QVector<QKnxNetIpStructRef>> auto optionalDibs() const -> decltype(T())
+    QVector<QKnxNetIpStructRef> optionalDibs() const
     {
-        static_assert(is_type<T, QVector<QKnxNetIpStructRef>, std::deque<QKnxNetIpStructRef>,
-            std::vector<QKnxNetIpStructRef>>::value, "Type not supported.");
-
         const auto codeToType = [] (QKnxNetIp::DescriptionType code) -> QKnxNetIpStructRef::Type
         {
             switch (QKnxNetIp::DescriptionType(code)) {
@@ -90,14 +86,14 @@ public:
             return QKnxNetIpStructRef::Type::Null;
         };
 
-        const auto &ref = payloadRef();
+        const auto &ref = payloadRef().bytes(0);
         auto header = QKnxNetIpStructHeader<QKnxNetIp::DescriptionType>::fromBytes(ref, 0);
         quint16 index = header.totalSize(); // total size of device DIB
 
         header = QKnxNetIpStructHeader<QKnxNetIp::DescriptionType>::fromBytes(ref, index);
         index += header.totalSize(); // advance of total size of families DIB
 
-        T dibs;
+        QVector<QKnxNetIpStructRef> dibs;
         while (index < ref.size()) {
             header = QKnxNetIpStructHeader<QKnxNetIp::DescriptionType>::fromBytes(ref, index);
             dibs.push_back(QKnxNetIpStructRef(payloadRef(index), codeToType(header.code())));

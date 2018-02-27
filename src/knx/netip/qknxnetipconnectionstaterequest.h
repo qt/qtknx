@@ -44,8 +44,7 @@ public:
 
     QKnxNetIpConnectionStateRequest(quint8 channelId, const QKnxNetIpHpai &controlEndpoint);
 
-    template <typename T>
-        static QKnxNetIpConnectionStateRequest fromBytes(const T &bytes, quint16 index)
+    static QKnxNetIpConnectionStateRequest fromBytes(const QKnxByteArray &bytes, quint16 index)
     {
         return QKnxNetIpFrameHelper::fromBytes(bytes, index,
             QKnxNetIp::ServiceType::ConnectionStateRequest);

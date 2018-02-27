@@ -66,20 +66,20 @@ void tst_QKnxNetIpConnectRequest::testConstructor()
 
     QCOMPARE(connectRequest.isValid(), false);
     QCOMPARE(connectRequest.size(), quint16(22));
-    QCOMPARE(connectRequest.bytes<QByteArray>(),
-        QByteArray::fromHex("06100205001608017f0000010e5708017f0000010e57"));
+    QCOMPARE(connectRequest.bytes(),
+        QKnxByteArray::fromHex("06100205001608017f0000010e5708017f0000010e57"));
     QCOMPARE(connectRequest.payload().size(), quint16(16));
-    QCOMPARE(connectRequest.payload().bytes<QByteArray>(),
-        QByteArray::fromHex("08017f0000010e5708017f0000010e57"));
+    QCOMPARE(connectRequest.payload().bytes(),
+        QKnxByteArray::fromHex("08017f0000010e5708017f0000010e57"));
     QCOMPARE(connectRequest.toString(), QString::fromLatin1("Header size { 0x06 }, "
             "Version { 0x10 }, Code { 0x205 }, Total size { 0x16 }, "
             "Bytes { 0x08, 0x01, 0x7f, 0x00, 0x00, 0x01, 0x0e, 0x57, 0x08, 0x01, "
             "0x7f, 0x00, 0x00, 0x01, 0x0e, 0x57 }"));
-    QCOMPARE(connectRequest.controlEndpoint().bytes<QByteArray>(),
-        QByteArray::fromHex("08017f0000010e57"));
-    QCOMPARE(connectRequest.dataEndpoint().bytes<QByteArray>(),
-        QByteArray::fromHex("08017f0000010e57"));
-    QCOMPARE(connectRequest.requestInformation().bytes<QByteArray>(), QByteArray(""));
+    QCOMPARE(connectRequest.controlEndpoint().bytes(),
+        QKnxByteArray::fromHex("08017f0000010e57"));
+    QCOMPARE(connectRequest.dataEndpoint().bytes(),
+        QKnxByteArray::fromHex("08017f0000010e57"));
+    QCOMPARE(connectRequest.requestInformation().bytes(), QKnxByteArray {});
 
     request.setConnectionType(QKnxNetIp::ConnectionType::Tunnel);
     request.setTunnelingLayer(QKnxNetIp::TunnelingLayer::Link);
@@ -87,21 +87,21 @@ void tst_QKnxNetIpConnectRequest::testConstructor()
 
     QCOMPARE(connectRequest.isValid(), true);
     QCOMPARE(connectRequest.size(), quint16(26));
-    QCOMPARE(connectRequest.bytes<QByteArray>(),
-        QByteArray::fromHex("06100205001a08017f0000010e5708017f0000010e5704040200"));
+    QCOMPARE(connectRequest.bytes(),
+        QKnxByteArray::fromHex("06100205001a08017f0000010e5708017f0000010e5704040200"));
     QCOMPARE(connectRequest.payload().size(), quint16(20));
-    QCOMPARE(connectRequest.payload().bytes<QByteArray>(),
-        QByteArray::fromHex("08017f0000010e5708017f0000010e5704040200"));
+    QCOMPARE(connectRequest.payload().bytes(),
+        QKnxByteArray::fromHex("08017f0000010e5708017f0000010e5704040200"));
     QCOMPARE(connectRequest.toString(), QString::fromLatin1("Header size { 0x06 }, "
             "Version { 0x10 }, Code { 0x205 }, Total size { 0x1a }, "
             "Bytes { 0x08, 0x01, 0x7f, 0x00, 0x00, 0x01, 0x0e, 0x57, 0x08, 0x01, "
             "0x7f, 0x00, 0x00, 0x01, 0x0e, 0x57, 0x04, 0x04, 0x02, 0x00 }"));
 
-    QCOMPARE(connectRequest.controlEndpoint().bytes<QByteArray>(),
-        QByteArray::fromHex("08017f0000010e57"));
-    QCOMPARE(connectRequest.dataEndpoint().bytes<QByteArray>(),
-        QByteArray::fromHex("08017f0000010e57"));
-    QCOMPARE(connectRequest.requestInformation().bytes<QByteArray>(), QByteArray::fromHex("04040200"));
+    QCOMPARE(connectRequest.controlEndpoint().bytes(),
+        QKnxByteArray::fromHex("08017f0000010e57"));
+    QCOMPARE(connectRequest.dataEndpoint().bytes(),
+        QKnxByteArray::fromHex("08017f0000010e57"));
+    QCOMPARE(connectRequest.requestInformation().bytes(), QKnxByteArray::fromHex("04040200"));
 }
 
 void tst_QKnxNetIpConnectRequest::testDebugStream()
@@ -119,7 +119,7 @@ void tst_QKnxNetIpConnectRequest::testDebugStream()
     qDebug() << QKnxNetIpConnectRequest();
     QCOMPARE(s_msg, QString::fromLatin1("0x1nv4l1d"));
 
-    qDebug() << QKnxNetIpConnectRequest::fromBytes(QByteArray::fromHex("06100205001a0801c0a80001c3"
+    qDebug() << QKnxNetIpConnectRequest::fromBytes(QKnxByteArray::fromHex("06100205001a0801c0a80001c3"
         "b40801c0a80001c3b404040200"), 0);
     QCOMPARE(s_msg, QString::fromLatin1("0x06100205001a0801c0a80001c3b40801c0a80001c3b404040200"));
 }

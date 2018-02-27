@@ -62,19 +62,16 @@ void tst_QKnxNetIpDisconnectRequest::testConstructor()
 
     QCOMPARE(request.isValid(), true);
     QCOMPARE(request.size(), quint16(16));
-    QCOMPARE(request.bytes<QByteArray>(),
-        QByteArray::fromHex("061002090010c80008017f0000010e57"));
+    QCOMPARE(request.bytes(), QKnxByteArray::fromHex("061002090010c80008017f0000010e57"));
     QCOMPARE(request.payload().size(), quint16(10));
-    QCOMPARE(request.payload().bytes<QByteArray>(),
-        QByteArray::fromHex("c80008017f0000010e57"));
+    QCOMPARE(request.payload().bytes(), QKnxByteArray::fromHex("c80008017f0000010e57"));
     QCOMPARE(request.toString(), QString::fromLatin1("Header size { 0x06 }, "
             "Version { 0x10 }, Code { 0x209 }, Total size { 0x10 }, "
             "Bytes { 0xc8, 0x00, 0x08, 0x01, 0x7f, 0x00, 0x00, 0x01, 0x0e, 0x57 }"));
 
     QCOMPARE(request.channelId(), quint8(200));
     QCOMPARE(request.controlEndpoint().isValid(), true);
-    QCOMPARE(request.controlEndpoint().bytes<QByteArray>(),
-        QByteArray::fromHex("08017f0000010e57"));
+    QCOMPARE(request.controlEndpoint().bytes(), QKnxByteArray::fromHex("08017f0000010e57"));
 }
 
 void tst_QKnxNetIpDisconnectRequest::testDebugStream()

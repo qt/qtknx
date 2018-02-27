@@ -106,8 +106,8 @@ public:
     quint32 heartbeatTimeout() const;
     void setHeartbeatTimeout(quint32 msec);
 
-    QVector<quint8> supportedProtocolVersions() const;
-    void setSupportedProtocolVersions(const QVector<quint8> &versions);
+    QKnxByteArray supportedProtocolVersions() const;
+    void setSupportedProtocolVersions(const QKnxByteArray &versions);
 
     void connectToHost(const QKnxNetIpHpai &controlEndpoint);
     void connectToHost(const QHostAddress &address, quint16 port);

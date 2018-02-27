@@ -30,7 +30,6 @@
 #ifndef QKNXNETIPKNXADDRESSESDIB_H
 #define QKNXNETIPKNXADDRESSESDIB_H
 
-#include <QtCore/qbytearray.h>
 #include <QtCore/qdatastream.h>
 #include <QtCore/qdebug.h>
 #include <QtCore/qstring.h>
@@ -52,24 +51,20 @@ public:
     explicit QKnxNetIpKnxAddressesDib(const QKnxAddress &address);
     explicit QKnxNetIpKnxAddressesDib(const QVector<QKnxAddress> &addresses);
 
-    template <typename T> static QKnxNetIpKnxAddressesDib fromBytes(const T &bytes, quint16 index)
+    static QKnxNetIpKnxAddressesDib fromBytes(const QKnxByteArray &bytes, quint16 index)
     {
         return QKnxNetIpStructHelper::fromBytes(bytes, index,
             QKnxNetIp::DescriptionType::KnxAddresses);
     }
 
     QKnxNetIp::DescriptionType descriptionType() const;
-    template <typename T> auto individualAddresses() const -> decltype(T())
+    QVector<QKnxAddress> individualAddresses() const
     {
-        static_assert(is_type<T, QVector<QKnxAddress>, std::deque<QKnxAddress>,
-            std::vector<QKnxAddress>>::value, "Type not supported.");
-
         const QKnxNetIpPayload &load = payload();
-        T addresses;
+        QVector<QKnxAddress> addresses;
         for (quint16 i = 0; i < load.size(); i += 2)
-            addresses.push_back({ QKnxAddress::Type::Individual, load.bytes<QByteArray>(i, 2) });
+            addresses.push_back({ QKnxAddress::Type::Individual, load.bytes(i, 2) });
         return addresses;
-
     }
 
     bool isValid() const override;

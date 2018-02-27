@@ -30,7 +30,6 @@
 #ifndef QKNXNETIPCRD_H
 #define QKNXNETIPCRD_H
 
-#include <QtCore/qbytearray.h>
 #include <QtCore/qdatastream.h>
 #include <QtCore/qdebug.h>
 #include <QtCore/qstring.h>
@@ -51,7 +50,7 @@ public:
     explicit QKnxNetIpCrd(const QKnxAddress &individualAddress);
     explicit QKnxNetIpCrd(QKnxNetIp::ConnectionType connectionType);
 
-    template <typename T> static QKnxNetIpCrd fromBytes(const T &bytes, quint16 index)
+    static QKnxNetIpCrd fromBytes(const QKnxByteArray &bytes, quint16 index)
     {
         auto code = QKnxNetIpStructHeader<QKnxNetIp::ConnectionType>::fromBytes(bytes, index).code();
         if (!QKnxNetIp::isStructType(code))

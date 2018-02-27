@@ -62,7 +62,7 @@ quint8 QKnxNetIpRoutingBusy::routingBusyWaitTime() const
 
 quint16 QKnxNetIpRoutingBusy::routingBusyControl() const
 {
-    return QKnxUtils::QUint16::fromBytes(payloadRef(), 2);
+    return QKnxUtils::QUint16::fromBytes(payloadRef().bytes(0), 2);
 }
 
 bool QKnxNetIpRoutingBusy::isValid() const

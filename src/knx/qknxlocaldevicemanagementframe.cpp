@@ -181,7 +181,7 @@ quint8 QKnxLocalDeviceManagementFrame::objectInstance() const
 void QKnxLocalDeviceManagementFrame::setObjectInstance(quint8 instance)
 {
     auto si = serviceInformation();
-    si.replaceBytes<std::array<quint8, 1>, 1>(2, { { instance } });
+    si.replaceBytes(2, { instance });
     setServiceInformation(si);
 }
 
@@ -193,7 +193,7 @@ QKnxInterfaceObjectProperty QKnxLocalDeviceManagementFrame::property() const
 void QKnxLocalDeviceManagementFrame::setProperty(QKnxInterfaceObjectProperty pid)
 {
     auto si = serviceInformation();
-    si.replaceBytes<std::array<quint8, 1>, 1>(3, { { quint8(pid) } });
+    si.replaceBytes(3, { quint8(pid) });
     setServiceInformation(si);
 }
 

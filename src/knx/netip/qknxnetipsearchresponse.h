@@ -48,7 +48,7 @@ public:
                             const QKnxNetIpDeviceDib &deviceHardware,
                             const QKnxNetIpServiceFamiliesDib &supportedFamilies);
 
-    template <typename T> static QKnxNetIpSearchResponse fromBytes(const T &bytes, quint16 index)
+    static QKnxNetIpSearchResponse fromBytes(const QKnxByteArray &bytes, quint16 index)
     {
         return QKnxNetIpFrameHelper::fromBytes(bytes, index, QKnxNetIp::ServiceType::SearchResponse);
     }

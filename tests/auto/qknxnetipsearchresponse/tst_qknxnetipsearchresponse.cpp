@@ -63,27 +63,27 @@ void tst_QKnxNetIpSearchResponse::testConstructor()
                                 QKnxNetIpDeviceDib::DeviceStatus::ActiveProgrammingMode,
                                 QKnxAddress::Individual::Unregistered,
                                 0x1111,
-                                QByteArray::fromHex("123456123456"),
+                                QKnxByteArray::fromHex("123456123456"),
                                 QHostAddress::AnyIPv4,
-                                QByteArray::fromHex("bcaec56690f9"),
-                                QByteArray("qt.io KNX device"));
+                                QKnxByteArray::fromHex("bcaec56690f9"),
+                                QKnxByteArray("qt.io KNX device", 16));
     QKnxNetIpServiceFamiliesDib families(QKnxNetIpServiceFamiliesDib::ServiceFamilieId::Core, 10);
 
     QKnxNetIpSearchResponse search(endpoint, hardware, families);
 
     QCOMPARE(search.isValid(), true);
     QCOMPARE(search.size(), quint16(72));
-    QCOMPARE(search.bytes<QByteArray>(),
-        QByteArray::fromHex("06100202004808017f0000010e57")
-        + QByteArray::fromHex("36012001ffff111112345612345600000000bcaec56690f9")
-        + "qt.io KNX device" + QByteArray::fromHex("0000000000000000000000000000")
-        + QByteArray::fromHex("0402020A"));
+    QCOMPARE(search.bytes(), QKnxByteArray::fromHex("06100202004808017f0000010e57")
+        + QKnxByteArray::fromHex("36012001ffff111112345612345600000000bcaec56690f9")
+        + QKnxByteArray::fromHex("71742e696f204b4e5820646576696365") // qt.io KNX device
+        + QKnxByteArray::fromHex("0000000000000000000000000000")
+        + QKnxByteArray::fromHex("0402020a"));
     QCOMPARE(search.payload().size(), quint16(66));
-    QCOMPARE(search.payload().bytes<QByteArray>(),
-        QByteArray::fromHex("08017f0000010e57")
-        + QByteArray::fromHex("36012001ffff111112345612345600000000bcaec56690f9")
-        + "qt.io KNX device" + QByteArray::fromHex("0000000000000000000000000000")
-        + QByteArray::fromHex("0402020A"));
+    QCOMPARE(search.payload().bytes(), QKnxByteArray::fromHex("08017f0000010e57")
+        + QKnxByteArray::fromHex("36012001ffff111112345612345600000000bcaec56690f9")
+        + QKnxByteArray::fromHex("71742e696f204b4e5820646576696365") // qt.io KNX device
+        + QKnxByteArray::fromHex("0000000000000000000000000000")
+        + QKnxByteArray::fromHex("0402020a"));
     QCOMPARE(search.toString(), QString::fromLatin1("Header size { 0x06 }, "
             "Version { 0x10 }, Code { 0x202 }, Total size { 0x48 }, "
             "Bytes { 0x08, 0x01, 0x7f, 0x00, 0x00, 0x01, 0x0e, 0x57, 0x36, 0x01, "
@@ -94,19 +94,20 @@ void tst_QKnxNetIpSearchResponse::testConstructor()
             "0x0a }"));
 
     QCOMPARE(search.controlEndpoint().isValid(), true);
-    QCOMPARE(search.controlEndpoint().bytes<QByteArray>(), QByteArray::fromHex("08017f0000010e57"));
+    QCOMPARE(search.controlEndpoint().bytes(), QKnxByteArray::fromHex("08017f0000010e57"));
     QCOMPARE(search.deviceHardware().isValid(), true);
-    QCOMPARE(search.deviceHardware().bytes<QByteArray>(),
-        QByteArray::fromHex("36012001FFFF111112345612345600000000BCAEC56690F9")+
-            "qt.io KNX device" + QByteArray::fromHex("0000000000000000000000000000"));
+    QCOMPARE(search.deviceHardware().bytes(),
+        QKnxByteArray::fromHex("36012001FFFF111112345612345600000000BCAEC56690F9")
+        + QKnxByteArray::fromHex("71742e696f204b4e5820646576696365") // qt.io KNX device
+        + QKnxByteArray::fromHex("0000000000000000000000000000"));
     QCOMPARE(search.supportedFamilies().isValid(), true);
-    QCOMPARE(search.supportedFamilies().bytes<QByteArray>(), QByteArray::fromHex("0402020A"));
+    QCOMPARE(search.supportedFamilies().bytes(), QKnxByteArray::fromHex("0402020a"));
 
-    QCOMPARE(QKnxNetIpSearchResponse::fromBytes<QByteArray>(search.bytes<QByteArray>(), 0).isValid(),
+    QCOMPARE(QKnxNetIpSearchResponse::fromBytes(search.bytes(), 0).isValid(),
         true);
-    QCOMPARE(QKnxNetIpSearchResponse::fromBytes<QByteArray>(search.bytes<QByteArray>(), 56).isValid(),
+    QCOMPARE(QKnxNetIpSearchResponse::fromBytes(search.bytes(), 56).isValid(),
         false);
-    QCOMPARE(QKnxNetIpSearchResponse::fromBytes<QByteArray>(search.bytes<QByteArray>(), 2).isValid(),
+    QCOMPARE(QKnxNetIpSearchResponse::fromBytes(search.bytes(), 2).isValid(),
         false);
 }
 
@@ -130,10 +131,10 @@ void tst_QKnxNetIpSearchResponse::testDebugStream()
                                 QKnxNetIpDeviceDib::DeviceStatus::ActiveProgrammingMode,
                                 QKnxAddress::Individual::Unregistered,
                                 0x1111,
-                                QByteArray::fromHex("123456123456"),
+                                QKnxByteArray::fromHex("123456123456"),
                                 QHostAddress::AnyIPv4,
-                                QByteArray::fromHex("bcaec56690f9"),
-                                QByteArray("qt.io KNX device"));
+                                QKnxByteArray::fromHex("bcaec56690f9"),
+                                QKnxByteArray("qt.io KNX device", 16));
     QKnxNetIpServiceFamiliesDib families(QKnxNetIpServiceFamiliesDib::ServiceFamilieId::Core, 10);
     qDebug() << QKnxNetIpSearchResponse(endpoint, hardware, families);
     QCOMPARE(s_msg, QString::fromLatin1("0x06100202004808017f0000010e5736012001ffff1111123456123456"
@@ -151,10 +152,10 @@ void tst_QKnxNetIpSearchResponse::testDataStream()
                                 QKnxNetIpDeviceDib::DeviceStatus::ActiveProgrammingMode,
                                 QKnxAddress::Individual::Unregistered,
                                 0x1111,
-                                QByteArray::fromHex("123456123456"),
+                                QKnxByteArray::fromHex("123456123456"),
                                 QHostAddress::AnyIPv4,
-                                QByteArray::fromHex("bcaec56690f9"),
-                                QByteArray("qt.io KNX device"));
+                                QKnxByteArray::fromHex("bcaec56690f9"),
+                                QKnxByteArray("qt.io KNX device", 16));
     QKnxNetIpServiceFamiliesDib families(QKnxNetIpServiceFamiliesDib::ServiceFamilieId::Core, 10);
     out << QKnxNetIpSearchResponse(endpoint, hardware, families);
     QCOMPARE(byteArray, QByteArray::fromHex("06100202004808017f0000010e5736012001ffff111112345612"

@@ -57,13 +57,12 @@
 #include <QtKnx/QKnxTpduFactory>
 #include <QtKnx/QKnxLinkLayerFrame>
 
-const QVector<quint8> DemoDataPoint::BytesOn = QVector<quint8>(1, 0x01);
-const QVector<quint8> DemoDataPoint::BytesOff = QVector<quint8>(1, 0x00);
+const QKnxByteArray DemoDataPoint::BytesOn { 0x01 };
+const QKnxByteArray DemoDataPoint::BytesOff { 0x00 };
 
 bool DemoSwitchDataPoint::updateDataPointState(const QKnxLinkLayerFrame &frame)
 {
-    auto str = frame.serviceInformation().bytes().toHex();
-    m_state = (str[str.size() - 1] == '1');
+    m_state = frame.serviceInformation().bytes().endsWith(1);
     return true;
 }
 
@@ -77,7 +76,7 @@ bool DemoSwitchDataPoint::isOn() const
     return m_state;
 }
 
-QVector<quint8> DemoSwitchDataPoint::bytes() const
+QKnxByteArray DemoSwitchDataPoint::bytes() const
 {
     if (m_state)
         return DemoDataPoint::BytesOn;
@@ -119,21 +118,21 @@ bool DemoColorLed::updateDataPointState(const QKnxLinkLayerFrame &frame)
     return false;
 }
 
-QVector<quint8> DemoColorLed::redBytes() const
+QKnxByteArray DemoColorLed::redBytes() const
 {
     if (m_stateColor.red() > 0)
         return DemoDataPoint::BytesOn;
     return DemoDataPoint::BytesOff;
 }
 
-QVector<quint8> DemoColorLed::greenBytes() const
+QKnxByteArray DemoColorLed::greenBytes() const
 {
     if (m_stateColor.green() > 0)
         return DemoDataPoint::BytesOn;
     return DemoDataPoint::BytesOff;
 }
 
-QVector<quint8> DemoColorLed::blueBytes() const
+QKnxByteArray DemoColorLed::blueBytes() const
 {
     if (m_stateColor.blue() > 0)
         return DemoDataPoint::BytesOn;
@@ -157,8 +156,8 @@ bool DemoColorLed::isOn() const
 
 bool DemoRockerDataPoint::updateDataPointState(const QKnxLinkLayerFrame &frame)
 {
-    auto str = frame.serviceInformation().bytes().toHex();
-    QString s = str.mid(20, 4);
+    auto bytes = frame.serviceInformation().bytes();
+    QString s = QByteArray((const char *) bytes.constData(), bytes.size()).mid(20, 4);
     bool ok;
     setPosition(s.toInt(&ok, 16));
     emit rockerChange(m_position);
@@ -227,19 +226,19 @@ void DemoBlindDataPoint::stopBlind()
         m_timer.stop();
 }
 
-QVector<quint8> DemoBlindDataPoint::moveUpBytes() const
+QKnxByteArray DemoBlindDataPoint::moveUpBytes() const
 {
     // send a 0 to move up
     return DemoDataPoint::BytesOff;
 }
 
-QVector<quint8> DemoBlindDataPoint::moveDownBytes() const
+QKnxByteArray DemoBlindDataPoint::moveDownBytes() const
 {
     // send a 1 to move down
     return DemoDataPoint::BytesOn;
 }
 
-QVector<quint8> DemoBlindDataPoint::stopBytes() const
+QKnxByteArray DemoBlindDataPoint::stopBytes() const
 {
     // send a 1 to stop
     return DemoDataPoint::BytesOn;

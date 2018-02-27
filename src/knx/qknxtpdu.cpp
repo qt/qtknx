@@ -194,13 +194,13 @@ public:
     QKnxTpduPrivate() = default;
     ~QKnxTpduPrivate() = default;
 
-    QVector<quint8> m_tpduBytes;
+    QKnxByteArray m_tpduBytes;
     qint32 m_apci = -1;
     qint16 m_tpci = -1;
     void setApci();
     void setTpci();
     void setByte(quint16 index, quint8 byte);
-    void appendBytes(const QVector<quint8> &bytesToAppend);
+    void appendBytes(const QKnxByteArray &bytesToAppend);
 };
 
 void QKnxTpduPrivate::setByte(quint16 index, quint8 byte)
@@ -212,21 +212,21 @@ void QKnxTpduPrivate::setByte(quint16 index, quint8 byte)
 
 void QKnxTpduPrivate::setApci()
 {
-    std::bitset<8> apciHigh = m_tpduBytes[0] & 0x03; // mask out all bits except the first two
-    std::bitset<8> apciLow = m_tpduBytes[1] & 0xc0;  // mask out all bits except the last two
+    std::bitset<8> apciHigh = m_tpduBytes.at(0) & 0x03; // mask out all bits except the first two
+    std::bitset<8> apciLow = m_tpduBytes.at(1) & 0xc0;  // mask out all bits except the last two
 
     const auto fourBitsApci = [&apciHigh, &apciLow]() {
-        QVector<quint8> apciBytes = { { quint8(apciHigh.to_ulong()), quint8(apciLow.to_ulong()) } };
+        QKnxByteArray apciBytes { quint8(apciHigh.to_ulong()), quint8(apciLow.to_ulong()) };
         return (QKnxUtils::QUint16::fromBytes(apciBytes));
     };
     const auto tenBitsApci = [apciHigh](quint8 octet7) {
-        QVector<quint8> apciBytes = { { quint8(apciHigh.to_ulong()), octet7 } };
+        QKnxByteArray apciBytes { quint8(apciHigh.to_ulong()), octet7 };
         return (QKnxUtils::QUint16::fromBytes(apciBytes));
     };
     if ((apciHigh[0] == 0 && apciHigh[1] == 0) || (apciHigh[0] == 1 && apciHigh[1] == 1)) {
-        std::bitset<8> octet7 = m_tpduBytes[1];
+        std::bitset<8> octet7 = m_tpduBytes.at(1);
         if (octet7[7] == 1 && octet7[6] == 1) {
-            m_apci  = qint32(tenBitsApci(m_tpduBytes[1]));
+            m_apci  = qint32(tenBitsApci(m_tpduBytes.at(1)));
             return;
         }
         m_apci = qint32(fourBitsApci());
@@ -238,7 +238,7 @@ void QKnxTpduPrivate::setApci()
             m_apci = qint32(fourBitsApci());
             return;
         }
-        m_apci = qint32(tenBitsApci(m_tpduBytes[1]));
+        m_apci = qint32(tenBitsApci(m_tpduBytes.at(1)));
         return;
     }
     // it's one of the A_Memory Service (only the 2 last bits of octet 6 are needed for the APCI)
@@ -246,7 +246,7 @@ void QKnxTpduPrivate::setApci()
         m_apci = qint32(fourBitsApci());
         return;
     }
-    m_apci = qint32(m_tpduBytes[1]);
+    m_apci = qint32(m_tpduBytes.at(1));
     return;
 }
 
@@ -256,23 +256,24 @@ void QKnxTpduPrivate::setTpci()
         m_tpci = -1;
         return;
     }
-    if (isBitSet(m_tpduBytes[0], 7) && isBitSet(m_tpduBytes[0], 6) && isBitSet(m_tpduBytes[0], 1)) { // T_ACK/ T_NACK
-        m_tpci = qint16(m_tpduBytes[0] & 0xc3); // no APCI, mask out sequence number
+    if (isBitSet(m_tpduBytes.at(0), 7) && isBitSet(m_tpduBytes.at(0), 6)
+        && isBitSet(m_tpduBytes.at(0), 1)) { // T_ACK/ T_NACK
+            m_tpci = qint16(m_tpduBytes.at(0) & 0xc3); // no APCI, mask out sequence number
+            return;
+    }
+    if (isBitSet(m_tpduBytes.at(0), 7) && (!isBitSet(m_tpduBytes.at(0), 6))) {// T_CONNECT/ T_DISCONNECT
+        m_tpci = qint16(m_tpduBytes.at(0)); // no APCI, no sequence number
         return;
     }
-    if (isBitSet(m_tpduBytes[0], 7) && (!isBitSet(m_tpduBytes[0], 6))) {// T_CONNECT/ T_DISCONNECT
-        m_tpci = qint16(m_tpduBytes[0]); // no APCI, no sequence number
+    if (isBitSet(m_tpduBytes.at(0), 6) && (!isBitSet(m_tpduBytes.at(0), 7))) {// T_DATA_CONNECTED, mask out the APCI
+        m_tpci = qint16((m_tpduBytes.at(0) & 0xfc) & 0xc3); // mask out the APCI and the sequence number
         return;
     }
-    if (isBitSet(m_tpduBytes[0], 6) && (!isBitSet(m_tpduBytes[0], 7))) {// T_DATA_CONNECTED, mask out the APCI
-        m_tpci = qint16((m_tpduBytes[0] & 0xfc) & 0xc3); // mask out the APCI and the sequence number
-        return;
-    }
-    m_tpci = qint16(m_tpduBytes[0] & 0xfc); // mask out the APCI
+    m_tpci = qint16(m_tpduBytes.at(0) & 0xfc); // mask out the APCI
     return;
 }
 
-void QKnxTpduPrivate::appendBytes(const QVector<quint8> &bytesToAppend)
+void QKnxTpduPrivate::appendBytes(const QKnxByteArray &bytesToAppend)
 {
     quint16 pos = quint16(m_tpduBytes.size());
     if (bytesToAppend.size() <= 0)
@@ -294,18 +295,18 @@ quint8 QKnxTpdu::byte(quint16 index) const
     return {};
 }
 
-QVector<quint8> QKnxTpdu::bytes() const
+QKnxByteArray QKnxTpdu::bytes() const
 {
     return d_ptr->m_tpduBytes;
 }
-QVector<quint8> QKnxTpdu::bytes(quint16 start, quint16 count) const
+QKnxByteArray QKnxTpdu::bytes(quint16 start, quint16 count) const
 {
     if (size() < start + count)
         return {};
     return d_ptr->m_tpduBytes.mid(start, count);
 }
 
-void QKnxTpdu::setBytes(QVector<quint8>::const_iterator begin, QVector<quint8>::const_iterator end)
+void QKnxTpdu::setBytes(QKnxByteArray::const_iterator begin, QKnxByteArray::const_iterator end)
 {
     d_ptr->m_tpduBytes.resize(std::distance(begin, end));
     std::copy(begin, end, std::begin(d_ptr->m_tpduBytes));
@@ -415,12 +416,12 @@ QKnxTpdu::QKnxTpdu(TransportControlField tpci, ApplicationControlField apci)
     setApplicationControlField(apci);
 }
 
-QKnxTpdu::QKnxTpdu(TransportControlField tpci, ApplicationControlField apci, const QVector<quint8> &data)
+QKnxTpdu::QKnxTpdu(TransportControlField tpci, ApplicationControlField apci, const QKnxByteArray &data)
     : QKnxTpdu(tpci, apci, 0, data)
 {}
 
 QKnxTpdu::QKnxTpdu(TransportControlField tpci, ApplicationControlField apci, quint8 seqNumber,
-        const QVector<quint8> &data)
+        const QKnxByteArray &data)
     : QKnxTpdu(tpci, apci)
 {
     setSequenceNumber(seqNumber);
@@ -575,12 +576,12 @@ void QKnxTpdu::setSequenceNumber(quint8 seqNumber)
     d_ptr->setByte(0, (byte(0) & 0xc3) | quint8(seqNumber << 2));
 }
 
-QVector<quint8> QKnxTpdu::data() const
+QKnxByteArray QKnxTpdu::data() const
 {
     if (size() < 2)
         return {};
 
-    QVector<quint8> dataApci;
+    QKnxByteArray dataApci;
     switch (applicationControlField()) {
     case ApplicationControlField::GroupValueResponse:
     case ApplicationControlField::GroupValueWrite:
@@ -595,7 +596,7 @@ QVector<quint8> QKnxTpdu::data() const
     case ApplicationControlField::DeviceDescriptorRead:
     case ApplicationControlField::DeviceDescriptorResponse:
     case ApplicationControlField::Restart: // 6 bits from an optimized TPDU
-        dataApci = QKnxUtils::QUint8::bytes<QVector<quint8>>(quint8(byte(1) & 0x3f));
+        dataApci = QKnxUtils::QUint8::bytes(quint8(byte(1) & 0x3f));
     default:
         break;
     }
@@ -603,7 +604,7 @@ QVector<quint8> QKnxTpdu::data() const
     return dataApci + bytes(2, dataSize() - 1);
 }
 
-void QKnxTpdu::setData(const QVector<quint8> &data)
+void QKnxTpdu::setData(const QKnxByteArray &data)
 {
     // In those cases there should be no data.
     switch (transportControlField()) {
@@ -619,7 +620,7 @@ void QKnxTpdu::setData(const QVector<quint8> &data)
     }
 
     auto apci = applicationControlField();
-    auto apciBytes = QKnxUtils::QUint16::bytes<QVector<quint8>>(quint16(apci));
+    auto apciBytes = QKnxUtils::QUint16::bytes(quint16(apci));
 
     d_ptr->m_tpduBytes.resize(2); // always resize to minimum size
     d_ptr->setByte(1, apciBytes[1]); // and clear the possible 6 bits of the upper APCI byteToTest

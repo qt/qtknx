@@ -86,7 +86,7 @@ void QKnxNetIpHpai::setAddress(const QHostAddress &hostAddress)
 
 quint16 QKnxNetIpHpai::port() const
 {
-    return QKnxUtils::QUint16::fromBytes(payloadRef(), 4);
+    return QKnxUtils::QUint16::fromBytes(payloadRef().bytes(0), 4);
 }
 
 void QKnxNetIpHpai::setPort(quint16 port)

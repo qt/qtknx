@@ -217,7 +217,6 @@ void QmlKnxDemo::stopBlind()
 
 void QmlKnxDemo::handleFrame(const QKnxLinkLayerFrame &frame)
 {
-    auto str = frame.serviceInformation().bytes().toHex();
     auto dstAdd = frame.destinationAddress().toString();
 
     if (QKnxLinkLayerFrame::MessageCode::DataConfirmation == frame.messageCode()
@@ -331,14 +330,14 @@ void QmlKnxDemo::checkLightStatusOn()
 void QmlKnxDemo::test()
 {
     // red
-    auto data = QByteArray::fromHex("0x00bce01105000c010081");
+    QKnxByteArray data { 00, 0xbc, 0xe0, 11, 05, 00, 0x0c, 01, 00, 81 };
     handleFrame(QKnxLinkLayerFrame::fromBytes(data, 0, data.size()));
 
     // blue
-    data = QByteArray::fromHex("0x00bce01105000e010081");
+    data = { 00, 0xbc, 0xe0, 11, 05, 00, 0x0e, 01, 00, 81 };
     handleFrame(QKnxLinkLayerFrame::fromBytes(data, 0, data.size()));
 
     // green
-    data = QByteArray::fromHex("0x00bce01105000d010081");
+    data = { 00, 0xbc, 0xe0, 11, 05, 00, 0x0d, 01, 00, 81 };
     handleFrame(QKnxLinkLayerFrame::fromBytes(data, 0, data.size()));
 }

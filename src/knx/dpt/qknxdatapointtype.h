@@ -35,6 +35,7 @@
 #include <QtCore/qstring.h>
 #include <QtCore/qvariant.h>
 #include <QtCore/qshareddata.h>
+#include <QtKnx/qknxbytearray.h>
 #include <QtKnx/qknxglobal.h>
 
 QT_BEGIN_NAMESPACE
@@ -199,31 +200,22 @@ public:
     virtual bool isValid() const;
     virtual QString toString() const;
 
-    quint8 &operator[](int i);
-    const quint8 &operator[](int i) const;
-
-    quint8 *data();
-    const quint8 *data() const;
     const quint8 *constData() const;
 
     quint8 byte(quint16 index) const;
-    template <typename T = QByteArray> auto bytes() const -> decltype(T())
-    {
-        T t(size(), 0x00);
-        std::copy_n(constData(), size(), std::begin(t));
-        return t;
-    }
-
     bool setByte(quint16 index, quint8 bytes);
+
+    QKnxByteArray bytes() const;
+    virtual bool setBytes(const QKnxByteArray &bytesToSet, quint16 index, quint16 count);
 
     QKnxDatapointType(const QKnxDatapointType &other);
     QKnxDatapointType &operator=(const QKnxDatapointType &other);
 
-#ifdef Q_COMPILER_RVALUE_REFS
+    QKnxDatapointType(QKnxDatapointType &&other) Q_DECL_NOTHROW;
     QKnxDatapointType &operator=(QKnxDatapointType &&other) Q_DECL_NOTHROW;
-#endif
 
     void swap(QKnxDatapointType &other) Q_DECL_NOTHROW;
+
     bool operator==(const QKnxDatapointType &other) const;
     bool operator!=(const QKnxDatapointType &other) const;
 
@@ -242,13 +234,6 @@ public:
 
 protected:
     void resize(int newSize);
-    template <typename T> bool setBytes(const T &bytesToSet, quint16 index, quint16 count)
-    {
-        if (((bytesToSet.size() - index) < count) || (size() != count))
-            return false;
-        std::copy(std::begin(bytesToSet), std::end(bytesToSet), data());
-        return true;
-    }
 
 private:
     QKnxDatapointType() = delete;
@@ -258,47 +243,21 @@ private:
     QSharedDataPointer<QKnxDatapointTypePrivate> d_ptr;
 };
 
-class Q_KNX_EXPORT QKnxFixedSizeDatapointType : public QKnxDatapointType
+using QKnxFixedSizeDatapointType = QKnxDatapointType;
+class Q_KNX_EXPORT QKnxVariableSizeDatapointType : public QKnxDatapointType
 {
 public:
-    QKnxFixedSizeDatapointType(Type type, int size)
-        : QKnxDatapointType(type, size) {}
-    QKnxFixedSizeDatapointType(const QString &dptId, int size)
-        : QKnxDatapointType(dptId, size) {}
-    QKnxFixedSizeDatapointType(quint16 mainType, quint16 subType, int size)
-        : QKnxDatapointType(mainType, subType, size) {}
+    QKnxVariableSizeDatapointType(Type type, int size);
+    QKnxVariableSizeDatapointType(const QString &dptId, int size);
+    QKnxVariableSizeDatapointType(quint16 mainType, quint16 subType, int size);
 
-    using QKnxDatapointType::setBytes;
-
-private:
-    using QKnxDatapointType::resize;
+    bool setBytes(const QKnxByteArray &bytesToSet, quint16 index, quint16 count) override;
 };
 
 inline uint qHash(const QKnxDatapointType::Type &key, uint seed)
 {
     return qHash(quint32(key), seed);
 }
-
-class Q_KNX_EXPORT QKnxVariableSizeDatapointType : public QKnxDatapointType
-{
-public:
-    QKnxVariableSizeDatapointType(Type type, int size)
-        : QKnxDatapointType(type, size) {}
-    QKnxVariableSizeDatapointType(const QString &dptId, int size)
-        : QKnxDatapointType(dptId, size) {}
-    QKnxVariableSizeDatapointType(quint16 mainType, quint16 subType, int size)
-        : QKnxDatapointType(mainType, subType, size) {}
-
-    template <typename T> bool setBytes(const T &bytesToSet, quint16 index, quint16 count)
-    {
-        if ((bytesToSet.size() - index) < count)
-            return false;
-
-        resize(count);
-        std::copy(std::begin(bytesToSet), std::end(bytesToSet), data());
-        return true;
-    }
-};
 
 QT_END_NAMESPACE
 

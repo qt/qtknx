@@ -62,11 +62,10 @@ void tst_QKnxNetIpConnectionStateResponse::testConstructor()
         QKnxNetIp::Error::ConnectionId);
     QCOMPARE(connectionStateResponse.isValid(), true);
     QCOMPARE(connectionStateResponse.size(), quint16(8));
-    QCOMPARE(connectionStateResponse.bytes<QByteArray>(),
-        QByteArray::fromHex("061002080008c821"));
+    QCOMPARE(connectionStateResponse.bytes(),
+        QKnxByteArray({ 0x06, 0x10, 0x02, 0x08, 0x00, 0x08, 0xc8, 0x21 }));
     QCOMPARE(connectionStateResponse.payload().size(), quint16(2));
-    QCOMPARE(connectionStateResponse.payload().bytes<QByteArray>(),
-        QByteArray::fromHex("c821"));
+    QCOMPARE(connectionStateResponse.payload().bytes(), QKnxByteArray({ 0xc8, 0x21 }));
     QCOMPARE(connectionStateResponse.toString(), QString::fromLatin1("Header size { 0x06 }, "
             "Version { 0x10 }, Code { 0x208 }, Total size { 0x08 }, "
             "Bytes { 0xc8, 0x21 }"));

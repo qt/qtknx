@@ -32,6 +32,7 @@
 
 #include <QtKnx/qknxadditionalinfo.h>
 #include <QtKnx/qknxaddress.h>
+#include <QtKnx/qknxbytearray.h>
 #include <QtKnx/qknxcontrolfield.h>
 #include <QtKnx/qknxextendedcontrolfield.h>
 #include <QtKnx/qknxglobal.h>
@@ -96,25 +97,14 @@ public:
     QKnxLinkLayerPayload serviceInformation() const;
     QKnxLinkLayerPayloadRef serviceInformationRef(quint16 index = 0) const;
 
-    template <typename T = QByteArray> auto bytes() const -> decltype(T())
+    QKnxByteArray bytes() const
     {
-        static_assert(is_type<T, QByteArray, QVector<quint8>, std::deque<quint8>,
-            std::vector<quint8>>::value, "Type not supported.");
-
-        T t(m_serviceInformation.size() + 1, quint8(m_code));
-        auto ref = m_serviceInformation.ref();
-        std::copy(std::begin(ref), std::end(ref), std::next(std::begin(t), 1));
-
-        return t;
+        return QKnxByteArray { quint8(m_code) } + m_serviceInformation.ref().bytes(0);
     }
 
-    template <typename T, std::size_t S = 0>
-        static QKnxLinkLayerFrame fromBytes(const T &type, quint16 index, quint16 size,
+    static QKnxLinkLayerFrame fromBytes(const QKnxByteArray &type, quint16 index, quint16 size,
         QKnx::MediumType mediumType = QKnx::MediumType::Unknown)
     {
-        static_assert(is_type<T, QByteArray, QVector<quint8>, QKnxByteStoreRef, std::deque<quint8>,
-            std::vector<quint8>, std::array<quint8, S>>::value, "Type not supported.");
-
         if (type.size() < 1)
             return {};
 
@@ -142,8 +132,8 @@ public:
     QKnxControlField controlField() const;
     void setControlField(const QKnxControlField &field);
 
-    // Parts of the LinkLayer Frame that are present or not depending on the MessageCode/ Frame Type
-    // or because thez are optional
+    // Parts of the LinkLayer Frame that are present or not depending on the
+    // MessageCode/ Frame Type or because they are optional
     QKnxExtendedControlField extendedControlField() const;
     void setExtendedControlField(const QKnxExtendedControlField &field); // TODO: check if there is an extended control field!
 
@@ -151,11 +141,8 @@ public:
 
     void addAdditionalInfo(const QKnxAdditionalInfo &info);
 
-    template <typename T = QVector<QKnxAdditionalInfo>> auto additionalInfos() const -> decltype(T())
+    QVector<QKnxAdditionalInfo> additionalInfos() const
     {
-        static_assert(is_type<T, QVector<QKnxAdditionalInfo>, std::deque<QKnxAdditionalInfo>,
-            std::vector<QKnxAdditionalInfo>>::value, "Type not supported.");
-
         const auto &store = serviceInformationRef();
         if (store.size() < 1)
             return {};
@@ -164,10 +151,10 @@ public:
         if (size < 0x02 || size == 0xff)
             return {};
 
-        T infos;
+        QVector<QKnxAdditionalInfo> infos;
         quint8 index = 1;
         while (index < size) {
-            infos.push_back(QKnxAdditionalInfo::fromBytes(store, index));
+            infos.push_back(QKnxAdditionalInfo::fromBytes(store.bytes(0), index));
             index += store.byte(index + 1) + 2; // type + size => 2
         }
         return infos;
@@ -177,7 +164,8 @@ public:
     void clearAdditionalInfos();
 
 protected:
-    QKnxLinkLayerFrame(QKnx::MediumType mediumType, QKnxLinkLayerFrame::MessageCode messageCode, const QKnxLinkLayerPayload &payload);
+    QKnxLinkLayerFrame(QKnx::MediumType mediumType, QKnxLinkLayerFrame::MessageCode messageCode,
+        const QKnxLinkLayerPayload &payload);
     void setServiceInformation(const QKnxLinkLayerPayload &serviceInformation);
 
 private:
@@ -212,7 +200,6 @@ private:
             break;
         }
         return QKnx::MediumType::Unknown;
-
     }
 };
 

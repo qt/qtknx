@@ -51,6 +51,7 @@
 #include <QtCore/QDebug>
 #include <QtCore/QCommandLineParser>
 #include <QtCore/QCoreApplication>
+#include <QtKnx/QKnxByteArray>
 #include <QtKnx/QKnxNetIpTunnelConnection>
 #include <QtNetwork/QNetworkInterface>
 
@@ -102,9 +103,9 @@ int main(int argc, char *argv[])
     QSocketNotifier notifier(STDIN_FILENO, QSocketNotifier::Read);
     QObject::connect(&notifier, &QSocketNotifier::activated, [&](int) {
 #endif
-        auto bytes = input.readLine().toLatin1();
-        if (bytes != "quit") {
-            bytes = QByteArray::fromHex(bytes);
+        auto tmp = input.readLine().toLatin1();
+        if (tmp != "quit") {
+            const auto bytes = QKnxByteArray::fromHex(tmp);
             tunnel.sendTunnelFrame(QKnxLinkLayerFrame::fromBytes(bytes, 0, bytes.size()));
         } else {
             tunnel.disconnectFromHost();

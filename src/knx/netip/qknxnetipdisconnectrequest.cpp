@@ -52,7 +52,7 @@ quint8 QKnxNetIpDisconnectRequest::channelId() const
 
 QKnxNetIpHpai QKnxNetIpDisconnectRequest::controlEndpoint() const
 {
-    return QKnxNetIpHpai::fromBytes(payloadRef(), 2);
+    return QKnxNetIpHpai::fromBytes(payloadRef().bytes(0), 2);
 }
 
 bool QKnxNetIpDisconnectRequest::isValid() const

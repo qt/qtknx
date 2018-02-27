@@ -64,13 +64,13 @@ QKnxNetIp::DescriptionType QKnxNetIpServiceFamiliesDib::descriptionType() const
 void QKnxNetIpServiceFamiliesDib::add(ServiceFamilieId id, quint8 version)
 {
     auto load = payload();
-    load.appendBytes<std::array<quint8, 2>, 2>(std::array<quint8, 2>{ { quint8(id), version } });
+    load.appendBytes({ quint8(id), version });
     setPayload(load);
 }
 
 void QKnxNetIpServiceFamiliesDib::add(const ServiceFamilyIdVersions &families)
 {
-    QByteArray additionalData;
+    QKnxByteArray additionalData;
 
     int i = 0;
     auto keys = families.uniqueKeys();

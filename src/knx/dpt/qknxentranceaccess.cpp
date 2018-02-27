@@ -113,7 +113,7 @@ bool QKnxEntranceAccess::setIdCode(quint32 idCode)
     if (idCode > 999999)
         return false;
 
-    QVector<quint8> digits;
+    QKnxByteArray digits;
     while (idCode != 0) {
         digits.push_back(idCode % 10);
         idCode = idCode / 10;

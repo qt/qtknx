@@ -55,14 +55,14 @@ void tst_QKnxNetIpDeviceConfigurationRequest::testDefaultConstructor()
 
 void tst_QKnxNetIpDeviceConfigurationRequest::testConstructor()
 {
-    auto ba = QByteArray::fromHex("fc000001531001");
+    auto ba = QKnxByteArray::fromHex("fc000001531001");
     QKnxNetIpDeviceConfigurationRequest request(1, 1, QKnxLocalDeviceManagementFrame::fromBytes(ba, 0, ba.size()));
     QCOMPARE(request.isValid(), true);
     QCOMPARE(request.size(), quint16(17));
 
     QCOMPARE(request.channelId(), quint8(1));
     QCOMPARE(request.sequenceCount(), quint8(1));
-    QCOMPARE(request.cemi().bytes<QByteArray>(), ba);
+    QCOMPARE(request.cemi().bytes(), ba);
 }
 
 void tst_QKnxNetIpDeviceConfigurationRequest::testDebugStream()
@@ -80,7 +80,7 @@ void tst_QKnxNetIpDeviceConfigurationRequest::testDebugStream()
     qDebug() << QKnxNetIpDeviceConfigurationRequest();
     QCOMPARE(s_msg, QString::fromLatin1("0x1nv4l1d"));
 
-    auto ba = QByteArray::fromHex("06100310001104020000fc000001531001");
+    auto ba = QKnxByteArray::fromHex("06100310001104020000fc000001531001");
     qDebug() << QKnxNetIpDeviceConfigurationRequest::fromBytes(ba, 0);
     QCOMPARE(s_msg, QString::fromLatin1("0x06100310001104020000fc000001531001"));
 }
@@ -98,9 +98,9 @@ void tst_QKnxNetIpDeviceConfigurationRequest::testDataStream()
         QByteArray byteArray;
         QDataStream out(&byteArray, QIODevice::WriteOnly);
 
-        auto ba = QByteArray::fromHex("06100310001104020000fc000001531001");
+        auto ba = QKnxByteArray::fromHex("06100310001104020000fc000001531001");
         out << QKnxNetIpDeviceConfigurationRequest::fromBytes(ba, 0);
-        QCOMPARE(byteArray, ba);
+        QCOMPARE(byteArray, QByteArray::fromHex("06100310001104020000fc000001531001"));
     }
 }
 

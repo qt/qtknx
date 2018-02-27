@@ -49,7 +49,7 @@ private slots:
         frame.setProperty(QKnxInterfaceObjectProperty::KnxNetIpParameter::CurrentIpAddress);
         frame.setNumberOfElements(14);
         frame.setStartIndex(25);
-        frame.setData(QByteArray::fromHex("0102030405"));
+        frame.setData(QKnxByteArray { 0x01, 0x02, 0x03, 0x04, 0x05 });
 
         QCOMPARE(frame.messageCode(), QKnxLocalDeviceManagementFrame::MessageCode::PropertyReadRequest);
         QCOMPARE(quint16(frame.objectType()), quint16(QKnxInterfaceObjectType::KnxNetIpParameter));
@@ -57,12 +57,12 @@ private slots:
         QCOMPARE(quint8(frame.property()), quint8(QKnxInterfaceObjectProperty::CurrentIpAddress));
         QCOMPARE(frame.numberOfElements(), quint8(14));
         QCOMPARE(frame.startIndex(), quint16(25));
-        QCOMPARE(frame.data(), QByteArray::fromHex("0102030405"));
+        QCOMPARE(frame.data(), QKnxByteArray({ 0x01, 0x02, 0x03, 0x04, 0x05 }));
     }
 
     void testFactory()
     {
-        auto objectTypeProperty = QByteArray::fromHex("fc000801011001");
+        auto objectTypeProperty = QKnxByteArray { 0xfc, 0x00, 0x08, 0x01, 0x01, 0x10, 0x01 };
         QKnxLocalDeviceManagementFrame frame = QKnxLocalDeviceManagementFrame::fromBytes(objectTypeProperty,
             0, objectTypeProperty.size());
 
@@ -73,10 +73,10 @@ private slots:
         QCOMPARE(frame.numberOfElements(), quint8(1));
         QCOMPARE(frame.startIndex(), quint16(1));
 
-        auto bytes = QByteArray::fromHex("fc000b014c1000");
+        auto bytes = QKnxByteArray { 0xfc, 0x00, 0x0b, 0x01, 0x4c, 0x10, 0x00 };
         frame = QKnxLocalDeviceManagementFrame::fromBytes(bytes, 0, objectTypeProperty.size());
         frame.setNumberOfElements(15);
-        bytes = frame.bytes().toHex();
+        bytes = frame.bytes();  // TODO: Fix this, what was the idea to test here?
     }
 
     void testDebugStream()

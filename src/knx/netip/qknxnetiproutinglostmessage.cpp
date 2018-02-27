@@ -51,7 +51,7 @@ QKnxNetIp::DeviceState QKnxNetIpRoutingLostMessage::deviceState() const
 
 quint16 QKnxNetIpRoutingLostMessage::lostMessageCount() const
 {
-    return QKnxUtils::QUint16::fromBytes(payloadRef(), 1);
+    return QKnxUtils::QUint16::fromBytes(payloadRef().bytes(0), 1);
 }
 
 bool QKnxNetIpRoutingLostMessage::isValid() const

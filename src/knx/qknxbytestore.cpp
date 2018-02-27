@@ -149,6 +149,16 @@ void QKnxByteStore::setBytes(const QKnxByteStoreRef &storeRef)
     \a replacement.
 */
 
+void QKnxByteStore::replaceBytes(quint16 pos, const QKnxByteArray & replacement)
+{
+    if (replacement.size() <= 0)
+        return;
+
+    if ((pos + replacement.size()) >= size())
+        resize(pos + quint16(replacement.size()));
+    m_bytes.replace(pos, replacement.size(), replacement);
+}
+
 /*!
     Creates a \l QKnxByteStoreRef object pointing to the \a index of the object.
 */

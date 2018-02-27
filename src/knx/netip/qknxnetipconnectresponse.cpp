@@ -68,14 +68,14 @@ QKnxNetIpHpai QKnxNetIpConnectResponse::dataEndpoint() const
 {
     if (status() != QKnxNetIp::Error::None)
         return {};
-    return QKnxNetIpHpai::fromBytes(payloadRef(), 2);
+    return QKnxNetIpHpai::fromBytes(payloadRef().bytes(0), 2);
 }
 
 QKnxNetIpCrd QKnxNetIpConnectResponse::responseData() const
 {
     if (status() != QKnxNetIp::Error::None)
         return {};
-    return QKnxNetIpCrd::fromBytes(payloadRef(), 10);
+    return QKnxNetIpCrd::fromBytes(payloadRef().bytes(0), 10);
 }
 
 bool QKnxNetIpConnectResponse::isValid() const

@@ -122,7 +122,7 @@ bool QKnxCharString::setString(QLatin1String string)
 */
 bool QKnxCharString::setString(const char *string, int size)
 {
-    static auto null = QByteArray(TypeSize, 0);
+    static auto null = QKnxByteArray(TypeSize, 0);
     if (!string)
         return setBytes(null, 0, TypeSize);
 
@@ -132,7 +132,7 @@ bool QKnxCharString::setString(const char *string, int size)
 
     if (size > TypeSize || !isAscii(string, size, maximum().toUInt()))
         return false;
-    return setBytes(QByteArray(QByteArray(string, size) + null.mid(0, TypeSize - size)), 0, TypeSize);
+    return setBytes(QKnxByteArray(string, size) + null.mid(0, TypeSize - size), 0, TypeSize);
 }
 
 /*!

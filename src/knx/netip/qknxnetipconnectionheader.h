@@ -30,7 +30,6 @@
 #ifndef QKNXNETIPCONNECTIONHEADER_H
 #define QKNXNETIPCONNECTIONHEADER_H
 
-#include <QtCore/qbytearray.h>
 #include <QtCore/qdatastream.h>
 #include <QtCore/qdebug.h>
 #include <QtCore/qstring.h>
@@ -65,17 +64,13 @@ public:
     quint8 serviceTypeSpecificValue() const;
     void setServiceTypeSpecificValue(quint8 value);
 
-    template <typename T = QByteArray> auto connectionTypeSpecificHeaderItems() const -> decltype(T())
+    QKnxByteArray connectionTypeSpecificHeaderItems() const
     {
-        static_assert(is_type<T, QByteArray, QVector<quint8>, std::deque<quint8>,
-            std::vector<quint8>>::value, "Type not supported.");
-        return bytes<T>(4, size() - 4);
+        return bytes(4, size() - 4);
     }
 
-    template <typename T, std::size_t S = 0> void setConnectionTypeSpecificHeaderItems(const T &items)
+    void setConnectionTypeSpecificHeaderItems(const QKnxByteArray &items)
     {
-        static_assert(is_type<T, QByteArray, QVector<quint8>, std::deque<quint8>,
-            std::vector<quint8>, std::array<quint8, S>>::value, "Type not supported.");
         insertBytes(4, items);
         setByte(0, quint8(items.size()) + 4);
     }
@@ -87,31 +82,7 @@ public:
     using QKnxByteStore::byte;
     using QKnxByteStore::bytes;
 
-    template <typename T, std::size_t S = 0>
-        static QKnxNetIpConnectionHeader fromBytes(const T &bytes, quint16 index)
-    {
-        static_assert(is_type<T, QByteArray, QKnxByteStoreRef, QVector<quint8>, std::deque<quint8>,
-            std::vector<quint8>, std::array<quint8, S>>::value, "Type not supported.");
-
-        const qint32 availableSize = bytes.size() - index;
-        if (availableSize < 1)
-            return {}; // total size missing
-
-        const quint8 totalSize = QKnxUtils::QUint8::fromBytes(bytes, index);
-        if (availableSize < totalSize)
-            return {}; // header might be coruppted
-
-        const quint8 channelId = QKnxUtils::QUint8::fromBytes(bytes, index + 1);
-        const quint8 sequenceCount = QKnxUtils::QUint8::fromBytes(bytes, index + 2);
-        const quint8 serviceTypeSpecificValue = QKnxUtils::QUint8::fromBytes(bytes, index + 3);
-        QKnxNetIpConnectionHeader header(channelId, sequenceCount, serviceTypeSpecificValue);
-        if (totalSize > 4) {
-            auto begin = std::next(std::begin(bytes), index + 4);
-            header.setConnectionTypeSpecificHeaderItems(std::vector<quint8>(begin, std::next(begin,
-                totalSize - 4)));
-        }
-        return header;
-    }
+    static QKnxNetIpConnectionHeader fromBytes(const QKnxByteArray &bytes, quint16 index);
 
 private:
     quint8 m_isValid = 0;

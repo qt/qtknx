@@ -95,10 +95,12 @@ void QKnxNetIpServerDescriptionAgentPrivate::setupSocket()
             if (q->state() == QKnxNetIpServerDescriptionAgent::State::Running) {
                 m_description = {};
                 usedPort = socket->localPort();
-                socket->writeDatagram(QKnxNetIpDescriptionRequest({
+                auto data = QKnxNetIpDescriptionRequest({
                     (nat ? QHostAddress::AnyIPv4 : socket->localAddress()),
                     (nat ? quint16(0u) : usedPort)
-                }).bytes(), m_server.address(), m_server.port());
+                }).bytes();
+                socket->writeDatagram((const char *) data.constData(), data.size(), m_server
+                    .address(), m_server.port());
 
                 setupAndStartReceiveTimer();
             }
@@ -124,12 +126,13 @@ void QKnxNetIpServerDescriptionAgentPrivate::setupSocket()
             if (q->state() != QKnxNetIpServerDescriptionAgent::State::Running)
                 break;
 
-            auto datagram = socket->receiveDatagram();
-            const auto header = QKnxNetIpFrameHeader::fromBytes(datagram.data(), 0);
+            auto ba = socket->receiveDatagram().data();
+            QKnxByteArray data(ba.constData(), ba.size());
+            const auto header = QKnxNetIpFrameHeader::fromBytes(data, 0);
             if (!header.isValid() || header.code() != QKnxNetIp::ServiceType::DescriptionResponse)
                 continue;
 
-            auto response = QKnxNetIpDescriptionResponse::fromBytes(datagram.data(), 0);
+            auto response = QKnxNetIpDescriptionResponse::fromBytes(data, 0);
             if (!response.isValid())
                 continue;
 

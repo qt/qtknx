@@ -46,8 +46,7 @@ public:
     QKnxNetIpDeviceConfigurationRequest(quint8 channelId, quint8 sequenceCount,
         const QKnxLocalDeviceManagementFrame &cemi);
 
-    template <typename T>
-        static QKnxNetIpDeviceConfigurationRequest fromBytes(const T &bytes, quint16 index)
+    static QKnxNetIpDeviceConfigurationRequest fromBytes(const QKnxByteArray &bytes, quint16 index)
     {
         return QKnxNetIpConnectionHeaderFrameHelper::fromBytes(bytes, index,
             QKnxNetIp::ServiceType::DeviceConfigurationRequest);

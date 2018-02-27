@@ -1,6 +1,6 @@
 /******************************************************************************
 **
-** Copyright (C) 2017 The Qt Company Ltd.
+** Copyright (C) 2018 The Qt Company Ltd.
 ** Contact: https://www.qt.io/licensing/
 **
 ** This file is part of the QtKnx module.
@@ -30,7 +30,6 @@
 #ifndef QKNXNETIPFRAMEHEADER_H
 #define QKNXNETIPFRAMEHEADER_H
 
-#include <QtCore/qbytearray.h>
 #include <QtCore/qdatastream.h>
 #include <QtCore/qdebug.h>
 #include <QtCore/qstring.h>
@@ -74,12 +73,8 @@ public:
     static constexpr const quint8 HeaderSize10 = 0x06;
     static constexpr const quint8 KnxNetIpVersion10 = 0x10;
 
-    template <typename T, std::size_t S = 0>
-        static QKnxNetIpFrameHeader fromBytes(const T &bytes, quint16 index)
+    static QKnxNetIpFrameHeader fromBytes(const QKnxByteArray &bytes, quint16 index)
     {
-        static_assert(is_type<T, QByteArray, QKnxByteStoreRef, QVector<quint8>, std::deque<quint8>,
-            std::vector<quint8>, std::array<quint8, S>>::value, "Type not supported.");
-
         const qint32 availableSize = bytes.size() - index;
         if (availableSize < QKnxNetIpFrameHeader::HeaderSize10)
             return {};
@@ -90,6 +85,7 @@ public:
         const quint16 code = QKnxUtils::QUint16::fromBytes(bytes, index + 2);
         if (!QKnxNetIp::isFrameType(QKnxNetIp::ServiceType(code)))
             return {};
+
         return QKnxNetIpFrameHeader(QKnxNetIp::ServiceType(code),
             QKnxUtils::QUint16::fromBytes(bytes, index + 4) - QKnxNetIpFrameHeader::HeaderSize10);
     }

@@ -30,7 +30,6 @@
 #ifndef QKNXNETIPCONFIGDIB_H
 #define QKNXNETIPCONFIGDIB_H
 
-#include <QtCore/qbytearray.h>
 #include <QtCore/qdatastream.h>
 #include <QtCore/qdebug.h>
 #include <QtCore/qstring.h>
@@ -79,7 +78,7 @@ public:
                        Capabilities capabilitys,
                        AssignmentMethods methods);
 
-    template <typename T> static QKnxNetIpConfigDib fromBytes(const T &bytes, quint16 index)
+    static QKnxNetIpConfigDib fromBytes(const QKnxByteArray &bytes, quint16 index)
     {
         return QKnxNetIpStructHelper::fromBytes(bytes, index,
             QKnxNetIp::DescriptionType::IpConfiguration);

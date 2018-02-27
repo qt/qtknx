@@ -60,18 +60,18 @@ void tst_QKnxNetIpDescriptionRequest::testConstructor()
     QKnxNetIpDescriptionRequest descriptionRequest(endpoint);
     QCOMPARE(descriptionRequest.isValid(), true);
     QCOMPARE(descriptionRequest.size(), quint16(14));
-    QCOMPARE(descriptionRequest.bytes<QByteArray>(),
-        QByteArray::fromHex("06100203000e08017f0000010e57"));
+    QCOMPARE(descriptionRequest.bytes(),
+        QKnxByteArray::fromHex("06100203000e08017f0000010e57"));
     QCOMPARE(descriptionRequest.payload().size(), quint16(8));
-    QCOMPARE(descriptionRequest.payload().bytes<QByteArray>(),
-        QByteArray::fromHex("08017f0000010e57"));
+    QCOMPARE(descriptionRequest.payload().bytes(),
+        QKnxByteArray::fromHex("08017f0000010e57"));
     QCOMPARE(descriptionRequest.toString(), QString::fromLatin1("Header size { 0x06 }, "
             "Version { 0x10 }, Code { 0x203 }, Total size { 0x0e }, "
             "Bytes { 0x08, 0x01, 0x7f, 0x00, 0x00, 0x01, 0x0e, 0x57 }"));
 
     QCOMPARE(descriptionRequest.controlEndpoint().isValid(), true);
-    QCOMPARE(descriptionRequest.controlEndpoint().bytes<QByteArray>(),
-        QByteArray::fromHex("08017f0000010e57"));
+    QCOMPARE(descriptionRequest.controlEndpoint().bytes(),
+        QKnxByteArray::fromHex("08017f0000010e57"));
 }
 
 void tst_QKnxNetIpDescriptionRequest::testDebugStream()

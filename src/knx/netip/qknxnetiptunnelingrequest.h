@@ -45,7 +45,7 @@ public:
 
     QKnxNetIpTunnelingRequest(quint8 channelId, quint8 sequenceCount, const QKnxLinkLayerFrame &cemi);
 
-    template <typename T> static QKnxNetIpTunnelingRequest fromBytes(const T &bytes, quint16 index)
+    static QKnxNetIpTunnelingRequest fromBytes(const QKnxByteArray &bytes, quint16 index)
     {
         return QKnxNetIpConnectionHeaderFrameHelper::fromBytes(bytes, index,
             QKnxNetIp::ServiceType::TunnelingRequest);

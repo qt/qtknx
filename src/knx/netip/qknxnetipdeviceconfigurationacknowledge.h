@@ -45,8 +45,7 @@ public:
     QKnxNetIpDeviceConfigurationAcknowledge(quint8 channelId, quint8 sequenceCount,
         QKnxNetIp::Error status);
 
-    template <typename T>
-        static QKnxNetIpDeviceConfigurationAcknowledge fromBytes(const T &bytes, quint16 index)
+    static QKnxNetIpDeviceConfigurationAcknowledge fromBytes(const QKnxByteArray &bytes, quint16 index)
     {
         return QKnxNetIpConnectionHeaderFrameHelper::fromBytes(bytes, index,
             QKnxNetIp::ServiceType::DeviceConfigurationAcknowledge);

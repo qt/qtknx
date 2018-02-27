@@ -53,7 +53,7 @@ QKnxNetIpServerInfo::~QKnxNetIpServerInfo()
 
 QString QKnxNetIpServerInfo::deviceName() const
 {
-    return QString::fromUtf8(d_ptr->hardware.deviceName());
+    return QString::fromUtf8(static_cast<QByteArray> (d_ptr->hardware.deviceName()));
 }
 
 QKnxAddress QKnxNetIpServerInfo::individualAddress() const

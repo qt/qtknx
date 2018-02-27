@@ -44,8 +44,7 @@ public:
 
     explicit QKnxNetIpDescriptionRequest(const QKnxNetIpHpai &controlEndpoint);
 
-    template <typename T>
-        static QKnxNetIpDescriptionRequest fromBytes(const T &bytes, quint16 index)
+    static QKnxNetIpDescriptionRequest fromBytes(const QKnxByteArray &bytes, quint16 index)
     {
         return QKnxNetIpFrameHelper::fromBytes(bytes, index,
             QKnxNetIp::ServiceType::DescriptionRequest);

@@ -47,12 +47,12 @@ QKnxNetIpDescriptionResponse::QKnxNetIpDescriptionResponse(const QKnxNetIpFrame 
 
 QKnxNetIpDeviceDib QKnxNetIpDescriptionResponse::deviceHardware() const
 {
-    return QKnxNetIpDeviceDib::fromBytes(payloadRef(), 0);
+    return QKnxNetIpDeviceDib::fromBytes(payloadRef().bytes(0), 0);
 }
 
 QKnxNetIpServiceFamiliesDib QKnxNetIpDescriptionResponse::supportedFamilies() const
 {
-    return QKnxNetIpServiceFamiliesDib::fromBytes(payloadRef(), 54);
+    return QKnxNetIpServiceFamiliesDib::fromBytes(payloadRef().bytes(0), 54);
 }
 
 bool QKnxNetIpDescriptionResponse::isValid() const

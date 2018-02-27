@@ -40,8 +40,9 @@ using QKnxNetIpStruct = QKnxNetIpPackage<T, QKnxNetIpStructHeader<T>>;
 
 struct QKnxNetIpStructHelper
 {
-    template <typename NetIpType, typename T, std::size_t S = 0>
-        static QKnxNetIpStruct<NetIpType> fromBytes(const T &bytes, quint16 index, NetIpType nType)
+    template <typename NetIpType>
+        static QKnxNetIpStruct<NetIpType> fromBytes(const QKnxByteArray &bytes, quint16 index,
+            NetIpType nType)
     {
         auto header = QKnxNetIpStructHeader<NetIpType>::fromBytes(bytes, index);
         if (!header.isValid() || header.code() != nType)

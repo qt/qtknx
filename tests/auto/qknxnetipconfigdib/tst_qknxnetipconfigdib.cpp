@@ -53,9 +53,9 @@ void tst_QKnxNetIpConfigDib::testDefaultConstructor()
     QKnxNetIpConfigDib configDib;
     QCOMPARE(configDib.isValid(), false);
     QCOMPARE(configDib.size(), quint16(0));
-    QCOMPARE(configDib.bytes<QByteArray>(), QByteArray(""));
+    QCOMPARE(configDib.bytes(), QKnxByteArray {});
     QCOMPARE(configDib.payload().size(), quint16(0));
-    QCOMPARE(configDib.payload().bytes<QByteArray>(), QByteArray(""));
+    QCOMPARE(configDib.payload().bytes(), QKnxByteArray {});
     QCOMPARE(configDib.toString(), QString::fromLatin1("Total size { 0x00 }, Code { 0x00 }, "
         "Bytes {  }"));
     QCOMPARE(quint8(configDib.descriptionType()), quint8(0));
@@ -78,11 +78,13 @@ void tst_QKnxNetIpConfigDib::testConstructorWithFourArguments()
 
     QCOMPARE(configDib.isValid(), true);
     QCOMPARE(configDib.size(), quint16(16));
-    QCOMPARE(configDib.bytes<QByteArray>(),
-        QByteArray::fromHex("1003C0A8020CFFFFFF00C0A802010201"));
+    QCOMPARE(configDib.bytes(),
+        QKnxByteArray({ 0x10, 0x03, 0xc0, 0xa8, 0x02, 0x0c, 0xff, 0xff, 0xff, 0x00, 0xc0, 0xa8,
+            0x02, 0x01, 0x02, 0x01 }));
     QCOMPARE(configDib.payload().size(), quint16(14));
-    QCOMPARE(configDib.payload().bytes<QByteArray>(),
-        QByteArray::fromHex("C0A8020CFFFFFF00C0A802010201"));
+    QCOMPARE(configDib.payload().bytes(),
+        QKnxByteArray({ 0xc0, 0xa8, 0x02, 0x0c, 0xff, 0xff, 0xff, 0x00, 0xc0, 0xa8, 0x02,
+            0x01, 0x02, 0x01 }));
     QCOMPARE(configDib.toString(), QString::fromLatin1("Total size { 0x10 }, Code { 0x03 }, "
         "Bytes { 0xc0, 0xa8, 0x02, 0x0c, 0xff, 0xff, 0xff, 0x00, 0xc0, 0xa8, 0x02, "
         "0x01, 0x02, 0x01 }"));
@@ -104,11 +106,13 @@ void tst_QKnxNetIpConfigDib::testConstructorWithFiveArguments()
 
     QCOMPARE(configDib.isValid(), true);
     QCOMPARE(configDib.size(), quint16(16));
-    QCOMPARE(configDib.bytes<QByteArray>(),
-        QByteArray::fromHex("1003C0A8020CFFFFFF00C0A802010201"));
+    QCOMPARE(configDib.bytes(),
+        QKnxByteArray({ 0x10, 0x03, 0xc0, 0xa8, 0x02, 0x0c, 0xff, 0xff, 0xff, 0x00, 0xc0, 0xa8,
+            0x02, 0x01, 0x02, 0x01 }));
     QCOMPARE(configDib.payload().size(), quint16(14));
-    QCOMPARE(configDib.payload().bytes<QByteArray>(),
-        QByteArray::fromHex("C0A8020CFFFFFF00C0A802010201"));
+    QCOMPARE(configDib.payload().bytes(),
+        QKnxByteArray({ 0xc0, 0xa8, 0x02, 0x0c, 0xff, 0xff, 0xff, 0x00, 0xc0, 0xa8, 0x02,
+            0x01, 0x02, 0x01 }));
     QCOMPARE(configDib.toString(), QString::fromLatin1("Total size { 0x10 }, Code { 0x03 }, "
         "Bytes { 0xc0, 0xa8, 0x02, 0x0c, 0xff, 0xff, 0xff, 0x00, 0xc0, 0xa8, 0x02, "
         "0x01, 0x02, 0x01 }"));

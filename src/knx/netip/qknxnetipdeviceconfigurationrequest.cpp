@@ -56,8 +56,9 @@ quint8 QKnxNetIpDeviceConfigurationRequest::sequenceCount() const
 
 QKnxLocalDeviceManagementFrame QKnxNetIpDeviceConfigurationRequest::cemi() const
 {
-    auto ref = payloadRef(connectionHeaderSize());
-    return QKnxLocalDeviceManagementFrame::fromBytes(ref.bytes<QByteArray>(), 0, ref.size());
+    // TODO: The copy here is suboptimal...
+    auto data = payloadRef(connectionHeaderSize()).bytes(0);
+    return QKnxLocalDeviceManagementFrame::fromBytes(data, 0, data.size());
 }
 
 bool QKnxNetIpDeviceConfigurationRequest::isValid() const

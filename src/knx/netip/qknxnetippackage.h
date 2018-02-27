@@ -30,7 +30,6 @@
 #ifndef QKNXNETIPPACKAGE_H
 #define QKNXNETIPPACKAGE_H
 
-#include <QtCore/qbytearray.h>
 #include <QtCore/qdatastream.h>
 #include <QtCore/qdebug.h>
 #include <QtCore/qstring.h>
@@ -82,12 +81,9 @@ public:
         return QStringLiteral("%1, %2").arg(m_header.toString(), m_payload.toString());
     }
 
-    template <typename T = QByteArray> auto bytes() const -> decltype(T())
+    QKnxByteArray bytes() const
     {
-        static_assert(is_type<T, QByteArray, QVector<quint8>, std::deque<quint8>,
-            std::vector<quint8>>::value, "Type not supported.");
-
-        T t(m_header.totalSize(), 0);
+        QKnxByteArray t(m_header.totalSize(), 0);
 
         auto headr = m_header.bytes();
         std::copy(std::begin(headr), std::end(headr), std::begin(t));

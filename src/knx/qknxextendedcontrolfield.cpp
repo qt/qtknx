@@ -60,19 +60,7 @@ QKnxExtendedControlField::QKnxExtendedControlField(quint8 data)
 
     \note The byte array must contain at least one elements.
 */
-QKnxExtendedControlField::QKnxExtendedControlField(const QByteArray &data)
-{
-    if (data.size() > 0)
-        m_ctrl2 = quint8(data[0]);
-}
-
-/*!
-    Creates a new extended control field from the first byte of the \a data
-    vector. Hexadecimal, octal and decimal notation are supported.
-
-    \note The vector must contain at least one elements.
-*/
-QKnxExtendedControlField::QKnxExtendedControlField(const QVector<quint8> &data)
+QKnxExtendedControlField::QKnxExtendedControlField(const QKnxByteArray &data)
 {
     if (data.size() > 0)
         m_ctrl2 = quint8(data[0]);
@@ -131,18 +119,7 @@ QString QKnxExtendedControlField::toString() const
 /*!
     \fn quint8 QKnxExtendedControlField::bytes() const
 
-    Returns the extended control field as byte or range of bytes.
-
-    \note \c quint8, \c QByteArray and \c QVector<quint8> as well as
-    std::vector<quint8> and std::deque<quint8> are supported as return type.
-
-    \code
-        QKnxExtendedControlField ectrl;
-
-        quint8 byte = ectrl.bytes();
-        auto byteArray = ectrl.bytes<QByteArray>();
-        auto vector = ectrl.bytes<QVector<quint8>>();
-    \endcode
+    Returns the extended control field range of bytes.
 */
 
 /*!

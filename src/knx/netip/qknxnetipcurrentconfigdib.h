@@ -30,7 +30,6 @@
 #ifndef QKNXNETIPCURRENTCONFIGDIB_H
 #define QKNXNETIPCURRENTCONFIGDIB_H
 
-#include <QtCore/qbytearray.h>
 #include <QtCore/qdatastream.h>
 #include <QtCore/qdebug.h>
 #include <QtCore/qstring.h>
@@ -69,7 +68,7 @@ public:
                               const QHostAddress &dhcp,
                               AssignmentMethod method);
 
-    template <typename T> static QKnxNetIpCurrentConfigDib fromBytes(const T &bytes, quint16 index)
+    static QKnxNetIpCurrentConfigDib fromBytes(const QKnxByteArray &bytes, quint16 index)
     {
         return QKnxNetIpStructHelper::fromBytes(bytes, index,
             QKnxNetIp::DescriptionType::CurrentIpConfiguration);

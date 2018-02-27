@@ -30,7 +30,6 @@
 #ifndef QKNXADDRESS_H
 #define QKNXADDRESS_H
 
-#include <QtCore/qbytearray.h>
 #include <QtCore/qdatastream.h>
 #include <QtCore/qdebug.h>
 #include <QtCore/qstring.h>
@@ -60,8 +59,7 @@ public:
     QKnxAddress() = default;
     QKnxAddress(QKnxAddress::Type type, quint16 address);
     QKnxAddress(QKnxAddress::Type type, const QString &address);
-    QKnxAddress(QKnxAddress::Type type, const QByteArray &address);
-    QKnxAddress(QKnxAddress::Type type, const QVector<quint8> &address);
+    QKnxAddress(QKnxAddress::Type type, const QKnxByteArray &address);
 
     static QKnxAddress createGroup(quint8 mainGroup, quint16 subGroup);
     static QKnxAddress createGroup(quint8 mainGroup, quint16 middleGroup, quint8 subGroup);
@@ -78,14 +76,11 @@ public:
     struct Q_KNX_EXPORT Individual final { static QKnxAddress Unregistered; };
 
     quint8 size() const { return 2; }
-    template <typename T = QByteArray> auto bytes() const -> decltype(T())
+    QKnxByteArray bytes() const
     {
-        static_assert(is_type<T, QByteArray, QVector<quint8>, std::deque<quint8>,
-            std::vector<quint8>>::value, "Type not supported.");
-
         if (!isValid())
             return {};
-        return QKnxUtils::QUint16::bytes<T>(quint16(m_address));
+        return QKnxUtils::QUint16::bytes(quint16(m_address));
     }
 
     QString toString(Notation notation = Notation::ThreeLevel) const;

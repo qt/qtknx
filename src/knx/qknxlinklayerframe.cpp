@@ -225,7 +225,7 @@ QKnxControlField QKnxLinkLayerFrame::controlField() const
 void QKnxLinkLayerFrame::setControlField(const QKnxControlField &controlField)
 {
     auto payload = serviceInformation();
-    payload.setByte(additionalInfosSize() + 1, controlField.bytes());
+    payload.setByte(additionalInfosSize() + 1, controlField.byte());
     setServiceInformation(payload);
 }
 
@@ -237,7 +237,7 @@ QKnxExtendedControlField QKnxLinkLayerFrame::extendedControlField() const
 void QKnxLinkLayerFrame::setExtendedControlField(const QKnxExtendedControlField &controlFieldEx)
 {
     auto payload = serviceInformation();
-    payload.setByte(additionalInfosSize() + 2, controlFieldEx.bytes());
+    payload.setByte(additionalInfosSize() + 2, controlFieldEx.byte());
     setServiceInformation(payload);
 }
 
@@ -285,7 +285,7 @@ void QKnxLinkLayerFrame::removeAdditionalInfo(QKnxAdditionalInfo::Type type)
     }
 
     payload.setByte(0, payload.size() - 1);
-    payload.appendBytes(serviceInformationRef(oldSize + 1).bytes<QByteArray>());
+    payload.appendBytes(serviceInformationRef(oldSize + 1).bytes(0));
 
     setServiceInformation(payload);
 }
@@ -308,7 +308,7 @@ void QKnxLinkLayerFrame::removeAdditionalInfo(const QKnxAdditionalInfo &info)
     }
 
     payload.setByte(0, payload.size() - 1);
-    payload.appendBytes(serviceInformationRef(oldSize + 1).bytes<QByteArray>());
+    payload.appendBytes(serviceInformationRef(oldSize + 1).bytes(0));
 
     setServiceInformation(payload);
 }
@@ -320,7 +320,7 @@ void QKnxLinkLayerFrame::clearAdditionalInfos()
         return;
 
     QKnxLinkLayerPayload payload(0x00);
-    payload.appendBytes(serviceInformationRef(oldSize + 1).bytes<QByteArray>());
+    payload.appendBytes(serviceInformationRef(oldSize + 1).bytes(0));
     setServiceInformation(payload);
 }
 
@@ -357,7 +357,7 @@ QKnxTpdu QKnxLinkLayerFrame::tpdu() const
 
     // length field + ctrl + extCtrl + 2 * KNX address -> 7 bytes
     const quint8 tpduOffset = additionalInfosSize() + 7 + 1/* bytes */;
-    return QKnxTpdu::fromBytes(serviceInformationRef().bytes<QVector<quint8>>(),
+    return QKnxTpdu::fromBytes(serviceInformationRef().bytes(0),
         tpduOffset, (size() - 1) - tpduOffset);
 }
 
