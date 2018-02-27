@@ -162,7 +162,7 @@ void QKnxNetIpServerDiscoveryAgentPrivate::setupSocket()
             auto ba = socket->receiveDatagram().data();
             QKnxByteArray data(ba.constData(), ba.size());
             const auto header = QKnxNetIpFrameHeader::fromBytes(data, 0);
-            if (!header.isValid() || header.code() != QKnxNetIp::ServiceType::SearchResponse)
+            if (!header.isValid() || header.serviceType() != QKnxNetIp::ServiceType::SearchResponse)
                 continue;
 
             auto response = QKnxNetIpSearchResponse::fromBytes(data, 0);

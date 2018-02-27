@@ -167,7 +167,7 @@ void QKnxNetIpEndpointConnectionPrivate::setup()
                     //     send disconnect request
                     // } else {
                     // TODO: set the m_dataEndpointVersion once we receive or send the first frame
-                        switch (header.code()) {
+                        switch (header.serviceType()) {
                         case QKnxNetIp::ServiceType::TunnelingRequest:
 
                             process(QKnxNetIpTunnelingRequest::fromBytes(data, 0));
@@ -214,7 +214,7 @@ void QKnxNetIpEndpointConnectionPrivate::setup()
                     // } else if (header.protocolVersion() != m_controlEndpointVersion) {
                     //     send disconnect request
                     // } else {
-                        switch (header.code()) {
+                        switch (header.serviceType()) {
                         case QKnxNetIp::ServiceType::ConnectResponse:
                             process(QKnxNetIpConnectResponse::fromBytes(data, 0),
                                 datagram);

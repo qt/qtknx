@@ -129,7 +129,7 @@ void QKnxNetIpServerDescriptionAgentPrivate::setupSocket()
             auto ba = socket->receiveDatagram().data();
             QKnxByteArray data(ba.constData(), ba.size());
             const auto header = QKnxNetIpFrameHeader::fromBytes(data, 0);
-            if (!header.isValid() || header.code() != QKnxNetIp::ServiceType::DescriptionResponse)
+            if (!header.isValid() || header.serviceType() != QKnxNetIp::ServiceType::DescriptionResponse)
                 continue;
 
             auto response = QKnxNetIpDescriptionResponse::fromBytes(data, 0);

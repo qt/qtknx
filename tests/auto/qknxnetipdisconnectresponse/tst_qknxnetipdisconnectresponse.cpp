@@ -66,7 +66,7 @@ void tst_QKnxNetIpDisconnectResponse::testConstructor()
     QCOMPARE(response.payload().size(), quint16(2));
     QCOMPARE(response.payload().bytes(), QKnxByteArray::fromHex("c824"));
     QCOMPARE(response.toString(), QString::fromLatin1("Header size { 0x06 }, "
-            "Version { 0x10 }, Code { 0x20a }, Total size { 0x08 }, Bytes { 0xc8, 0x24 }"));
+            "Version { 0x10 }, Service type { 0x20a }, Total size { 0x08 }, Bytes { 0xc8, 0x24 }"));
 
     QCOMPARE(response.channelId(), quint8(200));
     QCOMPARE(response.status(), QKnxNetIp::Error::NoMoreConnections);
@@ -82,7 +82,7 @@ void tst_QKnxNetIpDisconnectResponse::testConstructorNoError()
     QCOMPARE(response.payload().size(), quint16(2));
     QCOMPARE(response.payload().bytes(), QKnxByteArray::fromHex("c800"));
     QCOMPARE(response.toString(), QString::fromLatin1("Header size { 0x06 }, "
-            "Version { 0x10 }, Code { 0x20a }, Total size { 0x08 }, Bytes { 0xc8, 0x00 }"));
+            "Version { 0x10 }, Service type { 0x20a }, Total size { 0x08 }, Bytes { 0xc8, 0x00 }"));
 
     QCOMPARE(response.channelId(), quint8(200));
     QCOMPARE(response.status(), QKnxNetIp::Error::None);

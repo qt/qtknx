@@ -28,6 +28,7 @@
 ******************************************************************************/
 
 #include "qknxnetiproutinglostmessage.h"
+#include "qknxutils.h"
 
 QT_BEGIN_NAMESPACE
 

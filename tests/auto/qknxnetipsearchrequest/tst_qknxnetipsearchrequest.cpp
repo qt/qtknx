@@ -64,7 +64,7 @@ void tst_QKnxNetIpSearchRequest::testConstructor()
     QCOMPARE(search.payload().size(), quint16(8));
     QCOMPARE(search.payload().bytes(), QKnxByteArray::fromHex("08017f0000010e57"));
     QCOMPARE(search.toString(), QString::fromLatin1("Header size { 0x06 }, "
-            "Version { 0x10 }, Code { 0x201 }, Total size { 0x0e }, "
+            "Version { 0x10 }, Service type { 0x201 }, Total size { 0x0e }, "
             "Bytes { 0x08, 0x01, 0x7f, 0x00, 0x00, 0x01, 0x0e, 0x57 }"));
 
     QCOMPARE(search.discoveryEndpoint().isValid(), true);

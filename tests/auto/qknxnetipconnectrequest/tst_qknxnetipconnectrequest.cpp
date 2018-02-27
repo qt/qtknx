@@ -72,7 +72,7 @@ void tst_QKnxNetIpConnectRequest::testConstructor()
     QCOMPARE(connectRequest.payload().bytes(),
         QKnxByteArray::fromHex("08017f0000010e5708017f0000010e57"));
     QCOMPARE(connectRequest.toString(), QString::fromLatin1("Header size { 0x06 }, "
-            "Version { 0x10 }, Code { 0x205 }, Total size { 0x16 }, "
+            "Version { 0x10 }, Service type { 0x205 }, Total size { 0x16 }, "
             "Bytes { 0x08, 0x01, 0x7f, 0x00, 0x00, 0x01, 0x0e, 0x57, 0x08, 0x01, "
             "0x7f, 0x00, 0x00, 0x01, 0x0e, 0x57 }"));
     QCOMPARE(connectRequest.controlEndpoint().bytes(),
@@ -93,7 +93,7 @@ void tst_QKnxNetIpConnectRequest::testConstructor()
     QCOMPARE(connectRequest.payload().bytes(),
         QKnxByteArray::fromHex("08017f0000010e5708017f0000010e5704040200"));
     QCOMPARE(connectRequest.toString(), QString::fromLatin1("Header size { 0x06 }, "
-            "Version { 0x10 }, Code { 0x205 }, Total size { 0x1a }, "
+            "Version { 0x10 }, Service type { 0x205 }, Total size { 0x1a }, "
             "Bytes { 0x08, 0x01, 0x7f, 0x00, 0x00, 0x01, 0x0e, 0x57, 0x08, 0x01, "
             "0x7f, 0x00, 0x00, 0x01, 0x0e, 0x57, 0x04, 0x04, 0x02, 0x00 }"));
 

@@ -66,7 +66,7 @@ void tst_QKnxNetIpDescriptionRequest::testConstructor()
     QCOMPARE(descriptionRequest.payload().bytes(),
         QKnxByteArray::fromHex("08017f0000010e57"));
     QCOMPARE(descriptionRequest.toString(), QString::fromLatin1("Header size { 0x06 }, "
-            "Version { 0x10 }, Code { 0x203 }, Total size { 0x0e }, "
+            "Version { 0x10 }, Service type { 0x203 }, Total size { 0x0e }, "
             "Bytes { 0x08, 0x01, 0x7f, 0x00, 0x00, 0x01, 0x0e, 0x57 }"));
 
     QCOMPARE(descriptionRequest.controlEndpoint().isValid(), true);

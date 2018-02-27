@@ -36,11 +36,9 @@
 
 QT_BEGIN_NAMESPACE
 
-class Q_KNX_EXPORT QKnxNetIpConnectionHeaderFrame
-    : public QKnxNetIpPackage<QKnxNetIp::ServiceType, QKnxNetIpFrameHeader>
+class Q_KNX_EXPORT QKnxNetIpConnectionHeaderFrame : public QKnxNetIpFrame
 {
     friend struct QKnxNetIpConnectionHeaderFrameHelper;
-    using Package = QKnxNetIpPackage<QKnxNetIp::ServiceType, QKnxNetIpFrameHeader>;
 
 public:
     QKnxNetIpConnectionHeaderFrame() = default;
@@ -66,11 +64,11 @@ public:
     }
 
 protected:
-    using Package::Package;
+    using QKnxNetIpFrame::QKnxNetIpFrame;
 
     QKnxNetIpConnectionHeaderFrame(const QKnxNetIpFrameHeader &header,
             const QKnxNetIpConnectionHeader &connHeader, const QKnxNetIpPayload &payload)
-        : Package(header, payload)
+        : QKnxNetIpFrame(header, payload)
         , m_connectionHeader(connHeader)
     {}
 
@@ -78,7 +76,7 @@ protected:
     {
         QKnxNetIpPayload payload(connHeader.bytes());
         payload.appendBytes(payloadRef(m_connectionHeader.size()).bytes(0));
-        Package::setPayload(payload);
+        QKnxNetIpFrame::setPayload(payload);
 
         m_connectionHeader = connHeader;
     }
@@ -87,7 +85,7 @@ protected:
     {
         auto load = payload;
         load.insertBytes(0, m_connectionHeader.bytes());
-        Package::setPayload(load);
+        QKnxNetIpFrame::setPayload(load);
     }
 
 private:
@@ -100,7 +98,7 @@ struct QKnxNetIpConnectionHeaderFrameHelper
             QKnxNetIp::ServiceType sType)
     {
         auto header = QKnxNetIpFrameHeader::fromBytes(bytes, index);
-        if (!header.isValid() || header.code() != sType)
+        if (!header.isValid() || header.serviceType() != sType)
             return {};
 
         auto connectionHeader = QKnxNetIpConnectionHeader::fromBytes(bytes, index + header.size());
@@ -108,7 +106,7 @@ struct QKnxNetIpConnectionHeaderFrameHelper
             return {};
 
         return QKnxNetIpConnectionHeaderFrame(header, connectionHeader,
-            QKnxNetIpPayload::fromBytes(bytes, index + header.size(), header.payloadSize()));
+            QKnxNetIpPayload::fromBytes(bytes, index + header.size(), header.dataSize()));
     }
 };
 

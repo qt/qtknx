@@ -30,65 +30,53 @@
 #ifndef QKNXNETIPFRAMEHEADER_H
 #define QKNXNETIPFRAMEHEADER_H
 
-#include <QtCore/qdatastream.h>
-#include <QtCore/qdebug.h>
 #include <QtCore/qstring.h>
-#include <QtCore/qvector.h>
-#include <QtKnx/qknxbytestore.h>
-#include <QtKnx/qknxglobal.h>
+
+#include <QtKnx/qknxbytearray.h>
 #include <QtKnx/qknxnetip.h>
-#include <QtKnx/qknxtraits.h>
-#include <QtKnx/qknxutils.h>
 
 QT_BEGIN_NAMESPACE
 
-class Q_KNX_EXPORT QKnxNetIpFrameHeader final : private QKnxByteStore
+class Q_KNX_EXPORT QKnxNetIpFrameHeader final
 {
     friend struct QKnxNetIpFrameHelper;
 
 public:
     QKnxNetIpFrameHeader() = default;
-    ~QKnxNetIpFrameHeader() override = default;
+    ~QKnxNetIpFrameHeader() = default;
 
-    explicit QKnxNetIpFrameHeader(QKnxNetIp::ServiceType code);
-    QKnxNetIpFrameHeader(QKnxNetIp::ServiceType code, quint16 payloadSize);
-
-    bool isValid() const;
-    quint16 totalSize() const;
-
-    quint8 protocolVersion() const;
-
-    quint16 payloadSize() const;
-    void setPayloadSize(quint16 payloadSize);
-
-    QKnxNetIp::ServiceType code() const;
-    void setCode(QKnxNetIp::ServiceType code);
-
-    QString toString() const override;
-
-    using QKnxByteStore::size;
-    using QKnxByteStore::byte;
-    using QKnxByteStore::bytes;
+    explicit QKnxNetIpFrameHeader(QKnxNetIp::ServiceType type);
+    QKnxNetIpFrameHeader(QKnxNetIp::ServiceType type, quint16 dataSize);
 
     static constexpr const quint8 HeaderSize10 = 0x06;
     static constexpr const quint8 KnxNetIpVersion10 = 0x10;
 
-    static QKnxNetIpFrameHeader fromBytes(const QKnxByteArray &bytes, quint16 index)
-    {
-        const qint32 availableSize = bytes.size() - index;
-        if (availableSize < QKnxNetIpFrameHeader::HeaderSize10)
-            return {};
+    bool isNull() const;
+    bool isValid() const;
 
-        if (QKnxUtils::QUint8::fromBytes(bytes, index + 1) != QKnxNetIpFrameHeader::KnxNetIpVersion10)
-            return {};
+    quint8 size() const;
+    quint8 setSize(quint8 size);
 
-        const quint16 code = QKnxUtils::QUint16::fromBytes(bytes, index + 2);
-        if (!QKnxNetIp::isFrameType(QKnxNetIp::ServiceType(code)))
-            return {};
+    quint8 protocolVersion() const;
+    void setProtocolVersion(quint8 version);
 
-        return QKnxNetIpFrameHeader(QKnxNetIp::ServiceType(code),
-            QKnxUtils::QUint16::fromBytes(bytes, index + 4) - QKnxNetIpFrameHeader::HeaderSize10);
-    }
+    quint16 totalSize() const;
+
+    quint16 dataSize() const;
+    void setDataSize(quint16 dataSize);
+
+    QKnxNetIp::ServiceType serviceType() const;
+    void setServiceType(QKnxNetIp::ServiceType type);
+
+    QString toString() const;
+
+    quint8 byte(quint8 index) const;
+    QKnxByteArray bytes() const;
+
+    static QKnxNetIpFrameHeader fromBytes(const QKnxByteArray &bytes, quint16 index = 0);
+
+private:
+    quint8 m_bytes[6] { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
 };
 
 QT_END_NAMESPACE

@@ -70,7 +70,7 @@ void tst_QKnxNetIpConnectionStateRequest::testConstructor()
     QCOMPARE(connectionStateRequest.payload().bytes(),
         QKnxByteArray({ 0xff, 0x00, 0x08, 0x01, 0x7f, 0x00, 0x00, 0x01, 0x0e, 0x57 }));
     QCOMPARE(connectionStateRequest.toString(), QString::fromLatin1("Header size { 0x06 }, "
-            "Version { 0x10 }, Code { 0x207 }, Total size { 0x10 }, "
+            "Version { 0x10 }, Service type { 0x207 }, Total size { 0x10 }, "
             "Bytes { 0xff, 0x00, 0x08, 0x01, 0x7f, 0x00, 0x00, 0x01, 0x0e, 0x57 }"));
 
     QCOMPARE(connectionStateRequest.channelId(), quint8(255));

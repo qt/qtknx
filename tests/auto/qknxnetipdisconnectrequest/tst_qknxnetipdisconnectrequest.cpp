@@ -66,7 +66,7 @@ void tst_QKnxNetIpDisconnectRequest::testConstructor()
     QCOMPARE(request.payload().size(), quint16(10));
     QCOMPARE(request.payload().bytes(), QKnxByteArray::fromHex("c80008017f0000010e57"));
     QCOMPARE(request.toString(), QString::fromLatin1("Header size { 0x06 }, "
-            "Version { 0x10 }, Code { 0x209 }, Total size { 0x10 }, "
+            "Version { 0x10 }, Service type { 0x209 }, Total size { 0x10 }, "
             "Bytes { 0xc8, 0x00, 0x08, 0x01, 0x7f, 0x00, 0x00, 0x01, 0x0e, 0x57 }"));
 
     QCOMPARE(request.channelId(), quint8(200));

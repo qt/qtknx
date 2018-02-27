@@ -78,8 +78,8 @@ void tst_QKnxNetIpDescriptionResponse::testDefaultConstructor()
     QCOMPARE(descriptionResponseDefault.bytes(),QKnxByteArray {});
     QCOMPARE(descriptionResponseDefault.payload().size(), quint16(0));
     QCOMPARE(descriptionResponseDefault.payload().bytes(),QKnxByteArray {});
-    QCOMPARE(descriptionResponseDefault.toString(), QString::fromLatin1("Header size { 0x06 }, "
-            "Version { 0x10 }, Code { 0x00 }, Total size { 0x00 }, Bytes {  }"));
+    QCOMPARE(descriptionResponseDefault.toString(), QString::fromLatin1("Header size { 0x00 }, "
+            "Version { 0x00 }, Service type { 0x00 }, Total size { 0x00 }, Bytes {  }"));
 }
 
 void tst_QKnxNetIpDescriptionResponse::testConstructorWithArguments()
@@ -102,7 +102,7 @@ void tst_QKnxNetIpDescriptionResponse::testConstructorWithArguments()
         + QKnxByteArray::fromHex("04020404"));
 
     QCOMPARE(descriptionResponse.toString(), QString::fromLatin1("Header size { 0x06 }, "
-            "Version { 0x10 }, Code { 0x204 }, Total size { 0x40 }, Bytes { 0x36, 0x01, 0x20, "
+            "Version { 0x10 }, Service type { 0x204 }, Total size { 0x40 }, Bytes { 0x36, 0x01, 0x20, "
             "0x01, 0xff, 0xff, 0x11, 0x11, 0x12, 0x34, 0x56, 0x12, 0x34, 0x56, 0x00, 0x00, 0x00, "
             "0x00, 0xbc, 0xae, 0xc5, 0x66, 0x90, 0xf9, 0x71, 0x74, 0x2e, 0x69, 0x6f, 0x20, 0x4b, "
             "0x4e, 0x58, 0x20, 0x64, 0x65, 0x76, 0x69, 0x63, 0x65, 0x00, 0x00, 0x00, 0x00, 0x00, "
