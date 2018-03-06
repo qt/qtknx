@@ -30,7 +30,6 @@
 #ifndef QKNXNETIPSTRUCTREF_H
 #define QKNXNETIPSTRUCTREF_H
 
-#include <QtKnx/qknxnetippackage.h>
 #include <QtKnx/qknxnetipconfigdib.h>
 #include <QtKnx/qknxnetipcrd.h>
 #include <QtKnx/qknxnetipcri.h>

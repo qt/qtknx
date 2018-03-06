@@ -24,7 +24,6 @@ PUBLIC_HEADERS += $$PWD/qknxnetip.h \
     $$PWD/qknxnetiphpai.h \
     $$PWD/qknxnetipknxaddressesdib.h \
     $$PWD/qknxnetipmanufacturerdib.h \
-    $$PWD/qknxnetippackage.h \
     $$PWD/qknxnetippayload.h \
     $$PWD/qknxnetiproutingbusy.h \
     $$PWD/qknxnetiproutingindication.h \

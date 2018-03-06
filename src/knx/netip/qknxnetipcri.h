@@ -55,7 +55,7 @@ public:
         auto code = QKnxNetIpStructHeader<QKnxNetIp::ConnectionType>::fromBytes(bytes, index).code();
         if (!QKnxNetIp::isStructType(code))
             return {};
-        return QKnxNetIpStructHelper::fromBytes(bytes, index, code);
+        return QKnxNetIpStruct::fromBytes(bytes, index, code);
     }
 
     QKnxNetIp::ConnectionType connectionType() const;

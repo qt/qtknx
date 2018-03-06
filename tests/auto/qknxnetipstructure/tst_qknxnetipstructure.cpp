@@ -64,7 +64,7 @@ public:
     // TODO: The following function is not used yet...
     template<typename T> static TestStructure fromBytes(const T &bytes, quint16 index)
     {
-        return QKnxNetIpStructHelper::fromBytes(bytes, index, QKnxNetIp::HostProtocol::Unknown);
+        return QKnxNetIpStruct::fromBytes(bytes, index, QKnxNetIp::HostProtocol::Unknown);
     }
 
 private:

@@ -30,27 +30,117 @@
 #ifndef QKNXNETIPSTRUCT_H
 #define QKNXNETIPSTRUCT_H
 
+#include <QtKnx/qknxbytearray.h>
 #include <QtKnx/qknxnetip.h>
-#include <QtKnx/qknxnetippackage.h>
+#include <QtKnx/qknxtraits.h>
+#include <QtKnx/qknxnetipstructheader.h>
+#include <QtKnx/qknxnetippayload.h>
 
 QT_BEGIN_NAMESPACE
 
-template <typename T>
-using QKnxNetIpStruct = QKnxNetIpPackage<T, QKnxNetIpStructHeader<T>>;
-
-struct QKnxNetIpStructHelper
+template <typename CodeType> class Q_KNX_EXPORT QKnxNetIpStruct
 {
-    template <typename NetIpType>
-        static QKnxNetIpStruct<NetIpType> fromBytes(const QKnxByteArray &bytes, quint16 index,
-            NetIpType nType)
+    static_assert(is_type<CodeType, QKnxNetIp::HostProtocol, QKnxNetIp::ConnectionType,
+        QKnxNetIp::DescriptionType>::value, "Type not supported.");
+
+public:
+    quint16 size() const
     {
-        auto header = QKnxNetIpStructHeader<NetIpType>::fromBytes(bytes, index);
+        return m_header.totalSize();
+    }
+
+    virtual QKnxNetIpStructHeader<CodeType> header() const
+    {
+        return m_header;
+    }
+
+    virtual QKnxNetIpPayload payload() const
+    {
+        return m_payload;
+    }
+
+    QKnxNetIpPayloadRef payloadRef(quint16 index = 0) const
+    {
+        return m_payload.ref(index);
+    }
+
+    virtual bool isValid() const
+    {
+        return m_header.isValid() && size() == (m_header.size() + m_payload.size());
+    }
+
+    virtual QString toString() const
+    {
+        return QStringLiteral("%1, %2").arg(m_header.toString(), m_payload.toString());
+    }
+
+    QKnxByteArray bytes() const
+    {
+        QKnxByteArray t(m_header.totalSize(), 0);
+
+        auto headr = m_header.bytes();
+        std::copy(std::begin(headr), std::end(headr), std::begin(t));
+
+        auto loadRef = m_payload.ref();
+        std::copy(std::begin(loadRef), std::end(loadRef), std::next(std::begin(t), m_header.size()));
+
+        return t;
+    }
+
+    static QKnxNetIpStruct<CodeType> fromBytes(const QKnxByteArray &bytes, quint16 index,
+            CodeType nType)
+    {
+        auto header = QKnxNetIpStructHeader<CodeType>::fromBytes(bytes, index);
         if (!header.isValid() || header.code() != nType)
             return {};
 
-        return QKnxNetIpStruct<NetIpType>(header, QKnxNetIpPayload::fromBytes(bytes,
-            index + header.size(), header.dataSize()));
+        return { header, QKnxNetIpPayload::fromBytes(bytes, index + header.size(), header
+            .dataSize()) };
     }
+
+    virtual ~QKnxNetIpStruct() = default;
+
+protected:
+    QKnxNetIpStruct() = default;
+
+    explicit QKnxNetIpStruct(CodeType code)
+        : m_header({ code })
+    {}
+
+    QKnxNetIpStruct(const  QKnxNetIpStructHeader<CodeType> &header, const QKnxNetIpPayload &payload)
+        : m_header(header)
+        , m_payload(payload)
+    {}
+
+    CodeType code() const
+    {
+        return m_header.code();
+    }
+
+    void setCode(CodeType code)
+    {
+        m_header.setCode(code);
+    }
+
+    quint16 dataSize() const
+    {
+        return m_header.dataSize();
+    }
+
+    void setDataSize(quint16 dataSize)
+    {
+        m_header.setDataSize(dataSize);
+    }
+
+    void setPayload(const QKnxNetIpPayload &payload)
+    {
+        m_payload = payload;
+        setDataSize(payload.size());
+    }
+
+private:
+    QKnxNetIpStructHeader<CodeType> m_header;
+    QKnxNetIpPayload m_payload;
 };
 
 using QKnxNetIpHostProtocolStruct = QKnxNetIpStruct<QKnxNetIp::HostProtocol>;

@@ -65,11 +65,7 @@ QT_BEGIN_NAMESPACE
 
 static QDebug stream(QDebug debug, const QKnxByteArray &bytes)
 {
-    QDebug &dbg = debug.nospace().noquote() << "0x" << hex << qSetFieldWidth(2)
-        << qSetPadChar(QLatin1Char('0'));
-    for (quint8 byte : qAsConst(bytes))
-        dbg << byte;
-    return debug;
+    return debug.nospace().noquote() << "0x" << bytes.toHex();
 }
 
 static QDataStream &stream(QDataStream &out, const QKnxByteArray &bytes)
