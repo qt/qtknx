@@ -47,7 +47,6 @@ private slots:
     void testAddFunctions();
     void testGetFunction();
     void testDebugStream();
-    void testDataStream();
 };
 
 void tst_QKnxNetIpServiceFamiliesDib::testDefaultConstructor()
@@ -56,10 +55,8 @@ void tst_QKnxNetIpServiceFamiliesDib::testDefaultConstructor()
     QCOMPARE(serviceFamiliesDib.isValid(), true);
     QCOMPARE(serviceFamiliesDib.size(), quint16(2));
     QCOMPARE(serviceFamiliesDib.bytes(), QKnxByteArray::fromHex("0202"));
-    QCOMPARE(serviceFamiliesDib.payload().size(), quint16(0));
-    QCOMPARE(serviceFamiliesDib.payload().bytes(), QKnxByteArray {});
-    QCOMPARE(serviceFamiliesDib.toString(), QString::fromLatin1("Total size { 0x02 }, "
-        "Code { 0x02 }, Bytes {  }"));
+    QCOMPARE(serviceFamiliesDib.data().size(), quint16(0));
+    QCOMPARE(serviceFamiliesDib.data(), QKnxByteArray {});
     QCOMPARE(serviceFamiliesDib.descriptionType(),
         QKnxNetIp::DescriptionType::SupportedServiceFamilies);
 }
@@ -81,12 +78,8 @@ void tst_QKnxNetIpServiceFamiliesDib::testConstructorWithOneArgument()
     QCOMPARE(serviceFamiliesDib.size(), quint16(18));
     QCOMPARE(serviceFamiliesDib.bytes(),
         QKnxByteArray::fromHex("1202020903010302040B050C060D070E080F"));
-    QCOMPARE(serviceFamiliesDib.payload().size(), quint16(16));
-    QCOMPARE(serviceFamiliesDib.payload().bytes(),
-        QKnxByteArray::fromHex("020903010302040B050C060D070E080F"));
-    QCOMPARE(serviceFamiliesDib.toString(), QString::fromLatin1("Total size { 0x12 }, "
-        "Code { 0x02 }, Bytes { 0x02, 0x09, 0x03, 0x01, 0x03, 0x02, 0x04, 0x0b, 0x05, 0x0c, 0x06, "
-        "0x0d, 0x07, 0x0e, 0x08, 0x0f }"));
+    QCOMPARE(serviceFamiliesDib.data().size(), quint16(16));
+    QCOMPARE(serviceFamiliesDib.data(), QKnxByteArray::fromHex("020903010302040B050C060D070E080F"));
     QCOMPARE(serviceFamiliesDib.descriptionType(),
         QKnxNetIp::DescriptionType::SupportedServiceFamilies);
 }
@@ -99,9 +92,7 @@ void tst_QKnxNetIpServiceFamiliesDib::testConstructorWithTwoArguments()
     QCOMPARE(families.size(), quint16(4));
     QCOMPARE(families.bytes(), QKnxByteArray::fromHex("0402020A"));
     QCOMPARE(families.size(), quint16(4));
-    QCOMPARE(families.payload().bytes(), QKnxByteArray::fromHex("020A"));
-    QCOMPARE(families.toString(), QString::fromLatin1("Total size { 0x04 }, "
-        "Code { 0x02 }, Bytes { 0x02, 0x0a }"));
+    QCOMPARE(families.data(), QKnxByteArray::fromHex("020A"));
     QCOMPARE(families.descriptionType(), QKnxNetIp::DescriptionType::SupportedServiceFamilies);
 }
 
@@ -111,10 +102,8 @@ void tst_QKnxNetIpServiceFamiliesDib::testAddFunctions()
     QCOMPARE(families.isValid(), true);
     QCOMPARE(families.size(), quint16(04));
     QCOMPARE(families.bytes(), QKnxByteArray::fromHex("04020209"));
-    QCOMPARE(families.payload().size(), quint16(2));
-    QCOMPARE(families.payload().bytes(), QKnxByteArray::fromHex("0209"));
-    QCOMPARE(families.toString(), QString::fromLatin1("Total size { 0x04 }, "
-        "Code { 0x02 }, Bytes { 0x02, 0x09 }"));
+    QCOMPARE(families.data().size(), quint16(2));
+    QCOMPARE(families.data(), QKnxByteArray::fromHex("0209"));
     QCOMPARE(families.descriptionType(),
         QKnxNetIp::DescriptionType::SupportedServiceFamilies);
 
@@ -122,10 +111,8 @@ void tst_QKnxNetIpServiceFamiliesDib::testAddFunctions()
     QCOMPARE(families.isValid(), true);
     QCOMPARE(families.size(), quint16(6));
     QCOMPARE(families.bytes(), QKnxByteArray::fromHex("06020209030A"));
-    QCOMPARE(families.payload().size(), quint16(4));
-    QCOMPARE(families.payload().bytes(), QKnxByteArray::fromHex("0209030A"));
-    QCOMPARE(families.toString(), QString::fromLatin1("Total size { 0x06 }, "
-        "Code { 0x02 }, Bytes { 0x02, 0x09, 0x03, 0x0a }"));
+    QCOMPARE(families.data().size(), quint16(4));
+    QCOMPARE(families.data(), QKnxByteArray::fromHex("0209030A"));
     QCOMPARE(families.descriptionType(),
         QKnxNetIp::DescriptionType::SupportedServiceFamilies);
 
@@ -135,10 +122,8 @@ void tst_QKnxNetIpServiceFamiliesDib::testAddFunctions()
     QCOMPARE(families.isValid(), true);
     QCOMPARE(families.size(), quint16(8));
     QCOMPARE(families.bytes(), QKnxByteArray::fromHex("08020209030A040B"));
-    QCOMPARE(families.payload().size(), quint16(6));
-    QCOMPARE(families.payload().bytes(), QKnxByteArray::fromHex("0209030A040B"));
-    QCOMPARE(families.toString(), QString::fromLatin1("Total size { 0x08 }, "
-        "Code { 0x02 }, Bytes { 0x02, 0x09, 0x03, 0x0a, 0x04, 0x0b }"));
+    QCOMPARE(families.data().size(), quint16(6));
+    QCOMPARE(families.data(), QKnxByteArray::fromHex("0209030A040B"));
     QCOMPARE(families.descriptionType(),
         QKnxNetIp::DescriptionType::SupportedServiceFamilies);
 }
@@ -210,38 +195,6 @@ void tst_QKnxNetIpServiceFamiliesDib::testDebugStream()
 
     qDebug() << QKnxNetIpServiceFamiliesDib(QKnxNetIpServiceFamiliesDib::ServiceFamilieId::Core, 10);
     QCOMPARE(s_msg, QString::fromLatin1("0x0402020a"));
-}
-
-void tst_QKnxNetIpServiceFamiliesDib::testDataStream()
-{
-    {
-        QByteArray byteArray;
-        QDataStream out(&byteArray, QIODevice::WriteOnly);
-        out << QKnxNetIpServiceFamiliesDib();
-        QCOMPARE(byteArray, QByteArray::fromHex("0202"));
-    }
-
-    {
-        QKnxNetIpServiceFamiliesDib::ServiceFamilyIdVersions families;
-        families.insert(QKnxNetIpServiceFamiliesDib::ServiceFamilieId::Core, 9);
-        families.insert(QKnxNetIpServiceFamiliesDib::ServiceFamilieId::DeviceManagement, 10);
-        families.insert(QKnxNetIpServiceFamiliesDib::ServiceFamilieId::IpTunneling, 11);
-        families.insert(QKnxNetIpServiceFamiliesDib::ServiceFamilieId::IpRouting, 12);
-        families.insert(QKnxNetIpServiceFamiliesDib::ServiceFamilieId::RemoteLogging, 13);
-        families.insert(QKnxNetIpServiceFamiliesDib::ServiceFamilieId::RemoteConfigAndDiagnosis, 14);
-        families.insert(QKnxNetIpServiceFamiliesDib::ServiceFamilieId::ObjectServer, 15);
-        QByteArray byteArray;
-        QDataStream out(&byteArray, QIODevice::WriteOnly);
-        out << QKnxNetIpServiceFamiliesDib(families);
-        QCOMPARE(byteArray, QByteArray::fromHex("10020209030A040B050C060D070E080F"));
-    }
-
-    {
-        QByteArray byteArray;
-        QDataStream out(&byteArray, QIODevice::WriteOnly);
-        out << QKnxNetIpServiceFamiliesDib(QKnxNetIpServiceFamiliesDib::ServiceFamilieId::Core, 10);
-        QCOMPARE(byteArray, QByteArray::fromHex("0402020A"));
-    }
 }
 
 QTEST_APPLESS_MAIN(tst_QKnxNetIpServiceFamiliesDib)

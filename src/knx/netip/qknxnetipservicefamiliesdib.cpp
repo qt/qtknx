@@ -63,9 +63,7 @@ QKnxNetIp::DescriptionType QKnxNetIpServiceFamiliesDib::descriptionType() const
 
 void QKnxNetIpServiceFamiliesDib::add(ServiceFamilieId id, quint8 version)
 {
-    auto load = payload();
-    load.appendBytes({ quint8(id), version });
-    setPayload(load);
+    setData(constData() + QKnxByteArray { quint8(id), version });
 }
 
 void QKnxNetIpServiceFamiliesDib::add(const ServiceFamilyIdVersions &families)
@@ -81,9 +79,7 @@ void QKnxNetIpServiceFamiliesDib::add(const ServiceFamilyIdVersions &families)
             additionalData[i++] = quint8(key), additionalData[i++] = value;
     }
 
-    auto load = payload();
-    load.appendBytes(additionalData);
-    setPayload(load);
+    setData(constData() + additionalData);
 }
 
 QKnxNetIpServiceFamiliesDib::ServiceFamilyIdVersions
@@ -91,9 +87,9 @@ QKnxNetIpServiceFamiliesDib::ServiceFamilyIdVersions
 {
     ServiceFamilyIdVersions serviceTypesAndVersions;
 
-    const auto &ref = payloadRef();
-    for (int i = 0 ; i < ref.size() ; i += 2)
-        serviceTypesAndVersions.insertMulti(ServiceFamilieId(ref.byte(i)), ref.byte(i+1));
+    const auto &data = constData();
+    for (int i = 0 ; i < dataSize() ; i += 2)
+        serviceTypesAndVersions.insertMulti(ServiceFamilieId(data.value(i)), data.value(i+1));
 
     return serviceTypesAndVersions;
 }

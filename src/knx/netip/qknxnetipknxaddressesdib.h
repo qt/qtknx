@@ -60,10 +60,10 @@ public:
     QKnxNetIp::DescriptionType descriptionType() const;
     QVector<QKnxAddress> individualAddresses() const
     {
-        const QKnxNetIpPayload &load = payload();
+        const auto &load = constData();
         QVector<QKnxAddress> addresses;
         for (quint16 i = 0; i < load.size(); i += 2)
-            addresses.push_back({ QKnxAddress::Type::Individual, load.bytes(i, 2) });
+            addresses.push_back({ QKnxAddress::Type::Individual, load.mid(i, 2) });
         return addresses;
     }
 

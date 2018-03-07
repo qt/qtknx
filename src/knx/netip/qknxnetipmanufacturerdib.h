@@ -58,11 +58,7 @@ public:
     QKnxNetIp::DescriptionType descriptionType() const;
 
     quint16 manufacturerId() const;
-    QKnxByteArray manufacturerData() const
-    {
-        const auto &ref = payloadRef();
-        return ref.bytes(2, ref.size() - 2);
-    }
+    QKnxByteArray manufacturerData() const;
 
     bool isValid() const override;
 

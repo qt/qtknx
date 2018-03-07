@@ -68,13 +68,6 @@ static QDebug stream(QDebug debug, const QKnxByteArray &bytes)
     return debug.nospace().noquote() << "0x" << bytes.toHex();
 }
 
-static QDataStream &stream(QDataStream &out, const QKnxByteArray &bytes)
-{
-    for (quint8 byte : qAsConst(bytes))
-        out << byte;
-    return out;
-}
-
 /*!
     \relates QKnxNetIpHostProtocolStruct
 
@@ -85,17 +78,6 @@ QDebug operator<<(QDebug debug, const QKnxNetIpHostProtocolStruct &package)
     QDebugStateSaver _(debug);
     return package.isValid() ? stream(debug, package.bytes())
         : debug.nospace().noquote() << "0x1nv4l1d";
-}
-
-/*!
-    \relates QKnxNetIpHostProtocolStruct
-
-    Writes a KNX \a QKnxNetIpHostProtocolStruct to the stream \a out and returns a reference to the
-    stream.
-*/
-QDataStream &operator<<(QDataStream &out, const QKnxNetIpHostProtocolStruct &package)
-{
-    return package.isValid() ? stream(out, package.bytes()) : out;
 }
 
 /*!
@@ -111,17 +93,6 @@ QDebug operator<<(QDebug debug, const QKnxNetIpConnectionTypeStruct &package)
 }
 
 /*!
-    \relates QKnxNetIpConnectionTypeStruct
-
-    Writes a KNX \a QKnxNetIpConnectionTypeStruct to the stream \a out and returns a reference to the
-    stream.
-*/
-QDataStream &operator<<(QDataStream &out, const QKnxNetIpConnectionTypeStruct &package)
-{
-    return package.isValid() ? stream(out, package.bytes()) : out;
-}
-
-/*!
     \relates QKnxNetIpDescriptionTypeStruct
 
     Writes the KNX \a QKnxNetIpDescriptionTypeStruct to the \a debug stream.
@@ -131,17 +102,6 @@ QDebug operator<<(QDebug debug, const QKnxNetIpDescriptionTypeStruct &package)
     QDebugStateSaver _(debug);
     return package.isValid() ? stream(debug, package.bytes())
         : debug.nospace().noquote() << "0x1nv4l1d";
-}
-
-/*!
-    \relates QKnxNetIpDescriptionTypeStruct
-
-    Writes a KNX \a QKnxNetIpDescriptionTypeStruct to the stream \a out and returns a reference to the
-    stream.
-*/
-QDataStream &operator<<(QDataStream &out, const QKnxNetIpDescriptionTypeStruct &package)
-{
-    return package.isValid() ? stream(out, package.bytes()) : out;
 }
 
 QT_END_NAMESPACE

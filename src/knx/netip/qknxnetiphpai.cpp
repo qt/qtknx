@@ -73,7 +73,7 @@ void QKnxNetIpHpai::setHostProtocol(QKnxNetIp::HostProtocol code)
 
 QHostAddress QKnxNetIpHpai::address() const
 {
-    return QKnxUtils::HostAddress::fromBytes(payloadRef());
+    return QKnxUtils::HostAddress::fromBytes(constData());
 }
 
 void QKnxNetIpHpai::setAddress(const QHostAddress &hostAddress)
@@ -86,7 +86,7 @@ void QKnxNetIpHpai::setAddress(const QHostAddress &hostAddress)
 
 quint16 QKnxNetIpHpai::port() const
 {
-    return QKnxUtils::QUint16::fromBytes(payloadRef().bytes(0), 4);
+    return QKnxUtils::QUint16::fromBytes(constData(), 4);
 }
 
 void QKnxNetIpHpai::setPort(quint16 port)
@@ -100,15 +100,11 @@ void QKnxNetIpHpai::setPort(quint16 port)
 void QKnxNetIpHpai::setHpai(QKnxNetIp::HostProtocol code, const QHostAddress &address, quint16 port)
 {
     setCode(code);
-    QKnxNetIpPayload payload;
 
     // TODO: Review this part - It might make more sense to set the address to AnyIPv4
     // to indicate NAT traversal, see for example 8.6.3.5 Network Address Translation (NAT)
-    payload.setBytes(QKnxUtils::HostAddress::bytes(address
-        .isNull() ? QHostAddress::LocalHost : address));
-
-    payload.appendBytes(QKnxUtils::QUint16::bytes(port));
-    setPayload(payload);
+    setData(QKnxUtils::HostAddress::bytes(address.isNull() ? QHostAddress::LocalHost : address)
+        + QKnxUtils::QUint16::bytes(port));
 }
 
 bool QKnxNetIpHpai::isValid() const

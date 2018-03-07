@@ -45,7 +45,6 @@ private slots:
     void testConstructorWithFourArguments();
     void testConstructorWithFiveArguments();
     void testDebugStream();
-    void testDataStream();
 };
 
 void tst_QKnxNetIpCurrentConfigDib::testDefaultConstructor()
@@ -54,10 +53,8 @@ void tst_QKnxNetIpCurrentConfigDib::testDefaultConstructor()
     QCOMPARE(currentconfigDib.isValid(), false);
     QCOMPARE(currentconfigDib.size(), quint16(0));
     QCOMPARE(currentconfigDib.bytes(), QKnxByteArray {});
-    QCOMPARE(currentconfigDib.payload().size(), quint16(0));
-    QCOMPARE(currentconfigDib.payload().bytes(), QKnxByteArray {});
-    QCOMPARE(currentconfigDib.toString(), QString::fromLatin1("Total size { 0x00 }, "
-        "Code { 0x00 }, Bytes {  }"));
+    QCOMPARE(currentconfigDib.data().size(), quint16(0));
+    QCOMPARE(currentconfigDib.data(), QKnxByteArray {});
     QCOMPARE(quint8(currentconfigDib.descriptionType()), quint8(0));
     QCOMPARE(currentconfigDib.ipAddress(), QHostAddress());
     QCOMPARE(currentconfigDib.subnetMask(), QHostAddress());
@@ -80,12 +77,9 @@ void tst_QKnxNetIpCurrentConfigDib::testConstructorWithFourArguments()
     QCOMPARE(currentconfigDib.size(), quint16(20));
     QCOMPARE(currentconfigDib.bytes(),
         QKnxByteArray::fromHex("1404C0A8020CFFFFFF00C0A80201B48A03020100"));
-    QCOMPARE(currentconfigDib.payload().size(), quint16(18));
-    QCOMPARE(currentconfigDib.payload().bytes(),
+    QCOMPARE(currentconfigDib.data().size(), quint16(18));
+    QCOMPARE(currentconfigDib.data(),
         QKnxByteArray::fromHex("C0A8020CFFFFFF00C0A80201B48A03020100"));
-    QCOMPARE(currentconfigDib.toString(), QString::fromLatin1("Total size { 0x14 }, "
-        "Code { 0x04 }, Bytes { 0xc0, 0xa8, 0x02, 0x0c, 0xff, 0xff, 0xff, 0x00, "
-        "0xc0, 0xa8, 0x02, 0x01, 0xb4, 0x8a, 0x03, 0x02, 0x01, 0x00 }"));
     QCOMPARE(currentconfigDib.descriptionType(),
         QKnxNetIp::DescriptionType::CurrentIpConfiguration);
     QCOMPARE(currentconfigDib.ipAddress(), QHostAddress("192.168.2.12"));
@@ -108,12 +102,9 @@ void tst_QKnxNetIpCurrentConfigDib::testConstructorWithFiveArguments()
     QCOMPARE(currentconfigDib.size(), quint16(20));
     QCOMPARE(currentconfigDib.bytes(),
         QKnxByteArray::fromHex("1404C0A8020CFFFFFF00C0A80201B48A03020100"));
-    QCOMPARE(currentconfigDib.payload().size(), quint16(18));
-    QCOMPARE(currentconfigDib.payload().bytes(),
+    QCOMPARE(currentconfigDib.data().size(), quint16(18));
+    QCOMPARE(currentconfigDib.data(),
         QKnxByteArray::fromHex("C0A8020CFFFFFF00C0A80201B48A03020100"));
-    QCOMPARE(currentconfigDib.toString(), QString::fromLatin1("Total size { 0x14 }, "
-        "Code { 0x04 }, Bytes { 0xc0, 0xa8, 0x02, 0x0c, 0xff, 0xff, 0xff, 0x00, "
-        "0xc0, 0xa8, 0x02, 0x01, 0xb4, 0x8a, 0x03, 0x02, 0x01, 0x00 }"));
     QCOMPARE(currentconfigDib.descriptionType(),
         QKnxNetIp::DescriptionType::CurrentIpConfiguration);
     QCOMPARE(currentconfigDib.ipAddress(), QHostAddress("192.168.2.12"));
@@ -156,34 +147,6 @@ void tst_QKnxNetIpCurrentConfigDib::testDebugStream()
                                           QHostAddress("180.138.3.2"),
                                           QKnxNetIpCurrentConfigDib::AssignmentMethod::Manual);
     QCOMPARE(s_msg, QString::fromLatin1("0x1404c0a8020cffffff00c0a80201b48a03020100"));
-}
-
-void tst_QKnxNetIpCurrentConfigDib::testDataStream()
-{
-    {
-        QNetworkAddressEntry addressEntry;
-        addressEntry.setIp(QHostAddress("192.168.2.12"));
-        addressEntry.setNetmask(QHostAddress("255.255.255.0"));
-
-        QByteArray byteArray;
-        QDataStream out(&byteArray, QIODevice::WriteOnly);
-        out << QKnxNetIpCurrentConfigDib(addressEntry,
-                                         QHostAddress("192.168.2.1"),
-                                         QHostAddress("180.138.3.2"),
-                                         QKnxNetIpCurrentConfigDib::AssignmentMethod::Manual);
-        QCOMPARE(byteArray, QByteArray::fromHex("1404C0A8020CFFFFFF00C0A80201B48A03020100"));
-    }
-
-    {
-        QByteArray byteArray;
-        QDataStream out(&byteArray, QIODevice::WriteOnly);
-        out << QKnxNetIpCurrentConfigDib(QHostAddress("192.168.2.12"),
-                                         QHostAddress("255.255.255.0"),
-                                         QHostAddress("192.168.2.1"),
-                                         QHostAddress("180.138.3.2"),
-                                         QKnxNetIpCurrentConfigDib::AssignmentMethod::Manual);
-        QCOMPARE(byteArray, QByteArray::fromHex("1404C0A8020CFFFFFF00C0A80201B48A03020100"));
-    }
 }
 
 QTEST_APPLESS_MAIN(tst_QKnxNetIpCurrentConfigDib)

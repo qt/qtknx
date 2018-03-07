@@ -46,7 +46,6 @@ private slots:
     void testConstructorWithByteArrayDataArguments();
     void testConstructorWithVectorDataArguments();
     void testDebugStream();
-    void testDataStream();
 };
 
 void tst_QKnxNetIpManufacturerDib::testDefaultConstructor()
@@ -55,10 +54,8 @@ void tst_QKnxNetIpManufacturerDib::testDefaultConstructor()
     QCOMPARE(manufacturerDib.isValid(), false);
     QCOMPARE(manufacturerDib.size(), quint16(0));
     QCOMPARE(manufacturerDib.bytes(), QKnxByteArray {});
-    QCOMPARE(manufacturerDib.payload().size(), quint16(0));
-    QCOMPARE(manufacturerDib.payload().bytes(), QKnxByteArray {});
-    QCOMPARE(manufacturerDib.toString(), QString::fromLatin1("Total size { 0x00 }, Code { 0x00 }, "
-        "Bytes {  }"));
+    QCOMPARE(manufacturerDib.data().size(), quint16(0));
+    QCOMPARE(manufacturerDib.data(), QKnxByteArray {});
     QCOMPARE(quint8(manufacturerDib.descriptionType()), quint8(0));
     QCOMPARE(manufacturerDib.manufacturerId(), quint16(0));
 }
@@ -69,10 +66,8 @@ void tst_QKnxNetIpManufacturerDib::testConstructorWithOneArguments()
     QCOMPARE(manufacturerDib.isValid(), true);
     QCOMPARE(manufacturerDib.size(), quint16(4));
     QCOMPARE(manufacturerDib.bytes(), QKnxByteArray::fromHex("04FEFFFF"));
-    QCOMPARE(manufacturerDib.payload().size(), quint16(2));
-    QCOMPARE(manufacturerDib.payload().bytes(), QKnxByteArray::fromHex("FFFF"));
-    QCOMPARE(manufacturerDib.toString(), QString::fromLatin1("Total size { 0x04 }, Code { 0xfe }, "
-        "Bytes { 0xff, 0xff }"));
+    QCOMPARE(manufacturerDib.data().size(), quint16(2));
+    QCOMPARE(manufacturerDib.data(), QKnxByteArray::fromHex("FFFF"));
     QCOMPARE(manufacturerDib.descriptionType(), QKnxNetIp::DescriptionType::ManufactorData);
     QCOMPARE(manufacturerDib.manufacturerId(), quint16(65535));
 }
@@ -84,10 +79,8 @@ void tst_QKnxNetIpManufacturerDib::testConstructorWithByteArrayDataArguments()
     QCOMPARE(manufacturerDib.isValid(), true);
     QCOMPARE(manufacturerDib.size(), quint16(9));
     QCOMPARE(manufacturerDib.bytes(), QKnxByteArray::fromHex("09FEFFFF0102030405"));
-    QCOMPARE(manufacturerDib.payload().size(), quint16(7));
-    QCOMPARE(manufacturerDib.payload().bytes(), QKnxByteArray::fromHex("FFFF0102030405"));
-    QCOMPARE(manufacturerDib.toString(), QString::fromLatin1("Total size { 0x09 }, Code { 0xfe }, "
-        "Bytes { 0xff, 0xff, 0x01, 0x02, 0x03, 0x04, 0x05 }"));
+    QCOMPARE(manufacturerDib.data().size(), quint16(7));
+    QCOMPARE(manufacturerDib.data(), QKnxByteArray::fromHex("FFFF0102030405"));
     QCOMPARE(manufacturerDib.descriptionType(), QKnxNetIp::DescriptionType::ManufactorData);
     QCOMPARE(manufacturerDib.manufacturerId(), quint16(65535));
     QCOMPARE(manufacturerDib.manufacturerData().size(), data.size());
@@ -102,10 +95,8 @@ void tst_QKnxNetIpManufacturerDib::testConstructorWithVectorDataArguments()
     QCOMPARE(manufacturerDib.isValid(), true);
     QCOMPARE(manufacturerDib.size(), quint16(9));
     QCOMPARE(manufacturerDib.bytes(), QKnxByteArray::fromHex("09FEFFFF0102030405"));
-    QCOMPARE(manufacturerDib.payload().size(), quint16(7));
-    QCOMPARE(manufacturerDib.payload().bytes(), QKnxByteArray::fromHex("FFFF0102030405"));
-    QCOMPARE(manufacturerDib.toString(), QString::fromLatin1("Total size { 0x09 }, Code { 0xfe }, "
-        "Bytes { 0xff, 0xff, 0x01, 0x02, 0x03, 0x04, 0x05 }"));
+    QCOMPARE(manufacturerDib.data().size(), quint16(7));
+    QCOMPARE(manufacturerDib.data(), QKnxByteArray::fromHex("FFFF0102030405"));
     QCOMPARE(manufacturerDib.descriptionType(), QKnxNetIp::DescriptionType::ManufactorData);
     QCOMPARE(manufacturerDib.manufacturerId(), quint16(65535));
     QCOMPARE(manufacturerDib.manufacturerData().size(), data.size());
@@ -138,30 +129,6 @@ void tst_QKnxNetIpManufacturerDib::testDebugStream()
 
     qDebug() << QKnxNetIpManufacturerDib(65535, { { 1, 2, 3, 4, 5 } });
     QCOMPARE(s_msg, QString::fromLatin1("0x09feffff0102030405"));
-}
-
-void tst_QKnxNetIpManufacturerDib::testDataStream()
-{
-    {
-        QByteArray byteArray;
-        QDataStream out(&byteArray, QIODevice::WriteOnly);
-        out << QKnxNetIpManufacturerDib(65535);
-        QCOMPARE(byteArray, QByteArray::fromHex("04FEFFFF"));
-    }
-
-    {
-        QByteArray byteArray;
-        QDataStream out(&byteArray, QIODevice::WriteOnly);
-        out << QKnxNetIpManufacturerDib(65535, QKnxByteArray::fromHex("0102030405"));
-        QCOMPARE(byteArray, QByteArray::fromHex("09FEFFFF0102030405"));
-    }
-
-    {
-        QByteArray byteArray;
-        QDataStream out(&byteArray, QIODevice::WriteOnly);
-        out << QKnxNetIpManufacturerDib(65535, { { 1, 2, 3, 4, 5 } });
-        QCOMPARE(byteArray, QByteArray::fromHex("09FEFFFF0102030405"));
-    }
 }
 
 QTEST_APPLESS_MAIN(tst_QKnxNetIpManufacturerDib)

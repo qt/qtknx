@@ -77,17 +77,17 @@ bool QKnxNetIpCri::isValid() const
 
 QKnxNetIp::TunnelingLayer QKnxNetIpCri::tunnelingLayer() const
 {
-    return QKnxNetIp::TunnelingLayer(payloadRef().byte(0));
+    return QKnxNetIp::TunnelingLayer(constData().value(0));
 }
 
 bool QKnxNetIpCri::setTunnelingLayer(QKnxNetIp::TunnelingLayer layer)
 {
     if (connectionType() != QKnxNetIp::ConnectionType::Tunnel
-        || (!QKnxNetIp::isTunnelingLayer(layer)))
+        || (!QKnxNetIp::isTunnelingLayer(layer))) {
         return false;
+    }
 
-    quint8 payload[2] = { quint8(layer), 0x00 };
-    setPayload({ payload, 2 });
+    setData({ quint8(layer), 0x00 });
     return true;
 }
 

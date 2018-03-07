@@ -79,7 +79,7 @@ bool QKnxNetIpCrd::isValid() const
 
 QKnxAddress QKnxNetIpCrd::individualAddress() const
 {
-    return QKnxAddress(QKnxAddress::Type::Individual, QKnxUtils::QUint16::fromBytes(payloadRef()));
+    return QKnxAddress(QKnxAddress::Type::Individual, QKnxUtils::QUint16::fromBytes(constData()));
 }
 
 bool QKnxNetIpCrd::setIndividualAddress(const QKnxAddress &address)
@@ -88,7 +88,7 @@ bool QKnxNetIpCrd::setIndividualAddress(const QKnxAddress &address)
         || (!address.isValid()) || (address.type() != QKnxAddress::Type::Individual))
         return false;
 
-    setPayload(QKnxNetIpPayload::fromBytes(address.bytes(), 0, address.size()));
+    setData(address.bytes());
     return true;
 }
 

@@ -45,7 +45,6 @@ private slots:
     void testConstructorTunnelingLayer();
     void testConstructorConnectionType();
     void testDebugStream();
-    void testDataStream();
 };
 
 void tst_QKnxNetIpCri::testDefaultConstructor()
@@ -54,10 +53,8 @@ void tst_QKnxNetIpCri::testDefaultConstructor()
     QCOMPARE(cri.isValid(), false);
     QCOMPARE(cri.size(), quint16(0));
     QCOMPARE(cri.bytes(), QKnxByteArray {});
-    QCOMPARE(cri.payload().size(), quint16(0));
-    QCOMPARE(cri.payload().bytes(), QKnxByteArray {});
-    QCOMPARE(cri.toString(), QString::fromLatin1("Total size { 0x00 }, Code { 0x00 }, "
-        "Bytes {  }"));
+    QCOMPARE(cri.data().size(), quint16(0));
+    QCOMPARE(cri.data(), QKnxByteArray {});
     QCOMPARE(quint8(cri.connectionType()), quint8(0));
 }
 
@@ -68,10 +65,8 @@ void tst_QKnxNetIpCri::testConstructorTunnelingLayer()
         QCOMPARE(cri.isValid(), false);
         QCOMPARE(cri.size(), quint16(2));
         QCOMPARE(cri.bytes(), QKnxByteArray::fromHex("0204"));
-        QCOMPARE(cri.payload().size(), quint16());
-        QCOMPARE(cri.payload().bytes(), QKnxByteArray {});
-        QCOMPARE(cri.toString(), QString::fromLatin1("Total size { 0x02 }, Code { 0x04 }, "
-            "Bytes {  }"));
+        QCOMPARE(cri.data().size(), quint16());
+        QCOMPARE(cri.data(), QKnxByteArray {});
         QCOMPARE(cri.connectionType(), QKnxNetIp::ConnectionType::Tunnel);
         QCOMPARE(cri.tunnelingLayer(), QKnxNetIp::TunnelingLayer::Unknown);
 
@@ -81,10 +76,8 @@ void tst_QKnxNetIpCri::testConstructorTunnelingLayer()
         QCOMPARE(cri.isValid(), true);
         QCOMPARE(cri.size(), quint16(4));
         QCOMPARE(cri.bytes(), QKnxByteArray::fromHex("04048000"));
-        QCOMPARE(cri.payload().size(), quint16(2));
-        QCOMPARE(cri.payload().bytes(), QKnxByteArray({ 0x80, 0x00 }));
-        QCOMPARE(cri.toString(), QString::fromLatin1("Total size { 0x04 }, Code { 0x04 }, "
-            "Bytes { 0x80, 0x00 }"));
+        QCOMPARE(cri.data().size(), quint16(2));
+        QCOMPARE(cri.data(), QKnxByteArray({ 0x80, 0x00 }));
         QCOMPARE(cri.connectionType(), QKnxNetIp::ConnectionType::Tunnel);
         QCOMPARE(cri.tunnelingLayer(), QKnxNetIp::TunnelingLayer::Busmonitor);
     }
@@ -94,10 +87,8 @@ void tst_QKnxNetIpCri::testConstructorTunnelingLayer()
         QCOMPARE(cri.isValid(), true);
         QCOMPARE(cri.size(), quint16(4));
         QCOMPARE(cri.bytes(), QKnxByteArray::fromHex("04040400"));
-        QCOMPARE(cri.payload().size(), quint16(2));
-        QCOMPARE(cri.payload().bytes(), QKnxByteArray({ 0x04, 0x00 }));
-        QCOMPARE(cri.toString(), QString::fromLatin1("Total size { 0x04 }, Code { 0x04 }, "
-            "Bytes { 0x04, 0x00 }"));
+        QCOMPARE(cri.data().size(), quint16(2));
+        QCOMPARE(cri.data(), QKnxByteArray({ 0x04, 0x00 }));
         QCOMPARE(cri.connectionType(), QKnxNetIp::ConnectionType::Tunnel);
         QCOMPARE(cri.tunnelingLayer(), QKnxNetIp::TunnelingLayer::Raw);
     }
@@ -109,60 +100,48 @@ void tst_QKnxNetIpCri::testConstructorConnectionType()
     QCOMPARE(cri.isValid(), false);
     QCOMPARE(cri.size(), quint16(2));
     QCOMPARE(cri.bytes(), QKnxByteArray::fromHex("0200"));
-    QCOMPARE(cri.payload().size(), quint16(0));
-    QCOMPARE(cri.payload().bytes(), QKnxByteArray {});
-    QCOMPARE(cri.toString(), QString::fromLatin1("Total size { 0x02 }, Code { 0x00 }, "
-        "Bytes {  }"));
+    QCOMPARE(cri.data().size(), quint16(0));
+    QCOMPARE(cri.data(), QKnxByteArray {});
     QCOMPARE(cri.connectionType(), QKnxNetIp::ConnectionType::Unknown);
 
     cri = QKnxNetIpCri(QKnxNetIp::ConnectionType::DeviceManagement);
     QCOMPARE(cri.isValid(), true);
     QCOMPARE(cri.size(), quint16(2));
     QCOMPARE(cri.bytes(), QKnxByteArray::fromHex("0203"));
-    QCOMPARE(cri.payload().size(), quint16(0));
-    QCOMPARE(cri.payload().bytes(), QKnxByteArray {});
-    QCOMPARE(cri.toString(), QString::fromLatin1("Total size { 0x02 }, Code { 0x03 }, "
-        "Bytes {  }"));
+    QCOMPARE(cri.data().size(), quint16(0));
+    QCOMPARE(cri.data(), QKnxByteArray {});
     QCOMPARE(cri.connectionType(), QKnxNetIp::ConnectionType::DeviceManagement);
 
     cri = QKnxNetIpCri(QKnxNetIp::ConnectionType::Tunnel);
     QCOMPARE(cri.isValid(), false);
     QCOMPARE(cri.size(), quint16(2));
     QCOMPARE(cri.bytes(), QKnxByteArray::fromHex("0204"));
-    QCOMPARE(cri.payload().size(), quint16());
-    QCOMPARE(cri.payload().bytes(), QKnxByteArray {});
-    QCOMPARE(cri.toString(), QString::fromLatin1("Total size { 0x02 }, Code { 0x04 }, "
-        "Bytes {  }"));
+    QCOMPARE(cri.data().size(), quint16());
+    QCOMPARE(cri.data(), QKnxByteArray {});
     QCOMPARE(cri.connectionType(), QKnxNetIp::ConnectionType::Tunnel);
 
     cri = QKnxNetIpCri(QKnxNetIp::ConnectionType::RemoteLogging);
     QCOMPARE(cri.isValid(), true);
     QCOMPARE(cri.size(), quint16(2));
     QCOMPARE(cri.bytes(), QKnxByteArray::fromHex("0206"));
-    QCOMPARE(cri.payload().size(), quint16(0));
-    QCOMPARE(cri.payload().bytes(), QKnxByteArray {});
-    QCOMPARE(cri.toString(), QString::fromLatin1("Total size { 0x02 }, Code { 0x06 }, "
-        "Bytes {  }"));
+    QCOMPARE(cri.data().size(), quint16(0));
+    QCOMPARE(cri.data(), QKnxByteArray {});
     QCOMPARE(cri.connectionType(), QKnxNetIp::ConnectionType::RemoteLogging);
 
     cri = QKnxNetIpCri(QKnxNetIp::ConnectionType::RemoteConfiguration);
     QCOMPARE(cri.isValid(), true);
     QCOMPARE(cri.size(), quint16(2));
     QCOMPARE(cri.bytes(), QKnxByteArray::fromHex("0207"));
-    QCOMPARE(cri.payload().size(), quint16(0));
-    QCOMPARE(cri.payload().bytes(), QKnxByteArray {});
-    QCOMPARE(cri.toString(), QString::fromLatin1("Total size { 0x02 }, Code { 0x07 }, "
-        "Bytes {  }"));
+    QCOMPARE(cri.data().size(), quint16(0));
+    QCOMPARE(cri.data(), QKnxByteArray {});
     QCOMPARE(cri.connectionType(), QKnxNetIp::ConnectionType::RemoteConfiguration);
 
     cri = QKnxNetIpCri(QKnxNetIp::ConnectionType::ObjectServer);
     QCOMPARE(cri.isValid(), true);
     QCOMPARE(cri.size(), quint16(2));
     QCOMPARE(cri.bytes(), QKnxByteArray::fromHex("0208"));
-    QCOMPARE(cri.payload().size(), quint16(0));
-    QCOMPARE(cri.payload().bytes(), QKnxByteArray {});
-    QCOMPARE(cri.toString(), QString::fromLatin1("Total size { 0x02 }, Code { 0x08 }, "
-        "Bytes {  }"));
+    QCOMPARE(cri.data().size(), quint16(0));
+    QCOMPARE(cri.data(), QKnxByteArray {});
     QCOMPARE(cri.connectionType(), QKnxNetIp::ConnectionType::ObjectServer);
 }
 
@@ -186,23 +165,6 @@ void tst_QKnxNetIpCri::testDebugStream()
     qDebug() << QKnxNetIpCri::fromBytes(QKnxByteArray::fromHex("04048000"), 0);
     QCOMPARE(s_msg, QString::fromLatin1("0x04048000"));
 
-}
-
-void tst_QKnxNetIpCri::testDataStream()
-{
-    {
-        QByteArray byteArray;
-        QDataStream out(&byteArray, QIODevice::WriteOnly);
-        out << QKnxNetIpCri(QKnxNetIp::ConnectionType::DeviceManagement);
-        QCOMPARE(byteArray, QByteArray::fromHex("0203"));
-    }
-
-    {
-        QByteArray byteArray;
-        QDataStream out(&byteArray, QIODevice::WriteOnly);
-        out << QKnxNetIpCri(QKnxNetIp::TunnelingLayer::Busmonitor);
-        QCOMPARE(byteArray, QByteArray::fromHex("04048000"));
-    }
 }
 
 QTEST_APPLESS_MAIN(tst_QKnxNetIpCri)

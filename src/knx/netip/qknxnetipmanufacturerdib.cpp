@@ -44,10 +44,7 @@ QKnxNetIpManufacturerDib::QKnxNetIpManufacturerDib(quint16 manufacturerId)
 QKnxNetIpManufacturerDib::QKnxNetIpManufacturerDib(quint16 manufacturerId, const QKnxByteArray &data)
     : QKnxNetIpDescriptionTypeStruct(QKnxNetIp::DescriptionType::ManufactorData)
 {
-    QKnxNetIpPayload payload;
-    payload.setBytes(QKnxUtils::QUint16::bytes(manufacturerId));
-    payload.appendBytes(data);
-    setPayload(payload);
+    setData(QKnxUtils::QUint16::bytes(manufacturerId) + data);
 }
 
 QKnxNetIp::DescriptionType QKnxNetIpManufacturerDib::descriptionType() const
@@ -57,7 +54,12 @@ QKnxNetIp::DescriptionType QKnxNetIpManufacturerDib::descriptionType() const
 
 quint16 QKnxNetIpManufacturerDib::manufacturerId() const
 {
-    return QKnxUtils::QUint16::fromBytes(payloadRef());
+    return QKnxUtils::QUint16::fromBytes(constData());
+}
+
+QKnxByteArray QKnxNetIpManufacturerDib::manufacturerData() const
+{
+    return constData().mid(2);
 }
 
 bool QKnxNetIpManufacturerDib::isValid() const

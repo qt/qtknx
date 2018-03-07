@@ -49,13 +49,13 @@ QKnxNetIpConfigDib::QKnxNetIpConfigDib(const QHostAddress &ip, const QHostAddres
     if (caps > 0x07 || (methods < 0x01 || methods > 0x15))
         return;
 
-    QKnxNetIpPayload payload;
-    payload.setBytes(QKnxUtils::HostAddress::bytes(ip));
-    payload.appendBytes(QKnxUtils::HostAddress::bytes(subnetMask));
-    payload.appendBytes(QKnxUtils::HostAddress::bytes(gateway));
-    payload.setByte(12, quint8(caps));
-    payload.setByte(13, quint8(methods));
-    setPayload(payload);
+    QKnxByteArray data;
+    data.append(QKnxUtils::HostAddress::bytes(ip));
+    data.append(QKnxUtils::HostAddress::bytes(subnetMask));
+    data.append(QKnxUtils::HostAddress::bytes(gateway));
+    data.append(quint8(caps));
+    data.append(quint8(methods));
+    setData(data);
 }
 
 QKnxNetIp::DescriptionType QKnxNetIpConfigDib::descriptionType() const
@@ -65,27 +65,27 @@ QKnxNetIp::DescriptionType QKnxNetIpConfigDib::descriptionType() const
 
 QHostAddress QKnxNetIpConfigDib::ipAddress() const
 {
-    return QKnxUtils::HostAddress::fromBytes(payloadRef());
+    return QKnxUtils::HostAddress::fromBytes(constData());
 }
 
 QHostAddress QKnxNetIpConfigDib::subnetMask() const
 {
-    return QKnxUtils::HostAddress::fromBytes(payloadRef().bytes(0), 4);
+    return QKnxUtils::HostAddress::fromBytes(constData(), 4);
 }
 
 QHostAddress QKnxNetIpConfigDib::defaultGateway() const
 {
-    return QKnxUtils::HostAddress::fromBytes(payloadRef().bytes(0), 8);
+    return QKnxUtils::HostAddress::fromBytes(constData(), 8);
 }
 
 QKnxNetIpConfigDib::Capabilities QKnxNetIpConfigDib::capabilities() const
 {
-    return QKnxNetIpConfigDib::Capabilities(payloadRef().byte(12));
+    return QKnxNetIpConfigDib::Capabilities(constData().value(12));
 }
 
 QKnxNetIpConfigDib::AssignmentMethods QKnxNetIpConfigDib::assignmentMethods() const
 {
-    return QKnxNetIpConfigDib::AssignmentMethods(payloadRef().byte(13));
+    return QKnxNetIpConfigDib::AssignmentMethods(constData().value(13));
 }
 
 bool QKnxNetIpConfigDib::isValid() const

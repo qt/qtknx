@@ -129,10 +129,8 @@ void tst_QKnxNetIpDescriptionResponse::testDeviceHardwareAccessor()
 
     QCOMPARE(hardware.size(), m_deviceHardware.size());
     QCOMPARE(hardware.bytes(), m_deviceHardware.bytes());
-    QCOMPARE(hardware.payload().size(), m_deviceHardware.payload().size());
-    QCOMPARE(hardware.payload().bytes(),
-        m_deviceHardware.payload().bytes());
-    QCOMPARE(hardware.toString(), m_deviceHardware.toString());
+    QCOMPARE(hardware.data().size(), m_deviceHardware.data().size());
+    QCOMPARE(hardware.data(), m_deviceHardware.data());
 }
 
 void tst_QKnxNetIpDescriptionResponse::testSupportedFamiliesAccessor()
@@ -148,9 +146,8 @@ void tst_QKnxNetIpDescriptionResponse::testSupportedFamiliesAccessor()
     QCOMPARE(familie.descriptionType(), m_sf.descriptionType());
     QCOMPARE(familie.size(), m_sf.size());
     QCOMPARE(familie.bytes(), m_sf.bytes());
-    QCOMPARE(familie.payload().size(), m_sf.payload().size());
-    QCOMPARE(familie.payload().bytes(), m_sf.payload().bytes());
-    QCOMPARE(familie.toString(), m_sf.toString());
+    QCOMPARE(familie.data().size(), m_sf.data().size());
+    QCOMPARE(familie.data(), m_sf.data());
 }
 
 void tst_QKnxNetIpDescriptionResponse::testOptionalDibs()
@@ -201,9 +198,8 @@ void tst_QKnxNetIpDescriptionResponse::testOptionalDibs()
     QCOMPARE(tmpConfigDib.isValid(), configDib.isValid());
     QCOMPARE(tmpConfigDib.size(), configDib.size());
     QCOMPARE(tmpConfigDib.bytes(), configDib.bytes());
-    QCOMPARE(tmpConfigDib.payload().size(), configDib.payload().size());
-    QCOMPARE(tmpConfigDib.payload().bytes(), configDib.payload().bytes());
-    QCOMPARE(tmpConfigDib.toString(), configDib.toString());
+    QCOMPARE(tmpConfigDib.data().size(), configDib.data().size());
+    QCOMPARE(tmpConfigDib.data(), configDib.data());
 
     QCOMPARE(tmpConfigDib.descriptionType(), configDib.descriptionType());
     QCOMPARE(tmpConfigDib.ipAddress().toString(), configDib.ipAddress().toString());
@@ -219,10 +215,8 @@ void tst_QKnxNetIpDescriptionResponse::testOptionalDibs()
     QCOMPARE(tmpCurrentConfigDib.isValid(), currentConfigDib.isValid());
     QCOMPARE(tmpCurrentConfigDib.size(), currentConfigDib.size());
     QCOMPARE(tmpCurrentConfigDib.bytes(), currentConfigDib.bytes());
-    QCOMPARE(tmpCurrentConfigDib.payload().size(), currentConfigDib.payload().size());
-    QCOMPARE(tmpCurrentConfigDib.payload().bytes(),
-        currentConfigDib.payload().bytes());
-    QCOMPARE(tmpCurrentConfigDib.toString(), currentConfigDib.toString());
+    QCOMPARE(tmpCurrentConfigDib.data().size(), currentConfigDib.data().size());
+    QCOMPARE(tmpCurrentConfigDib.data(), currentConfigDib.data());
 
     QCOMPARE(tmpCurrentConfigDib.descriptionType(), currentConfigDib.descriptionType());
     QCOMPARE(tmpCurrentConfigDib.ipAddress().toString(), currentConfigDib.ipAddress().toString());
@@ -240,10 +234,8 @@ void tst_QKnxNetIpDescriptionResponse::testOptionalDibs()
     QCOMPARE(tmpKnxAddressDib.isValid(), knxAddressDib.isValid());
     QCOMPARE(tmpKnxAddressDib.size(), knxAddressDib.size());
     QCOMPARE(tmpKnxAddressDib.bytes(), knxAddressDib.bytes());
-    QCOMPARE(tmpKnxAddressDib.payload().size(), knxAddressDib.payload().size());
-    QCOMPARE(tmpKnxAddressDib.payload().bytes(),
-        knxAddressDib.payload().bytes());
-    QCOMPARE(tmpKnxAddressDib.toString(), knxAddressDib.toString());
+    QCOMPARE(tmpKnxAddressDib.data().size(), knxAddressDib.data().size());
+    QCOMPARE(tmpKnxAddressDib.data(), knxAddressDib.data());
 
     QCOMPARE(tmpKnxAddressDib.descriptionType(), knxAddressDib.descriptionType());
     QCOMPARE(tmpKnxAddressDib.individualAddresses().size(),
@@ -256,10 +248,8 @@ void tst_QKnxNetIpDescriptionResponse::testOptionalDibs()
     QCOMPARE(tmpManufacturerDib.isValid(), manufacturerDib.isValid());
     QCOMPARE(tmpManufacturerDib.size(), manufacturerDib.size());
     QCOMPARE(tmpManufacturerDib.bytes(), manufacturerDib.bytes());
-    QCOMPARE(tmpManufacturerDib.payload().size(), manufacturerDib.payload().size());
-    QCOMPARE(tmpManufacturerDib.payload().bytes(),
-        manufacturerDib.payload().bytes());
-    QCOMPARE(tmpManufacturerDib.toString(), manufacturerDib.toString());
+    QCOMPARE(tmpManufacturerDib.data().size(), manufacturerDib.data().size());
+    QCOMPARE(tmpManufacturerDib.data(), manufacturerDib.data());
 
     QCOMPARE(tmpManufacturerDib.descriptionType(), manufacturerDib.descriptionType());
     QCOMPARE(tmpManufacturerDib.manufacturerId(), manufacturerDib.manufacturerId());
@@ -273,9 +263,8 @@ void tst_QKnxNetIpDescriptionResponse::testOptionalDibs()
     QCOMPARE(tmpSfDib.isValid(), sfDib.isValid());
     QCOMPARE(tmpSfDib.size(), sfDib.size());
     QCOMPARE(tmpSfDib.bytes(), sfDib.bytes());
-    QCOMPARE(tmpSfDib.payload().size(), sfDib.payload().size());
-    QCOMPARE(tmpSfDib.payload().bytes(), sfDib.payload().bytes());
-    QCOMPARE(tmpSfDib.toString(), sfDib.toString());
+    QCOMPARE(tmpSfDib.data().size(), sfDib.data().size());
+    QCOMPARE(tmpSfDib.data(), sfDib.data());
 
     QCOMPARE(tmpSfDib.descriptionType(), sfDib.descriptionType());
 }

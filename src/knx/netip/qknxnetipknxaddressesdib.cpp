@@ -43,12 +43,12 @@ QKnxNetIpKnxAddressesDib::QKnxNetIpKnxAddressesDib(const QKnxAddress &address)
 QKnxNetIpKnxAddressesDib::QKnxNetIpKnxAddressesDib(const QVector<QKnxAddress> &addresses)
     : QKnxNetIpDescriptionTypeStruct(QKnxNetIp::DescriptionType::KnxAddresses)
 {
-    QKnxNetIpPayload payload;
+    QKnxByteArray data;
     for (auto address : qAsConst(addresses)) {
         if (address.isValid() && address.type() == QKnxAddress::Type::Individual)
-            payload.appendBytes(address.bytes());
+            data += address.bytes();
     }
-    setPayload(payload);
+    setData(data);
 }
 
 QKnxNetIp::DescriptionType QKnxNetIpKnxAddressesDib::descriptionType() const

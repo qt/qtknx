@@ -243,7 +243,6 @@ void MainWindow::newIPAddressSelected(int localIpBoxIndex)
 void MainWindow::showServerAndServices(const QKnxNetIpServerInfo &info)
 {
     ui->outputEdit->append(tr("Server Endpoint found"));
-    ui->outputEdit->append(info.endpoint().toString());
     ui->outputEdit->append(tr("Server's Multicast Address"));
     ui->outputEdit->append(info.controlEndpointAddress().toString());
     ui->outputEdit->append(tr("Server's Port"));
