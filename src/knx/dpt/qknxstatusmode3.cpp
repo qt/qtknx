@@ -1,6 +1,6 @@
 /******************************************************************************
 **
-** Copyright (C) 2017 The Qt Company Ltd.
+** Copyright (C) 2018 The Qt Company Ltd.
 ** Contact: https://www.qt.io/licensing/
 **
 ** This file is part of the QtKnx module.
@@ -34,21 +34,66 @@ QT_BEGIN_NAMESPACE
 
 /*!
     \class QKnxStatusMode3
-
+    \inherits QKnxFixedSizeDatapointType
     \inmodule QtKnx
     \brief The QKnxStatusMode3 class is a datapoint type for a status mode 3.
+
+    This datapoint type holds information about which \l{Status}{status} flags
+    (from \c A to \c E) are set and which \l{Mode}{mode} (from \c Zero to \c 2)
+    is active. Valid values are from \c {All set and Mode 0} to
+    \c {All cleared and Mode 2}.
 
     This is a fixed size datapoint type with the length of 1 byte.
 
     \sa QKnxDatapointType
 */
 
+/*!
+    \enum QKnxStatusMode3::Mode
+
+    This enum holds information about which mode is active.
+
+    \value Zero
+    Mode 0 is active.
+    \value One
+    Mode 1 is active.
+    \value Two
+    Mode 2 is active.
+    \value Unknown
+    It is not possible to determine which mode is active.
+*/
+
+/*!
+    \enum QKnxStatusMode3::Status
+
+    This enum indicates whether a status flag is set (\c 0) or cleared (\c 1).
+
+    \value A
+    Status value A.
+    \value B
+    Status value B.
+    \value C
+    Status value C.
+    \value D
+    Status value D.
+    \value E
+    Status value E.
+*/
+
 // -- QKnxStatusMode3
 
+/*!
+    Creates a fixed size datapoint type with the mode set to \c Unknown and
+    the status flags left empty.
+*/
 QKnxStatusMode3::QKnxStatusMode3()
     : QKnxStatusMode3(Mode::Unknown, StatusFlags())
 {}
 
+/*!
+    Creates a fixed size datapoint type with the mode set to \a mode and
+    the status flags set to \a statusFlags.
+*/
 QKnxStatusMode3::QKnxStatusMode3(Mode mode, StatusFlags statusFlags)
     : QKnxFixedSizeDatapointType(MainType, SubType, TypeSize)
 {
@@ -60,6 +105,9 @@ QKnxStatusMode3::QKnxStatusMode3(Mode mode, StatusFlags statusFlags)
     setStatusFlags(statusFlags);
 }
 
+/*!
+    Returns the mode stored in the datapoint type.
+*/
 QKnxStatusMode3::Mode QKnxStatusMode3::mode() const
 {
     Mode mode = Mode(byte(0) & 0x07);
@@ -68,6 +116,12 @@ QKnxStatusMode3::Mode QKnxStatusMode3::mode() const
     return mode;
 }
 
+/*!
+    Sets the mode stored in the datapoint type to \a mode.
+
+    If the value is outside the allowed range, returns \c false and does not set
+    the value.
+*/
 bool QKnxStatusMode3::setMode(Mode mode)
 {
     if (mode != Mode::Zero && mode != Mode::One && mode != Mode::Two)
@@ -75,6 +129,9 @@ bool QKnxStatusMode3::setMode(Mode mode)
     return setByte(0, (byte(0) & 0xf8) | quint8(mode));
 }
 
+/*!
+    Returns \c true if the status flag \a status is set in the status flags.
+*/
 bool QKnxStatusMode3::isSet(Status status) const
 {
     if (status == Status::A)
@@ -90,6 +147,9 @@ bool QKnxStatusMode3::isSet(Status status) const
     return false;
 }
 
+/*!
+    Returns the status flags stored in the datapoint type.
+*/
 QKnxStatusMode3::StatusFlags QKnxStatusMode3::statusFlags() const
 {
     return StatusFlags().setFlag(Status::A, isSet(Status::A))
@@ -99,6 +159,9 @@ QKnxStatusMode3::StatusFlags QKnxStatusMode3::statusFlags() const
         .setFlag(Status::E, isSet(Status::E));
 }
 
+/*!
+    Sets the statusFlags stored in the datapoint type to \a statusFlags.
+*/
 bool  QKnxStatusMode3::setStatusFlags(StatusFlags statusFlags)
 {
     quint8 value = byte(0);
@@ -110,16 +173,25 @@ bool  QKnxStatusMode3::setStatusFlags(StatusFlags statusFlags)
     return setByte(0, value);
 }
 
+/*!
+    Sets the status \a status in the status flags.
+*/
 bool QKnxStatusMode3::setStatus(Status status)
 {
     return setStatusFlags(statusFlags() | status);
 }
 
+/*!
+    Removes the status \a status from the status flags.
+*/
 bool QKnxStatusMode3::removeStatus(Status status)
 {
     return setStatusFlags(statusFlags() &~ status);
 }
 
+/*!
+    \reimp
+*/
 bool QKnxStatusMode3::isValid() const
 {
     return QKnxDatapointType::isValid() && byte(0) <= maximum().toUInt()
