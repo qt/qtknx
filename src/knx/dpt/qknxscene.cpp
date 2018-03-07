@@ -40,7 +40,9 @@ QT_BEGIN_NAMESPACE
 
     This is a fixed size datapoint type with the length of 1 byte.
 
-    \sa QKnxDatapointType
+    The minimum scene number is \c 0 and the maximum scene number is \c 63.
+
+    \sa QKnxDatapointType, QKnxSceneControl, QKnxSceneInfo
 */
 
 /*!
@@ -51,7 +53,21 @@ QT_BEGIN_NAMESPACE
 
     This is a fixed size datapoint type with the length of 1 byte.
 
-    \sa QKnxDatapointType
+    A scene control can be used to activate or learn the corresponding scene
+    number. The range for scene numbers is from \c 0 to \c 63.
+
+    \sa Control, QKnxDatapointType, QKnxSceneNumber, QKnxSceneInfo
+*/
+
+/*!
+    \enum QKnxSceneControl::Control
+
+    This enum holds the action for the scene control.
+
+    \value Activate
+    Activate the scene corresponding to the scene number.
+    \value Learn
+    Learn the scene corresponding to the scene number.
 */
 
 /*!
@@ -62,15 +78,34 @@ QT_BEGIN_NAMESPACE
 
     This is a fixed size datapoint type with the length of 1 byte.
 
-    \sa QKnxDatapointType
+    The scene information holds the activity state of the corresponding scene
+    number. The range for scene numbers is from \c 0 to \c 63.
+
+    \sa Info, QKnxDatapointType, QKnxSceneNumber, QKnxSceneControl
+*/
+
+/*!
+    \enum QKnxSceneInfo::Info
+
+    This enum holds holds whether the scene is active.
+
+    \value Active
+    The scene is active.
+    \value Inactive
+    The scene is inactive.
 */
 
 // -- QKnxSceneNumber
 
+/*!
+    Creates a fixed size datapoint type with the scene number set to \c 0.
+*/
 QKnxSceneNumber::QKnxSceneNumber()
     : QKnxSceneNumber(0)
 {}
-
+/*!
+    Creates a fixed size datapoint type with the scene number set to \a number.
+*/
 QKnxSceneNumber::QKnxSceneNumber(quint8 number)
     : QKnxFixedSizeDatapointType(MainType, SubType, TypeSize)
 {
@@ -81,11 +116,20 @@ QKnxSceneNumber::QKnxSceneNumber(quint8 number)
     setSceneNumber(number);
 }
 
+/*!
+    Returns the scene number stored in the datapoint type.
+*/
 quint8 QKnxSceneNumber::sceneNumber() const
 {
     return byte(0) & 0x3f;
 }
 
+/*!
+    Sets the scene number stored in the datapoint type to \a number.
+
+    If the value is outside the allowed range, returns \c false and does not set
+    the value.
+*/
 bool QKnxSceneNumber::setSceneNumber(quint8 number)
 {
     if (number < 64)
@@ -93,6 +137,9 @@ bool QKnxSceneNumber::setSceneNumber(quint8 number)
     return false;
 }
 
+/*!
+    \reimp
+*/
 bool QKnxSceneNumber::isValid() const
 {
     return QKnxDatapointType::isValid() && byte(0) <= maximum().toUInt();
@@ -101,10 +148,22 @@ bool QKnxSceneNumber::isValid() const
 
 // -- QKnxSceneControl
 
+/*!
+    Creates a fixed size datapoint type with the scene number set to \c 0 and
+    the scene control action set to \c Activate.
+
+    \sa Control
+*/
 QKnxSceneControl::QKnxSceneControl()
     : QKnxSceneControl(0, QKnxSceneControl::Control::Activate)
 {}
 
+/*!
+    Creates a fixed size datapoint type with the scene number set to
+    \a sceneNumber and the scene control action set to \a control.
+
+    \sa Control
+*/
 QKnxSceneControl::QKnxSceneControl(quint8 sceneNumber, QKnxSceneControl::Control control)
     : QKnxFixedSizeDatapointType(MainType, SubType, TypeSize)
 {
@@ -116,11 +175,20 @@ QKnxSceneControl::QKnxSceneControl(quint8 sceneNumber, QKnxSceneControl::Control
     setControl(control);
 }
 
+/*!
+    Returns the scene number stored in the datapoint type.
+*/
 quint8 QKnxSceneControl::sceneNumber() const
 {
     return qint8(byte(0) & 0x3f);
 }
 
+/*!
+    Sets the scene number stored in the datapoint type to \a number.
+
+    If the value is outside the allowed range, returns \c false and does not set
+    the value.
+*/
 bool QKnxSceneControl::setSceneNumber(quint8 number)
 {
     if (number < 64)
@@ -128,11 +196,19 @@ bool QKnxSceneControl::setSceneNumber(quint8 number)
     return false;
 }
 
+/*!
+    Returns the scene control action stored in the datapoint type.
+*/
 QKnxSceneControl::Control QKnxSceneControl::control() const
 {
     return Control(QKnxDatapointType::testBit(byte(0), 7));
 }
 
+/*!
+    Sets the scene control action stored in the datapoint type to \a control.
+
+    Returns \c true if the value was set successfully.
+*/
 bool QKnxSceneControl::setControl(Control control)
 {
     if (control > Control::Learn)
@@ -140,12 +216,19 @@ bool QKnxSceneControl::setControl(Control control)
     return setByte(0, quint8(quint8(control) << 7) | quint8(byte(0) & 0x3f)) ;
 }
 
+/*!
+    \reimp
+*/
 bool QKnxSceneControl::isValid() const
 {
     return QKnxDatapointType::isValid() && byte(0) <= maximum().toUInt()
         && !QKnxDatapointType::testBit(byte(0), 6); // bit 7 shall be unused
 }
 
+/*!
+    Sets the scene number stored in the datapoint type to \a number and the
+    scene control action to \a control.
+*/
 bool QKnxSceneControl::setValue(quint8 sceneNumber, Control control)
 {
     return setSceneNumber(sceneNumber) && setControl(control);
@@ -154,10 +237,22 @@ bool QKnxSceneControl::setValue(quint8 sceneNumber, Control control)
 
 // -- QKnxSceneInfo
 
+/*!
+    Creates a fixed size datapoint type with the scene information set to
+    \c Active.
+
+    \sa Info
+*/
 QKnxSceneInfo::QKnxSceneInfo()
     : QKnxSceneInfo(0, QKnxSceneInfo::Info::Active)
 {}
 
+/*!
+    Creates a fixed size datapoint type with the scene number set to
+    \a sceneNumber and the scene information set to \a info.
+
+    \sa Info
+*/
 QKnxSceneInfo::QKnxSceneInfo(quint8 sceneNumber, QKnxSceneInfo::Info info)
     : QKnxFixedSizeDatapointType(MainType, SubType, TypeSize)
 {
@@ -169,11 +264,20 @@ QKnxSceneInfo::QKnxSceneInfo(quint8 sceneNumber, QKnxSceneInfo::Info info)
     setInfo(info);
 }
 
+/*!
+    Returns the scene number stored in the datapoint type.
+*/
 quint8 QKnxSceneInfo::sceneNumber() const
 {
     return qint8(byte(0) & 0x3f);
 }
 
+/*!
+    Sets the scene number stored in the datapoint type to \a number.
+
+    If the value is outside the allowed range, returns \c false and does not set
+    the value.
+*/
 bool QKnxSceneInfo::setSceneNumber(quint8 number)
 {
     if (number < 64)
@@ -181,11 +285,19 @@ bool QKnxSceneInfo::setSceneNumber(quint8 number)
     return false;
 }
 
+/*!
+    Returns the scene information stored in the datapoint type.
+*/
 QKnxSceneInfo::Info QKnxSceneInfo::info() const
 {
     return Info(QKnxDatapointType::testBit(byte(0), 6));
 }
 
+/*!
+    Sets the scene information stored in the datapoint type to \a info.
+
+    Returns \c true if the value was set successfully.
+*/
 bool QKnxSceneInfo::setInfo(Info info)
 {
     if (info > Info::Inactive)
@@ -193,11 +305,18 @@ bool QKnxSceneInfo::setInfo(Info info)
     return setByte(0, quint8(quint8(info) << 6) | quint8(byte(0) & 0x3f)) ;
 }
 
+/*!
+    \reimp
+*/
 bool QKnxSceneInfo::isValid() const
 {
     return QKnxDatapointType::isValid() && byte(0) <= maximum().toUInt();
 }
 
+/*!
+    Sets the scene number stored in the datapoint type to \a number and the
+    scene information to \a info.
+*/
 bool QKnxSceneInfo::setValue(quint8 sceneNumber, Info info)
 {
     return setSceneNumber(sceneNumber) && setInfo(info);
