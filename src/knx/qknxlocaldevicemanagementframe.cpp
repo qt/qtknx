@@ -36,12 +36,12 @@ QT_BEGIN_NAMESPACE
     \class QKnxLocalDeviceManagementFrame
 
     \inmodule QtKnx
-    \brief This class represents a CEMI frame dedicated to communication
+    \brief This class represents a cEMI frame dedicated to communication
     between a client and a KNXnet/IP server. The communication allow access
     device management functionalities.
 
     \l QKnxLocalDeviceManagementFrameFactory can be used to construct local
-    device management CEMI frames.
+    device management cEMI frames.
 */
 
 /*!
@@ -70,25 +70,21 @@ QT_BEGIN_NAMESPACE
 QKnxLocalDeviceManagementFrame::QKnxLocalDeviceManagementFrame(MessageCode code)
     : m_code(code)
 {
-    if (code != MessageCode::ResetRequest
-        && code != MessageCode::ResetIndication) {
-        static const constexpr quint8 data[6] = { 0xff, 0xff, 0x00, 0x00, 0x00, 0x00 };
-        setServiceInformation({ data, 6 });
-    }
+    if (code != MessageCode::ResetRequest && code != MessageCode::ResetIndication)
+        m_serviceInformation = { 0xff, 0xff, 0x00, 0x00, 0x00, 0x00 };
 }
 /*!
     Constructs a LocalDeviceManagement frame starting with \a messageCode and with a \l QKnxLocalDeviceManagementPayload \a payload.
 */
 QKnxLocalDeviceManagementFrame::QKnxLocalDeviceManagementFrame(
-    QKnxLocalDeviceManagementFrame::MessageCode messageCode,
-    const QKnxLocalDeviceManagementPayLoad &payload)
+        QKnxLocalDeviceManagementFrame::MessageCode messageCode, const QKnxByteArray &serviceInfo)
     : m_code(messageCode)
-    , m_serviceInformation(payload)
+    , m_serviceInformation(serviceInfo)
 {}
 
 
 /*!
-    Returns true if the current CEMI frame is valid.
+    Returns true if the cEMI frame is valid, returns \c false otherwise.
 */
 bool QKnxLocalDeviceManagementFrame::isValid() const
 {
@@ -160,61 +156,51 @@ bool QKnxLocalDeviceManagementFrame::isNegativeConfirmation() const
 
 QKnxInterfaceObjectType QKnxLocalDeviceManagementFrame::objectType() const
 {
-    return QKnxInterfaceObjectType(QKnxUtils::QUint16::fromBytes(serviceInformationRef()));
+    return QKnxInterfaceObjectType(QKnxUtils::QUint16::fromBytes(m_serviceInformation));
 }
 
 void QKnxLocalDeviceManagementFrame::setObjectType(QKnxInterfaceObjectType type)
 {
     if (!QKnxInterfaceObjectType::isObjectType(type))
         return;
-
-    auto si = serviceInformation();
-    si.replaceBytes(0, QKnxUtils::QUint16::bytes(quint16(type)));
-    setServiceInformation(si);
+    m_serviceInformation.replace(0, 2, QKnxUtils::QUint16::bytes(quint16(type)));
 }
 
 quint8 QKnxLocalDeviceManagementFrame::objectInstance() const
 {
-    return serviceInformationRef().byte(2);
+    return m_serviceInformation.value(2);
 }
 
 void QKnxLocalDeviceManagementFrame::setObjectInstance(quint8 instance)
 {
-    auto si = serviceInformation();
-    si.replaceBytes(2, { instance });
-    setServiceInformation(si);
+    m_serviceInformation[2] = instance;
 }
 
 QKnxInterfaceObjectProperty QKnxLocalDeviceManagementFrame::property() const
 {
-    return serviceInformationRef().byte(3);
+    return m_serviceInformation.value(3);
 }
 
 void QKnxLocalDeviceManagementFrame::setProperty(QKnxInterfaceObjectProperty pid)
 {
-    auto si = serviceInformation();
-    si.replaceBytes(3, { quint8(pid) });
-    setServiceInformation(si);
+    m_serviceInformation[3] = quint8(pid);
 }
 
 quint8 QKnxLocalDeviceManagementFrame::numberOfElements() const
 {
-    return quint8(serviceInformationRef().byte(4) & 0xf0) >> 4;
+    return quint8(m_serviceInformation.value(4) & 0xf0) >> 4;
 }
 
 void QKnxLocalDeviceManagementFrame::setNumberOfElements(quint8 numOfElements)
 {
     if (numOfElements > 0x0f)
         return;
-
-    auto si = serviceInformation();
-    si.setByte(4, (si.byte(4) & 0x0f) | (numOfElements << 4));
-    setServiceInformation(si);
+    m_serviceInformation[4] = (m_serviceInformation.value(4) & 0x0f) | (numOfElements << 4);
 }
 
 quint16 QKnxLocalDeviceManagementFrame::startIndex() const
 {
-    return QKnxUtils::QUint16::fromBytes(serviceInformationRef(4)) & 0x0fff;
+    return QKnxUtils::QUint16::fromBytes(m_serviceInformation, 4) & 0x0fff;
 }
 
 void QKnxLocalDeviceManagementFrame::setStartIndex(quint16 index)
@@ -222,10 +208,8 @@ void QKnxLocalDeviceManagementFrame::setStartIndex(quint16 index)
     if (index > 0x0fff)
         return;
 
-    auto si = serviceInformation();
-    auto startIndex = QKnxUtils::QUint16::fromBytes(serviceInformationRef(4));
-    si.replaceBytes(4, QKnxUtils::QUint16::bytes((startIndex & 0xf000) | index));
-    setServiceInformation(si);
+    auto startIndex = QKnxUtils::QUint16::fromBytes(m_serviceInformation, 4);
+    m_serviceInformation.replace(4, 2, QKnxUtils::QUint16::bytes((startIndex & 0xf000) | index));
 }
 
 QKnx::CemiServer::Error QKnxLocalDeviceManagementFrame::error() const
@@ -251,11 +235,9 @@ void QKnxLocalDeviceManagementFrame::setError(QKnx::CemiServer::Error error)
     switch (messageCode()) {
     case MessageCode::PropertyReadConfirmation:
     case MessageCode::PropertyWriteConfirmation: {
-        auto sf = serviceInformation();
-        if (sf.size() < 7)
-            sf.resize(7);
-        sf.setByte(6, quint8(error));
-        setServiceInformation(sf);
+        if (m_serviceInformation.size() < 7)
+            m_serviceInformation.resize(7);
+        m_serviceInformation[6] = quint8(error);
     }
     default:
         break;
@@ -268,7 +250,7 @@ QKnx::CemiServer::ReturnCode QKnxLocalDeviceManagementFrame::returnCode() const
     //case MessageCode::FunctionPropertyStateReadConfirmation:
     case MessageCode::FunctionPropertyCommandConfirmation:
         if (size() >= 6)
-            return QKnx::CemiServer::ReturnCode(serviceInformationRef().byte(5));
+            return QKnx::CemiServer::ReturnCode(m_serviceInformation.value(5));
     default:
         break;
     }
@@ -285,39 +267,15 @@ void QKnxLocalDeviceManagementFrame::setReturnCode(QKnx::CemiServer::ReturnCode 
         return;
     }
 
-    auto sf = serviceInformation();
-    if (sf.size() < 6)
-        sf.resize(6);
-    sf.setByte(5, quint8(code));
-    setServiceInformation(sf);
+    if (m_serviceInformation.size() < 6)
+        m_serviceInformation.resize(6);
+    m_serviceInformation[5] = quint8(code);
 }
 
 QKnxLocalDeviceManagementFrame::QKnxLocalDeviceManagementFrame(const QKnxLocalDeviceManagementFrame &other)
 {
     m_code = other.messageCode();
     m_serviceInformation = other.serviceInformation();
-}
-
-/*!
-    Sets the \l QKnxLinkLayerPayload \a serviceInformation of the DeviceManagement frame.
-*/
-void QKnxLocalDeviceManagementFrame::setServiceInformation(const QKnxLocalDeviceManagementPayLoad &serviceInformation)
-{
-    m_serviceInformation = serviceInformation;
-}
-
-/*!
-    Returns a \l QString representing the bytes of the LocalDeviceManagement frame
-*/
-QString QKnxLocalDeviceManagementFrame::toString() const
-{
-    QString tmp;
-    for (quint8 byte : m_serviceInformation.ref())
-        tmp += QStringLiteral("0x%1, ").arg(byte, 2, 16, QLatin1Char('0'));
-    tmp.chop(2);
-
-    return QStringLiteral("Message code: { 0x%1 }, Service information: { 0x%2 }")
-        .arg(quint8(m_code), 2, 16, QLatin1Char('0')).arg(tmp);
 }
 
 /*!
@@ -332,19 +290,11 @@ quint16 QKnxLocalDeviceManagementFrame::size() const
       Returns the \l QKnxLocalDeviceManagementPayload.
       This is the LocalDeviceManagement frame without the message code.
 */
-QKnxLocalDeviceManagementPayLoad QKnxLocalDeviceManagementFrame::serviceInformation() const
+QKnxByteArray QKnxLocalDeviceManagementFrame::serviceInformation() const
 {
     return m_serviceInformation;
 }
 
-/*!
-    Returns a \l QKnxLocalDeviceManagementPayloadRef at the given \a index of the LocalDeviceManagement frame
-    payload.
-*/
-QKnxLocalDeviceManagementPayLoadRef QKnxLocalDeviceManagementFrame::serviceInformationRef(quint16 index) const
-{
-    return m_serviceInformation.ref(index);
-}
 /*!
     Returns the message code of the LocalDeviceManagement frame.
 */

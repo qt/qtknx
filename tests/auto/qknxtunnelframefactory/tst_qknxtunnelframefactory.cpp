@@ -45,6 +45,16 @@ private Q_SLOTS:
     void testDeviceDescriptorResponse();
 };
 
+QT_BEGIN_NAMESPACE
+
+char *toString(const QKnxByteArray &ba)
+{
+    using QTest::toString;
+    return toString("QKnxByteArray(" + static_cast<QByteArray> (ba) + ')');
+}
+
+QT_END_NAMESPACE
+
 void tst_QKnxLinkLayerFrameFactory::testGroupValueRead()
 {
     QKnxAddress source { QKnxAddress::Type::Individual, 0 };

@@ -62,7 +62,7 @@ const QKnxByteArray DemoDataPoint::BytesOff { 0x00 };
 
 bool DemoSwitchDataPoint::updateDataPointState(const QKnxLinkLayerFrame &frame)
 {
-    m_state = frame.serviceInformation().bytes().endsWith(1);
+    m_state = frame.serviceInformation().endsWith(1);
     return true;
 }
 
@@ -156,7 +156,7 @@ bool DemoColorLed::isOn() const
 
 bool DemoRockerDataPoint::updateDataPointState(const QKnxLinkLayerFrame &frame)
 {
-    auto bytes = frame.serviceInformation().bytes();
+    auto bytes = frame.serviceInformation();
     QString s = QByteArray((const char *) bytes.constData(), bytes.size()).mid(20, 4);
     bool ok;
     setPosition(s.toInt(&ok, 16));

@@ -54,7 +54,7 @@ void tst_QKnxNetIpRoutingIndication::testDefaultConstructor()
     QCOMPARE(routing.isValid(), false);
 
     frame = QKnxNetIpRoutingIndication::builder().create();
-    QCOMPARE(routing.isValid(), false);
+    QCOMPARE(routing.isValid(), true);
 }
 
 void tst_QKnxNetIpRoutingIndication::testConstructor()
@@ -75,7 +75,7 @@ void tst_QKnxNetIpRoutingIndication::testDebugStream()
     } _(myMessageHandler);
 
     qDebug() << QKnxNetIpRoutingIndication::builder().create();
-    QCOMPARE(s_msg, QString::fromLatin1("0x06100530000700"));
+    QCOMPARE(s_msg, QString::fromLatin1("0x0610053000080000"));
 }
 
 QTEST_APPLESS_MAIN(tst_QKnxNetIpRoutingIndication)

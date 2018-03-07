@@ -28,6 +28,7 @@
 
 #include <QtCore/qdebug.h>
 #include <QtKnx/qknxlocaldevicemanagementframe.h>
+#include <QtKnx/qknxlocaldevicemanagementframefactory.h>
 #include <QtTest/qtest.h>
 
 static QString s_msg;
@@ -58,9 +59,22 @@ private slots:
         QCOMPARE(frame.numberOfElements(), quint8(14));
         QCOMPARE(frame.startIndex(), quint16(25));
         QCOMPARE(frame.data(), QKnxByteArray({ 0x01, 0x02, 0x03, 0x04, 0x05 }));
+
+        // TODO: extend the test with the following methods
+
+        // isValid()
+        // isNegativeConfirmation()
+        // error()
+        // setError(...)
+        // returnCode()
+        // setReturnCode(...)
+        // QKnxLocalDeviceManagementFrame(const QKnxLocalDeviceManagementFrame&)
+        // size()
+        // serviceInformation()
+        // setMessageCode(...)
     }
 
-    void testFactory()
+    void testFromBytes()
     {
         auto objectTypeProperty = QKnxByteArray { 0xfc, 0x00, 0x08, 0x01, 0x01, 0x10, 0x01 };
         QKnxLocalDeviceManagementFrame frame = QKnxLocalDeviceManagementFrame::fromBytes(objectTypeProperty,
@@ -79,6 +93,19 @@ private slots:
         bytes = frame.bytes();  // TODO: Fix this, what was the idea to test here?
     }
 
+    void testFactory()
+    {
+        auto cemi = QKnxLocalDeviceManagementFrameFactory::PropertyRead
+            ::createRequest(QKnxInterfaceObjectType::KnxNetIpParameter, 1,
+                QKnxInterfaceObjectProperty::FriendlyName, 1, 0);
+        // TODO: add some checks against above created cEMI
+
+        cemi = QKnxLocalDeviceManagementFrameFactory::FunctionPropertyCommand
+            ::createRequest(QKnxInterfaceObjectType::KnxNetIpParameter, 1,
+                QKnxInterfaceObjectProperty::FriendlyName, {});
+        // TODO: add some checks against above created cEMI
+    }
+
     void testDebugStream()
     {
         struct DebugHandler
@@ -91,11 +118,6 @@ private slots:
             QtMessageHandler oldMessageHandler;
         } _(myMessageHandler);
 
-        // TODO: Implement.
-    }
-
-    void testDataStream()
-    {
         // TODO: Implement.
     }
 };

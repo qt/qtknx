@@ -101,13 +101,14 @@ QKnxLinkLayerFrame::QKnxLinkLayerFrame(QKnx::MediumType mediumType,
 {}
 
 /*!
-    Constructs a LinkLayer frame starting with \a messageCode and with a \l QKnxLinkLayerPayload \a payload.
+    Constructs a LinkLayer frame starting with \a messageCode and sets the
+    service information to \a serviceInfo.
 */
 QKnxLinkLayerFrame::QKnxLinkLayerFrame(QKnx::MediumType mediumType,
-    QKnxLinkLayerFrame::MessageCode messageCode, const QKnxLinkLayerPayload &payload)
+    QKnxLinkLayerFrame::MessageCode messageCode, const QKnxByteArray &serviceInfo)
     : m_code(messageCode)
     , m_mediumType(mediumType)
-    , m_serviceInformation(payload)
+    , m_serviceInformation(serviceInfo)
 {}
 
 /*!
@@ -189,7 +190,7 @@ bool QKnxLinkLayerFrame::isValid() const
 bool QKnxLinkLayerFrame::isMessageCodeValid() const
 {
     // TODO: extend the medium type check
-    // TODO: some message code could be valide for other MediumType as well.
+    // TODO: some message code could be valid for other MediumType as well.
     // Adapt the function when other Medium type get implemented.
 
     switch (m_code) {
@@ -219,54 +220,47 @@ bool QKnxLinkLayerFrame::isMessageCodeValid() const
 
 QKnxControlField QKnxLinkLayerFrame::controlField() const
 {
-    return QKnxControlField { serviceInformationRef(additionalInfosSize() + 1).byte(0) };
+    return QKnxControlField { m_serviceInformation.value(additionalInfosSize() + 1) };
 }
 
 void QKnxLinkLayerFrame::setControlField(const QKnxControlField &controlField)
 {
-    auto payload = serviceInformation();
-    payload.setByte(additionalInfosSize() + 1, controlField.byte());
-    setServiceInformation(payload);
+    m_serviceInformation[additionalInfosSize() + 1] = controlField.byte();
 }
 
 QKnxExtendedControlField QKnxLinkLayerFrame::extendedControlField() const
 {
-    return QKnxExtendedControlField { serviceInformationRef(additionalInfosSize() + 1).byte(1) };
+    return QKnxExtendedControlField { m_serviceInformation.value(additionalInfosSize() + 2) };
 }
 
 void QKnxLinkLayerFrame::setExtendedControlField(const QKnxExtendedControlField &controlFieldEx)
 {
-    auto payload = serviceInformation();
-    payload.setByte(additionalInfosSize() + 2, controlFieldEx.byte());
-    setServiceInformation(payload);
+    m_serviceInformation[additionalInfosSize() + 2] = controlFieldEx.byte();
 }
 
 quint8 QKnxLinkLayerFrame::additionalInfosSize() const
 {
-    auto size = serviceInformationRef().byte(0);
+    auto size = m_serviceInformation.value(0);
     return (size < 0xff ? size : 0u); // 0xff is reserved for future use
 }
 
 void QKnxLinkLayerFrame::addAdditionalInfo(const QKnxAdditionalInfo &info)
 {
-    auto payload = serviceInformation();
-
-    quint8 size = payload.byte(0);
+    quint8 size = m_serviceInformation.value(0);
     if (size + info.size() > 0xfe)
         return; // maximum size would be exceeded, 0xff is reserved for future use
 
     quint8 index = 1;
     if (size > 0) {
         while (index < size) {
-            if (QKnxAdditionalInfo::Type(payload.byte(index)) >= info.type())
+            if (QKnxAdditionalInfo::Type(m_serviceInformation.value(index)) >= info.type())
                 break;
-            index += payload.byte(index + 1) + 2; // type + size => 2
+            index += m_serviceInformation.value(index + 1) + 2; // type + size => 2
         }
     }
 
-    payload.insertBytes((index > size ? size + 1 : index), info.bytes());
-    payload.setByte(0, size + info.size());
-    setServiceInformation(payload);
+    m_serviceInformation.insert((index > size ? size + 1 : index), info.bytes());
+    m_serviceInformation[0] = size + info.size();
 }
 
 void QKnxLinkLayerFrame::removeAdditionalInfo(QKnxAdditionalInfo::Type type)
@@ -275,19 +269,18 @@ void QKnxLinkLayerFrame::removeAdditionalInfo(QKnxAdditionalInfo::Type type)
     if (oldSize == 0)
         return;
 
-    QKnxLinkLayerPayload payload(oldSize);
+    QKnxByteArray data { oldSize };
 
+    // TODO: make this loop more efficient
     auto infos = additionalInfos();
     for (auto &info : qAsConst(infos)) {
         if (info.type() == type)
             continue;
-        payload.appendBytes(info.bytes());
+        data.append(info.bytes());
     }
 
-    payload.setByte(0, payload.size() - 1);
-    payload.appendBytes(serviceInformationRef(oldSize + 1).bytes(0));
-
-    setServiceInformation(payload);
+    data[0] = data.size() - 1;
+    m_serviceInformation = data + m_serviceInformation.mid(oldSize + 1);
 }
 
 void QKnxLinkLayerFrame::removeAdditionalInfo(const QKnxAdditionalInfo &info)
@@ -296,21 +289,20 @@ void QKnxLinkLayerFrame::removeAdditionalInfo(const QKnxAdditionalInfo &info)
     if (oldSize == 0)
         return;
 
-    QKnxLinkLayerPayload payload(oldSize);
+    QKnxByteArray data { oldSize };
 
+    // TODO: make this loop more efficient
     auto infos = additionalInfos();
     for (auto &tmp : qAsConst(infos)) {
         if (tmp.type() == info.type()) {
             if (tmp.bytes() == info.bytes())
                 continue;
         }
-        payload.appendBytes(tmp.bytes());
+        data.append(tmp.bytes());
     }
 
-    payload.setByte(0, payload.size() - 1);
-    payload.appendBytes(serviceInformationRef(oldSize + 1).bytes(0));
-
-    setServiceInformation(payload);
+    data[0] = data.size() - 1;
+    m_serviceInformation = data + m_serviceInformation.mid(oldSize + 1);
 }
 
 void QKnxLinkLayerFrame::clearAdditionalInfos()
@@ -318,36 +310,29 @@ void QKnxLinkLayerFrame::clearAdditionalInfos()
     quint8 oldSize = additionalInfosSize();
     if (oldSize == 0)
         return;
-
-    QKnxLinkLayerPayload payload(0x00);
-    payload.appendBytes(serviceInformationRef(oldSize + 1).bytes(0));
-    setServiceInformation(payload);
+    m_serviceInformation = m_serviceInformation.mid(oldSize + 1).prepend(0x00);
 }
 
 const QKnxAddress QKnxLinkLayerFrame::sourceAddress() const
 {
-    return { QKnxAddress::Type::Individual, serviceInformationRef(additionalInfosSize() + 1)
-        .bytes(2, 2) };
+    return { QKnxAddress::Type::Individual, m_serviceInformation
+        .mid(additionalInfosSize() + 3, 2) };
 }
 
 void QKnxLinkLayerFrame::setSourceAddress(const QKnxAddress &source)
 {
-    auto payload = serviceInformation();
-    payload.replaceBytes(additionalInfosSize() + 3, source.bytes());
-    setServiceInformation(payload);
+    m_serviceInformation.replace(additionalInfosSize() + 3, 2, source.bytes());
 }
 
 const QKnxAddress QKnxLinkLayerFrame::destinationAddress() const
 {
     return { extendedControlField().destinationAddressType(),
-        serviceInformationRef(additionalInfosSize() + 1).bytes(4, 2) };
+        m_serviceInformation.mid(additionalInfosSize() + 5, 2) };
 }
 
 void QKnxLinkLayerFrame::setDestinationAddress(const QKnxAddress &destination)
 {
-    auto payload = serviceInformation();
-    payload.replaceBytes(additionalInfosSize() + 5, destination.bytes());
-    setServiceInformation(payload);
+    m_serviceInformation.replace(additionalInfosSize() + 5, 2, destination.bytes());
 }
 
 QKnxTpdu QKnxLinkLayerFrame::tpdu() const
@@ -357,23 +342,22 @@ QKnxTpdu QKnxLinkLayerFrame::tpdu() const
 
     // length field + ctrl + extCtrl + 2 * KNX address -> 7 bytes
     const quint8 tpduOffset = additionalInfosSize() + 7 + 1/* bytes */;
-    return QKnxTpdu::fromBytes(serviceInformationRef().bytes(0),
-        tpduOffset, (size() - 1) - tpduOffset);
+    return QKnxTpdu::fromBytes(m_serviceInformation, tpduOffset, (size() - 1) - tpduOffset);
 }
 
 void QKnxLinkLayerFrame::setTpdu(const QKnxTpdu &tpdu)
 {
-    auto info = serviceInformation();
-    info.resize(additionalInfosSize() + 7); // length field + ctrl + extCtrl + 2 * KNX address
-    info.setByte(additionalInfosSize() + 7, tpdu.dataSize());
-    info.appendBytes(tpdu.bytes());
-    setServiceInformation(info);
+     // length field + ctrl + extCtrl + 2 * KNX address -> 7
+    m_serviceInformation.resize(additionalInfosSize() + 7);
+    m_serviceInformation[additionalInfosSize() + 7]  = tpdu.dataSize();
+    m_serviceInformation += tpdu.bytes();
 }
 
 QKnxLinkLayerFrame::QKnxLinkLayerFrame(const QKnxLinkLayerFrame &other)
 {
-    m_code = other.messageCode();
-    m_serviceInformation = other.serviceInformation();
+    m_code = other.m_code;
+    m_mediumType = other.m_mediumType;
+    m_serviceInformation = other.m_serviceInformation;
 
 }
 /*!
@@ -385,44 +369,12 @@ quint16 QKnxLinkLayerFrame::size() const
 }
 
 /*!
-      Returns the \l QKnxLinkLayerPayload.
-      This is the CEMI frame without the message code.
+      Returns the service information the frame carries. This is the cEMI frame
+      without the message code.
 */
-QKnxLinkLayerPayload QKnxLinkLayerFrame::serviceInformation() const
+QKnxByteArray QKnxLinkLayerFrame::serviceInformation() const
 {
     return m_serviceInformation;
-}
-
-/*!
-    Returns a \l QKnxLinkLayerPayloadRef at the given \a index of the LinkLayer frame
-    payload.
-*/
-QKnxLinkLayerPayloadRef QKnxLinkLayerFrame::serviceInformationRef(quint16 index) const
-{
-    return m_serviceInformation.ref(index);
-}
-
-
-/*!
-    Returns a \l QString representing the bytes of the LinkLayer frame
-*/
-QString QKnxLinkLayerFrame::toString() const
-{
-    QString tmp;
-    for (quint8 byte : m_serviceInformation.ref())
-        tmp += QStringLiteral("0x%1, ").arg(byte, 2, 16, QLatin1Char('0'));
-    tmp.chop(2);
-
-    return QStringLiteral("Message code: { 0x%1 }, Service information: { 0x%2 }")
-        .arg(quint8(m_code), 2, 16, QLatin1Char('0')).arg(tmp);
-}
-
-/*!
-    Sets the \l QKnxLinkLayerPayload \a serviceInformation of the LinkLayer frame.
-*/
-void QKnxLinkLayerFrame::setServiceInformation(const QKnxLinkLayerPayload &serviceInformation)
-{
-    m_serviceInformation = serviceInformation;
 }
 
 /*!

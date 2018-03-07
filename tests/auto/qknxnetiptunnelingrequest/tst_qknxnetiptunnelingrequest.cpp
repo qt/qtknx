@@ -52,6 +52,9 @@ void tst_QKnxNetIpTunnelingRequest::testDefaultConstructor()
     QKnxNetIpTunnelingRequest tunneling(frame);
 
     QCOMPARE(tunneling.isValid(), false);
+
+    frame = QKnxNetIpTunnelingRequest::builder().create();
+    QCOMPARE(tunneling.isValid(), false);
 }
 
 void tst_QKnxNetIpTunnelingRequest::testConstructor()
@@ -72,7 +75,7 @@ void tst_QKnxNetIpTunnelingRequest::testDebugStream()
     } _(myMessageHandler);
 
     qDebug() << QKnxNetIpTunnelingRequest::builder().create();
-    QCOMPARE(s_msg, QString::fromLatin1("0x06100420000b0400000000"));
+    QCOMPARE(s_msg, QString::fromLatin1("0x06100420000c040000000000"));
 }
 
 QTEST_APPLESS_MAIN(tst_QKnxNetIpTunnelingRequest)
