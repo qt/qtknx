@@ -31,7 +31,7 @@
 
 QT_BEGIN_NAMESPACE
 
-QKnxNetIpDeviceConfigurationRequest::QKnxNetIpDeviceConfigurationRequest(const QKnxNetIpFrameEx &frame)
+QKnxNetIpDeviceConfigurationRequest::QKnxNetIpDeviceConfigurationRequest(const QKnxNetIpFrame &frame)
     : m_frame(frame)
 {}
 
@@ -85,7 +85,7 @@ QKnxNetIpDeviceConfigurationRequest::Builder &
     return *this;
 }
 
-QKnxNetIpFrameEx QKnxNetIpDeviceConfigurationRequest::Builder::create() const
+QKnxNetIpFrame QKnxNetIpDeviceConfigurationRequest::Builder::create() const
 {
     return { QKnxNetIp::ServiceType::DeviceConfigurationRequest, { m_channelId, m_sequenceNumber },
         m_cemi.bytes() };

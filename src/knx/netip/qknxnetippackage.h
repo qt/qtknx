@@ -46,9 +46,7 @@ QT_BEGIN_NAMESPACE
 
 template <typename CodeType, typename QKnxNetIpHeader> class Q_KNX_EXPORT QKnxNetIpPackage
 {
-    friend struct QKnxNetIpFrameHelper;
     friend struct QKnxNetIpStructHelper;
-    friend struct QKnxNetIpConnectionHeaderFrameHelper;
 
 public:
     virtual quint16 size() const

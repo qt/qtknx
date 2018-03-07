@@ -80,7 +80,7 @@ public:
         emit q->receivedTunnelFrame(frame);
     }
 
-    void processConnectResponse(const QKnxNetIpFrameEx &frame, const QNetworkDatagram &dg) override
+    void processConnectResponse(const QKnxNetIpFrame &frame, const QNetworkDatagram &dg) override
     {
         QKnxNetIpConnectResponse response(frame);
         if (response.status() == QKnxNetIp::Error::NoMoreUniqueConnections) {

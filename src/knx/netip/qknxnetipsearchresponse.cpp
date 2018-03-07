@@ -31,7 +31,7 @@
 
 QT_BEGIN_NAMESPACE
 
-QKnxNetIpSearchResponse::QKnxNetIpSearchResponse(const QKnxNetIpFrameEx &frame)
+QKnxNetIpSearchResponse::QKnxNetIpSearchResponse(const QKnxNetIpFrame &frame)
     : m_frame(frame)
 {}
 
@@ -85,7 +85,7 @@ QKnxNetIpSearchResponse::Builder &
     return *this;
 }
 
-QKnxNetIpFrameEx QKnxNetIpSearchResponse::Builder::create() const
+QKnxNetIpFrame QKnxNetIpSearchResponse::Builder::create() const
 {
     return { QKnxNetIp::ServiceType::SearchResponse, m_hpai.bytes() + m_ddib.bytes() + m_sdib
         .bytes() };

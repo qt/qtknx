@@ -31,7 +31,7 @@
 
 QT_BEGIN_NAMESPACE
 
-QKnxNetIpConnectionStateResponse::QKnxNetIpConnectionStateResponse(const QKnxNetIpFrameEx &frame)
+QKnxNetIpConnectionStateResponse::QKnxNetIpConnectionStateResponse(const QKnxNetIpFrame &frame)
     : m_frame(frame)
 {}
 
@@ -73,7 +73,7 @@ QKnxNetIpConnectionStateResponse::Builder &
     return *this;
 }
 
-QKnxNetIpFrameEx QKnxNetIpConnectionStateResponse::Builder::create() const
+QKnxNetIpFrame QKnxNetIpConnectionStateResponse::Builder::create() const
 {
     QKnxByteArray data;
     switch (m_status) {

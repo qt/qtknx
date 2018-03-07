@@ -48,7 +48,7 @@ private slots:
 
 void tst_QKnxNetIpSearchRequest::testDefaultConstructor()
 {
-    QKnxNetIpFrameEx frame;
+    QKnxNetIpFrame frame;
     QKnxNetIpSearchRequest search(frame);
     QCOMPARE(search.isValid(), false);
     QCOMPARE(search.discoveryEndpoint().isValid(), false);

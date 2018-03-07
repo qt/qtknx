@@ -42,7 +42,6 @@ QT_BEGIN_NAMESPACE
 template <typename CodeType> class Q_KNX_EXPORT QKnxNetIpStructHeader final
 {
     friend struct QKnxNetIpStructHelper;
-    friend struct QKnxNetIpConnectionHeaderFrameHelper;
 
     static_assert(is_type<CodeType, QKnxNetIp::HostProtocol, QKnxNetIp::ConnectionType,
         QKnxNetIp::DescriptionType>::value, "Type not supported.");

@@ -31,7 +31,7 @@
 #define QKNXNETIPTUNNELINGREQUEST_H
 
 #include <QtKnx/qknxnetip.h>
-#include <QtKnx/qknxnetipconnectionheaderframe.h>
+#include <QtKnx/qknxnetipframe.h>
 #include <QtKnx/qknxglobal.h>
 #include <QtKnx/qknxlinklayerframe.h>
 
@@ -43,8 +43,8 @@ public:
     QKnxNetIpTunnelingRequest() = delete;
     ~QKnxNetIpTunnelingRequest() = default;
 
-    QKnxNetIpTunnelingRequest(const QKnxNetIpFrameEx &&) = delete;
-    explicit QKnxNetIpTunnelingRequest(const QKnxNetIpFrameEx &frame);
+    QKnxNetIpTunnelingRequest(const QKnxNetIpFrame &&) = delete;
+    explicit QKnxNetIpTunnelingRequest(const QKnxNetIpFrame &frame);
 
     bool isValid() const;
 
@@ -59,7 +59,7 @@ public:
         Builder &setSequenceNumber(quint8 sequenceNumber);
         Builder &setCemi(const QKnxLinkLayerFrame &cemi);
 
-        QKnxNetIpFrameEx create() const;
+        QKnxNetIpFrame create() const;
 
     private:
         quint8 m_channelId;
@@ -69,7 +69,7 @@ public:
     static QKnxNetIpTunnelingRequest::Builder builder();
 
 private:
-    const QKnxNetIpFrameEx &m_frame;
+    const QKnxNetIpFrame &m_frame;
 };
 
 QT_END_NAMESPACE

@@ -48,7 +48,7 @@ private slots:
 
 void tst_QKnxNetIpDescriptionRequest::testDefaultConstructor()
 {
-    QKnxNetIpFrameEx frame;
+    QKnxNetIpFrame frame;
     QKnxNetIpDescriptionRequest descriptionRequest(frame);
 
     QCOMPARE(descriptionRequest.isValid(), false);

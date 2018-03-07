@@ -34,23 +34,22 @@
 
 #include <QtKnx/qknxbytearray.h>
 #include <QtKnx/qknxnetip.h>
-#include <QtKnx/qknxnetippayload.h>
 #include <QtKnx/qknxnetipconnectionheader.h>
 #include <QtKnx/qknxnetipframeheader.h>
 
 QT_BEGIN_NAMESPACE
 
-class QKnxNetIpFrameExPrivate;
-class Q_KNX_EXPORT QKnxNetIpFrameEx
+class QKnxNetIpFramePrivate;
+class Q_KNX_EXPORT QKnxNetIpFrame
 {
 public:
-    QKnxNetIpFrameEx();
-    ~QKnxNetIpFrameEx();
+    QKnxNetIpFrame();
+    ~QKnxNetIpFrame();
 
-    QKnxNetIpFrameEx(QKnxNetIp::ServiceType type, const QKnxByteArray &data = {});
-    QKnxNetIpFrameEx(QKnxNetIp::ServiceType type,
+    QKnxNetIpFrame(QKnxNetIp::ServiceType type, const QKnxByteArray &data = {});
+    QKnxNetIpFrame(QKnxNetIp::ServiceType type,
         const QKnxNetIpConnectionHeader &connectionHeader, const QKnxByteArray &data = {});
-    QKnxNetIpFrameEx(const QKnxNetIpFrameHeader &header,
+    QKnxNetIpFrame(const QKnxNetIpFrameHeader &header,
         const QKnxNetIpConnectionHeader &connectionHeader, const QKnxByteArray &data = {});
 
     bool isNull()const;
@@ -80,128 +79,27 @@ public:
     void setData(const QKnxByteArray &data);
 
     QKnxByteArray bytes() const;
-    static QKnxNetIpFrameEx fromBytes(const QKnxByteArray &bytes, quint16 index = 0);
+    static QKnxNetIpFrame fromBytes(const QKnxByteArray &bytes, quint16 index = 0);
 
-    QKnxNetIpFrameEx(const QKnxNetIpFrameEx &other);
-    QKnxNetIpFrameEx &operator=(const QKnxNetIpFrameEx &other);
+    QKnxNetIpFrame(const QKnxNetIpFrame &other);
+    QKnxNetIpFrame &operator=(const QKnxNetIpFrame &other);
 
-    QKnxNetIpFrameEx(QKnxNetIpFrameEx &&other) Q_DECL_NOTHROW;
-    QKnxNetIpFrameEx &operator=(QKnxNetIpFrameEx &&other) Q_DECL_NOTHROW;
+    QKnxNetIpFrame(QKnxNetIpFrame &&other) Q_DECL_NOTHROW;
+    QKnxNetIpFrame &operator=(QKnxNetIpFrame &&other) Q_DECL_NOTHROW;
 
-    void swap(QKnxNetIpFrameEx &other) Q_DECL_NOTHROW;
+    void swap(QKnxNetIpFrame &other) Q_DECL_NOTHROW;
 
-    bool operator==(const QKnxNetIpFrameEx &other) const;
-    bool operator!=(const QKnxNetIpFrameEx &other) const;
-
-private:
-    explicit QKnxNetIpFrameEx(QKnxNetIpFrameExPrivate &dd);
+    bool operator==(const QKnxNetIpFrame &other) const;
+    bool operator!=(const QKnxNetIpFrame &other) const;
 
 private:
-    QSharedDataPointer<QKnxNetIpFrameExPrivate> d_ptr;
-};
-Q_KNX_EXPORT QDebug operator<<(QDebug debug, const QKnxNetIpFrameEx &frame);
-
-class Q_KNX_EXPORT QKnxNetIpFrame
-{
-    friend struct QKnxNetIpFrameHelper;
-    friend struct QKnxNetIpConnectionHeaderFrameHelper;
-
-public:
-    virtual quint16 size() const
-    {
-        return m_header.totalSize();
-    }
-
-    virtual QKnxNetIpFrameHeader header() const
-    {
-        return m_header;
-    }
-
-    virtual QKnxNetIpPayload payload() const
-    {
-        return m_payload;
-    }
-
-    virtual QKnxNetIpPayloadRef payloadRef(quint16 index = 0) const
-    {
-        return m_payload.ref(index);
-    }
-
-    virtual bool isValid() const
-    {
-        return m_header.isValid() && size() == (m_header.size() + m_payload.size());
-    }
-
-    virtual QString toString() const
-    {
-        return QStringLiteral("%1, %2").arg(m_header.toString(), m_payload.toString());
-    }
-
-    QKnxByteArray bytes() const
-    {
-        return m_header.bytes() + m_payload.bytes();
-    }
-
-    virtual ~QKnxNetIpFrame() = default;
-
-protected:
-    QKnxNetIpFrame() = default;
-
-    explicit QKnxNetIpFrame(QKnxNetIp::ServiceType code)
-        : m_header(code)
-    {}
-
-    QKnxNetIpFrame(const QKnxNetIpFrameHeader &header, const QKnxNetIpPayload &payload)
-        : m_header(header)
-        , m_payload(payload)
-    {}
-
-    QKnxNetIp::ServiceType code() const
-    {
-        return m_header.serviceType();
-    }
-
-    void setCode(QKnxNetIp::ServiceType type)
-    {
-        m_header.setServiceType(type);
-    }
-
-    quint16 dataSize() const
-    {
-        return m_header.dataSize();
-    }
-
-    void setDataSize(quint16 dataSize)
-    {
-        m_header.setDataSize(dataSize);
-    }
-
-    virtual void setPayload(const QKnxNetIpPayload &payload)
-    {
-        m_payload = payload;
-        setDataSize(payload.size());
-    }
+    explicit QKnxNetIpFrame(QKnxNetIpFramePrivate &dd);
 
 private:
-    QKnxNetIpFrameHeader m_header;
-    QKnxNetIpPayload m_payload;
+    QSharedDataPointer<QKnxNetIpFramePrivate> d_ptr;
 };
 
-struct QKnxNetIpFrameHelper
-{
-    static QKnxNetIpFrame fromBytes(const QKnxByteArray &bytes, quint16 index, QKnxNetIp::ServiceType sType)
-    {
-        auto header = QKnxNetIpFrameHeader::fromBytes(bytes, index);
-        if (!header.isValid() || header.serviceType() != sType)
-            return {};
-
-        return QKnxNetIpFrame(header, QKnxNetIpPayload::fromBytes(bytes, index + header.size(),
-            header.dataSize()));
-    }
-};
-
-Q_KNX_EXPORT QDebug operator<<(QDebug debug, const QKnxNetIpFrame &package);
-Q_KNX_EXPORT QDataStream &operator<<(QDataStream &out, const QKnxNetIpFrame &package);
+Q_KNX_EXPORT QDebug operator<<(QDebug debug, const QKnxNetIpFrame &frame);
 
 QT_END_NAMESPACE
 

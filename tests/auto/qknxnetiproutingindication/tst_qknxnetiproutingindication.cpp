@@ -48,7 +48,7 @@ private slots:
 
 void tst_QKnxNetIpRoutingIndication::testDefaultConstructor()
 {
-    QKnxNetIpFrameEx frame;
+    QKnxNetIpFrame frame;
 
     QKnxNetIpRoutingIndication routing(frame);
     QCOMPARE(routing.isValid(), false);

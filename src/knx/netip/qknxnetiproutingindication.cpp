@@ -31,7 +31,7 @@
 
 QT_BEGIN_NAMESPACE
 
-QKnxNetIpRoutingIndication::QKnxNetIpRoutingIndication(const QKnxNetIpFrameEx &frame)
+QKnxNetIpRoutingIndication::QKnxNetIpRoutingIndication(const QKnxNetIpFrame &frame)
     : m_frame(frame)
 {}
 
@@ -62,7 +62,7 @@ QKnxNetIpRoutingIndication::Builder &
     return *this;
 }
 
-QKnxNetIpFrameEx QKnxNetIpRoutingIndication::Builder::create() const
+QKnxNetIpFrame QKnxNetIpRoutingIndication::Builder::create() const
 {
     return { QKnxNetIp::ServiceType::RoutingIndication, m_llf.bytes() };
 }

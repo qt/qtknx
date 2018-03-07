@@ -31,7 +31,7 @@
 
 QT_BEGIN_NAMESPACE
 
-QKnxNetIpConnectionStateRequest::QKnxNetIpConnectionStateRequest(const QKnxNetIpFrameEx &frame)
+QKnxNetIpConnectionStateRequest::QKnxNetIpConnectionStateRequest(const QKnxNetIpFrame &frame)
     : m_frame(frame)
 {}
 
@@ -73,7 +73,7 @@ QKnxNetIpConnectionStateRequest::Builder &
     return *this;
 }
 
-QKnxNetIpFrameEx QKnxNetIpConnectionStateRequest::Builder::create() const
+QKnxNetIpFrame QKnxNetIpConnectionStateRequest::Builder::create() const
 {
     return { QKnxNetIp::ServiceType::ConnectionStateRequest, QKnxByteArray { m_channelId, 0x00 }
         + m_hpai.bytes() };

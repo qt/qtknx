@@ -43,8 +43,8 @@ public:
     QKnxNetIpRoutingIndication() = delete;
     ~QKnxNetIpRoutingIndication() = default;
 
-    QKnxNetIpRoutingIndication(const QKnxNetIpFrameEx &&) = delete;
-    explicit QKnxNetIpRoutingIndication(const QKnxNetIpFrameEx &frame);
+    QKnxNetIpRoutingIndication(const QKnxNetIpFrame &&) = delete;
+    explicit QKnxNetIpRoutingIndication(const QKnxNetIpFrame &frame);
 
     bool isValid() const;
     QKnxLinkLayerFrame linkLayerFrame() const;
@@ -53,7 +53,7 @@ public:
     {
     public:
         Builder &setLinkLayerFrame(const QKnxLinkLayerFrame &llf);
-        QKnxNetIpFrameEx create() const;
+        QKnxNetIpFrame create() const;
 
     private:
         QKnxLinkLayerFrame m_llf;
@@ -61,7 +61,7 @@ public:
     static QKnxNetIpRoutingIndication::Builder builder();
 
 private:
-    const QKnxNetIpFrameEx &m_frame;
+    const QKnxNetIpFrame &m_frame;
 };
 
 QT_END_NAMESPACE

@@ -31,7 +31,7 @@
 #define QKNXNETIPTUNNELINGACKNOWLEDGE_H
 
 #include <QtKnx/qknxnetip.h>
-#include <QtKnx/qknxnetipconnectionheaderframe.h>
+#include <QtKnx/qknxnetipframe.h>
 #include <QtKnx/qknxglobal.h>
 
 QT_BEGIN_NAMESPACE
@@ -42,8 +42,8 @@ public:
     QKnxNetIpTunnelingAcknowledge() = delete;
     ~QKnxNetIpTunnelingAcknowledge() = default;
 
-    QKnxNetIpTunnelingAcknowledge(const QKnxNetIpFrameEx &&) = delete;
-    explicit QKnxNetIpTunnelingAcknowledge(const QKnxNetIpFrameEx &frame);
+    QKnxNetIpTunnelingAcknowledge(const QKnxNetIpFrame &&) = delete;
+    explicit QKnxNetIpTunnelingAcknowledge(const QKnxNetIpFrame &frame);
 
     bool isValid() const;
 
@@ -58,7 +58,7 @@ public:
         Builder &setSequenceNumber(quint8 sequenceNumber);
         Builder &setStatus(QKnxNetIp::Error status);
 
-        QKnxNetIpFrameEx create() const;
+        QKnxNetIpFrame create() const;
 
     private:
         quint8 m_channelId;
@@ -68,7 +68,7 @@ public:
     static QKnxNetIpTunnelingAcknowledge::Builder builder();
 
 private:
-    const QKnxNetIpFrameEx &m_frame;
+    const QKnxNetIpFrame &m_frame;
 };
 
 QT_END_NAMESPACE

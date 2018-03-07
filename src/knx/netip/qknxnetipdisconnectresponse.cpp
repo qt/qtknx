@@ -31,7 +31,7 @@
 
 QT_BEGIN_NAMESPACE
 
-QKnxNetIpDisconnectResponse::QKnxNetIpDisconnectResponse(const QKnxNetIpFrameEx &frame)
+QKnxNetIpDisconnectResponse::QKnxNetIpDisconnectResponse(const QKnxNetIpFrame &frame)
     : m_frame(frame)
 {}
 
@@ -73,7 +73,7 @@ QKnxNetIpDisconnectResponse::Builder &
     return *this;
 }
 
-QKnxNetIpFrameEx QKnxNetIpDisconnectResponse::Builder::create() const
+QKnxNetIpFrame QKnxNetIpDisconnectResponse::Builder::create() const
 {
     return { QKnxNetIp::ServiceType::DisconnectResponse, QKnxByteArray { m_channelId,
         quint8(m_status) } };

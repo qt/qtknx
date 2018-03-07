@@ -31,7 +31,7 @@
 
 QT_BEGIN_NAMESPACE
 
-QKnxNetIpConnectResponse::QKnxNetIpConnectResponse(const QKnxNetIpFrameEx &frame)
+QKnxNetIpConnectResponse::QKnxNetIpConnectResponse(const QKnxNetIpFrame &frame)
     : m_frame(frame)
 {}
 
@@ -101,7 +101,7 @@ QKnxNetIpConnectResponse::Builder &
     return *this;
 }
 
-QKnxNetIpFrameEx QKnxNetIpConnectResponse::Builder::create() const
+QKnxNetIpFrame QKnxNetIpConnectResponse::Builder::create() const
 {
     QKnxByteArray data { m_channelId, quint8(m_status) };
     if (m_status == QKnxNetIp::Error::None)

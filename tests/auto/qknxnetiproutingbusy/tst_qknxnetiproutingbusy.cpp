@@ -48,7 +48,7 @@ private slots:
 
 void tst_QKnxNetIpRoutingBusy::testDefaultConstructor()
 {
-    QKnxNetIpFrameEx frame;
+    QKnxNetIpFrame frame;
 
     QKnxNetIpRoutingBusy routing(frame);
     QCOMPARE(routing.isValid(), false);

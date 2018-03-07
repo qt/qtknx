@@ -39,8 +39,6 @@ QT_BEGIN_NAMESPACE
 
 class Q_KNX_EXPORT QKnxNetIpFrameHeader final
 {
-    friend struct QKnxNetIpFrameHelper;
-
 public:
     QKnxNetIpFrameHeader() = default;
     ~QKnxNetIpFrameHeader() = default;

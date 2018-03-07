@@ -137,7 +137,7 @@ void QKnxNetIpServerDescriptionAgentPrivate::setupSocket()
             if (!header.isValid() || header.serviceType() != QKnxNetIp::ServiceType::DescriptionResponse)
                 continue;
 
-            auto frame = QKnxNetIpFrameEx::fromBytes(data, 0);
+            auto frame = QKnxNetIpFrame::fromBytes(data, 0);
             QKnxNetIpDescriptionResponse response(frame);
             if (!response.isValid())
                 continue;

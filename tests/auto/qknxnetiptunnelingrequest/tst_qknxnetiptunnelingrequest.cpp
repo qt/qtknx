@@ -48,7 +48,7 @@ private slots:
 
 void tst_QKnxNetIpTunnelingRequest::testDefaultConstructor()
 {
-    QKnxNetIpFrameEx frame;
+    QKnxNetIpFrame frame;
     QKnxNetIpTunnelingRequest tunneling(frame);
 
     QCOMPARE(tunneling.isValid(), false);

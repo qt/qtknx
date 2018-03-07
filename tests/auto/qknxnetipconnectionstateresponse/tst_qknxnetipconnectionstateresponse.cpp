@@ -48,7 +48,7 @@ private slots:
 
 void tst_QKnxNetIpConnectionStateResponse::testDefaultConstructor()
 {
-    QKnxNetIpFrameEx frame;
+    QKnxNetIpFrame frame;
     QKnxNetIpConnectionStateResponse connectionStateResponse(frame);
 
     QCOMPARE(connectionStateResponse.isValid(), false);

@@ -170,16 +170,16 @@ void QKnxNetIpEndpointConnectionPrivate::setup()
                     // TODO: set the m_dataEndpointVersion once we receive or send the first frame
                         switch (header.serviceType()) {
                         case QKnxNetIp::ServiceType::TunnelingRequest:
-                            processTunnelingRequest(QKnxNetIpFrameEx::fromBytes(data, 0));
+                            processTunnelingRequest(QKnxNetIpFrame::fromBytes(data, 0));
                             break;
                         case QKnxNetIp::ServiceType::TunnelingAcknowledge:
-                            processTunnelingAcknowledge(QKnxNetIpFrameEx::fromBytes(data, 0));
+                            processTunnelingAcknowledge(QKnxNetIpFrame::fromBytes(data, 0));
                             break;
                         case QKnxNetIp::ServiceType::DeviceConfigurationRequest:
-                            processDeviceConfigurationRequest(QKnxNetIpFrameEx::fromBytes(data, 0));
+                            processDeviceConfigurationRequest(QKnxNetIpFrame::fromBytes(data, 0));
                             break;
                         case QKnxNetIp::ServiceType::DeviceConfigurationAcknowledge:
-                            processDeviceConfigurationAcknowledge(QKnxNetIpFrameEx::fromBytes(data, 0));
+                            processDeviceConfigurationAcknowledge(QKnxNetIpFrame::fromBytes(data, 0));
                             break;
                         default:
                             processDatagram(QKnxNetIpEndpointConnection::EndpointType::Data, datagram);
@@ -216,16 +216,16 @@ void QKnxNetIpEndpointConnectionPrivate::setup()
                     // } else {
                         switch (header.serviceType()) {
                         case QKnxNetIp::ServiceType::ConnectResponse:
-                            processConnectResponse(QKnxNetIpFrameEx::fromBytes(data, 0), datagram);
+                            processConnectResponse(QKnxNetIpFrame::fromBytes(data, 0), datagram);
                             break;
                         case QKnxNetIp::ServiceType::ConnectionStateResponse:
-                            processConnectionStateResponse(QKnxNetIpFrameEx::fromBytes(data, 0));
+                            processConnectionStateResponse(QKnxNetIpFrame::fromBytes(data, 0));
                             break;
                         case QKnxNetIp::ServiceType::DisconnectRequest:
-                            processDisconnectRequest(QKnxNetIpFrameEx::fromBytes(data, 0));
+                            processDisconnectRequest(QKnxNetIpFrame::fromBytes(data, 0));
                             break;
                         case QKnxNetIp::ServiceType::DisconnectResponse:
-                            processDisconnectResponse(QKnxNetIpFrameEx::fromBytes(data, 0));
+                            processDisconnectResponse(QKnxNetIpFrame::fromBytes(data, 0));
                             break;
                         default:
                             processDatagram(QKnxNetIpEndpointConnection::EndpointType::Control,
@@ -295,7 +295,7 @@ void QKnxNetIpEndpointConnectionPrivate::process(const QKnxLinkLayerFrame &)
 void QKnxNetIpEndpointConnectionPrivate::process(const QKnxLocalDeviceManagementFrame &)
 {}
 
-void QKnxNetIpEndpointConnectionPrivate::processTunnelingRequest(const QKnxNetIpFrameEx &frame)
+void QKnxNetIpEndpointConnectionPrivate::processTunnelingRequest(const QKnxNetIpFrame &frame)
 {
     qDebug() << "Received tunneling request:" << frame;
 
@@ -325,7 +325,7 @@ void QKnxNetIpEndpointConnectionPrivate::processTunnelingRequest(const QKnxNetIp
     }
 }
 
-void QKnxNetIpEndpointConnectionPrivate::processTunnelingAcknowledge(const QKnxNetIpFrameEx &frame)
+void QKnxNetIpEndpointConnectionPrivate::processTunnelingAcknowledge(const QKnxNetIpFrame &frame)
 {
     qDebug() << "Received tunneling acknowledge:" << frame;
 
@@ -359,7 +359,7 @@ bool QKnxNetIpEndpointConnectionPrivate::sendTunnelingRequest(const QKnxLinkLaye
     return sendCemiRequest();
 }
 
-void QKnxNetIpEndpointConnectionPrivate::processDeviceConfigurationRequest(const QKnxNetIpFrameEx &frame)
+void QKnxNetIpEndpointConnectionPrivate::processDeviceConfigurationRequest(const QKnxNetIpFrame &frame)
 {
     qDebug() << "Received device configuration request:" << frame;
 
@@ -393,7 +393,7 @@ void QKnxNetIpEndpointConnectionPrivate::processDeviceConfigurationRequest(const
         process(request.cemi());
 }
 
-void QKnxNetIpEndpointConnectionPrivate::processDeviceConfigurationAcknowledge(const QKnxNetIpFrameEx &frame)
+void QKnxNetIpEndpointConnectionPrivate::processDeviceConfigurationAcknowledge(const QKnxNetIpFrame &frame)
 {
     qDebug() << "Received device configuration acknowledge:" << frame;
 
@@ -437,7 +437,7 @@ namespace QKnxPrivate
     }
 }
 
-void QKnxNetIpEndpointConnectionPrivate::processConnectResponse(const QKnxNetIpFrameEx &frame,
+void QKnxNetIpEndpointConnectionPrivate::processConnectResponse(const QKnxNetIpFrame &frame,
     const QNetworkDatagram &datagram)
 {
     qDebug() << "Received connect response:" << frame;
@@ -478,7 +478,7 @@ void QKnxNetIpEndpointConnectionPrivate::processConnectResponse(const QKnxNetIpF
     }
 }
 
-void QKnxNetIpEndpointConnectionPrivate::processConnectionStateResponse(const QKnxNetIpFrameEx &frame)
+void QKnxNetIpEndpointConnectionPrivate::processConnectionStateResponse(const QKnxNetIpFrame &frame)
 {
     qDebug() << "Received connection state response:" << frame;
 
@@ -497,7 +497,7 @@ void QKnxNetIpEndpointConnectionPrivate::processConnectionStateResponse(const QK
     }
 }
 
-void QKnxNetIpEndpointConnectionPrivate::processDisconnectRequest(const QKnxNetIpFrameEx &frame)
+void QKnxNetIpEndpointConnectionPrivate::processDisconnectRequest(const QKnxNetIpFrame &frame)
 {
     qDebug() << "Received disconnect request:" << frame;
 
@@ -520,7 +520,7 @@ void QKnxNetIpEndpointConnectionPrivate::processDisconnectRequest(const QKnxNetI
     }
 }
 
-void QKnxNetIpEndpointConnectionPrivate::processDisconnectResponse(const QKnxNetIpFrameEx &frame)
+void QKnxNetIpEndpointConnectionPrivate::processDisconnectResponse(const QKnxNetIpFrame &frame)
 {
     qDebug() << "Received disconnect response:" << frame;
 

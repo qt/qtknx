@@ -48,7 +48,7 @@ private slots:
 
 void tst_QKnxNetIpDeviceConfigurationAcknowledge::testDefaultConstructor()
 {
-    QKnxNetIpFrameEx frame;
+    QKnxNetIpFrame frame;
     QKnxNetIpDeviceConfigurationAcknowledge acknowledge(frame);
 
     QCOMPARE(acknowledge.isValid(), false);

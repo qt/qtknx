@@ -3,13 +3,12 @@ INCLUDEPATH += $$PWD
 PUBLIC_HEADERS += $$PWD/qknxnetip.h \
     $$PWD/qknxnetipconfigdib.h \
     $$PWD/qknxnetipconnectionheader.h \
-    $$PWD/qknxnetipconnectionheaderframe.h \
     $$PWD/qknxnetipconnectionstaterequest.h \
     $$PWD/qknxnetipconnectionstateresponse.h \
     $$PWD/qknxnetipconnectrequest.h \
     $$PWD/qknxnetipconnectresponse.h \
-    $$PWD/qknxnetipcrd.h  \
-    $$PWD/qknxnetipcri.h  \
+    $$PWD/qknxnetipcrd.h \
+    $$PWD/qknxnetipcri.h \
     $$PWD/qknxnetipcurrentconfigdib.h \
     $$PWD/qknxnetipdescriptionrequest.h \
     $$PWD/qknxnetipdescriptionresponse.h \

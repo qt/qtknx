@@ -31,7 +31,7 @@
 
 QT_BEGIN_NAMESPACE
 
-class QKnxNetIpFrameExPrivate : public QSharedData
+class QKnxNetIpFramePrivate : public QSharedData
 {
 public:
     QKnxNetIpFrameHeader m_header;
@@ -53,43 +53,43 @@ public:
 
     \sa isNull, isValid
 */
-QKnxNetIpFrameEx::QKnxNetIpFrameEx()
-    : d_ptr(new QKnxNetIpFrameExPrivate)
+QKnxNetIpFrame::QKnxNetIpFrame()
+    : d_ptr(new QKnxNetIpFramePrivate)
 {}
 
 /*!
     Destroys the frame object and releases all allocated resources.
 */
-QKnxNetIpFrameEx::~QKnxNetIpFrameEx() = default;
+QKnxNetIpFrame::~QKnxNetIpFrame() = default;
 
-QKnxNetIpFrameEx::QKnxNetIpFrameEx(QKnxNetIp::ServiceType type, const QKnxByteArray &data)
-    : QKnxNetIpFrameEx(type, {}, data)
+QKnxNetIpFrame::QKnxNetIpFrame(QKnxNetIp::ServiceType type, const QKnxByteArray &data)
+    : QKnxNetIpFrame(type, {}, data)
 {}
 
-QKnxNetIpFrameEx::QKnxNetIpFrameEx(QKnxNetIp::ServiceType type,
+QKnxNetIpFrame::QKnxNetIpFrame(QKnxNetIp::ServiceType type,
         const QKnxNetIpConnectionHeader &connectionHeader, const QKnxByteArray &data)
-    : d_ptr(new QKnxNetIpFrameExPrivate)
+    : d_ptr(new QKnxNetIpFramePrivate)
 {
     d_ptr->m_connectionHeader = connectionHeader;
     d_ptr->m_data = data;
     d_ptr->m_header = { type, quint16(connectionHeader.size() + data.size()) };
 }
 
-QKnxNetIpFrameEx::QKnxNetIpFrameEx(const QKnxNetIpFrameHeader &header,
+QKnxNetIpFrame::QKnxNetIpFrame(const QKnxNetIpFrameHeader &header,
         const QKnxNetIpConnectionHeader &connectionHeader, const QKnxByteArray &data)
-    : d_ptr(new QKnxNetIpFrameExPrivate)
+    : d_ptr(new QKnxNetIpFramePrivate)
 {
     d_ptr->m_header = header;
     d_ptr->m_connectionHeader = connectionHeader;
     d_ptr->m_data = data;
 }
 
-bool QKnxNetIpFrameEx::isNull() const
+bool QKnxNetIpFrame::isNull() const
 {
     return d_ptr->m_header.isNull() && d_ptr->m_connectionHeader.isNull() && d_ptr->m_data.isNull();
 }
 
-bool QKnxNetIpFrameEx::isValid() const
+bool QKnxNetIpFrame::isValid() const
 {
     if (isNull())
         return false;
@@ -111,96 +111,96 @@ bool QKnxNetIpFrameEx::isValid() const
         && d_ptr->m_header.dataSize() == (d_ptr->m_data.size() + d_ptr->m_connectionHeader.size());
 }
 
-quint16 QKnxNetIpFrameEx::size() const
+quint16 QKnxNetIpFrame::size() const
 {
     return d_ptr->m_header.totalSize();
 }
 
-quint16 QKnxNetIpFrameEx::dataSize() const
+quint16 QKnxNetIpFrame::dataSize() const
 {
     return d_ptr->m_header.dataSize() - d_ptr->m_connectionHeader.size();
 }
 
-QKnxNetIpFrameHeader QKnxNetIpFrameEx::header() const
+QKnxNetIpFrameHeader QKnxNetIpFrame::header() const
 {
     return d_ptr->m_header;
 }
 
-void QKnxNetIpFrameEx::setHeader(const QKnxNetIpFrameHeader & header)
+void QKnxNetIpFrame::setHeader(const QKnxNetIpFrameHeader & header)
 {
     d_ptr->m_header = header;
 }
 
-quint8 QKnxNetIpFrameEx::protocolVersion() const
+quint8 QKnxNetIpFrame::protocolVersion() const
 {
     return d_ptr->m_header.protocolVersion();
 }
 
-QKnxNetIp::ServiceType QKnxNetIpFrameEx::serviceType() const
+QKnxNetIp::ServiceType QKnxNetIpFrame::serviceType() const
 {
     return d_ptr->m_header.serviceType();
 }
 
-void QKnxNetIpFrameEx::setServiceType(QKnxNetIp::ServiceType type)
+void QKnxNetIpFrame::setServiceType(QKnxNetIp::ServiceType type)
 {
     d_ptr->m_header.setServiceType(type);
 }
 
-QKnxNetIpConnectionHeader QKnxNetIpFrameEx::connectionHeader() const
+QKnxNetIpConnectionHeader QKnxNetIpFrame::connectionHeader() const
 {
     return d_ptr->m_connectionHeader;
 }
 
-void QKnxNetIpFrameEx::setConnectionHeader(const QKnxNetIpConnectionHeader &header)
+void QKnxNetIpFrame::setConnectionHeader(const QKnxNetIpConnectionHeader &header)
 {
     quint16 dataSize = d_ptr->m_header.dataSize() - d_ptr->m_connectionHeader.size();
     d_ptr->m_connectionHeader = header;
     d_ptr->m_header.setDataSize(dataSize + header.size());
 }
 
-quint8 QKnxNetIpFrameEx::channelId() const
+quint8 QKnxNetIpFrame::channelId() const
 {
     return d_ptr->m_connectionHeader.channelId();
 }
 
-quint8 QKnxNetIpFrameEx::sequenceNumber() const
+quint8 QKnxNetIpFrame::sequenceNumber() const
 {
     return d_ptr->m_connectionHeader.sequenceNumber();
 }
 
-quint8 QKnxNetIpFrameEx::serviceTypeSpecificValue() const
+quint8 QKnxNetIpFrame::serviceTypeSpecificValue() const
 {
     return d_ptr->m_connectionHeader.serviceTypeSpecificValue();
 }
 
-QKnxByteArray QKnxNetIpFrameEx::connectionTypeSpecificHeaderItems() const
+QKnxByteArray QKnxNetIpFrame::connectionTypeSpecificHeaderItems() const
 {
     return d_ptr->m_connectionHeader.connectionTypeSpecificHeaderItems();
 }
 
-QKnxByteArray QKnxNetIpFrameEx::data() const
+QKnxByteArray QKnxNetIpFrame::data() const
 {
     return d_ptr->m_data;
 }
 
-const QKnxByteArray &QKnxNetIpFrameEx::constData() const
+const QKnxByteArray &QKnxNetIpFrame::constData() const
 {
     return d_ptr->m_data;
 }
 
-void QKnxNetIpFrameEx::setData(const QKnxByteArray &data)
+void QKnxNetIpFrame::setData(const QKnxByteArray &data)
 {
     auto dataSize = d_ptr->m_header.dataSize() - d_ptr->m_data.size();
     d_ptr->m_data = data;
     d_ptr->m_header.setDataSize(dataSize + data.size());
 }
 
-QKnxByteArray QKnxNetIpFrameEx::bytes() const
+QKnxByteArray QKnxNetIpFrame::bytes() const
 {
     return d_ptr->m_header.bytes() + d_ptr->m_connectionHeader.bytes() + d_ptr->m_data;
 }
 
-QKnxNetIpFrameEx QKnxNetIpFrameEx::fromBytes(const QKnxByteArray &bytes, quint16 index)
+QKnxNetIpFrame QKnxNetIpFrame::fromBytes(const QKnxByteArray &bytes, quint16 index)
 {
     auto header = QKnxNetIpFrameHeader::fromBytes(bytes, index);
     if (!header.isValid())
@@ -231,14 +231,14 @@ QKnxNetIpFrameEx QKnxNetIpFrameEx::fromBytes(const QKnxByteArray &bytes, quint16
 /*!
     Constructs a copy of \a other.
 */
-QKnxNetIpFrameEx::QKnxNetIpFrameEx(const QKnxNetIpFrameEx &other)
+QKnxNetIpFrame::QKnxNetIpFrame(const QKnxNetIpFrame &other)
     : d_ptr(other.d_ptr)
 {}
 
 /*!
     Assigns the specified \a other to this object.
 */
-QKnxNetIpFrameEx &QKnxNetIpFrameEx::operator=(const QKnxNetIpFrameEx &other)
+QKnxNetIpFrame &QKnxNetIpFrame::operator=(const QKnxNetIpFrame &other)
 {
     d_ptr = other.d_ptr;
     return *this;
@@ -248,7 +248,7 @@ QKnxNetIpFrameEx &QKnxNetIpFrameEx::operator=(const QKnxNetIpFrameEx &other)
     Move-constructs an object instance, making it point to the same object that
     \a other was pointing to.
 */
-QKnxNetIpFrameEx::QKnxNetIpFrameEx(QKnxNetIpFrameEx &&other) Q_DECL_NOTHROW
+QKnxNetIpFrame::QKnxNetIpFrame(QKnxNetIpFrame &&other) Q_DECL_NOTHROW
     : d_ptr(other.d_ptr)
 {
     other.d_ptr = Q_NULLPTR;
@@ -257,7 +257,7 @@ QKnxNetIpFrameEx::QKnxNetIpFrameEx(QKnxNetIpFrameEx &&other) Q_DECL_NOTHROW
 /*!
     Move-assigns \a other to this object instance.
 */
-QKnxNetIpFrameEx &QKnxNetIpFrameEx::operator=(QKnxNetIpFrameEx &&other) Q_DECL_NOTHROW
+QKnxNetIpFrame &QKnxNetIpFrame::operator=(QKnxNetIpFrame &&other) Q_DECL_NOTHROW
 {
     swap(other);
     return *this;
@@ -266,7 +266,7 @@ QKnxNetIpFrameEx &QKnxNetIpFrameEx::operator=(QKnxNetIpFrameEx &&other) Q_DECL_N
 /*!
     Swaps \a other with this object. This operation is very fast and never fails.
 */
-void QKnxNetIpFrameEx::swap(QKnxNetIpFrameEx &other) Q_DECL_NOTHROW
+void QKnxNetIpFrame::swap(QKnxNetIpFrame &other) Q_DECL_NOTHROW
 {
     d_ptr.swap(other.d_ptr);
 }
@@ -275,7 +275,7 @@ void QKnxNetIpFrameEx::swap(QKnxNetIpFrameEx &other) Q_DECL_NOTHROW
     Returns \c true if this object and the given \a other are equal; otherwise
     returns \c false.
 */
-bool QKnxNetIpFrameEx::operator==(const QKnxNetIpFrameEx &other) const
+bool QKnxNetIpFrame::operator==(const QKnxNetIpFrame &other) const
 {
     return d_ptr == other.d_ptr || [&]() -> bool {
         return d_ptr->m_header == other.d_ptr->m_header
@@ -288,7 +288,7 @@ bool QKnxNetIpFrameEx::operator==(const QKnxNetIpFrameEx &other) const
     Returns \c true if this object and the given \a other are not equal;
     otherwise returns \c false.
 */
-bool QKnxNetIpFrameEx::operator!=(const QKnxNetIpFrameEx &other) const
+bool QKnxNetIpFrame::operator!=(const QKnxNetIpFrame &other) const
 {
     return !operator==(other);
 }
@@ -296,8 +296,8 @@ bool QKnxNetIpFrameEx::operator!=(const QKnxNetIpFrameEx &other) const
 /*!
     \internal
 */
-QKnxNetIpFrameEx::QKnxNetIpFrameEx(QKnxNetIpFrameExPrivate &dd)
-    : d_ptr(new QKnxNetIpFrameExPrivate(dd))
+QKnxNetIpFrame::QKnxNetIpFrame(QKnxNetIpFramePrivate &dd)
+    : d_ptr(new QKnxNetIpFramePrivate(dd))
 {}
 
 /*!
@@ -305,96 +305,10 @@ QKnxNetIpFrameEx::QKnxNetIpFrameEx(QKnxNetIpFrameExPrivate &dd)
 
     Writes the KNX \a NetIpFrame to the \a debug stream.
 */
-QDebug operator<<(QDebug debug, const QKnxNetIpFrameEx &frame)
+QDebug operator<<(QDebug debug, const QKnxNetIpFrame &frame)
 {
     QDebugStateSaver _(debug);
     return debug.nospace().noquote() << "0x" << frame.bytes().toHex();
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-/*!
-    Creates a new QKnxNetIpFrame with the given \a code.
-*/
-
-/*!
-    Creates a new QKnxNetIpFrame with the given \a header and \a payload.
-    The \a header is expected to be fully setup and all values describing the
-    payload match the given \a payload.
-    \note No adjustments are made to the function arguments.
-*/
-
-/*!
-    Returns the generic code stored in the KNXnet/IP frame header.
-*/
-
-/*!
-    Sets the generic code stored in the KNXnet/IP frame header.
-*/
-
-/*!
-    Returns the number of bytes representing the KNXnet/IP frame including
-    the header and the payload.
-*/
-
-/*!
-    \relates QKnxNetIpFrame
-
-    Writes the KNX \a NetIpFrame to the \a debug stream.
-*/
-QDebug operator<<(QDebug debug, const QKnxNetIpFrame &package)
-{
-    QDebugStateSaver _(debug);
-    if (package.isValid()) {
-        QDebug &dbg = debug.nospace().noquote() << "0x" << hex << qSetFieldWidth(2)
-                                                << qSetPadChar(QLatin1Char('0'));
-        const auto bytes = package.bytes();
-        for (quint8 byte : qAsConst(bytes))
-            dbg << byte;
-    } else {
-        debug.nospace().noquote() << "0x1nv4l1d";
-    }
-    return debug;
-}
-
-/*!
-    \relates QKnxNetIpFrame
-
-    Writes a KNX \a NetIpFrame to the stream \a out and returns a reference to the
-    stream.
-*/
-QDataStream &operator<<(QDataStream &out, const QKnxNetIpFrame &package)
-{
-    if (!package.isValid())
-        return out;
-
-    const auto bytes = package.bytes();
-    for (quint8 byte : qAsConst(bytes))
-        out << byte;
-    return out;
 }
 
 QT_END_NAMESPACE

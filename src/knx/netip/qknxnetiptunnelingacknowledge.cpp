@@ -31,7 +31,7 @@
 
 QT_BEGIN_NAMESPACE
 
-QKnxNetIpTunnelingAcknowledge::QKnxNetIpTunnelingAcknowledge(const QKnxNetIpFrameEx &frame)
+QKnxNetIpTunnelingAcknowledge::QKnxNetIpTunnelingAcknowledge(const QKnxNetIpFrame &frame)
     : m_frame(frame)
 {}
 
@@ -85,7 +85,7 @@ QKnxNetIpTunnelingAcknowledge::Builder &
     return *this;
 }
 
-QKnxNetIpFrameEx QKnxNetIpTunnelingAcknowledge::Builder::create() const
+QKnxNetIpFrame QKnxNetIpTunnelingAcknowledge::Builder::create() const
 {
     return { QKnxNetIp::ServiceType::TunnelingAcknowledge,
         QKnxNetIpConnectionHeader { m_channelId, m_sequenceNumber, quint8(m_status) } };

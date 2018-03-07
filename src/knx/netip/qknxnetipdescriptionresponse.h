@@ -52,8 +52,8 @@ public:
     QKnxNetIpDescriptionResponse() = delete;
     ~QKnxNetIpDescriptionResponse() = default;
 
-    QKnxNetIpDescriptionResponse(const QKnxNetIpFrameEx &&) = delete;
-    explicit QKnxNetIpDescriptionResponse(const QKnxNetIpFrameEx &frame);
+    QKnxNetIpDescriptionResponse(const QKnxNetIpFrame &&) = delete;
+    explicit QKnxNetIpDescriptionResponse(const QKnxNetIpFrame &frame);
 
     bool isValid() const;
 
@@ -115,7 +115,7 @@ public:
             m_optionalDibs += dib.bytes();
         }
 
-        QKnxNetIpFrameEx create() const;
+        QKnxNetIpFrame create() const;
 
     private:
         QKnxNetIpDeviceDib m_ddib;
@@ -125,7 +125,7 @@ public:
     static QKnxNetIpDescriptionResponse::Builder builder();
 
 private:
-    const QKnxNetIpFrameEx &m_frame;
+    const QKnxNetIpFrame &m_frame;
 };
 
 QT_END_NAMESPACE

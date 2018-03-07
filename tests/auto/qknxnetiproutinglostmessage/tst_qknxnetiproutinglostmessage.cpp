@@ -48,7 +48,7 @@ private slots:
 
 void tst_QKnxNetIpRoutingLostMessage::testDefaultConstructor()
 {
-    QKnxNetIpFrameEx frame;
+    QKnxNetIpFrame frame;
 
     QKnxNetIpRoutingLostMessage routing(frame);
     QCOMPARE(routing.isValid(), false);

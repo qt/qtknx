@@ -42,8 +42,8 @@ public:
     QKnxNetIpSearchRequest() = delete;
     ~QKnxNetIpSearchRequest() = default;
 
-    QKnxNetIpSearchRequest(const QKnxNetIpFrameEx &&) = delete;
-    explicit QKnxNetIpSearchRequest(const QKnxNetIpFrameEx &frame);
+    QKnxNetIpSearchRequest(const QKnxNetIpFrame &&) = delete;
+    explicit QKnxNetIpSearchRequest(const QKnxNetIpFrame &frame);
 
     bool isValid() const;
     QKnxNetIpHpai discoveryEndpoint() const;
@@ -52,7 +52,7 @@ public:
     {
     public:
         Builder &setDiscoveryEndpoint(const QKnxNetIpHpai &hpai);
-        QKnxNetIpFrameEx create() const;
+        QKnxNetIpFrame create() const;
 
     private:
         QKnxNetIpHpai m_hpai;
@@ -60,7 +60,7 @@ public:
     static QKnxNetIpSearchRequest::Builder builder();
 
 private:
-    const QKnxNetIpFrameEx &m_frame;
+    const QKnxNetIpFrame &m_frame;
 };
 
 QT_END_NAMESPACE

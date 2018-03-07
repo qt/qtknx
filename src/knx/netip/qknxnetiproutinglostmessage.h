@@ -42,8 +42,8 @@ public:
     QKnxNetIpRoutingLostMessage() = delete;
     ~QKnxNetIpRoutingLostMessage() = default;
 
-    QKnxNetIpRoutingLostMessage(const QKnxNetIpFrameEx &&) = delete;
-    explicit QKnxNetIpRoutingLostMessage(const QKnxNetIpFrameEx &frame);
+    QKnxNetIpRoutingLostMessage(const QKnxNetIpFrame &&) = delete;
+    explicit QKnxNetIpRoutingLostMessage(const QKnxNetIpFrame &frame);
 
     bool isValid() const;
 
@@ -56,7 +56,7 @@ public:
         Builder &setDeviceState(QKnxNetIp::DeviceState state);
         Builder &setLostMessageCount(quint16 messageCount);
 
-        QKnxNetIpFrameEx create() const;
+        QKnxNetIpFrame create() const;
 
     private:
         QKnxNetIp::DeviceState m_state { QKnxNetIp::DeviceState::KnxFault };
@@ -66,7 +66,7 @@ public:
     static QKnxNetIpRoutingLostMessage::Builder builder();
 
 private:
-    const QKnxNetIpFrameEx &m_frame;
+    const QKnxNetIpFrame &m_frame;
 };
 
 QT_END_NAMESPACE

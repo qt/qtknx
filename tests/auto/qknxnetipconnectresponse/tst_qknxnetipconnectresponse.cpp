@@ -52,7 +52,7 @@ private slots:
 
 void tst_QKnxNetIpConnectResponse::testDefaultConstructor()
 {
-    QKnxNetIpFrameEx frame;
+    QKnxNetIpFrame frame;
     QKnxNetIpConnectResponse connectResponse(frame);
 
     QCOMPARE(connectResponse.isValid(), false);
@@ -154,7 +154,7 @@ void tst_QKnxNetIpConnectResponse::testConstructorFourArgumentsNoError()
 
 void tst_QKnxNetIpConnectResponse::testFromBytes()
 {
-    auto frame = QKnxNetIpFrameEx::fromBytes(
+    auto frame = QKnxNetIpFrame::fromBytes(
         QKnxByteArray::fromHex("06100206001415000801c0a8c814c3b404040200"), 0);
 
     auto header = frame.header();
@@ -178,7 +178,7 @@ void tst_QKnxNetIpConnectResponse::testFromBytes()
     QCOMPARE(quint8(crd[2]), quint8(0x02));
     QCOMPARE(quint8(crd[3]), quint8(0x00));
 
-    frame = QKnxNetIpFrameEx::fromBytes(
+    frame = QKnxNetIpFrame::fromBytes(
         QKnxByteArray::fromHex("061002060014010008010A094E1F0E5704041105"), 0);
 
     header = frame.header();

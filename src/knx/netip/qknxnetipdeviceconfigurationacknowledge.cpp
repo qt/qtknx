@@ -31,7 +31,7 @@
 
 QT_BEGIN_NAMESPACE
 
-QKnxNetIpDeviceConfigurationAcknowledge::QKnxNetIpDeviceConfigurationAcknowledge(const QKnxNetIpFrameEx &frame)
+QKnxNetIpDeviceConfigurationAcknowledge::QKnxNetIpDeviceConfigurationAcknowledge(const QKnxNetIpFrame &frame)
     : m_frame(frame)
 {}
 
@@ -85,7 +85,7 @@ QKnxNetIpDeviceConfigurationAcknowledge::Builder &
     return *this;
 }
 
-QKnxNetIpFrameEx QKnxNetIpDeviceConfigurationAcknowledge::Builder::create() const
+QKnxNetIpFrame QKnxNetIpDeviceConfigurationAcknowledge::Builder::create() const
 {
     return { QKnxNetIp::ServiceType::DeviceConfigurationAcknowledge,
         QKnxNetIpConnectionHeader { m_channelId, m_sequenceNumber, quint8(m_status) } };

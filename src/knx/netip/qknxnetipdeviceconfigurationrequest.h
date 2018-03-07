@@ -43,8 +43,8 @@ public:
     QKnxNetIpDeviceConfigurationRequest() = delete;
     ~QKnxNetIpDeviceConfigurationRequest() = default;
 
-    QKnxNetIpDeviceConfigurationRequest(const QKnxNetIpFrameEx &&) = delete;
-    explicit QKnxNetIpDeviceConfigurationRequest(const QKnxNetIpFrameEx &frame);
+    QKnxNetIpDeviceConfigurationRequest(const QKnxNetIpFrame &&) = delete;
+    explicit QKnxNetIpDeviceConfigurationRequest(const QKnxNetIpFrame &frame);
 
     bool isValid() const;
 
@@ -59,7 +59,7 @@ public:
         Builder &setSequenceNumber(quint8 sequenceNumber);
         Builder &setCemi(const QKnxLocalDeviceManagementFrame &cemi);
 
-        QKnxNetIpFrameEx create() const;
+        QKnxNetIpFrame create() const;
 
     private:
         quint8 m_channelId;
@@ -69,7 +69,7 @@ public:
     static QKnxNetIpDeviceConfigurationRequest::Builder builder();
 
 private:
-    const QKnxNetIpFrameEx &m_frame;
+    const QKnxNetIpFrame &m_frame;
 };
 
 QT_END_NAMESPACE

@@ -34,7 +34,6 @@
 #include <QtKnx/qknxnetipcri.h>
 #include <QtKnx/qknxnetiphpai.h>
 #include <QtKnx/qknxnetipframe.h>
-#include <QtKnx/qknxnetipconnectionheaderframe.h>
 #include <QtNetwork/qudpsocket.h>
 
 QT_BEGIN_NAMESPACE

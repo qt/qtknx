@@ -32,7 +32,7 @@
 
 QT_BEGIN_NAMESPACE
 
-QKnxNetIpRoutingBusy::QKnxNetIpRoutingBusy(const QKnxNetIpFrameEx &frame)
+QKnxNetIpRoutingBusy::QKnxNetIpRoutingBusy(const QKnxNetIpFrame &frame)
     : m_frame(frame)
 {}
 
@@ -89,7 +89,7 @@ QKnxNetIpRoutingBusy::Builder &
     return *this;
 }
 
-QKnxNetIpFrameEx QKnxNetIpRoutingBusy::Builder::create() const
+QKnxNetIpFrame QKnxNetIpRoutingBusy::Builder::create() const
 {
     return { QKnxNetIp::ServiceType::RoutingBusy, QKnxByteArray { 0x06, quint8(m_state) }
         + QKnxUtils::QUint16::bytes(m_waitTime) + QKnxUtils::QUint16::bytes(m_busyControl) };

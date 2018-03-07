@@ -31,7 +31,7 @@
 
 QT_BEGIN_NAMESPACE
 
-QKnxNetIpConnectRequest::QKnxNetIpConnectRequest(const QKnxNetIpFrameEx &frame)
+QKnxNetIpConnectRequest::QKnxNetIpConnectRequest(const QKnxNetIpFrame &frame)
     : m_frame(frame)
 {}
 
@@ -85,7 +85,7 @@ QKnxNetIpConnectRequest::Builder &
     return *this;
 }
 
-QKnxNetIpFrameEx QKnxNetIpConnectRequest::Builder::create() const
+QKnxNetIpFrame QKnxNetIpConnectRequest::Builder::create() const
 {
     return { QKnxNetIp::ServiceType::ConnectRequest, m_ceHpai.bytes() + m_deHpai.bytes() + m_cri
         .bytes() };

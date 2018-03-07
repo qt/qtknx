@@ -49,7 +49,7 @@ private slots:
 
 void tst_QKnxNetIpDeviceConfigurationRequest::testDefaultConstructor()
 {
-    QKnxNetIpFrameEx frame;
+    QKnxNetIpFrame frame;
     QKnxNetIpDeviceConfigurationRequest configuration(frame);
 
     QCOMPARE(configuration.isValid(), false);

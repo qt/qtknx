@@ -31,7 +31,7 @@
 
 QT_BEGIN_NAMESPACE
 
-QKnxNetIpTunnelingRequest::QKnxNetIpTunnelingRequest(const QKnxNetIpFrameEx &frame)
+QKnxNetIpTunnelingRequest::QKnxNetIpTunnelingRequest(const QKnxNetIpFrame &frame)
     : m_frame(frame)
 {}
 
@@ -85,7 +85,7 @@ QKnxNetIpTunnelingRequest::Builder &
     return *this;
 }
 
-QKnxNetIpFrameEx QKnxNetIpTunnelingRequest::Builder::create() const
+QKnxNetIpFrame QKnxNetIpTunnelingRequest::Builder::create() const
 {
     return { QKnxNetIp::ServiceType::TunnelingRequest, { m_channelId, m_sequenceNumber },
         m_cemi.bytes() };

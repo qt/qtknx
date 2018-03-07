@@ -42,8 +42,8 @@ public:
     QKnxNetIpDisconnectRequest() = delete;
     ~QKnxNetIpDisconnectRequest() = default;
 
-    QKnxNetIpDisconnectRequest(const QKnxNetIpFrameEx &&) = delete;
-    explicit QKnxNetIpDisconnectRequest(const QKnxNetIpFrameEx &frame);
+    QKnxNetIpDisconnectRequest(const QKnxNetIpFrame &&) = delete;
+    explicit QKnxNetIpDisconnectRequest(const QKnxNetIpFrame &frame);
 
     bool isValid() const;
 
@@ -56,7 +56,7 @@ public:
         Builder &setChannelId(quint8 channelId);
         Builder &setControlEndpoint(const QKnxNetIpHpai &hpai);
 
-        QKnxNetIpFrameEx create() const;
+        QKnxNetIpFrame create() const;
 
     private:
         quint8 m_channelId;
@@ -65,7 +65,7 @@ public:
     static QKnxNetIpDisconnectRequest::Builder builder();
 
 private:
-    const QKnxNetIpFrameEx &m_frame;
+    const QKnxNetIpFrame &m_frame;
 };
 
 QT_END_NAMESPACE

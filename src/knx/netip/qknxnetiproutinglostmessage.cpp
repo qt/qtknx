@@ -32,7 +32,7 @@
 
 QT_BEGIN_NAMESPACE
 
-QKnxNetIpRoutingLostMessage::QKnxNetIpRoutingLostMessage(const QKnxNetIpFrameEx &frame)
+QKnxNetIpRoutingLostMessage::QKnxNetIpRoutingLostMessage(const QKnxNetIpFrame &frame)
     : m_frame(frame)
 {}
 
@@ -74,7 +74,7 @@ QKnxNetIpRoutingLostMessage::Builder &
     return *this;
 }
 
-QKnxNetIpFrameEx QKnxNetIpRoutingLostMessage::Builder::create() const
+QKnxNetIpFrame QKnxNetIpRoutingLostMessage::Builder::create() const
 {
     return { QKnxNetIp::ServiceType::RoutingLostMessage, QKnxByteArray { 0x04, quint8(m_state) }
         + QKnxUtils::QUint16::bytes(m_lostMessageCount) };

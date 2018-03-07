@@ -49,7 +49,7 @@ private slots:
 
 void tst_QKnxNetIpDisconnectResponse::testDefaultConstructor()
 {
-    QKnxNetIpFrameEx frame;
+    QKnxNetIpFrame frame;
     QKnxNetIpDisconnectResponse response(frame);
 
     QCOMPARE(response.isValid(), false);

@@ -168,7 +168,7 @@ void QKnxNetIpServerDiscoveryAgentPrivate::setupSocket()
             if (!header.isValid() || header.serviceType() != QKnxNetIp::ServiceType::SearchResponse)
                 continue;
 
-            auto frame = QKnxNetIpFrameEx::fromBytes(data);
+            auto frame = QKnxNetIpFrame::fromBytes(data);
             auto response = QKnxNetIpSearchResponse(frame);
             if (!response.isValid())
                 continue;

@@ -31,7 +31,7 @@
 
 QT_BEGIN_NAMESPACE
 
-QKnxNetIpDescriptionResponse::QKnxNetIpDescriptionResponse(const QKnxNetIpFrameEx &frame)
+QKnxNetIpDescriptionResponse::QKnxNetIpDescriptionResponse(const QKnxNetIpFrame &frame)
     : m_frame(frame)
 {}
 
@@ -73,7 +73,7 @@ QKnxNetIpDescriptionResponse::Builder &
     return *this;
 }
 
-QKnxNetIpFrameEx QKnxNetIpDescriptionResponse::Builder::create() const
+QKnxNetIpFrame QKnxNetIpDescriptionResponse::Builder::create() const
 {
     return { QKnxNetIp::ServiceType::DescriptionResponse, m_ddib.bytes() + m_sdib.bytes()
         + m_optionalDibs };

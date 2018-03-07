@@ -42,8 +42,8 @@ public:
     QKnxNetIpDeviceConfigurationAcknowledge() = delete;
     ~QKnxNetIpDeviceConfigurationAcknowledge() = default;
 
-    QKnxNetIpDeviceConfigurationAcknowledge(const QKnxNetIpFrameEx &&) = delete;
-    explicit QKnxNetIpDeviceConfigurationAcknowledge(const QKnxNetIpFrameEx &frame);
+    QKnxNetIpDeviceConfigurationAcknowledge(const QKnxNetIpFrame &&) = delete;
+    explicit QKnxNetIpDeviceConfigurationAcknowledge(const QKnxNetIpFrame &frame);
 
     bool isValid() const;
 
@@ -58,7 +58,7 @@ public:
         Builder &setSequenceNumber(quint8 sequenceNumber);
         Builder &setStatus(QKnxNetIp::Error status);
 
-        QKnxNetIpFrameEx create() const;
+        QKnxNetIpFrame create() const;
 
     private:
         quint8 m_channelId;
@@ -68,7 +68,7 @@ public:
     static QKnxNetIpDeviceConfigurationAcknowledge::Builder builder();
 
 private:
-    const QKnxNetIpFrameEx &m_frame;
+    const QKnxNetIpFrame &m_frame;
 };
 
 QT_END_NAMESPACE

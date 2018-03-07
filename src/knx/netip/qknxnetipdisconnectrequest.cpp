@@ -31,7 +31,7 @@
 
 QT_BEGIN_NAMESPACE
 
-QKnxNetIpDisconnectRequest::QKnxNetIpDisconnectRequest(const QKnxNetIpFrameEx &frame)
+QKnxNetIpDisconnectRequest::QKnxNetIpDisconnectRequest(const QKnxNetIpFrame &frame)
     : m_frame(frame)
 {}
 
@@ -73,7 +73,7 @@ QKnxNetIpDisconnectRequest::Builder &
     return *this;
 }
 
-QKnxNetIpFrameEx QKnxNetIpDisconnectRequest::Builder::create() const
+QKnxNetIpFrame QKnxNetIpDisconnectRequest::Builder::create() const
 {
     return { QKnxNetIp::ServiceType::DisconnectRequest, QKnxByteArray { m_channelId, 0x00 }
         + m_hpai.bytes() };

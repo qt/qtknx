@@ -48,7 +48,7 @@ private slots:
 
 void tst_QKnxNetIpConnectionStateRequest::testDefaultConstructor()
 {
-    QKnxNetIpFrameEx frame;
+    QKnxNetIpFrame frame;
     QKnxNetIpConnectionStateRequest connectionStateRequest(frame);
     QCOMPARE(connectionStateRequest.isValid(), false);
     QCOMPARE(connectionStateRequest.channelId(), quint8(0));

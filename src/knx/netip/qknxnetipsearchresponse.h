@@ -44,8 +44,8 @@ public:
     QKnxNetIpSearchResponse() = delete;
     ~QKnxNetIpSearchResponse() = default;
 
-    QKnxNetIpSearchResponse(const QKnxNetIpFrameEx &&) = delete;
-    explicit QKnxNetIpSearchResponse(const QKnxNetIpFrameEx &frame);
+    QKnxNetIpSearchResponse(const QKnxNetIpFrame &&) = delete;
+    explicit QKnxNetIpSearchResponse(const QKnxNetIpFrame &frame);
 
     bool isValid() const;
 
@@ -60,7 +60,7 @@ public:
         Builder &setDeviceHardware(const QKnxNetIpDeviceDib &ddib);
         Builder &setSupportedFamilies(const QKnxNetIpServiceFamiliesDib &sdib);
 
-        QKnxNetIpFrameEx create() const;
+        QKnxNetIpFrame create() const;
 
     private:
         QKnxNetIpHpai m_hpai;
@@ -70,7 +70,7 @@ public:
     static QKnxNetIpSearchResponse::Builder builder();
 
 private:
-    const QKnxNetIpFrameEx &m_frame;
+    const QKnxNetIpFrame &m_frame;
 };
 
 QT_END_NAMESPACE

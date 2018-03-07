@@ -71,7 +71,7 @@ void tst_QKnxNetIpDescriptionResponse::initTestCase()
 
 void tst_QKnxNetIpDescriptionResponse::testDefaultConstructor()
 {
-    QKnxNetIpFrameEx frame;
+    QKnxNetIpFrame frame;
     QKnxNetIpDescriptionResponse descriptionResponseDefault(frame);
 
     QCOMPARE(descriptionResponseDefault.isValid(), false);

@@ -31,7 +31,7 @@
 
 QT_BEGIN_NAMESPACE
 
-QKnxNetIpDescriptionRequest::QKnxNetIpDescriptionRequest(const QKnxNetIpFrameEx &frame)
+QKnxNetIpDescriptionRequest::QKnxNetIpDescriptionRequest(const QKnxNetIpFrame &frame)
     : m_frame(frame)
 {}
 
@@ -61,7 +61,7 @@ QKnxNetIpDescriptionRequest::Builder &
     return *this;
 }
 
-QKnxNetIpFrameEx QKnxNetIpDescriptionRequest::Builder::create() const
+QKnxNetIpFrame QKnxNetIpDescriptionRequest::Builder::create() const
 {
     return { QKnxNetIp::ServiceType::DescriptionRequest, m_hpai.bytes() };
 }

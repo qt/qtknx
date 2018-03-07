@@ -42,8 +42,8 @@ public:
     QKnxNetIpRoutingBusy() = delete;
     ~QKnxNetIpRoutingBusy() = default;
 
-    QKnxNetIpRoutingBusy(const QKnxNetIpFrameEx &&) = delete;
-    explicit QKnxNetIpRoutingBusy(const QKnxNetIpFrameEx &frame);
+    QKnxNetIpRoutingBusy(const QKnxNetIpFrame &&) = delete;
+    explicit QKnxNetIpRoutingBusy(const QKnxNetIpFrame &frame);
 
     bool isValid() const;
 
@@ -58,7 +58,7 @@ public:
         Builder &setRoutingBusyWaitTime(quint16 waitTime);
         Builder &setRoutingBusyControl(quint16 busyControl);
 
-        QKnxNetIpFrameEx create() const;
+        QKnxNetIpFrame create() const;
 
     private:
         QKnxNetIp::DeviceState m_state { QKnxNetIp::DeviceState::KnxFault };
@@ -68,7 +68,7 @@ public:
     static QKnxNetIpRoutingBusy::Builder builder();
 
 private:
-    const QKnxNetIpFrameEx &m_frame;};
+    const QKnxNetIpFrame &m_frame;};
 
 QT_END_NAMESPACE
 

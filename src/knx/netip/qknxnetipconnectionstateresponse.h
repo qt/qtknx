@@ -42,8 +42,8 @@ public:
     QKnxNetIpConnectionStateResponse() = delete;
     ~QKnxNetIpConnectionStateResponse() = default;
 
-    QKnxNetIpConnectionStateResponse(const QKnxNetIpFrameEx &&) = delete;
-    explicit QKnxNetIpConnectionStateResponse(const QKnxNetIpFrameEx &frame);
+    QKnxNetIpConnectionStateResponse(const QKnxNetIpFrame &&) = delete;
+    explicit QKnxNetIpConnectionStateResponse(const QKnxNetIpFrame &frame);
 
     bool isValid() const;
 
@@ -56,7 +56,7 @@ public:
         Builder &setChannelId(quint8 channelId);
         Builder &setStatus(QKnxNetIp::Error status);
 
-        QKnxNetIpFrameEx create() const;
+        QKnxNetIpFrame create() const;
 
     private:
         quint8 m_channelId;
@@ -65,7 +65,7 @@ public:
     static QKnxNetIpConnectionStateResponse::Builder builder();
 
 private:
-    const QKnxNetIpFrameEx &m_frame;
+    const QKnxNetIpFrame &m_frame;
 };
 
 QT_END_NAMESPACE

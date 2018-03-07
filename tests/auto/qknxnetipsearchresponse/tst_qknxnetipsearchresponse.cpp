@@ -48,7 +48,7 @@ private slots:
 
 void tst_QKnxNetIpSearchResponse::testDefaultConstructor()
 {
-    QKnxNetIpFrameEx frame;
+    QKnxNetIpFrame frame;
     QKnxNetIpSearchResponse search(frame);
 
     QCOMPARE(search.isValid(), false);
@@ -101,9 +101,9 @@ void tst_QKnxNetIpSearchResponse::testConstructor()
     QCOMPARE(search.supportedFamilies().isValid(), true);
     QCOMPARE(search.supportedFamilies().bytes(), QKnxByteArray::fromHex("0402020a"));
 
-    QCOMPARE(QKnxNetIpFrameEx::fromBytes(frame.bytes(), 0).isValid(), true);
-    QCOMPARE(QKnxNetIpFrameEx::fromBytes(frame.bytes(), 56).isValid(), false);
-    QCOMPARE(QKnxNetIpFrameEx::fromBytes(frame.bytes(), 2).isValid(), false);
+    QCOMPARE(QKnxNetIpFrame::fromBytes(frame.bytes(), 0).isValid(), true);
+    QCOMPARE(QKnxNetIpFrame::fromBytes(frame.bytes(), 56).isValid(), false);
+    QCOMPARE(QKnxNetIpFrame::fromBytes(frame.bytes(), 2).isValid(), false);
 }
 
 void tst_QKnxNetIpSearchResponse::testDebugStream()
