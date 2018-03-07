@@ -17,8 +17,6 @@ DEFINES += QT_NO_CAST_FROM_ASCII
 PUBLIC_HEADERS += \
     qknxadditionalinfo.h \
     qknxaddress.h \
-    qknxbytestore.h \
-    qknxbytestoreref.h \
     qknxcemi.h \
     qknxconnectioninfo.h \
     qknxcontrolfield.h \
@@ -49,8 +47,6 @@ PRIVATE_HEADERS += \
 SOURCES += \
     qknxadditionalinfo.cpp \
     qknxaddress.cpp \
-    qknxbytestore.cpp \
-    qknxbytestoreref.cpp \
     qknxconnectioninfo.cpp \
     qknxcontrolfield.cpp \
     qknxdeviceconfiguration.cpp \

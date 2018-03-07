@@ -24,7 +24,6 @@ PUBLIC_HEADERS += $$PWD/qknxnetip.h \
     $$PWD/qknxnetiphpai.h \
     $$PWD/qknxnetipknxaddressesdib.h \
     $$PWD/qknxnetipmanufacturerdib.h \
-    $$PWD/qknxnetippayload.h \
     $$PWD/qknxnetiproutingbusy.h \
     $$PWD/qknxnetiproutingindication.h \
     $$PWD/qknxnetiproutinglostmessage.h \
@@ -69,7 +68,6 @@ SOURCES += $$PWD/qknxnetipconfigdib.cpp \
     $$PWD/qknxnetiphpai.cpp \
     $$PWD/qknxnetipknxaddressesdib.cpp \
     $$PWD/qknxnetipmanufacturerdib.cpp \
-    $$PWD/qknxnetippayload.cpp \
     $$PWD/qknxnetiproutingbusy.cpp \
     $$PWD/qknxnetiproutingindication.cpp \
     $$PWD/qknxnetiproutinglostmessage.cpp \

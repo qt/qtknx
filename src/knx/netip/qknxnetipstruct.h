@@ -34,7 +34,6 @@
 #include <QtKnx/qknxnetip.h>
 #include <QtKnx/qknxtraits.h>
 #include <QtKnx/qknxnetipstructheader.h>
-#include <QtKnx/qknxnetippayload.h>
 
 QT_BEGIN_NAMESPACE
 

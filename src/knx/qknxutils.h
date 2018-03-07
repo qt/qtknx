@@ -34,7 +34,7 @@
 #include <QtCore/qdebug.h>
 #include <QtCore/qstring.h>
 #include <QtCore/qvector.h>
-#include <QtKnx/qknxbytestoreref.h>
+#include <QtKnx/qknxbytearray.h>
 #include <QtKnx/qknxglobal.h>
 #include <QtKnx/qknxtraits.h>
 #include <QtNetwork/qhostaddress.h>
@@ -48,13 +48,6 @@ struct QKnxUtils final
         static QKnxByteArray bytes(quint8 integer)
         {
             return { quint8(integer) };
-        }
-
-        static quint8 fromBytes(const QKnxByteStoreRef &data, quint16 index = 0)
-        {
-            if (data.size() - index < 1)
-                return {};
-            return data.bytes()[index];
         }
 
         static quint8 fromBytes(const QKnxByteArray &data, quint16 index = 0)
@@ -72,13 +65,6 @@ struct QKnxUtils final
             return { quint8(integer >> 8), quint8(integer) };
         }
 
-        static quint16 fromBytes(const QKnxByteStoreRef &data, quint16 index = 0)
-        {
-            if (data.size() - index < 2)
-                return {};
-            return quint16(quint16(data.bytes()[index]) << 8 | data.bytes()[index + 1]);
-        }
-
         static quint16 fromBytes(const QKnxByteArray &data, quint16 index = 0)
         {
             if (data.size() - index < 2)
@@ -93,15 +79,6 @@ struct QKnxUtils final
         {
             return { quint8(integer >> 24), quint8(integer >> 16), quint8(integer >> 8),
                 quint8(integer) };
-        }
-
-        static quint32 fromBytes(const QKnxByteStoreRef &data, quint16 index = 0)
-        {
-            if (data.size() - index < 4)
-                return {};
-            const auto bytes = data.bytes();
-            return quint32(bytes[index]) << 24 | quint32(bytes[index + 1]) << 16
-                | quint32(bytes[index + 2]) << 8 | bytes[index + 3];
         }
 
         static quint32 fromBytes(const QKnxByteArray &data, quint16 index = 0)
@@ -124,21 +101,6 @@ struct QKnxUtils final
                 , quint8(integer >> 8), quint8(integer) };
         }
 
-        static quint64 fromBytes(const QKnxByteStoreRef &data, quint16 index = 0)
-        {
-            if (data.size() - index < 4)
-                return {};
-            const auto bytes = data.bytes();
-            return quint64(bytes[index]) << 56
-                | quint64(bytes[index + 1]) << 48
-                | quint64(bytes[index + 2]) << 40
-                | quint64(bytes[index + 3]) << 32
-                | quint64(bytes[index + 4]) << 24
-                | quint64(bytes[index + 5]) << 16
-                | quint64(bytes[index + 6]) << 8
-                | bytes[index + 7];
-        }
-
         static quint64 fromBytes(const QKnxByteArray &data, quint16 index = 0)
         {
             if (data.size() - index < 8)
@@ -159,13 +121,6 @@ struct QKnxUtils final
         static QKnxByteArray bytes(const QHostAddress &address)
         {
             return QUint32::bytes(address.toIPv4Address());
-        }
-
-        static QHostAddress fromBytes(const QKnxByteStoreRef &ref, quint16 index = 0)
-        {
-            if (ref.size() - index < 4)
-                return {};
-            return QHostAddress(QUint32::fromBytes(ref, index));
         }
 
         static QHostAddress fromBytes(const QKnxByteArray &data, quint16 index = 0)

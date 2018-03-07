@@ -34,7 +34,7 @@
 #include <QtCore/qshareddata.h>
 #include <QtKnx/qknxglobal.h>
 #include <QtKnx/qknxtraits.h>
-#include <QtKnx/qknxbytestore.h>
+#include <QtKnx/qknxbytearray.h>
 
 QT_BEGIN_NAMESPACE
 
