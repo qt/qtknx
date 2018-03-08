@@ -54,7 +54,7 @@ quint16 QKnxNetIpRoutingBusy::routingBusyControl() const
 bool QKnxNetIpRoutingBusy::isValid() const
 {
     quint16 time = routingBusyWaitTime();
-    if (time < 20 || time > 100)
+    if (time < 20)
         return false;
     return m_frame.isValid() && m_frame.size() == 12
         && m_frame.serviceType() == QKnxNetIp::ServiceType::RoutingBusy;
@@ -78,7 +78,7 @@ QKnxNetIpRoutingBusy::Builder &
 QKnxNetIpRoutingBusy::Builder &
     QKnxNetIpRoutingBusy::Builder::setRoutingBusyWaitTime(quint16 waitTime)
 {
-    m_waitTime = (waitTime > 100 ? 100 : (waitTime < 20 ? 20 : waitTime));
+    m_waitTime = waitTime < 20 ? 20 : waitTime;
     return *this;
 }
 

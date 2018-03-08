@@ -62,7 +62,7 @@ public:
 
     private:
         QKnxNetIp::DeviceState m_state { QKnxNetIp::DeviceState::KnxFault };
-        quint16 m_waitTime { 100 };
+        quint16 m_waitTime { quint16(QKnxNetIp::RoutingBusyWaitTime) };
         quint16 m_busyControl { 0x0000 };
     };
     static QKnxNetIpRoutingBusy::Builder builder();

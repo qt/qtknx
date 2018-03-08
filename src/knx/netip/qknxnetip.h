@@ -230,7 +230,10 @@ struct Q_KNX_EXPORT QKnxNetIp final
         DeviceConfigurationRequestTimeout = 10000,
 
         // KNXnet/IP Tunneling service time out in ms
-        TunnelingRequestTimeout = 1000
+        TunnelingRequestTimeout = 1000,
+
+        // KNXnet/IP routing service
+        RoutingBusyWaitTime = 100
     };
 };
 Q_DECLARE_TYPEINFO(QKnxNetIp::HostProtocol, Q_PRIMITIVE_TYPE);
