@@ -59,7 +59,7 @@ void tst_QKnxNetIpSearchResponse::testDefaultConstructor()
 
 void tst_QKnxNetIpSearchResponse::testConstructor()
 {
-    QKnxNetIpHpai endpoint(QKnxNetIp::HostProtocol::IpV4_Udp, QHostAddress::LocalHost, 3671);
+    QKnxNetIpHpai endpoint(QKnxNetIp::HostProtocol::UDP_IPv4, QHostAddress::LocalHost, 3671);
     QKnxNetIpDeviceDib hardware(QKnx::MediumType::NetIP,
                                 QKnxNetIpDeviceDib::DeviceStatus::ActiveProgrammingMode,
                                 QKnxAddress::Individual::Unregistered,
@@ -122,7 +122,7 @@ void tst_QKnxNetIpSearchResponse::testDebugStream()
     QCOMPARE(s_msg, QString::fromLatin1("0x0610020200080202"));
 
     qDebug() << QKnxNetIpSearchResponse::builder()
-        .setControlEndpoint({ QKnxNetIp::HostProtocol::IpV4_Udp, QHostAddress::LocalHost, 3671 })
+        .setControlEndpoint({ QKnxNetIp::HostProtocol::UDP_IPv4, QHostAddress::LocalHost, 3671 })
         .setSupportedFamilies({ QKnxNetIpServiceFamiliesDib::ServiceFamilieId::Core, 10 })
         .setDeviceHardware({
             QKnx::MediumType::NetIP,

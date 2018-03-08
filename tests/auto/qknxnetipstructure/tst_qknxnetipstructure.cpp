@@ -116,7 +116,7 @@ private slots:
         QCOMPARE(test.data().size(), quint16(0));
         QCOMPARE(test.data(), QKnxByteArray {});
 
-        test = TestStructure(QKnxNetIp::HostProtocol::IpV4_Udp);
+        test = TestStructure(QKnxNetIp::HostProtocol::UDP_IPv4);
         QCOMPARE(test.isValid(), true);
         QCOMPARE(test.code(), QKnxNetIp::HostProtocol(0x01));
         QCOMPARE(test.size(), quint16(2));
@@ -157,7 +157,7 @@ private slots:
         QCOMPARE(payload, QKnxByteArray {});
 
         payload = { 0x00, 0x01, 0x02, 0x03, 0x04, 0x05 };
-        header = QKnxNetIpStructHeader<QKnxNetIp::HostProtocol>(QKnxNetIp::HostProtocol::IpV4_Udp);
+        header = QKnxNetIpStructHeader<QKnxNetIp::HostProtocol>(QKnxNetIp::HostProtocol::UDP_IPv4);
         header.setDataSize(payload.size());
 
         test = TestStructure(header, payload);
@@ -183,7 +183,7 @@ private slots:
     {
         QKnxByteArray payload(0xfc, 0x05);
 
-        auto header = QKnxNetIpStructHeader<QKnxNetIp::HostProtocol>(QKnxNetIp::HostProtocol::IpV4_Udp);
+        auto header = QKnxNetIpStructHeader<QKnxNetIp::HostProtocol>(QKnxNetIp::HostProtocol::UDP_IPv4);
         header.setDataSize(payload.size());
 
         TestStructure test(header, payload);

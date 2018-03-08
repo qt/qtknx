@@ -202,7 +202,7 @@ void MainWindow::newServerSelected(int serverBoxIndex)
     );
 
     const auto &endpoint = info.endpoint();
-    if (endpoint.hostProtocol() != QKnxNetIp::HostProtocol::IpV4_Udp)
+    if (endpoint.hostProtocol() != QKnxNetIp::HostProtocol::UDP_IPv4)
         return;
 
     if (info.endpoint().isValid() && m_server != info) {

@@ -58,7 +58,7 @@ void tst_QKnxNetIpDescriptionRequest::testDefaultConstructor()
 void tst_QKnxNetIpDescriptionRequest::testConstructor()
 {
     auto frame = QKnxNetIpDescriptionRequest::builder()
-        .setControlEndpoint({ QKnxNetIp::HostProtocol::IpV4_Udp, QHostAddress::LocalHost, 3671 })
+        .setControlEndpoint({ QKnxNetIp::HostProtocol::UDP_IPv4, QHostAddress::LocalHost, 3671 })
         .create();
     QKnxNetIpDescriptionRequest descriptionRequest(frame);
 
@@ -89,7 +89,7 @@ void tst_QKnxNetIpDescriptionRequest::testDebugStream()
     QCOMPARE(s_msg, QString::fromLatin1("0x061002030006"));
 
     qDebug() << QKnxNetIpDescriptionRequest::builder()
-        .setControlEndpoint({ QKnxNetIp::HostProtocol::IpV4_Udp, QHostAddress::LocalHost, 3671 })
+        .setControlEndpoint({ QKnxNetIp::HostProtocol::UDP_IPv4, QHostAddress::LocalHost, 3671 })
         .create();
     QCOMPARE(s_msg, QString::fromLatin1("0x06100203000e08017f0000010e57"));
 }

@@ -107,7 +107,7 @@ void tst_QKnxNetIpConnectResponse::testConstructorFourArguments()
         .setStatus(QKnxNetIp::Error::NoMoreConnections)
         .setDataEndpoint(
             {
-                QKnxNetIp::HostProtocol::IpV4_Udp,
+                QKnxNetIp::HostProtocol::UDP_IPv4,
                 QHostAddress::LocalHost,
                 3671
             })
@@ -131,7 +131,7 @@ void tst_QKnxNetIpConnectResponse::testConstructorFourArgumentsNoError()
     auto frame = QKnxNetIpConnectResponse::builder()
         .setChannelId(200)
         .setStatus(QKnxNetIp::Error::None)
-        .setDataEndpoint({ QKnxNetIp::HostProtocol::IpV4_Udp, QHostAddress::LocalHost, 3671 })
+        .setDataEndpoint({ QKnxNetIp::HostProtocol::UDP_IPv4, QHostAddress::LocalHost, 3671 })
         .setResponseData(QKnxNetIpCrd({ QKnxAddress::Type::Individual, QStringLiteral("1.1.10") }))
         .create();
 
@@ -168,7 +168,7 @@ void tst_QKnxNetIpConnectResponse::testFromBytes()
     QCOMPARE(response.status(), QKnxNetIp::Error::None);
 
     auto hpai = response.dataEndpoint();
-    QCOMPARE(hpai.hostProtocol(), QKnxNetIp::HostProtocol::IpV4_Udp);
+    QCOMPARE(hpai.hostProtocol(), QKnxNetIp::HostProtocol::UDP_IPv4);
     QCOMPARE(hpai.address(), QHostAddress("192.168.200.20"));
     QCOMPARE(hpai.port(), quint16(50100));
 
@@ -191,7 +191,7 @@ void tst_QKnxNetIpConnectResponse::testFromBytes()
     QCOMPARE(response.status(), QKnxNetIp::Error::None);
 
     hpai = response.dataEndpoint();
-    QCOMPARE(hpai.hostProtocol(), QKnxNetIp::HostProtocol::IpV4_Udp);
+    QCOMPARE(hpai.hostProtocol(), QKnxNetIp::HostProtocol::UDP_IPv4);
     QCOMPARE(hpai.address(), QHostAddress("10.9.78.31"));
     QCOMPARE(hpai.port(), quint16(3671));
 
@@ -223,7 +223,7 @@ void tst_QKnxNetIpConnectResponse::testDebugStream()
         .create();
     QCOMPARE(s_msg, QString::fromLatin1("0x0610020600080024"));
 
-    QKnxNetIpHpai dataEnd(QKnxNetIp::HostProtocol::IpV4_Udp, QHostAddress::LocalHost, 3671);
+    QKnxNetIpHpai dataEnd(QKnxNetIp::HostProtocol::UDP_IPv4, QHostAddress::LocalHost, 3671);
     QKnxNetIpCrd responseData;
     qDebug() << QKnxNetIpConnectResponse::builder().setChannelId(200)
         .setStatus(QKnxNetIp::Error::None)

@@ -59,7 +59,7 @@ void tst_QKnxNetIpSearchRequest::testConstructor()
     auto frame = QKnxNetIpSearchRequest::builder()
         .setDiscoveryEndpoint(
             {
-                QKnxNetIp::HostProtocol::IpV4_Udp,
+                QKnxNetIp::HostProtocol::UDP_IPv4,
                 QHostAddress::LocalHost,
                 3671
             }
@@ -93,7 +93,7 @@ void tst_QKnxNetIpSearchRequest::testDebugStream()
     qDebug() << QKnxNetIpSearchRequest::builder()
         .setDiscoveryEndpoint(
             {
-                QKnxNetIp::HostProtocol::IpV4_Udp,
+                QKnxNetIp::HostProtocol::UDP_IPv4,
                 QHostAddress::LocalHost,
                 3671
             }

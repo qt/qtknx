@@ -49,7 +49,7 @@ QKnxNetIpHpai::QKnxNetIpHpai(const QKnxNetIpHostProtocolStruct &other)
 {}
 
 QKnxNetIpHpai::QKnxNetIpHpai(const QHostAddress &address, quint16 port)
-    : QKnxNetIpHpai(QKnxNetIp::HostProtocol::IpV4_Udp, address, port)
+    : QKnxNetIpHpai(QKnxNetIp::HostProtocol::UDP_IPv4, address, port)
 {}
 
 QKnxNetIpHpai::QKnxNetIpHpai(QKnxNetIp::HostProtocol hpc, const QHostAddress &address, quint16 port)
@@ -81,7 +81,7 @@ void QKnxNetIpHpai::setAddress(const QHostAddress &hostAddress)
     if (isValid())
         setHpai(hostProtocol(), hostAddress, port());
     else
-        setHpai(QKnxNetIp::HostProtocol::IpV4_Udp, hostAddress, 0);
+        setHpai(QKnxNetIp::HostProtocol::UDP_IPv4, hostAddress, 0);
 }
 
 quint16 QKnxNetIpHpai::port() const
@@ -94,7 +94,7 @@ void QKnxNetIpHpai::setPort(quint16 port)
     if (isValid())
         setHpai(hostProtocol(), address(), port);
     else
-        setHpai(QKnxNetIp::HostProtocol::IpV4_Udp, QHostAddress(), port);
+        setHpai(QKnxNetIp::HostProtocol::UDP_IPv4, QHostAddress(), port);
 }
 
 void QKnxNetIpHpai::setHpai(QKnxNetIp::HostProtocol code, const QHostAddress &address, quint16 port)
@@ -109,8 +109,8 @@ void QKnxNetIpHpai::setHpai(QKnxNetIp::HostProtocol code, const QHostAddress &ad
 
 bool QKnxNetIpHpai::isValid() const
 {
-    bool validHostProtocolCode = hostProtocol() == QKnxNetIp::HostProtocol::IpV4_Udp
-        || hostProtocol() == QKnxNetIp::HostProtocol::IpV4_Tcp;
+    bool validHostProtocolCode = hostProtocol() == QKnxNetIp::HostProtocol::UDP_IPv4
+        || hostProtocol() == QKnxNetIp::HostProtocol::TCP_IPv4;
     return QKnxNetIpHostProtocolStruct::isValid() && size() == 8 && validHostProtocolCode;
 }
 

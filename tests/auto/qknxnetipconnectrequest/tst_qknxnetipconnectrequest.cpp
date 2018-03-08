@@ -60,8 +60,8 @@ void tst_QKnxNetIpConnectRequest::testConstructor()
 {
     auto builder = QKnxNetIpConnectRequest::builder();
     auto frame = builder
-        .setControlEndpoint({ QKnxNetIp::HostProtocol::IpV4_Udp, QHostAddress::LocalHost, 3671 })
-        .setDataEndpoint({ QKnxNetIp::HostProtocol::IpV4_Udp, QHostAddress::LocalHost, 3671 })
+        .setControlEndpoint({ QKnxNetIp::HostProtocol::UDP_IPv4, QHostAddress::LocalHost, 3671 })
+        .setDataEndpoint({ QKnxNetIp::HostProtocol::UDP_IPv4, QHostAddress::LocalHost, 3671 })
         .create();
 
     QKnxNetIpConnectRequest connectRequest(frame);

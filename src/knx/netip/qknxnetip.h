@@ -42,8 +42,8 @@ struct Q_KNX_EXPORT QKnxNetIp final
     enum class HostProtocol : quint8
     {
         Unknown = 0x00,
-        IpV4_Udp = 0x01,
-        IpV4_Tcp = 0x02
+        UDP_IPv4 = 0x01,
+        TCP_IPv4 = 0x02
     };
 
     enum class ConnectionType : quint8
@@ -141,8 +141,8 @@ struct Q_KNX_EXPORT QKnxNetIp final
     static bool isStructType(QKnxNetIp::HostProtocol type)
     {
         switch (type) {
-        case QKnxNetIp::HostProtocol::IpV4_Udp:
-        case QKnxNetIp::HostProtocol::IpV4_Tcp:
+        case QKnxNetIp::HostProtocol::UDP_IPv4:
+        case QKnxNetIp::HostProtocol::TCP_IPv4:
             return true;
         case QKnxNetIp::HostProtocol::Unknown:
         default:
