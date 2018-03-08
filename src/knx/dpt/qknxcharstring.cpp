@@ -1,6 +1,6 @@
 /******************************************************************************
 **
-** Copyright (C) 2017 The Qt Company Ltd.
+** Copyright (C) 2018 The Qt Company Ltd.
 ** Contact: https://www.qt.io/licensing/
 **
 ** This file is part of the QtKnx module.
@@ -46,7 +46,7 @@ QT_BEGIN_NAMESPACE
 
     The range for the string size is from \c 0 to \c 14.
 
-    \sa QKnxDatapointType
+    \sa QKnxDatapointType, QKnxVarString, QKnxVarString88591
 */
 
 // -- QKnxCharString
@@ -86,7 +86,7 @@ QKnxCharString::QKnxCharString(const char *string, int size)
 {}
 
 /*!
-    Creates a fixed size datapoint with the subtype \a subType, storing the
+    Creates a fixed size datapoint type with the subtype \a subType, storing the
     string \a string with the length \a size.
 */
 QKnxCharString::QKnxCharString(int subType, const char* string, int size)
