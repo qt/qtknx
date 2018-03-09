@@ -168,7 +168,7 @@ QKnxNetIpFrameHeader QKnxNetIpFrame::header() const
 /*!
     Sets the KNXnet/IP frame header to \a header.
 */
-void QKnxNetIpFrame::setHeader(const QKnxNetIpFrameHeader & header)
+void QKnxNetIpFrame::setHeader(const QKnxNetIpFrameHeader &header)
 {
     d_ptr->m_header = header;
 }

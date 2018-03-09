@@ -711,7 +711,7 @@ QKnxByteArray QKnxDatapointType::bytes() const
     return d_ptr->m_bytes;
 }
 
-bool QKnxDatapointType::setBytes(const QKnxByteArray & bytesToSet, quint16 index, quint16 count)
+bool QKnxDatapointType::setBytes(const QKnxByteArray &bytesToSet, quint16 index, quint16 count)
 {
     if (((bytesToSet.size() - index) < count) || (size() != count))
         return false;
@@ -799,7 +799,7 @@ bool QKnxDatapointType::operator!=(const QKnxDatapointType &other) const
     into a \l {QKnxDatapointType::Type} enumeration used throughout the QtKnx
     API.
 */
-QKnxDatapointType::Type QKnxDatapointType::toType(const QString & dpt)
+QKnxDatapointType::Type QKnxDatapointType::toType(const QString &dpt)
 {
     QKnxDatapointTypePrivate dtp;
     auto match = dtp.m_dpt.match(dpt);
