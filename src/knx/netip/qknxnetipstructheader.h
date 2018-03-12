@@ -125,12 +125,6 @@ public:
         setByte(size() - 1, quint8(code));
     }
 
-    QString toString() const
-    {
-        return QStringLiteral("Total size { 0x%1 }, Code { 0x%2 }")
-            .arg(totalSize(), 2, 16, QLatin1Char('0')).arg(quint8(code()), 2, 16, QLatin1Char('0'));
-    }
-
     quint8 byte(quint8 index) const
     {
         Q_ASSERT_X(index < size(), "QKnxNetIpStructHeader::byte", "index out of range");

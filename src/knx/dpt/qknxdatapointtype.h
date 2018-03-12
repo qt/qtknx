@@ -198,8 +198,6 @@ public:
     void setDescription(const QString &description);
 
     virtual bool isValid() const;
-    virtual QString toString() const;
-
     const quint8 *constData() const;
 
     quint8 byte(quint16 index) const;

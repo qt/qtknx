@@ -103,20 +103,6 @@ void QKnxExtendedControlField::setFormat(QKnxExtendedControlField::ExtendedFrame
 }
 
 /*!
-    Returns the extended control field's \l DestinationAddressType, \l hopCount
-    and \l ExtendedFrameFormat fields as string. All values are formatted in
-    hexadecimal notation.
-*/
-QString QKnxExtendedControlField::toString() const
-{
-    return QStringLiteral("Destination address { 0x%1 }, Hop count { 0x%2 }, "
-        "Extended frame format { 0x%3 }")
-        .arg(m_ctrl2[7], 2, 16, QLatin1Char('0'))
-        .arg(hopCount(), 2, 16, QLatin1Char('0'))
-        .arg(quint8(format()), 2, 16, QLatin1Char('0'));
-}
-
-/*!
     \fn quint8 QKnxExtendedControlField::bytes() const
 
     Returns the extended control field range of bytes.

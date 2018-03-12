@@ -49,7 +49,6 @@ public:
     bool isValid() const;
 
     quint8 size() const;
-    QString toString() const;
 
     quint8 channelId() const;
     void setChannelId(quint8 channelId);

@@ -221,21 +221,6 @@ void QKnxNetIpFrameHeader::setServiceType(QKnxNetIp::ServiceType type)
 }
 
 /*!
-    Returns the KNXnet/IP header size, KNXnet/IP version, generic code and
-    the total size as string. Header size, version, code and total size are
-    formatted in hexadecimal notation.
-*/
-QString QKnxNetIpFrameHeader::toString() const
-{
-    return QStringLiteral("Header size { 0x%1 }, Version { 0x%2 }, Service type { 0x%3 }, "
-        "Total size { 0x%4 }")
-        .arg(size(), 2, 16, QLatin1Char('0'))
-        .arg(protocolVersion(), 2, 16, QLatin1Char('0'))
-        .arg(quint16(serviceType()), 2, 16, QLatin1Char('0'))
-        .arg(totalSize(), 2, 16, QLatin1Char('0'));
-}
-
-/*!
     Returns the byte at position \a index in the header.
 */
 quint8 QKnxNetIpFrameHeader::byte(quint8 index) const

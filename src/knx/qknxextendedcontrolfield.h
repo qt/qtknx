@@ -70,7 +70,6 @@ public:
         return { quint8(m_ctrl2.to_ulong()) };
     }
 
-    QString toString() const;
     quint8 size() const { return 1; }
 
 private:

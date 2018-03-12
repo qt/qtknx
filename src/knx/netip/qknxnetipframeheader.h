@@ -66,8 +66,6 @@ public:
     QKnxNetIp::ServiceType serviceType() const;
     void setServiceType(QKnxNetIp::ServiceType type);
 
-    QString toString() const;
-
     quint8 byte(quint8 index) const;
     QKnxByteArray bytes() const;
 

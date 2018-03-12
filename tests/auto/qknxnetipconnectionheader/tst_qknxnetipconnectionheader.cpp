@@ -43,9 +43,6 @@ private slots:
         QCOMPARE(header.sequenceNumber(), quint8(0));
         QCOMPARE(header.serviceTypeSpecificValue(), quint8(0));
         QCOMPARE(header.connectionTypeSpecificHeaderItems(), QKnxByteArray {});
-        QCOMPARE(header.toString(), QStringLiteral("Size { 0x00 }"
-            ", Communication channel ID { 0x00 }, Sequence number { 0x00 }"
-            ", Service type specific value { 0x00 }, Connection type specific header items {  }"));
         QCOMPARE(header.size(), quint8(0));
         QCOMPARE(header.bytes(), QKnxByteArray {});
     }
@@ -59,9 +56,6 @@ private slots:
         QCOMPARE(header.sequenceNumber(), quint8(2));
         QCOMPARE(header.serviceTypeSpecificValue(), quint8(3));
         QCOMPARE(header.connectionTypeSpecificHeaderItems(), QKnxByteArray {});
-        QCOMPARE(header.toString(), QStringLiteral("Size { 0x04 }"
-            ", Communication channel ID { 0x01 }, Sequence number { 0x02 }"
-            ", Service type specific value { 0x03 }, Connection type specific header items {  }"));
         QCOMPARE(header.size(), quint8(4));
         QCOMPARE(header.bytes(), QKnxByteArray({ 0x04, 0x01, 0x02, 0x03 }));
     }

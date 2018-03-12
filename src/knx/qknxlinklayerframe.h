@@ -81,7 +81,6 @@ public:
     QKnxLinkLayerFrame(const QKnxLinkLayerFrame &other);
 
     quint16 size() const;
-    QString toString() const;
 
     bool isValid() const;
     bool isMessageCodeValid() const;

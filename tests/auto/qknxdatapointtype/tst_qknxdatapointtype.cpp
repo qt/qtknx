@@ -135,7 +135,6 @@ void tst_QKnxDatapointType::dpt1_1Bit()
     QCOMPARE(dpt1Bit.bytes(), QKnxByteArray({ 0x01 }));
 
     dpt1Bit.setBytes(QKnxByteArray { 0x01 }, 0, 1);
-    QCOMPARE(dpt1Bit.toString(), QStringLiteral("01"));
 
     QKnxSwitch dptSwitch;
     QCOMPARE(dptSwitch.size(), 1);

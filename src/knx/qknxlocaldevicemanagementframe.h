@@ -73,7 +73,6 @@ public:
     QKnxLocalDeviceManagementFrame(const QKnxLocalDeviceManagementFrame &other);
 
     quint16 size() const;
-    QString toString() const;
 
     bool isValid() const;
     bool isNegativeConfirmation() const;

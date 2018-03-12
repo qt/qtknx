@@ -146,13 +146,6 @@ QT_BEGIN_NAMESPACE
 */
 
 /*!
-    \fn QString QKnxNetIpStructHeader::toString() const
-
-    Returns the KNXnet/IP struct's total size and generic code as a string. The
-    code and total size are formatted in hexadecimal notation.
-*/
-
-/*!
     \fn quint8 QKnxNetIpStructHeader::byte(quint8 index) const
 
     Returns the byte at position \a index in the header.

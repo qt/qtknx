@@ -208,7 +208,6 @@ public:
     QKnxByteArray bytes() const;
     QKnxByteArray bytes(quint16 start, quint16 count) const;
     void setBytes(QKnxByteArray::const_iterator begin, QKnxByteArray::const_iterator end);
-    QString toString() const;
 
 private:
     QSharedDataPointer<QKnxTpduPrivate> d_ptr;

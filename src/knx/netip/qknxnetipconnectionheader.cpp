@@ -127,29 +127,6 @@ quint8 QKnxNetIpConnectionHeader::size() const
 }
 
 /*!
-    Returns the KNXnet/IP connection header size, communication channel ID,
-    sequence number and service type specific value. If the header contains
-    connection type specific header items, they are also included in the output.
-    Header size, channel ID, sequence number, and service type specific value
-    are formatted in hexadecimal notation.
-*/
-QString QKnxNetIpConnectionHeader::toString() const
-{
-    QString items;
-    for (int i = 4; i < m_bytes.size(); ++i)
-        items += QStringLiteral("0x%1, ").arg(m_bytes[i], 2, 16, QLatin1Char('0'));
-    items.chop(2);
-
-    return QStringLiteral("Size { 0x%1 }, Communication channel ID { 0x%2 }"
-        ", Sequence number { 0x%3 }, Service type specific value { 0x%4 }"
-        ", Connection type specific header items { %5 }")
-        .arg(size(), 2, 16, QLatin1Char('0'))
-        .arg(channelId(), 2, 16, QLatin1Char('0'))
-        .arg(sequenceNumber(), 2, 16, QLatin1Char('0'))
-        .arg(serviceTypeSpecificValue(), 2, 16, QLatin1Char('0')).arg(items);
-}
-
-/*!
     Returns the communication channel ID of the KNXnet/IP frame.
 */
 quint8 QKnxNetIpConnectionHeader::channelId() const

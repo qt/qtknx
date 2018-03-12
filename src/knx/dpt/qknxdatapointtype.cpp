@@ -672,15 +672,6 @@ bool QKnxDatapointType::isValid() const
 }
 
 /*!
-    Returns the contents of the bytes stored in the datapoint type as a string.
-*/
-QString QKnxDatapointType::toString() const
-{
-    return QLatin1String(QByteArray((const char*) d_ptr->m_bytes.constData(), d_ptr->m_bytes
-        .size()).toHex());
-}
-
-/*!
     Returns the data stored in the datapoint type.
 */
 const quint8 *QKnxDatapointType::constData() const

@@ -84,23 +84,6 @@ void QKnxControlField::setPriority(QKnxControlField::Priority priority)
 }
 
 /*!
-    Returns the control field's \l FrameType, \l Repeat, \l Broadcast,
-    \l Priority, \l Acknowledge and \l Confirm fields as string. All values are
-    formatted in hexadecimal notation.
-*/
-QString QKnxControlField::toString() const
-{
-    return QStringLiteral("Type { 0x%1 }, Repeat { 0x%2 }, Broadcast { 0x%3 }, Priority { 0x%4 }, "
-            "Acknowledge { 0x%5 }, Confirm { 0x%6 }")
-        .arg(m_ctrl1[7], 2, 16, QLatin1Char('0'))
-        .arg(m_ctrl1[6], 2, 16, QLatin1Char('0'))
-        .arg(m_ctrl1[5], 2, 16, QLatin1Char('0'))
-        .arg(quint8(priority()), 2, 16, QLatin1Char('0'))
-        .arg(m_ctrl1[1], 2, 16, QLatin1Char('0'))
-        .arg(m_ctrl1[0], 2, 16, QLatin1Char('0'));
-}
-
-/*!
     \fn quint8 QKnxControlField::bytes() const
 
     Returns the control field as range of bytes.

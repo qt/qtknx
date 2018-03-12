@@ -314,15 +314,6 @@ void QKnxTpdu::setBytes(QKnxByteArray::const_iterator begin, QKnxByteArray::cons
     d_ptr->setApci();
 }
 
-QString QKnxTpdu::toString() const
-{
-    QString bytesString;
-    for (quint8 byte : d_ptr->m_tpduBytes)
-        bytesString += QStringLiteral("0x%1, ").arg(byte, 2, 16, QLatin1Char('0'));
-    bytesString.chop(2);
-    return QStringLiteral("Bytes { %1 }").arg(bytesString);
-}
-
 /*!
     Returns the Transport layer control field of the \c QKnxTpdu.
 */

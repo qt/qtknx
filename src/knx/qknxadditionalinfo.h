@@ -70,7 +70,6 @@ public:
     bool isValid() const;
 
     quint8 size() const;
-    QString toString() const;
 
     QKnxAdditionalInfo::Type type() const;
     void setType(QKnxAdditionalInfo::Type type);

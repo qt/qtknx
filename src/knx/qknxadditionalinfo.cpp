@@ -160,22 +160,6 @@ quint8 QKnxAdditionalInfo::size() const
 }
 
 /*!
-    Returns the additional info's type and length and the data as string. Type,
-    length, and data are formatted in hexadecimal notation.
-*/
-QString QKnxAdditionalInfo::toString() const
-{
-    QString data;
-    for (int i = 2; i < m_bytes.size(); ++i)
-        data += QStringLiteral("0x%1, ").arg(m_bytes[i], 2, 16, QLatin1Char('0'));
-    data.chop(2);
-
-    return QStringLiteral("Type { 0x%1 }, Data size { 0x%2 }, Data { %3 }")
-        .arg(quint8(type()), 2, 16, QLatin1Char('0'))
-        .arg(dataSize(), 2, 16, QLatin1Char('0')).arg(data);
-}
-
-/*!
     Returns the additional info \l Type.
 */
 QKnxAdditionalInfo::Type QKnxAdditionalInfo::type() const

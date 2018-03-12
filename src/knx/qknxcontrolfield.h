@@ -107,7 +107,6 @@ public:
     quint8 byte() const { return quint8(m_ctrl1.to_ulong()); }
     QKnxByteArray bytes() const { return { byte() }; }
 
-    QString toString() const;
     quint8 size() const { return 1; }
 
 private:

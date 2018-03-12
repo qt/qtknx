@@ -46,31 +46,24 @@ private slots:
         QKnxAdditionalInfo info;
         QCOMPARE(info.type(), QKnxAdditionalInfo::Type::Reserved);
         QCOMPARE(info.isValid(), false);
-        QCOMPARE(info.toString(), QStringLiteral("Type { 0x00 }, Data size { 0x00 }, Data {  }"));
         QCOMPARE(info.bytes(), QKnxByteArray {});
 
         info = QKnxAdditionalInfo(QKnxAdditionalInfo::Type::BiBatInformation,
             QKnxByteArray { 0x10, 0x20 });
         QCOMPARE(info.type(), QKnxAdditionalInfo::Type::BiBatInformation);
         QCOMPARE(info.isValid(), true);
-        QCOMPARE(info.toString(), QStringLiteral("Type { 0x07 }, Data size { 0x02 }, Data { 0x10, "
-            "0x20 }"));
         QCOMPARE(info.bytes(), QKnxByteArray({ 0x07, 0x02, 0x10, 0x20 }));
 
         info = QKnxAdditionalInfo(QKnxAdditionalInfo::Type::BiBatInformation,
             QKnxByteArray { 0x10, 0x20, 0x30 });
         QCOMPARE(info.type(), QKnxAdditionalInfo::Type::BiBatInformation);
         QCOMPARE(info.isValid(), false);
-        QCOMPARE(info.toString(), QStringLiteral("Type { 0x07 }, Data size { 0x03 }, Data { 0x10, "
-            "0x20, 0x30 }"));
         QCOMPARE(info.bytes(), QKnxByteArray {});
 
         info = QKnxAdditionalInfo(QKnxAdditionalInfo::Type(0xaa),
             QKnxByteArray { 0x10, 0x20, 0x30 });
         QCOMPARE(info.type(), QKnxAdditionalInfo::Type(0xaa));
         QCOMPARE(info.isValid(), false);
-        QCOMPARE(info.toString(), QStringLiteral("Type { 0xaa }, Data size { 0x03 }, Data { 0x10, "
-            "0x20, 0x30 }"));
         QCOMPARE(info.bytes(), QKnxByteArray {});
     }
 
@@ -180,7 +173,6 @@ private slots:
         auto info = QKnxAdditionalInfo::fromBytes({ 0x07, 0x02, 0x10, 0x20 }, 0);
         QCOMPARE(info.type(), QKnxAdditionalInfo::Type::BiBatInformation);
         QCOMPARE(info.isValid(), true);
-        QCOMPARE(info.toString(), QStringLiteral("Type { 0x07 }, Data size { 0x02 }, Data { 0x10, 0x20 }"));
         QCOMPARE(info.bytes(), QKnxByteArray({ 0x07, 0x02, 0x10, 0x20 }));
     }
 
