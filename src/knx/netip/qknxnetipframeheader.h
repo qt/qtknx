@@ -75,6 +75,7 @@ public:
 private:
     quint8 m_bytes[6] { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
 };
+// TODO: add debug stream operator
 
 QT_END_NAMESPACE
 

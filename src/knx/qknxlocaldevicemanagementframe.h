@@ -160,8 +160,7 @@ private:
     MessageCode m_code;
     QKnxByteArray m_serviceInformation;
 };
-
-// TODO: implement debug stream operator
+// TODO: add debug stream operator
 
 QT_END_NAMESPACE
 

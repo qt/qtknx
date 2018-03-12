@@ -210,6 +210,8 @@ public:
 private:
     QSharedDataPointer<QKnxTpduPrivate> d_ptr;
 };
+// TODO: add debug stream operator
+
 Q_DECLARE_TYPEINFO(QKnxTpdu::ErrorCode, Q_PRIMITIVE_TYPE);
 Q_DECLARE_TYPEINFO(QKnxTpdu::ResetType, Q_PRIMITIVE_TYPE);
 Q_DECLARE_TYPEINFO(QKnxTpdu::EraseCode, Q_PRIMITIVE_TYPE);

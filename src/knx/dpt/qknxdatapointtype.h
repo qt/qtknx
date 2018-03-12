@@ -251,6 +251,7 @@ public:
 
     bool setBytes(const QKnxByteArray &bytesToSet, quint16 index, quint16 count) override;
 };
+// TODO: add debug stream operator
 
 inline uint qHash(const QKnxDatapointType::Type &key, uint seed)
 {

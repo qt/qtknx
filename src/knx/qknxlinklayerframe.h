@@ -192,8 +192,7 @@ private:
         return QKnx::MediumType::Unknown;
     }
 };
-
-// TODO: implement debug stream operator
+// TODO: add debug stream operator
 
 QT_END_NAMESPACE
 
