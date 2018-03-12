@@ -90,7 +90,6 @@ private:
 private:
     QSharedDataPointer<QKnxGroupAddressInfoPrivate> d_ptr;
 };
-
 Q_KNX_EXPORT QDebug operator<<(QDebug debug, const QKnxGroupAddressInfo &info);
 
 QT_END_NAMESPACE

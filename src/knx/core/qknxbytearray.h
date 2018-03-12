@@ -521,7 +521,6 @@ inline const QKnxByteArray operator+(quint8 a1, const QKnxByteArray &a2)
 {
     return QKnxByteArray(1, a1) += a2;
 }
-
 Q_KNX_EXPORT QDebug operator<<(QDebug debug, const QKnxByteArray &);
 Q_KNX_EXPORT Q_DECL_PURE_FUNCTION uint qHash(const QKnxByteArray &ba, uint seed = 0) Q_DECL_NOTHROW;
 

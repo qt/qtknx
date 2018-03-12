@@ -98,7 +98,6 @@ private:
 private:
     QSharedDataPointer<QKnxNetIpFramePrivate> d_ptr;
 };
-
 Q_KNX_EXPORT QDebug operator<<(QDebug debug, const QKnxNetIpFrame &frame);
 
 QT_END_NAMESPACE

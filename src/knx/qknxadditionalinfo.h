@@ -69,6 +69,7 @@ public:
     bool isValid() const;
 
     quint8 size() const;
+    quint8 dataSize() const;
 
     QKnxAdditionalInfo::Type type() const;
     void setType(QKnxAdditionalInfo::Type type);
@@ -76,13 +77,11 @@ public:
     QKnxByteArray data() const;
     void setData(const QKnxByteArray &data);
 
-    quint8 dataSize() const;
-    static qint32 expectedDataSize(QKnxAdditionalInfo::Type type, bool *isFixedSize = nullptr);
-
     quint8 byte(quint8 index) const;
     QKnxByteArray bytes() const;
 
     static QKnxAdditionalInfo fromBytes(const QKnxByteArray &bytes, quint16 index = 0);
+    static qint32 expectedDataSize(QKnxAdditionalInfo::Type type, bool *isFixedSize = nullptr);
 
 private:
     QKnxByteArray m_bytes { 0x00, 0x00 };
