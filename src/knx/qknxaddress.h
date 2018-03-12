@@ -99,7 +99,6 @@ private:
 Q_KNX_EXPORT Q_DECL_PURE_FUNCTION uint qHash(const QKnxAddress &key, uint seed = 0) Q_DECL_NOTHROW;
 
 Q_KNX_EXPORT QDebug operator<<(QDebug debug, const QKnxAddress &address);
-Q_KNX_EXPORT QDataStream &operator<<(QDataStream &stream, const QKnxAddress &address);
 
 Q_DECLARE_TYPEINFO(QKnxAddress::Type, Q_PRIMITIVE_TYPE);
 Q_DECLARE_TYPEINFO(QKnxAddress::Notation, Q_PRIMITIVE_TYPE);

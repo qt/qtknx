@@ -203,24 +203,6 @@ private slots:
         qDebug() << QKnxAdditionalInfo(QKnxAdditionalInfo::Type::BiBatInformation, data);
         QCOMPARE(s_msg, QString::fromLatin1("0x07021020"));
     }
-
-    void testDataStream()
-    {
-        QByteArray byteArray;
-        QKnxByteArray data({ 0x10, 0x20 });
-
-        QDataStream out(&byteArray, QIODevice::WriteOnly);
-        out << QKnxAdditionalInfo(QKnxAdditionalInfo::Type::BiBatInformation, data);
-
-        QKnxAdditionalInfo info;
-        QDataStream in(&byteArray, QIODevice::ReadOnly);
-        in >> info;
-
-        QCOMPARE(info.type(), QKnxAdditionalInfo::Type::BiBatInformation);
-        QCOMPARE(info.isValid(), true);
-        QCOMPARE(info.toString(), QStringLiteral("Type { 0x07 }, Data size { 0x02 }, Data { 0x10, 0x20 }"));
-        QCOMPARE(info.bytes(), QKnxByteArray({ 0x07, 0x02, 0x10, 0x20 }));
-    }
 };
 
 QTEST_MAIN(tst_QKnxAdditionalinfo)

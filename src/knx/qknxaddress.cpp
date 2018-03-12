@@ -341,20 +341,6 @@ QDebug operator<<(QDebug debug, const QKnxAddress &address)
     return debug;
 }
 
-/*!
-    \relates QKnxAddress
-
-    Writes the KNX address \a address to the stream \a out and returns a
-    reference to the stream.
-*/
-QDataStream &operator<<(QDataStream &out, const QKnxAddress &address)
-{
-    if (!address.isValid())
-        return out;
-    const auto rawData = address.bytes();
-    return out << quint8(rawData[0]) << quint8(rawData[1]);
-}
-
 
 // -- private
 

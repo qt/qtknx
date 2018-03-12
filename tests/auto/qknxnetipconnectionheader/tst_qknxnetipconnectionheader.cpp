@@ -137,10 +137,6 @@ private slots:
     void testDebugStream()
     {
     }
-
-    void testDataStream()
-    {
-    }
 };
 
 QTEST_APPLESS_MAIN(tst_QKnxNetIpConnectionHeader)

@@ -613,23 +613,6 @@ private slots:
         qDebug() << QKnxAddress(QKnxAddress::Type::Individual, 4353);
         QCOMPARE(s_msg, QString::fromLatin1("0x1101"));
     }
-
-    void testDataStream()
-    {
-        {
-            QByteArray byteArray;
-            QDataStream out(&byteArray, QIODevice::WriteOnly);
-            out << QKnxAddress(QKnxAddress::Type::Group, 2305);
-            QCOMPARE(byteArray, QByteArray::fromHex("0901"));
-        }
-
-        {
-            QByteArray byteArray;
-            QDataStream out(&byteArray, QIODevice::WriteOnly);
-            out << QKnxAddress(QKnxAddress::Type::Individual, 4353);
-            QCOMPARE(byteArray, QByteArray::fromHex("1101"));
-        }
-    }
 };
 
 QTEST_APPLESS_MAIN(tst_QKnxAddress)

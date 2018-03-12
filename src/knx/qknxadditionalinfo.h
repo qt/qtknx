@@ -89,15 +89,7 @@ public:
 private:
     QKnxByteArray m_bytes { 0x00, 0x00 };
 };
-
 Q_KNX_EXPORT QDebug operator<<(QDebug debug, const QKnxAdditionalInfo &info);
-
-#if !defined(QT_NO_DATASTREAM)
-
-Q_KNX_EXPORT QDataStream &operator>>(QDataStream &stream, QKnxAdditionalInfo &info);
-Q_KNX_EXPORT QDataStream &operator<<(QDataStream &stream, const QKnxAdditionalInfo &info);
-
-#endif
 
 Q_DECLARE_TYPEINFO(QKnxAdditionalInfo::Type, Q_PRIMITIVE_TYPE);
 

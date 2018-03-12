@@ -123,11 +123,7 @@ private slots:
         } _(myMessageHandler);
     }
 
-    void testDataStream()
-    {
-    }
-
-    //TO DO: test the isValid function
+    //TODO: test the isValid function
 };
 
 QTEST_MAIN(tst_QKnxLinkLayerFrame)

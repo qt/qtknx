@@ -135,30 +135,4 @@ QDebug operator<<(QDebug debug, const QKnxExtendedControlField &field)
     return debug;
 }
 
-/*!
-    \relates QKnxExtendedControlField
-
-    Reads the extended control \a field from the \a stream and returns a
-    reference to the \a stream.
-*/
-QDataStream &operator>>(QDataStream &stream, QKnxExtendedControlField &field)
-{
-    quint8 raw;
-    stream >> raw;
-    field = QKnxExtendedControlField(raw);
-
-    return stream;
-}
-
-/*!
-    \relates QKnxExtendedControlField
-
-    Writes the extended control \a field to the \a stream and returns a
-    reference to the \a stream.
-*/
-QDataStream &operator<<(QDataStream &stream, const QKnxExtendedControlField &field)
-{
-    return stream << field.bytes();
-}
-
 QT_END_NAMESPACE

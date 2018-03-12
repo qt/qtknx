@@ -77,8 +77,6 @@ private:
     std::bitset<8> m_ctrl2 = 0;
 };
 Q_KNX_EXPORT QDebug operator<<(QDebug debug, const QKnxExtendedControlField &ctrl);
-Q_KNX_EXPORT QDataStream &operator>>(QDataStream &stream, QKnxExtendedControlField &ctrl);
-Q_KNX_EXPORT QDataStream &operator<<(QDataStream &stream, const QKnxExtendedControlField &ctrl);
 
 Q_DECLARE_TYPEINFO(QKnxExtendedControlField::ExtendedFrameFormat, Q_PRIMITIVE_TYPE);
 

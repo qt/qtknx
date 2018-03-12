@@ -314,36 +314,4 @@ QDebug operator<<(QDebug debug, const QKnxAdditionalInfo &info)
     return debug;
 }
 
-/*!
-    \relates QKnxAdditionalInfo
-
-    Reads the KNX cEMI frame's additional \a info from the \a stream and returns
-    a reference to the \a stream.
-*/
-QDataStream &operator>>(QDataStream &stream, QKnxAdditionalInfo &info)
-{
-    quint8 type, size;
-    stream >> type >> size;
-
-    QKnxByteArray ba(size, Qt::Uninitialized);
-    stream.readRawData((char *) ba.data(), size);
-    info = QKnxAdditionalInfo(QKnxAdditionalInfo::Type(type), ba);
-    return stream;
-}
-
-/*!
-    \relates QKnxAdditionalInfo
-
-    Writes the KNX cEMI frame's additional \a info to the \a stream and returns
-    a reference to the \a stream.
-*/
-QDataStream &operator<<(QDataStream &stream, const QKnxAdditionalInfo &info)
-{
-    if (!info.isValid())
-        return stream;
-    for (quint8 byte : info.bytes())
-        stream << static_cast<quint8> (byte);
-    return stream;
-}
-
 QT_END_NAMESPACE
