@@ -1,6 +1,6 @@
 /****************************************************************************
 **
-** Copyright (C) 2017 The Qt Company Ltd.
+** Copyright (C) 2018 The Qt Company Ltd.
 ** Contact: https://www.qt.io/licensing/
 **
 ** This file is part of the examples of the Qt Toolkit.
@@ -112,7 +112,6 @@ public:
     Q_INVOKABLE void colorSwitch(double value);
     Q_INVOKABLE void toggleLight(int light);
 
-    Q_INVOKABLE void test();
     Q_INVOKABLE void changeTunnelIp(const QString &ipStr, quint16 port = 3671);
 
 Q_SIGNALS:

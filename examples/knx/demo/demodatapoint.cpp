@@ -52,7 +52,6 @@
 
 #include <QtCore/QTimer>
 #include <QtGui/QColor>
-#include <QtKnx/QKnx1Bit>
 #include <QtKnx/QKnxTpdu>
 #include <QtKnx/QKnxTpduFactory>
 #include <QtKnx/QKnxLinkLayerFrame>
@@ -62,23 +61,26 @@ const QKnxByteArray DemoDataPoint::BytesOff { 0x00 };
 
 bool DemoSwitchDataPoint::updateDataPointState(const QKnxLinkLayerFrame &frame)
 {
-    m_state = frame.serviceInformation().endsWith(1);
+    m_switch.setBytes(frame.tpdu().data(), 0, 1);
     return true;
 }
 
 void DemoSwitchDataPoint::uiToggle()
 {
-    m_state = !m_state;
+    if (isOn())
+        m_switch.setValue(QKnxSwitch::State::Off);
+    else
+        m_switch.setValue(QKnxSwitch::State::On);
 }
 
 bool DemoSwitchDataPoint::isOn() const
 {
-    return m_state;
+    return m_switch.value() == QKnxSwitch::State::On;
 }
 
 QKnxByteArray DemoSwitchDataPoint::bytes() const
 {
-    if (m_state)
+    if (isOn())
         return DemoDataPoint::BytesOn;
     return DemoDataPoint::BytesOff;
 }

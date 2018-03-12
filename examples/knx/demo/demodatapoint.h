@@ -54,6 +54,7 @@
 #include <QtCore/QTimer>
 #include <QtGui/QColor>
 #include <QtKnx/QKnxLinkLayerFrame>
+#include <QtKnx/QKnx1Bit>
 
 class DemoDataPoint
 {
@@ -86,7 +87,7 @@ public:
     bool isOn() const;
 
 private:
-    bool m_state;
+    QKnxSwitch m_switch;
 };
 
 class DemoColorLed : public QObject, public DemoDataPoint

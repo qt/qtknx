@@ -1,6 +1,6 @@
 /****************************************************************************
 **
-** Copyright (C) 2017 The Qt Company Ltd.
+** Copyright (C) 2018 The Qt Company Ltd.
 ** Contact: https://www.qt.io/licensing/
 **
 ** This file is part of the examples of the Qt Toolkit.
@@ -53,9 +53,7 @@
 #include "utils.h"
 
 #include <QtCore/QString>
-#include <QtGui/QColor>
 #include <QtKnx/QKnxAddress>
-#include <QtNetwork/QNetworkAddressEntry>
 #include <QtNetwork/QNetworkInterface>
 
 namespace {
@@ -92,43 +90,36 @@ void QmlKnxDemo::toggleLight(int light)
 void QmlKnxDemo::colorSwitch(double value)
 {
     QColor colorAtStart = colorState;
-    if (value < (sliderSectionSize / 2)
-            && colorState != Qt::black)
+    if (value < (sliderSectionSize / 2) && colorState != Qt::black) {
         colorState = Qt::black;
-
-    else if ((value > (sliderSectionSize / 2))
-             && value < (3 * sliderSectionSize / 2)
-             && (colorState != Qt::white))
-        colorState = Qt::white;
-
-    else if ((value > (3 * sliderSectionSize / 2))
-             && value < (5 * sliderSectionSize / 2)
-             && (colorState != Qt::red))
-        colorState = Qt::red;
-
-    else if ((value > (5 * sliderSectionSize / 2))
-             && value < (7 * sliderSectionSize / 2)
-             && (colorState != Qt::magenta))
-        colorState = Qt::magenta;
-
-    else if ((value > (7 * sliderSectionSize / 2))
-             && value < (9 * sliderSectionSize / 2)
-             && (colorState != Qt::blue))
-        colorState = Qt::blue;
-
-    else if ((value > (9 * sliderSectionSize / 2))
-             && value < (11 * sliderSectionSize / 2)
-             && (colorState != Qt::cyan))
-        colorState = Qt::cyan;
-
-    else if (value > (11 * sliderSectionSize / 2)
-             && value < (13 * sliderSectionSize / 2)
-             && (colorState != Qt::green))
-        colorState = Qt::green;
-
-    else if (value > ((6 * sliderSectionSize) + (sliderSectionSize / 2))
-             && (colorState != Qt::yellow))
-        colorState = Qt::yellow;
+    } else if ((value > (sliderSectionSize / 2))
+        && value < (3 * sliderSectionSize / 2)
+        && (colorState != Qt::white)) {
+            colorState = Qt::white;
+    } else if ((value > (3 * sliderSectionSize / 2))
+        && value < (5 * sliderSectionSize / 2)
+        && (colorState != Qt::red)) {
+            colorState = Qt::red;
+    } else if ((value > (5 * sliderSectionSize / 2))
+        && value < (7 * sliderSectionSize / 2)
+        && (colorState != Qt::magenta)) {
+            colorState = Qt::magenta;
+    } else if ((value > (7 * sliderSectionSize / 2))
+        && value < (9 * sliderSectionSize / 2)
+        && (colorState != Qt::blue)) {
+            colorState = Qt::blue;
+    } else if ((value > (9 * sliderSectionSize / 2))
+        && value < (11 * sliderSectionSize / 2)
+        && (colorState != Qt::cyan)) {
+            colorState = Qt::cyan;
+    } else if (value > (11 * sliderSectionSize / 2)
+        && value < (13 * sliderSectionSize / 2)
+        && (colorState != Qt::green)) {
+            colorState = Qt::green;
+    } else if (value > ((6 * sliderSectionSize) + (sliderSectionSize / 2))
+        && (colorState != Qt::yellow)) {
+            colorState = Qt::yellow;
+    }
 
     if (colorAtStart != colorState) {
         if (auto led = m_etsBoard.getColorLed()) {
@@ -149,17 +140,9 @@ void QmlKnxDemo::toggleMiddleRight()
 
 void QmlKnxDemo::toggleMiddleLeft()
 {
-    auto led = m_etsBoard.getColorLed();
-    if (!led)
-        return;
-
-    if (!led->isOn()) {
+    if (auto led = m_etsBoard.getColorLed()) {
         // set green color in dpt by default...
-        led->setCurrentColor(QColor(0, 255, 0));
-        // send request to ets board
-        sendColorLedGroupValueWriteFrames(m_tunnel, led);
-    } else {
-        led->setCurrentColor(QColor(0, 0, 0));
+        led->setCurrentColor(QColor(0, (!led->isOn() ? 255 : 0), 0));
         sendColorLedGroupValueWriteFrames(m_tunnel, led);
     }
 }
@@ -294,7 +277,7 @@ void QmlKnxTunnel::autoDiscoverKnxServers()
 
 void QmlKnxTunnel::changeIp(const QString &ip, quint16 port)
 {
-    m_ip = ip;
+    m_ip = QHostAddress(ip);
     m_port = port;
     m_connection.disconnectFromHost();
 }
@@ -325,19 +308,4 @@ void QmlKnxDemo::changeTunnelIp(const QString &ipStr, quint16 port)
 void QmlKnxDemo::checkLightStatusOn()
 {
     initBoard(m_etsBoard, m_tunnel);
-}
-
-void QmlKnxDemo::test()
-{
-    // red
-    QKnxByteArray data { 00, 0xbc, 0xe0, 11, 05, 00, 0x0c, 01, 00, 81 };
-    handleFrame(QKnxLinkLayerFrame::fromBytes(data, 0, data.size()));
-
-    // blue
-    data = { 00, 0xbc, 0xe0, 11, 05, 00, 0x0e, 01, 00, 81 };
-    handleFrame(QKnxLinkLayerFrame::fromBytes(data, 0, data.size()));
-
-    // green
-    data = { 00, 0xbc, 0xe0, 11, 05, 00, 0x0d, 01, 00, 81 };
-    handleFrame(QKnxLinkLayerFrame::fromBytes(data, 0, data.size()));
 }
