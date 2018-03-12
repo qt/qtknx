@@ -75,14 +75,6 @@ QT_BEGIN_NAMESPACE
 */
 
 /*!
-    \fn bool QKnxEntranceAccess::setDigit(quint8 x, quint8 digit)
-
-    Sets the digit \a digit at the position \a x in the access identification
-    code.
-*/
-
-
-/*!
     Creates a fixed size datapoint type with the value set to \c 0 and an empty
     list of attributes.
 */
@@ -112,8 +104,8 @@ qint32 QKnxEntranceAccess::idCode() const
 {
     if (!isValid())
         return -1;
-    return (quint32(1e6) * digit(6)) + (quint32(1e5) * digit(5)) + (quint32(1e4) * digit(4))
-        + (quint32(1e3) * digit(3)) + (quint32(1e2) * digit(2)) + digit(1);
+    return (quint32(1e5) * digit(6)) + (quint32(1e4) * digit(5)) + (quint32(1e3) * digit(4))
+        + (quint32(1e2) * digit(3)) + (quint32(1e1) * digit(2)) + digit(1);
 }
 
 /*!
@@ -133,6 +125,25 @@ qint8 QKnxEntranceAccess::digit(quint8 x) const
         value = (x % 2 ? value & 0x0f : (value & 0xf0) >> 4);
     }
     return value;
+}
+
+/*!
+    Sets the digit \a digit at the position \a x in the access identification
+    code.
+*/
+bool QKnxEntranceAccess::setDigit(quint8 x, quint8 digit)
+{
+    if (x < 1 || x > 6 || digit > 9)
+        return false;
+
+    digit = (x % 2 ? digit : digit << 4);
+    if (x == 5 || x == 6)
+        return setByte(0, digit);
+    if (x == 4 || x == 3)
+        return setByte(1, digit);
+    if (x == 2 || x == 1)
+        return setByte(2, digit);
+    return false;
 }
 
 /*!

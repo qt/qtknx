@@ -746,6 +746,10 @@ void tst_QKnxDatapointType::dpt15_EntranceAccess()
     QCOMPARE(dptAccessData.isSet(QKnxEntranceAccess::Encrypted), false);
     QCOMPARE(dptAccessData.digit(1), qint8(0));
     QCOMPARE(dptAccessData.digit(2), qint8(9));
+    QCOMPARE(dptAccessData.setDigit(3, 1), true);
+    QCOMPARE(dptAccessData.digit(3), qint8(1));
+    QCOMPARE(dptAccessData.setDigit(6, 9), true);
+    QCOMPARE(dptAccessData.digit(6), qint8(9));
 
     QKnxEntranceAccess dpt;
     QCOMPARE(dpt.isValid(), true);
@@ -757,7 +761,20 @@ void tst_QKnxDatapointType::dpt15_EntranceAccess()
     QCOMPARE(dpt.digit(1), qint8(0));
     QCOMPARE(dpt.digit(3), qint8(1));
 
-    // TODO: Extend the auto-test.
+    QKnxEntranceAccess dpt2;
+    QCOMPARE(dpt2.isValid(), true);
+    QCOMPARE(dpt2.setIdCode(150276), true);
+    QCOMPARE(dpt2.idCode(), 150276);
+    QCOMPARE(dpt2.setAttributes(QKnxEntranceAccess::PermissionAccepted | QKnxEntranceAccess::Encrypted), true);
+    QCOMPARE(dpt2.attributes(), QKnxEntranceAccess::PermissionAccepted | QKnxEntranceAccess::Encrypted);
+    QCOMPARE(dpt2.setIndex(3), true);
+    QCOMPARE(dpt2.index(), quint8(3));
+
+    QCOMPARE(dpt2.digit(0), -1);
+    QCOMPARE(dpt2.digit(7), -1);
+    QCOMPARE(dpt2.setDigit(0, 1), false);
+    QCOMPARE(dpt2.setDigit(7, 1), false);
+    QCOMPARE(dpt2.setDigit(4, 10), false);
 }
 
 void tst_QKnxDatapointType::dpt16_String()
