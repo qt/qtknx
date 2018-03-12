@@ -30,13 +30,8 @@
 #ifndef QKNXNETIPCONFIGDIB_H
 #define QKNXNETIPCONFIGDIB_H
 
-#include <QtCore/qdatastream.h>
-#include <QtCore/qdebug.h>
-#include <QtCore/qstring.h>
-#include <QtCore/qvector.h>
 #include <QtKnx/qknxglobal.h>
 #include <QtKnx/qknxnetipstruct.h>
-#include <QtKnx/qknxtraits.h>
 #include <QtNetwork/qhostaddress.h>
 #include <QtNetwork/qnetworkinterface.h>
 

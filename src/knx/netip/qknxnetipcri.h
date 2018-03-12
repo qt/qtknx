@@ -30,13 +30,8 @@
 #ifndef QKNXNETIPCRI_H
 #define QKNXNETIPCRI_H
 
-#include <QtCore/qdatastream.h>
-#include <QtCore/qdebug.h>
-#include <QtCore/qstring.h>
-#include <QtCore/qvector.h>
 #include <QtKnx/qknxglobal.h>
 #include <QtKnx/qknxnetipstruct.h>
-#include <QtKnx/qknxtraits.h>
 #include <QtKnx/qknxnetipservicefamiliesdib.h>
 
 QT_BEGIN_NAMESPACE

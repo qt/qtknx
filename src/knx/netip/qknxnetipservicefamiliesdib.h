@@ -30,14 +30,9 @@
 #ifndef QKNXNETIPSERVICEFAMILIESDIB_H
 #define QKNXNETIPSERVICEFAMILIESDIB_H
 
-#include <QtCore/qdatastream.h>
-#include <QtCore/qdebug.h>
 #include <QtCore/qmap.h>
-#include <QtCore/qstring.h>
-#include <QtCore/qvector.h>
 #include <QtKnx/qknxglobal.h>
 #include <QtKnx/qknxnetipstruct.h>
-#include <QtKnx/qknxtraits.h>
 
 QT_BEGIN_NAMESPACE
 

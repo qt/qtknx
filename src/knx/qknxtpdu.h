@@ -30,10 +30,8 @@
 #ifndef QKNXTPDU_H
 #define QKNXTPDU_H
 
-#include <QtCore/qvector.h>
 #include <QtCore/qshareddata.h>
 #include <QtKnx/qknxglobal.h>
-#include <QtKnx/qknxtraits.h>
 #include <QtKnx/qknxbytearray.h>
 
 QT_BEGIN_NAMESPACE

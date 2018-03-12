@@ -30,12 +30,11 @@
 #ifndef QKNXCONTROLFIELD_H
 #define QKNXCONTROLFIELD_H
 
-#include <QtCore/qdatastream.h>
 #include <QtCore/qdebug.h>
-#include <QtCore/qstring.h>
 #include <QtKnx/qknxbytearray.h>
 #include <QtKnx/qknxglobal.h>
-#include <QtKnx/qknxtraits.h>
+
+#include <bitset>
 
 QT_BEGIN_NAMESPACE
 

@@ -30,8 +30,6 @@
 #ifndef QKNXNETIPSTRUCTHEADER_H
 #define QKNXNETIPSTRUCTHEADER_H
 
-#include <QtCore/qstring.h>
-
 #include <QtKnx/qknxbytearray.h>
 #include <QtKnx/qknxnetip.h>
 #include <QtKnx/qknxtraits.h>

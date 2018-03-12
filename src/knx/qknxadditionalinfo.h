@@ -30,7 +30,6 @@
 #ifndef QKNXADDITIONAL_H
 #define QKNXADDITIONAL_H
 
-#include <QtCore/qdatastream.h>
 #include <QtCore/qdebug.h>
 #include <QtCore/qstring.h>
 

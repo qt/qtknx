@@ -30,8 +30,6 @@
 #ifndef QKNXNETIPFRAMEHEADER_H
 #define QKNXNETIPFRAMEHEADER_H
 
-#include <QtCore/qstring.h>
-
 #include <QtKnx/qknxbytearray.h>
 #include <QtKnx/qknxnetip.h>
 

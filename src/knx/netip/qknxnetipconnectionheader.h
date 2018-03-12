@@ -30,8 +30,6 @@
 #ifndef QKNXNETIPCONNECTIONHEADER_H
 #define QKNXNETIPCONNECTIONHEADER_H
 
-#include <QtCore/qstring.h>
-
 #include <QtKnx/qknxbytearray.h>
 
 QT_BEGIN_NAMESPACE

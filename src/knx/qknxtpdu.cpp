@@ -30,6 +30,8 @@
 #include "qknxtpdu.h"
 #include "qknxutils.h"
 
+#include <bitset>
+
 QT_BEGIN_NAMESPACE
 
 /*!

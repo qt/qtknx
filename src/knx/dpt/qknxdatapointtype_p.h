@@ -44,7 +44,6 @@
 #include <QtCore/qregularexpression.h>
 #include <QtCore/qshareddata.h>
 #include <QtCore/qvariant.h>
-#include <QtCore/qvector.h>
 #include <QtKnx/qknxbytearray.h>
 #include <QtKnx/qknxglobal.h>
 
