@@ -97,15 +97,14 @@ void QKnxNetIpServerDescriptionAgentPrivate::setupSocket()
                 usedPort = socket->localPort();
 
                 auto frame = QKnxNetIpDescriptionRequest::builder()
-                    .setControlEndpoint(
-                        {
-                            (nat ? QHostAddress::AnyIPv4 : socket->localAddress()),
-                            (nat ? quint16(0u) : usedPort)
-                        })
+                    .setControlEndpoint(QKnxNetIpHpaiView::builder()
+                        .setHostAddress(nat ? QHostAddress::AnyIPv4 : socket->localAddress())
+                        .setPort(nat ? quint16(0u) : usedPort).create())
                     .create();
 
-                socket->writeDatagram(static_cast<QByteArray> (frame.bytes()), m_server.address(),
-                    m_server.port());
+                const QKnxNetIpHpaiView hpai(m_server);
+                socket->writeDatagram(static_cast<QByteArray> (frame.bytes()), hpai.hostAddress(),
+                    hpai.port());
 
                 setupAndStartReceiveTimer();
             }
@@ -362,7 +361,7 @@ void QKnxNetIpServerDescriptionAgent::start(const QKnxNetIpServerInfo &server)
 
 void QKnxNetIpServerDescriptionAgent::start(const QHostAddress &address, quint16 port)
 {
-    start(QKnxNetIpHpai { address, port });
+    start(QKnxNetIpHpaiView::builder().setHostAddress(address).setPort(port).create());
 }
 
 void QKnxNetIpServerDescriptionAgent::stop()

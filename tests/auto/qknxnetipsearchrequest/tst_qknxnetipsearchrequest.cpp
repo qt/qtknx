@@ -57,12 +57,9 @@ void tst_QKnxNetIpSearchRequest::testDefaultConstructor()
 void tst_QKnxNetIpSearchRequest::testConstructor()
 {
     auto frame = QKnxNetIpSearchRequest::builder()
-        .setDiscoveryEndpoint(
-            {
-                QKnxNetIp::HostProtocol::UDP_IPv4,
-                QHostAddress::LocalHost,
-                3671
-            }
+        .setDiscoveryEndpoint(QKnxNetIpHpaiView::builder()
+            .setHostAddress(QHostAddress::LocalHost)
+            .setPort(3671).create()
         ).create();
 
     QKnxNetIpSearchRequest search(frame);
@@ -91,12 +88,9 @@ void tst_QKnxNetIpSearchRequest::testDebugStream()
     QCOMPARE(s_msg, QStringLiteral("0x061002010006"));
 
     qDebug() << QKnxNetIpSearchRequest::builder()
-        .setDiscoveryEndpoint(
-            {
-                QKnxNetIp::HostProtocol::UDP_IPv4,
-                QHostAddress::LocalHost,
-                3671
-            }
+        .setDiscoveryEndpoint(QKnxNetIpHpaiView::builder()
+            .setHostAddress(QHostAddress::LocalHost)
+            .setPort(3671).create()
         ).create();
     QCOMPARE(s_msg, QStringLiteral("0x06100201000e08017f0000010e57"));
 }

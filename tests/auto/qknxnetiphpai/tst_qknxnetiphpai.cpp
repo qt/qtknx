@@ -48,11 +48,15 @@ private slots:
 
 void tst_QKnxNetIpHpai::testConstructor()
 {
-    QKnxNetIpHpai hpai(QKnxNetIp::HostProtocol::UDP_IPv4, QHostAddress::LocalHost, 3671);
+    auto hpai = QKnxNetIpHpaiView::builder()
+        .setHostAddress(QHostAddress::LocalHost)
+        .setPort(3671).create();
+    const QKnxNetIpHpaiView view(hpai);
 
-    QCOMPARE(hpai.hostProtocol(), QKnxNetIp::HostProtocol::UDP_IPv4);
-    QCOMPARE(hpai.address(), QHostAddress(QHostAddress::LocalHost));
-    QCOMPARE(hpai.port(), quint16(3671));
+    QCOMPARE(view.isValid(), true);
+    QCOMPARE(view.hostProtocol(), QKnxNetIp::HostProtocol::UDP_IPv4);
+    QCOMPARE(view.hostAddress(), QHostAddress(QHostAddress::LocalHost));
+    QCOMPARE(view.port(), quint16(3671));
 
     QCOMPARE(hpai.data().size(), quint16(6));
     QCOMPARE(hpai.data(), QKnxByteArray::fromHex("7f0000010e57"));
@@ -67,10 +71,14 @@ void tst_QKnxNetIpHpai::testSetFunctions()
         QKnxNetIpHpai hpai;
         QCOMPARE(hpai.isValid(), false);
 
-        hpai.setHpai(QKnxNetIp::HostProtocol::UDP_IPv4, QHostAddress::LocalHost, 3671);
-        QCOMPARE(hpai.hostProtocol(), QKnxNetIp::HostProtocol::UDP_IPv4);
-        QCOMPARE(hpai.address(), QHostAddress(QHostAddress::LocalHost));
-        QCOMPARE(hpai.port(), quint16(3671));
+        hpai = QKnxNetIpHpaiView::builder()
+            .setHostAddress(QHostAddress::LocalHost)
+            .setPort(3671).create();
+
+        QKnxNetIpHpaiView view(hpai);
+        QCOMPARE(view.hostProtocol(), QKnxNetIp::HostProtocol::UDP_IPv4);
+        QCOMPARE(view.hostAddress(), QHostAddress(QHostAddress::LocalHost));
+        QCOMPARE(view.port(), quint16(3671));
 
         QCOMPARE(hpai.data().size(), quint16(6));
         QCOMPARE(hpai.data(), QKnxByteArray::fromHex("7f0000010e57"));
@@ -82,99 +90,118 @@ void tst_QKnxNetIpHpai::testSetFunctions()
     }
 
     {
-        QKnxNetIpHpai hpai(QKnxNetIp::HostProtocol::UDP_IPv4, QHostAddress::LocalHost, 3333);
-        QCOMPARE(hpai.hostProtocol(), QKnxNetIp::HostProtocol::UDP_IPv4);
-        QCOMPARE(hpai.address(), QHostAddress(QHostAddress::LocalHost));
-        QCOMPARE(hpai.port(), quint16(3333));
-        QCOMPARE(hpai.isValid(), true);
+        QKnxNetIpHpai hpai;
+        QCOMPARE(hpai.isValid(), false);
 
-        hpai.setHpai(QKnxNetIp::HostProtocol::TCP_IPv4, QHostAddress::Broadcast, 3671);
-        QCOMPARE(hpai.hostProtocol(), QKnxNetIp::HostProtocol::TCP_IPv4);
-        QCOMPARE(hpai.address(), QHostAddress(QHostAddress::Broadcast));
-        QCOMPARE(hpai.port(), quint16(3671));
-        QCOMPARE(hpai.isValid(), true);
+        hpai = QKnxNetIpHpaiView::builder().setHostAddress(QHostAddress::LocalHost)
+            .setPort(3333).create();
+
+        QKnxNetIpHpaiView view(hpai);
+        QCOMPARE(view.isValid(), true);
+        QCOMPARE(view.hostProtocol(), QKnxNetIp::HostProtocol::UDP_IPv4);
+        QCOMPARE(view.hostAddress(), QHostAddress(QHostAddress::LocalHost));
+        QCOMPARE(view.port(), quint16(3333));
+
+        hpai = QKnxNetIpHpaiView::builder().setHostProtocol(QKnxNetIp::HostProtocol::TCP_IPv4)
+            .setHostAddress(QHostAddress::Broadcast).setPort(3671).create();
+        QCOMPARE(view.isValid(), true);
+        QCOMPARE(view.hostProtocol(), QKnxNetIp::HostProtocol::TCP_IPv4);
+        QCOMPARE(view.hostAddress(), QHostAddress(QHostAddress::Broadcast));
+        QCOMPARE(view.port(), quint16(3671));
     }
 
     {
         QKnxNetIpHpai hpai;
         QCOMPARE(hpai.isValid(), false);
 
+        QKnxNetIpHpaiView view(hpai);
+        auto builder = view.builder();
+
         // Setting address only
-        hpai.setAddress(QHostAddress::Broadcast);
-        QCOMPARE(hpai.hostProtocol(), QKnxNetIp::HostProtocol::UDP_IPv4);
-        QCOMPARE(hpai.address(), QHostAddress(QHostAddress::Broadcast));
-        QCOMPARE(hpai.port(), quint16(0));
-        QCOMPARE(hpai.isValid(), true);
+        hpai = builder.setHostAddress(QHostAddress::Broadcast).create();
+
+        QCOMPARE(view.hostProtocol(), QKnxNetIp::HostProtocol::UDP_IPv4);
+        QCOMPARE(view.hostAddress(), QHostAddress(QHostAddress::Broadcast));
+        QCOMPARE(view.port(), quint16(0));
+        QCOMPARE(view.isValid(), true);
 
         // Setting code only
-        hpai.setHostProtocol(QKnxNetIp::HostProtocol::TCP_IPv4);
-        QCOMPARE(hpai.hostProtocol(), QKnxNetIp::HostProtocol::TCP_IPv4);
-        QCOMPARE(hpai.address(), QHostAddress(QHostAddress::Broadcast));
-        QCOMPARE(hpai.port(), quint16(0));
-        QCOMPARE(hpai.isValid(), true);
+        hpai = builder.setHostProtocol(QKnxNetIp::HostProtocol::TCP_IPv4).create();
+        QCOMPARE(view.hostProtocol(), QKnxNetIp::HostProtocol::TCP_IPv4);
+        QCOMPARE(view.hostAddress(), QHostAddress(QHostAddress::Broadcast));
+        QCOMPARE(view.port(), quint16(0));
+        QCOMPARE(view.isValid(), true);
 
         // Setting port only
-        hpai.setPort(quint16(3671));
-        QCOMPARE(hpai.hostProtocol(), QKnxNetIp::HostProtocol::TCP_IPv4);
-        QCOMPARE(hpai.address(), QHostAddress(QHostAddress::Broadcast));
-        QCOMPARE(hpai.port(), quint16(3671));
-        QCOMPARE(hpai.isValid(), true);
+        hpai = builder.setPort(quint16(3671)).create();
+        QCOMPARE(view.hostProtocol(), QKnxNetIp::HostProtocol::TCP_IPv4);
+        QCOMPARE(view.hostAddress(), QHostAddress(QHostAddress::Broadcast));
+        QCOMPARE(view.port(), quint16(3671));
+        QCOMPARE(view.isValid(), true);
     }
 
     {
         QKnxNetIpHpai hpai;
         QCOMPARE(hpai.isValid(), false);
 
+        QKnxNetIpHpaiView view(hpai);
+        auto builder = view.builder();
+
         // Setting code only
-        hpai.setHostProtocol(QKnxNetIp::HostProtocol::TCP_IPv4);
-        QCOMPARE(hpai.hostProtocol(), QKnxNetIp::HostProtocol::TCP_IPv4);
-        QCOMPARE(hpai.address(), QHostAddress(QHostAddress::LocalHost));
-        QCOMPARE(hpai.port(), quint16(0));
-        QCOMPARE(hpai.isValid(), true);
+        hpai = builder.setHostProtocol(QKnxNetIp::HostProtocol::TCP_IPv4).create();
+        QCOMPARE(view.hostProtocol(), QKnxNetIp::HostProtocol::TCP_IPv4);
+        QCOMPARE(view.hostAddress(), QHostAddress(QHostAddress::LocalHost));
+        QCOMPARE(view.port(), quint16(0));
+        QCOMPARE(view.isValid(), true);
 
         // Setting address only
-        hpai.setAddress(QHostAddress::Broadcast);
-        QCOMPARE(hpai.hostProtocol(), QKnxNetIp::HostProtocol::TCP_IPv4);
-        QCOMPARE(hpai.address(), QHostAddress(QHostAddress::Broadcast));
-        QCOMPARE(hpai.port(), quint16(0));
-        QCOMPARE(hpai.isValid(), true);
+        hpai = builder.setHostAddress(QHostAddress::Broadcast).create();
+        QCOMPARE(view.hostProtocol(), QKnxNetIp::HostProtocol::TCP_IPv4);
+        QCOMPARE(view.hostAddress(), QHostAddress(QHostAddress::Broadcast));
+        QCOMPARE(view.port(), quint16(0));
+        QCOMPARE(view.isValid(), true);
 
         // Setting port only
-        hpai.setPort(quint16(3671));
-        QCOMPARE(hpai.hostProtocol(), QKnxNetIp::HostProtocol::TCP_IPv4);
-        QCOMPARE(hpai.address(), QHostAddress(QHostAddress::Broadcast));
-        QCOMPARE(hpai.port(), quint16(3671));
-        QCOMPARE(hpai.isValid(), true);
+        hpai = builder.setPort(quint16(3671)).create();
+        QCOMPARE(view.hostProtocol(), QKnxNetIp::HostProtocol::TCP_IPv4);
+        QCOMPARE(view.hostAddress(), QHostAddress(QHostAddress::Broadcast));
+        QCOMPARE(view.port(), quint16(3671));
+        QCOMPARE(view.isValid(), true);
     }
 
     {
-        QKnxNetIpHpai hpai(QKnxNetIp::HostProtocol::UDP_IPv4,
-            QHostAddress(QHostAddress::AnyIPv4), 3333);
-        QCOMPARE(hpai.address(), QHostAddress(QHostAddress::AnyIPv4));
-        QCOMPARE(hpai.hostProtocol(), QKnxNetIp::HostProtocol::UDP_IPv4);
-        QCOMPARE(hpai.port(), quint16(3333));
-        QCOMPARE(hpai.isValid(), true);
+        auto builder = QKnxNetIpHpaiView::builder();
+        auto hpai = builder. setHostProtocol(QKnxNetIp::HostProtocol::UDP_IPv4)
+            .setHostAddress(QHostAddress::AnyIPv4).setPort(3333).create();
+
+        QKnxNetIpHpaiView view(hpai);
+
+        // Original values
+        QCOMPARE(view.hostProtocol(), QKnxNetIp::HostProtocol::UDP_IPv4);
+        QCOMPARE(view.hostAddress(), QHostAddress(QHostAddress::AnyIPv4));
+        QCOMPARE(view.port(), quint16(3333));
+        QCOMPARE(view.isValid(), true);
 
         // Setting code only
-        hpai.setHostProtocol(QKnxNetIp::HostProtocol::TCP_IPv4);
-        QCOMPARE(hpai.hostProtocol(), QKnxNetIp::HostProtocol::TCP_IPv4);
-        QCOMPARE(hpai.address(), QHostAddress(QHostAddress::AnyIPv4));
-        QCOMPARE(hpai.port(), quint16(3333));
-        QCOMPARE(hpai.isValid(), true);
+        hpai = builder.setHostProtocol(QKnxNetIp::HostProtocol::TCP_IPv4).create();
+        QCOMPARE(view.hostProtocol(), QKnxNetIp::HostProtocol::TCP_IPv4);
+        QCOMPARE(view.hostAddress(), QHostAddress(QHostAddress::AnyIPv4));
+        QCOMPARE(view.port(), quint16(3333));
+        QCOMPARE(view.isValid(), true);
 
         // Setting address only
-        hpai.setAddress(QHostAddress(QHostAddress::Broadcast));
-        QCOMPARE(hpai.hostProtocol(), QKnxNetIp::HostProtocol::TCP_IPv4);
-        QCOMPARE(hpai.address(), QHostAddress(QHostAddress::Broadcast));
-        QCOMPARE(hpai.port(), quint16(3333));
-        QCOMPARE(hpai.isValid(), true);
+        hpai = builder.setHostAddress(QHostAddress(QHostAddress::Broadcast)).create();
+        QCOMPARE(view.hostProtocol(), QKnxNetIp::HostProtocol::TCP_IPv4);
+        QCOMPARE(view.hostAddress(), QHostAddress(QHostAddress::Broadcast));
+        QCOMPARE(view.port(), quint16(3333));
+        QCOMPARE(view.isValid(), true);
 
         // Setting port only
-        hpai.setPort(quint16(3671));
-        QCOMPARE(hpai.hostProtocol(), QKnxNetIp::HostProtocol::TCP_IPv4);
-        QCOMPARE(hpai.address(), QHostAddress(QHostAddress::Broadcast));
-        QCOMPARE(hpai.port(), quint16(3671));
-        QCOMPARE(hpai.isValid(), true);
+        hpai = builder.setPort(quint16(3671)).create();
+        QCOMPARE(view.hostProtocol(), QKnxNetIp::HostProtocol::TCP_IPv4);
+        QCOMPARE(view.hostAddress(), QHostAddress(QHostAddress::Broadcast));
+        QCOMPARE(view.port(), quint16(3671));
+        QCOMPARE(view.isValid(), true);
     }
 }
 
@@ -192,10 +219,13 @@ void tst_QKnxNetIpHpai::testDebugStream()
         QtMessageHandler oldMessageHandler;
     } _(myMessageHandler);
 
-    qDebug() << QKnxNetIpHpai();
-    QCOMPARE(s_msg, QString::fromLatin1("0x1nv4l1d"));
+    qDebug() << QKnxNetIpHpaiView::builder().create();
+    QCOMPARE(s_msg, QString::fromLatin1("0x08017f0000010000"));
 
-    qDebug() << QKnxNetIpHpai(QKnxNetIp::HostProtocol::UDP_IPv4, QHostAddress::LocalHost, 3671);
+    qDebug() << QKnxNetIpHpaiView::builder()
+        .setHostProtocol(QKnxNetIp::HostProtocol::UDP_IPv4)
+        .setHostAddress(QHostAddress::LocalHost)
+        .setPort(3671).create();
     QCOMPARE(s_msg, QString::fromLatin1("0x08017f0000010e57"));
 }
 

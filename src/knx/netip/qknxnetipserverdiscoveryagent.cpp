@@ -128,11 +128,9 @@ void QKnxNetIpServerDiscoveryAgentPrivate::setupSocket()
                 servers.clear();
 
                 auto frame = QKnxNetIpSearchRequest::builder()
-                    .setDiscoveryEndpoint(
-                        {
-                            (nat ? QHostAddress::AnyIPv4 : usedAddress),
-                            (nat ? quint16(0u) : usedPort)
-                        }
+                    .setDiscoveryEndpoint(QKnxNetIpHpaiView::builder()
+                        .setHostAddress(nat ? QHostAddress::AnyIPv4 : usedAddress)
+                        .setPort(nat ? quint16(0u) : usedPort).create()
                     ).create();
                 socket->writeDatagram(static_cast<QByteArray> (frame.bytes()), multicastAddress,
                     multicastPort);
@@ -221,11 +219,9 @@ void QKnxNetIpServerDiscoveryAgentPrivate::setupAndStartFrequencyTimer()
                 servers.clear();
 
                 auto frame = QKnxNetIpSearchRequest::builder()
-                    .setDiscoveryEndpoint(
-                        {
-                            (nat ? QHostAddress::AnyIPv4 : address),
-                            (nat ? quint16(0u) : port)
-                        }
+                    .setDiscoveryEndpoint(QKnxNetIpHpaiView::builder()
+                        .setHostAddress(nat ? QHostAddress::AnyIPv4 : address)
+                        .setPort(nat ? quint16(0u) : port).create()
                     ).create();
 
                 socket->writeDatagram(static_cast<QByteArray> (frame.bytes()), multicastAddress,

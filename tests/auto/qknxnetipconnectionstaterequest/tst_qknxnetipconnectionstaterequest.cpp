@@ -57,7 +57,10 @@ void tst_QKnxNetIpConnectionStateRequest::testDefaultConstructor()
 
 void tst_QKnxNetIpConnectionStateRequest::testConstructor()
 {
-    QKnxNetIpHpai hpai = { QKnxNetIp::HostProtocol::UDP_IPv4, QHostAddress::LocalHost, 3671 };
+    const auto hpai = QKnxNetIpHpaiView::builder()
+        .setHostAddress(QHostAddress::LocalHost)
+        .setPort(3671)
+        .create();
 
     auto frame = QKnxNetIpConnectionStateRequest::builder()
         .setChannelId(255)
@@ -94,7 +97,9 @@ void tst_QKnxNetIpConnectionStateRequest::testDebugStream()
 
     qDebug() << QKnxNetIpConnectionStateRequest::builder()
         .setChannelId(255)
-        .setControlEndpoint({ QKnxNetIp::HostProtocol::UDP_IPv4, QHostAddress::LocalHost, 3671 })
+        .setControlEndpoint(QKnxNetIpHpaiView::builder()
+            .setHostAddress(QHostAddress::LocalHost)
+            .setPort(3671).create())
         .create();
     QCOMPARE(s_msg, QString::fromLatin1("0x061002070010ff0008017f0000010e57"));
 }

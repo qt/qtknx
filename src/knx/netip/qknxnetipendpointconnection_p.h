@@ -78,20 +78,24 @@ struct Endpoint final
         : address(addr)
         , port(p)
     {}
-    explicit Endpoint(const QKnxNetIpHpai &hpai)
-        : address(hpai.address())
+    explicit Endpoint(const QKnxNetIpHpaiView &hpai)
+        : address(hpai.hostAddress())
         , port(hpai.port())
     {}
     explicit Endpoint(const QHostAddress::SpecialAddress &addr)
         : address(addr)
     {}
 
-    Endpoint &operator=(const QKnxNetIpHpai &hpai)
+    Endpoint &operator=(const QKnxNetIpHpai &s)
     {
-        address = hpai.address(); port = hpai.port();
+        const QKnxNetIpHpaiView hpai(s);
+        address = hpai.hostAddress(); port = hpai.port();
         return *this;
     }
-    operator QKnxNetIpHpai() const { return { address, port }; }
+    operator QKnxNetIpHpai() const
+    {
+        return QKnxNetIpHpaiView::builder().setHostAddress(address).setPort(port).create();
+    }
 
     QHostAddress address { QHostAddress::LocalHost };
     quint16 port { 0 };

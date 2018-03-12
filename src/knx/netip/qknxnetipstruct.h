@@ -37,23 +37,62 @@
 
 QT_BEGIN_NAMESPACE
 
-template <typename CodeType> class Q_KNX_EXPORT QKnxNetIpStruct
+template <typename CodeType> class QKnxNetIpStruct
 {
     static_assert(is_type<CodeType, QKnxNetIp::HostProtocol, QKnxNetIp::ConnectionType,
         QKnxNetIp::DescriptionType>::value, "Type not supported.");
 
 public:
+    QKnxNetIpStruct() = default;
+    virtual ~QKnxNetIpStruct() = default;
+
+    QKnxNetIpStruct(CodeType code, const QKnxByteArray &data = {})
+        : m_header(code)
+    {
+         setData(data);
+    }
+
+    QKnxNetIpStruct(const QKnxNetIpStructHeader<CodeType> &header, const QKnxByteArray &data = {})
+        : m_header(header)
+        , m_data(data)
+    {}
+
+    bool isNull() const
+    {
+        return m_header.isNull() && m_data.isNull();
+    }
+
+    virtual bool isValid() const
+    {
+        return m_header.isValid() && size() == (m_header.size() + m_data.size());
+    }
+
     quint16 size() const
     {
         return m_header.totalSize();
     }
 
-    virtual QKnxNetIpStructHeader<CodeType> header() const
+    quint16 dataSize() const
+    {
+        return m_header.dataSize();
+    }
+
+    QKnxNetIpStructHeader<CodeType> header() const
     {
         return m_header;
     }
 
-    virtual QKnxByteArray data() const
+    void setHeader(const QKnxNetIpStructHeader<CodeType> &header)
+    {
+        m_header = header;
+    }
+
+    CodeType code() const
+    {
+        return m_header.code();
+    }
+
+    QKnxByteArray data() const
     {
         return m_data;
     }
@@ -63,9 +102,10 @@ public:
         return m_data;
     }
 
-    virtual bool isValid() const
+    void setData(const QKnxByteArray &data)
     {
-        return m_header.isValid() && size() == (m_header.size() + m_data.size());
+        m_data = data;
+        m_header.setDataSize(data.size());
     }
 
     QKnxByteArray bytes() const
@@ -73,53 +113,25 @@ public:
         return m_header.bytes() + m_data;
     }
 
-    static QKnxNetIpStruct<CodeType> fromBytes(const QKnxByteArray &bytes, quint16 index,
-        CodeType type)
+    static QKnxNetIpStruct fromBytes(const QKnxByteArray &bytes, quint16 index = 0)
     {
         auto header = QKnxNetIpStructHeader<CodeType>::fromBytes(bytes, index);
-        if (!header.isValid() || header.code() != type)
+        if (!header.isValid())
             return {};
         return { header, bytes.mid(index + header.size(), header.dataSize()) };
     }
 
-    virtual ~QKnxNetIpStruct() = default;
+    // TODO: remove
+    static QKnxNetIpStruct<CodeType> fromBytes(const QKnxByteArray &bytes, quint16 index,
+        CodeType)
+    {
+        return QKnxNetIpStruct<CodeType>::fromBytes(bytes, index);
+    }
 
 protected:
-    QKnxNetIpStruct() = default;
-
-    explicit QKnxNetIpStruct(CodeType code)
-        : m_header({ code })
-    {}
-
-    QKnxNetIpStruct(const  QKnxNetIpStructHeader<CodeType> &header, const QKnxByteArray &data)
-        : m_header(header)
-        , m_data(data)
-    {}
-
-    CodeType code() const
-    {
-        return m_header.code();
-    }
-
-    void setCode(CodeType code)
+    void setCode(CodeType code) // TODO: remove
     {
         m_header.setCode(code);
-    }
-
-    quint16 dataSize() const
-    {
-        return m_header.dataSize();
-    }
-
-    void setDataSize(quint16 dataSize)
-    {
-        m_header.setDataSize(dataSize);
-    }
-
-    void setData(const QKnxByteArray &data)
-    {
-        m_data = data;
-        setDataSize(data.size());
     }
 
 private:
@@ -127,11 +139,9 @@ private:
     QKnxByteArray m_data;
 };
 
-using QKnxNetIpHostProtocolStruct = QKnxNetIpStruct<QKnxNetIp::HostProtocol>;
 using QKnxNetIpConnectionTypeStruct = QKnxNetIpStruct<QKnxNetIp::ConnectionType>;
 using QKnxNetIpDescriptionTypeStruct = QKnxNetIpStruct<QKnxNetIp::DescriptionType>;
 
-Q_KNX_EXPORT QDebug operator<<(QDebug debug, const QKnxNetIpHostProtocolStruct &package);
 Q_KNX_EXPORT QDebug operator<<(QDebug debug, const QKnxNetIpConnectionTypeStruct &package);
 Q_KNX_EXPORT QDebug operator<<(QDebug debug, const QKnxNetIpDescriptionTypeStruct &package);
 

@@ -60,7 +60,9 @@ void tst_QKnxNetIpDisconnectRequest::testConstructor()
 {
     auto frame = QKnxNetIpDisconnectRequest::builder()
         .setChannelId(200)
-        .setControlEndpoint({ QKnxNetIp::HostProtocol::UDP_IPv4, QHostAddress::LocalHost, 3671 })
+        .setControlEndpoint(QKnxNetIpHpaiView::builder()
+            .setHostAddress(QHostAddress::LocalHost)
+            .setPort(3671).create())
         .create();
     QKnxNetIpDisconnectRequest request(frame);
 
@@ -92,7 +94,9 @@ void tst_QKnxNetIpDisconnectRequest::testDebugStream()
 
     qDebug() << QKnxNetIpDisconnectRequest::builder()
         .setChannelId(200)
-        .setControlEndpoint({ QKnxNetIp::HostProtocol::UDP_IPv4, QHostAddress::LocalHost, 3671 })
+        .setControlEndpoint(QKnxNetIpHpaiView::builder()
+            .setHostAddress(QHostAddress::LocalHost)
+            .setPort(3671).create())
         .create();
     QCOMPARE(s_msg, QString::fromLatin1("0x061002090010c80008017f0000010e57"));
 }

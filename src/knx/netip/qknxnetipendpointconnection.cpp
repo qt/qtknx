@@ -672,7 +672,8 @@ void QKnxNetIpEndpointConnection::setSupportedProtocolVersions(const QKnxByteArr
 
 void QKnxNetIpEndpointConnection::connectToHost(const QKnxNetIpHpai &controlEndpoint)
 {
-    connectToHost(controlEndpoint.address(), controlEndpoint.port());
+    const QKnxNetIpHpaiView view(controlEndpoint);
+    connectToHost(view.hostAddress(), view.port());
 }
 
 void QKnxNetIpEndpointConnection::connectToHost(const QHostAddress &address, quint16 port)

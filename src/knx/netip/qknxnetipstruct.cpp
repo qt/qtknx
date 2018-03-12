@@ -69,18 +69,6 @@ static QDebug stream(QDebug debug, const QKnxByteArray &bytes)
 }
 
 /*!
-    \relates QKnxNetIpHostProtocolStruct
-
-    Writes the KNX \a QKnxNetIpHostProtocolStruct to the \a debug stream.
-*/
-QDebug operator<<(QDebug debug, const QKnxNetIpHostProtocolStruct &package)
-{
-    QDebugStateSaver _(debug);
-    return package.isValid() ? stream(debug, package.bytes())
-        : debug.nospace().noquote() << "0x1nv4l1d";
-}
-
-/*!
     \relates QKnxNetIpConnectionTypeStruct
 
     Writes the KNX \a QKnxNetIpConnectionTypeStruct to the \a debug stream.

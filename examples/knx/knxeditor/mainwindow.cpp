@@ -201,11 +201,12 @@ void MainWindow::newServerSelected(int serverBoxIndex)
         }())
     );
 
-    const auto &endpoint = info.endpoint();
+    const auto &hpai = info.endpoint();
+    const QKnxNetIpHpaiView endpoint(hpai);
     if (endpoint.hostProtocol() != QKnxNetIp::HostProtocol::UDP_IPv4)
         return;
 
-    if (info.endpoint().isValid() && m_server != info) {
+    if (endpoint.isValid() && m_server != info) {
         m_server = info;
 
         ui->tunneling->setEnabled(true);

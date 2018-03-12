@@ -35,7 +35,6 @@
 #include <QtKnx/qknxnetipcri.h>
 #include <QtKnx/qknxnetipcurrentconfigdib.h>
 #include <QtKnx/qknxnetipdevicedib.h>
-#include <QtKnx/qknxnetiphpai.h>
 #include <QtKnx/qknxnetipknxaddressesdib.h>
 #include <QtKnx/qknxnetipmanufacturerdib.h>
 #include <QtKnx/qknxnetipservicefamiliesdib.h>
@@ -62,7 +61,6 @@ public:
         QKnxNetIpCri,
         QKnxNetIpCurrentConfigDib,
         QKnxNetIpDeviceDib,
-        QKnxNetIpHpai,
         QKnxNetIpKnxAddressesDib,
         QKnxNetIpManufacturerDib,
         QKnxNetIpServiceFamiliesDib
@@ -96,11 +94,6 @@ public:
         , m_type(Type::QKnxNetIpDeviceDib)
     {}
 
-    explicit QKnxNetIpStructRef(QKnxNetIpHpai *hpai)
-        : f(hpai)
-        , m_type(Type::QKnxNetIpHpai)
-    {}
-
     explicit QKnxNetIpStructRef(QKnxNetIpKnxAddressesDib *knxAddressesDib)
         : g(knxAddressesDib)
         , m_type(Type::QKnxNetIpKnxAddressesDib)
@@ -125,7 +118,6 @@ public:
     bool isCri() const { return m_type == Type::QKnxNetIpCri; }
     bool isIpCurrentConfigDib() const { return m_type == Type::QKnxNetIpCurrentConfigDib; }
     bool isDeviceDib() const { return m_type == Type::QKnxNetIpDeviceDib; }
-    bool isHpai() const { return m_type == Type::QKnxNetIpHpai; }
     bool isKnxAddressesDib() const { return m_type == Type::QKnxNetIpKnxAddressesDib; }
     bool isManufacturerDib() const { return m_type == Type::QKnxNetIpManufacturerDib; }
     bool isServiceFamiliesDib() const { return m_type == Type::QKnxNetIpServiceFamiliesDib; }
@@ -137,8 +129,6 @@ public:
     QKnxNetIpStructRef::Type type() const { return m_type; }
 
 private:
-    explicit QKnxNetIpStructRef(QKnxNetIpHostProtocolStruct *)
-    {}
     explicit QKnxNetIpStructRef(QKnxNetIpConnectionTypeStruct *)
     {}
     explicit QKnxNetIpStructRef(QKnxNetIpDescriptionTypeStruct *)
@@ -157,7 +147,6 @@ private:
         QKnxNetIpCri *c;
         QKnxNetIpCurrentConfigDib *d;
         QKnxNetIpDeviceDib *e;
-        QKnxNetIpHpai *f;
         QKnxNetIpKnxAddressesDib *g;
         QKnxNetIpManufacturerDib *h;
         QKnxNetIpServiceFamiliesDib *i;
@@ -220,15 +209,6 @@ namespace QKnxPrivate
         {
             TYPE_CHECK_RETURN_FROM_BYTES(QKnxNetIpDeviceDib);
             return QKnxNetIpDeviceDib(*(ref.e));
-        }
-    };
-
-    template<> struct QKnxNetIpStructTypeHelper<QKnxNetIpHpai>
-    {
-        static QKnxNetIpHpai invoke(const QKnxNetIpStructRef &ref)
-        {
-            TYPE_CHECK_RETURN_FROM_BYTES(QKnxNetIpHpai);
-            return QKnxNetIpHpai(*(ref.f));
         }
     };
 

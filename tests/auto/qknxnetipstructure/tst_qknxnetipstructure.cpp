@@ -27,7 +27,7 @@
 ******************************************************************************/
 
 #include <QtCore/qdebug.h>
-#include <QtKnx/qknxnetipstruct.h>
+#include <QtKnx/qknxnetiphpai.h>
 #include <QtTest/qtest.h>
 
 static QString s_msg;
@@ -36,29 +36,28 @@ static void myMessageHandler(QtMsgType, const QMessageLogContext &, const QStrin
     s_msg = msg;
 }
 
-class TestStructure : private QKnxNetIpHostProtocolStruct
+class TestStructure : private QKnxNetIpHpai
 {
 public:
     TestStructure() = default;
     explicit TestStructure(QKnxNetIp::HostProtocol code)
-        : QKnxNetIpHostProtocolStruct(code)
+        : QKnxNetIpHpai(code)
     {}
     TestStructure(const QKnxNetIpStructHeader<QKnxNetIp::HostProtocol> &header, const QKnxByteArray &payload)
-        : QKnxNetIpHostProtocolStruct(header, payload)
+        : QKnxNetIpHpai(header, payload)
     {}
 
-    using QKnxNetIpHostProtocolStruct::code;
-    using QKnxNetIpHostProtocolStruct::setCode;
+    using QKnxNetIpHpai::code;
 
-    using QKnxNetIpHostProtocolStruct::size;
-    using QKnxNetIpHostProtocolStruct::header;
+    using QKnxNetIpHpai::size;
+    using QKnxNetIpHpai::header;
 
-    using QKnxNetIpHostProtocolStruct::data;
-    using QKnxNetIpHostProtocolStruct::setData;
+    using QKnxNetIpHpai::data;
+    using QKnxNetIpHpai::setData;
 
-    using QKnxNetIpHostProtocolStruct::isValid;
+    using QKnxNetIpHpai::isValid;
 
-    using QKnxNetIpHostProtocolStruct::bytes;
+    using QKnxNetIpHpai::bytes;
 
     // TODO: The following function is not used yet...
     template<typename T> static TestStructure fromBytes(const T &bytes, quint16 index)
@@ -67,8 +66,8 @@ public:
     }
 
 private:
-    TestStructure(const QKnxNetIpHostProtocolStruct &other)
-        : QKnxNetIpHostProtocolStruct(other)
+    TestStructure(const QKnxNetIpHpai &other)
+        : QKnxNetIpHpai(other)
     {}
 };
 

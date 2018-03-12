@@ -58,10 +58,14 @@ void tst_QKnxNetIpConnectRequest::testDefaultConstructor()
 
 void tst_QKnxNetIpConnectRequest::testConstructor()
 {
+    const auto hpai = QKnxNetIpHpaiView::builder()
+            .setHostAddress(QHostAddress::LocalHost)
+            .setPort(3671).create();
+
     auto builder = QKnxNetIpConnectRequest::builder();
     auto frame = builder
-        .setControlEndpoint({ QKnxNetIp::HostProtocol::UDP_IPv4, QHostAddress::LocalHost, 3671 })
-        .setDataEndpoint({ QKnxNetIp::HostProtocol::UDP_IPv4, QHostAddress::LocalHost, 3671 })
+        .setControlEndpoint(hpai)
+        .setDataEndpoint(hpai)
         .create();
 
     QKnxNetIpConnectRequest connectRequest(frame);
@@ -75,8 +79,7 @@ void tst_QKnxNetIpConnectRequest::testConstructor()
     QCOMPARE(connectRequest.dataEndpoint().bytes(), QKnxByteArray::fromHex("08017f0000010e57"));
     QCOMPARE(connectRequest.requestInformation().bytes(), QKnxByteArray {});
 
-    QKnxNetIpCri cri;
-    cri.setConnectionType(QKnxNetIp::ConnectionType::Tunnel);
+    QKnxNetIpCri cri(QKnxNetIp::ConnectionType::Tunnel);
     cri.setTunnelingLayer(QKnxNetIp::TunnelingLayer::Link);
 
     frame = builder.setRequestInformation(cri).create();
