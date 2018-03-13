@@ -1,6 +1,6 @@
 /******************************************************************************
 **
-** Copyright (C) 2017 The Qt Company Ltd.
+** Copyright (C) 2018 The Qt Company Ltd.
 ** Contact: https://www.qt.io/licensing/
 **
 ** This file is part of the QtKnx module.
@@ -35,29 +35,49 @@ QT_BEGIN_NAMESPACE
 
 /*!
     \class QKnxUtf8String
-
+    \inherits QKnxVariableSizeDatapointType
     \inmodule QtKnx
-    \brief The QKnxUtf8String class is a datapoint type for an UTF-8 string.
+    \since 5.11
+
+    \brief The QKnxUtf8String class is a datapoint type for a UTF-8 string.
+
+    This datapoint type stores a \l {UTF-8} (Unicode Transformation Format-8)
+    string. The data length for one character can vary from 1 to 4
+    octets. Each character is encoded according to UTF-8.
 
     This is a variable sized datapoint type.
 
-    \sa QKnxDatapointType
+    \sa QKnxDatapointType, QKnxUtf8
 */
 
 // -- QKnxUtf8String
 
+/*!
+    Creates a variable sized datapoint type.
+*/
 QKnxUtf8String::QKnxUtf8String()
     : QKnxUtf8String(nullptr)
 {}
 
+/*!
+    Creates a variable sized datapoint type that stores the string \a string.
+*/
 QKnxUtf8String::QKnxUtf8String(const QString &string)
     : QKnxUtf8String(string.toUtf8(), string.size())
 {}
 
+/*!
+    Creates a variable sized datapoint type that stores the string \a string
+    with the length \a size.
+*/
 QKnxUtf8String::QKnxUtf8String(const char *string, int size)
     : QKnxUtf8String(SubType, string, size)
 {}
 
+/*!
+    Creates a variable sized datapoint type with the sub type \a subType that
+    stores the string \a string with the length \a size.
+*/
 QKnxUtf8String::QKnxUtf8String(int subType, const char *string, int size)
     : QKnxVariableSizeDatapointType(MainType, subType, TypeSize)
 {
@@ -66,12 +86,21 @@ QKnxUtf8String::QKnxUtf8String(int subType, const char *string, int size)
     setString(string, size);
 }
 
+/*!
+    Returns the string stored in the datapoint type.
+*/
 QString QKnxUtf8String::string() const
 {
     auto data = bytes(); // TODO: fix this
     return QString::fromUtf8((const char*) data.constData(), data.size() - 1);
 }
 
+/*!
+    Sets the string stored in the datapoint type to \a string.
+
+    If the value is outside the allowed range, returns \c false and does not set
+    the string.
+*/
 bool QKnxUtf8String::setString(const QString &string)
 {
     if (string.size() >= USHRT_MAX)
@@ -82,6 +111,15 @@ bool QKnxUtf8String::setString(const QString &string)
         utf8.size() + 1);
 }
 
+/*!
+    Sets the string stored in the datapoint type to \a string with the length
+    \a size.
+
+    If \a size is \c -1, the full \a string is used.
+
+    If the string contains invalid UTF-8 sequences, returns \c false and does
+    not set the string.
+*/
 bool QKnxUtf8String::setString(const char *string, int size)
 {
     auto null = QKnxByteArray::fromHex("00");
@@ -106,6 +144,9 @@ bool QKnxUtf8String::setString(const char *string, int size)
     return setString(text);
 }
 
+/*!
+    \reimp
+*/
 bool QKnxUtf8String::isValid() const
 {
     return QKnxDatapointType::isValid() && byte(quint8(size()-1)) == 0;
@@ -114,14 +155,41 @@ bool QKnxUtf8String::isValid() const
 
 // -- QKnxUtf8
 
+/*!
+    \class QKnxUtf8
+    \inherits QKnxUtf8String
+    \inmodule QtKnx
+    \since 5.11
+
+    \brief The QKnxUtf8 class is a datapoint type for a UTF-8 string.
+
+    This datapoint type stores a \l {UTF-8} (Unicode Transformation Format-8)
+    string. The data length for one character can vary from 1 to 4
+    octets. Each character is encoded according to UTF-8.
+
+    This is a variable sized datapoint type.
+
+    \sa QKnxDatapointType, QKnxUtf8String
+*/
+
+/*!
+    Creates a variable sized datapoint type.
+*/
 QKnxUtf8::QKnxUtf8()
     : QKnxUtf8(nullptr)
 {}
 
+/*!
+    Creates a variable sized datapoint type that stores the string \a string.
+*/
 QKnxUtf8::QKnxUtf8(const QString &string)
     : QKnxUtf8(string.toUtf8(), string.size())
 {}
 
+/*!
+    Creates a variable sized datapoint type that stores the string \a string
+    with the length \a size.
+*/
 QKnxUtf8::QKnxUtf8(const char *string, int size)
     : QKnxUtf8String(SubType, string, size)
 {}
