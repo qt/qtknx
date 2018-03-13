@@ -1,6 +1,6 @@
 /******************************************************************************
 **
-** Copyright (C) 2017 The Qt Company Ltd.
+** Copyright (C) 2018 The Qt Company Ltd.
 ** Contact: https://www.qt.io/licensing/
 **
 ** This file is part of the QtKnx module.
@@ -56,7 +56,8 @@ QT_BEGIN_NAMESPACE
         \li \c QKnxEnable - Possible values are  \c Disable and \c Enable.
         \li \c QKnxHeatCool - Possible values are \c Cooling and \c Heating.
         \li \c QKnxInputSource - Possible values are \c Fixed and \c Calculated.
-        \li \c QKnxInvert - Possible values are \c Not inverted and \c Inverted.
+        \li \c QKnxInvert - Possible values are \c {Not inverted} and
+            \c Inverted.
         \li \c QKnxLogicalFunction - Possible values are
             \c {logical function OR} and \c {logical function AND}.
         \li \c QKnxOccupancy - Possible values are \c {Not occupied} and
@@ -124,7 +125,9 @@ bool QKnx1Bit::bit() const
 }
 
 /*!
-    Sets the value of the datapoint type to \a value.
+    Sets the bit stored in the datapoint type to \a value.
+
+    Returns \c true if the bit was set; otherwise returns \c false.
 */
 bool QKnx1Bit::setBit(bool value)
 {
