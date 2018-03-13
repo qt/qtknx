@@ -45,7 +45,8 @@ PRIVATE_HEADERS += $$PWD/qknxnetipendpointconnection_p.h \
     $$PWD/qknxnetipserverdiscoveryagent_p.h \
     $$PWD/qknxnetipserverinfo_p.h
 
-SOURCES += $$PWD/qknxnetipconfigdib.cpp \
+SOURCES += $$PWD/qknxnetip.cpp \
+    $$PWD/qknxnetipconfigdib.cpp \
     $$PWD/qknxnetipconnectionheader.cpp \
     $$PWD/qknxnetipconnectionstaterequest.cpp \
     $$PWD/qknxnetipconnectionstateresponse.cpp \

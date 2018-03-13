@@ -123,7 +123,7 @@ bool QKnxNetIpFrameHeader::isValid() const
         return {};
     }
     const auto totalSize = quint16(quint16(m_bytes[4]) << 8 | m_bytes[5]);
-    return QKnxNetIp::isFrameType(serviceType()) && totalSize >= headerSize;
+    return QKnxNetIp::isServiceType(serviceType()) && totalSize >= headerSize;
 }
 
 /*!
@@ -278,7 +278,7 @@ QKnxNetIpFrameHeader QKnxNetIpFrameHeader::fromBytes(const QKnxByteArray &bytes,
     }
 
     const quint16 code = QKnxUtils::QUint16::fromBytes(bytes, index + 2);
-    if (!QKnxNetIp::isFrameType(QKnxNetIp::ServiceType(code)))
+    if (!QKnxNetIp::isServiceType(QKnxNetIp::ServiceType(code)))
         return {};
 
     return { QKnxNetIp::ServiceType(code), quint16(QKnxUtils::QUint16::fromBytes(bytes, index + 4)
