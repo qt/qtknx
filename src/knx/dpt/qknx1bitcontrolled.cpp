@@ -1,6 +1,6 @@
 /******************************************************************************
 **
-** Copyright (C) 2017 The Qt Company Ltd.
+** Copyright (C) 2018 The Qt Company Ltd.
 ** Contact: https://www.qt.io/licensing/
 **
 ** This file is part of the QtKnx module.
@@ -44,9 +44,9 @@ QT_BEGIN_NAMESPACE
     This is a fixed size datapoint type with the length of 1 byte, though only
     two bits are used by the actual implementation.
 
-    The right side bit corresponds to the datapoint type value, whereas the
-    left side bit represents the control part. For example, switch with priority
-    control.
+    The right side bit corresponds to the \l QKnx1Bit datapoint type value,
+    whereas the left side bit represents the control part. For example, switch
+    with priority control.
 
     It is a base class for the following datapoint types:
 
@@ -54,15 +54,15 @@ QT_BEGIN_NAMESPACE
         \li \c QKnxAlarmControl
         \li \c QKnxBinaryValueControl
         \li \c QKnxBoolControl
+        \li \c QKnxDirection1Control - \c QKnxUpDown with a control part.
+        \li \c QKnxDirection2Control - \c QKnxOpenClose with a control part.
         \li \c QKnxEnableControl
         \li \c QKnxInvertControl
-        \li \c QKnxOpenCloseControl
         \li \c QKnxRampControl
         \li \c QKnxStartControl
         \li \c QKnxStateControl
         \li \c QKnxStepControl
         \li \c QKnxSwitchControl
-        \li \c QKnxUpDownControl
     \endlist
 
     \sa QKnxDatapointType, QKnx1Bit
@@ -137,6 +137,7 @@ void QKnx1BitControlled::setControlBit(bool control)
 {
     setByte(0, QKnxDatapointType::setBit(byte(0), control, 1));
 }
+
 /*!
     \reimp
 */
