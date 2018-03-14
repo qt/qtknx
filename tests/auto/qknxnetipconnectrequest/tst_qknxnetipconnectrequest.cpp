@@ -79,8 +79,10 @@ void tst_QKnxNetIpConnectRequest::testConstructor()
     QCOMPARE(connectRequest.dataEndpoint().bytes(), QKnxByteArray::fromHex("08017f0000010e57"));
     QCOMPARE(connectRequest.requestInformation().bytes(), QKnxByteArray {});
 
-    QKnxNetIpCri cri(QKnxNetIp::ConnectionType::Tunnel);
-    cri.setTunnelingLayer(QKnxNetIp::TunnelingLayer::Link);
+    auto cri = QKnxNetIpCriView::builder()
+        .setTunnelingLayer(QKnxNetIp::TunnelingLayer::Link)
+        .setConnectionType(QKnxNetIp::ConnectionType::Tunnel)
+        .create();
 
     frame = builder.setRequestInformation(cri).create();
 

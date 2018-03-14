@@ -70,7 +70,8 @@ class QKnxNetIpTunnelConnectionPrivate : public QKnxNetIpEndpointConnectionPriva
 
 public:
     QKnxNetIpTunnelConnectionPrivate(const QHostAddress &a, quint16 p, QKnxNetIp::TunnelingLayer l)
-        : QKnxNetIpEndpointConnectionPrivate(a, p, QKnxNetIpCri(l), 1, QKnxNetIp::TunnelingRequestTimeout)
+        : QKnxNetIpEndpointConnectionPrivate(a, p, QKnxNetIpCriView::builder().setTunnelingLayer(l)
+            .create(), 1, QKnxNetIp::TunnelingRequestTimeout)
         , m_layer(l)
     {}
 

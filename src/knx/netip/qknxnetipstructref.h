@@ -32,7 +32,6 @@
 
 #include <QtKnx/qknxnetipconfigdib.h>
 #include <QtKnx/qknxnetipcrd.h>
-#include <QtKnx/qknxnetipcri.h>
 #include <QtKnx/qknxnetipcurrentconfigdib.h>
 #include <QtKnx/qknxnetipdevicedib.h>
 #include <QtKnx/qknxnetipknxaddressesdib.h>
@@ -58,7 +57,6 @@ public:
         Null,
         QKnxNetIpConfigDib,
         QKnxNetIpCrd,
-        QKnxNetIpCri,
         QKnxNetIpCurrentConfigDib,
         QKnxNetIpDeviceDib,
         QKnxNetIpKnxAddressesDib,
@@ -77,11 +75,6 @@ public:
     explicit QKnxNetIpStructRef(QKnxNetIpCrd *crd)
         : b(crd)
         , m_type(Type::QKnxNetIpCrd)
-    {}
-
-    explicit QKnxNetIpStructRef(QKnxNetIpCri *cri)
-        : c(cri)
-        , m_type(Type::QKnxNetIpCri)
     {}
 
     explicit QKnxNetIpStructRef(QKnxNetIpCurrentConfigDib *ipCurrentConfigDib)
@@ -115,7 +108,6 @@ public:
     bool isNull() const { return m_type == Type::Null; }
     bool isIpConfigDib() const { return m_type == Type::QKnxNetIpConfigDib; }
     bool isCrd() const { return m_type == Type::QKnxNetIpCrd; }
-    bool isCri() const { return m_type == Type::QKnxNetIpCri; }
     bool isIpCurrentConfigDib() const { return m_type == Type::QKnxNetIpCurrentConfigDib; }
     bool isDeviceDib() const { return m_type == Type::QKnxNetIpDeviceDib; }
     bool isKnxAddressesDib() const { return m_type == Type::QKnxNetIpKnxAddressesDib; }
@@ -144,7 +136,6 @@ private:
     {
         QKnxNetIpConfigDib *a;
         QKnxNetIpCrd *b;
-        QKnxNetIpCri *c;
         QKnxNetIpCurrentConfigDib *d;
         QKnxNetIpDeviceDib *e;
         QKnxNetIpKnxAddressesDib *g;
@@ -182,15 +173,6 @@ namespace QKnxPrivate
         {
             TYPE_CHECK_RETURN_FROM_BYTES(QKnxNetIpCrd);
             return QKnxNetIpCrd(*(ref.b));
-        }
-    };
-
-    template<> struct QKnxNetIpStructTypeHelper<QKnxNetIpCri>
-    {
-        static QKnxNetIpCri invoke(const QKnxNetIpStructRef &ref)
-        {
-            TYPE_CHECK_RETURN_FROM_BYTES(QKnxNetIpCri);
-            return QKnxNetIpCri(*(ref.c));
         }
     };
 
