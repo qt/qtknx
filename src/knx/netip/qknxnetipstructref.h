@@ -51,12 +51,10 @@ class Q_KNX_EXPORT QKnxNetIpStructRef final
     template<typename T> friend struct QKnxPrivate::QKnxNetIpStructTypeHelper;
 
 public:
-
     enum class Type : quint8
     {
         Null,
         QKnxNetIpConfigDib,
-        QKnxNetIpCrd,
         QKnxNetIpCurrentConfigDib,
         QKnxNetIpDeviceDib,
         QKnxNetIpKnxAddressesDib,
@@ -70,11 +68,6 @@ public:
     explicit QKnxNetIpStructRef(QKnxNetIpConfigDib *ipConfigDib)
         : a(ipConfigDib)
         , m_type(Type::QKnxNetIpConfigDib)
-    {}
-
-    explicit QKnxNetIpStructRef(QKnxNetIpCrd *crd)
-        : b(crd)
-        , m_type(Type::QKnxNetIpCrd)
     {}
 
     explicit QKnxNetIpStructRef(QKnxNetIpCurrentConfigDib *ipCurrentConfigDib)
@@ -107,7 +100,6 @@ public:
 
     bool isNull() const { return m_type == Type::Null; }
     bool isIpConfigDib() const { return m_type == Type::QKnxNetIpConfigDib; }
-    bool isCrd() const { return m_type == Type::QKnxNetIpCrd; }
     bool isIpCurrentConfigDib() const { return m_type == Type::QKnxNetIpCurrentConfigDib; }
     bool isDeviceDib() const { return m_type == Type::QKnxNetIpDeviceDib; }
     bool isKnxAddressesDib() const { return m_type == Type::QKnxNetIpKnxAddressesDib; }
@@ -121,8 +113,6 @@ public:
     QKnxNetIpStructRef::Type type() const { return m_type; }
 
 private:
-    explicit QKnxNetIpStructRef(QKnxNetIpConnectionTypeStruct *)
-    {}
     explicit QKnxNetIpStructRef(QKnxNetIpDescriptionTypeStruct *)
     {}
 
@@ -135,7 +125,6 @@ private:
     union
     {
         QKnxNetIpConfigDib *a;
-        QKnxNetIpCrd *b;
         QKnxNetIpCurrentConfigDib *d;
         QKnxNetIpDeviceDib *e;
         QKnxNetIpKnxAddressesDib *g;
@@ -164,15 +153,6 @@ namespace QKnxPrivate
         {
             TYPE_CHECK_RETURN_FROM_BYTES(QKnxNetIpConfigDib);
             return QKnxNetIpConfigDib(*(ref.a));
-        }
-    };
-
-    template<> struct QKnxNetIpStructTypeHelper<QKnxNetIpCrd>
-    {
-        static QKnxNetIpCrd invoke(const QKnxNetIpStructRef &ref)
-        {
-            TYPE_CHECK_RETURN_FROM_BYTES(QKnxNetIpCrd);
-            return QKnxNetIpCrd(*(ref.b));
         }
     };
 

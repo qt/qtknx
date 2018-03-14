@@ -71,13 +71,12 @@ static QDebug stream(QDebug debug, const QKnxByteArray &bytes)
 /*!
     \relates QKnxNetIpConnectionTypeStruct
 
-    Writes the KNX \a QKnxNetIpConnectionTypeStruct to the \a debug stream.
+    Writes the KNXnet/IP connection type structure \a cr to the \a debug stream.
 */
-QDebug operator<<(QDebug debug, const QKnxNetIpConnectionTypeStruct &package)
+QDebug operator<<(QDebug debug, const QKnxNetIpConnectionTypeStruct &cr)
 {
     QDebugStateSaver _(debug);
-    return package.isValid() ? stream(debug, package.bytes())
-        : debug.nospace().noquote() << "0x1nv4l1d";
+    return debug.nospace().noquote() << "0x" << cr.bytes().toHex();
 }
 
 /*!

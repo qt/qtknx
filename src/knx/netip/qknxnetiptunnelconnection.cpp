@@ -91,8 +91,10 @@ public:
         }
 
         Q_Q(QKnxNetIpTunnelConnection);
-        if (q->state() != QKnxNetIpTunnelConnection::Connected)
-            m_address = response.responseData().individualAddress();
+        if (q->state() != QKnxNetIpTunnelConnection::Connected) {
+            const auto &crd = response.responseData();
+            m_address = QKnxNetIpCrdView(crd).individualAddress();
+        }
         QKnxNetIpEndpointConnectionPrivate::processConnectResponse(frame, dg);
     }
 

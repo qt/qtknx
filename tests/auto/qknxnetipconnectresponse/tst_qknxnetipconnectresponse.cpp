@@ -139,7 +139,9 @@ void tst_QKnxNetIpConnectResponse::testConstructorFourArgumentsNoError()
         .setChannelId(200)
         .setStatus(QKnxNetIp::Error::None)
         .setDataEndpoint(m_hpai)
-        .setResponseData(QKnxNetIpCrd({ QKnxAddress::Type::Individual, QStringLiteral("1.1.10") }))
+        .setResponseData(QKnxNetIpCrdView::builder()
+            .setIndividualAddress({ QKnxAddress::Type::Individual, QStringLiteral("1.1.10") })
+            .create())
         .create();
 
     QKnxNetIpConnectResponse connectResponse(frame);
@@ -155,8 +157,10 @@ void tst_QKnxNetIpConnectResponse::testConstructorFourArgumentsNoError()
     QCOMPARE(connectResponse.dataEndpoint().isValid(), true);
     QCOMPARE(connectResponse.dataEndpoint().bytes(),
         QKnxByteArray::fromHex("08017f0000010e57"));
-    QCOMPARE(connectResponse.responseData().isValid(), true);
-    QCOMPARE(connectResponse.responseData().individualAddress().toString(), QStringLiteral("1.1.10"));
+
+    const auto &crd = connectResponse.responseData();
+    QCOMPARE(QKnxNetIpCrdView(crd).isValid(), true);
+    QCOMPARE(QKnxNetIpCrdView(crd).individualAddress().toString(), QStringLiteral("1.1.10"));
 }
 
 void tst_QKnxNetIpConnectResponse::testFromBytes()
@@ -242,7 +246,8 @@ void tst_QKnxNetIpConnectResponse::testDebugStream()
     }
 
     QKnxNetIpCrd responseData(QKnxNetIp::ConnectionType::Tunnel);
-    responseData.setIndividualAddress({ QKnxAddress::Type::Individual, QStringLiteral("1.1.10") });
+    responseData.setData(QKnxAddress(QKnxAddress::Type::Individual, QStringLiteral("1.1.10"))
+        .bytes());
 
     qDebug() << QKnxNetIpConnectResponse::builder().setChannelId(200)
         .setStatus(QKnxNetIp::Error::None)
