@@ -74,7 +74,7 @@ void tst_QKnxNetIpCri::testConstructorTunnelingLayer()
 
         QKnxNetIpCriView view(cri);
         QCOMPARE(view.isValid(), false);
-        QCOMPARE(view.connectionType(), QKnxNetIp::ConnectionType::Tunnel);
+        QCOMPARE(view.connectionType(), QKnxNetIp::ConnectionType::Unknown);
         QCOMPARE(view.tunnelingLayer(), QKnxNetIp::TunnelingLayer::Unknown);
 
         // make the Cri valid by setting the QKnxNetIp::TunnelingLayer
@@ -138,7 +138,7 @@ void tst_QKnxNetIpCri::testConstructorConnectionType()
     QCOMPARE(cri.data().size(), quint16());
     QCOMPARE(cri.data(), QKnxByteArray {});
     QCOMPARE(view.isValid(), false);
-    QCOMPARE(view.connectionType(), QKnxNetIp::ConnectionType::Tunnel);
+    QCOMPARE(view.connectionType(), QKnxNetIp::ConnectionType::Unknown);
 
     cri = builder
         .setConnectionType(QKnxNetIp::ConnectionType::RemoteLogging)
