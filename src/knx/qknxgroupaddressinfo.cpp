@@ -297,6 +297,8 @@ QKnxGroupAddressInfo::QKnxGroupAddressInfo(QKnxGroupAddressInfoPrivate &dd)
 {}
 
 /*!
+    \relates QKnxGroupAddressInfo
+
     Writes the \a info object to the stream and returns a reference to the
     stream.
 */

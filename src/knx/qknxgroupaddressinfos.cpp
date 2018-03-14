@@ -591,6 +591,8 @@ QKnxGroupAddressInfos::QKnxGroupAddressInfos(QKnxGroupAddressInfosPrivate &dd)
 {}
 
 /*!
+    \relates QKnxGroupAddressInfos
+
     Writes the \a infos object to the stream and returns a reference to the
     stream.
 */
