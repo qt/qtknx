@@ -27,8 +27,8 @@
 **
 ******************************************************************************/
 
-#ifndef QKnxUtf8String_H
-#define QKnxUtf8String_H
+#ifndef QKNXUTF8STRING_H
+#define QKNXUTF8STRING_H
 
 #include <QtKnx/qknxdatapointtype.h>
 #include <QtKnx/qknxglobal.h>
