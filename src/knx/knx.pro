@@ -17,7 +17,6 @@ DEFINES += QT_NO_CAST_FROM_ASCII
 PUBLIC_HEADERS += \
     qknxadditionalinfo.h \
     qknxaddress.h \
-    qknxcemi.h \
     qknxconnectioninfo.h \
     qknxcontrolfield.h \
     qknxdeviceconfiguration.h \
