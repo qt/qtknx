@@ -189,6 +189,19 @@ QVector<QKnxGroupAddressInfo>
 */
 
 /*!
+    \enum QKnxGroupAddressInfos::Status
+
+    This enum holds the status of parsing the KNX project information.
+
+    \value NoError
+    \value FileError
+    \value ProjectError
+    \value ParseError
+
+    \sa parse()
+*/
+
+/*!
     Creates a new empty group address infos object.
 */
 QKnxGroupAddressInfos::QKnxGroupAddressInfos()
@@ -209,7 +222,7 @@ QKnxGroupAddressInfos::~QKnxGroupAddressInfos()
     The function argument can be either a valid KNX \c 0.xml or a \c .knxproj
     project file.
 
-    \sa parse
+    \sa parse()
 */
 QKnxGroupAddressInfos::QKnxGroupAddressInfos(const QString &projectFile)
     : d_ptr(new QKnxGroupAddressInfosPrivate)
@@ -234,7 +247,7 @@ QString QKnxGroupAddressInfos::projectFile() const
     The function argument can be either a valid KNX \c 0.xml or a \c .knxproj
     project file.
 
-    \sa parse
+    \sa parse()
 */
 void QKnxGroupAddressInfos::setProjectFile(const QString &projectFile)
 {
@@ -255,6 +268,9 @@ static bool isZipFile(QFile *file)
 
 /*!
     Clears all existing information and parses the KNX project file.
+
+    Returns \c true if parsing was successful; otherwise returns \c false. If
+    an error occurs, sets the \l Status, and fills the errorString().
 */
 bool QKnxGroupAddressInfos::parse()
 {
@@ -593,8 +609,8 @@ QKnxGroupAddressInfos::QKnxGroupAddressInfos(QKnxGroupAddressInfosPrivate &dd)
 /*!
     \relates QKnxGroupAddressInfos
 
-    Writes the \a infos object to the stream and returns a reference to the
-    stream.
+    Writes the \a infos object to the \a debug stream and returns a reference to
+    the stream.
 */
 QDebug operator<<(QDebug debug, const QKnxGroupAddressInfos &infos)
 {

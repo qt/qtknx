@@ -214,8 +214,8 @@ QString QKnxGroupAddressInfo::description() const
 }
 
 /*!
-    Sets the description of this group address info object. The value can be
-    empty.
+    Sets the description of this group address info object to \a description.
+    The value can be empty.
 */
 void QKnxGroupAddressInfo::setDescription(const QString &description)
 {
@@ -299,8 +299,8 @@ QKnxGroupAddressInfo::QKnxGroupAddressInfo(QKnxGroupAddressInfoPrivate &dd)
 /*!
     \relates QKnxGroupAddressInfo
 
-    Writes the \a info object to the stream and returns a reference to the
-    stream.
+    Writes the \a infos object to the \a debug stream and returns a reference to
+    the stream.
 */
 QDebug operator<<(QDebug debug, const QKnxGroupAddressInfo &info)
 {
