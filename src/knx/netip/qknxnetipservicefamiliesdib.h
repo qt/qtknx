@@ -36,7 +36,7 @@
 
 QT_BEGIN_NAMESPACE
 
-class Q_KNX_EXPORT QKnxNetIpServiceFamiliesDib final : public QKnxNetIpDescriptionTypeStruct
+class Q_KNX_EXPORT QKnxNetIpServiceFamiliesDib final : public QKnxNetIpDib
 {
 public:
     enum class ServiceFamilieId : quint8
@@ -72,7 +72,7 @@ public:
     bool isValid() const override;
 
 private:
-    QKnxNetIpServiceFamiliesDib(const QKnxNetIpDescriptionTypeStruct &other);
+    QKnxNetIpServiceFamiliesDib(const QKnxNetIpDib &other);
 };
 
 QT_END_NAMESPACE

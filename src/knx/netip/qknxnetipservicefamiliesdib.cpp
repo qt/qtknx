@@ -37,21 +37,21 @@ QT_BEGIN_NAMESPACE
 // The service family IDs shall be the high octet of the Service Type ID
 
 QKnxNetIpServiceFamiliesDib::QKnxNetIpServiceFamiliesDib()
-    : QKnxNetIpDescriptionTypeStruct(QKnxNetIp::DescriptionType::SupportedServiceFamilies)
+    : QKnxNetIpDib(QKnxNetIp::DescriptionType::SupportedServiceFamilies)
 {}
 
-QKnxNetIpServiceFamiliesDib::QKnxNetIpServiceFamiliesDib(const QKnxNetIpDescriptionTypeStruct &other)
-    : QKnxNetIpDescriptionTypeStruct(other)
+QKnxNetIpServiceFamiliesDib::QKnxNetIpServiceFamiliesDib(const QKnxNetIpDib &other)
+    : QKnxNetIpDib(other)
 {}
 
 QKnxNetIpServiceFamiliesDib::QKnxNetIpServiceFamiliesDib(ServiceFamilieId id, quint8 version)
-    : QKnxNetIpDescriptionTypeStruct(QKnxNetIp::DescriptionType::SupportedServiceFamilies)
+    : QKnxNetIpDib(QKnxNetIp::DescriptionType::SupportedServiceFamilies)
 {
     add(id, version);
 }
 
 QKnxNetIpServiceFamiliesDib::QKnxNetIpServiceFamiliesDib(const ServiceFamilyIdVersions &families)
-    : QKnxNetIpDescriptionTypeStruct(QKnxNetIp::DescriptionType::SupportedServiceFamilies)
+    : QKnxNetIpDib(QKnxNetIp::DescriptionType::SupportedServiceFamilies)
 {
     add(families);
 }
@@ -96,7 +96,7 @@ QKnxNetIpServiceFamiliesDib::ServiceFamilyIdVersions
 
 bool QKnxNetIpServiceFamiliesDib::isValid() const
 {
-    return QKnxNetIpDescriptionTypeStruct::isValid() && (size() % 2 == 0) // must be even sized
+    return QKnxNetIpDib::isValid() && (size() % 2 == 0) // must be even sized
         && descriptionType() == QKnxNetIp::DescriptionType::SupportedServiceFamilies;
 }
 

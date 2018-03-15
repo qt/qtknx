@@ -37,7 +37,7 @@
 
 QT_BEGIN_NAMESPACE
 
-class Q_KNX_EXPORT QKnxNetIpConfigDib final : public QKnxNetIpDescriptionTypeStruct
+class Q_KNX_EXPORT QKnxNetIpConfigDib final : public QKnxNetIpDib
 {
 public:
     // 03_08_03 Management v01.06.02 AS, 2.5.7 PID_IP_CAPABILITIES (PID = 56)
@@ -89,7 +89,7 @@ public:
     bool isValid() const override;
 
 private:
-    QKnxNetIpConfigDib(const QKnxNetIpDescriptionTypeStruct &other);
+    QKnxNetIpConfigDib(const QKnxNetIpDib &other);
 };
 Q_DECLARE_OPERATORS_FOR_FLAGS(QKnxNetIpConfigDib::Capabilities)
 Q_DECLARE_OPERATORS_FOR_FLAGS(QKnxNetIpConfigDib::AssignmentMethods)

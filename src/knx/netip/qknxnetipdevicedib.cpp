@@ -40,14 +40,14 @@ QT_BEGIN_NAMESPACE
     information block.
 */
 
-QKnxNetIpDeviceDib::QKnxNetIpDeviceDib(const QKnxNetIpDescriptionTypeStruct &other)
-    : QKnxNetIpDescriptionTypeStruct(other)
+QKnxNetIpDeviceDib::QKnxNetIpDeviceDib(const QKnxNetIpDib &other)
+    : QKnxNetIpDib(other)
 {}
 
 QKnxNetIpDeviceDib::QKnxNetIpDeviceDib(QKnx::MediumType mediumType, DeviceStatus deviceStatus,
         const QKnxAddress &individualAddress, quint16 projectId, const QKnxByteArray &serialNumber,
         const QHostAddress &multicastAddress, const QKnxByteArray &macAddress, const QKnxByteArray &deviceName)
-    : QKnxNetIpDescriptionTypeStruct(QKnxNetIp::DescriptionType::DeviceInfo)
+    : QKnxNetIpDib(QKnxNetIp::DescriptionType::DeviceInfo)
 {
     QKnxByteArray data { quint8(mediumType) };
     if (deviceStatus > DeviceStatus::ActiveProgrammingMode)
@@ -125,7 +125,7 @@ QKnxByteArray QKnxNetIpDeviceDib::deviceName() const
 
 bool QKnxNetIpDeviceDib::isValid() const
 {
-    return QKnxNetIpDescriptionTypeStruct::isValid() && size() == 54
+    return QKnxNetIpDib::isValid() && size() == 54
         && descriptionType() == QKnxNetIp::DescriptionType::DeviceInfo;
 }
 

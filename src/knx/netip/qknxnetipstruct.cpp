@@ -93,14 +93,15 @@ QDebug operator<<(QDebug debug, const QKnxNetIpStruct<QKnxNetIp::ConnectionType>
 }
 
 /*!
-    \relates QKnxNetIpDescriptionTypeStruct
+    \relates QKnxNetIpStruct
 
-    Writes the KNX \a QKnxNetIpDescriptionTypeStruct to the \a debug stream.
+    Writes the KNXnet/IP description information block structure \a dib to the
+    \a debug stream.
 */
-QDebug operator<<(QDebug debug, const QKnxNetIpDescriptionTypeStruct &package)
+QDebug operator<<(QDebug debug, const QKnxNetIpStruct<QKnxNetIp::DescriptionType> &dib)
 {
     QDebugStateSaver _(debug);
-    return package.isValid() ? stream(debug, package.bytes())
+    return dib.isValid() ? stream(debug, dib.bytes())
         : debug.nospace().noquote() << "0x1nv4l1d";
 }
 

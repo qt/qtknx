@@ -31,8 +31,8 @@
 
 QT_BEGIN_NAMESPACE
 
-QKnxNetIpKnxAddressesDib::QKnxNetIpKnxAddressesDib(const QKnxNetIpDescriptionTypeStruct &other)
-    : QKnxNetIpDescriptionTypeStruct(other)
+QKnxNetIpKnxAddressesDib::QKnxNetIpKnxAddressesDib(const QKnxNetIpDib &other)
+    : QKnxNetIpDib(other)
 {}
 
 QKnxNetIpKnxAddressesDib::QKnxNetIpKnxAddressesDib(const QKnxAddress &address)
@@ -41,7 +41,7 @@ QKnxNetIpKnxAddressesDib::QKnxNetIpKnxAddressesDib(const QKnxAddress &address)
 }
 
 QKnxNetIpKnxAddressesDib::QKnxNetIpKnxAddressesDib(const QVector<QKnxAddress> &addresses)
-    : QKnxNetIpDescriptionTypeStruct(QKnxNetIp::DescriptionType::KnxAddresses)
+    : QKnxNetIpDib(QKnxNetIp::DescriptionType::KnxAddresses)
 {
     QKnxByteArray data;
     for (auto address : qAsConst(addresses)) {
@@ -58,7 +58,7 @@ QKnxNetIp::DescriptionType QKnxNetIpKnxAddressesDib::descriptionType() const
 
 bool QKnxNetIpKnxAddressesDib::isValid() const
 {
-    return QKnxNetIpDescriptionTypeStruct::isValid() && (size() % 2 == 0) // must be even sized
+    return QKnxNetIpDib::isValid() && (size() % 2 == 0) // must be even sized
         && size() >= 2 // and stores the header and at least one address
         && descriptionType() == QKnxNetIp::DescriptionType::KnxAddresses;
 }

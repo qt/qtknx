@@ -142,11 +142,11 @@ private:
 using QKnxNetIpHpai = QKnxNetIpStruct<QKnxNetIp::HostProtocol>;
 using QKnxNetIpCri = QKnxNetIpStruct<QKnxNetIp::ConnectionType>;
 using QKnxNetIpCrd = QKnxNetIpStruct<QKnxNetIp::ConnectionType>;
-using QKnxNetIpDescriptionTypeStruct = QKnxNetIpStruct<QKnxNetIp::DescriptionType>;
+using QKnxNetIpDib = QKnxNetIpStruct<QKnxNetIp::DescriptionType>;
 
 Q_KNX_EXPORT QDebug operator<<(QDebug debug, const QKnxNetIpStruct<QKnxNetIp::HostProtocol> &hpai);
 Q_KNX_EXPORT QDebug operator<<(QDebug debug, const QKnxNetIpStruct<QKnxNetIp::ConnectionType> &cr);
-Q_KNX_EXPORT QDebug operator<<(QDebug debug, const QKnxNetIpDescriptionTypeStruct &package);
+Q_KNX_EXPORT QDebug operator<<(QDebug debug, const QKnxNetIpStruct<QKnxNetIp::DescriptionType> &dib);
 
 QT_END_NAMESPACE
 

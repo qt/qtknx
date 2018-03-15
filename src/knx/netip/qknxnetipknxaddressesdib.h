@@ -38,7 +38,7 @@
 
 QT_BEGIN_NAMESPACE
 
-class Q_KNX_EXPORT QKnxNetIpKnxAddressesDib final : public QKnxNetIpDescriptionTypeStruct
+class Q_KNX_EXPORT QKnxNetIpKnxAddressesDib final : public QKnxNetIpDib
 {
 public:
     QKnxNetIpKnxAddressesDib() = default;
@@ -66,7 +66,7 @@ public:
     bool isValid() const override;
 
 private:
-    QKnxNetIpKnxAddressesDib(const QKnxNetIpDescriptionTypeStruct &other);
+    QKnxNetIpKnxAddressesDib(const QKnxNetIpDib &other);
 };
 
 QT_END_NAMESPACE
