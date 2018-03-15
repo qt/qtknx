@@ -35,12 +35,9 @@ QT_BEGIN_NAMESPACE
     \class QKnxNetIpCrdView
 
     \inmodule QtKnx
-    \brief The QKnxNetIpCrdView class generates a KNXnet/IP connection response
-    data (CRD) structure.
-
-    This class provides the means to read the KNXnet/IP CRD from the generic
-    \l QKnxNetIpCrd class and to create a KNXnet/IP CRD structure based on the
-    information.
+    \brief The QKnxNetIpCrdView class provides the means to read the KNXnet/IP
+    connection response data (CRD) from the generic \l QKnxNetIpCrd class and to
+    create a KNXnet/IP CRD structure based on the information.
 
     A KNXnet/IP CRD structure contains the data block returned with the connect
     response \l QKnxNetIpFrame. The content of such a frame can be viewed
@@ -85,7 +82,6 @@ QT_BEGIN_NAMESPACE
     \fn QKnxNetIpCrdView::QKnxNetIpCrdView(const QKnxNetIpCrd &&)
     \internal
 */
-
 
 /*!
     Constructs a wrapper object with the specified a KNXnet/IP structure \a crd

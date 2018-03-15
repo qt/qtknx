@@ -35,12 +35,9 @@ QT_BEGIN_NAMESPACE
     \class QKnxNetIpCriView
 
     \inmodule QtKnx
-    \brief The QKnxNetIpCriView class generates a KNXnet/IP connection request
-    information (CRI) structure.
-
-    This class provides the means to read KNXnet/IP CRI from the generic
-    \l QKnxNetIpCri class and to create a KNXnet/IP CRI structure based on the
-    information.
+    \brief The QKnxNetIpCriView class provides the means to read the connection
+    request information (CRI) from the generic \l QKnxNetIpCri class and to
+    create a KNXnet/IP CRI structure based on the information.
 
     A KNXnet/IP CRI structure contains additional information needed for
     different types of communication channels to fulfill a connection request.

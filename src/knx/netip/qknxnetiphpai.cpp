@@ -70,8 +70,23 @@ QT_BEGIN_NAMESPACE
 */
 
 /*!
-    Constructs a wrapper object with the given a KNXnet/IP structure
-    \a knxStruct to read the host protocol address information (HPAI).
+    \internal
+    \fn QKnxNetIpHpaiView::QKnxNetIpHpaiView()
+*/
+
+/*!
+    \internal
+    \fn QKnxNetIpHpaiView::~QKnxNetIpHpaiView()
+*/
+
+/*!
+    \internal
+    \fn QKnxNetIpHpaiView::QKnxNetIpHpaiView(const QKnxNetIpHpai &&)
+*/
+
+/*!
+    Constructs a wrapper object with the given a KNXnet/IP structure \a hpai to
+    read the host protocol address information (HPAI).
 */
 QKnxNetIpHpaiView::QKnxNetIpHpaiView(const QKnxNetIpHpai &hpai)
     : m_hpai(hpai)
