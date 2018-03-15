@@ -66,7 +66,7 @@ struct Q_KNX_EXPORT QKnxNetIp final
         IpConfiguration = 0x03,
         CurrentIpConfiguration = 0x04,
         KnxAddresses = 0x05,
-        ManufactorData = 0xfe,
+        ManufacturerData = 0xfe,
         NotUsed = 0xff
     };
     static bool isStructType(QKnxNetIp::DescriptionType type);

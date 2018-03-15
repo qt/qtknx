@@ -47,7 +47,7 @@ private slots:
         QVector<QKnxAdditionalInfo> addInfos = {
             { QKnxAdditionalInfo::Type::BiBatInformation, QKnxByteArray::fromHex("1020") },
             { QKnxAdditionalInfo::Type::RfFastAckInformation, QKnxByteArray::fromHex("30405060") },
-            { QKnxAdditionalInfo::Type::ManufactorSpecificData, QKnxByteArray::fromHex("708090") }
+            { QKnxAdditionalInfo::Type::ManufacturerSpecificData, QKnxByteArray::fromHex("708090") }
         };
 
         QKnxLinkLayerFrame frame(QKnx::MediumType::NetIP, QKnxLinkLayerFrame::MessageCode::DataRequest);
@@ -86,7 +86,7 @@ private slots:
         QVector<QKnxAdditionalInfo> addInfos = {
             { QKnxAdditionalInfo::Type::BiBatInformation, QKnxByteArray::fromHex("1020") },
             { QKnxAdditionalInfo::Type::RfFastAckInformation, QKnxByteArray::fromHex("30405060") },
-            { QKnxAdditionalInfo::Type::ManufactorSpecificData, QKnxByteArray::fromHex("708090") }
+            { QKnxAdditionalInfo::Type::ManufacturerSpecificData, QKnxByteArray::fromHex("708090") }
         };
 
         QKnxLinkLayerFrame frame(QKnx::MediumType::NetIP, QKnxLinkLayerFrame::MessageCode::DataRequest);

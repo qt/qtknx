@@ -42,7 +42,7 @@ QKnxNetIpManufacturerDib::QKnxNetIpManufacturerDib(quint16 manufacturerId)
 }
 
 QKnxNetIpManufacturerDib::QKnxNetIpManufacturerDib(quint16 manufacturerId, const QKnxByteArray &data)
-    : QKnxNetIpDescriptionTypeStruct(QKnxNetIp::DescriptionType::ManufactorData)
+    : QKnxNetIpDescriptionTypeStruct(QKnxNetIp::DescriptionType::ManufacturerData)
 {
     setData(QKnxUtils::QUint16::bytes(manufacturerId) + data);
 }
@@ -65,7 +65,7 @@ QKnxByteArray QKnxNetIpManufacturerDib::manufacturerData() const
 bool QKnxNetIpManufacturerDib::isValid() const
 {
     return QKnxNetIpDescriptionTypeStruct::isValid() && size() >= 4
-        && descriptionType() == QKnxNetIp::DescriptionType::ManufactorData;
+        && descriptionType() == QKnxNetIp::DescriptionType::ManufacturerData;
 }
 
 QT_END_NAMESPACE

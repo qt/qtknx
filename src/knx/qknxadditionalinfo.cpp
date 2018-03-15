@@ -62,7 +62,7 @@ QT_BEGIN_NAMESPACE
     \value PreambleAndPostamble         Preamble and postamble length.
     \value RfFastAckInformation         Status and information about each
                                         expected number of Fast Ack (N)
-    \value ManufactorSpecificData       Manufacturer specific data, including
+    \value ManufacturerSpecificData       Manufacturer specific data, including
                                         manufacturer ID (2 byte) and
                                         Subfunction ID (1 byte).
     \omitvalue EscCode
@@ -139,7 +139,7 @@ bool QKnxAdditionalInfo::isValid() const
         return dataSize() == quint8(expectedSize);
     case QKnxAdditionalInfo::Type::RfFastAckInformation:
         return (dataSize() >= quint8(expectedSize)) && ((dataSize() % 2) == 0);
-    case QKnxAdditionalInfo::Type::ManufactorSpecificData:
+    case QKnxAdditionalInfo::Type::ManufacturerSpecificData:
         return dataSize() >= quint8(expectedSize);
     case QKnxAdditionalInfo::Type::Reserved:
     case QKnxAdditionalInfo::Type::EscCode:
@@ -215,7 +215,7 @@ quint8 QKnxAdditionalInfo::dataSize() const
     \list
         \li \l QKnxAdditionalInfo::RfFastAckInformation - a multiple of two
                bytes, two bytes minimum.
-        \li \l QKnxAdditionalInfo::ManufactorSpecificData - three bytes minimum.
+        \li \l QKnxAdditionalInfo::ManufacturerSpecificData - three bytes minimum.
     \endlist
 */
 qint32 QKnxAdditionalInfo::expectedDataSize(QKnxAdditionalInfo::Type type, bool *isFixedSize)
@@ -232,7 +232,7 @@ qint32 QKnxAdditionalInfo::expectedDataSize(QKnxAdditionalInfo::Type type, bool 
         table[int(QKnxAdditionalInfo::Type::RfMultiInformation)] = 4;
         table[int(QKnxAdditionalInfo::Type::PreambleAndPostamble)] = 3;
         table[int(QKnxAdditionalInfo::Type::RfFastAckInformation)] = 2;
-        table[int(QKnxAdditionalInfo::Type::ManufactorSpecificData)] = 3;
+        table[int(QKnxAdditionalInfo::Type::ManufacturerSpecificData)] = 3;
         return table;
     }();
     if (isFixedSize)

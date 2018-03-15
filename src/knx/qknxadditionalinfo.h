@@ -55,7 +55,7 @@ public:
         RfMultiInformation = 0x08,
         PreambleAndPostamble = 0x09,
         RfFastAckInformation = 0x0a,
-        ManufactorSpecificData = 0xfe,
+        ManufacturerSpecificData = 0xfe,
         EscCode = 0xff
     };
     Q_ENUM(Type)

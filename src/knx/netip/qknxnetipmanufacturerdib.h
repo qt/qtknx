@@ -47,7 +47,7 @@ public:
     static QKnxNetIpManufacturerDib fromBytes(const QKnxByteArray &bytes, quint16 index)
     {
         return QKnxNetIpStruct::fromBytes(bytes, index,
-            QKnxNetIp::DescriptionType::ManufactorData);
+            QKnxNetIp::DescriptionType::ManufacturerData);
     }
 
     QKnxNetIp::DescriptionType descriptionType() const;

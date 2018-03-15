@@ -129,7 +129,7 @@ bool QKnxNetIp::isStructType(QKnxNetIp::ConnectionType type)
     \value CurrentIpConfiguration   Current IP configuration of the device.
     \value KnxAddresses
            All individual addresses assigned to the device.
-    \value ManufactorData
+    \value ManufacturerData
            A structure for further data defined by a device manufacturer.
     \value NotUsed                  This value may not be used.
 */
@@ -146,7 +146,7 @@ bool QKnxNetIp::isStructType(QKnxNetIp::DescriptionType type)
     case QKnxNetIp::DescriptionType::IpConfiguration:
     case QKnxNetIp::DescriptionType::CurrentIpConfiguration:
     case QKnxNetIp::DescriptionType::KnxAddresses:
-    case QKnxNetIp::DescriptionType::ManufactorData:
+    case QKnxNetIp::DescriptionType::ManufacturerData:
         return true;
     case QKnxNetIp::DescriptionType::NotUsed:
     case QKnxNetIp::DescriptionType::Unknown:

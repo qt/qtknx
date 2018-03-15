@@ -75,7 +75,7 @@ public:
                 return QKnxNetIpStructRef::Type::QKnxNetIpCurrentConfigDib;
             case QKnxNetIp::DescriptionType::KnxAddresses:
                 return QKnxNetIpStructRef::Type::QKnxNetIpKnxAddressesDib;
-            case QKnxNetIp::DescriptionType::ManufactorData:
+            case QKnxNetIp::DescriptionType::ManufacturerData:
                 return QKnxNetIpStructRef::Type::QKnxNetIpManufacturerDib;
             default:
                 break;

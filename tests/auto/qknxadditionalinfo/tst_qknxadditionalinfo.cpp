@@ -81,10 +81,10 @@ private slots:
         QCOMPARE(info.isValid(), true);
 
         QKnxByteArray data { 0x10, 0x20 };
-        info = { QKnxAdditionalInfo::Type::ManufactorSpecificData, data };
+        info = { QKnxAdditionalInfo::Type::ManufacturerSpecificData, data };
         QCOMPARE(info.isValid(), false);
 
-        info = { QKnxAdditionalInfo::Type::ManufactorSpecificData,
+        info = { QKnxAdditionalInfo::Type::ManufacturerSpecificData,
             QKnxByteArray({ 0x10, 0x20, 0x30 }) };
         QCOMPARE(info.isValid(), true);
 
@@ -145,7 +145,7 @@ private slots:
             &fixed), 2);
         QCOMPARE(fixed, false);
 
-        QCOMPARE(QKnxAdditionalInfo::expectedDataSize(QKnxAdditionalInfo::Type::ManufactorSpecificData,
+        QCOMPARE(QKnxAdditionalInfo::expectedDataSize(QKnxAdditionalInfo::Type::ManufacturerSpecificData,
             &fixed), 3);
         QCOMPARE(fixed, false);
 
