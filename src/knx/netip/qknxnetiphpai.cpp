@@ -33,17 +33,6 @@
 QT_BEGIN_NAMESPACE
 
 /*!
-    \relates QKnxNetIpHpai
-
-    Writes the KNX \a QKnxNetIpHpai to the \a debug stream.
-*/
-QDebug operator<<(QDebug debug, const QKnxNetIpHpai &hpai)
-{
-    QDebugStateSaver _(debug);
-    return debug.nospace().noquote() << "0x" << hpai.bytes().toHex();
-}
-
-/*!
     \class QKnxNetIpHpaiView
 
     \inmodule QtKnx

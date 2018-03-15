@@ -36,9 +36,6 @@
 
 QT_BEGIN_NAMESPACE
 
-using QKnxNetIpHpai = QKnxNetIpStruct<QKnxNetIp::HostProtocol>;
-Q_KNX_EXPORT QDebug operator<<(QDebug debug, const QKnxNetIpHpai &package);
-
 class Q_KNX_EXPORT QKnxNetIpHpaiView final
 {
 public:

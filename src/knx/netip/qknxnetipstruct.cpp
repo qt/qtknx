@@ -69,11 +69,24 @@ static QDebug stream(QDebug debug, const QKnxByteArray &bytes)
 }
 
 /*!
-    \relates QKnxNetIpConnectionTypeStruct
+    \relates QKnxNetIpStruct
 
-    Writes the KNXnet/IP connection type structure \a cr to the \a debug stream.
+    Writes the KNXnet/IP host protocol information structure \a hpai to the
+    \a debug stream.
 */
-QDebug operator<<(QDebug debug, const QKnxNetIpConnectionTypeStruct &cr)
+QDebug operator<<(QDebug debug, const QKnxNetIpStruct<QKnxNetIp::HostProtocol> &hpai)
+{
+    QDebugStateSaver _(debug);
+    return debug.nospace().noquote() << "0x" << hpai.bytes().toHex();
+}
+
+/*!
+    \relates QKnxNetIpStruct
+
+    Writes the KNXnet/IP connection information structure \a cr to the \a debug
+    stream.
+*/
+QDebug operator<<(QDebug debug, const QKnxNetIpStruct<QKnxNetIp::ConnectionType> &cr)
 {
     QDebugStateSaver _(debug);
     return debug.nospace().noquote() << "0x" << cr.bytes().toHex();

@@ -36,8 +36,6 @@
 
 QT_BEGIN_NAMESPACE
 
-using QKnxNetIpCrd = QKnxNetIpStruct<QKnxNetIp::ConnectionType>;
-
 class Q_KNX_EXPORT QKnxNetIpCrdView final
 {
 public:
