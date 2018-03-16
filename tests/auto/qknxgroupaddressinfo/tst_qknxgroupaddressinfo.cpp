@@ -43,204 +43,165 @@ class tst_QKnxGroupAddressInfos : public QObject
     Q_OBJECT
 
 private slots:
-    void test_GroupAddressInfos();
-    void test_GroupAddressInfosFromFile();
-    void test_DebugStream();
+    void groupAddressInfo();
+    void groupAddressInfosFromXml();
+    void groupAddressInfosFromZip();
+
+private:
+    QVector<QKnxGroupAddressInfo> initGroupAddressInfos(const QString &install = {});
 };
 
-void tst_QKnxGroupAddressInfos::test_GroupAddressInfos()
+QVector<QKnxGroupAddressInfo> tst_QKnxGroupAddressInfos::initGroupAddressInfos(const QString &i)
 {
-    QString id1 = "P-01-000-1";
-    QString address1 = "1";
-    QString name1 = "address1";
-    QString description1 = "Do 1";
-    QString id2 = "P-01-000-2";
-    QString address2 = "2";
-    QString name2 = "address2";
-    QString description2 = "Do 2";
-    QString dataPointType = "DPT-1-1";
-    QString puid = "whatever";
-    QKnxGroupAddressInfo info1(id1, address1, name1, description1, dataPointType, puid);
-    QKnxGroupAddressInfo info2(id2, address2, name2, description2, dataPointType, puid);
-    QKnxGroupAddressInfos groupAddressesInfo;
-    QString home = QString::fromLatin1("Home");
-    groupAddressesInfo.addEntry(info1, home);
-    groupAddressesInfo.addEntry(info2, home);
-
-    QCOMPARE(groupAddressesInfo.groupAddressesFullDescription(home).size(),
-        groupAddressesInfo.datapointTypeGroupAddresses(home).size());
-
-    QCOMPARE(groupAddressesInfo.groupAddressesFullDescription(home).value(
-        info1.groupAddress()).groupAddress(), info1.groupAddress());
-    QCOMPARE(groupAddressesInfo.groupAddressesFullDescription(home).value(
-        info1.groupAddress()).id(), info1.id());
-    QCOMPARE(groupAddressesInfo.groupAddressesFullDescription(home).value(
-        info1.groupAddress()).address(), info1.address());
-    QCOMPARE(groupAddressesInfo.groupAddressesFullDescription(home).value(
-        info1.groupAddress()).name(), info1.name());
-    QCOMPARE(groupAddressesInfo.groupAddressesFullDescription(home).value(
-        info1.groupAddress()).description(), info1.description());
-    QCOMPARE(groupAddressesInfo.groupAddressesFullDescription(home).value(
-        info1.groupAddress()).dataPointNumber(), info1.dataPointNumber());
-    QCOMPARE(groupAddressesInfo.groupAddressesFullDescription(home).value(
-        info1.groupAddress()).puid(), info1.puid());
-    QCOMPARE(groupAddressesInfo.groupAddressesFullDescription(home).value(
-        info1.groupAddress()).dataPointType(), info1.dataPointType());
-
-    QCOMPARE(groupAddressesInfo.groupAddressesFullDescription(home).value(
-        info2.groupAddress()).groupAddress(), info2.groupAddress());
-    QCOMPARE(groupAddressesInfo.groupAddressesFullDescription(home).value(
-        info2.groupAddress()).id(), info2.id());
-    QCOMPARE(groupAddressesInfo.groupAddressesFullDescription(home).value(
-        info2.groupAddress()).address(), info2.address());
-    QCOMPARE(groupAddressesInfo.groupAddressesFullDescription(home).value(
-        info2.groupAddress()).name(), info2.name());
-    QCOMPARE(groupAddressesInfo.groupAddressesFullDescription(home).value(
-        info2.groupAddress()).description(), info2.description());
-    QCOMPARE(groupAddressesInfo.groupAddressesFullDescription(home).value(
-        info2.groupAddress()).dataPointNumber(), info2.dataPointNumber());
-    QCOMPARE(groupAddressesInfo.groupAddressesFullDescription(home).value(
-        info2.groupAddress()).puid(), info2.puid());
-    QCOMPARE(groupAddressesInfo.groupAddressesFullDescription(home).value(
-        info2.groupAddress()).dataPointType(), info2.dataPointType());
-
-    QCOMPARE(groupAddressesInfo.datapointTypeGroupAddresses(home).values(
-        info2.dataPointType()).size(), 2);
-    QCOMPARE(groupAddressesInfo.datapointTypeGroupAddresses(home).values(info2.dataPointType())[0],
-        info2.groupAddress());
-    QCOMPARE(groupAddressesInfo.datapointTypeGroupAddresses(home).values(info2.dataPointType())[1],
-        info1.groupAddress());
+    return QVector<QKnxGroupAddressInfo> {
+        { i, "Living room Ceiling light switching", 0x0900, "DPST-1-1", "Living room Ceiling light" },
+        { i, "Living room Desk light switching", 0x0901, "DPST-1-1", "Living room Desk light" },
+        { i, "Living room Socket switching", 0x0902, "DPST-1-1", "Living room Socket" },
+        { i, "Kitchen Ceiling light switching", 0x0908, "DPST-1-1", "Kitchen Ceiling light" },
+        { i, "Kitchen Working light switching", 0x0909, "DPST-1-1", "Kitchen Working light" },
+        { i, "Kitchen Dining corner switching", 0x090a, "DPST-1-1", "Kitchen Dining corner" },
+        { i, "Bedroom Ceiling light switching", 0x0910, "DPST-1-1", "Bedroom Ceiling light" },
+        { i, "Bedroom Bed left switching", 0x0911, "DPST-1-1", "Bedroom Bed left" },
+        { i, "Bedroom Bed right switching", 0x0912, "DPST-1-1", "Bedroom Bed right" },
+        { i, "Bath room Ceiling light switching", 0x0918, "DPST-1-1", "Bath room Ceiling light" },
+        { i, "Bath room Mirror switching", 0x0919, "DPST-1-1", "Bath room Mirror" },
+        { i, "Corridor Ceiling light switching", 0x091f, "DPST-1-1", "Corridor Ceiling light" },
+        { i, "Terrace/Balcony Wall light switching", 0x0920, "DPST-1-1", "Terrace/Balcony Wall light" },
+        { i, "Living room Ceiling light status", 0x0c00, "DPST-1-1", "Living room Ceiling light" },
+        { i, "Living room Desk light status", 0x0c01, "DPST-1-1", "Living room Desk light" },
+        { i, "Living room Socket status", 0x0c02, "DPST-1-1", "Living room Socket" },
+        { i, "Kitchen Ceiling light status", 0x0c08, "DPST-1-1", "Kitchen Ceiling light" },
+        { i, "Kitchen Working light status", 0x0c09, "DPST-1-1", "Kitchen Working light" },
+        { i, "Kitchen Dining corner status", 0x0c0a, "DPST-1-1", "Kitchen Dining corner" },
+        { i, "Bedroom Ceiling light status", 0x0c10, "DPST-1-1", "Bedroom Ceiling light" },
+        { i, "Bedroom Bed left status", 0x0c11, "DPST-1-1", "Bedroom Bed left" },
+        { i, "Bedroom Bed right status", 0x0c12, "DPST-1-1", "Bedroom Bed right" },
+        { i, "Bath room Ceiling light status", 0x0c18, "DPST-1-1", "Bath room Ceiling light" },
+        { i, "Bath room Mirror status", 0x0c19, "DPST-1-1", "Bath room Mirror" },
+        { i, "Corridor Ceiling light status", 0x0c1f, "DPST-1-1", "Corridor Ceiling light" },
+        { i, "Terrace/Balcony Wall light status", 0x0c20, "DPST-1-1", "Terrace/Balcony Wall light" },
+        { i, "Living room Ceiling light dimming", 0x0a00, "DPST-3-7", "Living room Ceiling light" },
+        { i, "Living room Desk light dimming", 0x0a01, "DPST-3-7", "Living room Desk light" },
+        { i, "Kitchen Ceiling light dimming", 0x0a07, "DPST-3-7", "Kitchen Ceiling light" },
+        { i, "Bedroom Ceiling light dimming", 0x0a0d, "DPST-3-7", "Bedroom Ceiling light" },
+        { i, "Bath room Ceiling light dimming", 0x0a13, "DPST-3-7", "Bath room Ceiling light" },
+        { i, "Living room Ceiling light value", 0x0b00, "DPST-5-1", "Living room Ceiling light" },
+        { i, "Living room Desk light value", 0x0b01, "DPST-5-1", "Living room Desk light" },
+        { i, "Kitchen Ceiling light value", 0x0b07, "DPST-5-1", "Kitchen Ceiling light" },
+        { i, "Bedroom Ceiling light value", 0x0b0d, "DPST-5-1", "Bedroom Ceiling light" },
+        { i, "Bath room Ceiling light value", 0x0b13, "DPST-5-1", "Bath room Ceiling light" },
+        { i, "Switch light central", 0x0800, "DPST-1-1", "Apartment Central light" },
+        { i, "Dawn switch", 0x0801, "", "" },
+        { i, "Dimming light central", 0x0802, "", "Apartment Central light" },
+        { i, "Value light central", 0x0803, "", "Apartment Central light" },
+        { i, "Living room Light room switch", 0x080a, "DPST-1-1", "Living room Light room switch" },
+        { i, "Living room Light room dimming", 0x080b, "", "Living room Light room switch" },
+        { i, "Living room Light room value", 0x080c, "", "Living room Light room switch" },
+        { i, "Kitchen Light room switch", 0x080d, "DPST-1-1", "Kitchen Light room switch" },
+        { i, "Bedroom Light room switch", 0x080e, "DPST-1-1", "Bedroom Light room switch" },
+        { i, "Bath room Light room switch", 0x080f, "DPST-1-1", "Bath room Light room switch" },
+        { i, "Wind alert", 0x1001, "DPST-1-5", "Living room Window 1" },
+        { i, "Rain alert", 0x1002, "DPST-1-5", "Living room Window 1" },
+        { i, "Central movement", 0x1000, "DPST-1-8", "Apartment Central movement" },
+        { i, "Central step/stop", 0x1003, "DPST-1-7", "Apartment Central movement" },
+        { i, "Living room Room movement", 0x100a, "DPST-1-8", "Living room Room movement" },
+        { i, "Living room Room step/stop", 0x100b, "DPST-1-7", "Living room Room movement" },
+        { i, "Kitchen Room movement", 0x100c, "DPST-1-8", "Kitchen Room movement" },
+        { i, "Kitchen Room step/stop", 0x100d, "DPST-1-7", "Kitchen Room movement" },
+        { i, "Living room Window 1 movement", 0x1100, "DPST-1-8", "Living room Window 1" },
+        { i, "Living room Window 2 movement", 0x1101, "DPST-1-8", "Living room Window 2" },
+        { i, "Kitchen Window 1 movement", 0x1107, "DPST-1-8", "Kitchen Window 1" },
+        { i, "Kitchen Window 2 movement", 0x1108, "DPST-1-8", "Kitchen Window 2" },
+        { i, "Bedroom Window 1 movement", 0x110e, "DPST-1-8", "Bedroom Window 1" },
+        { i, "Bath room Window movement", 0x110f, "DPST-1-8", "Bath room Window" },
+        { i, "Terrace/Balcony Blind movement", 0x1110, "DPST-1-8", "Terrace/Balcony Blind" },
+        { i, "Living room Window 1 step/stop", 0x1200, "DPST-1-7", "Living room Window 1" },
+        { i, "Living room Window 2 step/stop", 0x1201, "DPST-1-7", "Living room Window 2" },
+        { i, "Kitchen Window 1 step/stop", 0x1207, "DPST-1-7", "Kitchen Window 1" },
+        { i, "Kitchen Window 2 step/stop", 0x1208, "DPST-1-7", "Kitchen Window 2" },
+        { i, "Bedroom Window 1 step/stop", 0x120e, "DPST-1-7", "Bedroom Window 1" },
+        { i, "Bath room Window step/stop", 0x120f, "DPST-1-7", "Bath room Window" },
+        { i, "Terrace/Balcony Blind step/stop", 0x1210, "DPST-1-7", "Terrace/Balcony Blind" },
+        { i, "Living room Floor variable", 0x1b00, "", "Living room Floor" },
+        { i, "Kitchen Floor variable", 0x1b01, "", "Kitchen Floor" },
+        { i, "Bedroom Floor variable", 0x1b02, "", "Bedroom Floor" },
+        { i, "Bath room Radiator variable", 0x1b03, "", "Bath room Radiator" },
+        { i, "Bath room Floor variable", 0x1b04, "", "Bath room Floor" },
+        { i, "Corridor Floor variable", 0x1b0a, "", "Corridor Floor" },
+        { i, "Living room heating current temperature", 0x1900, "DPST-9-1", "Living room Floor" },
+        { i, "Kitchen heating current temperature", 0x1901, "DPST-9-1", "Kitchen Floor" },
+        { i, "Bedroom heating current temperature", 0x1902, "DPST-9-1", "Bedroom Floor" },
+        { i, "Bath room heating current temperature", 0x1903, "DPST-9-1", "Bath room Floor" },
+        { i, "Corridor heating current temperature", 0x1904, "DPST-9-1", "Corridor Floor" },
+        { i, "Living room heating setpoint temperature", 0x1a00, "DPST-9-1", "Living room Floor" },
+        { i, "Kitchen heating setpoint temperature", 0x1a01, "DPST-9-1", "Kitchen Floor" },
+        { i, "Bedroom heating setpoint temperature", 0x1a02, "DPST-9-1", "Bedroom Floor" },
+        { i, "Bath room heating setpoint temperature", 0x1a03, "DPST-9-1", "Bath room Floor" },
+        { i, "Corridor heating setpoint temperature", 0x1a04, "DPST-9-1", "Corridor Floor" },
+        { i, "Living room heating operation mode", 0x1c00, "DPST-20-102", "Living room Floor" },
+        { i, "Kitchen heating operation mode", 0x1c01, "DPST-20-102", "Kitchen Floor" },
+        { i, "Bedroom heating operation mode", 0x1c02, "DPST-20-102", "Bedroom Floor" },
+        { i, "Bath room heating operation mode", 0x1c03, "DPST-20-102", "Bath room Floor" },
+        { i, "Corridor heating operation mode", 0x1c04, "DPST-20-102", "Corridor Floor" },
+        { i, "Living room heating window contact", 0x1d00, "DPST-1-19", "Living room Floor" },
+        { i, "Kitchen heating window contact", 0x1d01, "DPST-1-19", "Kitchen Floor" },
+        { i, "Bedroom heating window contact", 0x1d02, "DPST-1-19", "Bedroom Floor" },
+        { i, "Bath room heating window contact", 0x1d03, "DPST-1-19", "Bath room Floor" },
+        { i, "Corridor heating window contact", 0x1d04, "DPST-1-19", "Corridor Floor" },
+        { i, "Central operation mode switch", 0x1800, "DPST-20-102", "Apartment Central operation mode switch" }
+    };
 }
 
-void tst_QKnxGroupAddressInfos::test_GroupAddressInfosFromFile()
+void tst_QKnxGroupAddressInfos::groupAddressInfo()
 {
-    QString fileName = QString::fromLatin1(":/data/0.xml");
-    QString projectName = QString::fromLatin1("ProjectId");
-    QKnxGroupAddressInfos infos(fileName, projectName);
-    QString installation = QString::fromLatin1("Installation");
+    QKnxGroupAddressInfo info;
+    QCOMPARE(info.isValid(), false);
+    QCOMPARE(info.installation(), QString());
+    QCOMPARE(info.name(), QString());
+    QCOMPARE(info.address(), QKnxAddress());
+    QCOMPARE(info.datapointType(), QKnxDatapointType::Type::Unknown);
+    QCOMPARE(info.description(), QString());
 
-    QCOMPARE(infos.knxProjectFileName(), fileName);
-    QCOMPARE(infos.knxProjectId(), projectName);
+    info.setAddress(QKnxAddress::Individual::Unregistered);
+    QCOMPARE(info.address(), QKnxAddress::Individual::Unregistered);
+    QCOMPARE(info.isValid(), false);
 
-    QCOMPARE(infos.readFile(), QKnxGroupAddressInfos::ReadStatus::NoError);
-    QCOMPARE(infos.installationsName().size(), 1);
-    QCOMPARE(infos.groupAddressesFullDescription(installation).size(), 6);
+    info.setName("Name");
+    QCOMPARE(info.name(), QString("Name"));
+    QCOMPARE(info.isValid(), false);
 
-    QKnxAddress groupAddress1 = { QKnxAddress::Type::Group, quint16(1) };
-    QKnxAddress groupAddress2 = { QKnxAddress::Type::Group, quint16(2) };
-    QKnxAddress groupAddress2048 = { QKnxAddress::Type::Group, quint16(2048) };
-    QKnxAddress groupAddress2049 = { QKnxAddress::Type::Group, quint16(2049) };
-    QKnxAddress groupAddress2304 = { QKnxAddress::Type::Group, quint16(2304) };
-    QKnxAddress groupAddress2305 = { QKnxAddress::Type::Group, quint16(2305) };
+    info.setDatapointType(QKnxDatapointType::Type::DptSwitch);
+    QCOMPARE(info.datapointType(), QKnxDatapointType::Type::DptSwitch);
+    QCOMPARE(info.isValid(), false);
 
-    QCOMPARE(infos.groupAddressesFullDescription(installation).value(groupAddress1).groupAddress(),
-        groupAddress1);
-    QCOMPARE(infos.groupAddressesFullDescription(installation).value(groupAddress1).id(),
-        QLatin1String("P-050F-0_GA-355"));
-    QCOMPARE(infos.groupAddressesFullDescription(installation).value(groupAddress1).address(),
-        groupAddress1.toString());
-    QCOMPARE(infos.groupAddressesFullDescription(installation).value(groupAddress1).name(),
-        QLatin1String("Name"));
-    QCOMPARE(infos.groupAddressesFullDescription(installation).value(groupAddress1).description(),
-        QLatin1String("Description"));
-    QCOMPARE(infos.groupAddressesFullDescription(installation).value(groupAddress1).dataPointNumber(),
-        QLatin1String("DPST-1-1"));
-    QCOMPARE(infos.groupAddressesFullDescription(installation).value(groupAddress1).puid(),
-        QLatin1String("436"));
-    QCOMPARE(infos.groupAddressesFullDescription(installation).value(groupAddress1).dataPointType(),
-        QKnxDatapointType::Type::DptSwitch);
+    info.setDescription("Description");
+    QCOMPARE(info.description(), QString("Description"));
+    QCOMPARE(info.isValid(), false);
 
-    QCOMPARE(infos.groupAddressesFullDescription(installation).value(groupAddress2).groupAddress(),
-        groupAddress2);
-    QCOMPARE(infos.groupAddressesFullDescription(installation).value(groupAddress2).id(),
-        QLatin1String("P-050F-0_GA-356"));
-    QCOMPARE(infos.groupAddressesFullDescription(installation).value(groupAddress2).address(),
-        groupAddress2.toString());
-    QCOMPARE(infos.groupAddressesFullDescription(installation).value(groupAddress2).name(),
-        QLatin1String("Name2"));
-    QCOMPARE(infos.groupAddressesFullDescription(installation).value(groupAddress2).description(),
-        QLatin1String("Description2"));
-    QCOMPARE(infos.groupAddressesFullDescription(installation).value(groupAddress2).dataPointNumber(),
-        QLatin1String("DPST-20-102"));
-    QCOMPARE(infos.groupAddressesFullDescription(installation).value(groupAddress2).puid(),
-        QLatin1String("437"));
-    QCOMPARE(infos.groupAddressesFullDescription(installation).value(groupAddress2).dataPointType(),
-        QKnxDatapointType::Type(2000102));
+    info.setInstallation("Installation");
+    QCOMPARE(info.installation(), QString("Installation"));
+    QCOMPARE(info.isValid(), false);
 
-    QCOMPARE(infos.groupAddressesFullDescription(installation).value(groupAddress2048).groupAddress(),
-        groupAddress2048);
-    QCOMPARE(infos.groupAddressesFullDescription(installation).value(groupAddress2048).id(),
-        QLatin1String("P-050F-0_GA-261"));
-    QCOMPARE(infos.groupAddressesFullDescription(installation).value(groupAddress2048).address(),
-        groupAddress2048.toString());
-    QCOMPARE(infos.groupAddressesFullDescription(installation).value(groupAddress2048).name(),
-        QLatin1String("Name3"));
-    QCOMPARE(infos.groupAddressesFullDescription(installation).value(groupAddress2048).description(),
-        QLatin1String("Description3"));
-    QCOMPARE(infos.groupAddressesFullDescription(installation).value(groupAddress2048).dataPointNumber(),
-        QLatin1String("DPST-1-1"));
-    QCOMPARE(infos.groupAddressesFullDescription(installation).value(groupAddress2048).puid(),
-        QLatin1String("342"));
-    QCOMPARE(infos.groupAddressesFullDescription(installation).value(groupAddress2048).dataPointType(),
-        QKnxDatapointType::Type::DptSwitch);
+    info.setAddress(QKnxAddress::Group::Broadcast);
+    QCOMPARE(info.address(), QKnxAddress::Group::Broadcast);
+    QCOMPARE(info.isValid(), true);
 
-    QCOMPARE(infos.groupAddressesFullDescription(installation).value(groupAddress2049).groupAddress(),
-        groupAddress2049);
-    QCOMPARE(infos.groupAddressesFullDescription(installation).value(groupAddress2049).id(),
-        QLatin1String("P-050F-0_GA-262"));
-    QCOMPARE(infos.groupAddressesFullDescription(installation).value(groupAddress2049).address(),
-        groupAddress2049.toString());
-    QCOMPARE(infos.groupAddressesFullDescription(installation).value(groupAddress2049).name(),
-        QLatin1String("Name4"));
-    QCOMPARE(infos.groupAddressesFullDescription(installation).value(groupAddress2049).description(),
-        QLatin1String("Description4"));
-    QCOMPARE(infos.groupAddressesFullDescription(installation).value(groupAddress2049).dataPointNumber(),
-        QLatin1String("DPST-1-1"));
-    QCOMPARE(infos.groupAddressesFullDescription(installation).value(groupAddress2049).puid(),
-        QLatin1String("343"));
-    QCOMPARE(infos.groupAddressesFullDescription(installation).value(groupAddress2049).dataPointType(),
-        QKnxDatapointType::Type::DptSwitch);
+    QKnxGroupAddressInfo info2 = { QString("Installation"), QString("Name"), 0x0000,
+        QKnxDatapointType::Type::DptSwitch, QString("Description") };
+    QCOMPARE(info2, info);
 
-    QCOMPARE(infos.groupAddressesFullDescription(installation).value(groupAddress2304).groupAddress(),
-        groupAddress2304);
-    QCOMPARE(infos.groupAddressesFullDescription(installation).value(groupAddress2304).id(),
-        QLatin1String("P-050F-0_GA-358"));
-    QCOMPARE(infos.groupAddressesFullDescription(installation).value(groupAddress2304).address(),
-        groupAddress2304.toString());
-    QCOMPARE(infos.groupAddressesFullDescription(installation).value(groupAddress2304).name(),
-        QLatin1String("Name5"));
-    QCOMPARE(infos.groupAddressesFullDescription(installation).value(groupAddress2304).description(),
-        QLatin1String("Description5"));
-    QCOMPARE(infos.groupAddressesFullDescription(installation).value(groupAddress2304).dataPointNumber(),
-        QLatin1String("DPST-1-1"));
-    QCOMPARE(infos.groupAddressesFullDescription(installation).value(groupAddress2304).puid(),
-        QLatin1String("439"));
-    QCOMPARE(infos.groupAddressesFullDescription(installation).value(groupAddress2304).dataPointType(),
-        QKnxDatapointType::Type::DptSwitch);
+    info2 = { QString("Installation"), QString("Name"), 0x0000, QString("DPST-1-1"),
+        QString("Description") };
+    QCOMPARE(info2, info);
 
-    QCOMPARE(infos.groupAddressesFullDescription(installation).value(groupAddress2305).groupAddress(),
-        groupAddress2305);
-    QCOMPARE(infos.groupAddressesFullDescription(installation).value(groupAddress2305).id(),
-        QLatin1String("P-050F-0_GA-359"));
-    QCOMPARE(infos.groupAddressesFullDescription(installation).value(groupAddress2305).address(),
-        groupAddress2305.toString());
-    QCOMPARE(infos.groupAddressesFullDescription(installation).value(groupAddress2305).name(),
-        QLatin1String("Name6"));
-    QCOMPARE(infos.groupAddressesFullDescription(installation).value(groupAddress2305).description(),
-        QLatin1String("Description6"));
-    QCOMPARE(infos.groupAddressesFullDescription(installation).value(groupAddress2305).dataPointNumber(),
-        QLatin1String(""));
-    QCOMPARE(infos.groupAddressesFullDescription(installation).value(groupAddress2305).puid(),
-        QLatin1String("440"));
-    QCOMPARE(infos.groupAddressesFullDescription(installation).value(groupAddress2305).dataPointType(),
-        QKnxDatapointType::Type::Unknown);
+    info2 = { QString("Installation"), QString("Name"), QKnxAddress::Group::Broadcast,
+        QKnxDatapointType::Type::DptSwitch, QString("Description") };
+    QCOMPARE(info2, info);
 
-    QCOMPARE(infos.datapointTypeGroupAddresses(installation).values(
-        QKnxDatapointType::Type::DptSwitch).size(), 4);
-}
+    info2 = { QString("Installation"), QString("Name"), QKnxAddress::Group::Broadcast,
+        QString("DPST-1-1"), QString("Description") };
+    QCOMPARE(info2, info);
 
-void tst_QKnxGroupAddressInfos::test_DebugStream()
-{
     struct DebugHandler
     {
         explicit DebugHandler(QtMessageHandler newMessageHandler)
@@ -253,24 +214,133 @@ void tst_QKnxGroupAddressInfos::test_DebugStream()
         QtMessageHandler oldMessageHandler;
     } _(myMessageHandler);
 
-    QString id1 = "P-01-000-1";
-    QString address1 = "1";
-    QString name1 = "address1";
-    QString description1 = "Do 1";
-    QString dataPointType = "DPT-1-1";
-    QString puid = "whatever";
-
-    QKnxGroupAddressInfo info1(id1, address1, name1, description1, dataPointType, puid);
-
-    QString home = QString::fromLatin1("Home");
-    QKnxGroupAddressInfos groupAddressesInfo;
-    groupAddressesInfo.addEntry(info1, home);
-
-    qDebug() << groupAddressesInfo;
-    QCOMPARE(s_msg, QString::fromLatin1("{Installation: Home}, {Group Address: 0x0001}, {Description: Do 1}, "
-        "{DPT Type: 100001}"));
+    qDebug() << info;
+    QCOMPARE(s_msg, QString("QKnxGroupAddressInfo (installation=Installation, name=Name, "
+        "address=0x0000, type=QKnxDatapointType::Type(DptSwitch), description=Description)"));
 }
 
+void tst_QKnxGroupAddressInfos::groupAddressInfosFromXml()
+{
+    QKnxGroupAddressInfos infos(QString(":/data/0.xml"));
+
+    QCOMPARE(infos.projectIds(), QVector<QString>());
+    QCOMPARE(infos.projectFile(), QString(":/data/0.xml"));
+    QCOMPARE(infos.status(), QKnxGroupAddressInfos::Status::NoError);
+    QCOMPARE(infos.errorString(), QString());
+
+    QCOMPARE(infos.parse(), true);
+    QCOMPARE(infos.projectName(QString("P-03D8")), QString());
+    QCOMPARE(infos.projectName(QString("P-03D9")), QString());
+    QVERIFY2(infos.projectIds().contains(QString("P-03D8")), "P-03D8" );
+    QVERIFY2(infos.projectIds().contains(QString("P-03D9")), "P-03D9" );
+
+    auto installations = infos.installations(QString("P-03D8"));
+    QCOMPARE(installations.count(), 2);
+
+    QCOMPARE(installations.indexOf(QString("First")) >= 0, true);
+    QCOMPARE(infos.infoCount(QString("P-03D8"), QString("First")), 95);
+    QCOMPARE(infos.addressInfos(QString("P-03D8"), QString("First")).size(), 95);
+
+    auto groupAddressInfos = initGroupAddressInfos(QString("First"));
+    auto entries = infos.addressInfos(QString("P-03D8"), QString("First"));
+    for (const auto &entry : qAsConst(groupAddressInfos))
+        QVERIFY2(entries.contains(entry), entry.name().toLatin1());
+
+    QCOMPARE(installations.indexOf(QString("Second")) >= 0, true);
+    QCOMPARE(infos.infoCount(QString("P-03D8"), QString("Second")), 95);
+    QCOMPARE(infos.addressInfos(QString("P-03D8"), QString("Second")).size(), 95);
+
+    groupAddressInfos = initGroupAddressInfos(QString("Second"));
+    entries = infos.addressInfos(QString("P-03D8"), QString("Second"));
+    for (const auto &entry : qAsConst(groupAddressInfos))
+        QVERIFY2(entries.contains(entry), entry.name().toLatin1());
+
+    installations = infos.installations(QString("P-03D9"));
+    QCOMPARE(installations.count(), 2);
+
+    QCOMPARE(installations.indexOf(QString("Third")) >= 0, true);
+    QCOMPARE(infos.infoCount(QString("P-03D9"), QString("Third")), 95);
+    QCOMPARE(infos.addressInfos(QString("P-03D9"), QString("Third")).size(), 95);
+
+    groupAddressInfos = initGroupAddressInfos(QString("Third"));
+    entries = infos.addressInfos(QString("P-03D9"), QString("Third"));
+    for (const auto &entry : qAsConst(groupAddressInfos))
+        QVERIFY2(entries.contains(entry), entry.name().toLatin1());
+
+    QCOMPARE(installations.indexOf(QString("Fourth")) >= 0, true);
+    QCOMPARE(infos.infoCount(QString("P-03D9"), QString("Fourth")), 95);
+    QCOMPARE(infos.addressInfos(QString("P-03D9"), QString("Fourth")).size(), 95);
+
+    groupAddressInfos = initGroupAddressInfos(QString("Fourth"));
+    entries = infos.addressInfos(QString("P-03D9"), QString("Fourth"));
+    for (const auto &entry : qAsConst(groupAddressInfos))
+        QVERIFY2(entries.contains(entry), entry.name().toLatin1());
+
+    entries = infos.addressInfos(QString("P-03D9"), QString("Fifth"));
+    QCOMPARE(entries.size(), 0); // wrong installation name
+
+    entries = infos.addressInfos(QString("P-03D5"), QString("Fourth"));
+    QCOMPARE(entries.size(), 0); // wrong project id
+}
+
+void tst_QKnxGroupAddressInfos::groupAddressInfosFromZip()
+{
+    QKnxGroupAddressInfos infos;
+    QCOMPARE(infos.projectIds(), QVector<QString>());
+    QCOMPARE(infos.projectFile(), QString());
+    QCOMPARE(infos.status(), QKnxGroupAddressInfos::Status::NoError);
+    QCOMPARE(infos.errorString(), QString());
+
+    QCOMPARE(infos.parse(), false);
+    QCOMPARE(infos.status(), QKnxGroupAddressInfos::Status::FileError);
+    QCOMPARE(infos.errorString(), QString("No file name specified"));
+
+    infos.clear();
+    QCOMPARE(infos.status(), QKnxGroupAddressInfos::Status::NoError);
+    QCOMPARE(infos.errorString(), QString());
+
+    infos.setProjectFile(QStringLiteral(":/data/nofile.xml"));
+    QCOMPARE(infos.projectFile(), QStringLiteral(":/data/nofile.xml"));
+    QCOMPARE(infos.parse(), false);
+    QCOMPARE(infos.status(), QKnxGroupAddressInfos::Status::FileError);
+    QCOMPARE(infos.errorString(), QString("No such file or directory"));
+
+    infos.clear();
+    QCOMPARE(infos.projectFile(), QString());
+    QCOMPARE(infos.status(), QKnxGroupAddressInfos::Status::NoError);
+    QCOMPARE(infos.errorString(), QString());
+
+    infos.setProjectFile(QStringLiteral(":/data/qt.io.knxproj"));
+    QCOMPARE(infos.projectFile(), QStringLiteral(":/data/qt.io.knxproj"));
+    QCOMPARE(infos.parse(), true);
+
+    QCOMPARE(infos.projectIds().count(), 1);
+    QCOMPARE(infos.projectIds().first(), QString("P-03D9"));
+    QCOMPARE(infos.projectName(QString("P-03D9")), QString("qt.io.test"));
+
+    auto installations = infos.installations(QString("P-03D9"));
+    QCOMPARE(installations.count(), 1);
+
+    auto installation = installations.first();
+    QCOMPARE(installation, QString());
+    QCOMPARE(infos.infoCount(QString("P-03D9"), installation), 95);
+    QCOMPARE(infos.addressInfos(QString("P-03D9"), installation).size(), 95);
+
+    const auto groupAddressInfos = initGroupAddressInfos();
+    const auto entries = infos.addressInfos(QString("P-03D9"), installation);
+    for (const auto &entry : qAsConst(groupAddressInfos))
+        QVERIFY2(entries.contains(entry), entry.name().toLatin1());
+
+    infos.clear();
+    infos.add(groupAddressInfos.first(), QString("P-03D9"));
+    QCOMPARE(infos.addressInfos(QString("P-03D9"), installation).first(), groupAddressInfos.first());
+
+    infos.remove(groupAddressInfos.last(), QString("P-03D9"));
+    QCOMPARE(infos.addressInfos(QString("P-03D9"), installation).first(), groupAddressInfos.first());
+
+    infos.remove(groupAddressInfos.first(), QString("P-03D9"));
+    QCOMPARE(infos.infoCount(QString("P-03D9"), ""), 0);
+}
 
 QTEST_MAIN(tst_QKnxGroupAddressInfos)
 

@@ -30,20 +30,14 @@
 #ifndef QKNXNETIPCURRENTCONFIGDIB_H
 #define QKNXNETIPCURRENTCONFIGDIB_H
 
-#include <QtCore/qbytearray.h>
-#include <QtCore/qdatastream.h>
-#include <QtCore/qdebug.h>
-#include <QtCore/qstring.h>
-#include <QtCore/qvector.h>
 #include <QtKnx/qknxglobal.h>
 #include <QtKnx/qknxnetipstruct.h>
-#include <QtKnx/qknxtraits.h>
 #include <QtNetwork/qhostaddress.h>
 #include <QtNetwork/qnetworkinterface.h>
 
 QT_BEGIN_NAMESPACE
 
-class Q_KNX_EXPORT QKnxNetIpCurrentConfigDib final : public QKnxNetIpDescriptionTypeStruct
+class Q_KNX_EXPORT QKnxNetIpCurrentConfigDib final : public QKnxNetIpDib
 {
 public:
     // 03_08_03 Management v01.06.02 AS, 2.5.5 PID_CURRENT_IP_ASSIGNMENT_METHOD (PID = 54)
@@ -69,9 +63,9 @@ public:
                               const QHostAddress &dhcp,
                               AssignmentMethod method);
 
-    template <typename T> static QKnxNetIpCurrentConfigDib fromBytes(const T &bytes, quint16 index)
+    static QKnxNetIpCurrentConfigDib fromBytes(const QKnxByteArray &bytes, quint16 index)
     {
-        return QKnxNetIpStructHelper::fromBytes(bytes, index,
+        return QKnxNetIpStruct::fromBytes(bytes, index,
             QKnxNetIp::DescriptionType::CurrentIpConfiguration);
     }
 
@@ -85,7 +79,7 @@ public:
     bool isValid() const override;
 
 private:
-    QKnxNetIpCurrentConfigDib(const QKnxNetIpDescriptionTypeStruct &other);
+    QKnxNetIpCurrentConfigDib(const QKnxNetIpDib &other);
 };
 
 QT_END_NAMESPACE

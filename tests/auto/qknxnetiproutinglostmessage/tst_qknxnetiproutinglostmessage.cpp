@@ -42,19 +42,37 @@ class tst_QKnxNetIpRoutingLostMessage: public QObject
 
 private slots:
     void testDefaultConstructor();
-    void testConstructor(); // to do
-    void testDebugStream(); // to do
-    void testDataStream(); // to do
+    void testConstructor();
+    void testDebugStream();
 };
 
 void tst_QKnxNetIpRoutingLostMessage::testDefaultConstructor()
 {
-    QKnxNetIpRoutingLostMessage routing;
+    QKnxNetIpFrame frame;
+
+    QKnxNetIpRoutingLostMessage routing(frame);
     QCOMPARE(routing.isValid(), false);
+
+    frame = QKnxNetIpRoutingLostMessage::builder().create();
+    QCOMPARE(routing.isValid(), true);
 }
 
 void tst_QKnxNetIpRoutingLostMessage::testConstructor()
 {
+    auto frame = QKnxNetIpRoutingLostMessage::builder()
+        .setDeviceState(QKnxNetIp::DeviceState::IpFault)
+        .setLostMessageCount(0xffff)
+        .create();
+    QKnxNetIpRoutingLostMessage routing(frame);
+
+    QCOMPARE(routing.isValid(), true);
+    QCOMPARE(frame.size(), quint16(10));
+    QCOMPARE(frame.bytes(), QKnxByteArray::fromHex("06100531000a0401ffff"));
+    QCOMPARE(frame.data().size(), quint16(4));
+    QCOMPARE(frame.data(), QKnxByteArray::fromHex("0401ffff"));
+
+    QCOMPARE(routing.deviceState(), QKnxNetIp::DeviceState::IpFault);
+    QCOMPARE(routing.lostMessageCount(), quint16(0xffff));
 }
 
 void tst_QKnxNetIpRoutingLostMessage::testDebugStream()
@@ -69,17 +87,10 @@ void tst_QKnxNetIpRoutingLostMessage::testDebugStream()
         QtMessageHandler oldMessageHandler;
     } _(myMessageHandler);
 
-    //qDebug() << DEFAULTCONSTRUCTOR;
-    //QCOMPARE(s_msg, QString::fromLatin1("0x1nv4l1d"));
+    qDebug() << QKnxNetIpRoutingLostMessage::builder().create();
+    QCOMPARE(s_msg, QString::fromLatin1("0x06100531000a04000000"));
 }
 
-void tst_QKnxNetIpRoutingLostMessage::testDataStream()
-{
-    //QByteArray byteArray;
-    //QDataStream out(&byteArray, QIODevice::WriteOnly);
-    //out << OTHERCONSTRUCTOR;
-    //QCOMPARE(byteArray, QByteArray::fromHex("1404C0A8020CFFFFFF00C0A80201B48A03020100"));
-}
 QTEST_APPLESS_MAIN(tst_QKnxNetIpRoutingLostMessage)
 
 #include "tst_qknxnetiproutinglostmessage.moc"

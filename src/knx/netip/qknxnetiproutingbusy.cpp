@@ -32,45 +32,67 @@
 
 QT_BEGIN_NAMESPACE
 
-QKnxNetIpRoutingBusy::QKnxNetIpRoutingBusy(QKnxNetIp::DeviceState state)
-    : QKnxNetIpRoutingBusy(state, 100, 0x0000)
-{}
-
-QKnxNetIpRoutingBusy::QKnxNetIpRoutingBusy(QKnxNetIp::DeviceState state,
-        quint8 routingBusyWaitTime, quint16 routingBusyControl)
-    : QKnxNetIpFrame(QKnxNetIp::ServiceType::RoutingBusy)
-{
-    QKnxNetIpPayload payload((quint8) state);
-    payload.setByte(1, routingBusyWaitTime);
-    payload.appendBytes(QKnxUtils::QUint16::bytes(routingBusyControl));
-    setPayload(payload);
-}
-
-QKnxNetIpRoutingBusy::QKnxNetIpRoutingBusy(const QKnxNetIpFrame &other)
-    : QKnxNetIpFrame(other)
+QKnxNetIpRoutingBusy::QKnxNetIpRoutingBusy(const QKnxNetIpFrame &frame)
+    : m_frame(frame)
 {}
 
 QKnxNetIp::DeviceState QKnxNetIpRoutingBusy::deviceState() const
 {
-    return QKnxNetIp::DeviceState(payloadRef().byte(0));
+    return QKnxNetIp::DeviceState(m_frame.constData().value(1));
 }
 
-quint8 QKnxNetIpRoutingBusy::routingBusyWaitTime() const
+quint16 QKnxNetIpRoutingBusy::routingBusyWaitTime() const
 {
-    return quint8(payloadRef().byte(1));
+    return QKnxUtils::QUint16::fromBytes(m_frame.constData(), 2);
 }
 
 quint16 QKnxNetIpRoutingBusy::routingBusyControl() const
 {
-    return QKnxUtils::QUint16::fromBytes(payloadRef(), 2);
+    return QKnxUtils::QUint16::fromBytes(m_frame.constData(), 4);
 }
 
 bool QKnxNetIpRoutingBusy::isValid() const
 {
-    quint8 time = routingBusyWaitTime();
-    if (time < 20 || time > 100)
+    quint16 time = routingBusyWaitTime();
+    if (time < 20)
         return false;
-    return QKnxNetIpFrame::isValid() && size() == 12 && code() == QKnxNetIp::ServiceType::RoutingBusy;
+    return m_frame.isValid() && m_frame.size() == 12
+        && m_frame.serviceType() == QKnxNetIp::ServiceType::RoutingBusy;
+}
+
+QKnxNetIpRoutingBusy::Builder QKnxNetIpRoutingBusy::builder()
+{
+    return QKnxNetIpRoutingBusy::Builder();
+}
+
+
+// -- QKnxNetIpRoutingBusy::Builder
+
+QKnxNetIpRoutingBusy::Builder &
+    QKnxNetIpRoutingBusy::Builder::setDeviceState(QKnxNetIp::DeviceState state)
+{
+    m_state = state;
+    return *this;
+}
+
+QKnxNetIpRoutingBusy::Builder &
+    QKnxNetIpRoutingBusy::Builder::setRoutingBusyWaitTime(quint16 waitTime)
+{
+    m_waitTime = waitTime < 20 ? 20 : waitTime;
+    return *this;
+}
+
+QKnxNetIpRoutingBusy::Builder &
+    QKnxNetIpRoutingBusy::Builder::setRoutingBusyControl(quint16 busyControl)
+{
+    m_busyControl = busyControl;
+    return *this;
+}
+
+QKnxNetIpFrame QKnxNetIpRoutingBusy::Builder::create() const
+{
+    return { QKnxNetIp::ServiceType::RoutingBusy, QKnxByteArray { 0x06, quint8(m_state) }
+        + QKnxUtils::QUint16::bytes(m_waitTime) + QKnxUtils::QUint16::bytes(m_busyControl) };
 }
 
 QT_END_NAMESPACE

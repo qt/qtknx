@@ -30,19 +30,14 @@
 #ifndef QKNXADDITIONAL_H
 #define QKNXADDITIONAL_H
 
-#include <QtCore/qbytearray.h>
-#include <QtCore/qdatastream.h>
 #include <QtCore/qdebug.h>
 #include <QtCore/qstring.h>
-#include <QtCore/qvector.h>
-#include <QtKnx/qknxbytestore.h>
-#include <QtKnx/qknxglobal.h>
-#include <QtKnx/qknxtraits.h>
-#include <QtKnx/qknxutils.h>
+
+#include <QtKnx/qknxbytearray.h>
 
 QT_BEGIN_NAMESPACE
 
-class Q_KNX_EXPORT QKnxAdditionalInfo final : private QKnxByteStore
+class Q_KNX_EXPORT QKnxAdditionalInfo final
 {
     Q_GADGET
 
@@ -60,60 +55,38 @@ public:
         RfMultiInformation = 0x08,
         PreambleAndPostamble = 0x09,
         RfFastAckInformation = 0x0a,
-        ManufactorSpecificData = 0xfe,
+        ManufacturerSpecificData = 0xfe,
         EscCode = 0xff
     };
     Q_ENUM(Type)
-    QKnxAdditionalInfo::Type type() const;
 
     QKnxAdditionalInfo() = default;
-    ~QKnxAdditionalInfo() override = default;
+    ~QKnxAdditionalInfo() = default;
 
-    QKnxAdditionalInfo(QKnxAdditionalInfo::Type type, const QByteArray &data);
-    QKnxAdditionalInfo(QKnxAdditionalInfo::Type type, const QVector<quint8> &data);
+    QKnxAdditionalInfo(QKnxAdditionalInfo::Type type, const QKnxByteArray &data);
 
+    bool isNull() const;
     bool isValid() const;
-    QString toString() const override;
 
+    quint8 size() const;
     quint8 dataSize() const;
-    template <typename T = QByteArray> auto data() const -> decltype(T())
-    {
-        static_assert(is_type<T, QByteArray, QVector<quint8>, std::deque<quint8>,
-            std::vector<quint8>>::value, "Type not supported.");
 
-        const auto &store = ref(2);
-        T t(store.size(), 0);
-        std::copy(std::begin(store), std::end(store), std::begin(t));
-        return t;
-    }
+    QKnxAdditionalInfo::Type type() const;
+    void setType(QKnxAdditionalInfo::Type type);
+
+    QKnxByteArray data() const;
+    void setData(const QKnxByteArray &data);
+
+    quint8 byte(quint8 index) const;
+    QKnxByteArray bytes() const;
+
+    static QKnxAdditionalInfo fromBytes(const QKnxByteArray &bytes, quint16 index = 0);
     static qint32 expectedDataSize(QKnxAdditionalInfo::Type type, bool *isFixedSize = nullptr);
 
-    template <typename T, std::size_t S = 0>
-        static QKnxAdditionalInfo fromBytes(const T &bytes, quint16 index)
-    {
-        static_assert(is_type<T, QByteArray, QKnxByteStoreRef, QVector<quint8>, std::deque<quint8>,
-            std::vector<quint8>, std::array<quint8, S>>::value, "Type not supported.");
-
-        const qint32 availableSize = bytes.size() - index;
-        if (availableSize < 2)
-            return {}; // size missing
-
-        quint16 size = QKnxUtils::QUint8::fromBytes(bytes, index + 1) + 2; // type + size => 2
-        if (availableSize < size)
-            return {};
-
-        QKnxAdditionalInfo info;
-        info.setBytes(std::next(std::begin(bytes), index), std::next(std::begin(bytes), index + size));
-        return info;
-    }
-
-    using QKnxByteStore::size;
-    using QKnxByteStore::byte;
-    using QKnxByteStore::bytes;
+private:
+    QKnxByteArray m_bytes { 0x00, 0x00 };
 };
 Q_KNX_EXPORT QDebug operator<<(QDebug debug, const QKnxAdditionalInfo &info);
-Q_KNX_EXPORT QDataStream &operator>>(QDataStream &stream, QKnxAdditionalInfo &info);
-Q_KNX_EXPORT QDataStream &operator<<(QDataStream &stream, const QKnxAdditionalInfo &info);
 
 Q_DECLARE_TYPEINFO(QKnxAdditionalInfo::Type, Q_PRIMITIVE_TYPE);
 

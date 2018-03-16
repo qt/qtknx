@@ -45,20 +45,20 @@ QT_BEGIN_NAMESPACE
 static QKnxTpdu createNetworkParameterTpdu(QKnxTpdu::ApplicationControlField apci,
                                            QKnxInterfaceObjectType object,
                                            QKnxInterfaceObjectProperty property,
-                                           const QVector<quint8> &data, // aka. testInfo
-                                           const QVector<quint8> &testResult = {})
+                                           const QKnxByteArray &data, // aka. testInfo
+                                           const QKnxByteArray &testResult = {})
 {
     if (!QKnxInterfaceObjectType::isMatch(object, property))
         return {QKnxTpdu::TransportControlField::Invalid,
             QKnxTpdu::ApplicationControlField::Invalid};
 
     return { QKnxTpdu::TransportControlField::DataBroadcast, apci,
-        QKnxUtils::QUint16::bytes<QVector<quint8>>(quint16(object)) + QKnxUtils::QUint8::bytes<QVector<quint8>>(quint8(property))
+        QKnxUtils::QUint16::bytes(quint16(object)) + QKnxUtils::QUint8::bytes(quint8(property))
         + data + testResult };
 }
 
 QKnxTpdu QKnxTpduFactory::Broadcast::createNetworkParameterReadTpdu(QKnxInterfaceObjectType object,
-    QKnxInterfaceObjectProperty property, const QVector<quint8> &testInfo)
+    QKnxInterfaceObjectProperty property, const QKnxByteArray &testInfo)
 {
     if (testInfo.size() > 250) // L_Data_Extended -> max 254 bytes payload
         return {QKnxTpdu::TransportControlField::Invalid,
@@ -70,7 +70,7 @@ QKnxTpdu QKnxTpduFactory::Broadcast::createNetworkParameterReadTpdu(QKnxInterfac
 
 QKnxTpdu
 QKnxTpduFactory::Broadcast::createNetworkParameterResponseTpdu(QKnxInterfaceObjectType object,
-    QKnxInterfaceObjectProperty property, const QVector<quint8> &testInfo, const QVector<quint8> &testResult)
+    QKnxInterfaceObjectProperty property, const QKnxByteArray &testInfo, const QKnxByteArray &testResult)
 {
     if ((testInfo.size() + testResult.size()) > 250) // L_Data_Extended -> max 254 bytes payload
         return {QKnxTpdu::TransportControlField::Invalid,
@@ -81,7 +81,7 @@ QKnxTpduFactory::Broadcast::createNetworkParameterResponseTpdu(QKnxInterfaceObje
 }
 
 QKnxTpdu QKnxTpduFactory::Broadcast::createNetworkParameterWriteTpdu(QKnxInterfaceObjectType object,
-    QKnxInterfaceObjectProperty property, const QVector<quint8> &value)
+    QKnxInterfaceObjectProperty property, const QKnxByteArray &value)
 {
     if (value.size() > 250) // L_Data_Extended -> max 254 bytes payload
         return {QKnxTpdu::TransportControlField::Invalid,
@@ -93,7 +93,7 @@ QKnxTpdu QKnxTpduFactory::Broadcast::createNetworkParameterWriteTpdu(QKnxInterfa
 
 QKnxTpdu
 QKnxTpduFactory::Broadcast::createNetworkParameterInfoReportTpdu(QKnxInterfaceObjectType object,
-    QKnxInterfaceObjectProperty property, const QVector<quint8> &testInfo, const QVector<quint8> &testResult)
+    QKnxInterfaceObjectProperty property, const QKnxByteArray &testInfo, const QKnxByteArray &testResult)
 {
     if ((testInfo.size() + testResult.size()) > 250) // L_Data_Extended -> max 254 bytes payload
         return {QKnxTpdu::TransportControlField::Invalid,
@@ -109,8 +109,8 @@ QKnxTpduFactory::Broadcast::createNetworkParameterInfoReportTpdu(QKnxInterfaceOb
 static QKnxTpdu createSystemNetworkParameterTpdu(QKnxTpdu::ApplicationControlField apci,
                                                  QKnxInterfaceObjectType object,
                                                  quint16 property,
-                                                 const QVector<quint8> &data, // aka. operand, testInfo
-                                                 const QVector<quint8> &testResult = {})
+                                                 const QKnxByteArray &data, // aka. operand, testInfo
+                                                 const QKnxByteArray &testResult = {})
 {
     if (property > 0x0fff)
         return {QKnxTpdu::TransportControlField::Invalid,
@@ -121,13 +121,13 @@ static QKnxTpdu createSystemNetworkParameterTpdu(QKnxTpdu::ApplicationControlFie
             QKnxTpdu::ApplicationControlField::Invalid}; // 5 bytes already used for APCI, object type, PID
 
     return { QKnxTpdu::TransportControlField::DataSystemBroadcast, apci,
-        QKnxUtils::QUint16::bytes<QVector<quint8>>(quint16(object)) + QKnxUtils::QUint8::bytes<QVector<quint8>>(quint8(property >> 4))
-         + QKnxUtils::QUint8::bytes<QVector<quint8>>(quint8(property << 4)) + data + testResult };
+        QKnxUtils::QUint16::bytes(quint16(object)) + QKnxUtils::QUint8::bytes(quint8(property >> 4))
+         + QKnxUtils::QUint8::bytes(quint8(property << 4)) + data + testResult };
 }
 
 QKnxTpdu QKnxTpduFactory::Broadcast
 ::createSystemNetworkParameterReadTpdu(QKnxInterfaceObjectType object, quint16 property,
-    const QVector<quint8> &testInfo)
+    const QKnxByteArray &testInfo)
 {
     return createSystemNetworkParameterTpdu(
         QKnxTpdu::ApplicationControlField::SystemNetworkParameterRead, object, property, testInfo);
@@ -135,7 +135,7 @@ QKnxTpdu QKnxTpduFactory::Broadcast
 
 QKnxTpdu
 QKnxTpduFactory::Broadcast::createSystemNetworkParameterResponseTpdu(QKnxInterfaceObjectType object,
-    quint16 property, const QVector<quint8> &testInfo, const QVector<quint8> &testResult)
+    quint16 property, const QKnxByteArray &testInfo, const QKnxByteArray &testResult)
 {
     return createSystemNetworkParameterTpdu(
         QKnxTpdu::ApplicationControlField::SystemNetworkParameterResponse, object, property,
@@ -144,7 +144,7 @@ QKnxTpduFactory::Broadcast::createSystemNetworkParameterResponseTpdu(QKnxInterfa
 
 QKnxTpdu
 QKnxTpduFactory::Broadcast::createSystemNetworkParameterWriteTpdu(QKnxInterfaceObjectType object,
-    quint16 property, const QVector<quint8> &value)
+    quint16 property, const QKnxByteArray &value)
 {
     return createSystemNetworkParameterTpdu(
         QKnxTpdu::ApplicationControlField::SystemNetworkParameterWrite, object, property, value);
@@ -174,7 +174,7 @@ QKnxTpdu QKnxTpduFactory::Broadcast::createIndividualAddressWriteTpdu(const QKnx
             QKnxTpdu::ApplicationControlField::Invalid};
 
     return { QKnxTpdu::TransportControlField::DataBroadcast,
-        QKnxTpdu::ApplicationControlField::IndividualAddressWrite, address.bytes<QVector<quint8>>() };
+        QKnxTpdu::ApplicationControlField::IndividualAddressWrite, address.bytes() };
 }
 
 QKnxTpdu
@@ -193,7 +193,7 @@ QKnxTpduFactory::Broadcast::createIndividualAddressResponseTpdu()
     has a different size then six octets.
 */
 QKnxTpdu
-QKnxTpduFactory::Broadcast::createIndividualAddressSerialNumberReadTpdu(const QVector<quint8> &sn)
+QKnxTpduFactory::Broadcast::createIndividualAddressSerialNumberReadTpdu(const QKnxByteArray &sn)
 {
     if (sn.size() != 6)
         return {QKnxTpdu::TransportControlField::Invalid,
@@ -204,7 +204,7 @@ QKnxTpduFactory::Broadcast::createIndividualAddressSerialNumberReadTpdu(const QV
 }
 
 QKnxTpdu
-QKnxTpduFactory::Broadcast::createIndividualAddressSerialNumberResponseTpdu(const QVector<quint8> &sn,
+QKnxTpduFactory::Broadcast::createIndividualAddressSerialNumberResponseTpdu(const QKnxByteArray &sn,
     const QKnxAddress &domainAddress)
 {
     if ((sn.size() != 6) || (domainAddress.type() != QKnxAddress::Type::Individual))
@@ -213,7 +213,7 @@ QKnxTpduFactory::Broadcast::createIndividualAddressSerialNumberResponseTpdu(cons
 
     return { QKnxTpdu::TransportControlField::DataBroadcast,
         QKnxTpdu::ApplicationControlField::IndividualAddressSerialNumberResponse, sn
-        + domainAddress.bytes<QVector<quint8>>() + QKnxUtils::QUint16::bytes<QVector<quint8>>(0u) };
+        + domainAddress.bytes() + QKnxUtils::QUint16::bytes(0u) };
 }
 
 /*!
@@ -223,7 +223,7 @@ QKnxTpduFactory::Broadcast::createIndividualAddressSerialNumberResponseTpdu(cons
     \a newAddress is not of type \l QKnxAddress::Individual.
 */
 QKnxTpdu
-QKnxTpduFactory::Broadcast::createIndividualAddressSerialNumberWriteTpdu(const QVector<quint8> &sn,
+QKnxTpduFactory::Broadcast::createIndividualAddressSerialNumberWriteTpdu(const QKnxByteArray &sn,
     const QKnxAddress &newAddress)
 {
     if ((sn.size() != 6) || (newAddress.type() != QKnxAddress::Type::Individual))
@@ -232,7 +232,7 @@ QKnxTpduFactory::Broadcast::createIndividualAddressSerialNumberWriteTpdu(const Q
 
     return { QKnxTpdu::TransportControlField::DataBroadcast,
         QKnxTpdu::ApplicationControlField::IndividualAddressSerialNumberWrite, sn + newAddress
-        .bytes<QVector<quint8>>() + QKnxUtils::QUint32::bytes<QVector<quint8>>(0u) };
+        .bytes() + QKnxUtils::QUint32::bytes(0u) };
 }
 
 
@@ -247,7 +247,7 @@ QKnxTpdu QKnxTpduFactory::Broadcast::createDomainAddressReadTpdu()
         QKnxTpdu::ApplicationControlField::DomainAddressRead };
 }
 
-QKnxTpdu QKnxTpduFactory::Broadcast::createDomainAddressResponseTpdu(const QVector<quint8> &address)
+QKnxTpdu QKnxTpduFactory::Broadcast::createDomainAddressResponseTpdu(const QKnxByteArray &address)
 {
     if ((address.size() != 2) && (address.size() != 6))
         return {QKnxTpdu::TransportControlField::Invalid,
@@ -261,7 +261,7 @@ QKnxTpdu QKnxTpduFactory::Broadcast::createDomainAddressResponseTpdu(const QVect
     Returns a TPDU for Domain Address Write Application Service with the given
     \l QKnxAddress \a address set.
 */
-QKnxTpdu QKnxTpduFactory::Broadcast::createDomainAddressWriteTpdu(const QVector<quint8> &address)
+QKnxTpdu QKnxTpduFactory::Broadcast::createDomainAddressWriteTpdu(const QKnxByteArray &address)
 {
     if ((address.size() != 2) && (address.size() != 6))
         return {QKnxTpdu::TransportControlField::Invalid,
@@ -280,7 +280,7 @@ QKnxTpdu QKnxTpduFactory::Broadcast::createDomainAddressWriteTpdu(const QVector<
     then six octets.
 */
 QKnxTpdu
-QKnxTpduFactory::Broadcast::createDomainAddressSerialNumberReadTpdu(const QVector<quint8> &sn)
+QKnxTpduFactory::Broadcast::createDomainAddressSerialNumberReadTpdu(const QKnxByteArray &sn)
 {
     if (sn.size() != 6)
         return {QKnxTpdu::TransportControlField::Invalid,
@@ -291,8 +291,8 @@ QKnxTpduFactory::Broadcast::createDomainAddressSerialNumberReadTpdu(const QVecto
 }
 
 QKnxTpdu
-QKnxTpduFactory::Broadcast::createDomainAddressSerialNumberResponseTpdu(const QVector<quint8> &sn,
-    const QVector<quint8> &domainAddress)
+QKnxTpduFactory::Broadcast::createDomainAddressSerialNumberResponseTpdu(const QKnxByteArray &sn,
+    const QKnxByteArray &domainAddress)
 {
     if ((sn.size() != 6) || ((domainAddress.size() != 2) && (domainAddress.size() != 6)))
         return {QKnxTpdu::TransportControlField::Invalid,
@@ -307,8 +307,8 @@ QKnxTpduFactory::Broadcast::createDomainAddressSerialNumberResponseTpdu(const QV
     with the given \a sn and \l QKnxAddress \a domainAddress set; or otherwise
     an empty TPDU if the \a sn has a different size then six octets.
 */
-QKnxTpdu QKnxTpduFactory::Broadcast::createDomainAddressSerialNumberWriteTpdu(const QVector<quint8> &sn,
-    const QVector<quint8> &domainAddress)
+QKnxTpdu QKnxTpduFactory::Broadcast::createDomainAddressSerialNumberWriteTpdu(const QKnxByteArray &sn,
+    const QKnxByteArray &domainAddress)
 {
     if ((sn.size() != 6) || ((domainAddress.size() != 2) && (domainAddress.size() != 6)))
         return {QKnxTpdu::TransportControlField::Invalid,
@@ -329,14 +329,14 @@ QKnxTpdu QKnxTpduFactory::Broadcast::createPll110DomainAddressSelectiveReadTpdu(
             QKnxTpdu::ApplicationControlField::Invalid};
 
     return { QKnxTpdu::TransportControlField::DataBroadcast,
-        QKnxTpdu::ApplicationControlField::DomainAddressSelectiveRead, QKnxUtils::QUint8::bytes<QVector<quint8>>(0u)
-        + QKnxUtils::QUint8::bytes<QVector<quint8>>(domainAddress) + startAddress.bytes<QVector<quint8>>()
-        + QKnxUtils::QUint8::bytes<QVector<quint8>>(range) };
+        QKnxTpdu::ApplicationControlField::DomainAddressSelectiveRead, QKnxUtils::QUint8::bytes(0u)
+        + QKnxUtils::QUint8::bytes(domainAddress) + startAddress.bytes()
+        + QKnxUtils::QUint8::bytes(range) };
 }
 
 QKnxTpdu
-QKnxTpduFactory::Broadcast::createRfDomainAddressSelectiveReadTpdu(const QVector<quint8> &startAddress,
-    const QVector<quint8> &endAddress)
+QKnxTpduFactory::Broadcast::createRfDomainAddressSelectiveReadTpdu(const QKnxByteArray &startAddress,
+    const QKnxByteArray &endAddress)
 {
     if ((startAddress.size() != 6) && (endAddress.size() != 6))
         return {QKnxTpdu::TransportControlField::Invalid,
@@ -344,7 +344,7 @@ QKnxTpduFactory::Broadcast::createRfDomainAddressSelectiveReadTpdu(const QVector
 
     return { QKnxTpdu::TransportControlField::DataBroadcast,
         QKnxTpdu::ApplicationControlField::DomainAddressSelectiveRead, startAddress + endAddress
-        + QKnxUtils::QUint8::bytes<QVector<quint8>>(0u) };
+        + QKnxUtils::QUint8::bytes(0u) };
 }
 
 QKnxTpdu QKnxTpduFactory::Broadcast::createFeDomainAddressSelectiveReadTpdu(quint16 manufacturerId,
@@ -352,8 +352,8 @@ QKnxTpdu QKnxTpduFactory::Broadcast::createFeDomainAddressSelectiveReadTpdu(quin
 {
     return { QKnxTpdu::TransportControlField::DataBroadcast,
         QKnxTpdu::ApplicationControlField::DomainAddressSelectiveRead,
-        QKnxUtils::QUint16::bytes<QVector<quint8>>(manufacturerId) + QKnxUtils::QUint16::bytes<QVector<quint8>>(quint16(obj))
-        + QKnxUtils::QUint8::bytes<QVector<quint8>>(quint8(property)) + QKnxUtils::QUint16::bytes<QVector<quint8>>(parameters) };
+        QKnxUtils::QUint16::bytes(manufacturerId) + QKnxUtils::QUint16::bytes(quint16(obj))
+        + QKnxUtils::QUint8::bytes(quint8(property)) + QKnxUtils::QUint16::bytes(parameters) };
 }
 
 QT_END_NAMESPACE

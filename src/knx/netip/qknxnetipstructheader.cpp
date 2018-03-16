@@ -1,6 +1,6 @@
 /******************************************************************************
 **
-** Copyright (C) 2017 The Qt Company Ltd.
+** Copyright (C) 2018 The Qt Company Ltd.
 ** Contact: https://www.qt.io/licensing/
 **
 ** This file is part of the QtKnx module.
@@ -31,16 +31,6 @@
 
 QT_BEGIN_NAMESPACE
 
-/*
-    2.1.3 Structures:
-
-    All KNXnet/IP structures follow a common rule: the first octet shall always
-    be the length of the complete structure (as some structures may have fields
-    of variable length e.g. strings) and the second octet shall always be an
-    identifier that shall specify the type of the structure. From the third
-    octet on the structure data shall follow.
-*/
-
 /*!
     \class QKnxNetIpStructHeader
 
@@ -50,14 +40,144 @@ QT_BEGIN_NAMESPACE
 
     The first octet of the structure is the length of the structure and the
     second octet is an identifier that specifies the type of the structure.
-    The data follows from the third octet on.
+
+    If the structure's amount of data exceeds 252 octets, the first octet is
+    \c 0xff and the next two octets contain the length as a 16 bit value. The
+    fourth octet is then the identifier specifying the type of the structure.
 */
 
 /*!
-    \fn QString QKnxNetIpStructHeader::toString() const
+    \fn QKnxNetIpStructHeader::QKnxNetIpStructHeader
 
-    Returns the KNXnet/IP struct's total size and generic code as a string. The
-    code and total size are formatted in hexadecimal notation.
+    Constructs an empty invalid header object.
+
+    \sa isNull(), isValid()
+*/
+
+/*!
+    \fn QKnxNetIpStructHeader::~QKnxNetIpStructHeader()
+
+    Destroys the header object and releases all allocated resources.
+*/
+
+/*!
+    \fn QKnxNetIpStructHeader::QKnxNetIpStructHeader(CodeType code)
+
+    Constructs a valid header object and sets the KNXnet/IP structure identifier
+    to \a code.
+
+    \sa isValid(), code(), setCode()
+*/
+
+/*!
+    \fn QKnxNetIpStructHeader::QKnxNetIpStructHeader(CodeType code, quint16 dataSize)
+
+    Constructs a valid header object and sets the KNXnet/IP struct identifier
+    to \a code and the data size to \a dataSize and updates the header size and
+    total size accordingly.
+
+    \sa isValid(), code(), setCode(), dataSize(), setDataSize()
+*/
+
+/*!
+    \fn bool QKnxNetIpStructHeader::isNull() const
+
+    Returns \c true if this is a default constructed header, otherwise returns
+    \c false. A header is considered null if it contains no initialized values.
+
+    \sa isValid()
+*/
+
+/*!
+    \fn bool QKnxNetIpStructHeader::isValid() const
+
+    Returns \c true if the KNXnet/IP struct header contains initialized values
+    and is in itself valid, otherwise returns \c false. A valid KNXnet/IP struct
+    header consist of a given total size and a known \l code identifier.
+
+    \sa isNull()
+*/
+
+/*!
+    \fn quint8 QKnxNetIpStructHeader::size() const
+
+    Returns the size of the KNXnet/IP struct's header.
+
+    \sa isNull(), isValid()
+*/
+
+/*!
+    \fn quint16 QKnxNetIpStructHeader::totalSize() const
+
+    Returns the total size of the KNXnet/IP struct if the header is valid,
+    otherwise returns \c null. The total size includes the size of the header
+    and the size of the KNXnet/IP struct's data.
+
+    \sa isNull(), isValid(), size(), dataSize()
+*/
+
+/*!
+    \fn quint16 QKnxNetIpStructHeader::dataSize() const
+
+    Returns the size of the KNXnet/IP struct's data if the header is valid,
+    otherwise returns \c null.
+    The data size excludes the size of the KNXnet/IP struct's header.
+
+    \sa isNull(), isValid(), size(), totalSize()
+*/
+
+/*!
+    \fn void QKnxNetIpStructHeader::setDataSize(quint16 dataSize)
+
+    Sets the KNXnet/IP struct's data size to \a dataSize and updates the
+    header and total size accordingly.
+*/
+
+/*!
+    \fn CodeType QKnxNetIpStructHeader::code() const
+
+    Returns the KNXnet/IP struct's \l code identifier.
+*/
+
+/*!
+    \fn void QKnxNetIpStructHeader::setCode(CodeType code)
+
+    Sets the KNXnet/IP struct's code identifier to \a code.
+*/
+
+/*!
+    \fn quint8 QKnxNetIpStructHeader::byte(quint8 index) const
+
+    Returns the byte at position \a index in the header.
+*/
+
+/*!
+    \fn QKnxByteArray QKnxNetIpStructHeader::bytes() const
+
+    Returns an array of bytes that represent the KNXnet/IP struct header.
+*/
+
+/*!
+    \fn static QKnxNetIpStructHeader QKnxNetIpStructHeader::fromBytes(const QKnxByteArray &bytes, quint16 index = 0)
+
+    Constructs the KNXnet/IP struct header from the byte array \a bytes starting
+    at the position \a index inside the array.
+
+    \sa isNull(), isValid()
+*/
+
+/*!
+    \fn  bool QKnxNetIpStructHeader::operator==(const QKnxNetIpStructHeader &other) const
+
+    Returns \c true if this object and the given \a other are equal; otherwise
+    returns \c false.
+*/
+
+/*!
+    \fn  bool QKnxNetIpStructHeader::operator!=(const QKnxNetIpStructHeader &other) const
+
+    Returns \c true if this object and the given \a other are not equal;
+    otherwise returns \c false.
 */
 
 QT_END_NAMESPACE

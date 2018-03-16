@@ -42,9 +42,10 @@ struct Q_KNX_EXPORT QKnxNetIp final
     enum class HostProtocol : quint8
     {
         Unknown = 0x00,
-        IpV4_Udp = 0x01,
-        IpV4_Tcp = 0x02
+        UDP_IPv4 = 0x01,
+        TCP_IPv4 = 0x02
     };
+    static bool isStructType(QKnxNetIp::HostProtocol type);
 
     enum class ConnectionType : quint8
     {
@@ -55,6 +56,7 @@ struct Q_KNX_EXPORT QKnxNetIp final
         RemoteConfiguration = 0x07,
         ObjectServer = 0x08
     };
+    static bool isStructType(QKnxNetIp::ConnectionType type);
 
     enum class DescriptionType : quint8
     {
@@ -64,9 +66,10 @@ struct Q_KNX_EXPORT QKnxNetIp final
         IpConfiguration = 0x03,
         CurrentIpConfiguration = 0x04,
         KnxAddresses = 0x05,
-        ManufactorData = 0xfe,
+        ManufacturerData = 0xfe,
         NotUsed = 0xff
     };
+    static bool isStructType(QKnxNetIp::DescriptionType type);
 
     enum class ServiceType : quint16
     {
@@ -97,6 +100,7 @@ struct Q_KNX_EXPORT QKnxNetIp final
         RoutingLostMessage = 0x0531,
         RoutingBusy = 0x0352
     };
+    static bool isServiceType(QKnxNetIp::ServiceType type);
 
     enum class Error : quint8
     {
@@ -124,94 +128,7 @@ struct Q_KNX_EXPORT QKnxNetIp final
         Raw = 0x04,
         Busmonitor = 0x80
     };
-
-    static bool isTunnelingLayer(TunnelingLayer layer)
-    {
-        switch (layer) {
-        case QKnxNetIp::TunnelingLayer::Link:
-        case QKnxNetIp::TunnelingLayer::Raw:
-        case QKnxNetIp::TunnelingLayer::Busmonitor:
-            return true;
-        default:
-            break;
-        }
-        return false;
-    }
-
-    static bool isStructType(QKnxNetIp::HostProtocol type)
-    {
-        switch (type) {
-        case QKnxNetIp::HostProtocol::IpV4_Udp:
-        case QKnxNetIp::HostProtocol::IpV4_Tcp:
-            return true;
-        case QKnxNetIp::HostProtocol::Unknown:
-        default:
-            break;
-        }
-        return false;
-    }
-
-    static bool isStructType(QKnxNetIp::ConnectionType type)
-    {
-        switch (type) {
-        case QKnxNetIp::ConnectionType::DeviceManagement:
-        case QKnxNetIp::ConnectionType::Tunnel:
-        case QKnxNetIp::ConnectionType::RemoteLogging:
-        case QKnxNetIp::ConnectionType::RemoteConfiguration:
-        case QKnxNetIp::ConnectionType::ObjectServer:
-            return true;
-        case QKnxNetIp::ConnectionType::Unknown:
-        default:
-            break;
-        }
-        return false;
-    }
-
-    static bool isStructType(QKnxNetIp::DescriptionType type)
-    {
-        switch (type) {
-        case QKnxNetIp::DescriptionType::DeviceInfo:
-        case QKnxNetIp::DescriptionType::SupportedServiceFamilies:
-        case QKnxNetIp::DescriptionType::IpConfiguration:
-        case QKnxNetIp::DescriptionType::CurrentIpConfiguration:
-        case QKnxNetIp::DescriptionType::KnxAddresses:
-        case QKnxNetIp::DescriptionType::ManufactorData:
-            return true;
-        case QKnxNetIp::DescriptionType::NotUsed:
-        case QKnxNetIp::DescriptionType::Unknown:
-        default:
-            break;
-        }
-        return false;
-    }
-
-    static bool isFrameType(QKnxNetIp::ServiceType type)
-    {
-        switch (type) {
-        case QKnxNetIp::ServiceType::SearchRequest:
-        case QKnxNetIp::ServiceType::SearchResponse:
-        case QKnxNetIp::ServiceType::DescriptionRequest:
-        case QKnxNetIp::ServiceType::DescriptionResponse:
-        case QKnxNetIp::ServiceType::ConnectRequest:
-        case QKnxNetIp::ServiceType::ConnectResponse:
-        case QKnxNetIp::ServiceType::ConnectionStateRequest:
-        case QKnxNetIp::ServiceType::ConnectionStateResponse:
-        case QKnxNetIp::ServiceType::DisconnectRequest:
-        case QKnxNetIp::ServiceType::DisconnectResponse:
-        case QKnxNetIp::ServiceType::DeviceConfigurationRequest:
-        case QKnxNetIp::ServiceType::DeviceConfigurationAcknowledge:
-        case QKnxNetIp::ServiceType::TunnelingRequest:
-        case QKnxNetIp::ServiceType::TunnelingAcknowledge:
-        case QKnxNetIp::ServiceType::RoutingIndication:
-        case QKnxNetIp::ServiceType::RoutingLostMessage:
-        case QKnxNetIp::ServiceType::RoutingBusy:
-            return true;
-        case QKnxNetIp::ServiceType::Unknown:
-        default:
-            break;
-        }
-        return false;
-    }
+    static bool isTunnelingLayer(TunnelingLayer layer);
 
     enum Timeout
     {
@@ -230,7 +147,10 @@ struct Q_KNX_EXPORT QKnxNetIp final
         DeviceConfigurationRequestTimeout = 10000,
 
         // KNXnet/IP Tunneling service time out in ms
-        TunnelingRequestTimeout = 1000
+        TunnelingRequestTimeout = 1000,
+
+        // KNXnet/IP routing service
+        RoutingBusyWaitTime = 100
     };
 };
 Q_DECLARE_TYPEINFO(QKnxNetIp::HostProtocol, Q_PRIMITIVE_TYPE);

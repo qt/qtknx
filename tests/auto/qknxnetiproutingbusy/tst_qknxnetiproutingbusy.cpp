@@ -36,25 +36,45 @@ static void myMessageHandler(QtMsgType, const QMessageLogContext &, const QStrin
     s_msg = msg;
 }
 
-class tst_QKnxNetIpRoutingBusy: public QObject
+class tst_QKnxNetIpRoutingBusy : public QObject
 {
     Q_OBJECT
 
 private slots:
     void testDefaultConstructor();
-    void testConstructor(); // to do
-    void testDebugStream(); // to do
-    void testDataStream(); // to do
+    void testConstructor();
+    void testDebugStream();
 };
 
 void tst_QKnxNetIpRoutingBusy::testDefaultConstructor()
 {
-    QKnxNetIpRoutingBusy routing;
+    QKnxNetIpFrame frame;
+
+    QKnxNetIpRoutingBusy routing(frame);
     QCOMPARE(routing.isValid(), false);
+
+    frame = QKnxNetIpRoutingBusy::builder().create();
+    QCOMPARE(routing.isValid(), true);
 }
 
 void tst_QKnxNetIpRoutingBusy::testConstructor()
 {
+    auto frame = QKnxNetIpRoutingBusy::builder()
+        .setDeviceState(QKnxNetIp::DeviceState::IpFault)
+        .setRoutingBusyWaitTime(99)
+        .setRoutingBusyControl(0xffff)
+        .create();
+    QKnxNetIpRoutingBusy routing(frame);
+
+    QCOMPARE(routing.isValid(), true);
+    QCOMPARE(frame.size(), quint16(12));
+    QCOMPARE(frame.bytes(), QKnxByteArray::fromHex("06100352000c06010063ffff"));
+    QCOMPARE(frame.data().size(), quint16(6));
+    QCOMPARE(frame.data(), QKnxByteArray::fromHex("06010063ffff"));
+
+    QCOMPARE(routing.deviceState(), QKnxNetIp::DeviceState::IpFault);
+    QCOMPARE(routing.routingBusyWaitTime(), quint16(99));
+    QCOMPARE(routing.routingBusyControl(), quint16(0xffff));
 }
 
 void tst_QKnxNetIpRoutingBusy::testDebugStream()
@@ -62,23 +82,24 @@ void tst_QKnxNetIpRoutingBusy::testDebugStream()
     struct DebugHandler
     {
         explicit DebugHandler(QtMessageHandler newMessageHandler)
-            : oldMessageHandler(qInstallMessageHandler(newMessageHandler)) {}
-        ~DebugHandler() {
+            : oldMessageHandler(qInstallMessageHandler(newMessageHandler))
+        {}
+        ~DebugHandler()
+        {
             qInstallMessageHandler(oldMessageHandler);
         }
         QtMessageHandler oldMessageHandler;
     } _(myMessageHandler);
 
-    //qDebug() << DEFAULTCONSTRUCTOR;
-    //QCOMPARE(s_msg, QString::fromLatin1("0x1nv4l1d"));
-}
+    qDebug() << QKnxNetIpRoutingBusy::builder().create();
+    QCOMPARE(s_msg, QStringLiteral("0x06100352000c060000640000"));
 
-void tst_QKnxNetIpRoutingBusy::testDataStream()
-{
-    //QByteArray byteArray;
-    //QDataStream out(&byteArray, QIODevice::WriteOnly);
-    //out << OTHERCONSTRUCTOR;
-    //QCOMPARE(byteArray, QByteArray::fromHex("1404C0A8020CFFFFFF00C0A80201B48A03020100"));
+    qDebug() << QKnxNetIpRoutingBusy::builder()
+        .setDeviceState(QKnxNetIp::DeviceState::IpFault)
+        .setRoutingBusyWaitTime(99)
+        .setRoutingBusyControl(0xffff)
+        .create();
+    QCOMPARE(s_msg, QStringLiteral("0x06100352000c06010063ffff"));
 }
 
 QTEST_APPLESS_MAIN(tst_QKnxNetIpRoutingBusy)

@@ -32,31 +32,19 @@
 
 QT_BEGIN_NAMESPACE
 
-QKnxNetIpManufacturerDib::QKnxNetIpManufacturerDib(const QKnxNetIpDescriptionTypeStruct &other)
-    : QKnxNetIpDescriptionTypeStruct(other)
+QKnxNetIpManufacturerDib::QKnxNetIpManufacturerDib(const QKnxNetIpDib &other)
+    : QKnxNetIpDib(other)
 {}
 
 QKnxNetIpManufacturerDib::QKnxNetIpManufacturerDib(quint16 manufacturerId)
-    : QKnxNetIpManufacturerDib(manufacturerId, QByteArray {})
+    : QKnxNetIpManufacturerDib(manufacturerId, QKnxByteArray {})
 {
 }
 
-QKnxNetIpManufacturerDib::QKnxNetIpManufacturerDib(quint16 manufacturerId, const QByteArray &data)
-    : QKnxNetIpDescriptionTypeStruct(QKnxNetIp::DescriptionType::ManufactorData)
+QKnxNetIpManufacturerDib::QKnxNetIpManufacturerDib(quint16 manufacturerId, const QKnxByteArray &data)
+    : QKnxNetIpDib(QKnxNetIp::DescriptionType::ManufacturerData)
 {
-    QKnxNetIpPayload payload;
-    payload.setBytes(QKnxUtils::QUint16::bytes(manufacturerId));
-    payload.appendBytes(data);
-    setPayload(payload);
-}
-
-QKnxNetIpManufacturerDib::QKnxNetIpManufacturerDib(quint16 manufacturerId, const QVector<quint8> &data)
-    : QKnxNetIpDescriptionTypeStruct(QKnxNetIp::DescriptionType::ManufactorData)
-{
-    QKnxNetIpPayload payload;
-    payload.setBytes(QKnxUtils::QUint16::bytes(manufacturerId));
-    payload.appendBytes(data);
-    setPayload(payload);
+    setData(QKnxUtils::QUint16::bytes(manufacturerId) + data);
 }
 
 QKnxNetIp::DescriptionType QKnxNetIpManufacturerDib::descriptionType() const
@@ -66,13 +54,18 @@ QKnxNetIp::DescriptionType QKnxNetIpManufacturerDib::descriptionType() const
 
 quint16 QKnxNetIpManufacturerDib::manufacturerId() const
 {
-    return QKnxUtils::QUint16::fromBytes(payloadRef());
+    return QKnxUtils::QUint16::fromBytes(constData());
+}
+
+QKnxByteArray QKnxNetIpManufacturerDib::manufacturerData() const
+{
+    return constData().mid(2);
 }
 
 bool QKnxNetIpManufacturerDib::isValid() const
 {
-    return QKnxNetIpDescriptionTypeStruct::isValid() && size() >= 4
-        && descriptionType() == QKnxNetIp::DescriptionType::ManufactorData;
+    return QKnxNetIpDib::isValid() && size() >= 4
+        && descriptionType() == QKnxNetIp::DescriptionType::ManufacturerData;
 }
 
 QT_END_NAMESPACE

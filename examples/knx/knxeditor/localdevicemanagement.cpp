@@ -51,6 +51,7 @@
 #include "localdevicemanagement.h"
 #include "ui_localdevicemanagement.h"
 
+#include <QKnxByteArray>
 #include <QKnxLocalDeviceManagementFrameFactory>
 #include <QKnxInterfaceObjectPropertyDataType>
 #include <QMetaEnum>
@@ -113,16 +114,17 @@ LocalDeviceManagement::LocalDeviceManagement(QWidget* parent)
     connect(ui->deviceManagementSendRequest, &QPushButton::clicked, this, [&]() {
         ui->textOuputDeviceManagement->append(tr("Send device management frame with cEMI payload: ")
             + ui->cemiFrame->text());
-        auto data = QByteArray::fromHex(ui->cemiFrame->text().toUtf8());
+        auto data = QKnxByteArray::fromHex(ui->cemiFrame->text().toUtf8());
         if (ui->cemiData->isEnabled())
-            data.append(QByteArray::fromHex(ui->cemiData->text().toUtf8()));
-        m_management.sendDeviceManagementFrame(QKnxLocalDeviceManagementFrame::fromBytes(data, 0, data.size()));
+            data.append(QKnxByteArray::fromHex(ui->cemiData->text().toUtf8()));
+        m_management.sendDeviceManagementFrame(QKnxLocalDeviceManagementFrame::fromBytes(data, 0,
+            data.size()));
     });
 
     connect(&m_management, &QKnxNetIpDeviceManagementConnection::receivedDeviceManagementFrame,
         this, [&](QKnxLocalDeviceManagementFrame frame) {
         ui->textOuputDeviceManagement->append(tr("Received device management frame with cEMI "
-            "payload: " + frame.bytes().toHex()));
+            "payload: " + static_cast<QByteArray> (frame.bytes().toHex())));
 
         if (m_awaitIoListResponse)
             handleIoListResponse(frame);
@@ -313,20 +315,19 @@ void LocalDeviceManagement::handleIoListResponse(const QKnxLocalDeviceManagement
     if (!dataTypes.value(0).isValid())
         return;
 
-    auto data = frame.data();
+    auto data = static_cast<QByteArray> (frame.data().toHex());
     quint8 expectedDataSize = dataTypes[0].size();
     if (frame.startIndex() == 0) {
         if (data.size() == expectedDataSize) {
             m_management.sendDeviceManagementFrame(QKnxLocalDeviceManagementFrameFactory::PropertyRead
                 ::createRequest(QKnxInterfaceObjectType::System::Device, 1,
-                    QKnxInterfaceObjectProperty::Device::IoList, data.toHex().toUShort(nullptr,
-                        16), 1));
+                    QKnxInterfaceObjectProperty::Device::IoList, data.toUShort(nullptr, 16), 1));
         }
     } else {
         if ((data.size() % expectedDataSize) == 0) {
             QSet<int> values;
             for (int i = 0; i < data.size(); i += expectedDataSize)
-                values.insert(data.mid(i, expectedDataSize).toHex().toUShort(nullptr, 16));
+                values.insert(data.mid(i, expectedDataSize).toUShort(nullptr, 16));
             setupComboBox(ui->objectType, QKnxInterfaceObjectType::staticMetaObject, values);
         }
     }

@@ -30,21 +30,15 @@
 #ifndef QKNXNETIPDEVICEDIB_H
 #define QKNXNETIPDEVICEDIB_H
 
-#include <QtCore/qbytearray.h>
-#include <QtCore/qdatastream.h>
-#include <QtCore/qdebug.h>
-#include <QtCore/qstring.h>
-#include <QtCore/qvector.h>
 #include <QtKnx/qknxaddress.h>
 #include <QtKnx/qknxglobal.h>
 #include <QtKnx/qknxnamespace.h>
 #include <QtKnx/qknxnetipstruct.h>
-#include <QtKnx/qknxtraits.h>
 #include <QtNetwork/qhostaddress.h>
 
 QT_BEGIN_NAMESPACE
 
-class Q_KNX_EXPORT QKnxNetIpDeviceDib final : public QKnxNetIpDescriptionTypeStruct
+class Q_KNX_EXPORT QKnxNetIpDeviceDib final : public QKnxNetIpDib
 {
 public:
 
@@ -64,14 +58,14 @@ public:
                        DeviceStatus deviceStatus,
                        const QKnxAddress &address,
                        quint16 projectId,
-                       const QByteArray &serialNumber,
+                       const QKnxByteArray &serialNumber,
                        const QHostAddress &multicastAddress,
-                       const QByteArray &macAddress,
-                       const QByteArray deviceName);
+                       const QKnxByteArray &macAddress,
+                       const QKnxByteArray &deviceName);
 
-    template <typename T> static QKnxNetIpDeviceDib fromBytes(const T &bytes, quint16 index)
+    static QKnxNetIpDeviceDib fromBytes(const QKnxByteArray &bytes, quint16 index)
     {
-        return QKnxNetIpStructHelper::fromBytes(bytes, index,
+        return QKnxNetIpStruct::fromBytes(bytes, index,
             QKnxNetIp::DescriptionType::DeviceInfo);
     }
 
@@ -79,15 +73,15 @@ public:
     QKnxNetIp::DescriptionType descriptionType() const;
     QKnxAddress individualAddress() const;
     quint16 projectInstallationIdentfier() const;
-    QByteArray serialNumber() const;
+    QKnxByteArray serialNumber() const;
     QHostAddress multicastAddress() const;
-    QByteArray macAddress() const;
-    QByteArray deviceName() const;
+    QKnxByteArray macAddress() const;
+    QKnxByteArray deviceName() const;
 
     bool isValid() const override;
 
 private:
-    QKnxNetIpDeviceDib(const QKnxNetIpDescriptionTypeStruct &other);
+    QKnxNetIpDeviceDib(const QKnxNetIpDib &other);
 };
 
 QT_END_NAMESPACE

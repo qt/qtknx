@@ -31,34 +31,45 @@
 #define QKNXNETIPTUNNELINGREQUEST_H
 
 #include <QtKnx/qknxnetip.h>
-#include <QtKnx/qknxnetipconnectionheaderframe.h>
+#include <QtKnx/qknxnetipframe.h>
 #include <QtKnx/qknxglobal.h>
 #include <QtKnx/qknxlinklayerframe.h>
 
 QT_BEGIN_NAMESPACE
 
-class Q_KNX_EXPORT QKnxNetIpTunnelingRequest final : public QKnxNetIpConnectionHeaderFrame
+class Q_KNX_EXPORT QKnxNetIpTunnelingRequest final
 {
 public:
-    QKnxNetIpTunnelingRequest() = default;
-    ~QKnxNetIpTunnelingRequest() override = default;
+    QKnxNetIpTunnelingRequest() = delete;
+    ~QKnxNetIpTunnelingRequest() = default;
 
-    QKnxNetIpTunnelingRequest(quint8 channelId, quint8 sequenceCount, const QKnxLinkLayerFrame &cemi);
+    QKnxNetIpTunnelingRequest(const QKnxNetIpFrame &&) = delete;
+    explicit QKnxNetIpTunnelingRequest(const QKnxNetIpFrame &frame);
 
-    template <typename T> static QKnxNetIpTunnelingRequest fromBytes(const T &bytes, quint16 index)
-    {
-        return QKnxNetIpConnectionHeaderFrameHelper::fromBytes(bytes, index,
-            QKnxNetIp::ServiceType::TunnelingRequest);
-    }
+    bool isValid() const;
 
     quint8 channelId() const;
-    quint8 sequenceCount() const;
+    quint8 sequenceNumber() const;
     QKnxLinkLayerFrame cemi() const;
 
-    bool isValid() const override;
+    class Q_KNX_EXPORT Builder final
+    {
+    public:
+        Builder &setChannelId(quint8 channelId);
+        Builder &setSequenceNumber(quint8 sequenceNumber);
+        Builder &setCemi(const QKnxLinkLayerFrame &cemi);
+
+        QKnxNetIpFrame create() const;
+
+    private:
+        quint8 m_channelId;
+        quint8 m_sequenceNumber;
+        QKnxLinkLayerFrame m_cemi;
+    };
+    static QKnxNetIpTunnelingRequest::Builder builder();
 
 private:
-    QKnxNetIpTunnelingRequest(const QKnxNetIpConnectionHeaderFrame &other);
+    const QKnxNetIpFrame &m_frame;
 };
 
 QT_END_NAMESPACE

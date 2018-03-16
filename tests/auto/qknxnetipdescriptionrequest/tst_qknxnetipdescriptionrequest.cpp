@@ -44,34 +44,35 @@ private slots:
     void testDefaultConstructor();
     void testConstructor();
     void testDebugStream();
-    void testDataStream();
 };
 
 void tst_QKnxNetIpDescriptionRequest::testDefaultConstructor()
 {
-    QKnxNetIpDescriptionRequest descriptionRequest;
+    QKnxNetIpFrame frame;
+    QKnxNetIpDescriptionRequest descriptionRequest(frame);
+
     QCOMPARE(descriptionRequest.isValid(), false);
     QCOMPARE(descriptionRequest.controlEndpoint().isValid(), false);
 }
 
 void tst_QKnxNetIpDescriptionRequest::testConstructor()
 {
-    QKnxNetIpHpai endpoint(QKnxNetIp::HostProtocol::IpV4_Udp, QHostAddress::LocalHost, 3671);
-    QKnxNetIpDescriptionRequest descriptionRequest(endpoint);
+    auto frame = QKnxNetIpDescriptionRequest::builder()
+        .setControlEndpoint(QKnxNetIpHpaiView::builder()
+            .setHostAddress(QHostAddress::LocalHost)
+            .setPort(3671).create())
+        .create();
+    QKnxNetIpDescriptionRequest descriptionRequest(frame);
+
     QCOMPARE(descriptionRequest.isValid(), true);
-    QCOMPARE(descriptionRequest.size(), quint16(14));
-    QCOMPARE(descriptionRequest.bytes<QByteArray>(),
-        QByteArray::fromHex("06100203000e08017f0000010e57"));
-    QCOMPARE(descriptionRequest.payload().size(), quint16(8));
-    QCOMPARE(descriptionRequest.payload().bytes<QByteArray>(),
-        QByteArray::fromHex("08017f0000010e57"));
-    QCOMPARE(descriptionRequest.toString(), QString::fromLatin1("Header size { 0x06 }, "
-            "Version { 0x10 }, Code { 0x203 }, Total size { 0x0e }, "
-            "Bytes { 0x08, 0x01, 0x7f, 0x00, 0x00, 0x01, 0x0e, 0x57 }"));
+    QCOMPARE(frame.size(), quint16(14));
+    QCOMPARE(frame.bytes(), QKnxByteArray::fromHex("06100203000e08017f0000010e57"));
+    QCOMPARE(frame.data().size(), quint16(8));
+    QCOMPARE(frame.data(), QKnxByteArray::fromHex("08017f0000010e57"));
 
     QCOMPARE(descriptionRequest.controlEndpoint().isValid(), true);
-    QCOMPARE(descriptionRequest.controlEndpoint().bytes<QByteArray>(),
-        QByteArray::fromHex("08017f0000010e57"));
+    QCOMPARE(descriptionRequest.controlEndpoint().bytes(),
+        QKnxByteArray::fromHex("08017f0000010e57"));
 }
 
 void tst_QKnxNetIpDescriptionRequest::testDebugStream()
@@ -86,22 +87,15 @@ void tst_QKnxNetIpDescriptionRequest::testDebugStream()
         QtMessageHandler oldMessageHandler;
     } _(myMessageHandler);
 
-    qDebug() << QKnxNetIpDescriptionRequest();
-    QCOMPARE(s_msg, QString::fromLatin1("0x1nv4l1d"));
+    qDebug() << QKnxNetIpDescriptionRequest::builder().create();
+    QCOMPARE(s_msg, QString::fromLatin1("0x061002030006"));
 
-    QKnxNetIpHpai endpoint(QKnxNetIp::HostProtocol::IpV4_Udp, QHostAddress::LocalHost, 3671);
-    qDebug() << QKnxNetIpDescriptionRequest(endpoint);
+    qDebug() << QKnxNetIpDescriptionRequest::builder()
+        .setControlEndpoint(QKnxNetIpHpaiView::builder()
+            .setHostAddress(QHostAddress::LocalHost)
+            .setPort(3671).create())
+        .create();
     QCOMPARE(s_msg, QString::fromLatin1("0x06100203000e08017f0000010e57"));
-}
-
-void tst_QKnxNetIpDescriptionRequest::testDataStream()
-{
-    QByteArray byteArray;
-    QDataStream out(&byteArray, QIODevice::WriteOnly);
-
-    QKnxNetIpHpai endpoint(QKnxNetIp::HostProtocol::IpV4_Udp, QHostAddress::LocalHost, 3671);
-    out << QKnxNetIpDescriptionRequest(endpoint);
-    QCOMPARE(byteArray, QByteArray::fromHex("06100203000e08017f0000010e57"));
 }
 
 QTEST_APPLESS_MAIN(tst_QKnxNetIpDescriptionRequest)

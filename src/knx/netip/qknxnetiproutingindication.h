@@ -37,28 +37,31 @@
 
 QT_BEGIN_NAMESPACE
 
-class Q_KNX_EXPORT QKnxNetIpRoutingIndication final : public QKnxNetIpFrame
+class Q_KNX_EXPORT QKnxNetIpRoutingIndication final
 {
 public:
-    QKnxNetIpRoutingIndication() = default;
-    ~QKnxNetIpRoutingIndication() override = default;
+    QKnxNetIpRoutingIndication() = delete;
+    ~QKnxNetIpRoutingIndication() = default;
 
-    explicit QKnxNetIpRoutingIndication(const QKnxLinkLayerFrame &cemi);
+    QKnxNetIpRoutingIndication(const QKnxNetIpFrame &&) = delete;
+    explicit QKnxNetIpRoutingIndication(const QKnxNetIpFrame &frame);
 
-    template <typename T>
-        static QKnxNetIpRoutingIndication fromBytes(const T &bytes, quint16 index)
-    {
-        return QKnxNetIpFrameHelper::fromBytes(bytes, index,
-            QKnxNetIp::ServiceType::RoutingIndication);
-    }
-
+    bool isValid() const;
     QKnxLinkLayerFrame linkLayerFrame() const;
-    void setLinkLayerFrame(const QKnxLinkLayerFrame &cemi);
 
-    bool isValid() const override;
+    class Q_KNX_EXPORT Builder final
+    {
+    public:
+        Builder &setLinkLayerFrame(const QKnxLinkLayerFrame &llf);
+        QKnxNetIpFrame create() const;
+
+    private:
+        QKnxLinkLayerFrame m_llf;
+    };
+    static QKnxNetIpRoutingIndication::Builder builder();
 
 private:
-    QKnxNetIpRoutingIndication(const QKnxNetIpFrame &other);
+    const QKnxNetIpFrame &m_frame;
 };
 
 QT_END_NAMESPACE

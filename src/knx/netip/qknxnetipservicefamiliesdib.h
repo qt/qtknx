@@ -30,19 +30,13 @@
 #ifndef QKNXNETIPSERVICEFAMILIESDIB_H
 #define QKNXNETIPSERVICEFAMILIESDIB_H
 
-#include <QtCore/qbytearray.h>
-#include <QtCore/qdatastream.h>
-#include <QtCore/qdebug.h>
 #include <QtCore/qmap.h>
-#include <QtCore/qstring.h>
-#include <QtCore/qvector.h>
 #include <QtKnx/qknxglobal.h>
 #include <QtKnx/qknxnetipstruct.h>
-#include <QtKnx/qknxtraits.h>
 
 QT_BEGIN_NAMESPACE
 
-class Q_KNX_EXPORT QKnxNetIpServiceFamiliesDib final : public QKnxNetIpDescriptionTypeStruct
+class Q_KNX_EXPORT QKnxNetIpServiceFamiliesDib final : public QKnxNetIpDib
 {
 public:
     enum class ServiceFamilieId : quint8
@@ -63,9 +57,9 @@ public:
     QKnxNetIpServiceFamiliesDib(ServiceFamilieId id, quint8 version);
     QKnxNetIpServiceFamiliesDib(const ServiceFamilyIdVersions &families);
 
-    template <typename T> static QKnxNetIpServiceFamiliesDib fromBytes(const T &bytes, quint16 index)
+    static QKnxNetIpServiceFamiliesDib fromBytes(const QKnxByteArray &bytes, quint16 index)
     {
-        return QKnxNetIpStructHelper::fromBytes(bytes, index,
+        return QKnxNetIpStruct::fromBytes(bytes, index,
             QKnxNetIp::DescriptionType::SupportedServiceFamilies);
     }
 
@@ -78,7 +72,7 @@ public:
     bool isValid() const override;
 
 private:
-    QKnxNetIpServiceFamiliesDib(const QKnxNetIpDescriptionTypeStruct &other);
+    QKnxNetIpServiceFamiliesDib(const QKnxNetIpDib &other);
 };
 
 QT_END_NAMESPACE

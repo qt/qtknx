@@ -30,40 +30,123 @@
 #ifndef QKNXNETIPSTRUCT_H
 #define QKNXNETIPSTRUCT_H
 
+#include <QtKnx/qknxbytearray.h>
 #include <QtKnx/qknxnetip.h>
-#include <QtKnx/qknxnetippackage.h>
+#include <QtKnx/qknxtraits.h>
+#include <QtKnx/qknxnetipstructheader.h>
 
 QT_BEGIN_NAMESPACE
 
-template <typename T>
-using QKnxNetIpStruct = QKnxNetIpPackage<T, QKnxNetIpStructHeader<T>>;
-
-struct QKnxNetIpStructHelper
+template <typename CodeType> class QKnxNetIpStruct
 {
-    template <typename NetIpType, typename T, std::size_t S = 0>
-        static QKnxNetIpStruct<NetIpType> fromBytes(const T &bytes, quint16 index, NetIpType nType)
-    {
-        auto header = QKnxNetIpStructHeader<NetIpType>::fromBytes(bytes, index);
-        if (!header.isValid() || header.code() != nType)
-            return {};
+    static_assert(is_type<CodeType, QKnxNetIp::HostProtocol, QKnxNetIp::ConnectionType,
+        QKnxNetIp::DescriptionType>::value, "Type not supported.");
 
-        return QKnxNetIpStruct<NetIpType>(header, QKnxNetIpPayload::fromBytes(bytes,
-            index + header.size(), header.payloadSize()));
+public:
+    QKnxNetIpStruct() = default;
+    virtual ~QKnxNetIpStruct() = default;
+
+    QKnxNetIpStruct(CodeType code, const QKnxByteArray &data = {})
+        : m_header(code)
+    {
+         setData(data);
     }
+
+    QKnxNetIpStruct(const QKnxNetIpStructHeader<CodeType> &header, const QKnxByteArray &data = {})
+        : m_header(header)
+        , m_data(data)
+    {}
+
+    bool isNull() const
+    {
+        return m_header.isNull() && m_data.isNull();
+    }
+
+    virtual bool isValid() const
+    {
+        return m_header.isValid() && size() == (m_header.size() + m_data.size());
+    }
+
+    quint16 size() const
+    {
+        return m_header.totalSize();
+    }
+
+    quint16 dataSize() const
+    {
+        return m_header.dataSize();
+    }
+
+    QKnxNetIpStructHeader<CodeType> header() const
+    {
+        return m_header;
+    }
+
+    void setHeader(const QKnxNetIpStructHeader<CodeType> &header)
+    {
+        m_header = header;
+    }
+
+    CodeType code() const
+    {
+        return m_header.code();
+    }
+
+    QKnxByteArray data() const
+    {
+        return m_data;
+    }
+
+    const QKnxByteArray &constData() const
+    {
+        return m_data;
+    }
+
+    void setData(const QKnxByteArray &data)
+    {
+        m_data = data;
+        m_header.setDataSize(data.size());
+    }
+
+    QKnxByteArray bytes() const
+    {
+        return m_header.bytes() + m_data;
+    }
+
+    static QKnxNetIpStruct fromBytes(const QKnxByteArray &bytes, quint16 index = 0)
+    {
+        auto header = QKnxNetIpStructHeader<CodeType>::fromBytes(bytes, index);
+        if (!header.isValid())
+            return {};
+        return { header, bytes.mid(index + header.size(), header.dataSize()) };
+    }
+
+    // TODO: remove
+    static QKnxNetIpStruct<CodeType> fromBytes(const QKnxByteArray &bytes, quint16 index,
+        CodeType)
+    {
+        return QKnxNetIpStruct<CodeType>::fromBytes(bytes, index);
+    }
+
+protected:
+    void setCode(CodeType code) // TODO: remove
+    {
+        m_header.setCode(code);
+    }
+
+private:
+    QKnxNetIpStructHeader<CodeType> m_header;
+    QKnxByteArray m_data;
 };
 
-using QKnxNetIpHostProtocolStruct = QKnxNetIpStruct<QKnxNetIp::HostProtocol>;
-using QKnxNetIpConnectionTypeStruct = QKnxNetIpStruct<QKnxNetIp::ConnectionType>;
-using QKnxNetIpDescriptionTypeStruct = QKnxNetIpStruct<QKnxNetIp::DescriptionType>;
+using QKnxNetIpHpai = QKnxNetIpStruct<QKnxNetIp::HostProtocol>;
+using QKnxNetIpCri = QKnxNetIpStruct<QKnxNetIp::ConnectionType>;
+using QKnxNetIpCrd = QKnxNetIpStruct<QKnxNetIp::ConnectionType>;
+using QKnxNetIpDib = QKnxNetIpStruct<QKnxNetIp::DescriptionType>;
 
-Q_KNX_EXPORT QDebug operator<<(QDebug debug, const QKnxNetIpHostProtocolStruct &package);
-Q_KNX_EXPORT QDataStream &operator<<(QDataStream &out, const QKnxNetIpHostProtocolStruct &package);
-
-Q_KNX_EXPORT QDebug operator<<(QDebug debug, const QKnxNetIpConnectionTypeStruct &package);
-Q_KNX_EXPORT QDataStream &operator<<(QDataStream &out, const QKnxNetIpConnectionTypeStruct &package);
-
-Q_KNX_EXPORT QDebug operator<<(QDebug debug, const QKnxNetIpDescriptionTypeStruct &package);
-Q_KNX_EXPORT QDataStream &operator<<(QDataStream &out, const QKnxNetIpDescriptionTypeStruct &package);
+Q_KNX_EXPORT QDebug operator<<(QDebug debug, const QKnxNetIpStruct<QKnxNetIp::HostProtocol> &hpai);
+Q_KNX_EXPORT QDebug operator<<(QDebug debug, const QKnxNetIpStruct<QKnxNetIp::ConnectionType> &cr);
+Q_KNX_EXPORT QDebug operator<<(QDebug debug, const QKnxNetIpStruct<QKnxNetIp::DescriptionType> &dib);
 
 QT_END_NAMESPACE
 

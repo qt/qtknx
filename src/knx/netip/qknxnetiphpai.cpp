@@ -33,89 +33,182 @@
 QT_BEGIN_NAMESPACE
 
 /*!
-    \class QKnxNetIpHpai
+    \class QKnxNetIpHpaiView
 
     \inmodule QtKnx
-    \brief The QKnxNetIpHpai class uniquely identifies an IP transport
-    connection endpoint.
+    \brief The QKnxNetIpHpaiView class provides the means to read the
+    KNXnet/IP host address protocol information (HPAI) from the generic
+    QKnxNetIpHpai class and to create such a structure.
 
-    The information needed to identify an IP transport connection endpoint
-    includes the Network Layer address and the Transport Layer identifier called
-    \e {port number}.
+    A KNXnet/IP HPAI structure contains the information that is necessary to
+    uniquely identify an KNXnet/IP transport connection endpoint.
+
+    The information needed to identify an KNXnet/IP transport connection
+    endpoint includes the IP \l address and \l port number.
+
+    \note When using QKnxNetIpHpaiView care must be taken to ensure that the
+    referenced KNXnet/IP HPAI structure outlives the QKnxNetIpHpaiView on all
+    code paths, lest the view ends up referencing deleted data.
+
+    Reading the host address and port number can be achieved like this:
+    \code
+        auto hpai = QKnxNetIpHpai::fromBytes(...);
+
+        QKnxNetIpHpaiView view(hpai);
+        if (!view.isValid())
+            return;
+
+        if (view.hostProtocol() == QKnxNetIp::HostProtocol::TCP_IPv4)
+            return; // TCP support not implemented yet
+
+        // read the host protocol address information
+        auto address = view.hostAddress();
+        auto port = view.port();
+    \endcode
+
+    \sa builder()
 */
 
-QKnxNetIpHpai::QKnxNetIpHpai(const QKnxNetIpHostProtocolStruct &other)
-    : QKnxNetIpHostProtocolStruct(other)
+/*!
+    \internal
+    \fn QKnxNetIpHpaiView::QKnxNetIpHpaiView()
+*/
+
+/*!
+    \internal
+    \fn QKnxNetIpHpaiView::~QKnxNetIpHpaiView()
+*/
+
+/*!
+    \internal
+    \fn QKnxNetIpHpaiView::QKnxNetIpHpaiView(const QKnxNetIpHpai &&)
+*/
+
+/*!
+    Constructs a wrapper object with the given a KNXnet/IP structure \a hpai to
+    read the host protocol address information (HPAI).
+*/
+QKnxNetIpHpaiView::QKnxNetIpHpaiView(const QKnxNetIpHpai &hpai)
+    : m_hpai(hpai)
 {}
 
-QKnxNetIpHpai::QKnxNetIpHpai(const QHostAddress &address, quint16 port)
-    : QKnxNetIpHpai(QKnxNetIp::HostProtocol::IpV4_Udp, address, port)
-{}
-
-QKnxNetIpHpai::QKnxNetIpHpai(QKnxNetIp::HostProtocol hpc, const QHostAddress &address, quint16 port)
-    : QKnxNetIpHostProtocolStruct(hpc)
+/*!
+    Returns \c true if the KNXnet/IP structure to create the object is a valid
+    KNXnet/IP HPAI structure, returns \c false otherwise.
+*/
+bool QKnxNetIpHpaiView::isValid() const
 {
-    setHpai(hpc, address, port);
+    bool validHostProtocolCode = m_hpai.code() == QKnxNetIp::HostProtocol::UDP_IPv4
+        || m_hpai.code() == QKnxNetIp::HostProtocol::TCP_IPv4;
+    return m_hpai.isValid() && m_hpai.size() == 8 && validHostProtocolCode;
 }
 
-QKnxNetIp::HostProtocol QKnxNetIpHpai::hostProtocol() const
+/*!
+    Return the host protocol from KNXnet/IP structure if the object passed
+    during construction was valid, otherwise returns QKnxNetIp::Unknown.
+*/
+QKnxNetIp::HostProtocol QKnxNetIpHpaiView::hostProtocol() const
 {
-    return code();
+    if (m_hpai.isValid())
+        return m_hpai.code();
+    return QKnxNetIp::HostProtocol::Unknown;
 }
 
-void QKnxNetIpHpai::setHostProtocol(QKnxNetIp::HostProtocol code)
+/*!
+    Returns the host address from KNXnet/IP structure if the object passed
+    during construction was valid, otherwise returns a \e {default-constructed}
+    QHostAddress.
+*/
+QHostAddress QKnxNetIpHpaiView::hostAddress() const
 {
-    if (isValid())
-        setCode(code);
-    else
-        setHpai(code, QHostAddress(), 0);
+    if (m_hpai.isValid())
+        return QKnxUtils::HostAddress::fromBytes(m_hpai.constData());
+    return {};
 }
 
-QHostAddress QKnxNetIpHpai::address() const
+/*!
+    Returns the port number carried inside the KNXnet/IP host protocol address
+    information structure.
+*/
+quint16 QKnxNetIpHpaiView::port() const
 {
-    return QKnxUtils::HostAddress::fromBytes(payloadRef());
+    return QKnxUtils::QUint16::fromBytes(m_hpai.constData(), 4);
 }
 
-void QKnxNetIpHpai::setAddress(const QHostAddress &hostAddress)
+/*!
+    Returns a builder object to create a KNXnet/IP host protocol address
+    information structure.
+*/
+QKnxNetIpHpaiView::Builder QKnxNetIpHpaiView::builder()
 {
-    if (isValid())
-        setHpai(hostProtocol(), hostAddress, port());
-    else
-        setHpai(QKnxNetIp::HostProtocol::IpV4_Udp, hostAddress, 0);
+    return QKnxNetIpHpaiView::Builder();
 }
 
-quint16 QKnxNetIpHpai::port() const
+
+/*!
+    \class QKnxNetIpHpaiView::Builder
+
+    \inmodule QtKnx
+    \brief The QKnxNetIpHpaiView::Builder class provides the means to create a
+    KNXnet/IP host address protocol information.
+
+    A KNXnet/IP HPAI structure contains the information that is necessary to
+    uniquely identify an KNXnet/IP transport connection endpoint.
+
+    The information needed to identify an KNXnet/IP transport connection
+    endpoint includes the IP \l address and \l port number.
+
+    The common way to create such a HPAI structure is:
+    \code
+        auto hpai = QKnxNetIpHpaiView::builder()
+            .setHostProtocol(QKnxNetIp::HostProtocol::TCP_IPv4
+            .setHostAddress(QHostAddress::AnyIPv4)
+            .setPort(2013)
+            .create();
+    \endcode
+
+    By default setting the host protocol can be omitted if you want to target a
+    KNXnet/IP server using a UDP/IP connection.
+*/
+
+/*!
+    Sets the host protocol to \a code and returns a reference to the builder.
+*/
+QKnxNetIpHpaiView::Builder &QKnxNetIpHpaiView::Builder::setHostProtocol(QKnxNetIp::HostProtocol code)
 {
-    return QKnxUtils::QUint16::fromBytes(payloadRef(), 4);
+    m_code = code;
+    return *this;
 }
 
-void QKnxNetIpHpai::setPort(quint16 port)
+/*!
+    Sets the host address to \a address and returns a reference to the builder.
+*/
+QKnxNetIpHpaiView::Builder &QKnxNetIpHpaiView::Builder::setHostAddress(const QHostAddress &address)
 {
-    if (isValid())
-        setHpai(hostProtocol(), address(), port);
-    else
-        setHpai(QKnxNetIp::HostProtocol::IpV4_Udp, QHostAddress(), port);
+    m_address = address;
+    return *this;
 }
 
-void QKnxNetIpHpai::setHpai(QKnxNetIp::HostProtocol code, const QHostAddress &address, quint16 port)
+/*!
+    Sets the host port to \a port and returns a reference to the builder.
+*/
+QKnxNetIpHpaiView::Builder &QKnxNetIpHpaiView::Builder::setPort(quint16 port)
 {
-    setCode(code);
-    QKnxNetIpPayload payload;
-
-    // TODO: Review this part - It might make more sense to set the address to AnyIPv4
-    // to indicate NAT traversal, see for example 8.6.3.5 Network Address Translation (NAT)
-    payload.setBytes(QKnxUtils::HostAddress::bytes(address
-        .isNull() ? QHostAddress::LocalHost : address));
-
-    payload.appendBytes(QKnxUtils::QUint16::bytes(port));
-    setPayload(payload);
+    m_port = port;
+    return *this;
 }
 
-bool QKnxNetIpHpai::isValid() const
+/*!
+    Creates and returns a QKnxNetIpHpai.
+
+    \note The returned structure may be invalid depending on the values used
+    during setup.
+
+    \sa isValid()
+*/
+QKnxNetIpHpai QKnxNetIpHpaiView::Builder::create() const
 {
-    bool validHostProtocolCode = hostProtocol() == QKnxNetIp::HostProtocol::IpV4_Udp
-        || hostProtocol() == QKnxNetIp::HostProtocol::IpV4_Tcp;
-    return QKnxNetIpHostProtocolStruct::isValid() && size() == 8 && validHostProtocolCode;
+    return { m_code, QKnxUtils::HostAddress::bytes(m_address) + QKnxUtils::QUint16::bytes(m_port) };
 }
 
 QT_END_NAMESPACE

@@ -42,19 +42,37 @@ class tst_QKnxNetIpDeviceConfigurationAcknowledge: public QObject
 
 private slots:
     void testDefaultConstructor();
-    void testConstructor(); // to do
-    void testDebugStream(); // to do
-    void testDataStream(); // to do
+    void testConstructor();
+    void testDebugStream();
 };
 
 void tst_QKnxNetIpDeviceConfigurationAcknowledge::testDefaultConstructor()
 {
-    QKnxNetIpDeviceConfigurationAcknowledge configuration;
-    QCOMPARE(configuration.isValid(), false);
+    QKnxNetIpFrame frame;
+    QKnxNetIpDeviceConfigurationAcknowledge acknowledge(frame);
+
+    QCOMPARE(acknowledge.isValid(), false);
 }
 
 void tst_QKnxNetIpDeviceConfigurationAcknowledge::testConstructor()
 {
+    auto frame = QKnxNetIpDeviceConfigurationAcknowledge::builder()
+        .setChannelId(255)
+        .setSequenceNumber(250)
+        .setStatus(QKnxNetIp::Error::ConnectionId)
+        .create();
+    QKnxNetIpDeviceConfigurationAcknowledge acknowledge(frame);
+
+    QCOMPARE(acknowledge.isValid(), true);
+    QCOMPARE(frame.size(), quint16(10));
+    QCOMPARE(frame.data(), QKnxByteArray {});
+    QCOMPARE(frame.data().size(), 0);
+    QCOMPARE(frame.bytes(), QKnxByteArray::fromHex("06100311000a04fffa21"));
+    QCOMPARE(frame.connectionHeader().bytes(), QKnxByteArray::fromHex("04fffa21"));
+
+    QCOMPARE(acknowledge.channelId(), quint8(255));
+    QCOMPARE(acknowledge.sequenceNumber(), quint8(250));
+    QCOMPARE(acknowledge.status(), QKnxNetIp::Error::ConnectionId);
 }
 
 void tst_QKnxNetIpDeviceConfigurationAcknowledge::testDebugStream()
@@ -69,23 +87,15 @@ void tst_QKnxNetIpDeviceConfigurationAcknowledge::testDebugStream()
         QtMessageHandler oldMessageHandler;
     } _(myMessageHandler);
 
-    //qDebug() << DEFAULTCONSTRUCTOR;
-    //QCOMPARE(s_msg, QString::fromLatin1("0x1nv4l1d"));
-}
+    qDebug() << QKnxNetIpDeviceConfigurationAcknowledge::builder().create();
+    QCOMPARE(s_msg, QString::fromLatin1("0x06100311000a04000000"));
 
-void tst_QKnxNetIpDeviceConfigurationAcknowledge::testDataStream()
-{
-    {
-        //QByteArray byteArray;
-        //QDataStream out(&byteArray, QIODevice::WriteOnly);
-        //out << CONSTRUCTORWITHARG;
-        //QCOMPARE(byteArray, QByteArray::fromHex("1404C0A8020CFFFFFF00C0A80201B48A03020100"));
-    }
-
-    {
-        //out << OTHERCONSTRUCTOR;
-        //QCOMPARE(byteArray, QByteArray::fromHex("1404C0A8020CFFFFFF00C0A80201B48A03020100"));
-    }
+    qDebug() << QKnxNetIpDeviceConfigurationAcknowledge::builder()
+        .setChannelId(255)
+        .setSequenceNumber(250)
+        .setStatus(QKnxNetIp::Error::None)
+        .create();
+    QCOMPARE(s_msg, QString::fromLatin1("0x06100311000a04fffa00"));
 }
 
 QTEST_APPLESS_MAIN(tst_QKnxNetIpDeviceConfigurationAcknowledge)

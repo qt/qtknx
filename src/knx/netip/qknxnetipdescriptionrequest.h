@@ -36,26 +36,31 @@
 
 QT_BEGIN_NAMESPACE
 
-class Q_KNX_EXPORT QKnxNetIpDescriptionRequest final : public QKnxNetIpFrame
+class Q_KNX_EXPORT QKnxNetIpDescriptionRequest final
 {
 public:
-    QKnxNetIpDescriptionRequest() = default;
-    ~QKnxNetIpDescriptionRequest() override = default;
+    QKnxNetIpDescriptionRequest() = delete;
+    ~QKnxNetIpDescriptionRequest() = default;
 
-    explicit QKnxNetIpDescriptionRequest(const QKnxNetIpHpai &controlEndpoint);
+    QKnxNetIpDescriptionRequest(const QKnxNetIpFrame &&) = delete;
+    explicit QKnxNetIpDescriptionRequest(const QKnxNetIpFrame &frame);
 
-    template <typename T>
-        static QKnxNetIpDescriptionRequest fromBytes(const T &bytes, quint16 index)
-    {
-        return QKnxNetIpFrameHelper::fromBytes(bytes, index,
-            QKnxNetIp::ServiceType::DescriptionRequest);
-    }
-
-    bool isValid() const override;
+    bool isValid() const;
     QKnxNetIpHpai controlEndpoint() const;
 
+    class Q_KNX_EXPORT Builder final
+    {
+    public:
+        Builder &setControlEndpoint(const QKnxNetIpHpai &hpai);
+        QKnxNetIpFrame create() const;
+
+    private:
+        QKnxNetIpHpai m_hpai;
+    };
+    static QKnxNetIpDescriptionRequest::Builder builder();
+
 private:
-    QKnxNetIpDescriptionRequest(const QKnxNetIpFrame &other);
+    const QKnxNetIpFrame &m_frame;
 };
 
 QT_END_NAMESPACE

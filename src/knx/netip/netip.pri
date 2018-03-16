@@ -3,13 +3,12 @@ INCLUDEPATH += $$PWD
 PUBLIC_HEADERS += $$PWD/qknxnetip.h \
     $$PWD/qknxnetipconfigdib.h \
     $$PWD/qknxnetipconnectionheader.h \
-    $$PWD/qknxnetipconnectionheaderframe.h \
     $$PWD/qknxnetipconnectionstaterequest.h \
     $$PWD/qknxnetipconnectionstateresponse.h \
     $$PWD/qknxnetipconnectrequest.h \
     $$PWD/qknxnetipconnectresponse.h \
-    $$PWD/qknxnetipcrd.h  \
-    $$PWD/qknxnetipcri.h  \
+    $$PWD/qknxnetipcrd.h \
+    $$PWD/qknxnetipcri.h \
     $$PWD/qknxnetipcurrentconfigdib.h \
     $$PWD/qknxnetipdescriptionrequest.h \
     $$PWD/qknxnetipdescriptionresponse.h \
@@ -25,8 +24,6 @@ PUBLIC_HEADERS += $$PWD/qknxnetip.h \
     $$PWD/qknxnetiphpai.h \
     $$PWD/qknxnetipknxaddressesdib.h \
     $$PWD/qknxnetipmanufacturerdib.h \
-    $$PWD/qknxnetippackage.h \
-    $$PWD/qknxnetippayload.h \
     $$PWD/qknxnetiproutingbusy.h \
     $$PWD/qknxnetiproutingindication.h \
     $$PWD/qknxnetiproutinglostmessage.h \
@@ -48,7 +45,8 @@ PRIVATE_HEADERS += $$PWD/qknxnetipendpointconnection_p.h \
     $$PWD/qknxnetipserverdiscoveryagent_p.h \
     $$PWD/qknxnetipserverinfo_p.h
 
-SOURCES += $$PWD/qknxnetipconfigdib.cpp \
+SOURCES += $$PWD/qknxnetip.cpp \
+    $$PWD/qknxnetipconfigdib.cpp \
     $$PWD/qknxnetipconnectionheader.cpp \
     $$PWD/qknxnetipconnectionstaterequest.cpp \
     $$PWD/qknxnetipconnectionstateresponse.cpp \
@@ -71,7 +69,6 @@ SOURCES += $$PWD/qknxnetipconfigdib.cpp \
     $$PWD/qknxnetiphpai.cpp \
     $$PWD/qknxnetipknxaddressesdib.cpp \
     $$PWD/qknxnetipmanufacturerdib.cpp \
-    $$PWD/qknxnetippayload.cpp \
     $$PWD/qknxnetiproutingbusy.cpp \
     $$PWD/qknxnetiproutingindication.cpp \
     $$PWD/qknxnetiproutinglostmessage.cpp \

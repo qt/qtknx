@@ -672,53 +672,6 @@ bool QKnxDatapointType::isValid() const
 }
 
 /*!
-    Returns the contents of the bytes stored in the datapoint type as a string.
-*/
-QString QKnxDatapointType::toString() const
-{
-    return QLatin1String(QByteArray((const char*) d_ptr->m_bytes.constData(), d_ptr->m_bytes
-        .size()).toHex());
-}
-
-/*!
-    Returns the content of the byte at index position \a i as a modifiable
-    reference.
-*/
-quint8 &QKnxDatapointType::operator[](int i)
-{
-    Q_ASSERT_X(i >= 0 && i < d_ptr->m_bytes.size(), "QKnxDatapointType::operator[]",
-        "index out of range");
-    return d_ptr->m_bytes[i];
-}
-
-/*!
-    Returns the content of the byte at index position \a i as a modifiable
-    reference.
-*/
-const quint8 &QKnxDatapointType::operator[](int i) const
-{
-    Q_ASSERT_X(i >= 0 && i < d_ptr->m_bytes.size(), "QKnxDatapointType::operator[]",
-        "index out of range");
-    return d_ptr->m_bytes[i];
-}
-
-/*!
-    Returns the data stored in the datapoint type.
-*/
-quint8 *QKnxDatapointType::data()
-{
-    return d_ptr->m_bytes.data();
-}
-
-/*!
-    Returns the data stored in the datapoint type.
-*/
-const quint8 *QKnxDatapointType::data() const
-{
-    return d_ptr->m_bytes.data();
-}
-
-/*!
     Returns the data stored in the datapoint type.
 */
 const quint8 *QKnxDatapointType::constData() const
@@ -731,7 +684,7 @@ const quint8 *QKnxDatapointType::constData() const
 */
 quint8 QKnxDatapointType::byte(quint16 index) const
 {
-    return (index < d_ptr->m_bytes.size() ? d_ptr->m_bytes[index] : quint8{});
+    return d_ptr->m_bytes.value(index);
 }
 
 /*!
@@ -742,6 +695,19 @@ bool QKnxDatapointType::setByte(quint16 index, quint8 bytes)
     if (index < d_ptr->m_bytes.size())
         d_ptr->m_bytes[index] = bytes;
     return (index < d_ptr->m_bytes.size());
+}
+
+QKnxByteArray QKnxDatapointType::bytes() const
+{
+    return d_ptr->m_bytes;
+}
+
+bool QKnxDatapointType::setBytes(const QKnxByteArray &bytesToSet, quint16 index, quint16 count)
+{
+    if (((bytesToSet.size() - index) < count) || (size() != count))
+        return false;
+    d_ptr->m_bytes = bytesToSet;
+    return true;
 }
 
 /*!
@@ -762,7 +728,17 @@ QKnxDatapointType &QKnxDatapointType::operator=(const QKnxDatapointType &other)
 }
 
 /*!
-    Assigns \a other to this datapoint type and returns a reference to this
+    Move-constructs an object instance, making it point to the same object that
+    \a other was pointing to.
+*/
+QKnxDatapointType::QKnxDatapointType(QKnxDatapointType &&other) Q_DECL_NOTHROW
+    : d_ptr(other.d_ptr)
+{
+    other.d_ptr = Q_NULLPTR;
+}
+
+/*!
+    Move assigns \a other to this datapoint type and returns a reference to this
     datapoint type.
 */
 #ifdef Q_COMPILER_RVALUE_REFS
@@ -809,6 +785,31 @@ bool QKnxDatapointType::operator!=(const QKnxDatapointType &other) const
     return !operator==(other);
 }
 
+/*!
+    Converts a KNX datapoint type \a dpt of the format \c DPT-* or \c DPST-*-*
+    into a \l {QKnxDatapointType::Type} enumeration used throughout the QtKnx
+    API.
+*/
+QKnxDatapointType::Type QKnxDatapointType::toType(const QString &dpt)
+{
+    QKnxDatapointTypePrivate dtp;
+    auto match = dtp.m_dpt.match(dpt);
+    if (!match.hasMatch())
+        return QKnxDatapointType::Type::Unknown;
+
+    QString subType = QStringLiteral("0");
+    auto mainType = match.captured(QStringLiteral("MainOnly"));
+    if (mainType.isEmpty()) {
+        subType = match.captured(QStringLiteral("SubType"));
+        mainType = match.captured(QStringLiteral("MainType"));
+    }
+
+    quint32 type;
+    if (dtp.toType(mainType, subType, &type))
+        return static_cast<Type> (type);
+    return QKnxDatapointType::Type::Unknown;
+}
+
 
 // -- private
 
@@ -827,6 +828,31 @@ QKnxDatapointType::QKnxDatapointType(QKnxDatapointTypePrivate &dd)
     : d_ptr(new QKnxDatapointTypePrivate(dd))
 {}
 
+
+// -- QKnxVariableSizeDatapointType
+
+QKnxVariableSizeDatapointType::QKnxVariableSizeDatapointType(Type type, int size)
+    : QKnxDatapointType(type, size)
+{}
+
+QKnxVariableSizeDatapointType::QKnxVariableSizeDatapointType(const QString &dptId, int size)
+    : QKnxDatapointType(dptId, size)
+{}
+
+QKnxVariableSizeDatapointType::QKnxVariableSizeDatapointType(quint16 mainType, quint16 subType, int size)
+    : QKnxDatapointType(mainType, subType, size)
+{}
+
+bool QKnxVariableSizeDatapointType::setBytes(const QKnxByteArray &bytesToSet, quint16 index, quint16 count)
+{
+    if ((bytesToSet.size() - index) < count)
+        return false;
+
+    resize(count);
+    return QKnxDatapointType::setBytes(bytesToSet, index, count);
+}
+
 #include "moc_qknxdatapointtype.cpp"
 
 QT_END_NAMESPACE
+

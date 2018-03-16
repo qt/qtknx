@@ -30,12 +30,9 @@
 #ifndef QKNXTPDU_H
 #define QKNXTPDU_H
 
-#include <QtCore/qbytearray.h>
-#include <QtCore/qvector.h>
 #include <QtCore/qshareddata.h>
 #include <QtKnx/qknxglobal.h>
-#include <QtKnx/qknxtraits.h>
-#include <QtKnx/qknxbytestore.h>
+#include <QtKnx/qknxbytearray.h>
 
 QT_BEGIN_NAMESPACE
 
@@ -174,9 +171,9 @@ public:
 
     explicit QKnxTpdu(TransportControlField tpci);
     QKnxTpdu(TransportControlField tpci, ApplicationControlField apci);
-    QKnxTpdu(TransportControlField tpci, ApplicationControlField apci, const QVector<quint8> &data);
+    QKnxTpdu(TransportControlField tpci, ApplicationControlField apci, const QKnxByteArray &data);
     QKnxTpdu(TransportControlField tpci, ApplicationControlField apci, quint8 seqNumber,
-        const QVector<quint8> &data = {});
+        const QKnxByteArray &data = {});
 
     QKnxTpdu(const QKnxTpdu &o);
     QKnxTpdu &operator=(const QKnxTpdu &o);
@@ -187,10 +184,10 @@ public:
     quint8 sequenceNumber() const;
     void setSequenceNumber(quint8 seqNumber);
 
-    QVector<quint8> data() const;
-    void setData(const QVector<quint8> &data);
+    QKnxByteArray data() const;
+    void setData(const QKnxByteArray &data);
 
-    static QKnxTpdu fromBytes(const QVector<quint8> &data, quint16 index, quint8 size)
+    static QKnxTpdu fromBytes(const QKnxByteArray &data, quint16 index, quint8 size)
     {
         auto tpdu = QKnxTpdu { TransportControlField::Invalid, ApplicationControlField::Invalid };
 
@@ -206,14 +203,15 @@ public:
 
     quint16 size() const;
     quint8 byte(quint16 index) const;
-    QVector<quint8> bytes() const;
-    QVector<quint8> bytes(quint16 start, quint16 count) const;
-    void setBytes(QVector<quint8>::const_iterator begin, QVector<quint8>::const_iterator end);
-    QString toString() const;
+    QKnxByteArray bytes() const;
+    QKnxByteArray bytes(quint16 start, quint16 count) const;
+    void setBytes(QKnxByteArray::const_iterator begin, QKnxByteArray::const_iterator end);
 
 private:
     QSharedDataPointer<QKnxTpduPrivate> d_ptr;
 };
+// TODO: add debug stream operator
+
 Q_DECLARE_TYPEINFO(QKnxTpdu::ErrorCode, Q_PRIMITIVE_TYPE);
 Q_DECLARE_TYPEINFO(QKnxTpdu::ResetType, Q_PRIMITIVE_TYPE);
 Q_DECLARE_TYPEINFO(QKnxTpdu::EraseCode, Q_PRIMITIVE_TYPE);

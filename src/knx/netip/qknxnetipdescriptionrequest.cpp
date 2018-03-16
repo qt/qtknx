@@ -31,27 +31,39 @@
 
 QT_BEGIN_NAMESPACE
 
-QKnxNetIpDescriptionRequest::QKnxNetIpDescriptionRequest(const QKnxNetIpHpai &controlEndpoint)
-    : QKnxNetIpFrame(QKnxNetIp::ServiceType::DescriptionRequest)
-{
-    QKnxNetIpPayload payload;
-    payload.setBytes(controlEndpoint.bytes());
-    setPayload(payload);
-}
-
-QKnxNetIpDescriptionRequest::QKnxNetIpDescriptionRequest(const QKnxNetIpFrame &other)
-    : QKnxNetIpFrame(other)
+QKnxNetIpDescriptionRequest::QKnxNetIpDescriptionRequest(const QKnxNetIpFrame &frame)
+    : m_frame(frame)
 {}
 
 bool QKnxNetIpDescriptionRequest::isValid() const
 {
-    return QKnxNetIpFrame::isValid() && size() == 14
-        && code() == QKnxNetIp::ServiceType::DescriptionRequest;
+    return m_frame.isValid() && m_frame.serviceType() == QKnxNetIp::ServiceType::DescriptionRequest
+        && m_frame.size() == 14;
 }
 
 QKnxNetIpHpai QKnxNetIpDescriptionRequest::controlEndpoint() const
 {
-    return QKnxNetIpHpai::fromBytes(payloadRef(), 0);
+    return QKnxNetIpHpai::fromBytes(m_frame.constData(), 0);
+}
+
+QKnxNetIpDescriptionRequest::Builder QKnxNetIpDescriptionRequest::builder()
+{
+    return QKnxNetIpDescriptionRequest::Builder();
+}
+
+
+// -- QKnxNetIpDescriptionRequest::Builder
+
+QKnxNetIpDescriptionRequest::Builder &
+    QKnxNetIpDescriptionRequest::Builder::setControlEndpoint(const QKnxNetIpHpai &hpai)
+{
+    m_hpai = hpai;
+    return *this;
+}
+
+QKnxNetIpFrame QKnxNetIpDescriptionRequest::Builder::create() const
+{
+    return { QKnxNetIp::ServiceType::DescriptionRequest, m_hpai.bytes() };
 }
 
 QT_END_NAMESPACE

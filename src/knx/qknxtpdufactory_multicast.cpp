@@ -58,7 +58,7 @@ QKnxTpdu QKnxTpduFactory::Multicast::createGroupValueReadTpdu()
     Creates and returns a TPDU for a Group value response application service
     with the given \a data.
 */
-QKnxTpdu QKnxTpduFactory::Multicast::createGroupValueResponseTpdu(const QVector<quint8> &data)
+QKnxTpdu QKnxTpduFactory::Multicast::createGroupValueResponseTpdu(const QKnxByteArray &data)
 {
     if (data.size() > 253) // 3_02_02 Communication Medium TP1, Paragraph 2.2.4.1 -> 15 -1 but 2.2.5.1 -> 254 -1
         return {QKnxTpdu::TransportControlField::Invalid,
@@ -72,7 +72,7 @@ QKnxTpdu QKnxTpduFactory::Multicast::createGroupValueResponseTpdu(const QVector<
     Creates and returns a TPDU for a Group value write application service with
     the given \a data.
 */
-QKnxTpdu QKnxTpduFactory::Multicast::createGroupValueWriteTpdu(const QVector<quint8> &data)
+QKnxTpdu QKnxTpduFactory::Multicast::createGroupValueWriteTpdu(const QKnxByteArray &data)
 {
     if (data.size() > 253) // 3_02_02 Communication Medium TP1, Paragraph 2.2 -> 15 -1 but 2.2.5.1 -> 254 -1.4.1
         return {QKnxTpdu::TransportControlField::Invalid,
@@ -87,7 +87,7 @@ QKnxTpdu QKnxTpduFactory::Multicast::createGroupValueWriteTpdu(const QVector<qui
 
 static QKnxTpdu createGroupPropertyValueTpdu(QKnxTpdu::ApplicationControlField apci,
                                       QKnxInterfaceObjectType object, quint8 objectInstance,
-                                      QKnxInterfaceObjectProperty property, const QVector<quint8> &data)
+                                      QKnxInterfaceObjectProperty property, const QKnxByteArray &data)
 {
     if (data.size() > 249) // L_Data_Extended -> max 254 bytes
         return {QKnxTpdu::TransportControlField::Invalid,
@@ -100,8 +100,8 @@ static QKnxTpdu createGroupPropertyValueTpdu(QKnxTpdu::ApplicationControlField a
             QKnxTpdu::ApplicationControlField::Invalid};
 
     return { QKnxTpdu::TransportControlField::DataTagGroup, apci,
-        QKnxUtils::QUint16::bytes<QVector<quint8>>(quint16(object)) + QKnxUtils::QUint8::bytes<QVector<quint8>>(quint8(property))
-        + QKnxUtils::QUint8::bytes<QVector<quint8>>(objectInstance) + data };
+        QKnxUtils::QUint16::bytes(quint16(object)) + QKnxUtils::QUint8::bytes(quint8(property))
+        + QKnxUtils::QUint8::bytes(objectInstance) + data };
 }
 
 QKnxTpdu QKnxTpduFactory::Multicast::createGroupPropertyValueReadTpdu(QKnxInterfaceObjectType obj,
@@ -113,14 +113,14 @@ QKnxTpdu QKnxTpduFactory::Multicast::createGroupPropertyValueReadTpdu(QKnxInterf
 
 QKnxTpdu
 QKnxTpduFactory::Multicast::createGroupPropertyValueResponseTpdu(QKnxInterfaceObjectType object,
-    quint8 objectInstance, QKnxInterfaceObjectProperty property, const QVector<quint8> &data)
+    quint8 objectInstance, QKnxInterfaceObjectProperty property, const QKnxByteArray &data)
 {
     return createGroupPropertyValueTpdu(QKnxTpdu::ApplicationControlField::GroupPropValueResponse,
         object, objectInstance, property, data);
 }
 
 QKnxTpdu QKnxTpduFactory::Multicast::createGroupPropertyValueWriteTpdu(QKnxInterfaceObjectType obj,
-    quint8 objectInstance, QKnxInterfaceObjectProperty property, const QVector<quint8> &data)
+    quint8 objectInstance, QKnxInterfaceObjectProperty property, const QKnxByteArray &data)
 {
     return createGroupPropertyValueTpdu(QKnxTpdu::ApplicationControlField::GroupPropValueWrite,
         obj, objectInstance, property, data);
@@ -128,7 +128,7 @@ QKnxTpdu QKnxTpduFactory::Multicast::createGroupPropertyValueWriteTpdu(QKnxInter
 
 QKnxTpdu
 QKnxTpduFactory::Multicast::createGroupPropertyValueInfoReportTpdu(QKnxInterfaceObjectType object,
-    quint8 objectInstance, QKnxInterfaceObjectProperty property, const QVector<quint8> &data)
+    quint8 objectInstance, QKnxInterfaceObjectProperty property, const QKnxByteArray &data)
 {
     return createGroupPropertyValueTpdu(QKnxTpdu::ApplicationControlField::GroupPropValueInfoReport,
         object, objectInstance, property, data);

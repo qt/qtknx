@@ -202,14 +202,14 @@ QKnxLinkLayerFrame QKnxLinkLayerFrameFactory::GroupValue::createReadIndication(c
 // -- A_GroupValueResponse
 
 QKnxLinkLayerFrame QKnxLinkLayerFrameFactory::GroupValue::createResponseRequest(const QKnxAddress &src,
-    const QKnxAddress &dest, const QVector<quint8> &data)
+    const QKnxAddress &dest, const QKnxByteArray &data)
 {
     return createResponseRequest(src, dest, data, createRequestControlField(),
         createExtentedControlField(QKnxAddress::Type::Group));
 }
 
 QKnxLinkLayerFrame QKnxLinkLayerFrameFactory::GroupValue::createResponseRequest(const QKnxAddress &src,
-    const QKnxAddress &dest, const QVector<quint8> &data, const QKnxControlField &ctrl,
+    const QKnxAddress &dest, const QKnxByteArray &data, const QKnxControlField &ctrl,
     const QKnxExtendedControlField &extCtrl)
 {
     if (!groupValueArgumentsValid(src, dest, extCtrl))
@@ -223,14 +223,14 @@ QKnxLinkLayerFrame QKnxLinkLayerFrameFactory::GroupValue::createResponseRequest(
 }
 
 QKnxLinkLayerFrame QKnxLinkLayerFrameFactory::GroupValue::createResponseConfirmation(const QKnxAddress &src,
-    const QKnxAddress &dest, const QVector<quint8> &data, QKnxControlField::Confirm status)
+    const QKnxAddress &dest, const QKnxByteArray &data, QKnxControlField::Confirm status)
 {
     return createResponseConfirmation(src, dest, data, createConfirmationControlField(status),
         createExtentedControlField(QKnxAddress::Type::Group));
 }
 
 QKnxLinkLayerFrame QKnxLinkLayerFrameFactory::GroupValue::createResponseConfirmation(const QKnxAddress &src,
-    const QKnxAddress &dest, const QVector<quint8> &data, const QKnxControlField &ctrl,
+    const QKnxAddress &dest, const QKnxByteArray &data, const QKnxControlField &ctrl,
     const QKnxExtendedControlField &extCtrl)
 {
     if (!groupValueArgumentsValid(src, dest, extCtrl))
@@ -245,14 +245,14 @@ QKnxLinkLayerFrame QKnxLinkLayerFrameFactory::GroupValue::createResponseConfirma
 }
 
 QKnxLinkLayerFrame QKnxLinkLayerFrameFactory::GroupValue::createResponseIndication(const QKnxAddress &src,
-    const QKnxAddress &dest, const QVector<quint8> &data)
+    const QKnxAddress &dest, const QKnxByteArray &data)
 {
     return createResponseIndication(src, dest, data, createIndicationControlField(),
         createExtentedControlField(QKnxAddress::Type::Group));
 }
 
 QKnxLinkLayerFrame QKnxLinkLayerFrameFactory::GroupValue::createResponseIndication(const QKnxAddress &src,
-    const QKnxAddress &dest, const QVector<quint8> &data, const QKnxControlField &ctrl,
+    const QKnxAddress &dest, const QKnxByteArray &data, const QKnxControlField &ctrl,
     const QKnxExtendedControlField &extCtrl)
 {
     if (!groupValueArgumentsValid(src, dest, extCtrl))
@@ -270,14 +270,14 @@ QKnxLinkLayerFrame QKnxLinkLayerFrameFactory::GroupValue::createResponseIndicati
 // -- A_GroupValueWrite
 
 QKnxLinkLayerFrame QKnxLinkLayerFrameFactory::GroupValue::createWriteRequest(const QKnxAddress &src,
-    const QKnxAddress &dest, const QVector<quint8> &data)
+    const QKnxAddress &dest, const QKnxByteArray &data)
 {
     return createWriteRequest(src, dest, data, createRequestControlField(),
         createExtentedControlField(QKnxAddress::Type::Group));
 }
 
 QKnxLinkLayerFrame QKnxLinkLayerFrameFactory::GroupValue::createWriteRequest(const QKnxAddress &src,
-    const QKnxAddress &dest, const QVector<quint8> &data, const QKnxControlField &ctrl,
+    const QKnxAddress &dest, const QKnxByteArray &data, const QKnxControlField &ctrl,
     const QKnxExtendedControlField &extCtrl)
 {
     if (!groupValueArgumentsValid(src, dest, extCtrl))
@@ -291,14 +291,14 @@ QKnxLinkLayerFrame QKnxLinkLayerFrameFactory::GroupValue::createWriteRequest(con
 }
 
 QKnxLinkLayerFrame QKnxLinkLayerFrameFactory::GroupValue::createWriteConfirmation(const QKnxAddress &src,
-    const QKnxAddress &dest, const QVector<quint8> &data, QKnxControlField::Confirm status)
+    const QKnxAddress &dest, const QKnxByteArray &data, QKnxControlField::Confirm status)
 {
     return createWriteConfirmation(src, dest, data, createConfirmationControlField(status),
         createExtentedControlField(QKnxAddress::Type::Group));
 }
 
 QKnxLinkLayerFrame QKnxLinkLayerFrameFactory::GroupValue::createWriteConfirmation(const QKnxAddress &src,
-    const QKnxAddress &dest, const QVector<quint8> &data, const QKnxControlField &ctrl,
+    const QKnxAddress &dest, const QKnxByteArray &data, const QKnxControlField &ctrl,
     const QKnxExtendedControlField &extCtrl)
 {
     if (!groupValueArgumentsValid(src, dest, extCtrl))
@@ -313,14 +313,14 @@ QKnxLinkLayerFrame QKnxLinkLayerFrameFactory::GroupValue::createWriteConfirmatio
 }
 
 QKnxLinkLayerFrame QKnxLinkLayerFrameFactory::GroupValue::createWriteIndication(const QKnxAddress &src,
-    const QKnxAddress &dest, const QVector<quint8> &data)
+    const QKnxAddress &dest, const QKnxByteArray &data)
 {
     return createWriteIndication(src, dest, data, createIndicationControlField(),
         createExtentedControlField(QKnxAddress::Type::Group));
 }
 
 QKnxLinkLayerFrame QKnxLinkLayerFrameFactory::GroupValue::createWriteIndication(const QKnxAddress &src,
-    const QKnxAddress &dest, const QVector<quint8> &data, const QKnxControlField &ctrl,
+    const QKnxAddress &dest, const QKnxByteArray &data, const QKnxControlField &ctrl,
     const QKnxExtendedControlField &extCtrl)
 {
     if (!groupValueArgumentsValid(src, dest, extCtrl))
@@ -355,7 +355,7 @@ static bool memoryArgumentsValid(const QKnxAddress &src, const QKnxAddress &dest
 
 static bool memoryArgumentsValid(const QKnxAddress &src, const QKnxAddress &dest,
     const QKnxExtendedControlField &extCtrl, quint8 number, quint8 sequenceNumber,
-    const QVector<quint8> &data)
+    const QKnxByteArray &data)
 {
     return memoryArgumentsValid(src, dest, extCtrl, number, sequenceNumber)
         && number == data.size();
@@ -438,7 +438,7 @@ QKnxLinkLayerFrame QKnxLinkLayerFrameFactory::Memory::createReadIndication(const
 // -- A_Memory_Response
 
 QKnxLinkLayerFrame QKnxLinkLayerFrameFactory::Memory::createResponseRequest(const QKnxAddress &src,
-    const QKnxAddress &dest, quint16 memoryAddress, quint8 number, const QVector<quint8> &data,
+    const QKnxAddress &dest, quint16 memoryAddress, quint8 number, const QKnxByteArray &data,
     quint8 sequenceNumber)
 {
     return createResponseRequest(src, dest, memoryAddress, number, data, createRequestControlField(),
@@ -446,7 +446,7 @@ QKnxLinkLayerFrame QKnxLinkLayerFrameFactory::Memory::createResponseRequest(cons
 }
 
 QKnxLinkLayerFrame QKnxLinkLayerFrameFactory::Memory::createResponseRequest(const QKnxAddress &src,
-    const QKnxAddress &dest, quint16 memoryAddress, quint8 number, const QVector<quint8> &data,
+    const QKnxAddress &dest, quint16 memoryAddress, quint8 number, const QKnxByteArray &data,
     const QKnxControlField &ctrl, const QKnxExtendedControlField &extCtrl, quint8 sequenceNumber)
 {
     if (!memoryArgumentsValid(src, dest, extCtrl, number, sequenceNumber, data))
@@ -461,7 +461,7 @@ QKnxLinkLayerFrame QKnxLinkLayerFrameFactory::Memory::createResponseRequest(cons
 }
 
 QKnxLinkLayerFrame QKnxLinkLayerFrameFactory::Memory::createResponseConfirmation(const QKnxAddress &src,
-    const QKnxAddress &dest, quint16 memoryAddress, quint8 number, const QVector<quint8> &data,
+    const QKnxAddress &dest, quint16 memoryAddress, quint8 number, const QKnxByteArray &data,
     quint8 sequenceNumber, QKnxControlField::Confirm status)
 {
     return createResponseConfirmation(src, dest, memoryAddress, number, data,
@@ -470,7 +470,7 @@ QKnxLinkLayerFrame QKnxLinkLayerFrameFactory::Memory::createResponseConfirmation
 }
 
 QKnxLinkLayerFrame QKnxLinkLayerFrameFactory::Memory::createResponseConfirmation(const QKnxAddress &src,
-    const QKnxAddress &dest, quint16 memoryAddress, quint8 number, const QVector<quint8> &data,
+    const QKnxAddress &dest, quint16 memoryAddress, quint8 number, const QKnxByteArray &data,
     const QKnxControlField &ctrl, const QKnxExtendedControlField &extCtrl, quint8 sequenceNumber)
 {
     if (!memoryArgumentsValid(src, dest, extCtrl, number, sequenceNumber, data))
@@ -486,7 +486,7 @@ QKnxLinkLayerFrame QKnxLinkLayerFrameFactory::Memory::createResponseConfirmation
 }
 
 QKnxLinkLayerFrame QKnxLinkLayerFrameFactory::Memory::createResponseIndication(const QKnxAddress &src,
-    const QKnxAddress &dest, quint16 memoryAddress, quint8 number, const QVector<quint8> &data,
+    const QKnxAddress &dest, quint16 memoryAddress, quint8 number, const QKnxByteArray &data,
     quint8 sequenceNumber)
 {
     return createResponseIndication(src, dest, memoryAddress, number, data,
@@ -495,7 +495,7 @@ QKnxLinkLayerFrame QKnxLinkLayerFrameFactory::Memory::createResponseIndication(c
 }
 
 QKnxLinkLayerFrame QKnxLinkLayerFrameFactory::Memory::createResponseIndication(const QKnxAddress &src,
-    const QKnxAddress &dest, quint16 memoryAddress, quint8 number, const QVector<quint8> &data,
+    const QKnxAddress &dest, quint16 memoryAddress, quint8 number, const QKnxByteArray &data,
     const QKnxControlField &ctrl, const QKnxExtendedControlField &extCtrl, quint8 sequenceNumber)
 {
     if (!memoryArgumentsValid(src, dest, extCtrl, number, sequenceNumber, data))
@@ -514,7 +514,7 @@ QKnxLinkLayerFrame QKnxLinkLayerFrameFactory::Memory::createResponseIndication(c
 // -- A_MemoryWrite
 
 QKnxLinkLayerFrame QKnxLinkLayerFrameFactory::Memory::createWriteRequest(const QKnxAddress &src,
-    const QKnxAddress &dest, quint16 memoryAddress, quint8 number, const QVector<quint8> &data,
+    const QKnxAddress &dest, quint16 memoryAddress, quint8 number, const QKnxByteArray &data,
     quint8 sequenceNumber)
 {
     return createWriteRequest(src, dest, memoryAddress, number, data, createRequestControlField(),
@@ -522,7 +522,7 @@ QKnxLinkLayerFrame QKnxLinkLayerFrameFactory::Memory::createWriteRequest(const Q
 }
 
 QKnxLinkLayerFrame QKnxLinkLayerFrameFactory::Memory::createWriteRequest(const QKnxAddress &src,
-    const QKnxAddress &dest, quint16 memoryAddress, quint8 number, const QVector<quint8> &data,
+    const QKnxAddress &dest, quint16 memoryAddress, quint8 number, const QKnxByteArray &data,
     const QKnxControlField &ctrl, const QKnxExtendedControlField &extCtrl, quint8 sequenceNumber)
 {
     if (!memoryArgumentsValid(src, dest, extCtrl, number, sequenceNumber, data))
@@ -537,7 +537,7 @@ QKnxLinkLayerFrame QKnxLinkLayerFrameFactory::Memory::createWriteRequest(const Q
 }
 
 QKnxLinkLayerFrame QKnxLinkLayerFrameFactory::Memory::createWriteConfirmation(const QKnxAddress &src,
-    const QKnxAddress &dest, quint16 memoryAddress, quint8 number, const QVector<quint8> &data,
+    const QKnxAddress &dest, quint16 memoryAddress, quint8 number, const QKnxByteArray &data,
     quint8 sequenceNumber, QKnxControlField::Confirm status)
 {
     return createWriteConfirmation(src, dest, memoryAddress, number, data,
@@ -546,7 +546,7 @@ QKnxLinkLayerFrame QKnxLinkLayerFrameFactory::Memory::createWriteConfirmation(co
 }
 
 QKnxLinkLayerFrame QKnxLinkLayerFrameFactory::Memory::createWriteConfirmation(const QKnxAddress &src,
-    const QKnxAddress &dest, quint16 memoryAddress, quint8 number, const QVector<quint8> &data,
+    const QKnxAddress &dest, quint16 memoryAddress, quint8 number, const QKnxByteArray &data,
     const QKnxControlField &ctrl, const QKnxExtendedControlField &extCtrl, quint8 sequenceNumber)
 {
     if (!memoryArgumentsValid(src, dest, extCtrl, number, sequenceNumber, data))
@@ -562,7 +562,7 @@ QKnxLinkLayerFrame QKnxLinkLayerFrameFactory::Memory::createWriteConfirmation(co
 }
 
 QKnxLinkLayerFrame QKnxLinkLayerFrameFactory::Memory::createWriteIndication(const QKnxAddress &src,
-    const QKnxAddress &dest, quint16 memoryAddress, quint8 number, const QVector<quint8> &data,
+    const QKnxAddress &dest, quint16 memoryAddress, quint8 number, const QKnxByteArray &data,
     quint8 sequenceNumber)
 {
     return createWriteIndication(src, dest, memoryAddress, number, data,
@@ -571,7 +571,7 @@ QKnxLinkLayerFrame QKnxLinkLayerFrameFactory::Memory::createWriteIndication(cons
 }
 
 QKnxLinkLayerFrame QKnxLinkLayerFrameFactory::Memory::createWriteIndication(const QKnxAddress &src,
-    const QKnxAddress &dest, quint16 memoryAddress, quint8 number, const QVector<quint8> &data,
+    const QKnxAddress &dest, quint16 memoryAddress, quint8 number, const QKnxByteArray &data,
     const QKnxControlField &ctrl, const QKnxExtendedControlField &extCtrl, quint8 sequenceNumber)
 {
     if (!memoryArgumentsValid(src, dest, extCtrl, number, sequenceNumber, data))
@@ -681,7 +681,7 @@ QKnxLinkLayerFrame QKnxLinkLayerFrameFactory::DeviceDescriptor::createReadIndica
 
 QKnxLinkLayerFrame QKnxLinkLayerFrameFactory::DeviceDescriptor::createResponseRequest(
     const QKnxAddress &src, const QKnxAddress &dest, quint8 descriptorType,
-    const QVector<quint8> &descriptor, QKnxTpduFactory::PointToPoint::Mode mode,
+    const QKnxByteArray &descriptor, QKnxTpduFactory::PointToPoint::Mode mode,
     quint8 seqNumber)
 {
     auto ctrl = createRequestControlField();
@@ -694,7 +694,7 @@ QKnxLinkLayerFrame QKnxLinkLayerFrameFactory::DeviceDescriptor::createResponseRe
 
 QKnxLinkLayerFrame QKnxLinkLayerFrameFactory::DeviceDescriptor::createResponseRequest(
     const QKnxAddress &src, const QKnxAddress &dest, quint8 descriptorType,
-    const QVector<quint8> &descriptor, const QKnxControlField &ctrl,
+    const QKnxByteArray &descriptor, const QKnxControlField &ctrl,
     const QKnxExtendedControlField &extCtrl, QKnxTpduFactory::PointToPoint::Mode mode,
     quint8 seqNumber)
 {
@@ -711,7 +711,7 @@ QKnxLinkLayerFrame QKnxLinkLayerFrameFactory::DeviceDescriptor::createResponseRe
 
 QKnxLinkLayerFrame QKnxLinkLayerFrameFactory::DeviceDescriptor::createResponseConfirmation(
     const QKnxAddress &src, const QKnxAddress &dest, quint8 descriptorType,
-    const QVector<quint8> &descriptor, QKnxTpduFactory::PointToPoint::Mode mode, quint8 seqNumber,
+    const QKnxByteArray &descriptor, QKnxTpduFactory::PointToPoint::Mode mode, quint8 seqNumber,
     QKnxControlField::Confirm status)
 {
     auto ctrl = createConfirmationControlField(status);
@@ -724,7 +724,7 @@ QKnxLinkLayerFrame QKnxLinkLayerFrameFactory::DeviceDescriptor::createResponseCo
 
 QKnxLinkLayerFrame QKnxLinkLayerFrameFactory::DeviceDescriptor::createResponseConfirmation(
     const QKnxAddress &src, const QKnxAddress &dest, quint8 descriptorType,
-    const QVector<quint8> &descriptor, const QKnxControlField &ctrl,
+    const QKnxByteArray &descriptor, const QKnxControlField &ctrl,
     const QKnxExtendedControlField &extCtrl, QKnxTpduFactory::PointToPoint::Mode mode,
     quint8 seqNumber)
 {
@@ -742,7 +742,7 @@ QKnxLinkLayerFrame QKnxLinkLayerFrameFactory::DeviceDescriptor::createResponseCo
 
 QKnxLinkLayerFrame QKnxLinkLayerFrameFactory::DeviceDescriptor::createResponseIndication(
     const QKnxAddress &src, const QKnxAddress &dest, quint8 descriptorType,
-    const QVector<quint8> &descriptor, QKnxTpduFactory::PointToPoint::Mode mode, quint8 seqNumber)
+    const QKnxByteArray &descriptor, QKnxTpduFactory::PointToPoint::Mode mode, quint8 seqNumber)
 {
     auto ctrl = createIndicationControlField();
     if (descriptor.size() > 15)
@@ -754,7 +754,7 @@ QKnxLinkLayerFrame QKnxLinkLayerFrameFactory::DeviceDescriptor::createResponseIn
 
 QKnxLinkLayerFrame QKnxLinkLayerFrameFactory::DeviceDescriptor::createResponseIndication(
     const QKnxAddress &src, const QKnxAddress &dest, quint8 descriptorType,
-    const QVector<quint8> &descriptor, const QKnxControlField &ctrl,
+    const QKnxByteArray &descriptor, const QKnxControlField &ctrl,
     const QKnxExtendedControlField &extCtrl, QKnxTpduFactory::PointToPoint::Mode mode,
     quint8 seqNumber)
 {

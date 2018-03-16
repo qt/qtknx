@@ -36,28 +36,36 @@
 
 QT_BEGIN_NAMESPACE
 
-class Q_KNX_EXPORT QKnxNetIpDisconnectResponse final : public QKnxNetIpFrame
+class Q_KNX_EXPORT QKnxNetIpDisconnectResponse final
 {
 public:
-    QKnxNetIpDisconnectResponse() = default;
-    ~QKnxNetIpDisconnectResponse() override = default;
+    QKnxNetIpDisconnectResponse() = delete;
+    ~QKnxNetIpDisconnectResponse() = default;
 
-    QKnxNetIpDisconnectResponse(quint8 channelId, QKnxNetIp::Error status);
+    QKnxNetIpDisconnectResponse(const QKnxNetIpFrame &&) = delete;
+    explicit QKnxNetIpDisconnectResponse(const QKnxNetIpFrame &frame);
 
-    template <typename T>
-        static QKnxNetIpDisconnectResponse fromBytes(const T &bytes, quint16 index)
-    {
-        return QKnxNetIpFrameHelper::fromBytes(bytes, index,
-            QKnxNetIp::ServiceType::DisconnectResponse);
-    }
+    bool isValid() const;
 
     quint8 channelId() const;
     QKnxNetIp::Error status() const;
 
-    bool isValid() const override;
+    class Q_KNX_EXPORT Builder final
+    {
+    public:
+        Builder &setChannelId(quint8 channelId);
+        Builder &setStatus(QKnxNetIp::Error status);
+
+        QKnxNetIpFrame create() const;
+
+    private:
+        quint8 m_channelId;
+        QKnxNetIp::Error m_status { QKnxNetIp::Error::None };
+    };
+    static QKnxNetIpDisconnectResponse::Builder builder();
 
 private:
-    QKnxNetIpDisconnectResponse(const QKnxNetIpFrame &other);
+    const QKnxNetIpFrame &m_frame;
 };
 
 QT_END_NAMESPACE

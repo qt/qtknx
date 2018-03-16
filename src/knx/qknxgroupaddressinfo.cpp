@@ -28,140 +28,291 @@
 ******************************************************************************/
 
 #include "qknxgroupaddressinfo.h"
+#include "qknxgroupaddresses.h"
 
 QT_BEGIN_NAMESPACE
 
 //-- QKnxGroupAddressInfoPrivate
 
-class QKnxGroupAddressInfoPrivate : public QSharedData
+class QKnxGroupAddressInfoPrivate final : public QSharedData
 {
 public:
     QKnxGroupAddressInfoPrivate() = default;
     ~QKnxGroupAddressInfoPrivate() = default;
 
-    QKnxAddress groupAddress {};
-    QKnxGroupAddress groupAddressEntry;
-    QKnxDatapointType::Type datapointType = QKnxDatapointType::Type::Unknown;
+    QKnxAddress address;
+    QString installation, name, description;
+    QKnxDatapointType::Type type = QKnxDatapointType::Type::Unknown;
 };
 
-static QKnxDatapointType::Type dptNumbersFromQString(const QString &dptType)
-{
-    // Format: DPT-mainType-subType
-    if (dptType.size() < 7)
-        return {};
 
-    auto mainSubType = dptType.split(QString::fromLatin1("-"));
-    if (mainSubType.size() != 3)
-        return {};
+/*!
+    \class QKnxGroupAddressInfo
 
-    return QKnxDatapointType::Type(100000 * mainSubType.value(1).toUInt() + mainSubType.value(2)
-        .toUInt());
-}
+    \inmodule QtKnx
+    \brief The QKnxGroupAddressInfo class contains information about a single
+    KNX group address object used inside a KNX installation.
 
+    The information contained in this class corresponds to the information
+    described by the GroupRange_t/GroupAddress XML element in the KNX
+    Project-Schema XML file.
 
-//-- QKnxGroupAddressInfo
+    \note Not all GroupRange_t/GroupAddress attributes are reflected by the API.
+*/
 
+/*!
+    Creates a new empty group address info object.
+*/
 QKnxGroupAddressInfo::QKnxGroupAddressInfo()
-    : d(new QKnxGroupAddressInfoPrivate)
+    : d_ptr(new QKnxGroupAddressInfoPrivate)
 {}
 
+/*!
+    Destroys the object and frees any allocated resources.
+*/
 QKnxGroupAddressInfo::~QKnxGroupAddressInfo()
 {}
 
-QKnxGroupAddressInfo::QKnxGroupAddressInfo(const QKnxGroupAddress &groupAddressFromParser)
-    : d(new QKnxGroupAddressInfoPrivate)
+/*!
+    Creates a new group address info object and sets the \a installation,
+    \a name, KNX group \a address, the corresponding datapoint \a type and
+    the object \a description.
+*/
+QKnxGroupAddressInfo::QKnxGroupAddressInfo(const QString &installation, const QString &name,
+        const QKnxAddress &address, QKnxDatapointType::Type type, const QString &description)
+    : d_ptr(new QKnxGroupAddressInfoPrivate)
 {
-    d->groupAddressEntry = groupAddressFromParser;
-    d->groupAddress = { QKnxAddress::Type::Group, quint16(d->groupAddressEntry.Address) };
-    d->datapointType = dptNumbersFromQString(groupAddressFromParser.DatapointType);
+    d_ptr->installation = installation;
+    d_ptr->name = name;
+    d_ptr->description = description;
+    d_ptr->address = address;
+    d_ptr->type = type;
 }
 
-QKnxGroupAddressInfo::QKnxGroupAddressInfo(const QString &id, const QString &address,
-        const QString &name, const QString &description, const QString &dataPointType,
-        const QString &puid)
-    : QKnxGroupAddressInfo({ id, address.toUShort(), name, puid.toInt() })
-{
-    d->groupAddressEntry.Description = description;
-    d->groupAddressEntry.DatapointType = dataPointType;
-    d->datapointType = dptNumbersFromQString(d->groupAddressEntry.DatapointType);
-}
-QString QKnxGroupAddressInfo::id() const
-{
-    return d->groupAddressEntry.Id;
-}
-
-QString QKnxGroupAddressInfo::address() const
-{
-    return d->groupAddress.toString();
-}
-
-QString QKnxGroupAddressInfo::name() const
-{
-    return d->groupAddressEntry.Name;
-}
-
-QString QKnxGroupAddressInfo::description() const
-{
-    return d->groupAddressEntry.Description;
-}
-
-QString QKnxGroupAddressInfo::dataPointNumber() const
-{
-    return d->groupAddressEntry.DatapointType;
-}
-
-QString QKnxGroupAddressInfo::puid() const
-{
-    return QString::number(d->groupAddressEntry.Puid);
-}
-
-QKnxAddress QKnxGroupAddressInfo::groupAddress() const
-{
-    return d->groupAddress;
-}
-
-QKnxDatapointType::Type QKnxGroupAddressInfo::dataPointType() const
-{
-    return d->datapointType;
-}
-
-QKnxGroupAddressInfo::QKnxGroupAddressInfo(const QKnxGroupAddressInfo &other)
-    : d(other.d)
+/*!
+    Creates a new group address info object and sets the \a installation,
+    \a name, KNX group \a address, the corresponding datapoint type
+    \a datapointType and the object \a description.
+*/
+QKnxGroupAddressInfo::QKnxGroupAddressInfo(const QString &installation, const QString &name,
+        const QKnxAddress &address, const QString &datapointType, const QString &description)
+    : QKnxGroupAddressInfo(installation, name, address, QKnxDatapointType::toType(datapointType),
+        description)
 {}
 
+/*!
+    Returns \c true if the object is non-empty and valid; otherwise returns
+    \c false.
+
+    A valid object has a KNX address set and the type of the address needs to be
+    \l {QKnxAddress::Type} Group.
+*/
+bool QKnxGroupAddressInfo::isValid() const
+{
+    return d_ptr->address.isValid() && d_ptr->address.type() == QKnxAddress::Type::Group;
+}
+
+/*!
+    Creates a new group address info object and sets the \a installation,
+    \a name, KNX group \a address, the corresponding datapoint \a type and
+    the object \a description.
+*/
+QKnxGroupAddressInfo::QKnxGroupAddressInfo(const QString &installation, const QString &name,
+        quint16 address, QKnxDatapointType::Type type, const QString &description)
+    : QKnxGroupAddressInfo(installation, name, { QKnxAddress::Type::Group, quint16(address) },
+        type, description)
+{}
+
+/*!
+    Creates a new group address info object and sets the \a installation,
+    \a name, KNX group \a address, the corresponding datapoint type
+    \a datapointType and the object \a description.
+*/
+QKnxGroupAddressInfo::QKnxGroupAddressInfo(const QString &installation, const QString &name,
+        quint16 address, const QString &datapointType, const QString &description)
+    : QKnxGroupAddressInfo(installation, name, { QKnxAddress::Type::Group, quint16(address) },
+        QKnxDatapointType::toType(datapointType), description)
+{}
+
+/*!
+    Returns the name of the installation this group address info object belongs
+    to. The value can be empty.
+*/
+QString QKnxGroupAddressInfo::installation() const
+{
+    return d_ptr->installation;
+}
+
+/*!
+    Sets the name of the \a installation this group address info object belongs
+    to. The value can be empty.
+*/
+void QKnxGroupAddressInfo::setInstallation(const QString &installation)
+{
+    d_ptr->installation = installation;
+}
+
+/*!
+    Returns the name of this group address info object. The value can be empty.
+*/
+QString QKnxGroupAddressInfo::name() const
+{
+    return d_ptr->name;
+}
+
+/*!
+    Sets the \a name of this group address info object. The value can be empty.
+*/
+void QKnxGroupAddressInfo::setName(const QString &name)
+{
+    d_ptr->name = name;
+}
+
+/*!
+    Returns the KNX address of this group address info object.
+*/
+QKnxAddress QKnxGroupAddressInfo::address() const
+{
+    return d_ptr->address;
+}
+
+/*!
+    Sets the KNX \a address of this group address info object. The address
+    must be of type \l {QKnxAddress::Type} Group to keep the object valid.
+
+    \sa isValid
+*/
+void QKnxGroupAddressInfo::setAddress(const QKnxAddress &address)
+{
+    d_ptr->address = address;
+}
+
+/*!
+    Returns the datapoint type of this group address info object. If the
+    datapoint is not set, it will return \l {QKnxDatapointType::Unknown}.
+*/
+QKnxDatapointType::Type QKnxGroupAddressInfo::datapointType() const
+{
+    return d_ptr->type;
+}
+
+/*!
+    Sets the datapoint \a type of this group address info object.
+*/
+void QKnxGroupAddressInfo::setDatapointType(QKnxDatapointType::Type type)
+{
+    d_ptr->type = type;
+}
+
+/*!
+    Returns the description of this group address info object. The value can
+    be empty.
+*/
+QString QKnxGroupAddressInfo::description() const
+{
+    return d_ptr->description;
+}
+
+/*!
+    Sets the description of this group address info object to \a description.
+    The value can be empty.
+*/
+void QKnxGroupAddressInfo::setDescription(const QString &description)
+{
+    d_ptr->description = description;
+}
+
+/*!
+    Constructs a copy of \a other.
+*/
+QKnxGroupAddressInfo::QKnxGroupAddressInfo(const QKnxGroupAddressInfo &other)
+    : d_ptr(other.d_ptr)
+{}
+
+/*!
+    Assigns the specified \a other to this object.
+*/
 QKnxGroupAddressInfo &QKnxGroupAddressInfo::operator=(const QKnxGroupAddressInfo &other)
 {
-    d = other.d;
+    d_ptr = other.d_ptr;
     return *this;
 }
 
+/*!
+    Move-constructs an object instance, making it point to the same object that
+    \a other was pointing to.
+*/
+QKnxGroupAddressInfo::QKnxGroupAddressInfo(QKnxGroupAddressInfo &&other) Q_DECL_NOTHROW
+    : d_ptr(other.d_ptr)
+{
+    other.d_ptr = Q_NULLPTR;
+}
+
+/*!
+    Move-assigns \a other to this object instance.
+*/
 QKnxGroupAddressInfo &QKnxGroupAddressInfo::operator=(QKnxGroupAddressInfo &&other) Q_DECL_NOTHROW
 {
     swap(other);
     return *this;
 }
 
+/*!
+    Swaps \a other with this object. This operation is very fast and never fails.
+*/
+void QKnxGroupAddressInfo::swap(QKnxGroupAddressInfo &other) Q_DECL_NOTHROW
+{
+    d_ptr.swap(other.d_ptr);
+}
+
+/*!
+    Returns \c true if this object and the given \a other are equal; otherwise
+    returns \c false.
+*/
 bool QKnxGroupAddressInfo::operator==(const QKnxGroupAddressInfo &other) const
 {
-    return d == other.d || [&]() -> bool {
-        return d->groupAddress == other.d->groupAddress
-            && d->groupAddressEntry == d->groupAddressEntry
-            && d->datapointType == d->datapointType;
+    return d_ptr == other.d_ptr || [&]() -> bool {
+        return d_ptr->installation == other.d_ptr->installation
+            && d_ptr->name == other.d_ptr->name
+            && d_ptr->description == other.d_ptr->description
+            && d_ptr->address == other.d_ptr->address
+            && d_ptr->type == other.d_ptr->type;
     }();
 }
 
+/*!
+    Returns \c true if this object and the given \a other are not equal;
+    otherwise returns \c false.
+*/
 bool QKnxGroupAddressInfo::operator!=(const QKnxGroupAddressInfo &other) const
 {
     return !operator==(other);
 }
 
-void QKnxGroupAddressInfo::swap(QKnxGroupAddressInfo &other) Q_DECL_NOTHROW
-{
-    d.swap(other.d);
-}
-
+/*!
+    \internal
+*/
 QKnxGroupAddressInfo::QKnxGroupAddressInfo(QKnxGroupAddressInfoPrivate &dd)
-    : d(new QKnxGroupAddressInfoPrivate(dd))
+    : d_ptr(new QKnxGroupAddressInfoPrivate(dd))
 {}
+
+/*!
+    \relates QKnxGroupAddressInfo
+
+    Writes the \a infos object to the \a debug stream and returns a reference to
+    the stream.
+*/
+QDebug operator<<(QDebug debug, const QKnxGroupAddressInfo &info)
+{
+    QDebugStateSaver saver(debug);
+    debug.resetFormat().nospace().noquote();
+    debug << "QKnxGroupAddressInfo (installation=" << info.installation()
+        << ", name=" << info.name()
+        << ", address=" << info.address()
+        << ", type=" << info.datapointType()
+        << ", description=" << info.description()
+        << ')';
+    return debug;
+}
 
 QT_END_NAMESPACE

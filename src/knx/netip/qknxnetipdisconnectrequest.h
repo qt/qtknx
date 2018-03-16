@@ -36,28 +36,36 @@
 
 QT_BEGIN_NAMESPACE
 
-class Q_KNX_EXPORT QKnxNetIpDisconnectRequest final : public QKnxNetIpFrame
+class Q_KNX_EXPORT QKnxNetIpDisconnectRequest final
 {
 public:
-    QKnxNetIpDisconnectRequest() = default;
-    ~QKnxNetIpDisconnectRequest() override = default;
+    QKnxNetIpDisconnectRequest() = delete;
+    ~QKnxNetIpDisconnectRequest() = default;
 
-    QKnxNetIpDisconnectRequest(quint8 channelId, const QKnxNetIpHpai &controlEndpoint);
+    QKnxNetIpDisconnectRequest(const QKnxNetIpFrame &&) = delete;
+    explicit QKnxNetIpDisconnectRequest(const QKnxNetIpFrame &frame);
 
-    template <typename T>
-        static QKnxNetIpDisconnectRequest fromBytes(const T &bytes, quint16 index)
-    {
-        return QKnxNetIpFrameHelper::fromBytes(bytes, index,
-            QKnxNetIp::ServiceType::DisconnectRequest);
-    }
+    bool isValid() const;
 
     quint8 channelId() const;
     QKnxNetIpHpai controlEndpoint() const;
 
-    bool isValid() const override;
+    class Q_KNX_EXPORT Builder final
+    {
+    public:
+        Builder &setChannelId(quint8 channelId);
+        Builder &setControlEndpoint(const QKnxNetIpHpai &hpai);
+
+        QKnxNetIpFrame create() const;
+
+    private:
+        quint8 m_channelId;
+        QKnxNetIpHpai m_hpai;
+    };
+    static QKnxNetIpDisconnectRequest::Builder builder();
 
 private:
-    QKnxNetIpDisconnectRequest(const QKnxNetIpFrame &other);
+    const QKnxNetIpFrame &m_frame;
 };
 
 QT_END_NAMESPACE

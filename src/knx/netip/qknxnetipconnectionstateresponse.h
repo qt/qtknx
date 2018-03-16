@@ -36,28 +36,36 @@
 
 QT_BEGIN_NAMESPACE
 
-class Q_KNX_EXPORT QKnxNetIpConnectionStateResponse final : public QKnxNetIpFrame
+class Q_KNX_EXPORT QKnxNetIpConnectionStateResponse final
 {
 public:
-    QKnxNetIpConnectionStateResponse() = default;
-    ~QKnxNetIpConnectionStateResponse() override = default;
+    QKnxNetIpConnectionStateResponse() = delete;
+    ~QKnxNetIpConnectionStateResponse() = default;
 
-    QKnxNetIpConnectionStateResponse(quint8 channelId, QKnxNetIp::Error status);
+    QKnxNetIpConnectionStateResponse(const QKnxNetIpFrame &&) = delete;
+    explicit QKnxNetIpConnectionStateResponse(const QKnxNetIpFrame &frame);
 
-    template <typename T>
-        static QKnxNetIpConnectionStateResponse fromBytes(const T &bytes, quint16 index)
-    {
-        return QKnxNetIpFrameHelper::fromBytes(bytes, index,
-            QKnxNetIp::ServiceType::ConnectionStateResponse);
-    }
+    bool isValid() const;
 
     quint8 channelId() const;
     QKnxNetIp::Error status() const;
 
-    bool isValid() const override;
+    class Q_KNX_EXPORT Builder final
+    {
+    public:
+        Builder &setChannelId(quint8 channelId);
+        Builder &setStatus(QKnxNetIp::Error status);
+
+        QKnxNetIpFrame create() const;
+
+    private:
+        quint8 m_channelId;
+        QKnxNetIp::Error m_status { QKnxNetIp::Error::None };
+    };
+    static QKnxNetIpConnectionStateResponse::Builder builder();
 
 private:
-    QKnxNetIpConnectionStateResponse(const QKnxNetIpFrame &other);
+    const QKnxNetIpFrame &m_frame;
 };
 
 QT_END_NAMESPACE

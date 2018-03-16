@@ -47,13 +47,13 @@ private slots:
 
 void tst_QKnxControlField::testDefaultConstructor()
 {
-    QKnxControlField crf1(QByteArray::fromHex("bc"));
+    QKnxControlField crf1(QKnxByteArray { 0xbc });
 
     QCOMPARE(crf1.frameType(), QKnxControlField::FrameType::Standard);
     QCOMPARE(crf1.repeat(), QKnxControlField::Repeat::DoNotRepeat);
     QCOMPARE(crf1.broadcast(), QKnxControlField::Broadcast::Domain);
 
-    QKnxExtendedControlField crf2(QByteArray::fromHex("e0"));
+    QKnxExtendedControlField crf2(0xe0);
     QCOMPARE(crf2.hopCount(), quint8(6));
     QCOMPARE(crf2.destinationAddressType(), QKnxAddress::Type::Group);
 }

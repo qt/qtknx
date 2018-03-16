@@ -40,38 +40,41 @@ QT_BEGIN_NAMESPACE
     information block.
 */
 
-QKnxNetIpDeviceDib::QKnxNetIpDeviceDib(const QKnxNetIpDescriptionTypeStruct &other)
-    : QKnxNetIpDescriptionTypeStruct(other)
+QKnxNetIpDeviceDib::QKnxNetIpDeviceDib(const QKnxNetIpDib &other)
+    : QKnxNetIpDib(other)
 {}
 
 QKnxNetIpDeviceDib::QKnxNetIpDeviceDib(QKnx::MediumType mediumType, DeviceStatus deviceStatus,
-        const QKnxAddress &individualAddress, quint16 projectId, const QByteArray &serialNumber,
-        const QHostAddress &multicastAddress, const QByteArray &macAddress, const QByteArray deviceName)
-    : QKnxNetIpDescriptionTypeStruct(QKnxNetIp::DescriptionType::DeviceInfo)
+        const QKnxAddress &individualAddress, quint16 projectId, const QKnxByteArray &serialNumber,
+        const QHostAddress &multicastAddress, const QKnxByteArray &macAddress, const QKnxByteArray &deviceName)
+    : QKnxNetIpDib(QKnxNetIp::DescriptionType::DeviceInfo)
 {
-    QKnxNetIpPayload payload((quint8) mediumType);
-
+    QKnxByteArray data { quint8(mediumType) };
     if (deviceStatus > DeviceStatus::ActiveProgrammingMode)
         return;
-    payload.setByte(1, quint8(deviceStatus));
 
-    payload.appendBytes(individualAddress.bytes());
-    payload.appendBytes(QKnxUtils::QUint16::bytes(projectId));
+    data.append(quint8(deviceStatus));
+    data.append(individualAddress.bytes());
+    data.append(QKnxUtils::QUint16::bytes(projectId));
 
     if (serialNumber.size() != 6)
         return;
-    payload.appendBytes(serialNumber);
+    data.append(serialNumber);
 
     if (multicastAddress != QHostAddress::AnyIPv4 && !multicastAddress.isMulticast())
         return;
-    payload.appendBytes(QKnxUtils::HostAddress::bytes(multicastAddress));
+    data.append(QKnxUtils::HostAddress::bytes(multicastAddress));
 
     if (macAddress.size() != 6)
         return;
-    payload.appendBytes(macAddress);
-    payload.appendBytes(deviceName);
-    payload.resize(52); // size enforced by 7.5.4.2 Device information DIB
-    setPayload(payload);
+    data.append(macAddress);
+    data.append(deviceName);
+
+    if (data.size() < 52)
+        data.append(QKnxByteArray(52 - data.size(), 0));
+    data.resize(52); // size enforced by 7.5.4.2 Device information DIB
+
+    setData(data);
 }
 
 QKnxNetIp::DescriptionType QKnxNetIpDeviceDib::descriptionType() const
@@ -81,47 +84,48 @@ QKnxNetIp::DescriptionType QKnxNetIpDeviceDib::descriptionType() const
 
 QKnx::MediumType QKnxNetIpDeviceDib::mediumType() const
 {
-    return QKnx::MediumType(payloadRef().byte(0));
+    return QKnx::MediumType(constData().value(0));
 }
 
 QKnxNetIpDeviceDib::DeviceStatus QKnxNetIpDeviceDib::deviceStatus() const
 {
-    return QKnxNetIpDeviceDib::DeviceStatus(payloadRef().byte(1));
+    return QKnxNetIpDeviceDib::DeviceStatus(constData().value(1));
 }
 
 QKnxAddress QKnxNetIpDeviceDib::individualAddress() const
 {
-    return { QKnxAddress::Type::Individual, payloadRef().bytes<QByteArray>(2, 2) };
+    return { QKnxAddress::Type::Individual, constData().mid(2, 2) };
 }
 
 quint16 QKnxNetIpDeviceDib::projectInstallationIdentfier() const
 {
-    return QKnxUtils::QUint16::fromBytes(payloadRef(), 4);
+    return QKnxUtils::QUint16::fromBytes(constData(), 4);
 }
 
-QByteArray QKnxNetIpDeviceDib::serialNumber() const
+QKnxByteArray QKnxNetIpDeviceDib::serialNumber() const
 {
-    return payloadRef().bytes<QByteArray>(6, 6);
+    return constData().mid(6, 6);
 }
 
 QHostAddress QKnxNetIpDeviceDib::multicastAddress() const
 {
-    return QKnxUtils::HostAddress::fromBytes(payloadRef(), 12);
+    return QKnxUtils::HostAddress::fromBytes(constData(), 12);
 }
 
-QByteArray QKnxNetIpDeviceDib::macAddress() const
+QKnxByteArray QKnxNetIpDeviceDib::macAddress() const
 {
-    return payloadRef().bytes<QByteArray>(16, 6);
+    return constData().mid(16, 6);
 }
 
-QByteArray QKnxNetIpDeviceDib::deviceName() const
+QKnxByteArray QKnxNetIpDeviceDib::deviceName() const
 {
-    return QByteArray(payloadRef().bytes<QByteArray>(22, 30).constData());
+    auto tmp = constData().mid(22, 30);
+    return QKnxByteArray::fromByteArray((const char *) tmp.constData());
 }
 
 bool QKnxNetIpDeviceDib::isValid() const
 {
-    return QKnxNetIpDescriptionTypeStruct::isValid() && size() == 54
+    return QKnxNetIpDib::isValid() && size() == 54
         && descriptionType() == QKnxNetIp::DescriptionType::DeviceInfo;
 }
 

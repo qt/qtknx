@@ -38,29 +38,39 @@
 
 QT_BEGIN_NAMESPACE
 
-class Q_KNX_EXPORT QKnxNetIpSearchResponse final : public QKnxNetIpFrame
+class Q_KNX_EXPORT QKnxNetIpSearchResponse final
 {
 public:
-    QKnxNetIpSearchResponse() = default;
-    ~QKnxNetIpSearchResponse() override = default;
+    QKnxNetIpSearchResponse() = delete;
+    ~QKnxNetIpSearchResponse() = default;
 
-    QKnxNetIpSearchResponse(const QKnxNetIpHpai &controlEndpoint,
-                            const QKnxNetIpDeviceDib &deviceHardware,
-                            const QKnxNetIpServiceFamiliesDib &supportedFamilies);
+    QKnxNetIpSearchResponse(const QKnxNetIpFrame &&) = delete;
+    explicit QKnxNetIpSearchResponse(const QKnxNetIpFrame &frame);
 
-    template <typename T> static QKnxNetIpSearchResponse fromBytes(const T &bytes, quint16 index)
-    {
-        return QKnxNetIpFrameHelper::fromBytes(bytes, index, QKnxNetIp::ServiceType::SearchResponse);
-    }
+    bool isValid() const;
 
     QKnxNetIpHpai controlEndpoint() const;
     QKnxNetIpDeviceDib deviceHardware() const;
     QKnxNetIpServiceFamiliesDib supportedFamilies() const;
 
-    bool isValid() const override;
+    class Q_KNX_EXPORT Builder final
+    {
+    public:
+        Builder &setControlEndpoint(const QKnxNetIpHpai &hpai);
+        Builder &setDeviceHardware(const QKnxNetIpDeviceDib &ddib);
+        Builder &setSupportedFamilies(const QKnxNetIpServiceFamiliesDib &sdib);
+
+        QKnxNetIpFrame create() const;
+
+    private:
+        QKnxNetIpHpai m_hpai;
+        QKnxNetIpDeviceDib m_ddib;
+        QKnxNetIpServiceFamiliesDib m_sdib;
+    };
+    static QKnxNetIpSearchResponse::Builder builder();
 
 private:
-    QKnxNetIpSearchResponse(const QKnxNetIpFrame &other);
+    const QKnxNetIpFrame &m_frame;
 };
 
 QT_END_NAMESPACE

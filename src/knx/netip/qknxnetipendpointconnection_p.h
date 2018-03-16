@@ -68,7 +68,7 @@ struct UserProperties
     quint16 port { 0 };
     bool natAware { false };
     QHostAddress address { QHostAddress::LocalHost };
-    QVector<quint8> supportedVersions  { QKnxNetIpFrameHeader::KnxNetIpVersion10 };
+    QKnxByteArray supportedVersions  { QKnxNetIpFrameHeader::KnxNetIpVersion10 };
 };
 
 struct Endpoint final
@@ -78,20 +78,24 @@ struct Endpoint final
         : address(addr)
         , port(p)
     {}
-    explicit Endpoint(const QKnxNetIpHpai &hpai)
-        : address(hpai.address())
+    explicit Endpoint(const QKnxNetIpHpaiView &hpai)
+        : address(hpai.hostAddress())
         , port(hpai.port())
     {}
     explicit Endpoint(const QHostAddress::SpecialAddress &addr)
         : address(addr)
     {}
 
-    Endpoint &operator=(const QKnxNetIpHpai &hpai)
+    Endpoint &operator=(const QKnxNetIpHpai &s)
     {
-        address = hpai.address(); port = hpai.port();
+        const QKnxNetIpHpaiView hpai(s);
+        address = hpai.hostAddress(); port = hpai.port();
         return *this;
     }
-    operator QKnxNetIpHpai() const { return { address, port }; }
+    operator QKnxNetIpHpai() const
+    {
+        return QKnxNetIpHpaiView::builder().setHostAddress(address).setPort(port).create();
+    }
 
     QHostAddress address { QHostAddress::LocalHost };
     quint16 port { 0 };
@@ -123,18 +127,18 @@ public:
 
     // datapoint related processing
     bool sendTunnelingRequest(const QKnxLinkLayerFrame &frame);
-    virtual void process(const QKnxNetIpTunnelingRequest &);
-    virtual void process(const QKnxNetIpTunnelingAcknowledge &);
+    virtual void processTunnelingRequest(const QKnxNetIpFrame &frame);
+    virtual void processTunnelingAcknowledge(const QKnxNetIpFrame &frame);
 
     bool sendDeviceConfigurationRequest(const QKnxLocalDeviceManagementFrame &frame);
-    virtual void process(const QKnxNetIpDeviceConfigurationRequest &);
-    virtual void process(const QKnxNetIpDeviceConfigurationAcknowledge &);
+    virtual void processDeviceConfigurationRequest(const QKnxNetIpFrame &frame);
+    virtual void processDeviceConfigurationAcknowledge(const QKnxNetIpFrame &frame);
 
     // endpoint related processing
-    virtual void process(const QKnxNetIpConnectResponse &response, const QNetworkDatagram &dg);
-    virtual void process(const QKnxNetIpConnectionStateResponse &response);
-    virtual void process(const QKnxNetIpDisconnectRequest &request);
-    virtual void process(const QKnxNetIpDisconnectResponse &response);
+    virtual void processConnectResponse(const QKnxNetIpFrame &frame, const QNetworkDatagram &dg);
+    virtual void processConnectionStateResponse(const QKnxNetIpFrame &frame);
+    virtual void processDisconnectRequest(const QKnxNetIpFrame &frame);
+    virtual void processDisconnectResponse(const QKnxNetIpFrame &frame);
 
     virtual void processDatagram(QKnxNetIpEndpointConnection::EndpointType, const QNetworkDatagram &);
 
@@ -159,16 +163,16 @@ private:
     const int m_maxCemiRequest { 0 };
     const int m_acknowledgeTimeout { 0 };
 
-    QByteArray m_lastSendCemiRequest {};
-    QByteArray m_lastReceivedCemiRequest {};
+    QKnxNetIpFrame m_lastSendCemiRequest {};
+    QKnxNetIpFrame m_lastReceivedCemiRequest {};
 
     int m_stateRequests { 0 };
     const int m_maxStateRequests = { 3 };
-    QByteArray m_lastStateRequest {};
+    QKnxNetIpFrame m_lastStateRequest {};
 
     bool m_nat { false };
     quint32 m_heartbeatTimeout { QKnxNetIp::HeartbeatTimeout };
-    QVector<quint8> m_supportedVersions { QKnxNetIpFrameHeader::KnxNetIpVersion10 };
+    QKnxByteArray m_supportedVersions { QKnxNetIpFrameHeader::KnxNetIpVersion10 };
 
     QString m_errorString;
     quint8 m_dataEndpointVersion = QKnxNetIpFrameHeader::KnxNetIpVersion10;

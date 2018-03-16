@@ -60,23 +60,22 @@ private slots:
         QCOMPARE(address.type(), InvalidType);
         QCOMPARE(address.isValid(), false);
         QCOMPARE(address.toString(), QStringLiteral(""));
-        QCOMPARE(address.bytes<QByteArray>(), QByteArray {});
-        QCOMPARE(address.bytes<QVector<quint8>>(), QVector<quint8> {});
+        QCOMPARE(address.bytes(), QKnxByteArray {});
     }
 
     void testConstructorFromQuint16_data()
     {
         QTEST_COLUMNS
-        QTest::addColumn<QVector<quint8>>("bytes");
+        QTest::addColumn<QKnxByteArray>("bytes");
 
-        QByteArray raw(2, Qt::Uninitialized);
+        //QKnxByteArray raw(2);
         QTest::newRow("QKnxAddress(QKnxAddress::Type::Group, 2305)")
             << QKnxAddress(QKnxAddress::Type::Group, 2305)
             << QKnxAddress::Type::Group
             << QKnxAddress::Notation::ThreeLevel
             << true
             << QStringLiteral("1/1/1")
-            << QVector<quint8> { 0x09, 0x01 };
+            << QKnxByteArray { 0x09, 0x01 };
 
         QTest::newRow("QKnxAddress(QKnxAddress::Type::Individual, 4353)")
             << QKnxAddress(QKnxAddress::Type::Individual, 4353)
@@ -84,7 +83,7 @@ private slots:
             << QKnxAddress::Notation::ThreeLevel
             << true
             << QStringLiteral("1.1.1")
-            << QVector<quint8> { 0x11, 0x01 };
+            << QKnxByteArray { 0x11, 0x01 };
 
         QTest::newRow("QKnxAddress(InvalidType, 0)")
             << QKnxAddress(InvalidType, 0)
@@ -92,7 +91,7 @@ private slots:
             << QKnxAddress::Notation::ThreeLevel
             << false
             << QStringLiteral("")
-            << QVector<quint8> {};
+            << QKnxByteArray {};
     }
 
     void testConstructorFromQuint16()
@@ -105,13 +104,13 @@ private slots:
             qMetaTypeId<QKnxAddress::Notation>()));
 
         QTEST(address.toString(notation), "toString");
-        QTEST(address.bytes<QVector<quint8>>(), "bytes");
+        QTEST(address.bytes(), "bytes");
     }
 
     void testConstructorFromQString_data()
     {
         QTEST_COLUMNS
-        QTest::addColumn<QVector<quint8>>("bytes");
+        QTest::addColumn<QKnxByteArray>("bytes");
 
         // invalid separators
 
@@ -124,7 +123,7 @@ private slots:
                 << QKnxAddress::Notation::ThreeLevel
                 << false
                 << QStringLiteral("")
-                << QVector<quint8> {};
+                << QKnxByteArray {};
             QTest::newRow(QByteArray("QKnxAddress(QKnxAddress::Type::Individual, QStringLiteral(\""
                     + QByteArray(data) + "\"))").constData())
                 << QKnxAddress(QKnxAddress::Type::Individual, QStringLiteral("%1").arg(data))
@@ -132,7 +131,7 @@ private slots:
                 << QKnxAddress::Notation::ThreeLevel
                 << false
                 << QStringLiteral("")
-                << QVector<quint8> {};
+                << QKnxByteArray {};
             QTest::newRow(QByteArray("QKnxAddress(InvalidType, QStringLiteral(\""
                     + QByteArray(data) + "\"))").constData())
                 << QKnxAddress(InvalidType, QStringLiteral("%1").arg(data))
@@ -140,7 +139,7 @@ private slots:
                 << QKnxAddress::Notation::ThreeLevel
                 << false
                 << QStringLiteral("")
-                << QVector<quint8> {};
+                << QKnxByteArray {};
         }
 
         // invalid numbers
@@ -154,7 +153,7 @@ private slots:
                 << QKnxAddress::Notation::ThreeLevel
                 << false
                 << QStringLiteral("")
-                << QVector<quint8> {};
+                << QKnxByteArray {};
             QTest::newRow(QByteArray("QKnxAddress(QKnxAddress::Type::Individual, QStringLiteral(\""
                     + QByteArray(data) + "\"))").constData())
                 << QKnxAddress(QKnxAddress::Type::Individual, QStringLiteral("%1").arg(data))
@@ -162,7 +161,7 @@ private slots:
                 << QKnxAddress::Notation::ThreeLevel
                 << false
                 << QStringLiteral("")
-                << QVector<quint8> {};
+                << QKnxByteArray {};
             QTest::newRow(QByteArray("QKnxAddress(InvalidType, QStringLiteral(\""
                     + QByteArray(data) + "\"))").constData())
                 << QKnxAddress(InvalidType, QStringLiteral("%1").arg(data))
@@ -170,7 +169,7 @@ private slots:
                 << QKnxAddress::Notation::ThreeLevel
                 << false
                 << QStringLiteral("")
-                << QVector<quint8> {};
+                << QKnxByteArray {};
         }
         QTest::newRow("QKnxAddress(InvalidType, QStringLiteral(\"0\"))")
             << QKnxAddress(InvalidType, QStringLiteral("0"))
@@ -178,14 +177,14 @@ private slots:
             << QKnxAddress::Notation::ThreeLevel
             << false
             << QStringLiteral("")
-            << QVector<quint8> {};
+            << QKnxByteArray {};
         QTest::newRow("QKnxAddress(InvalidType, QStringLiteral(\"65535\"))")
             << QKnxAddress(InvalidType, QStringLiteral("65535"))
             << InvalidType
             << QKnxAddress::Notation::ThreeLevel
             << false
             << QStringLiteral("")
-            << QVector<quint8> {};
+            << QKnxByteArray {};
 
         // invalid group addresses
 
@@ -200,7 +199,7 @@ private slots:
                 << QKnxAddress::Notation::ThreeLevel
                 << false
                 << QStringLiteral("")
-                << QVector<quint8> {};
+                << QKnxByteArray {};
             QTest::newRow(QByteArray("QKnxAddress(InvalidType, QStringLiteral(\""
                     + QByteArray(data) + "\"))").constData())
                 << QKnxAddress(InvalidType, QStringLiteral("%1").arg(data))
@@ -208,7 +207,7 @@ private slots:
                 << QKnxAddress::Notation::ThreeLevel
                 << false
                 << QStringLiteral("")
-                << QVector<quint8> {};
+                << QKnxByteArray {};
         }
 
         // invalid individual addresses
@@ -224,7 +223,7 @@ private slots:
                 << QKnxAddress::Notation::ThreeLevel
                 << false
                 << QStringLiteral("")
-                << QVector<quint8> {};
+                << QKnxByteArray {};
             QTest::newRow(QByteArray("QKnxAddress(InvalidType, QStringLiteral(\""
                     + QByteArray(data) + "\"))").constData())
                 << QKnxAddress(InvalidType, QStringLiteral("%1").arg(data))
@@ -232,7 +231,7 @@ private slots:
                 << QKnxAddress::Notation::ThreeLevel
                 << false
                 << QStringLiteral("")
-                << QVector<quint8> {};
+                << QKnxByteArray {};
         }
 
         // valid numbers
@@ -243,28 +242,28 @@ private slots:
             << QKnxAddress::Notation::ThreeLevel
             << true
             << QStringLiteral("0/0/0")
-            << QVector<quint8> { 0x00, 0x00 };
+            << QKnxByteArray { 0x00, 0x00 };
         QTest::newRow("QKnxAddress(QKnxAddress::Type::Individual, QStringLiteral(\"0\"))")
             << QKnxAddress(QKnxAddress::Type::Individual, QStringLiteral("0"))
             << QKnxAddress::Type::Individual
             << QKnxAddress::Notation::ThreeLevel
             << true
             << QStringLiteral("0.0.0")
-            << QVector<quint8> { 0x00, 0x00 };
+            << QKnxByteArray { 0x00, 0x00 };
         QTest::newRow("QKnxAddress(QKnxAddress::Type::Group, QStringLiteral(\"65535\"))")
             << QKnxAddress(QKnxAddress::Type::Group, QStringLiteral("65535"))
             << QKnxAddress::Type::Group
             << QKnxAddress::Notation::ThreeLevel
             << true
             << QStringLiteral("31/7/255")
-            << QVector<quint8> { 0xff, 0xff };
+            << QKnxByteArray { 0xff, 0xff };
         QTest::newRow("QKnxAddress(QKnxAddress::Type::Individual, QStringLiteral(\"65535\"))")
             << QKnxAddress(QKnxAddress::Type::Individual, QStringLiteral("65535"))
             << QKnxAddress::Type::Individual
             << QKnxAddress::Notation::ThreeLevel
             << true
             << QStringLiteral("15.15.255")
-            << QVector<quint8> { 0xff, 0xff };
+            << QKnxByteArray { 0xff, 0xff };
 
         // valid 2-level group addresses
 
@@ -274,28 +273,28 @@ private slots:
             << QKnxAddress::Notation::TwoLevel
             << true
             << QStringLiteral("0/0")
-            << QVector<quint8> { 0x00, 0x00 };
+            << QKnxByteArray { 0x00, 0x00 };
         QTest::newRow("QKnxAddress(QKnxAddress::Type::Group, QStringLiteral(\"31/0\"))")
             << QKnxAddress(QKnxAddress::Type::Group, QStringLiteral("31/0"))
             << QKnxAddress::Type::Group
             << QKnxAddress::Notation::TwoLevel
             << true
             << QStringLiteral("31/0")
-            << QVector<quint8> { 0xf8, 0x00 };
+            << QKnxByteArray { 0xf8, 0x00 };
         QTest::newRow("QKnxAddress(QKnxAddress::Type::Group, QStringLiteral(\"0/2047\"))")
             << QKnxAddress(QKnxAddress::Type::Group, QStringLiteral("0/2047"))
             << QKnxAddress::Type::Group
             << QKnxAddress::Notation::TwoLevel
             << true
             << QStringLiteral("0/2047")
-            << QVector<quint8> { 0x07, 0xff };
+            << QKnxByteArray { 0x07, 0xff };
         QTest::newRow("QKnxAddress(QKnxAddress::Type::Group, QStringLiteral(\"31/2047\"))")
             << QKnxAddress(QKnxAddress::Type::Group, QStringLiteral("31/2047"))
             << QKnxAddress::Type::Group
             << QKnxAddress::Notation::TwoLevel
             << true
             << QStringLiteral("31/2047")
-            << QVector<quint8> { 0xff, 0xff };
+            << QKnxByteArray { 0xff, 0xff };
 
         // valid 3-level group addresses
 
@@ -305,35 +304,35 @@ private slots:
             << QKnxAddress::Notation::ThreeLevel
             << true
             << QStringLiteral("0/0/0")
-            << QVector<quint8> { 0x00, 0x00 };
+            << QKnxByteArray { 0x00, 0x00 };
         QTest::newRow("QKnxAddress(QKnxAddress::Type::Group, QStringLiteral(\"31/0/0\"))")
             << QKnxAddress(QKnxAddress::Type::Group, QStringLiteral("31/0/0"))
             << QKnxAddress::Type::Group
             << QKnxAddress::Notation::ThreeLevel
             << true
             << QStringLiteral("31/0/0")
-            << QVector<quint8> { 0xf8, 0x00 };
+            << QKnxByteArray { 0xf8, 0x00 };
         QTest::newRow("QKnxAddress(QKnxAddress::Type::Group, QStringLiteral(\"0/7/0\"))")
             << QKnxAddress(QKnxAddress::Type::Group, QStringLiteral("0/7/0"))
             << QKnxAddress::Type::Group
             << QKnxAddress::Notation::ThreeLevel
             << true
             << QStringLiteral("0/7/0")
-            << QVector<quint8> { 0x07, 0x00 };
+            << QKnxByteArray { 0x07, 0x00 };
         QTest::newRow("QKnxAddress(QKnxAddress::Type::Group, QStringLiteral(\"0/0/255\"))")
             << QKnxAddress(QKnxAddress::Type::Group, QStringLiteral("0/0/255"))
             << QKnxAddress::Type::Group
             << QKnxAddress::Notation::ThreeLevel
             << true
             << QStringLiteral("0/0/255")
-            << QVector<quint8> { 0x00, 0xff };
+            << QKnxByteArray { 0x00, 0xff };
         QTest::newRow("QKnxAddress(QKnxAddress::Type::Group, QStringLiteral(\"31/7/255\"))")
             << QKnxAddress(QKnxAddress::Type::Group, QStringLiteral("31/7/255"))
             << QKnxAddress::Type::Group
             << QKnxAddress::Notation::ThreeLevel
             << true
             << QStringLiteral("31/7/255")
-            << QVector<quint8> { 0xff, 0xff };
+            << QKnxByteArray { 0xff, 0xff };
 
         // valid 3-level individual addresses
 
@@ -343,35 +342,35 @@ private slots:
             << QKnxAddress::Notation::ThreeLevel
             << true
             << QStringLiteral("0.0.0")
-            << QVector<quint8> { 0x00, 0x00 };
+            << QKnxByteArray { 0x00, 0x00 };
         QTest::newRow("QKnxAddress(QKnxAddress::Type::Individual, QStringLiteral(\"15.0.0\"))")
             << QKnxAddress(QKnxAddress::Type::Individual, QStringLiteral("15.0.0"))
             << QKnxAddress::Type::Individual
             << QKnxAddress::Notation::ThreeLevel
             << true
             << QStringLiteral("15.0.0")
-            << QVector<quint8> { 0xf0, 0x00 };
+            << QKnxByteArray { 0xf0, 0x00 };
         QTest::newRow("QKnxAddress(QKnxAddress::Type::Individual, QStringLiteral(\"0.15.0\"))")
             << QKnxAddress(QKnxAddress::Type::Individual, QStringLiteral("0.15.0"))
             << QKnxAddress::Type::Individual
             << QKnxAddress::Notation::ThreeLevel
             << true
             << QStringLiteral("0.15.0")
-            << QVector<quint8> { 0x0f, 0x00 };
+            << QKnxByteArray { 0x0f, 0x00 };
         QTest::newRow("QKnxAddress(QKnxAddress::Type::Individual, QStringLiteral(\"0.0.255\"))")
             << QKnxAddress(QKnxAddress::Type::Individual, QStringLiteral("0.0.255"))
             << QKnxAddress::Type::Individual
             << QKnxAddress::Notation::ThreeLevel
             << true
             << QStringLiteral("0.0.255")
-            << QVector<quint8> { 0x00, 0xff };
+            << QKnxByteArray { 0x00, 0xff };
         QTest::newRow("QKnxAddress(QKnxAddress::Type::Individual, QStringLiteral(\"15.15.255\"))")
             << QKnxAddress(QKnxAddress::Type::Individual, QStringLiteral("15.15.255"))
             << QKnxAddress::Type::Individual
             << QKnxAddress::Notation::ThreeLevel
             << true
             << QStringLiteral("15.15.255")
-            << QVector<quint8> { 0xff, 0xff };
+            << QKnxByteArray { 0xff, 0xff };
     }
 
     void testConstructorFromQString()
@@ -384,111 +383,103 @@ private slots:
             qMetaTypeId<QKnxAddress::Notation>()));
 
         QTEST(address.toString(notation), "toString");
-        QTEST(address.bytes<QVector<quint8>>(), "bytes");
+        QTEST(address.bytes(), "bytes");
     }
 
-    void testConstructorFromQByteArray_data()
+    void testConstructorFromQKnxByteArray_data()
     {
         QTEST_COLUMNS
-        QTest::addColumn<QByteArray>("bytes");
+        QTest::addColumn<QKnxByteArray>("bytes");
 
-        QByteArray address(3, Qt::Uninitialized);
-        QTest::newRow("QKnxAddress(QKnxAddress::Type::Group, QByteArray {})")
-            << QKnxAddress(QKnxAddress::Type::Group, QByteArray {})
+        QTest::newRow("QKnxAddress(QKnxAddress::Type::Group, QKnxByteArray {})")
+            << QKnxAddress(QKnxAddress::Type::Group, QKnxByteArray {})
             << InvalidType
             << QKnxAddress::Notation::ThreeLevel
             << false
             << QStringLiteral("")
-            << QByteArray {};
-
-        address[0] = quint8(0x09);
-        QTest::newRow("QKnxAddress(QKnxAddress::Type::Group, QByteArray { 0x09 })")
-            << QKnxAddress(QKnxAddress::Type::Group, address.mid(0, 1))
+            << QKnxByteArray {};
+        QTest::newRow("QKnxAddress(QKnxAddress::Type::Group, QKnxByteArray { 0x09 })")
+            << QKnxAddress(QKnxAddress::Type::Group, QKnxByteArray { 0x09 })
             << InvalidType
             << QKnxAddress::Notation::ThreeLevel
             << false
             << QStringLiteral("")
-            << QByteArray {};
-        address[1] = quint8(0x01);
-        QTest::newRow("QKnxAddress(QKnxAddress::Type::Group, QByteArray { 0x09, 0x01 })")
-            << QKnxAddress(QKnxAddress::Type::Group, address.mid(0, 2))
+            << QKnxByteArray {};
+        QTest::newRow("QKnxAddress(QKnxAddress::Type::Group, QKnxByteArray { 0x09, 0x01 })")
+            << QKnxAddress(QKnxAddress::Type::Group, QKnxByteArray { 0x09, 0x01 })
             << QKnxAddress::Type::Group
             << QKnxAddress::Notation::ThreeLevel
             << true
             << QStringLiteral("1/1/1")
-            << address.mid(0, 2);
-        address[2] = quint8(0x07);
-        QTest::newRow("QKnxAddress(QKnxAddress::Type::Group, QByteArray { 0x09, 0x01, 0x07 })")
-            << QKnxAddress(QKnxAddress::Type::Group, address)
+            << QKnxByteArray { 0x09, 0x01 };
+        QTest::newRow("QKnxAddress(QKnxAddress::Type::Group, QKnxByteArray { 0x09, 0x01, 0x07 })")
+            << QKnxAddress(QKnxAddress::Type::Group, QKnxByteArray { 0x09, 0x01, 0x07 })
             << QKnxAddress::Type::Group
             << QKnxAddress::Notation::ThreeLevel
             << true
             << QStringLiteral("1/1/1")
-            << address.mid(0, 2);
+            << QKnxByteArray { 0x09, 0x01 };
 
-        QTest::newRow("QKnxAddress(QKnxAddress::Type::Individual, QByteArray {})")
-            << QKnxAddress(QKnxAddress::Type::Individual, QByteArray {})
+        QTest::newRow("QKnxAddress(QKnxAddress::Type::Individual, QKnxByteArray {})")
+            << QKnxAddress(QKnxAddress::Type::Individual, QKnxByteArray {})
             << InvalidType
             << QKnxAddress::Notation::ThreeLevel
             << false
             << QStringLiteral("")
-            << QByteArray {};
-        address[0] = quint8(0x11);
-        QTest::newRow("QKnxAddress(QKnxAddress::Type::Individual, QByteArray { 0x11 })")
-            << QKnxAddress(QKnxAddress::Type::Individual, address.mid(0, 1))
+            << QKnxByteArray {};
+        QTest::newRow("QKnxAddress(QKnxAddress::Type::Individual, QKnxByteArray { 0x11 })")
+            << QKnxAddress(QKnxAddress::Type::Individual, QKnxByteArray { 0x11 })
             << InvalidType
             << QKnxAddress::Notation::ThreeLevel
             << false
             << QStringLiteral("")
-            << QByteArray {};
-        address[1] = quint8(0x01);
-        QTest::newRow("QKnxAddress(QKnxAddress::Type::Individual, QByteArray { 0x11, 0x01 })")
-            << QKnxAddress(QKnxAddress::Type::Individual, address.mid(0, 2))
+            << QKnxByteArray {};
+        QTest::newRow("QKnxAddress(QKnxAddress::Type::Individual, QKnxByteArray { 0x11, 0x01 })")
+            << QKnxAddress(QKnxAddress::Type::Individual, QKnxByteArray { 0x11, 0x01 })
             << QKnxAddress::Type::Individual
             << QKnxAddress::Notation::ThreeLevel
             << true
             << QStringLiteral("1.1.1")
-            << address.mid(0, 2);
-        address[2] = quint8(0x03);
-        QTest::newRow("QKnxAddress(QKnxAddress::Type::Individual, QByteArray { 0x11, 0x01, 0x03 })")
-            << QKnxAddress(QKnxAddress::Type::Individual, address)
+            << QKnxByteArray { 0x11, 0x01 };
+        QTest::newRow("QKnxAddress(QKnxAddress::Type::Individual, QKnxByteArray { 0x11, 0x01, 0x03 })")
+            << QKnxAddress(QKnxAddress::Type::Individual, QKnxByteArray { 0x11, 0x01, 0x03 })
             << QKnxAddress::Type::Individual
             << QKnxAddress::Notation::ThreeLevel
             << true
             << QStringLiteral("1.1.1")
-            << address.mid(0, 2);
+            << QKnxByteArray { 0x11, 0x01 };
 
-        QTest::newRow("QKnxAddress(InvalidType, QByteArray {})")
-            << QKnxAddress(InvalidType, QByteArray {})
+        QTest::newRow("QKnxAddress(InvalidType, QKnxByteArray {})")
+            << QKnxAddress(InvalidType, QKnxByteArray {})
             << InvalidType
             << QKnxAddress::Notation::ThreeLevel
             << false
             << QStringLiteral("")
-            << QByteArray {};
-        QTest::newRow("QKnxAddress(InvalidType, QByteArray { 0x11 })")
-            << QKnxAddress(InvalidType, address.mid(0, 1))
+            << QKnxByteArray {};
+        QTest::newRow("QKnxAddress(InvalidType, QKnxByteArray { 0x11 })")
+            << QKnxAddress(InvalidType, QKnxByteArray { 0x11 })
             << InvalidType
             << QKnxAddress::Notation::ThreeLevel
             << false
             << QStringLiteral("")
-            << QByteArray {};
-        QTest::newRow("QKnxAddress(InvalidType, QByteArray { 0x11, 0x01 })")
-            << QKnxAddress(InvalidType, address.mid(0, 2))
+            << QKnxByteArray {};
+        QTest::newRow("QKnxAddress(InvalidType, QKnxByteArray { 0x11, 0x01 })")
+            << QKnxAddress(InvalidType, QKnxByteArray { 0x11, 0x01 })
             << InvalidType
             << QKnxAddress::Notation::ThreeLevel
             << false
             << QStringLiteral("")
-            << QByteArray {};
-        QTest::newRow("QKnxAddress(InvalidType, QByteArray { 0x11, 0x01, 0x03 })")
-            << QKnxAddress(InvalidType, address)
+            << QKnxByteArray {};
+        QTest::newRow("QKnxAddress(InvalidType, QKnxByteArray { 0x11, 0x01, 0x03 })")
+            << QKnxAddress(InvalidType, QKnxByteArray { 0x11, 0x01, 0x03 })
             << InvalidType
             << QKnxAddress::Notation::ThreeLevel
             << false
             << QStringLiteral("")
-            << QByteArray {};
+            << QKnxByteArray {};
     }
 
-    void testConstructorFromQByteArray()
+    void testConstructorFromQKnxByteArray()
     {
         QFETCH(QKnxAddress, address);
         QTEST(address.type(), "type");
@@ -498,113 +489,7 @@ private slots:
             qMetaTypeId<QKnxAddress::Notation>()));
 
         QTEST(address.toString(notation), "toString");
-        QTEST(address.bytes<QByteArray>(), "bytes");
-    }
-
-    void testConstructorFromQVector_data()
-    {
-        QTEST_COLUMNS
-        QTest::addColumn<QVector<quint8>>("bytes");
-
-        QTest::newRow("QKnxAddress(QKnxAddress::Type::Group, QVector<quint8> {})")
-            << QKnxAddress(QKnxAddress::Type::Group, QVector<quint8> {})
-            << InvalidType
-            << QKnxAddress::Notation::ThreeLevel
-            << false
-            << QStringLiteral("")
-            << QVector<quint8> {};
-        QTest::newRow("QKnxAddress(QKnxAddress::Type::Group, QVector<quint8> { 0x09 })")
-            << QKnxAddress(QKnxAddress::Type::Group, QVector<quint8> { 0x09 })
-            << InvalidType
-            << QKnxAddress::Notation::ThreeLevel
-            << false
-            << QStringLiteral("")
-            << QVector<quint8> {};
-        QTest::newRow("QKnxAddress(QKnxAddress::Type::Group, QVector<quint8> { 0x09, 0x01 })")
-            << QKnxAddress(QKnxAddress::Type::Group, QVector<quint8> { 0x09, 0x01 })
-            << QKnxAddress::Type::Group
-            << QKnxAddress::Notation::ThreeLevel
-            << true
-            << QStringLiteral("1/1/1")
-            << QVector<quint8> { 0x09, 0x01 };
-        QTest::newRow("QKnxAddress(QKnxAddress::Type::Group, QVector<quint8> { 0x09, 0x01, 0x07 })")
-            << QKnxAddress(QKnxAddress::Type::Group, QVector<quint8> { 0x09, 0x01, 0x07 })
-            << QKnxAddress::Type::Group
-            << QKnxAddress::Notation::ThreeLevel
-            << true
-            << QStringLiteral("1/1/1")
-            << QVector<quint8> { 0x09, 0x01 };
-
-        QTest::newRow("QKnxAddress(QKnxAddress::Type::Individual, QVector<quint8> {})")
-            << QKnxAddress(QKnxAddress::Type::Individual, QVector<quint8> {})
-            << InvalidType
-            << QKnxAddress::Notation::ThreeLevel
-            << false
-            << QStringLiteral("")
-            << QVector<quint8> {};
-        QTest::newRow("QKnxAddress(QKnxAddress::Type::Individual, QVector<quint8> { 0x11 })")
-            << QKnxAddress(QKnxAddress::Type::Individual, QVector<quint8> { 0x11 })
-            << InvalidType
-            << QKnxAddress::Notation::ThreeLevel
-            << false
-            << QStringLiteral("")
-            << QVector<quint8> {};
-        QTest::newRow("QKnxAddress(QKnxAddress::Type::Individual, QVector<quint8> { 0x11, 0x01 })")
-            << QKnxAddress(QKnxAddress::Type::Individual, QVector<quint8> { 0x11, 0x01 })
-            << QKnxAddress::Type::Individual
-            << QKnxAddress::Notation::ThreeLevel
-            << true
-            << QStringLiteral("1.1.1")
-            << QVector<quint8> { 0x11, 0x01 };
-        QTest::newRow("QKnxAddress(QKnxAddress::Type::Individual, QVector<quint8> { 0x11, 0x01, 0x03 })")
-            << QKnxAddress(QKnxAddress::Type::Individual, QVector<quint8> { 0x11, 0x01, 0x03 })
-            << QKnxAddress::Type::Individual
-            << QKnxAddress::Notation::ThreeLevel
-            << true
-            << QStringLiteral("1.1.1")
-            << QVector<quint8> { 0x11, 0x01 };
-
-        QTest::newRow("QKnxAddress(InvalidType, QVector<quint8> {})")
-            << QKnxAddress(InvalidType, QVector<quint8> {})
-            << InvalidType
-            << QKnxAddress::Notation::ThreeLevel
-            << false
-            << QStringLiteral("")
-            << QVector<quint8> {};
-        QTest::newRow("QKnxAddress(InvalidType, QVector<quint8> { 0x11 })")
-            << QKnxAddress(InvalidType, QVector<quint8> { 0x11 })
-            << InvalidType
-            << QKnxAddress::Notation::ThreeLevel
-            << false
-            << QStringLiteral("")
-            << QVector<quint8> {};
-        QTest::newRow("QKnxAddress(InvalidType, QVector<quint8> { 0x11, 0x01 })")
-            << QKnxAddress(InvalidType, QVector<quint8> { 0x11, 0x01 })
-            << InvalidType
-            << QKnxAddress::Notation::ThreeLevel
-            << false
-            << QStringLiteral("")
-            << QVector<quint8> {};
-        QTest::newRow("QKnxAddress(InvalidType, QVector<quint8> { 0x11, 0x01, 0x03 })")
-            << QKnxAddress(InvalidType, QVector<quint8> { 0x11, 0x01, 0x03 })
-            << InvalidType
-            << QKnxAddress::Notation::ThreeLevel
-            << false
-            << QStringLiteral("")
-            << QVector<quint8> {};
-    }
-
-    void testConstructorFromQVector()
-    {
-        QFETCH(QKnxAddress, address);
-        QTEST(address.type(), "type");
-        QTEST(address.isValid(), "isValid");
-
-        auto notation = *static_cast<const QKnxAddress::Notation *>(QTest::qElementData("notation",
-            qMetaTypeId<QKnxAddress::Notation>()));
-
-        QTEST(address.toString(notation), "toString");
-        QTEST(address.bytes<QVector<quint8>>(), "bytes");
+        QTEST(address.bytes(), "bytes");
     }
 
     void testCreateGroup()
@@ -615,14 +500,14 @@ private slots:
         QCOMPARE(address.type(), InvalidType);
         QCOMPARE(address.isValid(), false);
         QCOMPARE(address.toString(), QStringLiteral(""));
-        QCOMPARE(address.bytes<QVector<quint8>>(), QVector<quint8> {});
+        QCOMPARE(address.bytes(), QKnxByteArray {});
 
         // valid 2-level group address
 
         address = QKnxAddress::createGroup(1, 515);
         QCOMPARE(address.type(), QKnxAddress::Type::Group);
         QCOMPARE(address.isValid(), true);
-        QCOMPARE(address.bytes<QVector<quint8>>(), QVector<quint8> ({ 0x0a, 0x03 }));
+        QCOMPARE(address.bytes(), QKnxByteArray ({ 0x0a, 0x03 }));
         QCOMPARE(address.toString(QKnxAddress::Notation::TwoLevel), QStringLiteral("1/515"));
 
         // valid 3-level group address
@@ -631,7 +516,7 @@ private slots:
         QCOMPARE(address.type(), QKnxAddress::Type::Group);
         QCOMPARE(address.isValid(), true);
         QCOMPARE(address.toString(), QStringLiteral("1/0/1"));
-        QCOMPARE(address.bytes<QVector<quint8>>(), QVector<quint8> ({ 0x08, 0x01 }));
+        QCOMPARE(address.bytes(), QKnxByteArray ({ 0x08, 0x01 }));
     }
 
     void testCreateIndividual()
@@ -641,7 +526,7 @@ private slots:
         QCOMPARE(address.isValid(), true);
         QCOMPARE(address.toString(), QStringLiteral("1.0.1"));
         QCOMPARE(address.toString(QKnxAddress::Notation::TwoLevel), QString());
-        QCOMPARE(address.bytes<QVector<quint8>>(), QVector<quint8> ({ 0x10, 0x01 }));
+        QCOMPARE(address.bytes(), QKnxByteArray ({ 0x10, 0x01 }));
     }
 
     void testGroupBroadcast()
@@ -651,14 +536,14 @@ private slots:
         QCOMPARE(address.isValid(), true);
         QCOMPARE(address.isBroadcast(), true);
         QCOMPARE(address.toString(), QStringLiteral("0/0/0"));
-        QCOMPARE(address.bytes<QVector<quint8>>(), QVector<quint8> ({ 0x00, 0x00 }));
+        QCOMPARE(address.bytes(), QKnxByteArray ({ 0x00, 0x00 }));
 
         address = { QKnxAddress::Type::Group, 0x0000 };
         QCOMPARE(address.type(), QKnxAddress::Type::Group);
         QCOMPARE(address.isValid(), true);
         QCOMPARE(address.isBroadcast(), true);
         QCOMPARE(address.toString(), QStringLiteral("0/0/0"));
-        QCOMPARE(address.bytes<QVector<quint8>>(), QVector<quint8> ({ 0x00, 0x00 }));
+        QCOMPARE(address.bytes(), QKnxByteArray ({ 0x00, 0x00 }));
     }
 
     void testIndividualUnregistered()
@@ -669,7 +554,7 @@ private slots:
         QCOMPARE(address.isBroadcast(), false);
         QCOMPARE(address.isUnregistered(), true);
         QCOMPARE(address.toString(), QStringLiteral("15.15.255"));
-        QCOMPARE(address.bytes<QVector<quint8>>(), QVector<quint8> ({ 0xff, 0xff }));
+        QCOMPARE(address.bytes(), QKnxByteArray ({ 0xff, 0xff }));
 
         address = { QKnxAddress::Type::Individual, 0x0000 };
         QCOMPARE(address.type(), QKnxAddress::Type::Individual);
@@ -677,14 +562,14 @@ private slots:
         QCOMPARE(address.isBroadcast(), false);
         QCOMPARE(address.isUnregistered(), false);
         QCOMPARE(address.toString(), QStringLiteral("0.0.0"));
-        QCOMPARE(address.bytes<QVector<quint8>>(), QVector<quint8> ({ 0x00, 0x00 }));
+        QCOMPARE(address.bytes(), QKnxByteArray ({ 0x00, 0x00 }));
 
         address = { QKnxAddress::Type::Individual, 0x01ff };
         QCOMPARE(address.type(), QKnxAddress::Type::Individual);
         QCOMPARE(address.isValid(), true);
         QCOMPARE(address.isUnregistered(), true);
         QCOMPARE(address.toString(), QStringLiteral("0.1.255"));
-        QCOMPARE(address.bytes<QVector<quint8>>(), QVector<quint8> ({ 0x01, 0xff }));
+        QCOMPARE(address.bytes(), QKnxByteArray ({ 0x01, 0xff }));
     }
 
     void testIndividualIsCouplerOrRouter()
@@ -727,23 +612,6 @@ private slots:
 
         qDebug() << QKnxAddress(QKnxAddress::Type::Individual, 4353);
         QCOMPARE(s_msg, QString::fromLatin1("0x1101"));
-    }
-
-    void testDataStream()
-    {
-        {
-            QByteArray byteArray;
-            QDataStream out(&byteArray, QIODevice::WriteOnly);
-            out << QKnxAddress(QKnxAddress::Type::Group, 2305);
-            QCOMPARE(byteArray, QByteArray::fromHex("0901"));
-        }
-
-        {
-            QByteArray byteArray;
-            QDataStream out(&byteArray, QIODevice::WriteOnly);
-            out << QKnxAddress(QKnxAddress::Type::Individual, 4353);
-            QCOMPARE(byteArray, QByteArray::fromHex("1101"));
-        }
     }
 };
 

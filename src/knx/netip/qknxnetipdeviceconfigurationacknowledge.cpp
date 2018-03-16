@@ -31,37 +31,64 @@
 
 QT_BEGIN_NAMESPACE
 
-QKnxNetIpDeviceConfigurationAcknowledge::QKnxNetIpDeviceConfigurationAcknowledge(quint8 id,
-        quint8 sequenceCount, QKnxNetIp::Error status)
-    : QKnxNetIpConnectionHeaderFrame(QKnxNetIp::ServiceType::DeviceConfigurationAcknowledge)
-{
-    setConnectionHeader({ id, sequenceCount, quint8(status) });
-}
-
-QKnxNetIpDeviceConfigurationAcknowledge::QKnxNetIpDeviceConfigurationAcknowledge(
-        const QKnxNetIpConnectionHeaderFrame &other)
-    : QKnxNetIpConnectionHeaderFrame(other)
+QKnxNetIpDeviceConfigurationAcknowledge::QKnxNetIpDeviceConfigurationAcknowledge(const QKnxNetIpFrame &frame)
+    : m_frame(frame)
 {}
+
+bool QKnxNetIpDeviceConfigurationAcknowledge::isValid() const
+{
+    return m_frame.isValid() && m_frame.size() == 10
+        && m_frame.serviceType() == QKnxNetIp::ServiceType::DeviceConfigurationAcknowledge;
+}
 
 quint8 QKnxNetIpDeviceConfigurationAcknowledge::channelId() const
 {
-    return connectionHeader().channelId();
+    return m_frame.channelId();
 }
 
-quint8 QKnxNetIpDeviceConfigurationAcknowledge::sequenceCount() const
+quint8 QKnxNetIpDeviceConfigurationAcknowledge::sequenceNumber() const
 {
-    return connectionHeader().sequenceCount();
+    return m_frame.sequenceNumber();
 }
 
 QKnxNetIp::Error QKnxNetIpDeviceConfigurationAcknowledge::status() const
 {
-    return QKnxNetIp::Error(connectionHeader().serviceTypeSpecificValue());
+    return QKnxNetIp::Error(m_frame.serviceTypeSpecificValue());
 }
 
-bool QKnxNetIpDeviceConfigurationAcknowledge::isValid() const
+QKnxNetIpDeviceConfigurationAcknowledge::Builder QKnxNetIpDeviceConfigurationAcknowledge::builder()
 {
-    return QKnxNetIpConnectionHeaderFrame::isValid() && size() == 10
-        && code() == QKnxNetIp::ServiceType::DeviceConfigurationAcknowledge;
+    return QKnxNetIpDeviceConfigurationAcknowledge::Builder();
+}
+
+
+// -- QKnxNetIpDeviceConfigurationAcknowledge::Builder
+
+QKnxNetIpDeviceConfigurationAcknowledge::Builder &
+    QKnxNetIpDeviceConfigurationAcknowledge::Builder::setChannelId(quint8 channelId)
+{
+    m_channelId = channelId;
+    return *this;
+}
+
+QKnxNetIpDeviceConfigurationAcknowledge::Builder &
+    QKnxNetIpDeviceConfigurationAcknowledge::Builder::setSequenceNumber(quint8 sequenceNumber)
+{
+    m_sequenceNumber = sequenceNumber;
+    return *this;
+}
+
+QKnxNetIpDeviceConfigurationAcknowledge::Builder &
+    QKnxNetIpDeviceConfigurationAcknowledge::Builder::setStatus(QKnxNetIp::Error status)
+{
+    m_status = status;
+    return *this;
+}
+
+QKnxNetIpFrame QKnxNetIpDeviceConfigurationAcknowledge::Builder::create() const
+{
+    return { QKnxNetIp::ServiceType::DeviceConfigurationAcknowledge,
+        QKnxNetIpConnectionHeader { m_channelId, m_sequenceNumber, quint8(m_status) } };
 }
 
 QT_END_NAMESPACE

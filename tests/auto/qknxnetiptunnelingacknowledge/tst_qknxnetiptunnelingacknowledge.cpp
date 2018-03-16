@@ -42,19 +42,21 @@ class tst_QKnxNetIpTunnelingAcknowledge: public QObject
 
 private slots:
     void testDefaultConstructor();
-    void testConstructor(); // to do
-    void testDebugStream(); // to do
-    void testDataStream(); // to do
+    void testConstructor();
+    void testDebugStream();
 };
 
 void tst_QKnxNetIpTunnelingAcknowledge::testDefaultConstructor()
 {
-    QKnxNetIpTunnelingAcknowledge tunneling;
+    QKnxNetIpFrame frame;
+    QKnxNetIpTunnelingAcknowledge tunneling(frame);
+
     QCOMPARE(tunneling.isValid(), false);
 }
 
 void tst_QKnxNetIpTunnelingAcknowledge::testConstructor()
 {
+    // TODO: implement
 }
 
 void tst_QKnxNetIpTunnelingAcknowledge::testDebugStream()
@@ -69,16 +71,8 @@ void tst_QKnxNetIpTunnelingAcknowledge::testDebugStream()
         QtMessageHandler oldMessageHandler;
     } _(myMessageHandler);
 
-    //qDebug() << DEFAULTCONSTRUCTOR;
-    //QCOMPARE(s_msg, QString::fromLatin1("0x1nv4l1d"));
-}
-
-void tst_QKnxNetIpTunnelingAcknowledge::testDataStream()
-{
-    //QByteArray byteArray;
-    //QDataStream out(&byteArray, QIODevice::WriteOnly);
-    //out << OTHERCONSTRUCTOR;
-    //QCOMPARE(byteArray, QByteArray::fromHex("1404C0A8020CFFFFFF00C0A80201B48A03020100"));
+    qDebug() << QKnxNetIpTunnelingAcknowledge::builder().create();
+    QCOMPARE(s_msg, QString::fromLatin1("0x06100421000a04000000"));
 }
 
 QTEST_APPLESS_MAIN(tst_QKnxNetIpTunnelingAcknowledge)

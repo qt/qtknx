@@ -37,21 +37,21 @@ QT_BEGIN_NAMESPACE
 // The service family IDs shall be the high octet of the Service Type ID
 
 QKnxNetIpServiceFamiliesDib::QKnxNetIpServiceFamiliesDib()
-    : QKnxNetIpDescriptionTypeStruct(QKnxNetIp::DescriptionType::SupportedServiceFamilies)
+    : QKnxNetIpDib(QKnxNetIp::DescriptionType::SupportedServiceFamilies)
 {}
 
-QKnxNetIpServiceFamiliesDib::QKnxNetIpServiceFamiliesDib(const QKnxNetIpDescriptionTypeStruct &other)
-    : QKnxNetIpDescriptionTypeStruct(other)
+QKnxNetIpServiceFamiliesDib::QKnxNetIpServiceFamiliesDib(const QKnxNetIpDib &other)
+    : QKnxNetIpDib(other)
 {}
 
 QKnxNetIpServiceFamiliesDib::QKnxNetIpServiceFamiliesDib(ServiceFamilieId id, quint8 version)
-    : QKnxNetIpDescriptionTypeStruct(QKnxNetIp::DescriptionType::SupportedServiceFamilies)
+    : QKnxNetIpDib(QKnxNetIp::DescriptionType::SupportedServiceFamilies)
 {
     add(id, version);
 }
 
 QKnxNetIpServiceFamiliesDib::QKnxNetIpServiceFamiliesDib(const ServiceFamilyIdVersions &families)
-    : QKnxNetIpDescriptionTypeStruct(QKnxNetIp::DescriptionType::SupportedServiceFamilies)
+    : QKnxNetIpDib(QKnxNetIp::DescriptionType::SupportedServiceFamilies)
 {
     add(families);
 }
@@ -63,14 +63,12 @@ QKnxNetIp::DescriptionType QKnxNetIpServiceFamiliesDib::descriptionType() const
 
 void QKnxNetIpServiceFamiliesDib::add(ServiceFamilieId id, quint8 version)
 {
-    auto load = payload();
-    load.appendBytes<std::array<quint8, 2>, 2>(std::array<quint8, 2>{ { quint8(id), version } });
-    setPayload(load);
+    setData(constData() + QKnxByteArray { quint8(id), version });
 }
 
 void QKnxNetIpServiceFamiliesDib::add(const ServiceFamilyIdVersions &families)
 {
-    QByteArray additionalData;
+    QKnxByteArray additionalData;
 
     int i = 0;
     auto keys = families.uniqueKeys();
@@ -81,9 +79,7 @@ void QKnxNetIpServiceFamiliesDib::add(const ServiceFamilyIdVersions &families)
             additionalData[i++] = quint8(key), additionalData[i++] = value;
     }
 
-    auto load = payload();
-    load.appendBytes(additionalData);
-    setPayload(load);
+    setData(constData() + additionalData);
 }
 
 QKnxNetIpServiceFamiliesDib::ServiceFamilyIdVersions
@@ -91,16 +87,16 @@ QKnxNetIpServiceFamiliesDib::ServiceFamilyIdVersions
 {
     ServiceFamilyIdVersions serviceTypesAndVersions;
 
-    const auto &ref = payloadRef();
-    for (int i = 0 ; i < ref.size() ; i += 2)
-        serviceTypesAndVersions.insertMulti(ServiceFamilieId(ref.byte(i)), ref.byte(i+1));
+    const auto &data = constData();
+    for (int i = 0 ; i < dataSize() ; i += 2)
+        serviceTypesAndVersions.insertMulti(ServiceFamilieId(data.value(i)), data.value(i+1));
 
     return serviceTypesAndVersions;
 }
 
 bool QKnxNetIpServiceFamiliesDib::isValid() const
 {
-    return QKnxNetIpDescriptionTypeStruct::isValid() && (size() % 2 == 0) // must be even sized
+    return QKnxNetIpDib::isValid() && (size() % 2 == 0) // must be even sized
         && descriptionType() == QKnxNetIp::DescriptionType::SupportedServiceFamilies;
 }
 

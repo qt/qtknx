@@ -44,7 +44,7 @@
 #include <QtCore/qregularexpression.h>
 #include <QtCore/qshareddata.h>
 #include <QtCore/qvariant.h>
-#include <QtCore/qvector.h>
+#include <QtKnx/qknxbytearray.h>
 #include <QtKnx/qknxglobal.h>
 
 QT_BEGIN_NAMESPACE
@@ -57,7 +57,7 @@ struct Q_KNX_EXPORT QKnxDatapointTypePrivate : public QSharedData
     int m_subType { 0 };
     int m_mainType { 0 };
     quint32 m_type { 0 };
-    QVector<quint8> m_bytes;
+    QKnxByteArray m_bytes;
     QString m_unit, m_descrition;
     QVariant m_minimum, m_maximum;
     double m_coefficient { 1 };
@@ -84,7 +84,7 @@ struct Q_KNX_EXPORT QKnxDatapointTypePrivate : public QSharedData
         m_mainType = mainType;
 
         m_type = type;
-        m_bytes.resize(size);
+        m_bytes.fill(0x00, size);
     }
 };
 

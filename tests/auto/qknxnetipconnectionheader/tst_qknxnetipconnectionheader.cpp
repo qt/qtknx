@@ -37,106 +37,98 @@ private slots:
     void testDefaultConstructor()
     {
         QKnxNetIpConnectionHeader header;
+        QCOMPARE(header.isNull(), true);
         QCOMPARE(header.isValid(), false);
         QCOMPARE(header.channelId(), quint8(0));
-        QCOMPARE(header.sequenceCount(), quint8(0));
+        QCOMPARE(header.sequenceNumber(), quint8(0));
         QCOMPARE(header.serviceTypeSpecificValue(), quint8(0));
-        QCOMPARE(header.connectionTypeSpecificHeaderItems<std::vector<quint8>>(),
-            std::vector<quint8> {});
-        QCOMPARE(header.toString(), QStringLiteral("Size { 0x00 }"
-            ", Communication channel ID { 0x00 }, Sequence counter { 0x00 }"
-            ", Service type specific value { 0x00 }, Connection type specific header items {  }"));
-        QCOMPARE(header.size(), quint16(0));
-        QCOMPARE(header.bytes<std::vector<quint8>>(), std::vector<quint8> {});
+        QCOMPARE(header.connectionTypeSpecificHeaderItems(), QKnxByteArray {});
+        QCOMPARE(header.size(), quint8(0));
+        QCOMPARE(header.bytes(), QKnxByteArray {});
     }
 
     void testConstructorWithArguments()
     {
         QKnxNetIpConnectionHeader header(1, 2, 3);
+        QCOMPARE(header.isNull(), false);
         QCOMPARE(header.isValid(), true);
         QCOMPARE(header.channelId(), quint8(1));
-        QCOMPARE(header.sequenceCount(), quint8(2));
+        QCOMPARE(header.sequenceNumber(), quint8(2));
         QCOMPARE(header.serviceTypeSpecificValue(), quint8(3));
-        QCOMPARE(header.connectionTypeSpecificHeaderItems<std::vector<quint8>>(),
-            std::vector<quint8> {});
-        QCOMPARE(header.toString(), QStringLiteral("Size { 0x04 }"
-            ", Communication channel ID { 0x01 }, Sequence counter { 0x02 }"
-            ", Service type specific value { 0x03 }, Connection type specific header items {  }"));
-        QCOMPARE(header.size(), quint16(4));
-        QCOMPARE(header.bytes<std::vector<quint8>>(), std::vector<quint8> ({ 4, 1, 2, 3}));
+        QCOMPARE(header.connectionTypeSpecificHeaderItems(), QKnxByteArray {});
+        QCOMPARE(header.size(), quint8(4));
+        QCOMPARE(header.bytes(), QKnxByteArray({ 0x04, 0x01, 0x02, 0x03 }));
     }
 
     void testSetterGetter()
     {
         QKnxNetIpConnectionHeader header;
+        QCOMPARE(header.isNull(), true);
         QCOMPARE(header.isValid(), false);
+        QCOMPARE(header.size(), quint8(0));
 
         header.setChannelId(1);
         QCOMPARE(header.channelId(), quint8(1));
-        QCOMPARE(header.isValid(), false);
+        QCOMPARE(header.isValid(), true);
 
-        header.setSequenceCount(2);
-        QCOMPARE(header.sequenceCount(), quint8(2));
+        header = {};
+        QCOMPARE(header.isNull(), true);
         QCOMPARE(header.isValid(), false);
+        QCOMPARE(header.size(), quint8(0));
+
+        header.setSequenceNumber(2);
+        QCOMPARE(header.sequenceNumber(), quint8(2));
+        QCOMPARE(header.isValid(), true);
+
+        header = {};
+        QCOMPARE(header.isNull(), true);
+        QCOMPARE(header.isValid(), false);
+        QCOMPARE(header.size(), quint8(0));
 
         header.setServiceTypeSpecificValue(3);
         QCOMPARE(header.serviceTypeSpecificValue(), quint8(3));
         QCOMPARE(header.isValid(), true);
 
-        header = QKnxNetIpConnectionHeader();
+        header = {};
+        QCOMPARE(header.isNull(), true);
         QCOMPARE(header.isValid(), false);
+        QCOMPARE(header.size(), quint8(0));
 
-        header.setConnectionTypeSpecificHeaderItems(std::vector<quint8> { 1, 2, 3, 4, 5 });
-        QCOMPARE(header.isValid(), false);
-        QCOMPARE(header.size(), quint16(9));
-
-        header.setServiceTypeSpecificValue(3);
-        QCOMPARE(header.serviceTypeSpecificValue(), quint8(3));
-        QCOMPARE(header.isValid(), false);
-
-        header.setSequenceCount(2);
-        QCOMPARE(header.sequenceCount(), quint8(2));
-        QCOMPARE(header.isValid(), false);
-
-        header.setChannelId(1);
-        QCOMPARE(header.channelId(), quint8(1));
+        header.setConnectionTypeSpecificHeaderItems(QKnxByteArray { 0x01, 0x02, 0x03, 0x04, 0x05 });
         QCOMPARE(header.isValid(), true);
+        QCOMPARE(header.size(), quint8(9));
     }
 
     void testFromBytes()
     {
         QKnxNetIpConnectionHeader header(1, 2);
-        header.setConnectionTypeSpecificHeaderItems(std::vector<quint8> { 1, 2, 3, 4, 5 });
+        header.setConnectionTypeSpecificHeaderItems(QKnxByteArray { 0x01, 0x02, 0x03, 0x04, 0x05 });
 
         auto headerBytes = header.bytes();
         auto headerFromBytes = QKnxNetIpConnectionHeader::fromBytes(headerBytes, 0);
 
         QCOMPARE(headerFromBytes.isValid(), true);
         QCOMPARE(headerFromBytes.channelId(), quint8(1));
-        QCOMPARE(headerFromBytes.sequenceCount(), quint8(2));
+        QCOMPARE(headerFromBytes.sequenceNumber(), quint8(2));
         QCOMPARE(headerFromBytes.serviceTypeSpecificValue(), quint8(0));
-        QCOMPARE(headerFromBytes.connectionTypeSpecificHeaderItems<std::vector<quint8>>(),
-            std::vector<quint8> ({ 1, 2, 3, 4, 5 }));
+        QCOMPARE(headerFromBytes.connectionTypeSpecificHeaderItems(),
+            QKnxByteArray({ 0x01, 0x02, 0x03, 0x04, 0x05 }));
         QCOMPARE(headerFromBytes.bytes(), headerBytes);
 
-        auto headerBytesStream = QByteArray::fromHex("0102030405") + header.bytes<QByteArray>()
-            + QByteArray::fromHex("06070809aa");
+        auto headerBytesStream = QKnxByteArray { 0x01, 0x02, 0x03, 0x04, 0x05 } + header.bytes()
+            + QKnxByteArray { 0x06, 0x07, 0x08, 0x09, 0xaa };
         headerFromBytes = QKnxNetIpConnectionHeader::fromBytes(headerBytesStream, 5);
 
         QCOMPARE(headerFromBytes.isValid(), true);
         QCOMPARE(headerFromBytes.channelId(), quint8(1));
-        QCOMPARE(headerFromBytes.sequenceCount(), quint8(2));
+        QCOMPARE(headerFromBytes.sequenceNumber(), quint8(2));
         QCOMPARE(headerFromBytes.serviceTypeSpecificValue(), quint8(0));
-        QCOMPARE(headerFromBytes.connectionTypeSpecificHeaderItems<std::vector<quint8>>(),
-            std::vector<quint8> ({ 1, 2, 3, 4, 5 }));
+        QCOMPARE(headerFromBytes.connectionTypeSpecificHeaderItems(),
+            QKnxByteArray({ 0x01, 0x02, 0x03, 0x04, 0x05 }));
         QCOMPARE(headerFromBytes.bytes(), headerBytes);
     }
 
     void testDebugStream()
-    {
-    }
-
-    void testDataStream()
     {
     }
 };

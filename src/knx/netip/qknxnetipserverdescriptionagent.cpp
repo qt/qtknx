@@ -95,10 +95,16 @@ void QKnxNetIpServerDescriptionAgentPrivate::setupSocket()
             if (q->state() == QKnxNetIpServerDescriptionAgent::State::Running) {
                 m_description = {};
                 usedPort = socket->localPort();
-                socket->writeDatagram(QKnxNetIpDescriptionRequest({
-                    (nat ? QHostAddress::AnyIPv4 : socket->localAddress()),
-                    (nat ? quint16(0u) : usedPort)
-                }).bytes(), m_server.address(), m_server.port());
+
+                auto frame = QKnxNetIpDescriptionRequest::builder()
+                    .setControlEndpoint(QKnxNetIpHpaiView::builder()
+                        .setHostAddress(nat ? QHostAddress::AnyIPv4 : socket->localAddress())
+                        .setPort(nat ? quint16(0u) : usedPort).create())
+                    .create();
+
+                const QKnxNetIpHpaiView hpai(m_server);
+                socket->writeDatagram(static_cast<QByteArray> (frame.bytes()), hpai.hostAddress(),
+                    hpai.port());
 
                 setupAndStartReceiveTimer();
             }
@@ -124,12 +130,14 @@ void QKnxNetIpServerDescriptionAgentPrivate::setupSocket()
             if (q->state() != QKnxNetIpServerDescriptionAgent::State::Running)
                 break;
 
-            auto datagram = socket->receiveDatagram();
-            const auto header = QKnxNetIpFrameHeader::fromBytes(datagram.data(), 0);
-            if (!header.isValid() || header.code() != QKnxNetIp::ServiceType::DescriptionResponse)
+            auto ba = socket->receiveDatagram().data();
+            QKnxByteArray data(ba.constData(), ba.size());
+            const auto header = QKnxNetIpFrameHeader::fromBytes(data, 0);
+            if (!header.isValid() || header.serviceType() != QKnxNetIp::ServiceType::DescriptionResponse)
                 continue;
 
-            auto response = QKnxNetIpDescriptionResponse::fromBytes(datagram.data(), 0);
+            auto frame = QKnxNetIpFrame::fromBytes(data, 0);
+            QKnxNetIpDescriptionResponse response(frame);
             if (!response.isValid())
                 continue;
 
@@ -353,7 +361,7 @@ void QKnxNetIpServerDescriptionAgent::start(const QKnxNetIpServerInfo &server)
 
 void QKnxNetIpServerDescriptionAgent::start(const QHostAddress &address, quint16 port)
 {
-    start(QKnxNetIpHpai { address, port });
+    start(QKnxNetIpHpaiView::builder().setHostAddress(address).setPort(port).create());
 }
 
 void QKnxNetIpServerDescriptionAgent::stop()

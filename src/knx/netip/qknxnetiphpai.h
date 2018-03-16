@@ -30,50 +30,45 @@
 #ifndef QKNXNETIPHPAI_H
 #define QKNXNETIPHPAI_H
 
-#include <QtCore/qbytearray.h>
-#include <QtCore/qdatastream.h>
-#include <QtCore/qdebug.h>
-#include <QtCore/qstring.h>
-#include <QtCore/qvector.h>
 #include <QtKnx/qknxglobal.h>
-#include <QtKnx/qknxtraits.h>
 #include <QtKnx/qknxnetipstruct.h>
 #include <QtNetwork/qhostaddress.h>
 
 QT_BEGIN_NAMESPACE
 
-class Q_KNX_EXPORT QKnxNetIpHpai final : public QKnxNetIpHostProtocolStruct
+class Q_KNX_EXPORT QKnxNetIpHpaiView final
 {
 public:
-    QKnxNetIpHpai() = default;
-    ~QKnxNetIpHpai() override = default;
+    QKnxNetIpHpaiView() = delete;
+    ~QKnxNetIpHpaiView() = default;
 
-    QKnxNetIpHpai(const QHostAddress &address, quint16 port);
-    QKnxNetIpHpai(QKnxNetIp::HostProtocol hpc, const QHostAddress &address, quint16 port);
+    QKnxNetIpHpaiView(const QKnxNetIpHpai &&) = delete;
+    explicit QKnxNetIpHpaiView(const QKnxNetIpHpai &hpai);
 
-    template <typename T> static QKnxNetIpHpai fromBytes(const T &bytes, quint16 index)
-    {
-        auto code = QKnxNetIpStructHeader<QKnxNetIp::HostProtocol>::fromBytes(bytes, index).code();
-        if (!QKnxNetIp::isStructType(code))
-            return {};
-        return QKnxNetIpStructHelper::fromBytes(bytes, index, code);
-    }
+    bool isValid() const;
 
     QKnxNetIp::HostProtocol hostProtocol() const;
-    void setHostProtocol(QKnxNetIp::HostProtocol code);
-
-    QHostAddress address() const;
-    void setAddress(const QHostAddress &hostAddress);
-
+    QHostAddress hostAddress() const;
     quint16 port() const;
-    void setPort(quint16 port);
 
-    void setHpai(QKnxNetIp::HostProtocol code, const QHostAddress &hostAddress, quint16 port);
+    class Q_KNX_EXPORT Builder final
+    {
+    public:
+        Builder &setHostProtocol(QKnxNetIp::HostProtocol code);
+        Builder &setHostAddress(const QHostAddress &address);
+        Builder &setPort(quint16 port);
 
-    bool isValid() const override;
+        QKnxNetIpHpai create() const;
+
+    private:
+        QKnxNetIp::HostProtocol m_code { QKnxNetIp::HostProtocol::UDP_IPv4 };
+        QHostAddress m_address { QHostAddress::LocalHost };
+        quint16 m_port { 0 };
+    };
+    static QKnxNetIpHpaiView::Builder builder();
 
 private:
-    QKnxNetIpHpai(const QKnxNetIpHostProtocolStruct &other);
+     const QKnxNetIpHpai &m_hpai;
 };
 
 QT_END_NAMESPACE

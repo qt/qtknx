@@ -31,41 +31,64 @@
 
 QT_BEGIN_NAMESPACE
 
-QKnxNetIpTunnelingAcknowledge::QKnxNetIpTunnelingAcknowledge(quint8 id, quint8 sequenceCount,
-        QKnxNetIp::Error status)
-    : QKnxNetIpConnectionHeaderFrame(QKnxNetIp::ServiceType::TunnelingAcknowledge)
-{
-    QKnxNetIpConnectionHeader header;
-    header.setChannelId(id);
-    header.setSequenceCount(sequenceCount);
-    header.setServiceTypeSpecificValue(quint8(status));
-    setConnectionHeader(header);
-}
-
-QKnxNetIpTunnelingAcknowledge::QKnxNetIpTunnelingAcknowledge(
-        const QKnxNetIpConnectionHeaderFrame &other)
-    : QKnxNetIpConnectionHeaderFrame(other)
+QKnxNetIpTunnelingAcknowledge::QKnxNetIpTunnelingAcknowledge(const QKnxNetIpFrame &frame)
+    : m_frame(frame)
 {}
+
+bool QKnxNetIpTunnelingAcknowledge::isValid() const
+{
+    return m_frame.isValid() && m_frame.size() == 10
+        && m_frame.serviceType() == QKnxNetIp::ServiceType::TunnelingAcknowledge;
+}
 
 quint8 QKnxNetIpTunnelingAcknowledge::channelId() const
 {
-    return connectionHeader().channelId();
+    return m_frame.channelId();
 }
 
-quint8 QKnxNetIpTunnelingAcknowledge::sequenceCount() const
+quint8 QKnxNetIpTunnelingAcknowledge::sequenceNumber() const
 {
-    return connectionHeader().sequenceCount();
+    return m_frame.sequenceNumber();
 }
 
 QKnxNetIp::Error QKnxNetIpTunnelingAcknowledge::status() const
 {
-    return QKnxNetIp::Error(connectionHeader().serviceTypeSpecificValue());
+    return QKnxNetIp::Error(m_frame.serviceTypeSpecificValue());
 }
 
-bool QKnxNetIpTunnelingAcknowledge::isValid() const
+QKnxNetIpTunnelingAcknowledge::Builder QKnxNetIpTunnelingAcknowledge::builder()
 {
-    return QKnxNetIpConnectionHeaderFrame::isValid() && size() == 10
-        && code() == QKnxNetIp::ServiceType::TunnelingAcknowledge;
+    return QKnxNetIpTunnelingAcknowledge::Builder();
+}
+
+
+// -- QKnxNetIpTunnelingAcknowledge::Builder
+
+QKnxNetIpTunnelingAcknowledge::Builder &
+    QKnxNetIpTunnelingAcknowledge::Builder::setChannelId(quint8 channelId)
+{
+    m_channelId = channelId;
+    return *this;
+}
+
+QKnxNetIpTunnelingAcknowledge::Builder &
+    QKnxNetIpTunnelingAcknowledge::Builder::setSequenceNumber(quint8 sequenceNumber)
+{
+    m_sequenceNumber = sequenceNumber;
+    return *this;
+}
+
+QKnxNetIpTunnelingAcknowledge::Builder &
+    QKnxNetIpTunnelingAcknowledge::Builder::setStatus(QKnxNetIp::Error status)
+{
+    m_status = status;
+    return *this;
+}
+
+QKnxNetIpFrame QKnxNetIpTunnelingAcknowledge::Builder::create() const
+{
+    return { QKnxNetIp::ServiceType::TunnelingAcknowledge,
+        QKnxNetIpConnectionHeader { m_channelId, m_sequenceNumber, quint8(m_status) } };
 }
 
 QT_END_NAMESPACE

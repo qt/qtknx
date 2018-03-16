@@ -31,27 +31,39 @@
 
 QT_BEGIN_NAMESPACE
 
-QKnxNetIpSearchRequest::QKnxNetIpSearchRequest(const QKnxNetIpHpai &discoveryEndpoint)
-    : QKnxNetIpFrame(QKnxNetIp::ServiceType::SearchRequest)
-{
-    QKnxNetIpPayload payload;
-    payload.setBytes(discoveryEndpoint.bytes());
-    setPayload(payload);
-}
-
-QKnxNetIpSearchRequest::QKnxNetIpSearchRequest(const QKnxNetIpFrame &other)
-    : QKnxNetIpFrame(other)
+QKnxNetIpSearchRequest::QKnxNetIpSearchRequest(const QKnxNetIpFrame &frame)
+    : m_frame(frame)
 {}
 
 bool QKnxNetIpSearchRequest::isValid() const
 {
-    return QKnxNetIpFrame::isValid() && size() == 14
-        && code() == QKnxNetIp::ServiceType::SearchRequest;
+    return m_frame.isValid() && m_frame.serviceType() == QKnxNetIp::ServiceType::SearchRequest
+        && m_frame.size() == 14;
 }
 
 QKnxNetIpHpai QKnxNetIpSearchRequest::discoveryEndpoint() const
 {
-    return QKnxNetIpHpai::fromBytes(payloadRef(), 0);
+    return QKnxNetIpHpai::fromBytes(m_frame.constData(), 0);
+}
+
+QKnxNetIpSearchRequest::Builder QKnxNetIpSearchRequest::builder()
+{
+    return QKnxNetIpSearchRequest::Builder();
+}
+
+
+// -- QKnxNetIpSearchRequest::Builder
+
+QKnxNetIpSearchRequest::Builder &
+    QKnxNetIpSearchRequest::Builder::setDiscoveryEndpoint(const QKnxNetIpHpai &hpai)
+{
+    m_hpai = hpai;
+    return *this;
+}
+
+QKnxNetIpFrame QKnxNetIpSearchRequest::Builder::create() const
+{
+    return { QKnxNetIp::ServiceType::SearchRequest, m_hpai.bytes() };
 }
 
 QT_END_NAMESPACE

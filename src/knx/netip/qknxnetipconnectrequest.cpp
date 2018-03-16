@@ -31,40 +31,64 @@
 
 QT_BEGIN_NAMESPACE
 
-QKnxNetIpConnectRequest::QKnxNetIpConnectRequest(const QKnxNetIpHpai &controlEndpoint,
-        const QKnxNetIpHpai &dataEndpoint, const QKnxNetIpCri &requestInformation)
-    : QKnxNetIpFrame(QKnxNetIp::ServiceType::ConnectRequest)
-{
-    QKnxNetIpPayload payload;
-    payload.setBytes(controlEndpoint.bytes());
-    payload.appendBytes(dataEndpoint.bytes());
-    payload.appendBytes(requestInformation.bytes());
-    setPayload(payload);
-}
-
-QKnxNetIpConnectRequest::QKnxNetIpConnectRequest(const QKnxNetIpFrame &other)
-    : QKnxNetIpFrame(other)
+QKnxNetIpConnectRequest::QKnxNetIpConnectRequest(const QKnxNetIpFrame &frame)
+    : m_frame(frame)
 {}
 
 QKnxNetIpHpai QKnxNetIpConnectRequest::controlEndpoint() const
 {
-    return QKnxNetIpHpai::fromBytes(payloadRef(), 0);
+    return QKnxNetIpHpai::fromBytes(m_frame.constData(), 0);
 }
 
 QKnxNetIpHpai QKnxNetIpConnectRequest::dataEndpoint() const
 {
-    return QKnxNetIpHpai::fromBytes(payloadRef(), 8);
+    return QKnxNetIpHpai::fromBytes(m_frame.constData(), 8);
 }
 
 QKnxNetIpCri QKnxNetIpConnectRequest::requestInformation() const
 {
-    return QKnxNetIpCri::fromBytes(payloadRef(), 16);
+    return QKnxNetIpCri::fromBytes(m_frame.constData(), 16);
 }
 
 bool QKnxNetIpConnectRequest::isValid() const
 {
-    return QKnxNetIpFrame::isValid() && size() >= 24
-        && code() == QKnxNetIp::ServiceType::ConnectRequest;
+    return m_frame.isValid() && m_frame.serviceType() == QKnxNetIp::ServiceType::ConnectRequest
+        && m_frame.size() >= 24;
+}
+
+QKnxNetIpConnectRequest::Builder QKnxNetIpConnectRequest::builder()
+{
+    return QKnxNetIpConnectRequest::Builder();
+}
+
+
+// -- QKnxNetIpConnectRequest::Builder
+
+QKnxNetIpConnectRequest::Builder &
+    QKnxNetIpConnectRequest::Builder::setControlEndpoint(const QKnxNetIpHpai &hpai)
+{
+    m_ceHpai = hpai;
+    return *this;
+}
+
+QKnxNetIpConnectRequest::Builder &
+    QKnxNetIpConnectRequest::Builder::setDataEndpoint(const QKnxNetIpHpai &hpai)
+{
+    m_deHpai = hpai;
+    return *this;
+}
+
+QKnxNetIpConnectRequest::Builder &
+    QKnxNetIpConnectRequest::Builder::setRequestInformation(const QKnxNetIpCri &cri)
+{
+    m_cri = cri;
+    return *this;
+}
+
+QKnxNetIpFrame QKnxNetIpConnectRequest::Builder::create() const
+{
+    return { QKnxNetIp::ServiceType::ConnectRequest, m_ceHpai.bytes() + m_deHpai.bytes() + m_cri
+        .bytes() };
 }
 
 QT_END_NAMESPACE

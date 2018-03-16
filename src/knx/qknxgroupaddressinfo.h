@@ -36,45 +36,61 @@
 #include <QtKnx/qknxglobal.h>
 #include <QtKnx/qknxaddress.h>
 #include <QtKnx/qknxdatapointtype.h>
-#include <QtKnx/qknxgroupaddresses.h>
 
 QT_BEGIN_NAMESPACE
 
 class QKnxGroupAddressInfoPrivate;
-class Q_KNX_EXPORT QKnxGroupAddressInfo
+class Q_KNX_EXPORT QKnxGroupAddressInfo final
 {
 public:
     QKnxGroupAddressInfo();
     ~QKnxGroupAddressInfo();
 
-    QKnxGroupAddressInfo(const QKnxGroupAddress &groupAddressFromParser);
-    QKnxGroupAddressInfo(const QString &id, const QString &address, const QString &name,
-        const QString &description, const QString &dataPointType, const QString &puid);
+    QKnxGroupAddressInfo(const QString &installation, const QString &name, quint16 address,
+                         QKnxDatapointType::Type type, const QString &description = {});
+    QKnxGroupAddressInfo(const QString &installation, const QString &name, quint16 address,
+                         const QString &datapointType, const QString &description = {});
 
-    QString id() const;
-    QString address() const;
+    QKnxGroupAddressInfo(const QString &installation, const QString &name, const QKnxAddress &addr,
+                         QKnxDatapointType::Type typ, const QString &description = {});
+    QKnxGroupAddressInfo(const QString &installation, const QString &name, const QKnxAddress &addr,
+                         const QString &datapointType, const QString &description = {});
+
+    bool isValid() const;
+
+    QString installation() const;
+    void setInstallation(const QString &installation);
+
     QString name() const;
-    QString description() const;
-    QString dataPointNumber() const;
-    QString puid() const;
-    QKnxAddress groupAddress() const;
-    QKnxDatapointType::Type dataPointType() const;
+    void setName(const QString &name);
 
-    QKnxGroupAddressInfo(const QKnxGroupAddressInfo &o);
-    QKnxGroupAddressInfo &operator=(const QKnxGroupAddressInfo &o);
+    QKnxAddress address() const;
+    void setAddress(const QKnxAddress &address);
+
+    QKnxDatapointType::Type datapointType() const;
+    void setDatapointType(QKnxDatapointType::Type type);
+
+    QString description() const;
+    void setDescription(const QString &description);
+
+    QKnxGroupAddressInfo(const QKnxGroupAddressInfo &other);
+    QKnxGroupAddressInfo &operator=(const QKnxGroupAddressInfo &other);
+
+    QKnxGroupAddressInfo(QKnxGroupAddressInfo &&other) Q_DECL_NOTHROW;
     QKnxGroupAddressInfo &operator=(QKnxGroupAddressInfo &&other) Q_DECL_NOTHROW;
+
+    void swap(QKnxGroupAddressInfo &other) Q_DECL_NOTHROW;
 
     bool operator==(const QKnxGroupAddressInfo &other) const;
     bool operator!=(const QKnxGroupAddressInfo &other) const;
-
-    void swap(QKnxGroupAddressInfo &other) Q_DECL_NOTHROW;
 
 private:
     explicit QKnxGroupAddressInfo(QKnxGroupAddressInfoPrivate &dd);
 
 private:
-    QExplicitlySharedDataPointer<QKnxGroupAddressInfoPrivate> d;
+    QSharedDataPointer<QKnxGroupAddressInfoPrivate> d_ptr;
 };
+Q_KNX_EXPORT QDebug operator<<(QDebug debug, const QKnxGroupAddressInfo &info);
 
 QT_END_NAMESPACE
 

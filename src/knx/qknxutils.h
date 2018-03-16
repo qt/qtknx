@@ -30,14 +30,8 @@
 #ifndef QKNXUTILS_H
 #define QKNXUTILS_H
 
-#include <QtCore/qbytearray.h>
-#include <QtCore/qdatastream.h>
-#include <QtCore/qdebug.h>
-#include <QtCore/qstring.h>
-#include <QtCore/qvector.h>
-#include <QtKnx/qknxbytestoreref.h>
+#include <QtKnx/qknxbytearray.h>
 #include <QtKnx/qknxglobal.h>
-#include <QtKnx/qknxtraits.h>
 #include <QtNetwork/qhostaddress.h>
 
 QT_BEGIN_NAMESPACE
@@ -46,169 +40,85 @@ struct QKnxUtils final
 {
     struct QUint8 final
     {
-        template <typename T = QByteArray> static auto bytes(quint8 integer) -> decltype(T())
+        static QKnxByteArray bytes(quint8 integer)
         {
-            static_assert(is_type<T, QByteArray, QVector<quint8>, std::deque<quint8>,
-                std::vector<quint8>>::value, "Type not supported.");
-
-            T t(1, 0);
-            t[0] = quint8(integer);
-            return t;
+            return { quint8(integer) };
         }
 
-        static quint8 fromBytes(const QKnxByteStoreRef &data, quint16 index = 0)
+        static quint8 fromBytes(const QKnxByteArray &data, quint16 index = 0)
         {
             if (data.size() - index < 1)
                 return {};
-            return data.bytes()[index];
-        }
-
-        template <typename T, std::size_t S = 0>
-            static quint8 fromBytes(const T &data, quint16 index = 0)
-        {
-            static_assert(is_type<T, QByteArray, QVector<quint8>, std::deque<quint8>,
-                std::vector<quint8>, std::array<quint8, S>>::value, "Type not supported.");
-
-            if (data.size() - index < 1)
-                return {};
-            return quint8(data[index]);
+            return data[index];
         }
     };
 
     struct QUint16 final
     {
-        template <typename T = QByteArray> static auto bytes(quint16 integer) -> decltype(T())
+        static QKnxByteArray bytes(quint16 integer)
         {
-            static_assert(is_type<T, QByteArray, QVector<quint8>, std::deque<quint8>,
-                std::vector<quint8>>::value, "Type not supported.");
-
-            T t(2, 0);
-            t[0] = quint8(integer >> 8);
-            t[1] = quint8(integer);
-            return t;
+            return { quint8(integer >> 8), quint8(integer) };
         }
 
-        static quint16 fromBytes(const QKnxByteStoreRef &data, quint16 index = 0)
+        static quint16 fromBytes(const QKnxByteArray &data, quint16 index = 0)
         {
             if (data.size() - index < 2)
                 return {};
-            return quint16(quint16(data.bytes()[index]) << 8 | data.bytes()[index + 1]);
-        }
-
-        template <typename T, std::size_t S = 0>
-            static quint16 fromBytes(const T &data, quint16 index = 0)
-        {
-            static_assert(is_type<T, QByteArray, QVector<quint8>, std::deque<quint8>,
-                std::vector<quint8>, std::array<quint8, S>>::value, "Type not supported.");
-
-            if (data.size() - index < 2)
-                return {};
-            return quint16(quint16(quint8(data[index])) << 8 | quint8(data[index + 1]));
+            return quint16(quint16(data[index]) << 8 | data[index + 1]);
         }
     };
 
     struct QUint32 final
     {
-        template <typename T = QByteArray> static auto bytes(quint32 integer) -> decltype(T())
+        static QKnxByteArray bytes(quint32 integer)
         {
-            static_assert(is_type<T, QByteArray, QVector<quint8>, std::deque<quint8>,
-                std::vector<quint8>>::value, "Type not supported.");
-
-            T t(4, 0);
-            t[0] = quint8(integer >> 24);
-            t[1] = quint8(integer >> 16);
-            t[2] = quint8(integer >> 8);
-            t[3] = quint8(integer);
-            return t;
+            return { quint8(integer >> 24), quint8(integer >> 16), quint8(integer >> 8),
+                quint8(integer) };
         }
-        static quint32 fromBytes(const QKnxByteStoreRef &data, quint16 index = 0)
+
+        static quint32 fromBytes(const QKnxByteArray &data, quint16 index = 0)
         {
             if (data.size() - index < 4)
                 return {};
-            const auto bytes = data.bytes();
-            return quint32(bytes[index]) << 24 | quint32(bytes[index + 1]) << 16
-                | quint32(bytes[index + 2]) << 8 | bytes[index + 3];
-        }
-
-        template <typename T, std::size_t S = 0>
-            static quint32 fromBytes(const T &data, quint16 index = 0)
-        {
-            static_assert(is_type<T, QByteArray, QVector<quint8>, std::deque<quint8>,
-                std::vector<quint8>, std::array<quint8, S>>::value, "Type not supported.");
-
-            if (data.size() - index < 4)
-                return {};
-            return quint32(quint32(quint8(data[index])) << 24
-                | quint32(quint8(data[index + 1])) << 16
-                | quint32(quint8(data[index + 2])) << 8
-                | quint8(data[index + 3]));
+            return quint32(quint32(data[index]) << 24
+                | quint32(data[index + 1]) << 16
+                | quint32(data[index + 2]) << 8
+                | data[index + 3]);
         }
     };
 
     struct QUint64 final
     {
-        template <typename T = QByteArray> static auto bytes(quint64 integer) -> decltype(T())
+        static QKnxByteArray bytes(quint64 integer)
         {
-            static_assert(is_type<T, QByteArray, QVector<quint8>, std::deque<quint8>,
-                std::vector<quint8>>::value, "Type not supported.");
-
-            T t(8, 0);
-            t[0] = quint8(integer >> 56);
-            t[1] = quint8(integer >> 48);
-            t[2] = quint8(integer >> 40);
-            t[3] = quint8(integer >> 32);
-            t[4] = quint8(integer >> 24);
-            t[5] = quint8(integer >> 16);
-            t[6] = quint8(integer >> 8);
-            t[7] = quint8(integer);
-            return t;
-        }
-        static quint64 fromBytes(const QKnxByteStoreRef &data, quint16 index = 0)
-        {
-            if (data.size() - index < 4)
-                return {};
-            const auto bytes = data.bytes();
-            return quint64(bytes[index]) << 56
-                | quint64(bytes[index + 1]) << 48
-                | quint64(bytes[index + 2]) << 40
-                | quint64(bytes[index + 3]) << 32
-                | quint64(bytes[index + 4]) << 24
-                | quint64(bytes[index + 5]) << 16
-                | quint64(bytes[index + 6]) << 8
-                | bytes[index + 7];
+            return { quint8(integer >> 56), quint8(integer >> 48), quint8(integer >> 40)
+                , quint8(integer >> 32), quint8(integer >> 24), quint8(integer >> 16)
+                , quint8(integer >> 8), quint8(integer) };
         }
 
-        template <typename T, std::size_t S = 0>
-            static quint64 fromBytes(const T &data, quint16 index = 0)
+        static quint64 fromBytes(const QKnxByteArray &data, quint16 index = 0)
         {
-            static_assert(is_type<T, QByteArray, QVector<quint8>, std::deque<quint8>,
-                std::vector<quint8>, std::array<quint8, S>>::value, "Type not supported.");
-
             if (data.size() - index < 8)
                 return {};
-            return quint64(quint64(quint8(data[index])) << 56
-                | quint64(quint8(data[index + 1])) << 48
-                | quint64(quint8(data[index + 2])) << 40
-                | quint64(quint8(data[index + 3])) << 32
-                | quint64(quint8(data[index + 4])) << 24
-                | quint64(quint8(data[index + 5])) << 16
-                | quint64(quint8(data[index + 6])) << 8
-                | quint8(data[index + 7]));
+            return quint64(quint64(data[index]) << 56
+                | quint64(data[index + 1]) << 48
+                | quint64(data[index + 2]) << 40
+                | quint64(data[index + 3]) << 32
+                | quint64(data[index + 4]) << 24
+                | quint64(data[index + 5]) << 16
+                | quint64(data[index + 6]) << 8
+                | data[index + 7]);
         }
     };
 
     struct HostAddress final
     {
-        template <typename T = QByteArray>
-            static auto bytes(const QHostAddress &address) -> decltype(T())
+        static QKnxByteArray bytes(const QHostAddress &address)
         {
-            static_assert(is_type<T, QByteArray, QVector<quint8>, std::deque<quint8>,
-                std::vector<quint8>>::value, "Type not supported.");
             return QUint32::bytes(address.toIPv4Address());
         }
 
-        template <typename T, std::size_t S = 0>
-            static QHostAddress fromBytes(const T &data, quint16 index = 0)
+        static QHostAddress fromBytes(const QKnxByteArray &data, quint16 index = 0)
         {
             if (data.size() - index < 4)
                 return {};

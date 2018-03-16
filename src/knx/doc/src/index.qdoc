@@ -1,11 +1,11 @@
-/******************************************************************************
+/****************************************************************************
 **
-** Copyright (C) 2017 The Qt Company Ltd.
+** Copyright (C) 2018 The Qt Company Ltd.
 ** Contact: https://www.qt.io/licensing/
 **
-** This file is part of the QtKnx module.
+** This file is part of the documentation of the Qt Toolkit.
 **
-** $QT_BEGIN_LICENSE:GPL$
+** $QT_BEGIN_LICENSE:FDL$
 ** Commercial License Usage
 ** Licensees holding valid commercial Qt licenses may use this file in
 ** accordance with the commercial license agreement provided with the
@@ -14,18 +14,16 @@
 ** and conditions see https://www.qt.io/terms-conditions. For further
 ** information use the contact form at https://www.qt.io/contact-us.
 **
-** GNU General Public License Usage
-** Alternatively, this file may be used under the terms of the GNU
-** General Public License version 3 or (at your option) any later version
-** approved by the KDE Free Qt Foundation. The licenses are as published by
-** the Free Software Foundation and appearing in the file LICENSE.GPL3
-** included in the packaging of this file. Please review the following
-** information to ensure the GNU General Public License requirements will
-** be met: https://www.gnu.org/licenses/gpl-3.0.html.
-**
+** GNU Free Documentation License Usage
+** Alternatively, this file may be used under the terms of the GNU Free
+** Documentation License version 1.3 as published by the Free Software
+** Foundation and appearing in the file included in the packaging of
+** this file. Please review the following information to ensure
+** the GNU Free Documentation License version 1.3 requirements
+** will be met: https://www.gnu.org/licenses/fdl-1.3.html.
 ** $QT_END_LICENSE$
 **
-******************************************************************************/
+****************************************************************************/
 
 /*!
     \page qtknx-index.html
@@ -33,16 +31,15 @@
     \brief Provides classes and functions to make KNX programming simple and
     portable.
 
-    \note The Qt KNX module is currently available as a Technology Preview and
-    therefore the API and functionality provided by the module may be subject
-    to change at any time without prior notice.
-
     The Qt KNX module implements the client side of a connection between a
     client and a KNXnet/IP server. This connection can be used to send messages
     to the KNX bus and to control the functionalities of the KNX devices.
 
     Only local device management procedures and KNX application services working
     with group addressing are fully supported.
+
+    \note Qt KNX is part of the Qt for Automation offering and not Qt. For further
+    details please see \l {Qt for Automation}.
 
     \section1 Getting Started
 
@@ -74,4 +71,11 @@
     \list
     \li \l{Qt KNX C++ Classes}{C++ Classes}
     \endlist
+
+    \section1 Licenses and Attributions
+
+    Qt KNX is available under commercial licenses from \l{The Qt Company}.
+    In addition, it is available under the the \l{GNU General Public License, version 3}.
+
+    \generatelist{groupsbymodule attributions-qtknx}
 */

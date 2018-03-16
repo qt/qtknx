@@ -1,6 +1,6 @@
 /******************************************************************************
 **
-** Copyright (C) 2017 The Qt Company Ltd.
+** Copyright (C) 2018 The Qt Company Ltd.
 ** Contact: https://www.qt.io/licensing/
 **
 ** This file is part of the QtKnx module.
@@ -34,30 +34,50 @@ QT_BEGIN_NAMESPACE
 
 /*!
     \class QKnxVarString
-
+    \inherits QKnxVariableSizeDatapointType
     \inmodule QtKnx
-    \brief The QKnxVarString class is a datapoint type for a variable length
-    character string.
+    \since 5.11
+
+    \brief The QKnxVarString class is a datapoint type that encodes a variable
+    length string.
+
+    This datapoint type encodes a string of variable length. The encoding of the
+    string is specified in \l QKnxVarString88591.
 
     This is a variable sized datapoint type.
 
-    \sa QKnxDatapointType
+    \sa QKnxDatapointType, QKnxVarString88591, QKnxCharString,
+        QKnxCharStringASCII, QKnxCharString88591
 */
 
 // -- QKnxVarString
 
+/*!
+    Creates a variable sized datapoint type.
+*/
 QKnxVarString::QKnxVarString()
     : QKnxVarString(nullptr)
 {}
 
+/*!
+    Creates a variable sized datapoint type that stores the string \a string.
+*/
 QKnxVarString::QKnxVarString(QLatin1String string)
     : QKnxVarString(string.latin1(), string.size())
 {}
 
+/*!
+    Creates a variable sized datapoint type that stores the string \a string
+    with the length \a size.
+*/
 QKnxVarString::QKnxVarString(const char *string, int size)
     : QKnxVarString(SubType, string, size)
 {}
 
+/*!
+    Creates a variable sized datapoint type with the sub type \a subType that
+    stores the string \a string with the length \a size.
+*/
 QKnxVarString::QKnxVarString(int subType, const char *string, int size)
     : QKnxVariableSizeDatapointType(MainType, subType, TypeSize)
 {
@@ -66,19 +86,31 @@ QKnxVarString::QKnxVarString(int subType, const char *string, int size)
     setString(string, size);
 }
 
+/*!
+    Returns the string stored in the datapoint type.
+*/
 QLatin1String QKnxVarString::string() const
 {
     return QLatin1String((const char*) constData());
 }
 
+/*!
+    Sets the string stored in the datapoint type to \a string.
+*/
 bool QKnxVarString::setString(QLatin1String string)
 {
     return setString(string.latin1(), string.size());
 }
 
+/*!
+    Sets the string stored in the datapoint type to \a string with the length
+    \a size.
+
+    If \a size is \c -1, the full \a string is used.
+*/
 bool QKnxVarString::setString(const char *string, int size)
 {
-    auto null = QByteArray::fromHex("00");
+    auto null = QKnxByteArray::fromHex("00");
     if (!string)
         return setBytes(null, 0, 1);
 
@@ -88,9 +120,12 @@ bool QKnxVarString::setString(const char *string, int size)
 
     if (size >= USHRT_MAX)
         return false;
-    return setBytes(QByteArray(QByteArray::fromRawData(string, size) + null), 0, size + 1);
+    return setBytes(QKnxByteArray(string, size) + null, 0, size + 1);
 }
 
+/*!
+    \reimp
+*/
 bool QKnxVarString::isValid() const
 {
     return QKnxDatapointType::isValid() && byte(quint16(size() - 1)) == 0;
@@ -99,14 +134,38 @@ bool QKnxVarString::isValid() const
 
 // -- QKnxVarString88591
 
+/*!
+    \class QKnxVarString88591
+    \inherits QKnxVarString
+    \inmodule QtKnx
+    \since 5.11
+
+    \brief The QKnxVarString88591 class is a datapoint type that encodes a
+    variable length string of ISO 8859-1 characters.
+
+    This is a variable sized datapoint type.
+
+    \sa QKnxDatapointType
+*/
+
+/*!
+    Creates a variable sized datapoint type.
+*/
 QKnxVarString88591::QKnxVarString88591()
     : QKnxVarString88591(nullptr)
 {}
 
+/*!
+    Creates a fixed size datapoint type storing the string \a string.
+*/
 QKnxVarString88591::QKnxVarString88591(QLatin1String string)
     : QKnxVarString88591(string.latin1(), string.size())
 {}
 
+/*!
+    Creates a fixed size datapoint type storing the string \a string with the
+    length \a size.
+*/
 QKnxVarString88591::QKnxVarString88591(const char *string, int size)
     : QKnxVarString(SubType, string, size)
 {}

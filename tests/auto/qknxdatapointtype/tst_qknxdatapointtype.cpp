@@ -125,20 +125,16 @@ void tst_QKnxDatapointType::dpt1_1Bit()
     QCOMPARE(dpt1Bit.mainType(), 1);
     QCOMPARE(dpt1Bit.subType(), 0x00);
     QCOMPARE(dpt1Bit.isValid(), true);
-    QCOMPARE(dpt1Bit.bytes(), QByteArray::fromHex("00"));
+    QCOMPARE(dpt1Bit.bytes(), QKnxByteArray({ 0x00 }));
     QCOMPARE(dpt1Bit.type(), QKnxDatapointType::Type::Dpt1_1Bit);
 
     dpt1Bit.setBit(true);
     QCOMPARE(dpt1Bit.bit(), true);
     QCOMPARE(dpt1Bit.isValid(), true);
-    QCOMPARE(dpt1Bit.bytes(), QByteArray::fromHex("01"));
+    QCOMPARE(dpt1Bit.constData()[0], 0x01);
+    QCOMPARE(dpt1Bit.bytes(), QKnxByteArray({ 0x01 }));
 
-    dpt1Bit.data()[0] = 0xff;
-    QCOMPARE(dpt1Bit.isValid(), false);
-    dpt1Bit[0] = 0x00;
-    QCOMPARE(dpt1Bit.isValid(), true);
-    dpt1Bit.setBytes(QByteArray::fromHex("01"), 0, 1);
-    QCOMPARE(dpt1Bit.toString(), QStringLiteral("01"));
+    dpt1Bit.setBytes(QKnxByteArray { 0x01 }, 0, 1);
 
     QKnxSwitch dptSwitch;
     QCOMPARE(dptSwitch.size(), 1);
@@ -146,18 +142,18 @@ void tst_QKnxDatapointType::dpt1_1Bit()
     QCOMPARE(dptSwitch.subType(), 0x01);
     QCOMPARE(dptSwitch.isValid(), true);
     QCOMPARE(dptSwitch.value(), QKnxSwitch::State::Off);
-    QCOMPARE(dptSwitch.bytes(), QByteArray::fromHex("00"));
+    QCOMPARE(dptSwitch.bytes(), QKnxByteArray({ 0x00 }));
     QCOMPARE(dptSwitch.type(), QKnxDatapointType::Type::DptSwitch);
 
     dptSwitch.setValue(QKnxSwitch::State::On);
     QCOMPARE(dptSwitch.isValid(), true);
     QCOMPARE(dptSwitch.value(), QKnxSwitch::State::On);
-    QCOMPARE(dptSwitch.bytes(), QByteArray::fromHex("01"));
+    QCOMPARE(dptSwitch.bytes(), QKnxByteArray({ 0x01 }));
 
-    dptSwitch.setBytes(QByteArray::fromHex("ff"), 0, 1);
+    dptSwitch.setBytes(QKnxByteArray { 0xff }, 0, 1);
     QCOMPARE(dptSwitch.isValid(), false);
 
-    dptSwitch.setBytes(QByteArray::fromHex("01"), 0, 1);
+    dptSwitch.setBytes(QKnxByteArray { 0x01 }, 0, 1);
     QCOMPARE(dptSwitch.isValid(), true);
     QCOMPARE(dptSwitch.value(), QKnxSwitch::State::On);
 
@@ -189,9 +185,8 @@ void tst_QKnxDatapointType::dpt1_1Bit()
     QCOMPARE(dptWindowDoor.subType(), 19);
     QCOMPARE(dptWindowDoor.isValid(), true);
     QCOMPARE(dptWindowDoor.value(), QKnxWindowDoor::State::Closed);
-    QCOMPARE(dptWindowDoor.bytes(), QByteArray::fromHex("00"));
+    QCOMPARE(dptWindowDoor.bytes(), QKnxByteArray({ 0x00 }));
     QCOMPARE(dptWindowDoor.type(), QKnxDatapointType::Type::DptWindowDoor);
-
 }
 
 void tst_QKnxDatapointType::dpt2_1BitControlled()
@@ -202,7 +197,7 @@ void tst_QKnxDatapointType::dpt2_1BitControlled()
     QCOMPARE(dpt.valueBit(), false);
     QCOMPARE(dpt.controlBit(), false);
     QCOMPARE(dpt.isValid(), true);
-    QCOMPARE(dpt.bytes(), QByteArray::fromHex("00"));
+    QCOMPARE(dpt.bytes(), QKnxByteArray({ 0x00 }));
     QCOMPARE(dpt.type(), QKnxDatapointType::Type::Dpt2_1BitControlled);
 
     QKnxSwitchControl sSwitchControlled(QKnxSwitchControl::State::Off, QKnxSwitchControl::Control::NoControl);
@@ -422,7 +417,7 @@ void tst_QKnxDatapointType::dpt6_StatusMode3()
     QCOMPARE(dpt.isSet(QKnxStatusMode3::Status::D), false);
     QCOMPARE(dpt.isSet(QKnxStatusMode3::Status::E), false);
 
-    dpt.setBytes(QByteArray::fromHex("ff"), 0, 1);
+    dpt.setBytes(QKnxByteArray { 0xff }, 0, 1);
     QCOMPARE(dpt.isValid(), false);
     QCOMPARE(dpt.mode(), QKnxStatusMode3::Mode::Unknown);
     QCOMPARE(dpt.isSet(QKnxStatusMode3::Status::A), false);
@@ -751,18 +746,35 @@ void tst_QKnxDatapointType::dpt15_EntranceAccess()
     QCOMPARE(dptAccessData.isSet(QKnxEntranceAccess::Encrypted), false);
     QCOMPARE(dptAccessData.digit(1), qint8(0));
     QCOMPARE(dptAccessData.digit(2), qint8(9));
+    QCOMPARE(dptAccessData.setDigit(3, 1), true);
+    QCOMPARE(dptAccessData.digit(3), qint8(1));
+    QCOMPARE(dptAccessData.setDigit(6, 9), true);
+    QCOMPARE(dptAccessData.digit(6), qint8(9));
 
     QKnxEntranceAccess dpt;
     QCOMPARE(dpt.isValid(), true);
-    dpt.setBytes(QByteArray::fromHex("ff000000"), 0, 4);
+    dpt.setBytes(QKnxByteArray { 0xff, 0x00, 0x00, 0x00 }, 0, 4);
     QCOMPARE(dpt.isValid(), false);
     QCOMPARE(dpt.digit(1), qint8(-1));
-    dpt.setBytes(QByteArray::fromHex("00010000"), 0, 4);
+    dpt.setBytes(QKnxByteArray { 0x00, 0x01, 0x00, 0x00 }, 0, 4);
     QCOMPARE(dpt.isValid(), true);
     QCOMPARE(dpt.digit(1), qint8(0));
     QCOMPARE(dpt.digit(3), qint8(1));
 
-    // TODO: Extend the auto-test.
+    QKnxEntranceAccess dpt2;
+    QCOMPARE(dpt2.isValid(), true);
+    QCOMPARE(dpt2.setIdCode(150276), true);
+    QCOMPARE(dpt2.idCode(), 150276);
+    QCOMPARE(dpt2.setAttributes(QKnxEntranceAccess::PermissionAccepted | QKnxEntranceAccess::Encrypted), true);
+    QCOMPARE(dpt2.attributes(), QKnxEntranceAccess::PermissionAccepted | QKnxEntranceAccess::Encrypted);
+    QCOMPARE(dpt2.setIndex(3), true);
+    QCOMPARE(dpt2.index(), quint8(3));
+
+    QCOMPARE(dpt2.digit(0), -1);
+    QCOMPARE(dpt2.digit(7), -1);
+    QCOMPARE(dpt2.setDigit(0, 1), false);
+    QCOMPARE(dpt2.setDigit(7, 1), false);
+    QCOMPARE(dpt2.setDigit(4, 10), false);
 }
 
 void tst_QKnxDatapointType::dpt16_String()
@@ -776,11 +788,13 @@ void tst_QKnxDatapointType::dpt16_String()
 
     QCOMPARE(knxString.setString(QLatin1String("KNX is OK")), true);
     QCOMPARE(knxString.string(), QLatin1String("KNX is OK"));
-    QCOMPARE(knxString.bytes(), QByteArray::fromHex("4b4e58206973204f4b0000000000"));
+    QCOMPARE(knxString.bytes(), QKnxByteArray({ 0x4b, 0x4e, 0x58, 0x20, 0x69, 0x73, 0x20, 0x4f,
+        0x4b, 0x00, 0x00, 0x00, 0x00, 0x00 }));
 
     unsigned char value[4] = { 0xdf, 0xef, 0xff, 0x00 };
     QCOMPARE(knxString.setString(QLatin1String((const char*) value)), true);
-    QCOMPARE(knxString.bytes(), QByteArray::fromHex("dfefff0000000000000000000000"));
+    QCOMPARE(knxString.bytes(), QKnxByteArray({ 0xdf, 0xef, 0xff, 0x00, 0x00, 0x00, 0x00, 0x00,
+        0x00, 0x00, 0x00, 0x00, 0x00, 0x00 }));
 
     QKnxCharStringASCII stringA;
     QCOMPARE(stringA.mainType(), 16);
@@ -790,7 +804,7 @@ void tst_QKnxDatapointType::dpt16_String()
 
     QCOMPARE(stringA.setString(QLatin1String((const char*) value)), false);
     QCOMPARE(stringA.string(), QLatin1String());
-    QCOMPARE(stringA.bytes(), QByteArray::fromHex("0000000000000000000000000000"));
+    QCOMPARE(stringA.bytes(), QKnxByteArray(14, 0x00));
     QCOMPARE(stringA.isValid(), true);
 
     QCOMPARE(stringA.setByte(0, 255), true);
@@ -801,7 +815,8 @@ void tst_QKnxDatapointType::dpt16_String()
     QCOMPARE(stringA.byte(13), quint8(255));
     QCOMPARE(stringA.isValid(), false);
 
-    QCOMPARE(stringA.setBytes(QByteArray::fromHex("4b4e58206973204f4b0000000000"), 0, 14), true);
+    QCOMPARE(stringA.setBytes(QKnxByteArray { 0x4b, 0x4e, 0x58, 0x20, 0x69, 0x73, 0x20, 0x4f,
+        0x4b, 0x00, 0x00, 0x00, 0x00, 0x00 }, 0, 14), true);
     QCOMPARE(stringA.string(), QLatin1String("KNX is OK"));
     QCOMPARE(stringA.isValid(), true);
 
@@ -812,7 +827,8 @@ void tst_QKnxDatapointType::dpt16_String()
     QCOMPARE(string8.isValid(), true);
     QCOMPARE(string8.byte(0), quint8(0));
     QCOMPARE(string8.setString(QLatin1String((const char*) value)), true);
-    QCOMPARE(string8.bytes(), QByteArray::fromHex("dfefff0000000000000000000000"));
+    QCOMPARE(string8.bytes(), QKnxByteArray({ 0xdf, 0xef, 0xff, 0x00, 0x00, 0x00, 0x00, 0x00,
+        0x00, 0x00, 0x00, 0x00, 0x00, 0x00 }));
 }
 
 void tst_QKnxDatapointType::dpt17_SceneNumber()
@@ -834,7 +850,7 @@ void tst_QKnxDatapointType::dpt17_SceneNumber()
     QCOMPARE(dpt.isValid(), true);
     QCOMPARE(dpt.sceneNumber(), quint8(0));
 
-    dpt.setBytes(QByteArray::fromHex("ff"), 0, 1);
+    dpt.setBytes(QKnxByteArray { 0xff }, 0, 1);
     QCOMPARE(dpt.isValid(), false);
     QCOMPARE(dpt.sceneNumber(), quint8(63));
 }
@@ -869,17 +885,17 @@ void tst_QKnxDatapointType::dpt18_SceneControl()
     QCOMPARE(dpt.isValid(), true);
     QCOMPARE(dpt.control(), QKnxSceneControl::Learn);
 
-    dpt.setBytes(QByteArray::fromHex("ff"), 0, 1);
+    dpt.setBytes(QKnxByteArray { 0xff }, 0, 1);
     QCOMPARE(dpt.isValid(), false);
     QCOMPARE(dpt.sceneNumber(), quint8(63));
     QCOMPARE(dpt.control(), QKnxSceneControl::Control::Learn);
 
-    dpt.setBytes(QByteArray::fromHex("80"), 0, 1);
+    dpt.setBytes(QKnxByteArray { 0x80 }, 0, 1);
     QCOMPARE(dpt.isValid(), true);
     QCOMPARE(dpt.sceneNumber(), quint8(0));
     QCOMPARE(dpt.control(), QKnxSceneControl::Control::Learn);
 
-    dpt.setBytes(QByteArray::fromHex("40"), 0, 1);
+    dpt.setBytes(QKnxByteArray { 0x40 }, 0, 1);
     QCOMPARE(dpt.isValid(), false);
     QCOMPARE(dpt.sceneNumber(), quint8(0));
     QCOMPARE(dpt.control(), QKnxSceneControl::Control::Activate);
@@ -1716,14 +1732,14 @@ void tst_QKnxDatapointType::dpt21_8BitSet()
     QCOMPARE(dptGS.isSet(QKnxGeneralStatus::OutOfService), false);
     QCOMPARE(dptGS.isSet(QKnxGeneralStatus::Overridden), false);
     QCOMPARE(dptGS.isValid(), true);
-    dptGS.setBytes(QByteArray::fromHex("ff"), 0, 1);
+    dptGS.setBytes(QKnxByteArray { 0xff }, 0, 1);
     QCOMPARE(dptGS.isValid(), false);
     QCOMPARE(dptGS.isSet(QKnxGeneralStatus::Fault), true);
     QCOMPARE(dptGS.isSet(QKnxGeneralStatus::AlarmUnacknowledged), true);
     QCOMPARE(dptGS.isSet(QKnxGeneralStatus::InAlarm), true);
     QCOMPARE(dptGS.isSet(QKnxGeneralStatus::OutOfService), true);
     QCOMPARE(dptGS.isSet(QKnxGeneralStatus::Overridden), true);
-    dptGS.setBytes(QByteArray::fromHex("1f"), 0, 1);
+    dptGS.setBytes(QKnxByteArray { 0x1f }, 0, 1);
     QCOMPARE(dptGS.isValid(), true);
     QCOMPARE(dptGS.isSet(QKnxGeneralStatus::Fault), true);
     QCOMPARE(dptGS.isSet(QKnxGeneralStatus::AlarmUnacknowledged), true);
@@ -1749,22 +1765,22 @@ void tst_QKnxDatapointType::dpt21_8BitSet()
     QCOMPARE(dptDC.isSet(QKnxDeviceControl::VerifyMode), true);
     QCOMPARE(dptDC.isSet(QKnxDeviceControl::UserStopped), false);
     QCOMPARE(dptDC.isSet(QKnxDeviceControl::OwnIA), false);
-    dptDC.setBytes(QByteArray::fromHex("ff"), 0, 1);
+    dptDC.setBytes(QKnxByteArray { 0xff }, 0, 1);
     QCOMPARE(dptDC.isValid(), false);
     QCOMPARE(dptDC.isSet(QKnxDeviceControl::UserStopped), true);
     QCOMPARE(dptDC.isSet(QKnxDeviceControl::OwnIA), true);
     QCOMPARE(dptDC.isSet(QKnxDeviceControl::VerifyMode), true);
-    dptDC.setBytes(QByteArray::fromHex("1f"), 0, 1);
+    dptDC.setBytes(QKnxByteArray { 0x1f }, 0, 1);
     QCOMPARE(dptDC.isValid(), false);
     QCOMPARE(dptDC.isSet(QKnxDeviceControl::UserStopped), true);
     QCOMPARE(dptDC.isSet(QKnxDeviceControl::OwnIA), true);
     QCOMPARE(dptDC.isSet(QKnxDeviceControl::VerifyMode), true);
-    dptDC.setBytes(QByteArray::fromHex("07"), 0, 1);
+    dptDC.setBytes(QKnxByteArray { 0x07 }, 0, 1);
     QCOMPARE(dptDC.isValid(), true);
     QCOMPARE(dptDC.isSet(QKnxDeviceControl::UserStopped), true);
     QCOMPARE(dptDC.isSet(QKnxDeviceControl::OwnIA), true);
     QCOMPARE(dptDC.isSet(QKnxDeviceControl::VerifyMode), true);
-    dptDC.setBytes(QByteArray::fromHex("0f"), 0, 1);
+    dptDC.setBytes(QKnxByteArray { 0x0f }, 0, 1);
     QCOMPARE(dptDC.isValid(), true);
     QCOMPARE(dptDC.isSet(QKnxDeviceControl::UserStopped), true);
     QCOMPARE(dptDC.isSet(QKnxDeviceControl::OwnIA), true);
@@ -1789,15 +1805,15 @@ void tst_QKnxDatapointType::dpt23_2BitSet()
     QCOMPARE(action.isValid(), true);
     QCOMPARE(action.action(), QKnxOnOffAction::Action::OffOn);
     QCOMPARE(action.value(), quint8(2));
-    action.setBytes(QByteArray::fromHex("ff"), 0, 1);
+    action.setBytes(QKnxByteArray { 0xff }, 0, 1);
     QCOMPARE(action.isValid(), false);
     QCOMPARE(action.value(), quint8(3));
     QCOMPARE(action.action(), QKnxOnOffAction::Action::OnOff);
-    action.setBytes(QByteArray::fromHex("04"), 0, 1);
+    action.setBytes(QKnxByteArray { 0x04 }, 0, 1);
     QCOMPARE(action.isValid(), false);
     QCOMPARE(action.value(), quint8(0));
     QCOMPARE(action.action(), QKnxOnOffAction::Action::Off);
-    action.setBytes(QByteArray::fromHex("03"), 0, 1);
+    action.setBytes(QKnxByteArray { 0x03 }, 0, 1);
     QCOMPARE(action.isValid(), true);
     QCOMPARE(action.value(), quint8(3));
     QCOMPARE(action.action(), QKnxOnOffAction::Action::OnOff);
@@ -1812,15 +1828,15 @@ void tst_QKnxDatapointType::dpt23_2BitSet()
     QCOMPARE(alarm.isValid(), true);
     QCOMPARE(alarm.alarm(), QKnxAlarmReaction::Alarm::AlarmDown);
     QCOMPARE(alarm.value(), quint8(2));
-    alarm.setBytes(QByteArray::fromHex("ff"), 0, 1);
+    alarm.setBytes(QKnxByteArray { 0xff }, 0, 1);
     QCOMPARE(alarm.isValid(), false);
     QCOMPARE(alarm.value(), quint8(3));
     QCOMPARE(alarm.alarm(), QKnxAlarmReaction::Alarm::AlarmDown);
-    alarm.setBytes(QByteArray::fromHex("03"), 0, 1);
+    alarm.setBytes(QKnxByteArray { 0x03 }, 0, 1);
     QCOMPARE(alarm.isValid(), false);
     QCOMPARE(alarm.value(), quint8(3));
     QCOMPARE(alarm.alarm(), QKnxAlarmReaction::Alarm::AlarmDown);
-    alarm.setBytes(QByteArray::fromHex("02"), 0, 1);
+    alarm.setBytes(QKnxByteArray { 0x02 }, 0, 1);
     QCOMPARE(alarm.isValid(), true);
     QCOMPARE(alarm.value(), quint8(2));
     QCOMPARE(alarm.alarm(), QKnxAlarmReaction::Alarm::AlarmDown);
@@ -1835,15 +1851,15 @@ void tst_QKnxDatapointType::dpt23_2BitSet()
     QCOMPARE(upAction.isValid(), true);
     QCOMPARE(upAction.action(), QKnxUpDownAction::Action::UpDown);
     QCOMPARE(upAction.value(), quint8(2));
-    upAction.setBytes(QByteArray::fromHex("ff"), 0, 1);
+    upAction.setBytes(QKnxByteArray { 0xff }, 0, 1);
     QCOMPARE(upAction.isValid(), false);
     QCOMPARE(upAction.value(), quint8(3));
     QCOMPARE(upAction.action(), QKnxUpDownAction::Action::DownUp);
-    upAction.setBytes(QByteArray::fromHex("04"), 0, 1);
+    upAction.setBytes(QKnxByteArray { 0x04 }, 0, 1);
     QCOMPARE(upAction.isValid(), false);
     QCOMPARE(upAction.value(), quint8(0));
     QCOMPARE(upAction.action(), QKnxUpDownAction::Action::Up);
-    upAction.setBytes(QByteArray::fromHex("03"), 0, 1);
+    upAction.setBytes(QKnxByteArray { 0x03 }, 0, 1);
     QCOMPARE(upAction.isValid(), true);
     QCOMPARE(upAction.value(), quint8(3));
     QCOMPARE(upAction.action(), QKnxUpDownAction::Action::DownUp);
@@ -1863,25 +1879,28 @@ void tst_QKnxDatapointType::dpt24_VarString()
     QCOMPARE(string.isValid(), true);
     QCOMPARE(string.byte(0), quint8(0x54));
     QCOMPARE(string.string(), QLatin1String("Test"));
-    QCOMPARE(string.bytes(), QByteArray::fromHex("5465737400"));
+    QCOMPARE(string.bytes(), QKnxByteArray({ 0x54, 0x65, 0x73, 0x74, 0x00 }));
 
     QCOMPARE(string.setString(QLatin1String("This format allows transmission of long strings!")),
         true);
     QCOMPARE(string.size(), 49);
     QCOMPARE(string.isValid(), true);
     QCOMPARE(string.string(), QLatin1String("This format allows transmission of long strings!"));
-    QCOMPARE(string.bytes(), QByteArray::fromHex("5468697320666f726d617420616c6c6f7773207472616e"
-        "736d697373696f6e206f66206c6f6e6720737472696e67732100"));
+    QCOMPARE(string.bytes(), QKnxByteArray({ 0x54, 0x68, 0x69, 0x73, 0x20, 0x66, 0x6f, 0x72,
+        0x6d, 0x61, 0x74, 0x20, 0x61, 0x6c, 0x6c, 0x6f, 0x77, 0x73, 0x20, 0x74, 0x72, 0x61,
+        0x6e, 0x73, 0x6d, 0x69, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x20, 0x6f, 0x66, 0x20, 0x6c,
+        0x6f, 0x6e, 0x67, 0x20, 0x73, 0x74, 0x72, 0x69, 0x6e, 0x67, 0x73, 0x21, 0x00 }));
 
     QCOMPARE(string.setString(QLatin1String("KNX is OK")), true);
     QCOMPARE(string.size(), 10);
     QCOMPARE(string.isValid(), true);
     QCOMPARE(string.string(), QLatin1String("KNX is OK"));
-    QCOMPARE(string.bytes(), QByteArray::fromHex("4b4e58206973204f4b00"));
+    QCOMPARE(string.bytes(), QKnxByteArray({ 0x4b, 0x4e, 0x58, 0x20, 0x69, 0x73, 0x20, 0x4f,
+        0x4b, 0x00 }));
 
-    QCOMPARE(string.setBytes(QByteArray::fromHex("01"), 0, 1), true);
+    QCOMPARE(string.setBytes(QKnxByteArray { 0x01 }, 0, 1), true);
     QCOMPARE(string.isValid(), false);
-    QCOMPARE(string.setBytes(QByteArray::fromHex("0100"), 0, 2), true);
+    QCOMPARE(string.setBytes(QKnxByteArray { 0x01, 0x00 }, 0, 2), true);
     QCOMPARE(string.isValid(), true);
 }
 
@@ -1915,17 +1934,17 @@ void tst_QKnxDatapointType::dpt26_SceneInfo()
     QCOMPARE(dpt.isValid(), true);
     QCOMPARE(dpt.info(), QKnxSceneInfo::Inactive);
 
-    dpt.setBytes(QByteArray::fromHex("ff"), 0, 1);
+    dpt.setBytes(QKnxByteArray { 0xff }, 0, 1);
     QCOMPARE(dpt.isValid(), false);
     QCOMPARE(dpt.sceneNumber(), quint8(63));
     QCOMPARE(dpt.info(), QKnxSceneInfo::Info::Inactive);
 
-    dpt.setBytes(QByteArray::fromHex("80"), 0, 1);
+    dpt.setBytes(QKnxByteArray { 0x80 }, 0, 1);
     QCOMPARE(dpt.isValid(), false);
     QCOMPARE(dpt.sceneNumber(), quint8(0));
     QCOMPARE(dpt.info(), QKnxSceneInfo::Info::Active);
 
-    dpt.setBytes(QByteArray::fromHex("42"), 0, 1);
+    dpt.setBytes(QKnxByteArray { 0x42 }, 0, 1);
     QCOMPARE(dpt.isValid(), true);
     QCOMPARE(dpt.sceneNumber(), quint8(2));
     QCOMPARE(dpt.info(), QKnxSceneInfo::Info::Inactive);
@@ -2033,33 +2052,37 @@ void tst_QKnxDatapointType::dpt28_StringUtf8()
     QCOMPARE(string.setString(QString(QByteArray(1, char(85)))), true);
     QCOMPARE(string.byte(0), quint8(85));
 
-    const quint8 data[21] = { 0xe2, 0x88, 0x83, 0x79, 0x20, 0xe2, 0x88, 0x80, 0x78, 0x20, 0xc2,
-        0xac, 0x28, 0x78, 0x20, 0xe2, 0x89, 0xba, 0x20, 0x79, 0x29 };
+    QKnxByteArray data { 0xe2, 0x88, 0x83, 0x79, 0x20, 0xe2, 0x88, 0x80, 0x78, 0x20, 0xc2,
+        0xac, 0x28, 0x78, 0x20, 0xe2, 0x89, 0xba, 0x20, 0x79, 0x29, 0x00};
 
-    QCOMPARE(string.setString(QString::fromUtf8({ (const char*) data, 21 })), true);
+    QCOMPARE(string.setString(QString::fromUtf8({ (const char*) data.constData(), data.size() - 1 })), true);
     QCOMPARE(string.size(), 22);
     QCOMPARE(string.isValid(), true);
     QCOMPARE(string.byte(0), data[0]);
     QCOMPARE(string.byte(1), data[1]);
     QCOMPARE(string.byte(2), data[2]);
-    QCOMPARE(string.bytes(), QByteArray((const char*) data, 21) + QByteArray(1, 0));
+    QCOMPARE(string.bytes(), data);
 
     QCOMPARE(string.setString(QString("KNX is OK")), true);
     QCOMPARE(string.byte(0), quint8(75));
     QCOMPARE(string.string(), QString("KNX is OK"));
+    QCOMPARE(string.bytes(), QKnxByteArray({ 0x4b, 0x4e, 0x58, 0x20, 0x69, 0x73, 0x20, 0x4f,
+        0x4b, 0x00 }));
 
     QKnxUtf8 utf8;
-    QCOMPARE(utf8.setString((const char*) data, 21), true);
+    QCOMPARE(utf8.setString((const char*) data.constData(), data.size() - 1), true);
     QCOMPARE(utf8.size(), 22);
     QCOMPARE(utf8.isValid(), true);
     QCOMPARE(utf8.byte(0), data[0]);
     QCOMPARE(utf8.byte(1), data[1]);
     QCOMPARE(utf8.byte(2), data[2]);
-    QCOMPARE(utf8.bytes(), QByteArray((const char*) data, 21) + QByteArray(1, 0));
+    QCOMPARE(utf8.bytes(), data);
 
     QCOMPARE(utf8.setString(QString("KNX is OK")), true);
     QCOMPARE(utf8.byte(0), quint8(75));
     QCOMPARE(utf8.string(), QString("KNX is OK"));
+    QCOMPARE(string.bytes(), QKnxByteArray({ 0x4b, 0x4e, 0x58, 0x20, 0x69, 0x73, 0x20, 0x4f,
+        0x4b, 0x00 }));
 }
 
 void tst_QKnxDatapointType::dpt29_ElectricalEnergy()

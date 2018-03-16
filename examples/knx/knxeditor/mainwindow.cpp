@@ -93,6 +93,9 @@ MainWindow::MainWindow(QWidget *parent)
 
     m_discoveryAgent.setTimeout(5000);
     connect(&m_discoveryAgent, &QKnxNetIpServerDiscoveryAgent::started, this, [&] {
+        if (!ui)
+            return;
+
         ui->scanButton->setEnabled(false);
         ui->checkboxNat->setEnabled(false);
 
@@ -106,6 +109,9 @@ MainWindow::MainWindow(QWidget *parent)
         firstItem->setSelectable(false);
     });
     connect(&m_discoveryAgent, &QKnxNetIpServerDiscoveryAgent::finished, this, [&] {
+        if (!ui)
+            return;
+
         ui->scanButton->setEnabled(true);
         ui->checkboxNat->setEnabled(true);
 
@@ -126,6 +132,9 @@ MainWindow::MainWindow(QWidget *parent)
         QOverload<>::of(&QKnxNetIpServerDiscoveryAgent::start));
 
     connect(ui->checkboxNat, &QCheckBox::toggled, this, [&](bool checked) {
+        if (!ui)
+            return;
+
         ui->tunneling->setNatAware(checked);
         m_discoveryAgent.setNatAware(checked);
         ui->deviceManagement->setNatAware(checked);
@@ -154,8 +163,9 @@ MainWindow::MainWindow(QWidget *parent)
 
 MainWindow::~MainWindow()
 {
-    s_ui = 0;
+    s_ui = nullptr;
     delete ui;
+    ui = nullptr;
 }
 
 void MainWindow::newServerSelected(int serverBoxIndex)
@@ -191,11 +201,12 @@ void MainWindow::newServerSelected(int serverBoxIndex)
         }())
     );
 
-    const auto &endpoint = info.endpoint();
-    if (endpoint.hostProtocol() != QKnxNetIp::HostProtocol::IpV4_Udp)
+    const auto &hpai = info.endpoint();
+    const QKnxNetIpHpaiView endpoint(hpai);
+    if (endpoint.hostProtocol() != QKnxNetIp::HostProtocol::UDP_IPv4)
         return;
 
-    if (info.endpoint().isValid() && m_server != info) {
+    if (endpoint.isValid() && m_server != info) {
         m_server = info;
 
         ui->tunneling->setEnabled(true);
@@ -233,7 +244,6 @@ void MainWindow::newIPAddressSelected(int localIpBoxIndex)
 void MainWindow::showServerAndServices(const QKnxNetIpServerInfo &info)
 {
     ui->outputEdit->append(tr("Server Endpoint found"));
-    ui->outputEdit->append(info.endpoint().toString());
     ui->outputEdit->append(tr("Server's Multicast Address"));
     ui->outputEdit->append(info.controlEndpointAddress().toString());
     ui->outputEdit->append(tr("Server's Port"));

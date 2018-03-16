@@ -1,6 +1,6 @@
 /******************************************************************************
 **
-** Copyright (C) 2017 The Qt Company Ltd.
+** Copyright (C) 2018 The Qt Company Ltd.
 ** Contact: https://www.qt.io/licensing/
 **
 ** This file is part of the QtKnx module.
@@ -35,20 +35,57 @@ QT_BEGIN_NAMESPACE
 
 /*!
     \class QKnxEntranceAccess
-
+    \inherits QKnxFixedSizeDatapointType
     \inmodule QtKnx
-    \brief The QKnxEntranceAccess is a datapoint type for the entrance access.
+    \brief The QKnxEntranceAccess is a datapoint type for controlling entrance
+    access.
 
-    A fixed size datapoint type with the length of 4 bytes that controls the
-    entrance access.
+    This is a fixed size datapoint type with the length of 4 bytes that stores
+    an access identification code, additional \l{Attribute}{attributes}, and an
+    index.
+
+    Access identification codes consist of six digits, each between 0 and 9.
+    Only a card or key number should be used. A system number, version number,
+    country code, and so on, are not necessary. A ciphered access identification
+    code should be possible in principle. If 24 bits are not necessary, the most
+    significant positions shall be set to zero.
+
+    The range of the value is from \c {Low Code, 0 0 0 0 0 0} to
+    \c {High Code, 9 9 9 9 9 9}.
 
     \sa QKnxDatapointType
 */
 
+/*!
+    \enum QKnxEntranceAccess::Attribute
+
+    This enum holds the access identification code attributes.
+
+    \value Error
+           Whether the controlling device could successfully read the access
+           identification code.
+    \value PermissionAccepted
+           Whether the controlling device granted the access.
+    \value ReadRightToLeft
+           Sets the reading direction of a device used for access, such as a
+           badge, to be from right to left. Not needed for devices such as
+           electronic keys, and can be set to zero.
+    \value Encrypted
+           Whether the access identification code is encrypted.
+*/
+
+/*!
+    Creates a fixed size datapoint type with the value set to \c 0 and an empty
+    list of attributes.
+*/
 QKnxEntranceAccess::QKnxEntranceAccess()
     : QKnxEntranceAccess(0, Attributes(), 0)
 {}
 
+/*!
+    Creates a fixed size datapoint type with the access identification code set
+    to \a idCode, attributes to \a attributes, and the index to \a index.
+*/
 QKnxEntranceAccess::QKnxEntranceAccess(quint32 idCode, Attributes attributes, quint8 index)
     : QKnxFixedSizeDatapointType(MainType, SubType, TypeSize)
 {
@@ -59,14 +96,22 @@ QKnxEntranceAccess::QKnxEntranceAccess(quint32 idCode, Attributes attributes, qu
     setValue(idCode, attributes, index);
 }
 
+/*!
+    Returns the access identification code stored in the datapoint type or a
+    negative value if the datapoint is invalid.
+*/
 qint32 QKnxEntranceAccess::idCode() const
 {
     if (!isValid())
         return -1;
-    return (quint32(1e6) * digit(6)) + (quint32(1e5) * digit(5)) + (quint32(1e4) * digit(4))
-        + (quint32(1e3) * digit(3)) + (quint32(1e2) * digit(2)) + digit(1);
+    return (quint32(1e5) * digit(6)) + (quint32(1e4) * digit(5)) + (quint32(1e3) * digit(4))
+        + (quint32(1e2) * digit(3)) + (quint32(1e1) * digit(2)) + digit(1);
 }
 
+/*!
+    Returns the digit \a x of the access identification code or a negative value
+    if the datapoint is invalid or \a x is not in the range from \c 1 to \c 6.
+*/
 qint8 QKnxEntranceAccess::digit(quint8 x) const
 {
     qint8 value = -1;
@@ -82,6 +127,31 @@ qint8 QKnxEntranceAccess::digit(quint8 x) const
     return value;
 }
 
+/*!
+    Sets the digit \a digit at the position \a x in the access identification
+    code.
+*/
+bool QKnxEntranceAccess::setDigit(quint8 x, quint8 digit)
+{
+    if (x < 1 || x > 6 || digit > 9)
+        return false;
+
+    digit = (x % 2 ? digit : digit << 4);
+    if (x == 5 || x == 6)
+        return setByte(0, digit);
+    if (x == 4 || x == 3)
+        return setByte(1, digit);
+    if (x == 2 || x == 1)
+        return setByte(2, digit);
+    return false;
+}
+
+/*!
+    Returns the additional information stored in the datapoint type as a list
+    of attributes.
+
+    \sa Attribute
+*/
 QKnxEntranceAccess::Attributes QKnxEntranceAccess::attributes() const
 {
     return Attributes().setFlag(Attribute::Error, isSet(Attribute::Error))
@@ -90,6 +160,9 @@ QKnxEntranceAccess::Attributes QKnxEntranceAccess::attributes() const
         .setFlag(Attribute::Encrypted, isSet(Attribute::Encrypted));
 }
 
+/*!
+    Returns \c true if \a attribute is set; otherwise returns \c false.
+*/
 bool QKnxEntranceAccess::isSet(Attribute attribute) const
 {
     if (attribute == Attribute::Error)
@@ -103,17 +176,27 @@ bool QKnxEntranceAccess::isSet(Attribute attribute) const
     return false;
 }
 
+/*!
+    Returns the index stored in the datapoint type.
+*/
 quint8 QKnxEntranceAccess::index() const
 {
     return quint8(byte(3) & 0x0f);
 }
 
+/*!
+    Sets the access identification code stored in the datapoint type to
+    \a idCode.
+
+    If the value is outside the allowed range, returns \c false and does not set
+    the value.
+*/
 bool QKnxEntranceAccess::setIdCode(quint32 idCode)
 {
     if (idCode > 999999)
         return false;
 
-    QVector<quint8> digits;
+    QKnxByteArray digits;
     while (idCode != 0) {
         digits.push_back(idCode % 10);
         idCode = idCode / 10;
@@ -124,6 +207,12 @@ bool QKnxEntranceAccess::setIdCode(quint32 idCode)
     return success;
 }
 
+/*!
+    Sets the additional information of the datapoint type to the list of
+    attributes specified by \a attributes.
+
+    \sa Attribute
+*/
 bool QKnxEntranceAccess::setAttributes(Attributes attributes)
 {
     quint8 temp = byte(3);
@@ -134,16 +223,32 @@ bool QKnxEntranceAccess::setAttributes(Attributes attributes)
     return setByte(3, temp);
 }
 
+/*!
+    Adds \a attribute to the list of attributes.
+
+    \sa Attribute
+*/
 bool QKnxEntranceAccess::setAttribute(Attribute attribute)
 {
     return setAttributes(attributes() | attribute);
 }
 
+/*!
+    Removes \a attribute from the list of attributes.
+
+    \sa Attribute
+*/
 bool QKnxEntranceAccess::removeAttribute(Attribute attribute)
 {
     return setAttributes(attributes() &~ attribute);
 }
 
+/*!
+    Sets the index stored in the datapoint type to \a index.
+
+    If the value is outside the allowed range, from \c 0 to \c 15, returns
+    \c false and does not set the value.
+*/
 bool QKnxEntranceAccess::setIndex(quint8 index)
 {
     if (index > 15)
@@ -152,6 +257,11 @@ bool QKnxEntranceAccess::setIndex(quint8 index)
     return setByte(3, temp | index);
 }
 
+/*!
+    Sets the access identification code stored in the datapoint type to
+    \a idCode, the list of attributes to \a attributes, and the index to
+    \a index.
+*/
 bool QKnxEntranceAccess::setValue(quint32 idCode, Attributes attributes, quint8 index)
 {
     if (setIdCode(idCode) && setIndex(index))
@@ -159,6 +269,9 @@ bool QKnxEntranceAccess::setValue(quint32 idCode, Attributes attributes, quint8 
     return false;
 }
 
+/*!
+    \reimp
+*/
 bool QKnxEntranceAccess::isValid() const
 {
     return QKnxDatapointType::isValid()

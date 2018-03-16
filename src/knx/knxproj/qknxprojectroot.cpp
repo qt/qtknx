@@ -90,21 +90,13 @@ bool QKnxProject::parseElement(QXmlStreamReader *reader, bool pedantic)
                         return false;
                     ProjectInformation.append(info);
                 } else if (reader->name() == QStringLiteral("Installations")) {
-                    if (reader->readNextStartElement()
-                        && reader->name() != QStringLiteral("Installation")) {
-                        reader->raiseError(tr("The element <Installations> has incomplete content."
-                            " Expected element: <Installation>."));
+                    if (!QKnxProjectUtils::parseChildElement(reader, pedantic, &Installations))
                         return false;
-                    }
                     if (pedantic && Installations.size() > 16) {
                         reader->raiseError(tr("Pedantic error: Encountered element <Installation> "
                             "more then sixteen times."));
                         return false;
                     }
-                    QKnxInstallation installation;
-                    if (!installation.parseElement(reader, pedantic))
-                        return false;
-                    Installations.append(installation);
                 } else if (reader->name() == QStringLiteral("UserFiles")) {
                     if (!QKnxProjectUtils::parseChildElement(reader, pedantic, &UserFiles))
                         return false;

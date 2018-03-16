@@ -31,38 +31,64 @@
 
 QT_BEGIN_NAMESPACE
 
-QKnxNetIpTunnelingRequest::QKnxNetIpTunnelingRequest(quint8 id, quint8 sequenceCount,
-        const QKnxLinkLayerFrame &cemi)
-    : QKnxNetIpConnectionHeaderFrame(QKnxNetIp::ServiceType::TunnelingRequest)
-{
-    setConnectionHeader({ id, sequenceCount });
-    setPayload(QKnxNetIpPayload::fromBytes(cemi.bytes(), 0, cemi.size()));
-}
-
-QKnxNetIpTunnelingRequest::QKnxNetIpTunnelingRequest(const QKnxNetIpConnectionHeaderFrame &other)
-    : QKnxNetIpConnectionHeaderFrame(other)
+QKnxNetIpTunnelingRequest::QKnxNetIpTunnelingRequest(const QKnxNetIpFrame &frame)
+    : m_frame(frame)
 {}
+
+bool QKnxNetIpTunnelingRequest::isValid() const
+{
+    return m_frame.isValid() && m_frame.size() >= 12 && cemi().isValid()
+        && m_frame.serviceType() == QKnxNetIp::ServiceType::TunnelingRequest;
+}
 
 quint8 QKnxNetIpTunnelingRequest::channelId() const
 {
-    return connectionHeader().channelId();
+    return m_frame.channelId();
 }
 
-quint8 QKnxNetIpTunnelingRequest::sequenceCount() const
+quint8 QKnxNetIpTunnelingRequest::sequenceNumber() const
 {
-    return connectionHeader().sequenceCount();
+    return m_frame.sequenceNumber();
 }
 
 QKnxLinkLayerFrame QKnxNetIpTunnelingRequest::cemi() const
 {
-    auto ref = payloadRef(connectionHeaderSize());
-    return QKnxLinkLayerFrame::fromBytes(ref.bytes<QByteArray>(), 0, ref.size());
+    return QKnxLinkLayerFrame::fromBytes(m_frame.data(), 0, m_frame.dataSize());
 }
 
-bool QKnxNetIpTunnelingRequest::isValid() const
+QKnxNetIpTunnelingRequest::Builder QKnxNetIpTunnelingRequest::builder()
 {
-    return QKnxNetIpConnectionHeaderFrame::isValid() && size() >= 12 && cemi().isValid()
-        && code() == QKnxNetIp::ServiceType::TunnelingRequest;
+    return QKnxNetIpTunnelingRequest::Builder();
+}
+
+
+// -- QKnxNetIpTunnelingRequest::Builder
+
+QKnxNetIpTunnelingRequest::Builder &
+    QKnxNetIpTunnelingRequest::Builder::setChannelId(quint8 channelId)
+{
+    m_channelId = channelId;
+    return *this;
+}
+
+QKnxNetIpTunnelingRequest::Builder &
+    QKnxNetIpTunnelingRequest::Builder::setSequenceNumber(quint8 sequenceNumber)
+{
+    m_sequenceNumber = sequenceNumber;
+    return *this;
+}
+
+QKnxNetIpTunnelingRequest::Builder &
+    QKnxNetIpTunnelingRequest::Builder::setCemi(const QKnxLinkLayerFrame &cemi)
+{
+    m_cemi = cemi;
+    return *this;
+}
+
+QKnxNetIpFrame QKnxNetIpTunnelingRequest::Builder::create() const
+{
+    return { QKnxNetIp::ServiceType::TunnelingRequest, { m_channelId, m_sequenceNumber },
+        m_cemi.bytes() };
 }
 
 QT_END_NAMESPACE

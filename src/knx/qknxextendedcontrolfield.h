@@ -30,14 +30,11 @@
 #ifndef QKNXEXTENDEDCONTROLFIELD_H
 #define QKNXEXTENDEDCONTROLFIELD_H
 
-#include <QtCore/qbytearray.h>
-#include <QtCore/qdatastream.h>
 #include <QtCore/qdebug.h>
-#include <QtCore/qstring.h>
-#include <QtCore/qvector.h>
 #include <QtKnx/qknxaddress.h>
 #include <QtKnx/qknxglobal.h>
-#include <QtKnx/qknxtraits.h>
+
+#include <bitset>
 
 QT_BEGIN_NAMESPACE
 
@@ -48,8 +45,7 @@ class Q_KNX_EXPORT QKnxExtendedControlField final
 public:
     QKnxExtendedControlField() = default;
     explicit QKnxExtendedControlField(quint8 data);
-    explicit QKnxExtendedControlField(const QByteArray &data);
-    explicit QKnxExtendedControlField(const QVector<quint8> &data);
+    explicit QKnxExtendedControlField(const QKnxByteArray &data);
 
     QKnxAddress::Type destinationAddressType() const;
     void setDestinationAddressType(QKnxAddress::Type address);
@@ -66,25 +62,18 @@ public:
     QKnxExtendedControlField::ExtendedFrameFormat format() const;
     void setFormat(QKnxExtendedControlField::ExtendedFrameFormat format);
 
-    quint8 bytes() const { return quint8(m_ctrl2.to_ulong()); }
-    template <typename T = QByteArray> auto bytes() const -> decltype(T())
+    quint8 byte() const { return quint8(m_ctrl2.to_ulong()); }
+    QKnxByteArray bytes() const
     {
-        static_assert(is_type<T, QByteArray, QVector<quint8>, std::deque<quint8>,
-            std::vector<quint8>>::value, "Type not supported.");
-
-        T t(1, 0); t[0] = quint8(m_ctrl2.to_ulong());
-        return t;
+        return { quint8(m_ctrl2.to_ulong()) };
     }
 
-    QString toString() const;
     quint8 size() const { return 1; }
 
 private:
     std::bitset<8> m_ctrl2 = 0;
 };
 Q_KNX_EXPORT QDebug operator<<(QDebug debug, const QKnxExtendedControlField &ctrl);
-Q_KNX_EXPORT QDataStream &operator>>(QDataStream &stream, QKnxExtendedControlField &ctrl);
-Q_KNX_EXPORT QDataStream &operator<<(QDataStream &stream, const QKnxExtendedControlField &ctrl);
 
 Q_DECLARE_TYPEINFO(QKnxExtendedControlField::ExtendedFrameFormat, Q_PRIMITIVE_TYPE);
 

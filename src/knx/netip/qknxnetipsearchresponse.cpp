@@ -31,40 +31,64 @@
 
 QT_BEGIN_NAMESPACE
 
-QKnxNetIpSearchResponse::QKnxNetIpSearchResponse(const QKnxNetIpHpai &controlEndpoint,
-    const QKnxNetIpDeviceDib &deviceHardware, const QKnxNetIpServiceFamiliesDib &supportedFamilies)
-    : QKnxNetIpFrame(QKnxNetIp::ServiceType::SearchResponse)
-{
-    QKnxNetIpPayload payload;
-    payload.setBytes(controlEndpoint.bytes());
-    payload.appendBytes(deviceHardware.bytes());
-    payload.appendBytes(supportedFamilies.bytes());
-    setPayload(payload);
-}
-
-QKnxNetIpSearchResponse::QKnxNetIpSearchResponse(const QKnxNetIpFrame &other)
-    : QKnxNetIpFrame(other)
+QKnxNetIpSearchResponse::QKnxNetIpSearchResponse(const QKnxNetIpFrame &frame)
+    : m_frame(frame)
 {}
 
 QKnxNetIpHpai QKnxNetIpSearchResponse::controlEndpoint() const
 {
-    return QKnxNetIpHpai::fromBytes(payloadRef(), 0);
+    return QKnxNetIpHpai::fromBytes(m_frame.constData(), 0);
 }
 
 QKnxNetIpDeviceDib QKnxNetIpSearchResponse::deviceHardware() const
 {
-    return QKnxNetIpDeviceDib::fromBytes(payloadRef(), 8);
+    return QKnxNetIpDeviceDib::fromBytes(m_frame.constData(), 8);
 }
 
 QKnxNetIpServiceFamiliesDib QKnxNetIpSearchResponse::supportedFamilies() const
 {
-    return QKnxNetIpServiceFamiliesDib::fromBytes(payloadRef(), 62);
+    return QKnxNetIpServiceFamiliesDib::fromBytes(m_frame.constData(), 62);
 }
 
 bool QKnxNetIpSearchResponse::isValid() const
 {
-    return QKnxNetIpFrame::isValid() && size() >= 70
-        && code() == QKnxNetIp::ServiceType::SearchResponse;
+    return m_frame.isValid() && m_frame.serviceType() == QKnxNetIp::ServiceType::SearchResponse
+        && m_frame.size() >= 70;
+}
+
+QKnxNetIpSearchResponse::Builder QKnxNetIpSearchResponse::builder()
+{
+    return QKnxNetIpSearchResponse::Builder();
+}
+
+
+// -- QKnxNetIpSearchResponse::Builder
+
+QKnxNetIpSearchResponse::Builder &
+    QKnxNetIpSearchResponse::Builder::setControlEndpoint(const QKnxNetIpHpai &hpai)
+{
+    m_hpai = hpai;
+    return *this;
+}
+
+QKnxNetIpSearchResponse::Builder &
+QKnxNetIpSearchResponse::Builder::setDeviceHardware(const QKnxNetIpDeviceDib &ddib)
+{
+    m_ddib = ddib;
+    return *this;
+}
+
+QKnxNetIpSearchResponse::Builder &
+    QKnxNetIpSearchResponse::Builder::setSupportedFamilies(const QKnxNetIpServiceFamiliesDib &sdib)
+{
+    m_sdib = sdib;
+    return *this;
+}
+
+QKnxNetIpFrame QKnxNetIpSearchResponse::Builder::create() const
+{
+    return { QKnxNetIp::ServiceType::SearchResponse, m_hpai.bytes() + m_ddib.bytes() + m_sdib
+        .bytes() };
 }
 
 QT_END_NAMESPACE

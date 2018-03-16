@@ -1,6 +1,6 @@
 /******************************************************************************
 **
-** Copyright (C) 2017 The Qt Company Ltd.
+** Copyright (C) 2018 The Qt Company Ltd.
 ** Contact: https://www.qt.io/licensing/
 **
 ** This file is part of the QtKnx module.
@@ -30,29 +30,75 @@
 #ifndef QKNXNETIPFRAME_H
 #define QKNXNETIPFRAME_H
 
+#include <QtCore/qshareddata.h>
+
+#include <QtKnx/qknxbytearray.h>
 #include <QtKnx/qknxnetip.h>
-#include <QtKnx/qknxnetippackage.h>
+#include <QtKnx/qknxnetipconnectionheader.h>
+#include <QtKnx/qknxnetipframeheader.h>
 
 QT_BEGIN_NAMESPACE
 
-using QKnxNetIpFrame = QKnxNetIpPackage<QKnxNetIp::ServiceType, QKnxNetIpFrameHeader>;
-
-struct QKnxNetIpFrameHelper
+class QKnxNetIpFramePrivate;
+class Q_KNX_EXPORT QKnxNetIpFrame
 {
-    template <typename T, std::size_t S = 0>
-        static QKnxNetIpFrame fromBytes(const T &bytes, quint16 index, QKnxNetIp::ServiceType sType)
-    {
-        auto header = QKnxNetIpFrameHeader::fromBytes(bytes, index);
-        if (!header.isValid() || header.code() != sType)
-            return {};
+public:
+    QKnxNetIpFrame();
+    ~QKnxNetIpFrame();
 
-        return QKnxNetIpFrame(header, QKnxNetIpPayload::fromBytes(bytes, index + header.size(),
-            header.payloadSize()));
-    }
+    QKnxNetIpFrame(QKnxNetIp::ServiceType type, const QKnxByteArray &data = {});
+    QKnxNetIpFrame(QKnxNetIp::ServiceType type,
+        const QKnxNetIpConnectionHeader &connectionHeader, const QKnxByteArray &data = {});
+    QKnxNetIpFrame(const QKnxNetIpFrameHeader &header,
+        const QKnxNetIpConnectionHeader &connectionHeader, const QKnxByteArray &data = {});
+
+    bool isNull()const;
+    bool isValid() const;
+
+    quint16 size() const;
+    quint16 dataSize() const;
+
+    QKnxNetIpFrameHeader header() const;
+    void setHeader(const QKnxNetIpFrameHeader &header);
+
+    quint8 protocolVersion() const;
+
+    QKnxNetIp::ServiceType serviceType() const;
+    void setServiceType(QKnxNetIp::ServiceType type);
+
+    QKnxNetIpConnectionHeader connectionHeader() const;
+    void setConnectionHeader(const QKnxNetIpConnectionHeader &header);
+
+    quint8 channelId() const;
+    quint8 sequenceNumber() const;
+    quint8 serviceTypeSpecificValue() const;
+    QKnxByteArray connectionTypeSpecificHeaderItems() const;
+
+    QKnxByteArray data() const;
+    const QKnxByteArray &constData() const;
+    void setData(const QKnxByteArray &data);
+
+    QKnxByteArray bytes() const;
+    static QKnxNetIpFrame fromBytes(const QKnxByteArray &bytes, quint16 index = 0);
+
+    QKnxNetIpFrame(const QKnxNetIpFrame &other);
+    QKnxNetIpFrame &operator=(const QKnxNetIpFrame &other);
+
+    QKnxNetIpFrame(QKnxNetIpFrame &&other) Q_DECL_NOTHROW;
+    QKnxNetIpFrame &operator=(QKnxNetIpFrame &&other) Q_DECL_NOTHROW;
+
+    void swap(QKnxNetIpFrame &other) Q_DECL_NOTHROW;
+
+    bool operator==(const QKnxNetIpFrame &other) const;
+    bool operator!=(const QKnxNetIpFrame &other) const;
+
+private:
+    explicit QKnxNetIpFrame(QKnxNetIpFramePrivate &dd);
+
+private:
+    QSharedDataPointer<QKnxNetIpFramePrivate> d_ptr;
 };
-
-Q_KNX_EXPORT QDebug operator<<(QDebug debug, const QKnxNetIpFrame &package);
-Q_KNX_EXPORT QDataStream &operator<<(QDataStream &out, const QKnxNetIpFrame &package);
+Q_KNX_EXPORT QDebug operator<<(QDebug debug, const QKnxNetIpFrame &frame);
 
 QT_END_NAMESPACE
 

@@ -53,7 +53,7 @@ QKnxNetIpServerInfo::~QKnxNetIpServerInfo()
 
 QString QKnxNetIpServerInfo::deviceName() const
 {
-    return QString::fromUtf8(d_ptr->hardware.deviceName());
+    return QString::fromUtf8(static_cast<QByteArray> (d_ptr->hardware.deviceName()));
 }
 
 QKnxAddress QKnxNetIpServerInfo::individualAddress() const
@@ -63,12 +63,12 @@ QKnxAddress QKnxNetIpServerInfo::individualAddress() const
 
 quint16 QKnxNetIpServerInfo::controlEndpointPort() const
 {
-    return d_ptr->hpai.port();
+    return QKnxNetIpHpaiView(d_ptr->hpai).port();
 }
 
 QHostAddress QKnxNetIpServerInfo::controlEndpointAddress() const
 {
-    return d_ptr->hpai.address();
+    return QKnxNetIpHpaiView(d_ptr->hpai).hostAddress();
 }
 
 QKnxNetIpServiceFamiliesDib::ServiceFamilyIdVersions QKnxNetIpServerInfo::supportedServices() const

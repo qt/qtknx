@@ -1,6 +1,6 @@
 /******************************************************************************
 **
-** Copyright (C) 2017 The Qt Company Ltd.
+** Copyright (C) 2018 The Qt Company Ltd.
 ** Contact: https://www.qt.io/licensing/
 **
 ** This file is part of the QtKnx module.
@@ -28,17 +28,21 @@
 ******************************************************************************/
 
 #include "qknxnetipconnectionheader.h"
-#include "qknxutils.h"
 
 QT_BEGIN_NAMESPACE
 
-/*
-    5.3.1 Connection Header:
+/*!
+    \class QKnxNetIpConnectionHeader
+
+    \inmodule QtKnx
+
+    \brief The QKnxNetIpConnectionHeader class is a KNXnet/IP frame connection
+    header.
 
     The body of every KNXnet/IP frame sent over an established communication
-    channel shall start with data fields that shall contain additional general
+    channel starts with a data field that contains additional general
     information about the data connection. The amount of this data and what
-    type of information is included there in particular shall be determined by
+    type of information is included there in particular is determined by
     several options during the connection phase of a communication channel.
     The total of these data fields is called connection header and its
     appearance varies greatly depending on the already mentioned connection
@@ -46,78 +50,212 @@ QT_BEGIN_NAMESPACE
     the connection header is fixed.
 */
 
-QKnxNetIpConnectionHeader::QKnxNetIpConnectionHeader(quint8 channelId, quint8 sequenceCount,
+/*!
+    \fn QKnxNetIpConnectionHeader::QKnxNetIpConnectionHeader
+
+    Constructs an empty invalid frame header object.
+
+    \sa isNull(), isValid()
+*/
+
+/*!
+    \fn QKnxNetIpConnectionHeader::~QKnxNetIpConnectionHeader()
+
+    Destroys the frame header object and releases all allocated resources.
+*/
+
+/*!
+    Constructs a valid frame header object. Sets the object's communication
+    channel ID to \a channelId and the sequence number to \a seqNumber. The
+    header size is updated accordingly.
+
+    \sa isValid(), channelId(), sequenceNumber()
+*/
+QKnxNetIpConnectionHeader::QKnxNetIpConnectionHeader(quint8 channelId, quint8 seqNumber)
+    : QKnxNetIpConnectionHeader(channelId, seqNumber, 0)
+{}
+
+/*!
+    Constructs a valid frame header object. Sets the object's communication
+    channel ID to \a channelId, the sequence number to \a seqNumber, and the
+    service specific value to \a serviceTypeSpecificValue. The header size is
+    updated accordingly.
+
+    \sa isValid(), channelId(), sequenceNumber(), serviceTypeSpecificValue()
+*/
+QKnxNetIpConnectionHeader::QKnxNetIpConnectionHeader(quint8 channelId, quint8 seqNumber,
         quint8 serviceTypeSpecificValue)
-    : m_isValid(0x07)
 {
-    setByte(0, 4);
-    setByte(1, channelId);
-    setByte(2, sequenceCount);
-    setByte(3, serviceTypeSpecificValue);
+    m_bytes[0] = 4;
+    m_bytes[1] = channelId;
+    m_bytes[2] = seqNumber;
+    m_bytes[3] = serviceTypeSpecificValue;
 }
 
+/*!
+    Returns \c true if this is a default constructed header, otherwise returns
+    \c false. A header is considered null if its header size is not initialized.
+*/
+bool QKnxNetIpConnectionHeader::isNull() const
+{
+    return m_bytes[0] == 0x00;
+}
+
+/*!
+    Returns \c true if the frame header contains initialized values and is
+    in itself valid, otherwise returns \c false. A valid KNXnet/IP frame
+    connection header consist of a header size, communication channel ID,
+    sequence Number and a service specific type. All values can be \c null
+    except the header size.
+
+    \sa isNull()
+*/
 bool QKnxNetIpConnectionHeader::isValid() const
 {
-    return (size() >= 4) && (m_isValid >= 0x07) && (byte(0) == size());
+    if (isNull())
+        return false;
+    return (m_bytes[0] >= 4) && (m_bytes[0] == m_bytes.size());
 }
 
+/*!
+    Returns the total size of the header including all items. The minimum size
+    for a valid header is 4 bytes.
+*/
+quint8 QKnxNetIpConnectionHeader::size() const
+{
+    return m_bytes.at(0);
+}
+
+/*!
+    Returns the communication channel ID of the KNXnet/IP frame.
+*/
 quint8 QKnxNetIpConnectionHeader::channelId() const
 {
-    return byte(1);
+    return m_bytes[1];
 }
 
-void QKnxNetIpConnectionHeader::setChannelId(quint8 id)
+/*!
+    Sets the communication channel ID of the KNXnet/IP frame to \a channelId.
+*/
+void QKnxNetIpConnectionHeader::setChannelId(quint8 channelId)
 {
-    setByte(1, id);
-    m_isValid |= 1 << 0;
-    setByte(0, byte(0) == 0 ? 4 : byte(0));
+    m_bytes[1] = channelId;
+    m_bytes[0] = (m_bytes.at(0) == 0x00 ? 4 : m_bytes[0]);
 }
 
-quint8 QKnxNetIpConnectionHeader::sequenceCount() const
+/*!
+    Returns the sequence number of the KNXnet/IP frame.
+*/
+quint8 QKnxNetIpConnectionHeader::sequenceNumber() const
 {
-    return byte(2);
+    return m_bytes[2];
 }
 
-void QKnxNetIpConnectionHeader::setSequenceCount(quint8 count)
+/*!
+    Sets the sequence number of the KNXnet/IP frame to \a seqNumber.
+*/
+void QKnxNetIpConnectionHeader::setSequenceNumber(quint8 seqNumber)
 {
-    setByte(2, count);
-    m_isValid |= 1 << 1;
-    setByte(0, byte(0) == 0 ? 4 : byte(0));
+    m_bytes[2] = seqNumber;
+    m_bytes[0] = (m_bytes.at(0) == 0x00 ? 4 : m_bytes[0]);
 }
 
+/*!
+    Returns the service type specific value of the KNXnet/IP frame.
+*/
 quint8 QKnxNetIpConnectionHeader::serviceTypeSpecificValue() const
 {
-    return byte(3);
+    return m_bytes[3];
 }
 
+/*!
+    Sets the service type specific value of the KNXnet/IP frame to \a value.
+*/
 void QKnxNetIpConnectionHeader::setServiceTypeSpecificValue(quint8 value)
 {
-    setByte(3, value);
-    m_isValid |= 1 << 2;
-    setByte(0, byte(0) == 0 ? 4 : byte(0));
+    m_bytes[3] = value;
+    m_bytes[0] = (m_bytes.at(0) == 0x00 ? 4 : m_bytes[0]);
 }
 
-QString QKnxNetIpConnectionHeader::toString() const
+/*!
+    Returns a byte array with connection type specific header items of the
+    KNXnet/IP frame.
+*/
+QKnxByteArray QKnxNetIpConnectionHeader::connectionTypeSpecificHeaderItems() const
 {
-    const auto items = connectionTypeSpecificHeaderItems();
-
-    QString tmp;
-    for (quint8 byte : items)
-        tmp += QStringLiteral("0x%1, ").arg(byte, 2, 16, QLatin1Char('0'));
-    tmp.chop(2);
-
-    return QStringLiteral("Size { 0x%1 }, Communication channel ID { 0x%2 }"
-        ", Sequence counter { 0x%3 }, Service type specific value { 0x%4 }"
-        ", Connection type specific header items { %5 }")
-        .arg(size(), 2, 16, QLatin1Char('0'))
-        .arg(channelId(), 2, 16, QLatin1Char('0'))
-        .arg(sequenceCount(), 2, 16, QLatin1Char('0'))
-        .arg(serviceTypeSpecificValue(), 2, 16, QLatin1Char('0')).arg(tmp);
+    return m_bytes.mid(4);
 }
 
-QKnxNetIpQKnxNetIpConnectionHeaderRef QKnxNetIpConnectionHeader::ref() const
+/*!
+    Sets the connection type specific header items of the KNXnet/IP frame to
+    \a items.
+*/
+void QKnxNetIpConnectionHeader::setConnectionTypeSpecificHeaderItems(const QKnxByteArray &items)
 {
-    return QKnxByteStore::ref(0);
+    m_bytes[0] = items.size() + 4;
+    m_bytes.resize(items.size() + 4);
+    m_bytes.replace(4, items.size(), items);
+}
+
+/*!
+    Returns the byte at position \a index in the header.
+*/
+quint8 QKnxNetIpConnectionHeader::byte(quint8 index) const
+{
+    Q_ASSERT_X(index < size(), "QKnxNetIpConnectionHeader::byte", "index out of range");
+    return m_bytes[index];
+}
+
+/*!
+    Returns an array of bytes that represent the KNXnet/IP frame connection
+    header.
+*/
+QKnxByteArray QKnxNetIpConnectionHeader::bytes() const
+{
+    if (!isValid())
+        return {};
+    return m_bytes;
+}
+
+/*!
+    Constructs the KNXnet/IP frame connection header from the byte array \a bytes
+    starting at the position \a index inside the array.
+
+    \sa isNull(), isValid()
+*/
+QKnxNetIpConnectionHeader QKnxNetIpConnectionHeader::fromBytes(const QKnxByteArray &bytes, quint16 index)
+{
+    const qint32 availableSize = bytes.size() - index;
+    if (availableSize < 1)
+        return {}; // total size missing
+
+    const auto totalSize = bytes.at(index);
+    // header needs at least 4 bytes and total size needs to match
+    if (availableSize < 4 && availableSize < totalSize)
+        return {}; // header might be corrupted
+
+    QKnxNetIpConnectionHeader hdr{ bytes.at(index + 1), bytes.at(index + 2), bytes.at(index + 3) };
+    if (totalSize > 4)
+        hdr.setConnectionTypeSpecificHeaderItems(bytes.mid(index + 4, totalSize - 4));
+    return hdr;
+}
+
+/*!
+    Returns \c true if this object and the given \a other are equal; otherwise
+    returns \c false.
+*/
+bool QKnxNetIpConnectionHeader::operator==(const QKnxNetIpConnectionHeader &other) const
+{
+    return m_bytes == other.m_bytes;
+}
+
+/*!
+    Returns \c true if this object and the given \a other are not equal;
+    otherwise returns \c false.
+*/
+bool QKnxNetIpConnectionHeader::operator!=(const QKnxNetIpConnectionHeader &other) const
+{
+    return !operator==(other);
 }
 
 QT_END_NAMESPACE

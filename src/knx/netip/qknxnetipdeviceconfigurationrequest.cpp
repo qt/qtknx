@@ -31,39 +31,64 @@
 
 QT_BEGIN_NAMESPACE
 
-QKnxNetIpDeviceConfigurationRequest::QKnxNetIpDeviceConfigurationRequest(quint8 id,
-        quint8 sequenceCount, const QKnxLocalDeviceManagementFrame &cemi)
-    : QKnxNetIpConnectionHeaderFrame(QKnxNetIp::ServiceType::DeviceConfigurationRequest)
-{
-    setConnectionHeader({ id, sequenceCount });
-    setPayload(QKnxNetIpPayload::fromBytes(cemi.bytes(), 0, cemi.size()));
-}
-
-QKnxNetIpDeviceConfigurationRequest::QKnxNetIpDeviceConfigurationRequest(
-        const QKnxNetIpConnectionHeaderFrame &other)
-    : QKnxNetIpConnectionHeaderFrame(other)
+QKnxNetIpDeviceConfigurationRequest::QKnxNetIpDeviceConfigurationRequest(const QKnxNetIpFrame &frame)
+    : m_frame(frame)
 {}
+
+bool QKnxNetIpDeviceConfigurationRequest::isValid() const
+{
+    return m_frame.isValid() && m_frame.size() >= 12 && cemi().isValid()
+        && m_frame.serviceType() == QKnxNetIp::ServiceType::DeviceConfigurationRequest;
+}
 
 quint8 QKnxNetIpDeviceConfigurationRequest::channelId() const
 {
-    return connectionHeader().channelId();
+    return m_frame.channelId();
 }
 
-quint8 QKnxNetIpDeviceConfigurationRequest::sequenceCount() const
+quint8 QKnxNetIpDeviceConfigurationRequest::sequenceNumber() const
 {
-    return connectionHeader().sequenceCount();
+    return m_frame.sequenceNumber();
 }
 
 QKnxLocalDeviceManagementFrame QKnxNetIpDeviceConfigurationRequest::cemi() const
 {
-    auto ref = payloadRef(connectionHeaderSize());
-    return QKnxLocalDeviceManagementFrame::fromBytes(ref.bytes<QByteArray>(), 0, ref.size());
+    return QKnxLocalDeviceManagementFrame::fromBytes(m_frame.data(), 0, m_frame.dataSize());
 }
 
-bool QKnxNetIpDeviceConfigurationRequest::isValid() const
+QKnxNetIpDeviceConfigurationRequest::Builder QKnxNetIpDeviceConfigurationRequest::builder()
 {
-    return QKnxNetIpConnectionHeaderFrame::isValid() && size() >= 12 && cemi().isValid()
-        && code() == QKnxNetIp::ServiceType::DeviceConfigurationRequest;
+    return QKnxNetIpDeviceConfigurationRequest::Builder();
+}
+
+
+// -- QKnxNetIpDeviceConfigurationRequest::Builder
+
+QKnxNetIpDeviceConfigurationRequest::Builder &
+    QKnxNetIpDeviceConfigurationRequest::Builder::setChannelId(quint8 channelId)
+{
+    m_channelId = channelId;
+    return *this;
+}
+
+QKnxNetIpDeviceConfigurationRequest::Builder &
+    QKnxNetIpDeviceConfigurationRequest::Builder::setSequenceNumber(quint8 sequenceNumber)
+{
+    m_sequenceNumber = sequenceNumber;
+    return *this;
+}
+
+QKnxNetIpDeviceConfigurationRequest::Builder &
+    QKnxNetIpDeviceConfigurationRequest::Builder::setCemi(const QKnxLocalDeviceManagementFrame &cemi)
+{
+    m_cemi = cemi;
+    return *this;
+}
+
+QKnxNetIpFrame QKnxNetIpDeviceConfigurationRequest::Builder::create() const
+{
+    return { QKnxNetIp::ServiceType::DeviceConfigurationRequest, { m_channelId, m_sequenceNumber },
+        m_cemi.bytes() };
 }
 
 QT_END_NAMESPACE

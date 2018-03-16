@@ -45,9 +45,9 @@ private slots:
     void testConstructors()
     {
         QVector<QKnxAdditionalInfo> addInfos = {
-            { QKnxAdditionalInfo::Type::BiBatInformation, QByteArray::fromHex("1020") },
-            { QKnxAdditionalInfo::Type::RfFastAckInformation, QByteArray::fromHex("30405060") },
-            { QKnxAdditionalInfo::Type::ManufactorSpecificData, QByteArray::fromHex("708090") }
+            { QKnxAdditionalInfo::Type::BiBatInformation, QKnxByteArray::fromHex("1020") },
+            { QKnxAdditionalInfo::Type::RfFastAckInformation, QKnxByteArray::fromHex("30405060") },
+            { QKnxAdditionalInfo::Type::ManufacturerSpecificData, QKnxByteArray::fromHex("708090") }
         };
 
         QKnxLinkLayerFrame frame(QKnx::MediumType::NetIP, QKnxLinkLayerFrame::MessageCode::DataRequest);
@@ -59,7 +59,7 @@ private slots:
 
         QCOMPARE(frame.controlField().bytes(), QKnxControlField(1).bytes());
         QCOMPARE(frame.extendedControlField().bytes(), QKnxExtendedControlField(2).bytes());
-        QCOMPARE(frame.additionalInfos().first().bytes(), QByteArray::fromHex("07021020"));
+        QCOMPARE(frame.additionalInfos().first().bytes(), QKnxByteArray::fromHex("07021020"));
         QCOMPARE(frame.sourceAddress().bytes(), QKnxAddress::Individual::Unregistered.bytes());
         QCOMPARE(frame.destinationAddress().bytes(), QKnxAddress::Group::Broadcast.bytes());
 
@@ -75,8 +75,8 @@ private slots:
         frame.removeAdditionalInfo(QKnxAdditionalInfo::Type::RfFastAckInformation);
         infos = frame.additionalInfos();
         QCOMPARE(infos.count(), 2);
-        QCOMPARE(frame.additionalInfos().first().bytes(), QByteArray::fromHex("07021020"));
-        QCOMPARE(frame.additionalInfos().last().bytes(), QByteArray::fromHex("fe03708090"));
+        QCOMPARE(frame.additionalInfos().first().bytes(), QKnxByteArray::fromHex("07021020"));
+        QCOMPARE(frame.additionalInfos().last().bytes(), QKnxByteArray::fromHex("fe03708090"));
 
         QCOMPARE(frame.destinationAddress().bytes(), QKnxAddress::Group::Broadcast.bytes());
     }
@@ -84,9 +84,9 @@ private slots:
     void testTpduFetcher()
     {
         QVector<QKnxAdditionalInfo> addInfos = {
-            { QKnxAdditionalInfo::Type::BiBatInformation, QByteArray::fromHex("1020") },
-            { QKnxAdditionalInfo::Type::RfFastAckInformation, QByteArray::fromHex("30405060") },
-            { QKnxAdditionalInfo::Type::ManufactorSpecificData, QByteArray::fromHex("708090") }
+            { QKnxAdditionalInfo::Type::BiBatInformation, QKnxByteArray::fromHex("1020") },
+            { QKnxAdditionalInfo::Type::RfFastAckInformation, QKnxByteArray::fromHex("30405060") },
+            { QKnxAdditionalInfo::Type::ManufacturerSpecificData, QKnxByteArray::fromHex("708090") }
         };
 
         QKnxLinkLayerFrame frame(QKnx::MediumType::NetIP, QKnxLinkLayerFrame::MessageCode::DataRequest);
@@ -96,21 +96,18 @@ private slots:
         frame.setSourceAddress(QKnxAddress::Individual::Unregistered);
         frame.setDestinationAddress(QKnxAddress::Group::Broadcast);
 
-        QKnxTpdu tpdu = QKnxTpduFactory::Multicast::createGroupValueWriteTpdu(
-            QVector<quint8>(1, 0x01));
-        QCOMPARE(tpdu.bytes(), QVector<quint8>({ 0x00, 0x81 }));
+        QKnxTpdu tpdu = QKnxTpduFactory::Multicast::createGroupValueWriteTpdu({ 0x01 });
+        QCOMPARE(tpdu.bytes(), QKnxByteArray({ 0x00, 0x81 }));
         frame.setTpdu(tpdu);
-        QCOMPARE(frame.tpdu().bytes(), QVector<quint8>({ 0x00, 0x81 }));
-        QKnxTpdu tpdu2 = QKnxTpduFactory::Multicast::createGroupValueWriteTpdu(
-            QVector<quint8>({ 0x01, 0x01 }));
-        QCOMPARE(tpdu2.bytes(), QVector<quint8>({ 0x00, 0x80, 0x01, 0x01 }));
+        QCOMPARE(frame.tpdu().bytes(), QKnxByteArray({ 0x00, 0x81 }));
+        QKnxTpdu tpdu2 = QKnxTpduFactory::Multicast::createGroupValueWriteTpdu({ 0x01, 0x01 });
+        QCOMPARE(tpdu2.bytes(), QKnxByteArray({ 0x00, 0x80, 0x01, 0x01 }));
         frame.setTpdu(tpdu2);
-        QCOMPARE(frame.tpdu().bytes(), QVector<quint8>({ 0x00, 0x80, 0x01, 0x01 }));
-        QKnxTpdu tpdu4 = QKnxTpduFactory::Multicast::createGroupValueWriteTpdu(
-            QVector<quint8>(1, 0xff));
-        QCOMPARE(tpdu4.bytes(), QVector<quint8>({ 0x00, 0x80, 0xff }));
+        QCOMPARE(frame.tpdu().bytes(), QKnxByteArray({ 0x00, 0x80, 0x01, 0x01 }));
+        QKnxTpdu tpdu4 = QKnxTpduFactory::Multicast::createGroupValueWriteTpdu({ 0xff });
+        QCOMPARE(tpdu4.bytes(), QKnxByteArray({ 0x00, 0x80, 0xff }));
         frame.setTpdu(tpdu4);
-        QCOMPARE(frame.tpdu().bytes(), QVector<quint8>({ 0x00, 0x80, 0xff }));
+        QCOMPARE(frame.tpdu().bytes(), QKnxByteArray({ 0x00, 0x80, 0xff }));
     }
 
     void testDebugStream()
@@ -126,11 +123,7 @@ private slots:
         } _(myMessageHandler);
     }
 
-    void testDataStream()
-    {
-    }
-
-    //TO DO: test the isValid function
+    //TODO: test the isValid function
 };
 
 QTEST_MAIN(tst_QKnxLinkLayerFrame)

@@ -32,12 +32,121 @@
 QT_BEGIN_NAMESPACE
 
 /*!
-    \class QKnxTime
+    \class QKnxTimeBase
 
+    \inmodule QtKnx
+    \brief The QKnxTimeBase class is a base class for datapoint types that
+    contain time information.
+
+    \sa QKnxTime, QKnxTime24
+*/
+
+/*!
+    \enum QKnxTimeBase::TimeFlag
+
+    This enum holds the time flag.
+
+    \value NullTime
+    \value MsecPerDay
+    \value SecondsPerHour
+    \value MsecPerHour
+    \value SecondsPerMinute
+    \value MsecPerMinute
+*/
+
+/*!
+    \enum QAbstractKnxTime::DayOfWeek
+
+    This enum holds the day of the week.
+
+    \value Ignore
+    \value Monday
+    \value Tuesday
+    \value Wednesday
+    \value Thursday
+    \value Friday
+    \value Saturday
+    \value Sunday
+*/
+
+/*!
+    \fn bool QKnxTimeBase::isNull() const
+
+    Returns \c true if the time is null (that is, the time object was
+    constructed using the default constructor); otherwise returns \c false.
+    A null time is also an invalid time.
+
+    \sa isValid()
+*/
+
+/*!
+    \fn bool QKnxTimeBase::isValid(qint8 h, qint8 m, qint8 s)
+
+    Returns \c true if the values specified for hours \a h, minutes \a m, and
+    seconds \a s are valid; otherwise returns \c false.
+*/
+
+/*!
+    \fn bool QKnxTimeBase::isValid() const
+
+    Returns \c true if the time is valid; otherwise returns \c false.
+
+    \sa isNull()
+*/
+
+/*!
+    \fn qint8 QKnxTimeBase::hour() const
+
+    Returns the hour specified as a part of the time information.
+
+    \sa minute(), second()
+*/
+
+/*!
+    \fn qint8 QKnxTimeBase::minute() const
+
+    Returns the minutes specified as a part of the time information.
+
+    \sa hour(), second()
+*/
+
+/*!
+    \fn qint8 QKnxTimeBase::second() const
+
+    Returns the seconds specified as a part of the time information.
+
+    \sa hour(), minute()
+*/
+
+/*!
+    \fn void QKnxTimeBase::setHMS(quint8 h, quint8 m, quint8 s)
+
+    Sets the time to the hour \a h, minutes \a m, and seconds \a s if the given
+    arguments are valid.
+
+    \sa isValid()
+*/
+
+/*!
+    \fn DayOfWeek QKnxTimeBase::dayOfWeek() const
+
+    Returns the day of the week.
+*/
+
+/*!
+     \fn void QKnxTimeBase::setDayOfWeek(DayOfWeek day)
+
+    Sets the day of the week to \a day.
+*/
+
+/*!
+    \class QKnxTime
+    \inherits QKnxTimeBase
     \inmodule QtKnx
     \brief The QKnxTime class holds time information.
 
-    Hour values must be less than 24.
+    Hour values must be less than \c 24. Minute and second values must be less
+    than \c 59.
 */
 
 /*!
@@ -46,27 +155,47 @@ QT_BEGIN_NAMESPACE
     \inmodule QtKnx
     \brief The QKnxTime24 class holds time information.
 
-    Hour values can be up to 24.
+    Hour values can be up to \c 24. Minute and second values can be up to \c 59.
 */
 
 QAbstractKnxTime::~QAbstractKnxTime()
 {}
 
+/*!
+    Returns \c true if the time is valid; otherwise returns \c false.
+    For example, the time 23:30:55.746 is valid, but 24:12:30 is invalid.
+
+    \sa isNull()
+*/
 bool QKnxTime::isValid() const
 {
     return QKnxTimeBase<QKnxTime>::ds() > NullTime
         && QKnxTimeBase<QKnxTime>::ds() < MsecPerDay;
 }
+
+/*!
+   \reimp
+*/
 bool QKnxTime::isValid(quint8 h, quint8 m, quint8 s)
 {
     return quint32(h) < 24 && quint32(m) < 60 && quint32(s) < 60;
 }
 
+/*!
+    Returns \c true if the time is valid; otherwise returns \c false. For
+    example, the time 24:12:30 is valid, but 24:60:30 is invalid.
+
+    \sa isNull()
+*/
 bool QKnxTime24::isValid() const
 {
     return QKnxTimeBase<QKnxTime24>::ds() > NullTime
         && QKnxTimeBase<QKnxTime24>::ds() <= MsecPerDay;
 }
+
+/*!
+    \reimp
+*/
 bool QKnxTime24::isValid(quint8 h, quint8 m, quint8 s)
 {
     return quint32(h) <= 24 && quint32(m) < 60 && quint32(s) < 60;

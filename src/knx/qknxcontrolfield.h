@@ -30,13 +30,11 @@
 #ifndef QKNXCONTROLFIELD_H
 #define QKNXCONTROLFIELD_H
 
-#include <QtCore/qbytearray.h>
-#include <QtCore/qdatastream.h>
 #include <QtCore/qdebug.h>
-#include <QtCore/qstring.h>
-#include <QtCore/qvector.h>
+#include <QtKnx/qknxbytearray.h>
 #include <QtKnx/qknxglobal.h>
-#include <QtKnx/qknxtraits.h>
+
+#include <bitset>
 
 QT_BEGIN_NAMESPACE
 
@@ -47,8 +45,7 @@ class Q_KNX_EXPORT QKnxControlField final
 public:
     QKnxControlField() = default;
     explicit QKnxControlField(quint8 data);
-    explicit QKnxControlField(const QByteArray &data);
-    explicit QKnxControlField(const QVector<quint8> &data);
+    explicit QKnxControlField(const QKnxByteArray &data);
 
     enum class FrameType : quint8
     {
@@ -106,25 +103,15 @@ public:
     QKnxControlField::Confirm confirm() const { return static_cast<Confirm> (quint8(m_ctrl1[0])); }
     void setConfirm(QKnxControlField::Confirm confirm) { m_ctrl1[0] = static_cast<int> (confirm); }
 
-    quint8 bytes() const { return quint8(m_ctrl1.to_ulong()); }
-    template <typename T = QByteArray> auto bytes() const -> decltype(T())
-    {
-        static_assert(is_type<T, QByteArray, QVector<quint8>, std::deque<quint8>,
-            std::vector<quint8>>::value, "Type not supported.");
+    quint8 byte() const { return quint8(m_ctrl1.to_ulong()); }
+    QKnxByteArray bytes() const { return { byte() }; }
 
-        T t(1, 0); t[0] = quint8(m_ctrl1.to_ulong());
-        return t;
-    }
-
-    QString toString() const;
     quint8 size() const { return 1; }
 
 private:
     std::bitset<8> m_ctrl1 = 0;
 };
 Q_KNX_EXPORT QDebug operator<<(QDebug debug, const QKnxControlField &ctrl);
-Q_KNX_EXPORT QDataStream &operator>>(QDataStream &stream, QKnxControlField &ctrl);
-Q_KNX_EXPORT QDataStream &operator<<(QDataStream &stream, const QKnxControlField &ctrl);
 
 Q_DECLARE_TYPEINFO(QKnxControlField::FrameType, Q_PRIMITIVE_TYPE);
 Q_DECLARE_TYPEINFO(QKnxControlField::Repeat, Q_PRIMITIVE_TYPE);

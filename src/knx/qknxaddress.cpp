@@ -166,31 +166,13 @@ QKnxAddress::QKnxAddress(QKnxAddress::Type type, const QString &address)
 }
 
 /*!
-    Creates a KNX address from the first two bytes of the \a address byte
-    array. The type of the address is specified by \a type. Hexadecimal, octal,
-    and decimal notation are supported.
-
-    \note The byte array must contain at least two elements.
-*/
-QKnxAddress::QKnxAddress(QKnxAddress::Type type, const QByteArray &address)
-{
-    if (address.size() < 2)
-        return;
-    if (type != QKnxAddress::Type::Group && type != QKnxAddress::Type::Individual)
-        return;
-
-    m_type = type;
-    m_address = QKnxUtils::QUint16::fromBytes(address);
-}
-
-/*!
-    Creates a KNX address from the first two bytes of the \a address vector.
+    Creates a KNX address from the first two bytes of the \a address byte array.
     The type of the address is specified by \a type. Hexadecimal, octal, and
     decimal notation are supported.
 
-    \note The vector must contain at least two elements.
+    \note The byte array must contain at least two elements.
 */
-QKnxAddress::QKnxAddress(QKnxAddress::Type type, const QVector<quint8> &address)
+QKnxAddress::QKnxAddress(QKnxAddress::Type type, const QKnxByteArray &address)
 {
     if (address.size() < 2)
         return;
@@ -334,13 +316,11 @@ bool QKnxAddress::operator!=(const QKnxAddress &other) const
 }
 
 /*!
-    \fn auto QKnxAddress::bytes() const
+    \fn QKnxByteArray QKnxAddress::bytes() const
 
     Returns a KNX address as a range of bytes if the address is valid;
     otherwise the return value is empty. Only the first two bytes of the return
     value are part of the address.
-
-    \note Only QByteArray and QVector<quint8> are supported as return types.
 */
 
 /*!
@@ -352,27 +332,13 @@ QDebug operator<<(QDebug debug, const QKnxAddress &address)
 {
     QDebugStateSaver _(debug);
     if (address.isValid()) {
-        const auto rawData = address.bytes<QVector<quint8>>();
+        const auto rawData = address.bytes();
         debug.nospace().noquote() << "0x" << hex << qSetFieldWidth(2) << qSetPadChar(QLatin1Char('0'))
             << rawData[0] << hex << rawData[1];
     } else {
          debug.nospace().noquote() << "0x1nv4l1d";
     }
     return debug;
-}
-
-/*!
-    \relates QKnxAddress
-
-    Writes the KNX address \a address to the stream \a out and returns a
-    reference to the stream.
-*/
-QDataStream &operator<<(QDataStream &out, const QKnxAddress &address)
-{
-    if (!address.isValid())
-        return out;
-    const auto rawData = address.bytes();
-    return out << quint8(rawData[0]) << quint8(rawData[1]);
 }
 
 

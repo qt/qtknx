@@ -30,45 +30,43 @@
 #ifndef QKNXNETIPCRI_H
 #define QKNXNETIPCRI_H
 
-#include <QtCore/qbytearray.h>
-#include <QtCore/qdatastream.h>
-#include <QtCore/qdebug.h>
-#include <QtCore/qstring.h>
-#include <QtCore/qvector.h>
 #include <QtKnx/qknxglobal.h>
 #include <QtKnx/qknxnetipstruct.h>
-#include <QtKnx/qknxtraits.h>
-#include <QtKnx/qknxnetipservicefamiliesdib.h>
 
 QT_BEGIN_NAMESPACE
 
-class Q_KNX_EXPORT QKnxNetIpCri : public QKnxNetIpConnectionTypeStruct
+class Q_KNX_EXPORT QKnxNetIpCriView final
 {
 public:
-    QKnxNetIpCri() = default;
-    ~QKnxNetIpCri() override = default;
+    QKnxNetIpCriView() = delete;
+    ~QKnxNetIpCriView() = default;
 
-    explicit QKnxNetIpCri(QKnxNetIp::TunnelingLayer layer);
-    explicit QKnxNetIpCri(QKnxNetIp::ConnectionType connectionType);
+    QKnxNetIpCriView(const QKnxNetIpCri &&) = delete;
+    explicit QKnxNetIpCriView(const QKnxNetIpCri &cri);
 
-    template <typename T> static QKnxNetIpCri fromBytes(const T &bytes, quint16 index)
-    {
-        auto code = QKnxNetIpStructHeader<QKnxNetIp::ConnectionType>::fromBytes(bytes, index).code();
-        if (!QKnxNetIp::isStructType(code))
-            return {};
-        return QKnxNetIpStructHelper::fromBytes(bytes, index, code);
-    }
+    bool isValid() const;
 
     QKnxNetIp::ConnectionType connectionType() const;
-    void setConnectionType(QKnxNetIp::ConnectionType connectionType);
-
-    bool isValid() const override;
-
     QKnxNetIp::TunnelingLayer tunnelingLayer() const;
-    bool setTunnelingLayer(QKnxNetIp::TunnelingLayer layer);
+    QKnxByteArray additionalData() const;
+
+    class Q_KNX_EXPORT Builder final
+    {
+    public:
+        Builder &setConnectionType(QKnxNetIp::ConnectionType type);
+        Builder &setTunnelingLayer(QKnxNetIp::TunnelingLayer layer);
+        Builder &setAdditionalData(const QKnxByteArray &additionalData);
+
+        QKnxNetIpCri create() const;
+
+    private:
+        QKnxNetIp::ConnectionType m_cType = QKnxNetIp::ConnectionType::Tunnel;
+        QKnxByteArray m_additionalData;
+    };
+    static QKnxNetIpCriView::Builder builder();
 
 private:
-    QKnxNetIpCri(const QKnxNetIpConnectionTypeStruct &other);
+    const QKnxNetIpCri &m_cri;
 };
 
 QT_END_NAMESPACE

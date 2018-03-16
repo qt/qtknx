@@ -32,8 +32,8 @@
 
 QT_BEGIN_NAMESPACE
 
-QKnxNetIpCurrentConfigDib::QKnxNetIpCurrentConfigDib(const QKnxNetIpDescriptionTypeStruct &other)
-    : QKnxNetIpDescriptionTypeStruct(other)
+QKnxNetIpCurrentConfigDib::QKnxNetIpCurrentConfigDib(const QKnxNetIpDib &other)
+    : QKnxNetIpDib(other)
 {}
 
 QKnxNetIpCurrentConfigDib::QKnxNetIpCurrentConfigDib(const QNetworkAddressEntry &addressEntry,
@@ -44,20 +44,20 @@ QKnxNetIpCurrentConfigDib::QKnxNetIpCurrentConfigDib(const QNetworkAddressEntry 
 QKnxNetIpCurrentConfigDib::QKnxNetIpCurrentConfigDib(const QHostAddress &ip,
     const QHostAddress &subnetMask, const QHostAddress &gateway, const QHostAddress &dhcp,
         AssignmentMethod method)
-    : QKnxNetIpDescriptionTypeStruct(QKnxNetIp::DescriptionType::CurrentIpConfiguration)
+    : QKnxNetIpDib(QKnxNetIp::DescriptionType::CurrentIpConfiguration)
 {
     size_t bitcount = std::bitset<8>(quint8(method)).count();
     if (method < AssignmentMethod::Manual || method > AssignmentMethod::AutoIp || bitcount != 1)
         return; // Only one assignment method shall be enabled from within the possible range.
 
-    QKnxNetIpPayload payload;
-    payload.setBytes(QKnxUtils::HostAddress::bytes(ip));
-    payload.appendBytes(QKnxUtils::HostAddress::bytes(subnetMask));
-    payload.appendBytes(QKnxUtils::HostAddress::bytes(gateway));
-    payload.appendBytes(QKnxUtils::HostAddress::bytes(dhcp));
-    payload.setByte(16, quint8(method));
-    payload.setByte(17, quint8(0));
-    setPayload(payload);
+    QKnxByteArray data;
+    data.append(QKnxUtils::HostAddress::bytes(ip));
+    data.append(QKnxUtils::HostAddress::bytes(subnetMask));
+    data.append(QKnxUtils::HostAddress::bytes(gateway));
+    data.append(QKnxUtils::HostAddress::bytes(dhcp));
+    data.append(quint8(method));
+    data.append(quint8(0));
+    setData(data);
 }
 
 QKnxNetIp::DescriptionType QKnxNetIpCurrentConfigDib::descriptionType() const
@@ -67,32 +67,32 @@ QKnxNetIp::DescriptionType QKnxNetIpCurrentConfigDib::descriptionType() const
 
 QHostAddress QKnxNetIpCurrentConfigDib::ipAddress() const
 {
-    return QKnxUtils::HostAddress::fromBytes(payloadRef());
+    return QKnxUtils::HostAddress::fromBytes(constData());
 }
 
 QHostAddress QKnxNetIpCurrentConfigDib::subnetMask() const
 {
-    return QKnxUtils::HostAddress::fromBytes(payloadRef(), 4);
+    return QKnxUtils::HostAddress::fromBytes(constData(), 4);
 }
 
 QHostAddress QKnxNetIpCurrentConfigDib::defaultGateway() const
 {
-    return QKnxUtils::HostAddress::fromBytes(payloadRef(), 8);
+    return QKnxUtils::HostAddress::fromBytes(constData(), 8);
 }
 
 QHostAddress QKnxNetIpCurrentConfigDib::dhcpOrBootP() const
 {
-    return QKnxUtils::HostAddress::fromBytes(payloadRef(), 12);
+    return QKnxUtils::HostAddress::fromBytes(constData(), 12);
 }
 
 QKnxNetIpCurrentConfigDib::AssignmentMethod QKnxNetIpCurrentConfigDib::assignmentMethod() const
 {
-    return QKnxNetIpCurrentConfigDib::AssignmentMethod(payloadRef().byte(16));
+    return QKnxNetIpCurrentConfigDib::AssignmentMethod(constData().value(16));
 }
 
 bool QKnxNetIpCurrentConfigDib::isValid() const
 {
-    return QKnxNetIpDescriptionTypeStruct::isValid() && size() == 20
+    return QKnxNetIpDib::isValid() && size() == 20
         && descriptionType() == QKnxNetIp::DescriptionType::CurrentIpConfiguration;
 }
 

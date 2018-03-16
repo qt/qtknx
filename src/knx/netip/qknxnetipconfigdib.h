@@ -30,20 +30,14 @@
 #ifndef QKNXNETIPCONFIGDIB_H
 #define QKNXNETIPCONFIGDIB_H
 
-#include <QtCore/qbytearray.h>
-#include <QtCore/qdatastream.h>
-#include <QtCore/qdebug.h>
-#include <QtCore/qstring.h>
-#include <QtCore/qvector.h>
 #include <QtKnx/qknxglobal.h>
 #include <QtKnx/qknxnetipstruct.h>
-#include <QtKnx/qknxtraits.h>
 #include <QtNetwork/qhostaddress.h>
 #include <QtNetwork/qnetworkinterface.h>
 
 QT_BEGIN_NAMESPACE
 
-class Q_KNX_EXPORT QKnxNetIpConfigDib final : public QKnxNetIpDescriptionTypeStruct
+class Q_KNX_EXPORT QKnxNetIpConfigDib final : public QKnxNetIpDib
 {
 public:
     // 03_08_03 Management v01.06.02 AS, 2.5.7 PID_IP_CAPABILITIES (PID = 56)
@@ -79,9 +73,9 @@ public:
                        Capabilities capabilitys,
                        AssignmentMethods methods);
 
-    template <typename T> static QKnxNetIpConfigDib fromBytes(const T &bytes, quint16 index)
+    static QKnxNetIpConfigDib fromBytes(const QKnxByteArray &bytes, quint16 index)
     {
-        return QKnxNetIpStructHelper::fromBytes(bytes, index,
+        return QKnxNetIpStruct::fromBytes(bytes, index,
             QKnxNetIp::DescriptionType::IpConfiguration);
     }
 
@@ -95,7 +89,7 @@ public:
     bool isValid() const override;
 
 private:
-    QKnxNetIpConfigDib(const QKnxNetIpDescriptionTypeStruct &other);
+    QKnxNetIpConfigDib(const QKnxNetIpDib &other);
 };
 Q_DECLARE_OPERATORS_FOR_FLAGS(QKnxNetIpConfigDib::Capabilities)
 Q_DECLARE_OPERATORS_FOR_FLAGS(QKnxNetIpConfigDib::AssignmentMethods)

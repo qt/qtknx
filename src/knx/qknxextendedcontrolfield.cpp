@@ -60,19 +60,7 @@ QKnxExtendedControlField::QKnxExtendedControlField(quint8 data)
 
     \note The byte array must contain at least one elements.
 */
-QKnxExtendedControlField::QKnxExtendedControlField(const QByteArray &data)
-{
-    if (data.size() > 0)
-        m_ctrl2 = quint8(data[0]);
-}
-
-/*!
-    Creates a new extended control field from the first byte of the \a data
-    vector. Hexadecimal, octal and decimal notation are supported.
-
-    \note The vector must contain at least one elements.
-*/
-QKnxExtendedControlField::QKnxExtendedControlField(const QVector<quint8> &data)
+QKnxExtendedControlField::QKnxExtendedControlField(const QKnxByteArray &data)
 {
     if (data.size() > 0)
         m_ctrl2 = quint8(data[0]);
@@ -115,34 +103,9 @@ void QKnxExtendedControlField::setFormat(QKnxExtendedControlField::ExtendedFrame
 }
 
 /*!
-    Returns the extended control field's \l DestinationAddressType, \l hopCount
-    and \l ExtendedFrameFormat fields as string. All values are formatted in
-    hexadecimal notation.
-*/
-QString QKnxExtendedControlField::toString() const
-{
-    return QStringLiteral("Destination address { 0x%1 }, Hop count { 0x%2 }, "
-        "Extended frame format { 0x%3 }")
-        .arg(m_ctrl2[7], 2, 16, QLatin1Char('0'))
-        .arg(hopCount(), 2, 16, QLatin1Char('0'))
-        .arg(quint8(format()), 2, 16, QLatin1Char('0'));
-}
-
-/*!
     \fn quint8 QKnxExtendedControlField::bytes() const
 
-    Returns the extended control field as byte or range of bytes.
-
-    \note \c quint8, \c QByteArray and \c QVector<quint8> as well as
-    std::vector<quint8> and std::deque<quint8> are supported as return type.
-
-    \code
-        QKnxExtendedControlField ectrl;
-
-        quint8 byte = ectrl.bytes();
-        auto byteArray = ectrl.bytes<QByteArray>();
-        auto vector = ectrl.bytes<QVector<quint8>>();
-    \endcode
+    Returns the extended control field range of bytes.
 */
 
 /*!
@@ -156,32 +119,6 @@ QDebug operator<<(QDebug debug, const QKnxExtendedControlField &field)
     debug.nospace().noquote() << "0x" << hex << qSetFieldWidth(2) << qSetPadChar(QLatin1Char('0'))
         << field.bytes();
     return debug;
-}
-
-/*!
-    \relates QKnxExtendedControlField
-
-    Reads the extended control \a field from the \a stream and returns a
-    reference to the \a stream.
-*/
-QDataStream &operator>>(QDataStream &stream, QKnxExtendedControlField &field)
-{
-    quint8 raw;
-    stream >> raw;
-    field = QKnxExtendedControlField(raw);
-
-    return stream;
-}
-
-/*!
-    \relates QKnxExtendedControlField
-
-    Writes the extended control \a field to the \a stream and returns a
-    reference to the \a stream.
-*/
-QDataStream &operator<<(QDataStream &stream, const QKnxExtendedControlField &field)
-{
-    return stream << field.bytes();
 }
 
 QT_END_NAMESPACE

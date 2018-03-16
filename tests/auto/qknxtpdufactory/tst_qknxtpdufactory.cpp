@@ -103,12 +103,12 @@ void tst_QKnxTpduFactory::testTpdu()
 {
     QKnxTpdu tpdu1(QKnxTpdu::TransportControlField::DataGroup,
         QKnxTpdu::ApplicationControlField::GroupValueWrite);
-    tpdu1.setData(QVector<quint8>(1, 0x01));
+    tpdu1.setData({ 0x01 });
 
     QKnxLinkLayerFrame frame;
     frame.setTpdu(tpdu1);
     QCOMPARE(tpdu1.applicationControlField(), QKnxTpdu::ApplicationControlField::GroupValueWrite);
-    QCOMPARE(frame.tpdu().data(), QVector<quint8>(1, 0x01));
+    QCOMPARE(frame.tpdu().data(), QKnxByteArray(1, 0x01));
 
     QKnxTpdu tpdu(QKnxTpdu::TransportControlField::Invalid);
     QCOMPARE(tpdu.isValid(), false);
@@ -129,11 +129,11 @@ void tst_QKnxTpduFactory::testTpdu()
     QCOMPARE(tpdu.applicationControlField(), QKnxTpdu::ApplicationControlField::GroupValueWrite);
 
     QCOMPARE(tpdu.isValid(), true);
-    tpdu.setData(QVector<quint8>(1, 0x3f));
-    QCOMPARE(tpdu.data(), QVector<quint8>(1, 0x3f));
+    tpdu.setData({ 0x3f });
+    QCOMPARE(tpdu.data(), QKnxByteArray(1, 0x3f));
 
-    tpdu.setData(QVector<quint8>(1, 0x43));
-    QCOMPARE(tpdu.data(), QVector<quint8>(1, 0x43));
+    tpdu.setData({ 0x43 });
+    QCOMPARE(tpdu.data(), QKnxByteArray(1, 0x43));
 
     tpdu = { QKnxTpdu::TransportControlField::DataGroup,
         QKnxTpdu::ApplicationControlField::GroupValueRead };
@@ -145,49 +145,49 @@ void tst_QKnxTpduFactory::testTpdu()
     QCOMPARE(tpdu.transportControlField(), QKnxTpdu::TransportControlField::DataGroup);
     QCOMPARE(tpdu.applicationControlField(), QKnxTpdu::ApplicationControlField::GroupValueResponse);
 
-    tpdu.setData(QVector<quint8>(1, { 0x3f }));
-    QCOMPARE(tpdu.data(), QVector<quint8>(1, { 0x3f }));
-    QCOMPARE(tpdu.bytes(), QVector<quint8>({ 0x00, 0x7f }));
+    tpdu.setData({ 0x3f });
+    QCOMPARE(tpdu.data(), QKnxByteArray(1, 0x3f));
+    QCOMPARE(tpdu.bytes(), QKnxByteArray({ 0x00, 0x7f }));
 
     tpdu.setTransportControlField(QKnxTpdu::TransportControlField::DataBroadcast);
     tpdu.setApplicationControlField(QKnxTpdu::ApplicationControlField::GroupValueWrite);
     QCOMPARE(tpdu.transportControlField(), QKnxTpdu::TransportControlField::DataBroadcast);
     QCOMPARE(tpdu.applicationControlField(), QKnxTpdu::ApplicationControlField::GroupValueWrite);
-    QCOMPARE(tpdu.data(), QVector<quint8>(1, { 0x3f }));
-    QCOMPARE(tpdu.bytes(), QVector<quint8>({ 0x00, 0xbf }));
+    QCOMPARE(tpdu.data(), QKnxByteArray(1, 0x3f));
+    QCOMPARE(tpdu.bytes(), QKnxByteArray({ 0x00, 0xbf }));
 
-    tpdu.setData(QVector<quint8>(1, { 0x43 }));
-    QCOMPARE(tpdu.data(), QVector<quint8>(1, { 0x43 }));
-    QCOMPARE(tpdu.bytes(), QVector<quint8>({ 0x00, 0x80, 0x43 }));
+    tpdu.setData({ 0x43 });
+    QCOMPARE(tpdu.data(), QKnxByteArray(1, { 0x43 }));
+    QCOMPARE(tpdu.bytes(), QKnxByteArray({ 0x00, 0x80, 0x43 }));
 
     tpdu = { QKnxTpdu::TransportControlField::DataGroup,
         QKnxTpdu::ApplicationControlField::GroupValueRead };
     QCOMPARE(tpdu.transportControlField(), QKnxTpdu::TransportControlField::DataGroup);
     QCOMPARE(tpdu.applicationControlField(), QKnxTpdu::ApplicationControlField::GroupValueRead);
 
-    tpdu.setData(QVector<quint8>({ 0x3f, 0x3f }));
-    QCOMPARE(tpdu.data(), QVector<quint8>({ 0x3f, 0x3f }));
+    tpdu.setData({ 0x3f, 0x3f });
+    QCOMPARE(tpdu.data(), QKnxByteArray({ 0x3f, 0x3f }));
     QCOMPARE(tpdu.isValid(), false);
 
     tpdu.setData({});
     QCOMPARE(tpdu.isValid(), true);
-    QCOMPARE(tpdu.data(), QVector<quint8>{});
+    QCOMPARE(tpdu.data(), QKnxByteArray {});
 
     tpdu.setApplicationControlField(QKnxTpdu::ApplicationControlField::GroupValueWrite);
-    tpdu.setData(QVector<quint8>({ 0x3f, 0x3f }));
+    tpdu.setData({ 0x3f, 0x3f });
     QCOMPARE(tpdu.isValid(), true);
     tpdu.setTransportControlField(QKnxTpdu::TransportControlField::DataBroadcast);
     QCOMPARE(tpdu.transportControlField(), QKnxTpdu::TransportControlField::DataBroadcast);
     QCOMPARE(tpdu.applicationControlField(), QKnxTpdu::ApplicationControlField::GroupValueWrite);
-    QCOMPARE(tpdu.data(), QVector<quint8>({ 0x3f, 0x3f }));
+    QCOMPARE(tpdu.data(), QKnxByteArray({ 0x3f, 0x3f }));
 
-    tpdu.setData(QVector<quint8>(1, { 0x3f }));
-    QCOMPARE(tpdu.data(), QVector<quint8>(1, { 0x3f }));
-    QCOMPARE(tpdu.bytes(), QVector<quint8>({ 0x00, 0xbf }));
+    tpdu.setData({ 0x3f });
+    QCOMPARE(tpdu.data(), QKnxByteArray(1, 0x3f));
+    QCOMPARE(tpdu.bytes(), QKnxByteArray({ 0x00, 0xbf }));
 
-    tpdu.setData(QVector<quint8>(1, { 0x00 }));
-    QCOMPARE(tpdu.data(), QVector<quint8>(1, { 0x00 }));
-    QCOMPARE(tpdu.bytes(), QVector<quint8>({ 0x00, 0x80 }));
+    tpdu.setData({ 0x00 });
+    QCOMPARE(tpdu.data(), QKnxByteArray(1, 0x00));
+    QCOMPARE(tpdu.bytes(), QKnxByteArray({ 0x00, 0x80 }));
 
     auto tmpTpdu = QKnxTpdu::fromBytes(tpdu.bytes(), 0, quint8(tpdu.size()));
     QCOMPARE(tmpTpdu.bytes(), tpdu.bytes());
@@ -204,35 +204,35 @@ void tst_QKnxTpduFactory::testGroupValueRead()
 
 void tst_QKnxTpduFactory::testGroupValueWrite()
 {
-    auto tpdu = QKnxTpduFactory::Multicast::createGroupValueWriteTpdu(QVector<quint8>(1, 0x01));
-    QCOMPARE(tpdu.data(), QVector<quint8>(1, 0x01));
+    auto tpdu = QKnxTpduFactory::Multicast::createGroupValueWriteTpdu({ 0x01 });
+    QCOMPARE(tpdu.data(), QKnxByteArray(1, 0x01));
     QCOMPARE(tpdu.size(), quint16(2));
     QCOMPARE(tpdu.transportControlField(), QKnxTpdu::TransportControlField::DataGroup);
     QCOMPARE(tpdu.applicationControlField(), QKnxTpdu::ApplicationControlField::GroupValueWrite);
 
-    tpdu.setData(QVector<quint8>({ 0x01, 0x01 }));
+    tpdu.setData({ 0x01, 0x01 });
     QCOMPARE(tpdu.size(), quint16(4));
-    QCOMPARE(tpdu.data(), QVector<quint8>({ 0x01, 0x01 }));
+    QCOMPARE(tpdu.data(), QKnxByteArray({ 0x01, 0x01 }));
 
-    tpdu.setData(QVector<quint8>(1, 0x40));
+    tpdu.setData(QKnxByteArray(1, 0x40));
     QCOMPARE(tpdu.size(), quint16(3));
-    QCOMPARE(tpdu.data(), QVector<quint8>(1, 0x40));
+    QCOMPARE(tpdu.data(), QKnxByteArray(1, 0x40));
 
-    tpdu.setData(QVector<quint8>(1, { 0xf0 }));
+    tpdu.setData({ 0xf0 });
     QCOMPARE(tpdu.size(), quint16(3));
-    QCOMPARE(tpdu.data(), QVector<quint8>(1, { 0xf0 }));
+    QCOMPARE(tpdu.data(), QKnxByteArray(1, 0xf0));
 
-    tpdu.setData(QVector<quint8>(1, { 0xff }));
+    tpdu.setData({ 0xff });
     QCOMPARE(tpdu.size(), quint16(3));
-    QCOMPARE(tpdu.data(), QVector<quint8>(1, { 0xff }));
+    QCOMPARE(tpdu.data(), QKnxByteArray(1, 0xff));
 
-    tpdu.setData(QKnxCharString("The Qt Company").bytes<QVector<quint8>>());
+    tpdu.setData(QKnxCharString("The Qt Company").bytes());
     QCOMPARE(tpdu.isValid(), true);
     QCOMPARE(tpdu.size(), quint16(16));
     QCOMPARE(tpdu.dataSize(), quint8(15));
 
     tpdu = QKnxTpduFactory::Multicast::createGroupValueWriteTpdu(QKnxCharString("The Qt Company")
-        .bytes<QVector<quint8>>());
+        .bytes());
     QCOMPARE(tpdu.isValid(), true);
     QCOMPARE(tpdu.size(), quint16(16));
     QCOMPARE(tpdu.dataSize(), quint8(15));
@@ -250,23 +250,23 @@ void tst_QKnxTpduFactory::testGroupPropValueRead()
 
 void tst_QKnxTpduFactory::testGroupPropValueWrite()
 {
-    QVector<quint8> data({ 0x01, 0x02, 0x03 });
+    QKnxByteArray data { 0x01, 0x02, 0x03 };
     auto tpdu = QKnxTpduFactory::Multicast::createGroupPropertyValueWriteTpdu(QKnxInterfaceObjectType
         ::System::Device, 5, QKnxInterfaceObjectProperty::General::ManufacturerData, data);
 
     QCOMPARE(tpdu.size(), quint16(9));
-    QCOMPARE(tpdu.data(), QVector<quint8>({ 0x00, 0x00, 0x13, 0x05, 0x01, 0x02, 0x03 }));
+    QCOMPARE(tpdu.data(), QKnxByteArray({ 0x00, 0x00, 0x13, 0x05, 0x01, 0x02, 0x03 }));
     QCOMPARE(tpdu.transportControlField(), QKnxTpdu::TransportControlField::DataTagGroup);
     QCOMPARE(tpdu.applicationControlField(), QKnxTpdu::ApplicationControlField::GroupPropValueWrite);
 
-    tpdu.setData(QVector<quint8>(253, 1));
+    tpdu.setData(QKnxByteArray(253, 1));
     QCOMPARE(tpdu.isValid(), true);
     QCOMPARE(tpdu.size(), quint16(255));
     QCOMPARE(tpdu.dataSize(), quint8(254));
 
     tpdu = QKnxTpduFactory::Multicast::createGroupPropertyValueWriteTpdu(QKnxInterfaceObjectType
         ::System::Device, 5, QKnxInterfaceObjectProperty::General::ManufacturerData,
-        QVector<quint8>(249, 1));
+        QKnxByteArray(249, 1));
     QCOMPARE(tpdu.isValid(), true);
     QCOMPARE(tpdu.size(), quint16(255));
     QCOMPARE(tpdu.dataSize(), quint8(254));
@@ -299,11 +299,11 @@ void tst_QKnxTpduFactory::testIndividualAddressWrite()
 void tst_QKnxTpduFactory::testIndividualAddressSerialNumberRead()
 {
     auto tpdu = QKnxTpduFactory::Broadcast::createIndividualAddressSerialNumberReadTpdu(
-        QVector<quint8>({ 0x01, 0x02, 0x03 }));
+        { 0x01, 0x02, 0x03 });
     QCOMPARE(tpdu.size(), quint16(2));
 
     tpdu = QKnxTpduFactory::Broadcast::createIndividualAddressSerialNumberReadTpdu(
-        QVector<quint8>({ 0x01, 0x02, 0x03, 0x04, 0x05, 0x06 }));
+        { 0x01, 0x02, 0x03, 0x04, 0x05, 0x06 });
 
     QCOMPARE(tpdu.size(), quint16(8));
     QCOMPARE(tpdu.transportControlField(), QKnxTpdu::TransportControlField::DataBroadcast);
@@ -315,16 +315,16 @@ void tst_QKnxTpduFactory::testIndividualAddressSerialNumberWrite()
     auto address = QKnxAddress::Group::Broadcast;
 
     auto tpdu = QKnxTpduFactory::Broadcast::createIndividualAddressSerialNumberWriteTpdu(
-        QVector<quint8>({ 0x01, 0x02, 0x03 }), address);
+        { 0x01, 0x02, 0x03 }, address);
     QCOMPARE(tpdu.size(), quint16(2));
 
     tpdu = QKnxTpduFactory::Broadcast::createIndividualAddressSerialNumberWriteTpdu(
-        QVector<quint8>({ 0x01, 0x02, 0x03, 0x04, 0x05, 0x06 }), address);
+        { 0x01, 0x02, 0x03, 0x04, 0x05, 0x06 }, address);
     QCOMPARE(tpdu.size(), quint16(2));
 
     address = QKnxAddress::createIndividual(1, 1, 1);
     tpdu = QKnxTpduFactory::Broadcast::createIndividualAddressSerialNumberWriteTpdu(
-        QVector<quint8>({ 0x01, 0x02, 0x03, 0x04, 0x05, 0x06 }), address);
+        { 0x01, 0x02, 0x03, 0x04, 0x05, 0x06 }, address);
 
     QCOMPARE(tpdu.size(), quint16(14));
     QCOMPARE(tpdu.transportControlField(), QKnxTpdu::TransportControlField::DataBroadcast);
@@ -343,7 +343,7 @@ void tst_QKnxTpduFactory::testDomainAddressRead()
 void tst_QKnxTpduFactory::testDomainAddressWrite()
 {
     auto address = QKnxAddress::createGroup(1, 1, 1);
-    auto tpdu = QKnxTpduFactory::Broadcast::createDomainAddressWriteTpdu(address.bytes<QVector<quint8>>());
+    auto tpdu = QKnxTpduFactory::Broadcast::createDomainAddressWriteTpdu(address.bytes());
 
     QCOMPARE(tpdu.size(), quint16(4));
     QCOMPARE(tpdu.transportControlField(), QKnxTpdu::TransportControlField::DataBroadcast);
@@ -353,11 +353,11 @@ void tst_QKnxTpduFactory::testDomainAddressWrite()
 void tst_QKnxTpduFactory::testDomainAddressSerialNumberRead()
 {
     auto tpdu = QKnxTpduFactory::Broadcast::createDomainAddressSerialNumberReadTpdu(
-        QVector<quint8>({ 0x01, 0x02, 0x03 }));
+        { 0x01, 0x02, 0x03 });
     QCOMPARE(tpdu.size(), quint16(2));
 
     tpdu = QKnxTpduFactory::Broadcast::createDomainAddressSerialNumberReadTpdu(
-        QVector<quint8>({ 0x01, 0x02, 0x03, 0x04, 0x05, 0x06 }));
+        { 0x01, 0x02, 0x03, 0x04, 0x05, 0x06 });
 
     QCOMPARE(tpdu.size(), quint16(8));
     QCOMPARE(tpdu.transportControlField(), QKnxTpdu::TransportControlField::DataBroadcast);
@@ -366,17 +366,17 @@ void tst_QKnxTpduFactory::testDomainAddressSerialNumberRead()
 
 void tst_QKnxTpduFactory::testDomainAddressSerialNumberWrite()
 {
-    auto address = QKnxAddress::createGroup(1, 1, 1).bytes<QVector<quint8>>();
+    auto address = QKnxAddress::createGroup(1, 1, 1).bytes();
     auto tpdu = QKnxTpduFactory::Broadcast::createDomainAddressSerialNumberWriteTpdu(
-        QVector<quint8>({ 0x01, 0x02, 0x03 }), address);
+        { 0x01, 0x02, 0x03 }, address);
     QCOMPARE(tpdu.size(), quint16(2));
 
     tpdu = QKnxTpduFactory::Broadcast::createDomainAddressSerialNumberWriteTpdu(
-        QVector<quint8>({ 0x01, 0x02, 0x03 }), QVector<quint8>({ 0x01, 0x02, 0x03 }));
+        { 0x01, 0x02, 0x03 }, { 0x01, 0x02, 0x03 });
     QCOMPARE(tpdu.size(), quint16(2));
 
     tpdu = QKnxTpduFactory::Broadcast::createDomainAddressSerialNumberWriteTpdu(
-        QVector<quint8>({ 0x01, 0x02, 0x03, 0x04, 0x05, 0x06 }), address);
+        { 0x01, 0x02, 0x03, 0x04, 0x05, 0x06 }, address);
 
     QCOMPARE(tpdu.size(), quint16(10));
     QCOMPARE(tpdu.transportControlField(), QKnxTpdu::TransportControlField::DataBroadcast);
@@ -387,7 +387,7 @@ void tst_QKnxTpduFactory::testSystemNetworkParameterRead()
 {
     auto tpdu = QKnxTpduFactory::Broadcast::createSystemNetworkParameterReadTpdu(
         QKnxInterfaceObjectType::System::Device, QKnxInterfaceObjectProperty::Device::ErrorFlags,
-        QVector<quint8>({ 0x01, 0x02, 0x03, 0x04 }));
+        { 0x01, 0x02, 0x03, 0x04 });
 
     QCOMPARE(tpdu.size(), quint16(10));
     QCOMPARE(tpdu.transportControlField(), QKnxTpdu::TransportControlField::DataSystemBroadcast);
@@ -398,7 +398,7 @@ void tst_QKnxTpduFactory::testSystemNetworkParameterWrite()
 {
     auto tpdu = QKnxTpduFactory::Broadcast::createSystemNetworkParameterWriteTpdu(
         QKnxInterfaceObjectType::System::Device, QKnxInterfaceObjectProperty::Device::ErrorFlags,
-        QVector<quint8>({ 0x01, 0x02, 0x03, 0x04 }));
+        { 0x01, 0x02, 0x03, 0x04 });
 
     QCOMPARE(tpdu.size(), quint16(10));
     QCOMPARE(tpdu.transportControlField(), QKnxTpdu::TransportControlField::DataSystemBroadcast);
@@ -409,7 +409,7 @@ void tst_QKnxTpduFactory::testNetworkParameterRead()
 {
     auto tpdu = QKnxTpduFactory::Broadcast::createNetworkParameterReadTpdu(
         QKnxInterfaceObjectType::System::Device, QKnxInterfaceObjectProperty::Device::ErrorFlags,
-        QVector<quint8>({ 0x01, 0x02, 0x03, 0x04 }));
+        { 0x01, 0x02, 0x03, 0x04 });
 
     QCOMPARE(tpdu.size(), quint16(9));
     QCOMPARE(tpdu.transportControlField(), QKnxTpdu::TransportControlField::DataBroadcast);
@@ -417,7 +417,7 @@ void tst_QKnxTpduFactory::testNetworkParameterRead()
 
     tpdu = QKnxTpduFactory::Broadcast::createNetworkParameterReadTpdu(
         QKnxInterfaceObjectType::System::Device, QKnxInterfaceObjectProperty::Device::ErrorFlags,
-        QVector<quint8>(250, 1));
+        QKnxByteArray(250, 1));
     QCOMPARE(tpdu.size(), quint16(255));
     QCOMPARE(tpdu.dataSize(), quint8(254));
 }
@@ -426,7 +426,7 @@ void tst_QKnxTpduFactory::testNetworkParameterWrite()
 {
     auto tpdu = QKnxTpduFactory::Broadcast::createNetworkParameterWriteTpdu(
         QKnxInterfaceObjectType::System::Device, QKnxInterfaceObjectProperty::Device::ErrorFlags,
-        QVector<quint8>({ 0x01, 0x02, 0x03, 0x04 }));
+        { 0x01, 0x02, 0x03, 0x04 });
 
     QCOMPARE(tpdu.size(), quint16(9));
     QCOMPARE(tpdu.transportControlField(), QKnxTpdu::TransportControlField::DataBroadcast);
@@ -434,7 +434,7 @@ void tst_QKnxTpduFactory::testNetworkParameterWrite()
 
     tpdu = QKnxTpduFactory::PointToPointConnectionless::createNetworkParameterWriteTpdu(
         QKnxInterfaceObjectType::System::Device, QKnxInterfaceObjectProperty::Device::ErrorFlags,
-        QVector<quint8>({ 0x01, 0x02, 0x03, 0x04 }));
+        { 0x01, 0x02, 0x03, 0x04 });
 
     QCOMPARE(tpdu.size(), quint16(9));
     QCOMPARE(tpdu.transportControlField(), QKnxTpdu::TransportControlField::DataIndividual);
@@ -445,7 +445,7 @@ void tst_QKnxTpduFactory::testNetworkParameterResponse()
 {
    auto tpdu = QKnxTpduFactory::Broadcast::createNetworkParameterResponseTpdu(
         QKnxInterfaceObjectType::System::Device, QKnxInterfaceObjectProperty::Device::ErrorFlags,
-        {}, QVector<quint8>(11, 1));
+        {}, QKnxByteArray(11, 1));
 
     QCOMPARE(tpdu.size(), quint16(16));
     QCOMPARE(tpdu.dataSize(), quint8(15));
@@ -476,7 +476,7 @@ void tst_QKnxTpduFactory::testPropertyValueRead()
 
 void tst_QKnxTpduFactory::testPropertyValueWrite()
 {
-    QVector<quint8> data({ 0x01, 0x02, 0x03, 0x04 });
+    QKnxByteArray data { 0x01, 0x02, 0x03, 0x04 };
     auto tpdu = QKnxTpduFactory::PointToPoint::createPropertyValueWriteTpdu(
         QKnxTpduFactory::PointToPoint::Mode::Connectionless, 0,
         QKnxInterfaceObjectProperty::Device::ErrorFlags, 1, 1, data);
@@ -521,7 +521,7 @@ void tst_QKnxTpduFactory::testPropertyDescriptionRead()
 
 void tst_QKnxTpduFactory::testFunctionPropertyCommand()
 {
-    QVector<quint8> data({ 0x01, 0x02, 0x03, 0x04, 0x05 });
+    QKnxByteArray data { 0x01, 0x02, 0x03, 0x04, 0x05 };
     auto tpdu = QKnxTpduFactory::PointToPoint::createFunctionPropertyCommandTpdu(
         QKnxTpduFactory::PointToPoint::Mode::Connectionless, 0,
         QKnxInterfaceObjectProperty::Device::ErrorFlags, data);
@@ -544,7 +544,7 @@ void tst_QKnxTpduFactory::testFunctionPropertyCommand()
 
 void tst_QKnxTpduFactory::testFunctionPropertyStateRead()
 {
-    QVector<quint8> data({ 0x01, 0x02, 0x03, 0x04, 0x05 });
+    QKnxByteArray data { 0x01, 0x02, 0x03, 0x04, 0x05 };
 
     auto tpdu = QKnxTpduFactory::PointToPoint::createFunctionPropertyStateReadTpdu(
         QKnxTpduFactory::PointToPoint::Mode::Connectionless, 0,
@@ -655,7 +655,7 @@ void tst_QKnxTpduFactory::testDeviceDescriptorResponse()
 {
     quint8 descriptorType = 63;
     auto tpdu = QKnxTpduFactory::PointToPoint::createDeviceDescriptorResponseTpdu(
-        QKnxTpduFactory::PointToPoint::Mode::Connectionless, descriptorType, QVector<quint8>(253, 0));
+        QKnxTpduFactory::PointToPoint::Mode::Connectionless, descriptorType, QKnxByteArray(253, 0));
 
     QCOMPARE(tpdu.size(), quint16(255));
     QCOMPARE(tpdu.dataSize(), quint8(254));
@@ -696,7 +696,7 @@ void tst_QKnxTpduFactory::testMemoryWrite()
     quint8 number = 2;
     quint16 memoryAddress = 0x1502;
     auto tpdu = QKnxTpduFactory::PointToPointConnectionOriented::createMemoryWriteTpdu(number,
-        memoryAddress, QVector<quint8>({ 0x01, 0x02, 0x03, 0x04, 0x05 }), sequenceNumber);
+        memoryAddress, { 0x01, 0x02, 0x03, 0x04, 0x05 }, sequenceNumber);
 
     QCOMPARE(tpdu.size(), quint16(9));
     QCOMPARE(tpdu.sequenceNumber(), sequenceNumber);
@@ -715,7 +715,7 @@ void tst_QKnxTpduFactory::testUserMemoryRead()
 
     QCOMPARE(tpdu.size(), quint16(5));
     QCOMPARE(tpdu.sequenceNumber(), sequenceNumber);
-    QCOMPARE(tpdu.data(), QVector<quint8>({ 0x13, 0xff, 0xff }));
+    QCOMPARE(tpdu.data(), QKnxByteArray({ 0x13, 0xff, 0xff }));
     QCOMPARE(tpdu.transportControlField(), QKnxTpdu::TransportControlField::DataConnected);
     QCOMPARE(tpdu.applicationControlField(), QKnxTpdu::ApplicationControlField::UserMemoryRead);
 }
@@ -727,11 +727,11 @@ void tst_QKnxTpduFactory::testUserMemoryWrite()
     quint8 number = 2;
     quint16 memoryAddress = 0x0000;
     auto tpdu = QKnxTpduFactory::PointToPointConnectionOriented::createUserMemoryWriteTpdu(addressExtention,
-        number, memoryAddress, QVector<quint8>({ 0x01, 0x02, 0x03, 0x04, 0x05 }), sequenceNumber);
+        number, memoryAddress, { 0x01, 0x02, 0x03, 0x04, 0x05 }, sequenceNumber);
 
     QCOMPARE(tpdu.size(), quint16(10));
     QCOMPARE(tpdu.sequenceNumber(), sequenceNumber);
-    QCOMPARE(tpdu.data(), QVector<quint8>({ 0x12, 0x00, 0x00, 0x01, 0x02, 0x03, 0x04, 0x05 }));
+    QCOMPARE(tpdu.data(),QKnxByteArray({ 0x12, 0x00, 0x00, 0x01, 0x02, 0x03, 0x04, 0x05 }));
     QCOMPARE(tpdu.transportControlField(), QKnxTpdu::TransportControlField::DataConnected);
     QCOMPARE(tpdu.applicationControlField(), QKnxTpdu::ApplicationControlField::UserMemoryWrite);
 }

@@ -32,35 +32,44 @@
 
 #include <QtKnx/qknxlocaldevicemanagementframe.h>
 #include <QtKnx/qknxnetip.h>
-#include <QtKnx/qknxnetipconnectionheaderframe.h>
+#include <QtKnx/qknxnetipframe.h>
 #include <QtKnx/qknxglobal.h>
 
 QT_BEGIN_NAMESPACE
 
-class Q_KNX_EXPORT QKnxNetIpDeviceConfigurationRequest final : public QKnxNetIpConnectionHeaderFrame
+class Q_KNX_EXPORT QKnxNetIpDeviceConfigurationRequest final
 {
 public:
-    QKnxNetIpDeviceConfigurationRequest() = default;
-    ~QKnxNetIpDeviceConfigurationRequest() override = default;
+    QKnxNetIpDeviceConfigurationRequest() = delete;
+    ~QKnxNetIpDeviceConfigurationRequest() = default;
 
-    QKnxNetIpDeviceConfigurationRequest(quint8 channelId, quint8 sequenceCount,
-        const QKnxLocalDeviceManagementFrame &cemi);
+    QKnxNetIpDeviceConfigurationRequest(const QKnxNetIpFrame &&) = delete;
+    explicit QKnxNetIpDeviceConfigurationRequest(const QKnxNetIpFrame &frame);
 
-    template <typename T>
-        static QKnxNetIpDeviceConfigurationRequest fromBytes(const T &bytes, quint16 index)
-    {
-        return QKnxNetIpConnectionHeaderFrameHelper::fromBytes(bytes, index,
-            QKnxNetIp::ServiceType::DeviceConfigurationRequest);
-    }
+    bool isValid() const;
 
     quint8 channelId() const;
-    quint8 sequenceCount() const;
+    quint8 sequenceNumber() const;
     QKnxLocalDeviceManagementFrame cemi() const;
 
-    bool isValid() const override;
+    class Q_KNX_EXPORT Builder final
+    {
+    public:
+        Builder &setChannelId(quint8 channelId);
+        Builder &setSequenceNumber(quint8 sequenceNumber);
+        Builder &setCemi(const QKnxLocalDeviceManagementFrame &cemi);
+
+        QKnxNetIpFrame create() const;
+
+    private:
+        quint8 m_channelId;
+        quint8 m_sequenceNumber;
+        QKnxLocalDeviceManagementFrame m_cemi;
+    };
+    static QKnxNetIpDeviceConfigurationRequest::Builder builder();
 
 private:
-    QKnxNetIpDeviceConfigurationRequest(const QKnxNetIpConnectionHeaderFrame &other);
+    const QKnxNetIpFrame &m_frame;
 };
 
 QT_END_NAMESPACE
