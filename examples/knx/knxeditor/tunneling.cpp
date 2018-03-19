@@ -137,7 +137,7 @@ Tunneling::Tunneling(QWidget* parent)
     updateControlField();
     updateExtendedControlField();
 
-    connect(ui->frameType, &QComboBox::currentTextChanged, this, [&](const QString &text) {
+    connect(ui->frameFormat, &QComboBox::currentTextChanged, this, [&](const QString &text) {
         if (text == "Extended") {
             for (int i = 0; i < ui->additionalInfosList->count(); ++i) {
                 auto b = ui->additionalInfosList->item(i)->text().toLatin1();
@@ -210,7 +210,7 @@ Tunneling::Tunneling(QWidget* parent)
     connect(ui->manualInput, &QCheckBox::clicked, this, [&](bool checked) {
         bool disable = checked;
         if (!checked)
-            disable = ui->frameType->currentText() == "Standard";
+            disable = ui->frameFormat->currentText() == "Standard";
         ui->additionalInfo->setDisabled(disable);
 
         if (!checked) {
@@ -289,7 +289,7 @@ void Tunneling::updateFrame()
 
 void Tunneling::updateControlField()
 {
-    m_ctrl.setFrameType(QKnxControlField::FrameType(ui->frameType->currentIndex()));
+    m_ctrl.setFrameFormat(QKnxControlField::FrameFormat(ui->frameFormat->currentIndex()));
     m_ctrl.setRepeat(QKnxControlField::Repeat(ui->repeat->currentIndex()));
     m_ctrl.setBroadcast(QKnxControlField::Broadcast(ui->broadcast->currentIndex()));
     m_ctrl.setPriority(QKnxControlField::Priority(ui->priority->currentIndex()));

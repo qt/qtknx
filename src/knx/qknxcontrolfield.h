@@ -47,14 +47,14 @@ public:
     explicit QKnxControlField(quint8 data);
     explicit QKnxControlField(const QKnxByteArray &data);
 
-    enum class FrameType : quint8
+    enum class FrameFormat : quint8
     {
         Extended = 0x00,
         Standard = 0x01
     };
-    Q_ENUM(FrameType)
-    QKnxControlField::FrameType frameType() const { return static_cast<FrameType> (quint8(m_ctrl1[7])); }
-    void setFrameType(QKnxControlField::FrameType type) { m_ctrl1[7] = static_cast<int> (type); }
+    Q_ENUM(FrameFormat)
+    QKnxControlField::FrameFormat frameFormat() const { return static_cast<FrameFormat> (quint8(m_ctrl1[7])); }
+    void setFrameFormat(QKnxControlField::FrameFormat type) { m_ctrl1[7] = static_cast<int> (type); }
 
     enum class Repeat : quint8
     {
@@ -113,7 +113,7 @@ private:
 };
 Q_KNX_EXPORT QDebug operator<<(QDebug debug, const QKnxControlField &ctrl);
 
-Q_DECLARE_TYPEINFO(QKnxControlField::FrameType, Q_PRIMITIVE_TYPE);
+Q_DECLARE_TYPEINFO(QKnxControlField::FrameFormat, Q_PRIMITIVE_TYPE);
 Q_DECLARE_TYPEINFO(QKnxControlField::Repeat, Q_PRIMITIVE_TYPE);
 Q_DECLARE_TYPEINFO(QKnxControlField::Broadcast, Q_PRIMITIVE_TYPE);
 Q_DECLARE_TYPEINFO(QKnxControlField::Priority, Q_PRIMITIVE_TYPE);
