@@ -169,7 +169,7 @@ QKnxSceneControl::QKnxSceneControl(quint8 sceneNumber, QKnxSceneControl::Control
 {
     setDescription(tr("Scene Control"));
     setRange(QVariant(0x00), QVariant(0xbf));
-    setRangeText(tr("Minimum scene Number, 0"), tr("Maximum scene number, 63"));
+    setRangeText(tr("Minimum scene number, 0"), tr("Maximum scene number, 63"));
 
     setSceneNumber(sceneNumber);
     setControl(control);
@@ -258,7 +258,7 @@ QKnxSceneInfo::QKnxSceneInfo(quint8 sceneNumber, QKnxSceneInfo::Info info)
 {
     setDescription(tr("Scene Information"));
     setRange(QVariant(0x00), QVariant(0x7f));
-    setRangeText(tr("Minimum scene Number, 0"), tr("Maximum scene number, 63"));
+    setRangeText(tr("Minimum scene number, 0"), tr("Maximum scene number, 63"));
 
     setSceneNumber(sceneNumber);
     setInfo(info);

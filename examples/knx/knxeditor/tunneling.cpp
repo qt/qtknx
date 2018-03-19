@@ -101,7 +101,7 @@ Tunneling::Tunneling(QWidget* parent)
         ui->disconnectTunneling->setEnabled(true);
         ui->tunnelingSendRequest->setEnabled(true);
         ui->sourceAddress->setText(m_tunnel.individualAddress().toString());
-        ui->textOuputTunneling->append(tr("Successful connected to: %1 on port: %2").arg(m_server
+        ui->textOuputTunneling->append(tr("Successfully connected to: %1 on port: %2").arg(m_server
             .controlEndpointAddress().toString()).arg(m_server.controlEndpointPort()));
     });
 
