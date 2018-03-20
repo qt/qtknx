@@ -50,58 +50,74 @@ private slots:
 
 void tst_QKnxNetIpManufacturerDib::testDefaultConstructor()
 {
-    QKnxNetIpManufacturerDib manufacturerDib;
-    QCOMPARE(manufacturerDib.isValid(), false);
-    QCOMPARE(manufacturerDib.size(), quint16(0));
-    QCOMPARE(manufacturerDib.bytes(), QKnxByteArray {});
-    QCOMPARE(manufacturerDib.data().size(), quint16(0));
-    QCOMPARE(manufacturerDib.data(), QKnxByteArray {});
-    QCOMPARE(quint8(manufacturerDib.descriptionType()), quint8(0));
-    QCOMPARE(manufacturerDib.manufacturerId(), quint16(0));
+    auto manufacturerDib = QKnxNetIpManufacturerDibView::builder().create();
+    QCOMPARE(manufacturerDib.isValid(), true);
+    QCOMPARE(manufacturerDib.size(), quint16(4));
+    QCOMPARE(manufacturerDib.bytes(), QKnxByteArray::fromHex("04fe0000"));
+    QCOMPARE(manufacturerDib.data().size(), quint16(2));
+    QCOMPARE(manufacturerDib.data(), QKnxByteArray::fromHex("0000"));
+
+    QKnxNetIpManufacturerDibView view(manufacturerDib);
+    QCOMPARE(view.isValid(), true);
+    QCOMPARE(view.descriptionType(), QKnxNetIp::DescriptionType::ManufacturerData);
+    QCOMPARE(view.manufacturerId(), quint16(0));
 }
 
 void tst_QKnxNetIpManufacturerDib::testConstructorWithOneArguments()
 {
-    QKnxNetIpManufacturerDib manufacturerDib(65535);
+    auto manufacturerDib = QKnxNetIpManufacturerDibView::builder()
+        .setManufacturerId(65535).create();
     QCOMPARE(manufacturerDib.isValid(), true);
     QCOMPARE(manufacturerDib.size(), quint16(4));
     QCOMPARE(manufacturerDib.bytes(), QKnxByteArray::fromHex("04FEFFFF"));
     QCOMPARE(manufacturerDib.data().size(), quint16(2));
     QCOMPARE(manufacturerDib.data(), QKnxByteArray::fromHex("FFFF"));
-    QCOMPARE(manufacturerDib.descriptionType(), QKnxNetIp::DescriptionType::ManufacturerData);
-    QCOMPARE(manufacturerDib.manufacturerId(), quint16(65535));
+
+    QKnxNetIpManufacturerDibView view(manufacturerDib);
+    QCOMPARE(view.isValid(), true);
+    QCOMPARE(view.descriptionType(), QKnxNetIp::DescriptionType::ManufacturerData);
+    QCOMPARE(view.manufacturerId(), quint16(65535));
+    QCOMPARE(view.manufacturerData(), QKnxByteArray {});
 }
 
 void tst_QKnxNetIpManufacturerDib::testConstructorWithByteArrayDataArguments()
 {
     const auto data = QKnxByteArray::fromHex("0102030405");
-    QKnxNetIpManufacturerDib manufacturerDib(65535, data);
+    auto manufacturerDib = QKnxNetIpManufacturerDibView::builder().setManufacturerId(65535)
+        .setManufacturerData(data).create();
     QCOMPARE(manufacturerDib.isValid(), true);
     QCOMPARE(manufacturerDib.size(), quint16(9));
     QCOMPARE(manufacturerDib.bytes(), QKnxByteArray::fromHex("09FEFFFF0102030405"));
     QCOMPARE(manufacturerDib.data().size(), quint16(7));
     QCOMPARE(manufacturerDib.data(), QKnxByteArray::fromHex("FFFF0102030405"));
-    QCOMPARE(manufacturerDib.descriptionType(), QKnxNetIp::DescriptionType::ManufacturerData);
-    QCOMPARE(manufacturerDib.manufacturerId(), quint16(65535));
-    QCOMPARE(manufacturerDib.manufacturerData().size(), data.size());
-    QCOMPARE(manufacturerDib.manufacturerData().size(), data.size());
-    QCOMPARE(manufacturerDib.manufacturerData(), data);
+
+    QKnxNetIpManufacturerDibView view(manufacturerDib);
+    QCOMPARE(view.isValid(), true);
+    QCOMPARE(view.descriptionType(), QKnxNetIp::DescriptionType::ManufacturerData);
+    QCOMPARE(view.manufacturerId(), quint16(65535));
+    QCOMPARE(view.manufacturerData(), data);
+    QCOMPARE(view.manufacturerData().size(), data.size());
 }
 
 void tst_QKnxNetIpManufacturerDib::testConstructorWithVectorDataArguments()
 {
     const QKnxByteArray data = { 1, 2, 3, 4, 5 };
-    QKnxNetIpManufacturerDib manufacturerDib(65535, data);
+    auto manufacturerDib = QKnxNetIpManufacturerDibView::builder()
+        .setManufacturerId(65535)
+        .setManufacturerData(data)
+        .create();
     QCOMPARE(manufacturerDib.isValid(), true);
     QCOMPARE(manufacturerDib.size(), quint16(9));
     QCOMPARE(manufacturerDib.bytes(), QKnxByteArray::fromHex("09FEFFFF0102030405"));
     QCOMPARE(manufacturerDib.data().size(), quint16(7));
     QCOMPARE(manufacturerDib.data(), QKnxByteArray::fromHex("FFFF0102030405"));
-    QCOMPARE(manufacturerDib.descriptionType(), QKnxNetIp::DescriptionType::ManufacturerData);
-    QCOMPARE(manufacturerDib.manufacturerId(), quint16(65535));
-    QCOMPARE(manufacturerDib.manufacturerData().size(), data.size());
-    QCOMPARE(manufacturerDib.manufacturerData().size(), data.size());
-    QCOMPARE(manufacturerDib.manufacturerData(), data);
+
+    QKnxNetIpManufacturerDibView view(manufacturerDib);
+    QCOMPARE(view.isValid(), true);
+    QCOMPARE(view.descriptionType(), QKnxNetIp::DescriptionType::ManufacturerData);
+    QCOMPARE(view.manufacturerId(), quint16(65535));
+    QCOMPARE(view.manufacturerData(), data);
+    QCOMPARE(view.manufacturerData().size(), data.size());
 }
 
 void tst_QKnxNetIpManufacturerDib::testDebugStream()
@@ -118,16 +134,18 @@ void tst_QKnxNetIpManufacturerDib::testDebugStream()
         QtMessageHandler oldMessageHandler;
     } _(myMessageHandler);
 
-    qDebug() << QKnxNetIpManufacturerDib();
-    QCOMPARE(s_msg, QString::fromLatin1("0x1nv4l1d"));
+    qDebug() << QKnxNetIpManufacturerDibView::builder().create();
+    QCOMPARE(s_msg, QString::fromLatin1("0x04fe0000"));
 
-    qDebug() << QKnxNetIpManufacturerDib(65535);
+    qDebug() << QKnxNetIpManufacturerDibView::builder().setManufacturerId(65535).create();
     QCOMPARE(s_msg, QString::fromLatin1("0x04feffff"));
 
-    qDebug() << QKnxNetIpManufacturerDib(65535, QKnxByteArray::fromHex("0102030405"));
+    qDebug() << QKnxNetIpManufacturerDibView::builder().setManufacturerId(65535)
+        .setManufacturerData(QKnxByteArray::fromHex("0102030405")).create();
     QCOMPARE(s_msg, QString::fromLatin1("0x09feffff0102030405"));
 
-    qDebug() << QKnxNetIpManufacturerDib(65535, { { 1, 2, 3, 4, 5 } });
+    qDebug() << QKnxNetIpManufacturerDibView::builder().setManufacturerId(65535)
+        .setManufacturerData({ 1, 2, 3, 4, 5 }).create();
     QCOMPARE(s_msg, QString::fromLatin1("0x09feffff0102030405"));
 }
 

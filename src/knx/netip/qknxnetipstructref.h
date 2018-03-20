@@ -35,7 +35,6 @@
 #include <QtKnx/qknxnetipcurrentconfigdib.h>
 #include <QtKnx/qknxnetipdevicedib.h>
 #include <QtKnx/qknxnetipknxaddressesdib.h>
-#include <QtKnx/qknxnetipmanufacturerdib.h>
 #include <QtKnx/qknxnetipservicefamiliesdib.h>
 
 QT_BEGIN_NAMESPACE
@@ -58,7 +57,6 @@ public:
         QKnxNetIpCurrentConfigDib,
         QKnxNetIpDeviceDib,
         QKnxNetIpKnxAddressesDib,
-        QKnxNetIpManufacturerDib
     };
 
     QKnxNetIpStructRef() = default;
@@ -84,11 +82,6 @@ public:
         , m_type(Type::QKnxNetIpKnxAddressesDib)
     {}
 
-    explicit QKnxNetIpStructRef(QKnxNetIpManufacturerDib *manufacturerDib)
-        : h(manufacturerDib)
-        , m_type(Type::QKnxNetIpManufacturerDib)
-    {}
-
     QKnxNetIpStructRef(const QKnxNetIpStructRef &) = default;
     QKnxNetIpStructRef &operator=(const QKnxNetIpStructRef &) = default;
 
@@ -97,7 +90,6 @@ public:
     bool isIpCurrentConfigDib() const { return m_type == Type::QKnxNetIpCurrentConfigDib; }
     bool isDeviceDib() const { return m_type == Type::QKnxNetIpDeviceDib; }
     bool isKnxAddressesDib() const { return m_type == Type::QKnxNetIpKnxAddressesDib; }
-    bool isManufacturerDib() const { return m_type == Type::QKnxNetIpManufacturerDib; }
 
     template <typename T> T toType() const
     {
@@ -121,7 +113,6 @@ private:
         QKnxNetIpCurrentConfigDib *d;
         QKnxNetIpDeviceDib *e;
         QKnxNetIpKnxAddressesDib *g;
-        QKnxNetIpManufacturerDib *h;
     };
 
     Type m_type = Type::Null;
@@ -173,15 +164,6 @@ namespace QKnxPrivate
         {
             TYPE_CHECK_RETURN_FROM_BYTES(QKnxNetIpKnxAddressesDib);
             return QKnxNetIpKnxAddressesDib(*(ref.g));
-        }
-    };
-
-    template<> struct QKnxNetIpStructTypeHelper<QKnxNetIpManufacturerDib>
-    {
-        static QKnxNetIpManufacturerDib invoke(const QKnxNetIpStructRef &ref)
-        {
-            TYPE_CHECK_RETURN_FROM_BYTES(QKnxNetIpManufacturerDib);
-            return QKnxNetIpManufacturerDib(*(ref.h));
         }
     };
 #undef TYPE_CHECK_RETURN_FROM_BYTES
