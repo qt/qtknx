@@ -58,8 +58,7 @@ public:
         QKnxNetIpCurrentConfigDib,
         QKnxNetIpDeviceDib,
         QKnxNetIpKnxAddressesDib,
-        QKnxNetIpManufacturerDib,
-        QKnxNetIpServiceFamiliesDib
+        QKnxNetIpManufacturerDib
     };
 
     QKnxNetIpStructRef() = default;
@@ -90,11 +89,6 @@ public:
         , m_type(Type::QKnxNetIpManufacturerDib)
     {}
 
-    explicit QKnxNetIpStructRef(QKnxNetIpServiceFamiliesDib *serviceFamiliesDib)
-        : i(serviceFamiliesDib)
-        , m_type(Type::QKnxNetIpServiceFamiliesDib)
-    {}
-
     QKnxNetIpStructRef(const QKnxNetIpStructRef &) = default;
     QKnxNetIpStructRef &operator=(const QKnxNetIpStructRef &) = default;
 
@@ -104,7 +98,6 @@ public:
     bool isDeviceDib() const { return m_type == Type::QKnxNetIpDeviceDib; }
     bool isKnxAddressesDib() const { return m_type == Type::QKnxNetIpKnxAddressesDib; }
     bool isManufacturerDib() const { return m_type == Type::QKnxNetIpManufacturerDib; }
-    bool isServiceFamiliesDib() const { return m_type == Type::QKnxNetIpServiceFamiliesDib; }
 
     template <typename T> T toType() const
     {
@@ -129,8 +122,8 @@ private:
         QKnxNetIpDeviceDib *e;
         QKnxNetIpKnxAddressesDib *g;
         QKnxNetIpManufacturerDib *h;
-        QKnxNetIpServiceFamiliesDib *i;
     };
+
     Type m_type = Type::Null;
     QKnxByteArray m_byteStoreRef;
 };
@@ -189,15 +182,6 @@ namespace QKnxPrivate
         {
             TYPE_CHECK_RETURN_FROM_BYTES(QKnxNetIpManufacturerDib);
             return QKnxNetIpManufacturerDib(*(ref.h));
-        }
-    };
-
-    template<> struct QKnxNetIpStructTypeHelper<QKnxNetIpServiceFamiliesDib>
-    {
-        static QKnxNetIpServiceFamiliesDib invoke(const QKnxNetIpStructRef &ref)
-        {
-            TYPE_CHECK_RETURN_FROM_BYTES(QKnxNetIpServiceFamiliesDib);
-            return QKnxNetIpServiceFamiliesDib(*(ref.i));
         }
     };
 #undef TYPE_CHECK_RETURN_FROM_BYTES

@@ -71,6 +71,19 @@ struct Q_KNX_EXPORT QKnxNetIp final
     };
     static bool isStructType(QKnxNetIp::DescriptionType type);
 
+    enum class ServiceFamily : quint8
+    {
+        Unknown = 0x00,
+        Core = 0x02,
+        DeviceManagement = 0x03,
+        IpTunneling = 0x04,
+        IpRouting = 0x05,
+        RemoteLogging = 0x06,
+        RemoteConfigAndDiagnosis = 0x07,
+        ObjectServer = 0x08
+    };
+    static bool isServiceFamily(QKnxNetIp::ServiceFamily family);
+
     enum class ServiceType : quint16
     {
         Unknown = 0x0000,

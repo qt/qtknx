@@ -58,11 +58,11 @@ public:
     quint16 controlEndpointPort() const;
     QHostAddress controlEndpointAddress() const;
 
-    QKnxNetIpServiceFamiliesDib::ServiceFamilyIdVersions supportedServices() const;
+    QVector<QKnxServiceInfo> supportedServices() const;
 
     QKnxNetIpHpai endpoint() const;
     QKnxNetIpDeviceDib hardware() const;
-    QKnxNetIpServiceFamiliesDib services() const;
+    QKnxNetIpDib services() const;
 
     QKnxNetIpServerInfo(const QKnxNetIpServerInfo &o);
     QKnxNetIpServerInfo &operator=(const QKnxNetIpServerInfo &o);
@@ -78,7 +78,7 @@ public:
 
 private:
     QKnxNetIpServerInfo(const QKnxNetIpHpai &hpai, const QKnxNetIpDeviceDib &hardware,
-        QKnxNetIpServiceFamiliesDib services);
+        QKnxNetIpDib services);
     explicit QKnxNetIpServerInfo(QKnxNetIpServerInfoPrivate &dd);
 
 private:

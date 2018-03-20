@@ -30,49 +30,45 @@
 #ifndef QKNXNETIPSERVICEFAMILIESDIB_H
 #define QKNXNETIPSERVICEFAMILIESDIB_H
 
-#include <QtCore/qmap.h>
 #include <QtKnx/qknxglobal.h>
 #include <QtKnx/qknxnetipstruct.h>
 
 QT_BEGIN_NAMESPACE
 
-class Q_KNX_EXPORT QKnxNetIpServiceFamiliesDib final : public QKnxNetIpDib
+struct Q_KNX_EXPORT QKnxServiceInfo
+{
+    QKnxNetIp::ServiceFamily ServiceFamily;
+    quint8 ServiceFamilyVersion;
+};
+
+class Q_KNX_EXPORT QKnxNetIpServiceFamiliesDibView final
 {
 public:
-    enum class ServiceFamilieId : quint8
-    {
-        Core = 0x02,
-        DeviceManagement = 0x03,
-        IpTunneling = 0x04,
-        IpRouting = 0x05,
-        RemoteLogging = 0x06,
-        RemoteConfigAndDiagnosis = 0x07,
-        ObjectServer = 0x08
-    };
-    using ServiceFamilyIdVersions = QMultiMap<ServiceFamilieId, quint8>;
+    QKnxNetIpServiceFamiliesDibView() = delete;
+    ~QKnxNetIpServiceFamiliesDibView() = default;
 
-    QKnxNetIpServiceFamiliesDib();
-    ~QKnxNetIpServiceFamiliesDib() override = default;
+    QKnxNetIpServiceFamiliesDibView(const QKnxNetIpDib &&) = delete;
+    explicit QKnxNetIpServiceFamiliesDibView(const QKnxNetIpDib &dib);
 
-    QKnxNetIpServiceFamiliesDib(ServiceFamilieId id, quint8 version);
-    QKnxNetIpServiceFamiliesDib(const ServiceFamilyIdVersions &families);
-
-    static QKnxNetIpServiceFamiliesDib fromBytes(const QKnxByteArray &bytes, quint16 index)
-    {
-        return QKnxNetIpStruct::fromBytes(bytes, index,
-            QKnxNetIp::DescriptionType::SupportedServiceFamilies);
-    }
+    bool isValid() const;
 
     QKnxNetIp::DescriptionType descriptionType() const;
-    ServiceFamilyIdVersions serviceFamilyIdVersions() const;
+    QVector<QKnxServiceInfo> serviceInfos() const;
 
-    void add(ServiceFamilieId id, quint8 version);
-    void add(const ServiceFamilyIdVersions &families);
+    class Q_KNX_EXPORT Builder final
+    {
+    public:
+        Builder &setServiceInfos(const QVector<QKnxServiceInfo> &infos);
 
-    bool isValid() const override;
+        QKnxNetIpDib create() const;
+
+    private:
+        QVector<QKnxServiceInfo> m_infos;
+    };
+    static QKnxNetIpServiceFamiliesDibView::Builder builder();
 
 private:
-    QKnxNetIpServiceFamiliesDib(const QKnxNetIpDib &other);
+    const QKnxNetIpDib &m_dib;
 };
 
 QT_END_NAMESPACE
