@@ -1,6 +1,6 @@
 /******************************************************************************
 **
-** Copyright (C) 2017 The Qt Company Ltd.
+** Copyright (C) 2018 The Qt Company Ltd.
 ** Contact: https://www.qt.io/licensing/
 **
 ** This file is part of the QtKnx module.
@@ -120,6 +120,9 @@ void QKnx3BitControlled::setControlBit(bool value)
 
 /*!
     Sets the number of intervals to \a n.
+
+    If the value is outside the allowed range, returns \c false and does not set
+    the value.
 */
 bool QKnx3BitControlled::setNumberOfIntervals(NumberOfIntervals n)
 {
@@ -176,8 +179,8 @@ bool QKnx3BitControlled::isValid() const
 */
 
 /*!
-    Creates a fixed size datapoint type with the control set to \c Decrease and
-    the number of intervals set to \c Break.
+    Creates a fixed size datapoint type with the control set to \l Decrease and
+    the number of intervals set to \l QKnx3BitControlled::Break.
 */
 QKnxControlDimming::QKnxControlDimming()
     : QKnxControlDimming(Control::Decrease, NumberOfIntervals::Break)
@@ -239,8 +242,8 @@ QKnxControlDimming::Control QKnxControlDimming::control() const
 */
 
 /*!
-    Creates a fixed size boolean datapoint type with the control set to \c Up
-    and the number of intervals set to \c Break.
+    Creates a fixed size boolean datapoint type with the control set to \l Up
+    and the number of intervals set to \l QKnx3BitControlled::Break.
 */
 QKnxControlBlinds::QKnxControlBlinds()
     : QKnxControlBlinds(Control::Up, NumberOfIntervals::Break)
