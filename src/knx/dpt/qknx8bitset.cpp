@@ -1,6 +1,6 @@
 /******************************************************************************
 **
-** Copyright (C) 2017 The Qt Company Ltd.
+** Copyright (C) 2018 The Qt Company Ltd.
 ** Contact: https://www.qt.io/licensing/
 **
 ** This file is part of the QtKnx module.
@@ -105,6 +105,8 @@ quint8 QKnx8BitSet::byte() const
 
 /*!
     Sets the value of the datapoint type to \a value.
+
+    Returns \c true if the value was set; otherwise returns \c false.
 */
 
 bool QKnx8BitSet::setByte(quint8 value)
@@ -184,6 +186,8 @@ QKnxGeneralStatus::Attributes QKnxGeneralStatus::value() const
 /*!
     Sets the value of the datapoint type to the list of attributes specified by
     \a attributes.
+
+    Returns \c true if the value was set; otherwise returns \c false.
 */
 bool QKnxGeneralStatus::setValue(Attributes attributes)
 {
@@ -206,6 +210,8 @@ bool QKnxGeneralStatus::isSet(Attribute attribute) const
 
 /*!
     Sets the attribute \a attribute within the value of the datapoint type.
+
+    Returns \c true if the value was set; otherwise returns \c false.
 */
 bool QKnxGeneralStatus::setAttribute(Attribute attribute)
 {
@@ -214,6 +220,8 @@ bool QKnxGeneralStatus::setAttribute(Attribute attribute)
 
 /*!
     Removes the attribute \a attribute from the value of the datapoint type.
+
+    Returns \c true if the value was removed; otherwise returns \c false.
 */
 bool QKnxGeneralStatus::removeAttribute(Attribute attribute)
 {
@@ -281,6 +289,8 @@ QKnxDeviceControl::Attributes QKnxDeviceControl::value() const
 /*!
     Sets the value of the datapoint type to the list of attributes specified by
     \a attributes.
+
+    Returns \c true if the value was set; otherwise returns \c false.
 */
 bool QKnxDeviceControl::setValue(Attributes attributes)
 {
@@ -302,6 +312,8 @@ bool QKnxDeviceControl::isSet(Attribute attribute) const
 
 /*!
     Sets the attribute \a attribute within the value of the datapoint type.
+
+    Returns \c true if the value was set; otherwise returns \c false.
 */
 bool QKnxDeviceControl::setAttribute(Attribute attribute)
 {
@@ -310,6 +322,8 @@ bool QKnxDeviceControl::setAttribute(Attribute attribute)
 
 /*!
     Removes the attribute \a attribute from the value of the datapoint type.
+
+    Returns \c true if the value was removed; otherwise returns \c false.
 */
 bool QKnxDeviceControl::removeAttribute(Attribute attribute)
 {

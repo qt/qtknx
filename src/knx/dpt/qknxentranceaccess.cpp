@@ -130,6 +130,9 @@ qint8 QKnxEntranceAccess::digit(quint8 x) const
 /*!
     Sets the digit \a digit at the position \a x in the access identification
     code.
+
+    If the value is outside the allowed range, returns \c false and does not set
+    the value.
 */
 bool QKnxEntranceAccess::setDigit(quint8 x, quint8 digit)
 {
@@ -211,6 +214,8 @@ bool QKnxEntranceAccess::setIdCode(quint32 idCode)
     Sets the additional information of the datapoint type to the list of
     attributes specified by \a attributes.
 
+    Returns \c true if the value was set; otherwise returns \c false.
+
     \sa Attribute
 */
 bool QKnxEntranceAccess::setAttributes(Attributes attributes)
@@ -226,6 +231,8 @@ bool QKnxEntranceAccess::setAttributes(Attributes attributes)
 /*!
     Adds \a attribute to the list of attributes.
 
+    Returns \c true if the attribute was set; otherwise returns \c false.
+
     \sa Attribute
 */
 bool QKnxEntranceAccess::setAttribute(Attribute attribute)
@@ -235,6 +242,8 @@ bool QKnxEntranceAccess::setAttribute(Attribute attribute)
 
 /*!
     Removes \a attribute from the list of attributes.
+
+    Returns \c true if the attribute was removed; otherwise returns \c false.
 
     \sa Attribute
 */
@@ -261,6 +270,8 @@ bool QKnxEntranceAccess::setIndex(quint8 index)
     Sets the access identification code stored in the datapoint type to
     \a idCode, the list of attributes to \a attributes, and the index to
     \a index.
+
+    Returns \c true if the value was set; otherwise returns \c false.
 */
 bool QKnxEntranceAccess::setValue(quint32 idCode, Attributes attributes, quint8 index)
 {

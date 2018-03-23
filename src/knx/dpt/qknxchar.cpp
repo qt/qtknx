@@ -1,6 +1,6 @@
 /******************************************************************************
 **
-** Copyright (C) 2017 The Qt Company Ltd.
+** Copyright (C) 2018 The Qt Company Ltd.
 ** Contact: https://www.qt.io/licensing/
 **
 ** This file is part of the QtKnx module.
@@ -153,6 +153,8 @@ char QKnxCharASCII::character() const
 
 /*!
     Sets the character of the datapoint type to \a value.
+
+    Returns \c true if the value was set; otherwise returns \c false.
 */
 bool QKnxCharASCII::setCharacter(char value)
 {
@@ -204,6 +206,8 @@ unsigned char QKnxChar88591::character() const
 
 /*!
     Sets the character of the datapoint type to \a value.
+
+    Returns \c true if the value was set; otherwise returns \c false.
 */
 bool QKnxChar88591::setCharacter(unsigned char value)
 {

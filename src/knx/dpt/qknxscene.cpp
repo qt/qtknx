@@ -1,6 +1,6 @@
 /******************************************************************************
 **
-** Copyright (C) 2017 The Qt Company Ltd.
+** Copyright (C) 2018 The Qt Company Ltd.
 ** Contact: https://www.qt.io/licensing/
 **
 ** This file is part of the QtKnx module.
@@ -226,8 +226,11 @@ bool QKnxSceneControl::isValid() const
 }
 
 /*!
-    Sets the scene number stored in the datapoint type to \a number and the
+    Sets the scene number stored in the datapoint type to \a sceneNumber and the
     scene control action to \a control.
+
+    Returns \c true if the value was set; otherwise returns \c false.
+
 */
 bool QKnxSceneControl::setValue(quint8 sceneNumber, Control control)
 {
@@ -314,8 +317,10 @@ bool QKnxSceneInfo::isValid() const
 }
 
 /*!
-    Sets the scene number stored in the datapoint type to \a number and the
+    Sets the scene number stored in the datapoint type to \a sceneNumber and the
     scene information to \a info.
+
+    Returns \c true if the value was set; otherwise returns \c false.
 */
 bool QKnxSceneInfo::setValue(quint8 sceneNumber, Info info)
 {
