@@ -35,10 +35,14 @@ sourcedirs  += ..
 exampledirs = ../../../examples/knx
 imagedirs   += images
 excludedirs += ../qt4support
+moduleheader = QtKnx
 
 Cpp.ignoretokens += Q_KNX_EXPORT
 
 depends += qtcore qtdoc qtnetwork qmake
+
+# Custom module header for Clang doc builds
+moduleheader = QtKnx_pch.h
 
 #add generic thumbnail images for example documentation that does not have an image.
 manifestmeta.thumbnail.names                += "QtKnx/Discoverer*" \
