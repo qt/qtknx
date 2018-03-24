@@ -70,7 +70,7 @@ void tst_QKnxNetIpCrd::testConstructorKnxAddress()
 
         QKnxNetIpCrdView view(crd);
         QCOMPARE(view.isValid(), false);
-        QCOMPARE(view.connectionType(), QKnxNetIp::ConnectionType::Tunnel);
+        QCOMPARE(view.connectionType(), QKnxNetIp::ConnectionType::Unknown);
         QCOMPARE(view.individualAddress().toString(), QStringLiteral(""));
 
         // make the CRD valid by setting an QKnxAddress
@@ -138,7 +138,7 @@ void tst_QKnxNetIpCrd::testConstructorConnectionType()
     QCOMPARE(crd.data(), QKnxByteArray {});
 
     QCOMPARE(view.isValid(), false);
-    QCOMPARE(view.connectionType(), QKnxNetIp::ConnectionType::Tunnel);
+    QCOMPARE(view.connectionType(), QKnxNetIp::ConnectionType::Unknown);
 
     crd = view.builder().setConnectionType(QKnxNetIp::ConnectionType::RemoteLogging)
         .create();

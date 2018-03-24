@@ -49,7 +49,7 @@ QT_BEGIN_NAMESPACE
 // Reminder: in case of data.size() > 14 make sure the priority is set to Low
 
 static QKnxControlField setupControlField(
-            QKnxControlField::FrameType type = QKnxControlField::FrameType::Standard,
+            QKnxControlField::FrameFormat type = QKnxControlField::FrameFormat::Standard,
             QKnxControlField::Repeat repeat = QKnxControlField::Repeat::DoNotRepeat,
             QKnxControlField::Broadcast broad = QKnxControlField::Broadcast::System,
             QKnxControlField::Priority priority = QKnxControlField::Priority::Low,
@@ -57,7 +57,7 @@ static QKnxControlField setupControlField(
             QKnxControlField::Confirm errorStatus = QKnxControlField::Confirm::NoError)
 {
     QKnxControlField ctrl;
-    ctrl.setFrameType(type);
+    ctrl.setFrameFormat(type);
     ctrl.setRepeat(repeat);
     ctrl.setBroadcast(broad);
     ctrl.setPriority(priority);
@@ -79,7 +79,7 @@ static QKnxLinkLayerFrame createFrame(QKnxLinkLayerFrame::MessageCode code, cons
     frame.setSourceAddress(src);
     QKnxControlField temp = ctrl;
     if (tpdu.dataSize() > 15) {
-        temp.setFrameType(QKnxControlField::FrameType::Extended);
+        temp.setFrameFormat(QKnxControlField::FrameFormat::Extended);
         temp.setPriority(QKnxControlField::Priority::Low);
     }
     frame.setControlField(temp);

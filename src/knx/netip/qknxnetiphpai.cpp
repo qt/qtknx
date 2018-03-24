@@ -109,7 +109,7 @@ bool QKnxNetIpHpaiView::isValid() const
 */
 QKnxNetIp::HostProtocol QKnxNetIpHpaiView::hostProtocol() const
 {
-    if (m_hpai.isValid())
+    if (isValid())
         return m_hpai.code();
     return QKnxNetIp::HostProtocol::Unknown;
 }
@@ -121,7 +121,7 @@ QKnxNetIp::HostProtocol QKnxNetIpHpaiView::hostProtocol() const
 */
 QHostAddress QKnxNetIpHpaiView::hostAddress() const
 {
-    if (m_hpai.isValid())
+    if (isValid())
         return QKnxUtils::HostAddress::fromBytes(m_hpai.constData());
     return {};
 }

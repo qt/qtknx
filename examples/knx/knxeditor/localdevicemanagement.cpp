@@ -89,7 +89,7 @@ LocalDeviceManagement::LocalDeviceManagement(QWidget* parent)
         ui->deviceManagementSendRequest->setEnabled(true);
         ui->connectRequestDeviceManagement->setEnabled(false);
         ui->disconnectRequestDeviceManagement->setEnabled(true);
-        ui->textOuputDeviceManagement->append(tr("Successful connected to: %1 on port: %2")
+        ui->textOuputDeviceManagement->append(tr("Successfully connected to: %1 on port: %2")
             .arg(m_server.controlEndpointAddress().toString()).arg(m_server.controlEndpointPort()));
 
         m_management.sendDeviceManagementFrame(QKnxLocalDeviceManagementFrameFactory::PropertyRead

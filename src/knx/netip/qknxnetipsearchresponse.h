@@ -51,21 +51,21 @@ public:
 
     QKnxNetIpHpai controlEndpoint() const;
     QKnxNetIpDeviceDib deviceHardware() const;
-    QKnxNetIpServiceFamiliesDib supportedFamilies() const;
+    QKnxNetIpDib supportedFamilies() const;
 
     class Q_KNX_EXPORT Builder final
     {
     public:
         Builder &setControlEndpoint(const QKnxNetIpHpai &hpai);
         Builder &setDeviceHardware(const QKnxNetIpDeviceDib &ddib);
-        Builder &setSupportedFamilies(const QKnxNetIpServiceFamiliesDib &sdib);
+        Builder &setSupportedFamilies(const QKnxNetIpDib &sdib);
 
         QKnxNetIpFrame create() const;
 
     private:
         QKnxNetIpHpai m_hpai;
         QKnxNetIpDeviceDib m_ddib;
-        QKnxNetIpServiceFamiliesDib m_sdib;
+        QKnxNetIpDib m_sdib;
     };
     static QKnxNetIpSearchResponse::Builder builder();
 

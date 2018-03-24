@@ -57,22 +57,22 @@
 
 Ui::MainWindow *MainWindow::s_ui { nullptr };
 
-static QString familieToString(QKnxNetIpServiceFamiliesDib::ServiceFamilieId id)
+static QString familieToString(QKnxNetIp::ServiceFamily id)
 {
     switch (id) {
-    case QKnxNetIpServiceFamiliesDib::ServiceFamilieId::Core:
+    case QKnxNetIp::ServiceFamily::Core:
         return MainWindow::tr("Core");
-    case QKnxNetIpServiceFamiliesDib::ServiceFamilieId::DeviceManagement:
+    case QKnxNetIp::ServiceFamily::DeviceManagement:
         return MainWindow::tr("Device Management");
-    case QKnxNetIpServiceFamiliesDib::ServiceFamilieId::IpTunneling:
+    case QKnxNetIp::ServiceFamily::IpTunneling:
         return MainWindow::tr("Tunnel");
-    case QKnxNetIpServiceFamiliesDib::ServiceFamilieId::IpRouting:
+    case QKnxNetIp::ServiceFamily::IpRouting:
         return MainWindow::tr("Routing");
-    case QKnxNetIpServiceFamiliesDib::ServiceFamilieId::RemoteLogging:
+    case QKnxNetIp::ServiceFamily::RemoteLogging:
         return MainWindow::tr("Remote Logging");
-    case QKnxNetIpServiceFamiliesDib::ServiceFamilieId::RemoteConfigAndDiagnosis:
+    case QKnxNetIp::ServiceFamily::RemoteConfigAndDiagnosis:
         return MainWindow::tr("Remote Configuration");
-    case QKnxNetIpServiceFamiliesDib::ServiceFamilieId::ObjectServer:
+    case QKnxNetIp::ServiceFamily::ObjectServer:
         return MainWindow::tr("Object Server");
     default:
         break;
@@ -191,11 +191,11 @@ void MainWindow::newServerSelected(int serverBoxIndex)
         .arg(info.controlEndpointAddress().toString()).arg(info.controlEndpointPort())
         .arg([&info]() -> QString {
             QString value;
-            auto services = info.supportedServices();
-            for (auto it = services.constBegin(); it != services.constEnd(); ++it) {
+            const auto services = info.supportedServices();
+            for (const auto &service : services) {
                 value.append(tr("<tr><td class=\"padding\">%1</td></th>")
-                    .arg(tr("KNXnet/IP %1, Version: %2")
-                        .arg(familieToString(it.key())).arg(it.value())));
+                    .arg(tr("KNXnet/IP %1, Version: %2").arg(familieToString(service.ServiceFamily))
+                        .arg(service.ServiceFamilyVersion)));
             }
             return value;
         }())
@@ -249,10 +249,10 @@ void MainWindow::showServerAndServices(const QKnxNetIpServerInfo &info)
     ui->outputEdit->append(tr("Server's Port"));
     ui->outputEdit->append(QString::number(info.controlEndpointPort()));
     ui->outputEdit->append(tr("The following services are supported:"));
-    auto services = info.supportedServices();
-    for (auto it = std::begin(services); it != std::end(services); ++it) {
-        ui->outputEdit->append(tr("    KNXnet/IP %1, Version: %2").arg(familieToString(it.key()))
-            .arg(it.value()));
+    const auto services = info.supportedServices();
+    for (const auto service : services) {
+        ui->outputEdit->append(tr("    KNXnet/IP %1, Version: %2")
+            .arg(familieToString(service.ServiceFamily)).arg(service.ServiceFamilyVersion));
     }
 
     ui->serverBox->addItem(tr("%1 (%2:%3)").arg(info.deviceName(), info.controlEndpointAddress()

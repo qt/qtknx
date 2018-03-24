@@ -108,7 +108,7 @@
          </property>
          <layout class="QGridLayout" name="gridLayout">
           <item row="0" column="2">
-           <widget class="QComboBox" name="frameType">
+           <widget class="QComboBox" name="frameFormat">
             <property name="currentIndex">
              <number>1</number>
             </property>
@@ -722,7 +722,7 @@
   <tabstop>mc</tabstop>
   <tabstop>sourceAddress</tabstop>
   <tabstop>destAddress</tabstop>
-  <tabstop>frameType</tabstop>
+  <tabstop>frameFormat</tabstop>
   <tabstop>repeat</tabstop>
   <tabstop>broadcast</tabstop>
   <tabstop>priority</tabstop>

@@ -96,9 +96,11 @@ QKnxNetIpCriView::QKnxNetIpCriView(const QKnxNetIpCri &cri)
 bool QKnxNetIpCriView::isValid() const
 {
     switch (m_cri.code()) {
-        case QKnxNetIp::ConnectionType::Tunnel:
+        case QKnxNetIp::ConnectionType::Tunnel: {
+            auto tmp = m_cri.constData().value(0);
             return m_cri.isValid() && m_cri.size() == 4
-                && QKnxNetIp::isTunnelingLayer(tunnelingLayer());
+                && QKnxNetIp::isTunnelingLayer(QKnxNetIp::TunnelingLayer(tmp));
+        }
         case QKnxNetIp::ConnectionType::DeviceManagement:
         case QKnxNetIp::ConnectionType::RemoteLogging:
         case QKnxNetIp::ConnectionType::RemoteConfiguration:
@@ -117,7 +119,7 @@ bool QKnxNetIpCriView::isValid() const
 */
 QKnxNetIp::ConnectionType QKnxNetIpCriView::connectionType() const
 {
-    if (m_cri.isValid())
+    if (isValid())
         return m_cri.code();
     return QKnxNetIp::ConnectionType::Unknown;
 }
@@ -131,7 +133,7 @@ QKnxNetIp::ConnectionType QKnxNetIpCriView::connectionType() const
 */
 QKnxNetIp::TunnelingLayer QKnxNetIpCriView::tunnelingLayer() const
 {
-    if (m_cri.code() == QKnxNetIp::ConnectionType::Tunnel)
+    if (isValid())
         return QKnxNetIp::TunnelingLayer(m_cri.constData().value(0));
     return QKnxNetIp::TunnelingLayer::Unknown;
 }
@@ -204,7 +206,7 @@ QKnxNetIpCriView::Builder &
     QKnxNetIpCriView::Builder::setTunnelingLayer(QKnxNetIp::TunnelingLayer layer)
 {
     if (QKnxNetIp::isTunnelingLayer(layer))
-        setAdditionalData({ quint8(layer), 0x00 });
+        setAdditionalData({ quint8(layer), 0x00 /* reserved byte */ });
     return *this;
 }
 

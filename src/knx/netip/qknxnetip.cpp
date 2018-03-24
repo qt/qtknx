@@ -157,9 +157,52 @@ bool QKnxNetIp::isStructType(QKnxNetIp::DescriptionType type)
 }
 
 /*!
+    \enum QKnxNetIp::ServiceFamily
+
+    The service family is the high octet of the values of the \l ServiceType
+    enumeration.
+
+    \value Unknown                      Unknown service family.
+    \value Core                         Core service family.
+    \value DeviceManagement             Device management service family.
+    \value IpTunneling                  Tunneling service family.
+    \value IpRouting                    Routing service family.
+    \value RemoteLogging                Remote logging service family.
+    \value RemoteConfigAndDiagnosis
+           Remote configuration and diagnosis service family.
+    \value ObjectServer                 Object server service family.
+*/
+
+/*!
+    Returns \c true if the specified \a family is a part of the \l ServiceFamily
+    enumeration; otherwise returns \c false.
+*/
+bool QKnxNetIp::isServiceFamily(QKnxNetIp::ServiceFamily family)
+{
+    switch (family) {
+    case QKnxNetIp::ServiceFamily::Core:
+    case QKnxNetIp::ServiceFamily::DeviceManagement:
+    case QKnxNetIp::ServiceFamily::IpTunneling:
+    case QKnxNetIp::ServiceFamily::IpRouting:
+    case QKnxNetIp::ServiceFamily::RemoteLogging:
+    case QKnxNetIp::ServiceFamily::RemoteConfigAndDiagnosis:
+    case QKnxNetIp::ServiceFamily::ObjectServer:
+        return true;
+    case QKnxNetIp::ServiceFamily::Unknown:
+        break;
+    }
+    return false;
+}
+
+/*!
     \enum QKnxNetIp::ServiceType
 
     This enum describes KNXnet/IP frame service type identifiers.
+
+    The KNXnet/IP service type identifier defines the kind of action to
+    be performed and the type of the data payload contained in the
+    KNXnet/IP body. The high octet of the KNXnet/IP service type identifier
+    denotes the \l ServiceFamily.
 
     \value Unknown
            The service type of the KNXnet/IP frame is unknown.

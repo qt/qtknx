@@ -54,22 +54,22 @@
 #include <QtKnx/QKnxNetIpServerDiscoveryAgent>
 #include <QtNetwork/QNetworkInterface>
 
-static QString familieToString(QKnxNetIpServiceFamiliesDib::ServiceFamilieId id)
+static QString familieToString(QKnxNetIp::ServiceFamily id)
 {
     switch (id) {
-        case QKnxNetIpServiceFamiliesDib::ServiceFamilieId::Core:
+        case QKnxNetIp::ServiceFamily::Core:
             return "Core";
-        case QKnxNetIpServiceFamiliesDib::ServiceFamilieId::DeviceManagement:
+        case QKnxNetIp::ServiceFamily::DeviceManagement:
             return "Device Management";
-        case QKnxNetIpServiceFamiliesDib::ServiceFamilieId::IpTunneling:
+        case QKnxNetIp::ServiceFamily::IpTunneling:
             return "Tunnel";
-        case QKnxNetIpServiceFamiliesDib::ServiceFamilieId::IpRouting:
+        case QKnxNetIp::ServiceFamily::IpRouting:
             return "Routing";
-        case QKnxNetIpServiceFamiliesDib::ServiceFamilieId::RemoteLogging:
+        case QKnxNetIp::ServiceFamily::RemoteLogging:
             return "Remote Logging";
-        case QKnxNetIpServiceFamiliesDib::ServiceFamilieId::RemoteConfigAndDiagnosis:
+        case QKnxNetIp::ServiceFamily::RemoteConfigAndDiagnosis:
             return "Remote Configuration";
-        case QKnxNetIpServiceFamiliesDib::ServiceFamilieId::ObjectServer:
+        case QKnxNetIp::ServiceFamily::ObjectServer:
             return "Object Server";
         default:
             break;
@@ -139,11 +139,11 @@ int main(int argc, char *argv[])
             qInfo().noquote() << QString::fromLatin1("      Server control endpoint: %1:%2")
                 .arg(server.controlEndpointAddress().toString()).arg(server.controlEndpointPort());
 
-            auto services = server.supportedServices();
+            const auto services = server.supportedServices();
             qInfo().noquote() << QString::fromLatin1("    Supported services:");
-            for (auto it = services.constBegin(); it != services.constEnd(); ++it) {
+            for (const auto service : services) {
                 qInfo().noquote() << QString::fromLatin1("      KNXnet/IP %1, Version: %2")
-                    .arg(familieToString(it.key())).arg(it.value());
+                    .arg(familieToString(service.ServiceFamily)).arg(service.ServiceFamilyVersion);
             }
             qInfo() << "";
         }

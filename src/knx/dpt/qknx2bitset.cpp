@@ -42,7 +42,7 @@ QT_BEGIN_NAMESPACE
 
     The range for the value is from \c 0x00 to \c 0x03.
 
-    \sa QKnxDatapointType
+    \sa QKnxDatapointType, QKnxAlarmReaction, QKnxOnOffAction, QKnxUpDownAction
 */
 
 // -- QKnx2BitSet
@@ -82,7 +82,7 @@ quint8 QKnx2BitSet::value() const
 }
 
 /*!
-    Sets the value of the datapoint type to \a value.
+    Sets the value stored in the datapoint type to \a value.
 
     If the value is outside the allowed range, returns \c false and does not set
     the value.
@@ -105,10 +105,42 @@ bool QKnx2BitSet::isValid() const
 
 // -- QKnxOnOffAction
 
+/*!
+    \class QKnxOnOffAction
+    \inherits QKnx2BitSet
+    \inmodule QtKnx
+    \brief The QKnxOnOffAction class is a fixed size datapoint type for storing
+    the on/off action.
+
+    The range for the \l{Action}{action} value is from \c {Minimum Off, 0} to
+    \c {Maximum On/Off, 3}.
+
+    This is a fixed size datapoint type with the length of 2 bits.
+
+    \sa QKnxDatapointType, QKnxAlarmReaction, QKnxUpDownAction
+*/
+
+/*!
+    \enum QKnxOnOffAction::Action
+
+    This enum holds the action stored in the datapoint type.
+
+    \value Off
+    \value On
+    \value OffOn
+    \value OnOff
+*/
+
+/*!
+    Creates a fixed size datapoint type with the action set to \c Off.
+*/
 QKnxOnOffAction::QKnxOnOffAction()
     : QKnxOnOffAction(Action::Off)
 {}
 
+/*!
+    Creates a fixed size datapoint type with the action set to \a action.
+*/
 QKnxOnOffAction::QKnxOnOffAction(Action action)
     : QKnx2BitSet(SubType, quint8(action))
 {
@@ -116,11 +148,19 @@ QKnxOnOffAction::QKnxOnOffAction(Action action)
     setRangeText(tr("Minimum Off, 0"), tr("Maximum On/Off, 3"));
 }
 
+/*!
+    Sets the action stored in the datapoint type to \a action.
+
+    Returns \c true if the value was set; otherwise returns \c false.
+*/
 bool QKnxOnOffAction::setAction(Action action)
 {
     return setValue(quint8(action));
 }
 
+/*!
+    Returns the action stored in the datapoint type.
+*/
 QKnxOnOffAction::Action QKnxOnOffAction::action() const
 {
     return Action(value());
@@ -129,10 +169,46 @@ QKnxOnOffAction::Action QKnxOnOffAction::action() const
 
 // -- QKnxAlarmReaction
 
+/*!
+    \class QKnxAlarmReaction
+    \inherits QKnx2BitSet
+    \inmodule QtKnx
+    \brief The QKnxAlarmReaction class is a fixed size datapoint type for
+    storing the alarm reaction.
+
+    The range for the \l{Alarm}{alarm} value is from \c {No alarm is used, 0} to
+    \c {Alarm position is down, 2}.
+
+    This is a fixed size datapoint type with the length of 2 bits.
+
+    \sa QKnxDatapointType, QKnxOnOffAction, QKnxUpDownAction
+*/
+
+/*!
+    \enum QKnxAlarmReaction::Alarm
+
+    This enum holds the alarm reaction stored in the datapoint type.
+
+    \value NoAlarm
+           No alarm is used.
+    \value AlarmUp
+           Alarm position is up.
+    \value AlarmDown
+           Alarm position is down.
+*/
+
+/*!
+    Creates a fixed size datapoint type with the alarm reaction set to
+    \c NoAlarm.
+*/
 QKnxAlarmReaction::QKnxAlarmReaction()
     : QKnxAlarmReaction(Alarm::NoAlarm)
 {}
 
+/*!
+    Creates a fixed size datapoint type with the alarm reaction set to
+    \a alarm.
+*/
 QKnxAlarmReaction::QKnxAlarmReaction(Alarm alarm)
     : QKnx2BitSet(SubType, quint8(alarm))
 {
@@ -142,11 +218,19 @@ QKnxAlarmReaction::QKnxAlarmReaction(Alarm alarm)
     setAlarm(alarm);
 }
 
+/*!
+    Sets the alarm reaction stored in the datapoint type to \a alarm.
+
+    Returns \c true if the value was set; otherwise returns \c false.
+*/
 bool QKnxAlarmReaction::setAlarm(Alarm alarm)
 {
     return setValue(quint8(alarm));
 }
 
+/*!
+    Returns the alarm reaction stored in the datapoint type.
+*/
 QKnxAlarmReaction::Alarm QKnxAlarmReaction::alarm() const
 {
     auto tmp = value();
@@ -156,10 +240,42 @@ QKnxAlarmReaction::Alarm QKnxAlarmReaction::alarm() const
 
 // -- QKnxUpDownAction
 
+/*!
+    \class QKnxUpDownAction
+    \inherits QKnx2BitSet
+    \inmodule QtKnx
+    \brief The QKnxOnOffAction class is a fixed size datapoint type for storing
+    the up/down action.
+
+    The range for the \l{Action}{action} value is from \c {Minimum Up, 0} to
+    \c {Maximum Down/Up, 3}.
+
+    This is a fixed size datapoint type with the length of 2 bits.
+
+    \sa QKnxDatapointType, QKnxAlarmReaction, QKnxOnOffAction
+*/
+
+/*!
+    \enum QKnxUpDownAction::Action
+
+    This enum holds the action stored in the datapoint type.
+
+    \value Up
+    \value Down
+    \value UpDown
+    \value DownUp
+*/
+
+/*!
+    Creates a fixed size datapoint type with the action set to \c Up.
+*/
 QKnxUpDownAction::QKnxUpDownAction()
     : QKnxUpDownAction(Action::Up)
 {}
 
+/*!
+    Creates a fixed size datapoint type with the action set to \a action.
+*/
 QKnxUpDownAction::QKnxUpDownAction(Action action)
     : QKnx2BitSet(SubType, quint8(action))
 {
@@ -167,11 +283,19 @@ QKnxUpDownAction::QKnxUpDownAction(Action action)
     setRangeText(tr("Minimum Up, 0"), tr("Maximum Down/Up, 3"));
 }
 
+/*!
+    Sets the action stored in the datapoint type to \a action.
+
+    Returns \c true if the value was set; otherwise returns \c false.
+*/
 bool QKnxUpDownAction::setAction(Action action)
 {
     return setValue(quint8(action));
 }
 
+/*!
+    Returns the action stored in the datapoint type.
+*/
 QKnxUpDownAction::Action QKnxUpDownAction::action() const
 {
     return Action(value());

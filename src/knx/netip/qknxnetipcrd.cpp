@@ -99,9 +99,8 @@ bool QKnxNetIpCrdView::isValid() const
 {
     switch (m_crd.code()) {
         case QKnxNetIp::ConnectionType::Tunnel: {
-            const auto address = individualAddress();
-            return m_crd.isValid() && m_crd.size() == 4
-                && address.isValid() && address.type() == QKnxAddress::Type::Individual;
+            const QKnxAddress address { QKnxAddress::Type::Individual, m_crd.constData() };
+            return m_crd.isValid() && m_crd.size() == 4 && address.isValid();
         } break;
         case QKnxNetIp::ConnectionType::DeviceManagement:
         case QKnxNetIp::ConnectionType::RemoteLogging:
@@ -121,7 +120,7 @@ bool QKnxNetIpCrdView::isValid() const
 */
 QKnxNetIp::ConnectionType QKnxNetIpCrdView::connectionType() const
 {
-    if (m_crd.isValid())
+    if (isValid())
         return m_crd.code();
     return QKnxNetIp::ConnectionType::Unknown;
 }
@@ -135,7 +134,7 @@ QKnxNetIp::ConnectionType QKnxNetIpCrdView::connectionType() const
 */
 QKnxAddress QKnxNetIpCrdView::individualAddress() const
 {
-    if (m_crd.code() == QKnxNetIp::ConnectionType::Tunnel)
+    if (isValid())
         return { QKnxAddress::Type::Individual, m_crd.constData() };
     return {};
 }

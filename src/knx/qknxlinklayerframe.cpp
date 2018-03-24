@@ -156,7 +156,7 @@ bool QKnxLinkLayerFrame::isValid() const
         }
         // TODO: check NPDU/ TPDU size, several cases need to be taken into account:
         // 1; Information-Length (max. value is 255); number of TPDU octets, TPCI octet not included!
-        if (controlField().frameType() == QKnxControlField::FrameType::Extended
+        if (controlField().frameFormat() == QKnxControlField::FrameFormat::Extended
             && tpdu().size() > 256)
             return false;
         // Low Priority is Mandatory for long frame 3.3.2 paragraph 2.2.3
@@ -169,7 +169,7 @@ bool QKnxLinkLayerFrame::isValid() const
         //    03_06_03 EMI_IMI v01.03.03 AS.pdf page 75 NOTE 1
         // 4; 03_03_02 Data Link Layer General v01.02.02 AS.pdf page 12 paragraph 2.2.5
         // control field frame type standard -> max. length value is 15
-        if (controlField().frameType() == QKnxControlField::FrameType::Standard
+        if (controlField().frameFormat() == QKnxControlField::FrameFormat::Standard
             && tpdu().byte(0) > 15)
             return false;
         //  control field frame type extended -> max. length value is 255

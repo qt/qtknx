@@ -71,9 +71,9 @@ QHostAddress QKnxNetIpServerInfo::controlEndpointAddress() const
     return QKnxNetIpHpaiView(d_ptr->hpai).hostAddress();
 }
 
-QKnxNetIpServiceFamiliesDib::ServiceFamilyIdVersions QKnxNetIpServerInfo::supportedServices() const
+QVector<QKnxServiceInfo> QKnxNetIpServerInfo::supportedServices() const
 {
-    return d_ptr->services.serviceFamilyIdVersions();
+    return QKnxNetIpServiceFamiliesDibView(d_ptr->services).serviceInfos();
 }
 
 QKnxNetIpHpai QKnxNetIpServerInfo::endpoint() const
@@ -86,7 +86,7 @@ QKnxNetIpDeviceDib QKnxNetIpServerInfo::hardware() const
     return d_ptr->hardware;
 }
 
-QKnxNetIpServiceFamiliesDib QKnxNetIpServerInfo::services() const
+QKnxNetIpDib QKnxNetIpServerInfo::services() const
 {
     return d_ptr->services;
 }
@@ -132,7 +132,7 @@ void QKnxNetIpServerInfo::swap(QKnxNetIpServerInfo &other) Q_DECL_NOTHROW
 }
 
 QKnxNetIpServerInfo::QKnxNetIpServerInfo(const QKnxNetIpHpai &hpai,
-    const QKnxNetIpDeviceDib &hardware, QKnxNetIpServiceFamiliesDib services)
+    const QKnxNetIpDeviceDib &hardware, QKnxNetIpDib services)
     : QKnxNetIpServerInfo()
 {
     d_ptr->hpai = hpai;

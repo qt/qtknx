@@ -69,7 +69,8 @@ void tst_QKnxNetIpSearchResponse::testConstructor()
                                 QHostAddress::AnyIPv4,
                                 QKnxByteArray::fromHex("bcaec56690f9"),
                                 QKnxByteArray("qt.io KNX device", 16));
-    QKnxNetIpServiceFamiliesDib families(QKnxNetIpServiceFamiliesDib::ServiceFamilieId::Core, 10);
+    auto families = QKnxNetIpServiceFamiliesDibView::builder()
+        .setServiceInfos({ { QKnxNetIp::ServiceFamily::Core, 10 } }).create();
 
     auto frame = QKnxNetIpSearchResponse::builder()
         .setControlEndpoint(endpoint)
@@ -120,13 +121,14 @@ void tst_QKnxNetIpSearchResponse::testDebugStream()
     } _(myMessageHandler);
 
     qDebug() << QKnxNetIpSearchResponse::builder().create();
-    QCOMPARE(s_msg, QString::fromLatin1("0x0610020200080202"));
+    QCOMPARE(s_msg, QString::fromLatin1("0x061002020006"));
 
     qDebug() << QKnxNetIpSearchResponse::builder()
         .setControlEndpoint(QKnxNetIpHpaiView::builder()
             .setHostAddress(QHostAddress::LocalHost)
             .setPort(3671).create())
-        .setSupportedFamilies({ QKnxNetIpServiceFamiliesDib::ServiceFamilieId::Core, 10 })
+        .setSupportedFamilies(QKnxNetIpServiceFamiliesDibView::builder()
+            .setServiceInfos({ { QKnxNetIp::ServiceFamily::Core, 10 } }).create())
         .setDeviceHardware({
             QKnx::MediumType::NetIP,
             QKnxNetIpDeviceDib::DeviceStatus::ActiveProgrammingMode,

@@ -1,6 +1,6 @@
 /******************************************************************************
 **
-** Copyright (C) 2017 The Qt Company Ltd.
+** Copyright (C) 2018 The Qt Company Ltd.
 ** Contact: https://www.qt.io/licensing/
 **
 ** This file is part of the QtKnx module.
@@ -40,6 +40,8 @@ QT_BEGIN_NAMESPACE
     \brief The QKnx1Byte class is a fixed size datapoint type with the length of
     1 byte.
 
+    This datapoint type encodes an absolute value between \c 0 and \c 255.
+
     \sa QKnxDatapointType
 */
 // -- QKnx1Byte
@@ -53,8 +55,6 @@ QKnx1Byte::QKnx1Byte()
 
 /*!
     Creates a fixed size datapoint type with the value \a value.
-
-    The range for the value is from \c 0 to \c 255.
 */
 QKnx1Byte::QKnx1Byte(quint8 value)
     : QKnx1Byte(SubType, value)
@@ -63,8 +63,6 @@ QKnx1Byte::QKnx1Byte(quint8 value)
 /*!
     Creates a fixed size datapoint with the subtype \a subType and the value
     \a value.
-
-    The range for the value is from \c 0 to \c 255.
 */
 QKnx1Byte::QKnx1Byte(int subType, quint8 value)
     : QKnxFixedSizeDatapointType(MainType, subType, TypeSize)
@@ -85,7 +83,9 @@ quint8 QKnx1Byte::value() const
 }
 
 /*!
-    Sets the value of the datapoint type to \a value.
+    Sets the byte stored in the datapoint type to \a value.
+
+    Returns \c true if the byte was set; otherwise returns \c false.
 */
 bool QKnx1Byte::setValue(quint8 value)
 {
@@ -103,10 +103,74 @@ bool QKnx1Byte::isValid() const
 
 // -- QKnxScloMode
 
+/*!
+    \class QKnxScloMode
+    \inherits QKnx1Byte
+    \inmodule QtKnx
+
+    \brief The QKnxScloMode class is a datapoint type for storing the system
+    clock (SCLO) mode.
+
+    One device in the system may be assigned to provide accurate system time
+    and date information and synchronize the local clocks of other devices in
+    the system. The system clock information is generated and distributed by
+    the system clock that is configured as a \e {master clock}.
+
+    Other clocks in the system are configured as \e {slave clocks}, which are
+    also real clocks. They contain an internal clock to keep the time (using an
+    oscillator, crystal, mains signal, and so on).
+
+    The clock in the SCLO can also be run autonomously, which means that no
+    system clock information is sent and reception of system clock information
+    is disabled. In this case, the SCLO is configured as an
+    \e {autonomous clock}.
+
+    SCLO mode may be activated automatically or by configuration. Usually, the
+    device containing a SCLO with the most accurate clock will be configured as
+    master, whereas SCLOs in other devices are configured as slaves or
+    autonomous clocks.
+
+    The \l Mode enumeration holds the main functionality of SCLO as an
+    autonomous clock, a slave clock, or a master clock. Depending on the mode,
+    datapoints in the SCLO become mandatory or optional and alternative
+    flowcharts are activated in the device.
+
+    The SCLO mode must be set in a device, but it can be \e read-only. It can be
+    set at the factory and is not changeable because a SCLO may have a fixed
+    functionality. For example, a DCF77 Radio Clock will always be a master
+    clock.
+
+    This is a fixed size datapoint type with the length of 1 byte.
+
+    \sa QKnxDatapointType, QKnx1Byte
+*/
+
+/*!
+    \enum QKnxScloMode::Mode
+
+    This enum holds the main functionality of the SCLO stored in the datapoint
+    type.
+
+    \value Autonomous
+           The system clock is configured as an autonomous clock.
+    \value Slave
+           The system clock is configured as a slave clock.
+    \value Master
+           The system clock is configured as a master clock.
+    \value Invalid
+           The value is invalid.
+*/
+
+/*!
+    Creates a fixed size datapoint type with the SCLO mode set to \c Autonomous.
+*/
 QKnxScloMode::QKnxScloMode()
     : QKnxScloMode(Mode::Autonomous)
 {}
 
+/*!
+    Creates a fixed size datapoint type with the SCLO mode set to \a mode.
+*/
 QKnxScloMode::QKnxScloMode(Mode mode)
     : QKnx1Byte(SubType, 0)
 {
@@ -116,6 +180,11 @@ QKnxScloMode::QKnxScloMode(Mode mode)
     setMode(mode);
 }
 
+/*!
+    Sets the SCLO mode stored in the datapoint type to \a mode.
+
+    Returns \c true if the byte was set; otherwise returns \c false.
+*/
 bool QKnxScloMode::setMode(Mode mode)
 {
     if (mode <= Mode::Master)
@@ -123,6 +192,9 @@ bool QKnxScloMode::setMode(Mode mode)
     return false;
 }
 
+/*!
+    Returns the SCLO mode stored in the datapoint type.
+*/
 QKnxScloMode::Mode QKnxScloMode::mode() const
 {
     quint8 valueMode = value();
@@ -132,10 +204,52 @@ QKnxScloMode::Mode QKnxScloMode::mode() const
 
 // -- QKnxBuildingMode
 
+/*!
+    \class QKnxBuildingMode
+    \inherits QKnx1Byte
+    \inmodule QtKnx
+
+    \brief The QKnxBuildingMode class is a datapoint type for storing the
+    building mode.
+
+    This datapoint type stores whether the building is in use and whether it is
+    protected.
+
+    The range for the \l Mode value is from \c {Building in use, 0} to
+    \c {Building protection, 2}.
+
+    This is a fixed size datapoint type with the length of 1 byte.
+
+    \sa QKnxDatapointType, QKnx1Byte
+*/
+
+/*!
+    \enum QKnxBuildingMode::Mode
+
+    This enum holds the building mode stored in the datapoint type.
+
+    \value BuildingInUse
+           The building is in use.
+    \value BuildingNotUsed
+           The building is not in use.
+    \value BuildingProtection
+           The building is protected.
+    \value Invalid
+           The value is invalid.
+*/
+
+/*!
+    Creates a fixed size datapoint type with the building mode set to
+    \c BuildingInUse.
+*/
 QKnxBuildingMode::QKnxBuildingMode()
     : QKnxBuildingMode(Mode::BuildingInUse)
 {}
 
+/*!
+    Creates a fixed size datapoint type with the building mode set to
+    \a mode.
+*/
 QKnxBuildingMode::QKnxBuildingMode(Mode mode)
     : QKnx1Byte(SubType, 0)
 {
@@ -145,6 +259,11 @@ QKnxBuildingMode::QKnxBuildingMode(Mode mode)
     setMode(mode);
 }
 
+/*!
+    Sets the building mode stored in the datapoint type to \a mode.
+
+    Returns \c true if the byte was set; otherwise returns \c false.
+*/
 bool QKnxBuildingMode::setMode(Mode mode)
 {
     if (mode <= Mode::BuildingProtection)
@@ -152,6 +271,9 @@ bool QKnxBuildingMode::setMode(Mode mode)
     return false;
 }
 
+/*!
+    Returns the building mode stored in the datapoint type.
+*/
 QKnxBuildingMode::Mode QKnxBuildingMode::mode() const
 {
     quint8 valueMode = value();
@@ -161,10 +283,48 @@ QKnxBuildingMode::Mode QKnxBuildingMode::mode() const
 
 // -- QKnxOccupyMode
 
+/*!
+    \class QKnxOccupyMode
+    \inherits QKnx1Byte
+    \inmodule QtKnx
+
+    \brief The QKnxOccupyMode class is a datapoint type for storing the occupy
+    mode.
+
+    This datapoint type stores information about room occupancy.
+
+    The range for the value is from \c {Occupied, 0} to \c {Not occupied, 2}.
+
+    This is a fixed size datapoint type with the length of 1 byte.
+
+    \sa QKnxDatapointType, QKnx1Byte
+*/
+
+/*!
+    \enum QKnxOccupyMode::Mode
+
+    This enum holds the mode stored in the datapoint type.
+
+    \value Occupied
+           The room is occupied.
+    \value Standby
+           Stand-by
+    \value NotOccupied
+           The room is not occupied.
+    \value Invalid
+           The value is invalid.
+*/
+
+/*!
+    Creates a fixed size datapoint type with the mode set to \c Occupied.
+*/
 QKnxOccupyMode::QKnxOccupyMode()
     : QKnxOccupyMode(Mode::Occupied)
 {}
 
+/*!
+    Creates a fixed size datapoint type with the mode set to \a mode.
+*/
 QKnxOccupyMode::QKnxOccupyMode(Mode mode)
     : QKnx1Byte(SubType, 0)
 {
@@ -174,6 +334,11 @@ QKnxOccupyMode::QKnxOccupyMode(Mode mode)
     setMode(mode);
 }
 
+/*!
+    Sets the mode stored in the datapoint type to \a mode.
+
+    Returns \c true if the byte was set; otherwise returns \c false.
+*/
 bool QKnxOccupyMode::setMode(Mode mode)
 {
     if (mode <= Mode::NotOccupied)
@@ -181,6 +346,9 @@ bool QKnxOccupyMode::setMode(Mode mode)
     return false;
 }
 
+/*!
+    Returns the mode stored in the datapoint type.
+*/
 QKnxOccupyMode::Mode QKnxOccupyMode::mode() const
 {
     quint8 valueMode = value();
@@ -190,10 +358,51 @@ QKnxOccupyMode::Mode QKnxOccupyMode::mode() const
 
 // -- QKnxPriority
 
+/*!
+    \class QKnxPriority
+    \inherits QKnx1Byte
+    \inmodule QtKnx
+
+    \brief The QKnxPriority class is a datapoint type for storing priority.
+
+    This datapoint type is used for parameters, not for runtime interworking.
+    For example, it can be used to store the alarm priority of a configurable
+    digital alarm input in a device.
+
+    The range for the value is from \c {High, 0} to \c {Void, 3}.
+
+    This is a fixed size datapoint type with the length of 1 byte.
+
+    \sa QKnxDatapointType, QKnx1Byte
+*/
+
+/*!
+    \enum QKnxPriority::Priority
+
+    This enum holds the priority stored in the datapoint type.
+
+    \value High
+           High
+    \value Medium
+           Medium
+    \value Low
+           Low
+    \value Void
+           Void
+    \value Invalid
+           The value is invalid.
+*/
+
+/*!
+    Creates a fixed size datapoint type with the priority set to \c High.
+*/
 QKnxPriority::QKnxPriority()
     : QKnxPriority(Priority::High)
 {}
 
+/*!
+    Creates a fixed size datapoint type with the priority set to \a priority.
+*/
 QKnxPriority::QKnxPriority(Priority priority)
     : QKnx1Byte(SubType, 0)
 {
@@ -203,6 +412,11 @@ QKnxPriority::QKnxPriority(Priority priority)
     setPriority(priority);
 }
 
+/*!
+    Sets the priority stored in the datapoint type to \a priority.
+
+    Returns \c true if the byte was set; otherwise returns \c false.
+*/
 bool QKnxPriority::setPriority(Priority priority)
 {
     if (priority <= Priority::Void)
@@ -210,6 +424,9 @@ bool QKnxPriority::setPriority(Priority priority)
     return false;
 }
 
+/*!
+    Returns the priority stored in the datapoint type.
+*/
 QKnxPriority::Priority QKnxPriority::priority() const
 {
     quint8 valueMode = value();
@@ -219,10 +436,47 @@ QKnxPriority::Priority QKnxPriority::priority() const
 
 // -- QKnxLightApplicationMode
 
+/*!
+    \class QKnxLightApplicationMode
+    \inherits QKnx1Byte
+    \inmodule QtKnx
+
+    \brief The QKnxLightApplicationMode class is a datapoint type for storing
+    the light application mode.
+
+    The range for the \l Mode value is from \c {Normal, 0} to
+    \c {Night round, 2}.
+
+    This is a fixed size datapoint type with the length of 1 byte.
+
+    \sa QKnxDatapointType, QKnx1Byte
+*/
+
+/*!
+    \enum QKnxLightApplicationMode::Mode
+
+    This enum holds the light application mode stored in the datapoint type.
+
+    \value Normal
+           Normal
+    \value PresenceSimulation
+           Presence simulation
+    \value NightRound
+           Night round
+    \value Invalid
+           The value is invalid.
+*/
+
+/*!
+    Creates a fixed size datapoint type with the mode set to \c Normal.
+*/
 QKnxLightApplicationMode::QKnxLightApplicationMode()
     : QKnxLightApplicationMode(Mode::Normal)
 {}
 
+/*!
+    Creates a fixed size datapoint type with the mode set to \a mode.
+*/
 QKnxLightApplicationMode::QKnxLightApplicationMode(Mode mode)
     : QKnx1Byte(SubType, 0)
 {
@@ -232,6 +486,11 @@ QKnxLightApplicationMode::QKnxLightApplicationMode(Mode mode)
     setMode(mode);
 }
 
+/*!
+    Sets the mode stored in the datapoint type to \a mode.
+
+    Returns \c true if the byte was set; otherwise returns \c false.
+*/
 bool QKnxLightApplicationMode::setMode(Mode mode)
 {
     if (mode <= Mode::NightRound)
@@ -239,6 +498,9 @@ bool QKnxLightApplicationMode::setMode(Mode mode)
     return false;
 }
 
+/*!
+    Returns the mode stored in the datapoint type.
+*/
 QKnxLightApplicationMode::Mode QKnxLightApplicationMode::mode() const
 {
     quint8 valueMode = value();
@@ -248,10 +510,77 @@ QKnxLightApplicationMode::Mode QKnxLightApplicationMode::mode() const
 
 // -- QKnxApplicationArea
 
+/*!
+    \class QKnxApplicationArea
+    \inherits QKnx1Byte
+    \inmodule QtKnx
+
+    \brief The QKnxApplicationArea class is a datapoint type for storing the
+    application area.
+
+    The range for the \l Area value is from \c {No fault, 0} to
+    \c {Shutters and blinds, 50}.
+
+    Faults in functions of common interest are mapped to the application area
+    \l SystemFunctionCommonInterest. For example, a multiple system clock master
+    conflict is a QKnxErrorClassSystem::ConfigurationFault within the
+    \c SystemFunctionCommonInterest application area.
+
+    Faults in heating, ventilation, and air conditioning (HVAC) are mapped to
+    the application areas \l HvacGeneralFBs, \l HvacHotWaterHeating,
+    \l HvacDirectElectricalHeating, \l HvacTerminalUnits, and \l HvacVac.
+
+    This is a fixed size datapoint type with the length of 1 byte.
+
+    \sa QKnxDatapointType, QKnx1Byte, QKnxErrorClassSystem::Error,
+        QKnxErrorClassHvac, QKnxScloMode::Mode
+*/
+
+/*!
+    \enum QKnxApplicationArea::Area
+
+    This enum holds the application area stored in the datapoint type.
+    This coding corresponds to the numbering of parts in the KNX System
+    Specification.
+
+    \value NoFault
+           No fault signals were transmitted in any application areas.
+    \value SystemFunctionCommonInterest
+           The system and functions of common interest
+    \value HvacGeneralFBs
+           HVAC general functional blocks
+    \value HvacHotWaterHeating
+           HVAC hot water heating
+    \value HvacDirectElectricalHeating
+           HVAC direct electrical heating
+    \value HvacTerminalUnits
+           HVAC terminal units
+    \value HvacVac
+           HVAC VAC
+    \value Lighting
+           Lighting
+    \value Security
+           Security
+    \value LoadManagement
+           Load management
+    \value ShuttersAndBlinds
+           Shutters and blinds
+    \value Invalid
+           The value is invalid.
+*/
+
+/*!
+    Creates a fixed size datapoint type with the application area set to
+    \c NoFault.
+*/
 QKnxApplicationArea::QKnxApplicationArea()
     : QKnxApplicationArea(Area::NoFault)
 {}
 
+/*!
+    Creates a fixed size datapoint type with the the application area set to
+    \a area.
+*/
 QKnxApplicationArea::QKnxApplicationArea(Area area)
     : QKnx1Byte(SubType, 0)
 {
@@ -261,6 +590,11 @@ QKnxApplicationArea::QKnxApplicationArea(Area area)
     setArea(area);
 }
 
+/*!
+    Sets the application area stored in the datapoint type to \a area.
+
+    Returns \c true if the byte was set; otherwise returns \c false.
+*/
 bool QKnxApplicationArea::setArea(Area area)
 {
     switch (area) {
@@ -282,6 +616,9 @@ bool QKnxApplicationArea::setArea(Area area)
     return false;
 }
 
+/*!
+    Returns the application area stored in the datapoint type.
+*/
 QKnxApplicationArea::Area QKnxApplicationArea::area() const
 {
     QKnxApplicationArea::Area valueArea = QKnxApplicationArea::Area(value());
@@ -305,6 +642,9 @@ QKnxApplicationArea::Area QKnxApplicationArea::area() const
     return Area::Invalid;
 }
 
+/*!
+    \reimp
+*/
 bool QKnxApplicationArea::isValid() const
 {
     return QKnx1Byte::isValid() && area() != Area::Invalid;
@@ -313,10 +653,48 @@ bool QKnxApplicationArea::isValid() const
 
 // -- QKnxAlarmClassType
 
+/*!
+    \class QKnxAlarmClassType
+    \inherits QKnx1Byte
+    \inmodule QtKnx
+
+    \brief The QKnxAlarmClassType class is a datapoint type for storing the
+    alarm class type.
+
+    The alarm \l Type can be simple, basic, or extended.
+
+    This is a fixed size datapoint type with the length of 1 byte.
+
+    \sa QKnxDatapointType, QKnx1Byte
+*/
+
+/*!
+    \enum QKnxAlarmClassType::Type
+
+    This enum holds the alarm class type stored in the datapoint type.
+
+    \value SimpleAlarm
+           Simple alarm
+    \value BasicAlarm
+           Basic alarm
+    \value ExtendedAlarm
+           Extended alarm
+    \value Invalid
+           The value is invalid.
+*/
+
+/*!
+    Creates a fixed size datapoint type with the alarm class type set to
+    \c SimpleAlarm.
+*/
 QKnxAlarmClassType::QKnxAlarmClassType()
     : QKnxAlarmClassType(Type::SimpleAlarm)
 {}
 
+/*!
+    Creates a fixed size datapoint type with the alarm class type set to
+    \a type.
+*/
 QKnxAlarmClassType::QKnxAlarmClassType(Type type)
     : QKnx1Byte(SubType, 0)
 {
@@ -326,6 +704,11 @@ QKnxAlarmClassType::QKnxAlarmClassType(Type type)
     setType(type);
 }
 
+/*!
+    Sets the alarm class type stored in the datapoint type to \a type.
+
+    Returns \c true if the byte was set; otherwise returns \c false.
+*/
 bool QKnxAlarmClassType::setType(Type type)
 {
     if (type >= Type::SimpleAlarm && type <= Type::ExtendedAlarm)
@@ -333,6 +716,9 @@ bool QKnxAlarmClassType::setType(Type type)
     return false;
 }
 
+/*!
+    Returns the alarm class type stored in the datapoint type.
+*/
 QKnxAlarmClassType::Type QKnxAlarmClassType::type() const
 {
     auto typeValue = QKnxAlarmClassType::Type(value());
@@ -344,10 +730,56 @@ QKnxAlarmClassType::Type QKnxAlarmClassType::type() const
 
 // -- QKnxPsuMode
 
+/*!
+    \class QKnxPsuMode
+    \inherits QKnx1Byte
+    \inmodule QtKnx
+
+    \brief The QKnxPsuMode class is a datapoint type for storing the bus power
+    supply unit mode.
+
+    A bus power supply unit is required for bus communications. It can be either
+    a decentral (distributed) bus power supply unit, DPSU, or a central bus
+    power supply unit, PSU.
+
+    The DPSU or PSU can be activated or deactivated also by mechanical means,
+    such as using a jumper or a switch. The supported range is product specific.
+    For example, disabled/enabled only or disabled/auto only.
+
+    The range for the \l Mode value is from \c {Disabled, 0} to
+    \c {Automatic, 2}.
+
+    This is a fixed size datapoint type with the length of 1 byte.
+
+    \sa QKnxDatapointType, QKnx1Byte
+*/
+
+/*!
+    \enum QKnxPsuMode::Mode
+
+    This enum holds the bus power supply unit mode stored in the datapoint type.
+
+    \value Disabled
+           The PSU or DPSU in the device is switched off.
+    \value Enabled
+           The PSU or DPSU in the device is switched on.
+    \value Automatic
+           The PSU or DPSU in the device was turned on or off automatically.
+           For example, by sending a message on the bus.
+    \value Invalid
+           The mode is invalid.
+*/
+
+/*!
+    Creates a fixed size datapoint type with the mode set to \c Disabled.
+*/
 QKnxPsuMode::QKnxPsuMode()
     : QKnxPsuMode(Mode::Disabled)
 {}
 
+/*!
+    Creates a fixed size datapoint type with the mode set to \a mode.
+*/
 QKnxPsuMode::QKnxPsuMode(Mode mode)
     : QKnx1Byte(SubType, 0)
 {
@@ -357,6 +789,11 @@ QKnxPsuMode::QKnxPsuMode(Mode mode)
     setMode(mode);
 }
 
+/*!
+    Sets the mode stored in the datapoint type to \a mode.
+
+    Returns \c true if the byte was set; otherwise returns \c false.
+*/
 bool QKnxPsuMode::setMode(Mode mode)
 {
     if (mode <= Mode::Automatic)
@@ -365,6 +802,9 @@ bool QKnxPsuMode::setMode(Mode mode)
 
 }
 
+/*!
+    Returns the mode stored in the datapoint type.
+*/
 QKnxPsuMode::Mode QKnxPsuMode::mode() const
 {
     quint8 valueMode = value();
@@ -374,10 +814,86 @@ QKnxPsuMode::Mode QKnxPsuMode::mode() const
 
 // -- QKnxErrorClassSystem
 
+/*!
+    \class QKnxErrorClassSystem
+    \inherits QKnx1Byte
+    \inmodule QtKnx
+
+    \brief The QKnxErrorClassSystem class is a datapoint type for storing system
+    errors.
+
+    This datapoint type stores fault signals transmitted in the application area
+    \l QKnxApplicationArea::SystemFunctionCommonInterest.
+
+    The range for the \l Error value is from \c {No fault, 0} to
+    \c {Group object type exceeds, 18}.
+
+    This is a fixed size datapoint type with the length of 1 byte.
+
+    \sa QKnxDatapointType, QKnx1Byte, QKnxApplicationArea
+*/
+
+/*!
+    \enum QKnxErrorClassSystem::Error
+
+    This enum holds the system error stored in the datapoint type.
+
+    \value NoFault
+           No fault signals were transmitted.
+    \value GeneralDeviceFault
+           An error occurred in the RAM, EEPROM, UI, watchdog, and so on.
+    \value CommunicationFault
+           A communication error occurred.
+           For example, a failure in a formerly present communication partner
+           or a timeout in the system clock signal (heartbeat).
+    \value ConfigurationFault
+           A configuration error was detected.
+           For example, two devices with the same individual address were
+           detected or multiple system clocks were set as the master clock.
+    \value HardwareFault
+           A hardware error occurred.
+    \value SoftwareFault
+           A software error occurred.
+    \value InsufficientNonVolatileMemory
+           Not enough non-volatile memory
+    \value InsufficientVolatileMemory
+           Not enough volatile memory
+    \value MemoryAllocationCommandWithSize0Received
+           A memory allocation command with the size 0 was received.
+    \value CrcError
+           A CRC error occurred.
+    \value WatchdogResetDetected
+           A watchdog reset was detected.
+    \value InvalidOpCodeDetected
+           An invalid OP code was detected.
+    \value GeneralProtectionFault
+           A general protection error was detected.
+    \value MaximalTableLengthExceeded
+           The maximum table length was exceeded.
+    \value UndefinedLoadCommandReceived
+           An undefined load command was received.
+    \value GroupAddressTableIsNotSorted
+           The group address table is not sorted.
+    \value InvalidConnectionNumberTsap
+           The connection number TSAP is invalid.
+    \value InvalidGroupObjectNumberAsap
+           The connection number ASAP is invalid.
+    \value GroupObjectTypeExceeds
+           The group object type exceeds \c {PID_MAX_APDU_LENGTH H - 2}.
+    \value Invalid
+           The value is invalid.
+*/
+
+/*!
+    Creates a fixed size datapoint type with the system error set to \c NoFault.
+*/
 QKnxErrorClassSystem::QKnxErrorClassSystem()
     : QKnxErrorClassSystem(Error::NoFault)
 {}
 
+/*!
+    Creates a fixed size datapoint type with the system error set to \a error.
+*/
 QKnxErrorClassSystem::QKnxErrorClassSystem(Error error)
     : QKnx1Byte(SubType, 0)
 {
@@ -387,6 +903,11 @@ QKnxErrorClassSystem::QKnxErrorClassSystem(Error error)
     setError(error);
 }
 
+/*!
+    Sets the system error stored in the datapoint type to \a error.
+
+    Returns \c true if the byte was set; otherwise returns \c false.
+*/
 bool QKnxErrorClassSystem::setError(Error error)
 {
     if (error <= Error::GroupObjectTypeExceeds)
@@ -394,6 +915,9 @@ bool QKnxErrorClassSystem::setError(Error error)
     return false;
 }
 
+/*!
+    Returns the system error stored in the datapoint type.
+*/
 QKnxErrorClassSystem::Error QKnxErrorClassSystem::error() const
 {
     quint8 valueMode = value();
@@ -403,10 +927,51 @@ QKnxErrorClassSystem::Error QKnxErrorClassSystem::error() const
 
 // -- QKnxErrorClassHvac
 
+/*!
+    \class QKnxErrorClassHvac
+    \inherits QKnx1Byte
+    \inmodule QtKnx
+
+    \brief The QKnxErrorClassHvac class is a datapoint type for storing errors
+    in heating, ventilation, and air conditioning (HVAC).
+
+    The range for the \l Error value is from \c {No fault, 0} to
+    \c {Other fault, 4}.
+
+    This is a fixed size datapoint type with the length of 1 byte.
+
+    \sa QKnxDatapointType, QKnx1Byte, QKnxApplicationArea
+*/
+
+/*!
+    \enum QKnxErrorClassHvac::Error
+
+    This enum holds the HVAC fault signals stored in the datapoint type.
+
+    \value NoFault
+           No fault signals were transmitted.
+    \value SensorFault
+           An error occurred in the RAM, EEPROM, UI, watchdog, and so on.
+    \value ProcessControllerFault
+           An error occurred in the process or controller.
+    \value ActuatorFault
+           An error occurred in the actuator.
+    \value OtherFault
+           An undefined error occurred.
+    \value Invalid
+           The value is invalid.
+*/
+
+/*!
+    Creates a fixed size datapoint type with the error set to \c NoFault.
+*/
 QKnxErrorClassHvac::QKnxErrorClassHvac()
     : QKnxErrorClassHvac(Error::NoFault)
 {}
 
+/*!
+    Creates a fixed size datapoint type with the error set to \a error.
+*/
 QKnxErrorClassHvac::QKnxErrorClassHvac(Error error)
     : QKnx1Byte(SubType, 0)
 {
@@ -416,6 +981,11 @@ QKnxErrorClassHvac::QKnxErrorClassHvac(Error error)
     setError(error);
 }
 
+/*!
+    Sets the error stored in the datapoint type to \a error.
+
+    Returns \c true if the byte was set; otherwise returns \c false.
+*/
 bool QKnxErrorClassHvac::setError(Error error)
 {
     if (error <= Error::OtherFault)
@@ -424,6 +994,9 @@ bool QKnxErrorClassHvac::setError(Error error)
 
 }
 
+/*!
+    Returns the error stored in the datapoint type.
+*/
 QKnxErrorClassHvac::Error QKnxErrorClassHvac::error() const
 {
     quint8 valueMode = value();
@@ -433,10 +1006,67 @@ QKnxErrorClassHvac::Error QKnxErrorClassHvac::error() const
 
 // -- QKnxTimeDelay
 
+/*!
+    \class QKnxTimeDelay
+    \inherits QKnx1Byte
+    \inmodule QtKnx
+
+    \brief The QKnxTimeDelay class is a datapoint type for storing a time delay.
+
+    The range for the \l Delay value is from \c {Not active, 0} to
+    \c {Twenty four hours, 2}.
+
+    This is a fixed size datapoint type with the length of 1 byte.
+
+    \sa QKnxDatapointType, QKnx1Byte
+*/
+
+/*!
+    \enum QKnxTimeDelay::Delay
+
+    This enum holds the time delay stored in the datapoint type.
+
+    \value NotActive
+           No time delay was set.
+    \value OneSecond
+    \value TwoSecond
+    \value ThreeSecond
+    \value FiveSecond
+    \value TenSecond
+    \value FifteenSecond
+    \value TwentySecond
+    \value ThirtySecond
+    \value FortyFiveSecond
+    \value OneMinute
+    \value OneMinuteOneQuarter
+    \value OneMinuteAndHaft
+    \value TwoMinute
+    \value TwoMinuteAndHalf
+    \value ThreeMinute
+    \value FiveMinute
+    \value FifteenMinute
+    \value TwentyMinute
+    \value ThirtyMinute
+    \value OneHour
+    \value TwoHour
+    \value ThreeHour
+    \value FiveHour
+    \value TwelveHour
+    \value TwentyFourHour
+    \value Invalid
+           The value is invalid.
+*/
+
+/*!
+    Creates a fixed size datapoint type with the time delay set to \c NotActive.
+*/
 QKnxTimeDelay::QKnxTimeDelay()
     : QKnxTimeDelay(Delay::NotActive)
 {}
 
+/*!
+    Creates a fixed size datapoint type with the time delay set to \a delay.
+*/
 QKnxTimeDelay::QKnxTimeDelay(Delay delay)
     : QKnx1Byte(SubType, 0)
 {
@@ -446,6 +1076,11 @@ QKnxTimeDelay::QKnxTimeDelay(Delay delay)
     setDelay(delay);
 }
 
+/*!
+    Sets the time delay stored in the datapoint type to \a delay.
+
+    Returns \c true if the byte was set; otherwise returns \c false.
+*/
 bool QKnxTimeDelay::setDelay(Delay delay)
 {
     if (delay <= Delay::TwentyFourHour)
@@ -453,6 +1088,9 @@ bool QKnxTimeDelay::setDelay(Delay delay)
     return false;
 }
 
+/*!
+    Returns the time delay stored in the datapoint type.
+*/
 QKnxTimeDelay::Delay QKnxTimeDelay::delay() const
 {
     quint8 valueMode = value();
@@ -462,10 +1100,56 @@ QKnxTimeDelay::Delay QKnxTimeDelay::delay() const
 
 // -- QKnxBeaufortWindForceScale
 
+/*!
+    \class QKnxBeaufortWindForceScale
+    \inherits QKnx1Byte
+    \inmodule QtKnx
+
+    \brief The QKnxBeaufortWindForceScale class is a datapoint type for storing
+    the Beaufort wind force scale.
+
+    The range for the \l Force value is from \c {Calm (no wind), 0} to
+    \c {Hurricane, 12}.
+
+    This is a fixed size datapoint type with the length of 1 byte.
+
+    \sa QKnxDatapointType, QKnx1Byte
+*/
+
+/*!
+    \enum QKnxBeaufortWindForceScale::Force
+
+    This enum holds the Beaufort wind force scale stored in the datapoint type.
+
+    \value CalmNoWind
+    \value LightAir
+    \value LightBreeze
+    \value GentleBreeze
+    \value ModerateBreeze
+    \value FreshBreeze
+    \value StrongBreeze
+    \value NearModerateGale
+    \value FreshGale
+    \value StrongGale
+    \value WholeGaleStorm
+    \value ViolentStorm
+    \value Hurricane
+    \value Invalid
+           The value is invalid.
+*/
+
+/*!
+    Creates a fixed size datapoint type with the Beaufort wind force scale set
+    to \c CalmNoWind.
+*/
 QKnxBeaufortWindForceScale::QKnxBeaufortWindForceScale()
     : QKnxBeaufortWindForceScale(Force::CalmNoWind)
 {}
 
+/*!
+    Creates a fixed size datapoint type with the Beaufort wind force scale set
+    to \a force.
+*/
 QKnxBeaufortWindForceScale::QKnxBeaufortWindForceScale(Force force)
     : QKnx1Byte(SubType, 0)
 {
@@ -475,6 +1159,11 @@ QKnxBeaufortWindForceScale::QKnxBeaufortWindForceScale(Force force)
     setForce(force);
 }
 
+/*!
+    Sets the Beaufort wind force scale stored in the datapoint type to \a force.
+
+    Returns \c true if the byte was set; otherwise returns \c false.
+*/
 bool QKnxBeaufortWindForceScale::setForce(Force force)
 {
     if (force <= Force::Hurricane)
@@ -482,6 +1171,9 @@ bool QKnxBeaufortWindForceScale::setForce(Force force)
     return false;
 }
 
+/*!
+    Returns the Beaufort wind force scale stored in the datapoint type.
+*/
 QKnxBeaufortWindForceScale::Force QKnxBeaufortWindForceScale::force() const
 {
     quint8 valueMode = value();
@@ -491,10 +1183,51 @@ QKnxBeaufortWindForceScale::Force QKnxBeaufortWindForceScale::force() const
 
 // -- QKnxSensorSelect
 
+/*!
+    \class QKnxSensorSelect
+    \inherits QKnx1Byte
+    \inmodule QtKnx
+
+    \brief The QKnxSensorSelect class is a datapoint type for storing the sensor
+    mode.
+
+    The range for the \l Mode value is from \c {Inactive, 0} to
+    \c {Temperature sensor input, 12}.
+
+    This is a fixed size datapoint type with the length of 1 byte.
+
+    \sa QKnxDatapointType, QKnx1Byte
+*/
+
+/*!
+    \enum QKnxSensorSelect::Mode
+
+    This enum holds the sensor mode stored in the datapoint type.
+
+    \value Inactive
+           The sensor is inactive.
+    \value DigitalInputNotInverted
+           The sensor provides digital input in not inverted form.
+    \value DigitalInputInverted
+           The sensor provides inverted digital input.
+    \value AnalogInput
+           The sensor provides analog input.
+    \value TemperatureSensorInput
+           The sensor provides temperature input.
+    \value Invalid
+           The value is invalid.
+*/
+
+/*!
+    Creates a fixed size datapoint type with the mode set to \c Inactive.
+*/
 QKnxSensorSelect::QKnxSensorSelect()
     : QKnxSensorSelect(Mode::Inactive)
 {}
 
+/*!
+    Creates a fixed size datapoint type with the mode set to \a mode.
+*/
 QKnxSensorSelect::QKnxSensorSelect(Mode mode)
     : QKnx1Byte(SubType, 0)
 {
@@ -504,6 +1237,11 @@ QKnxSensorSelect::QKnxSensorSelect(Mode mode)
     setMode(mode);
 }
 
+/*!
+    Sets the mode stored in the datapoint type to \a mode.
+
+    Returns \c true if the byte was set; otherwise returns \c false.
+*/
 bool QKnxSensorSelect::setMode(Mode mode)
 {
     if (mode <= Mode::TemperatureSensorInput)
@@ -511,6 +1249,9 @@ bool QKnxSensorSelect::setMode(Mode mode)
     return false;
 }
 
+/*!
+    Returns the mode stored in the datapoint type.
+*/
 QKnxSensorSelect::Mode QKnxSensorSelect::mode() const
 {
     quint8 valueMode = value();
@@ -520,10 +1261,46 @@ QKnxSensorSelect::Mode QKnxSensorSelect::mode() const
 
 // -- QKnxActuatorConnectType
 
+/*!
+    \class QKnxActuatorConnectType
+    \inherits QKnx1Byte
+    \inmodule QtKnx
+
+    \brief The QKnxActuatorConnectType class is a datapoint type for storing the
+    actuator connection type.
+
+    An actuator can be connected to a sensor or a controller.
+
+    This is a fixed size datapoint type with the length of 1 byte.
+
+    \sa QKnxDatapointType, QKnx1Byte
+*/
+
+/*!
+    \enum QKnxActuatorConnectType::Type
+
+    This enum holds the actuator connection type stored in the datapoint type.
+
+    \value SensorConnection
+           The actuator is connected to a sensor.
+    \value ControllerConnection
+           The actuator is connected to a controller.
+    \value Invalid
+           The value is invalid.
+*/
+
+/*!
+    Creates a fixed size datapoint type with the actuator connection type set to
+    \c SensorConnection.
+*/
 QKnxActuatorConnectType::QKnxActuatorConnectType()
     : QKnxActuatorConnectType(Type::SensorConnection)
 {}
 
+/*!
+    Creates a fixed size datapoint type with the actuator connection type set to
+    \a type.
+*/
 QKnxActuatorConnectType::QKnxActuatorConnectType(Type type)
     : QKnx1Byte(SubType, 0)
 {
@@ -533,6 +1310,11 @@ QKnxActuatorConnectType::QKnxActuatorConnectType(Type type)
     setType(type);
 }
 
+/*!
+    Sets the actuator connection type stored in the datapoint type to \a type.
+
+    Returns \c true if the byte was set; otherwise returns \c false.
+*/
 bool QKnxActuatorConnectType::setType(Type type)
 {
     if (type == Type::SensorConnection || type == Type::ControllerConnection)
@@ -540,6 +1322,9 @@ bool QKnxActuatorConnectType::setType(Type type)
     return false;
 }
 
+/*!
+    Returns the actuator connection type stored in the datapoint type.
+*/
 QKnxActuatorConnectType::Type QKnxActuatorConnectType::type() const
 {
     auto typeValue = QKnxActuatorConnectType::Type(value());

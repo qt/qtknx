@@ -49,7 +49,7 @@ void tst_QKnxControlField::testDefaultConstructor()
 {
     QKnxControlField crf1(QKnxByteArray { 0xbc });
 
-    QCOMPARE(crf1.frameType(), QKnxControlField::FrameType::Standard);
+    QCOMPARE(crf1.frameFormat(), QKnxControlField::FrameFormat::Standard);
     QCOMPARE(crf1.repeat(), QKnxControlField::Repeat::DoNotRepeat);
     QCOMPARE(crf1.broadcast(), QKnxControlField::Broadcast::Domain);
 
