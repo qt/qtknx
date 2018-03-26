@@ -50,7 +50,7 @@ constexpr const quint8 QKnxNetIpFrameHeader::KnxNetIpVersion10;
 */
 
 /*!
-    \fn QKnxNetIpFrameHeader::QKnxNetIpFrameHeader
+    \fn QKnxNetIpFrameHeader::QKnxNetIpFrameHeader()
 
     Constructs an empty invalid frame header object.
 
@@ -137,7 +137,7 @@ quint8 QKnxNetIpFrameHeader::size() const
 }
 
 /*!
-    Sets the size of the KNXnet/IP frame header to \size.
+    Sets the size of the KNXnet/IP frame header to \a size.
 
     \sa size()
 */
@@ -157,7 +157,7 @@ quint8 QKnxNetIpFrameHeader::protocolVersion() const
 }
 
 /*!
-    Sets the protocol version of the KNXnet/IP frame header to \version.
+    Sets the protocol version of the KNXnet/IP frame header to \a version.
 
     \sa protocolVersion()
 */
