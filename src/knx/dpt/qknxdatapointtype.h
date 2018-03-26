@@ -241,7 +241,12 @@ private:
     QSharedDataPointer<QKnxDatapointTypePrivate> d_ptr;
 };
 
-using QKnxFixedSizeDatapointType = QKnxDatapointType;
+#ifndef Q_CLANG_QDOC
+    using QKnxFixedSizeDatapointType = QKnxDatapointType;
+#else
+    class QKnxFixedSizeDatapointType : public QKnxDatapointType {public:};
+#endif
+
 class Q_KNX_EXPORT QKnxVariableSizeDatapointType : public QKnxDatapointType
 {
 public:
