@@ -1,6 +1,6 @@
 /******************************************************************************
 **
-** Copyright (C) 2017 The Qt Company Ltd.
+** Copyright (C) 2018 The Qt Company Ltd.
 ** Contact: https://www.qt.io/licensing/
 **
 ** This file is part of the QtKnx module.
@@ -44,7 +44,8 @@ QT_BEGIN_NAMESPACE
     uniquely identify an KNXnet/IP transport connection endpoint.
 
     The information needed to identify an KNXnet/IP transport connection
-    endpoint includes the IP \l address and \l port number.
+    endpoint includes the \l{hostProtocol()}{protocol}, \l{hostAddress()}
+    {IP address}, and \l port number.
 
     \note When using QKnxNetIpHpaiView care must be taken to ensure that the
     referenced KNXnet/IP HPAI structure outlives the QKnxNetIpHpaiView on all
@@ -156,7 +157,8 @@ QKnxNetIpHpaiView::Builder QKnxNetIpHpaiView::builder()
     uniquely identify an KNXnet/IP transport connection endpoint.
 
     The information needed to identify an KNXnet/IP transport connection
-    endpoint includes the IP \l address and \l port number.
+    endpoint includes the \l{hostProtocol()}{protocol}, \l{hostAddress()}
+    {IP address}, and \l port number.
 
     The common way to create such a HPAI structure is:
     \code
