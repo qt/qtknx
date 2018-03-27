@@ -1,6 +1,6 @@
 /******************************************************************************
 **
-** Copyright (C) 2017 The Qt Company Ltd.
+** Copyright (C) 2018 The Qt Company Ltd.
 ** Contact: https://www.qt.io/licensing/
 **
 ** This file is part of the QtKnx module.
@@ -79,6 +79,11 @@ QT_BEGIN_NAMESPACE
     \fn QKnxDatapointTypeFactory::instance()
 
     Returns a reference to the datapoint type factory.
+*/
+
+/*!
+    \typedef QKnxDatapointTypeFactory::FactoryFunction
+    \internal
 */
 
 /*!
