@@ -136,10 +136,17 @@ private:
     QKnxByteArray m_data;
 };
 
-using QKnxNetIpHpai = QKnxNetIpStruct<QKnxNetIp::HostProtocol>;
-using QKnxNetIpCri = QKnxNetIpStruct<QKnxNetIp::ConnectionType>;
-using QKnxNetIpCrd = QKnxNetIpStruct<QKnxNetIp::ConnectionType>;
-using QKnxNetIpDib = QKnxNetIpStruct<QKnxNetIp::DescriptionType>;
+#ifndef Q_CLANG_QDOC
+    using QKnxNetIpHpai = QKnxNetIpStruct<QKnxNetIp::HostProtocol>;
+    using QKnxNetIpCri = QKnxNetIpStruct<QKnxNetIp::ConnectionType>;
+    using QKnxNetIpCrd = QKnxNetIpStruct<QKnxNetIp::ConnectionType>;
+    using QKnxNetIpDib = QKnxNetIpStruct<QKnxNetIp::DescriptionType>;
+#else
+    class QKnxNetIpHpai final {public:};
+    class QKnxNetIpCri final {public:};
+    class QKnxNetIpCrd final {public:};
+    class QKnxNetIpDib final {public:};
+#endif
 
 Q_KNX_EXPORT QDebug operator<<(QDebug debug, const QKnxNetIpStruct<QKnxNetIp::HostProtocol> &hpai);
 Q_KNX_EXPORT QDebug operator<<(QDebug debug, const QKnxNetIpStruct<QKnxNetIp::ConnectionType> &cr);
