@@ -75,7 +75,7 @@ QKnxGroupAddressInfo::~QKnxGroupAddressInfo()
 
 /*!
     Creates a new group address info object and sets the \a installation,
-    \a name, KNX group \a address, the corresponding datapoint \a type and
+    \a name, KNX group \a address, the corresponding datapoint \a type, and
     the object \a description.
 */
 QKnxGroupAddressInfo::QKnxGroupAddressInfo(const QString &installation, const QString &name,
@@ -92,7 +92,7 @@ QKnxGroupAddressInfo::QKnxGroupAddressInfo(const QString &installation, const QS
 /*!
     Creates a new group address info object and sets the \a installation,
     \a name, KNX group \a address, the corresponding datapoint type
-    \a datapointType and the object \a description.
+    \a datapointType, and the object \a description.
 */
 QKnxGroupAddressInfo::QKnxGroupAddressInfo(const QString &installation, const QString &name,
         const QKnxAddress &address, const QString &datapointType, const QString &description)
@@ -104,8 +104,8 @@ QKnxGroupAddressInfo::QKnxGroupAddressInfo(const QString &installation, const QS
     Returns \c true if the object is non-empty and valid; otherwise returns
     \c false.
 
-    A valid object has a KNX address set and the type of the address needs to be
-    \l {QKnxAddress::Type} Group.
+    A valid object has a KNX address of the type \l {QKnxAddress::Type}
+    {QKnxAddress::Group} set.
 */
 bool QKnxGroupAddressInfo::isValid() const
 {
@@ -114,7 +114,7 @@ bool QKnxGroupAddressInfo::isValid() const
 
 /*!
     Creates a new group address info object and sets the \a installation,
-    \a name, KNX group \a address, the corresponding datapoint \a type and
+    \a name, KNX group \a address, the corresponding datapoint \a type, and
     the object \a description.
 */
 QKnxGroupAddressInfo::QKnxGroupAddressInfo(const QString &installation, const QString &name,
@@ -126,7 +126,7 @@ QKnxGroupAddressInfo::QKnxGroupAddressInfo(const QString &installation, const QS
 /*!
     Creates a new group address info object and sets the \a installation,
     \a name, KNX group \a address, the corresponding datapoint type
-    \a datapointType and the object \a description.
+    \a datapointType, and the object \a description.
 */
 QKnxGroupAddressInfo::QKnxGroupAddressInfo(const QString &installation, const QString &name,
         quint16 address, const QString &datapointType, const QString &description)
@@ -178,7 +178,8 @@ QKnxAddress QKnxGroupAddressInfo::address() const
 
 /*!
     Sets the KNX \a address of this group address info object. The address
-    must be of type \l {QKnxAddress::Type} Group to keep the object valid.
+    must be of type \l {QKnxAddress::Type}{QKnxAddress::Group} to keep the
+    object valid.
 
     \sa isValid
 */
@@ -299,7 +300,7 @@ QKnxGroupAddressInfo::QKnxGroupAddressInfo(QKnxGroupAddressInfoPrivate &dd)
 /*!
     \relates QKnxGroupAddressInfo
 
-    Writes the \a infos object to the \a debug stream and returns a reference to
+    Writes the \a info object to the \a debug stream and returns a reference to
     the stream.
 */
 QDebug operator<<(QDebug debug, const QKnxGroupAddressInfo &info)
