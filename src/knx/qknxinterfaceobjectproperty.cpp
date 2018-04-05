@@ -1,6 +1,6 @@
 /******************************************************************************
 **
-** Copyright (C) 2017 The Qt Company Ltd.
+** Copyright (C) 2018 The Qt Company Ltd.
 ** Contact: https://www.qt.io/licensing/
 **
 ** This file is part of the QtKnx module.
@@ -35,53 +35,111 @@ QT_BEGIN_NAMESPACE
     \class QKnxInterfaceObjectProperty
 
     \inmodule QtKnx
-    \brief This class holds information about the properties of the KNX interface object.
+    \brief The QKnxInterfaceObjectProperty class holds the properties of a KNX
+    interface object.
 
-    KNX interface object holds information about the device functionalities.
-    Different properties are storing different functionalities.
-    Only properties of interface object of type \l QKnxInterfaceObjectType::System are listed here.
+    A KNX interface object holds information about device functionality.
+    This class represents the properties of interface objects of the type
+    \l QKnxInterfaceObjectType::System. Each property stores a particular
+    functionality. \l General properties are common to all KNX interface
+    objects.
+*/
+
+/*!
+    \typedef QKnxInterfaceObjectProperty::AssociationTable
+
+    A synonym for QKnxInterfaceObjectProperty::General.
+*/
+
+/*!
+    \typedef QKnxInterfaceObjectProperty::FileServer
+
+    A synonym for QKnxInterfaceObjectProperty::General.
+*/
+
+/*!
+    \typedef QKnxInterfaceObjectProperty::InterfaceProgram
+
+    A synonym for QKnxInterfaceObjectProperty::General.
+*/
+
+/*!
+    \typedef QKnxInterfaceObjectProperty::KnxObjectAssociationTable
+
+    A synonym for QKnxInterfaceObjectProperty::General.
 */
 
 /*!
     \enum QKnxInterfaceObjectProperty::General
-    This enum describes the General properties of a KNX interface object.
-    Those properties can be found in any interface object.
+    This enum holds the properties that are common to all KNX interface objects.
 
     \value ObjectType
+           The type of the KNX interface object.
+           One of \l QKnxInterfaceObjectType::System.
     \value ObjectName
+           The name of the KNX interface object.
     \value Semaphor
+           A semaphor
     \value GroupObjectReference
+           A reference to a group object that this property is relative to,
+           according to the \c <ObjectReference>.<Property> pattern.
     \value LoadStateControl
+           A load state control
     \value RunStateControl
+           A run state control
     \value TableReference
+           A reference to a table.
     \value ServiceControl
+           A service control
     \value FirmwareRevision
+           The revision number of the firmware installed on the device.
     \value ServicesSupported
+           The services supported by the device.
     \value SerialNumber
+           The serial number of the device.
     \value ManufacturerId
+           The ID of the manufacturer of the device.
     \value ProgramVersion
+           The program version.
     \value DeviceControl
+           A device control
     \value OrderInfo
+           Order information
     \value PeiType
+           The Physical External Interface (PEI) type of the interface between
+           an application module and a communication module.
     \value PortConfiguration
+           Port configuration
     \value PollGroupSettings
+           Poll group settings
     \value ManufacturerData
+           Additional data defined by the manufacturer of the device.
     \value Enable
+           Enable
     \value Description
+           A description
     \value File
+           A file
     \value Table
+           A table
     \value Enrol
+           Enrollment information.
     \value Version
+           A version number.
     \value GroupObjectLink
     \value McbTable
+           An MCB table
     \value ErrorCode
+           An error code.
     \value ObjectIndex
+           The index of the object.
     \value DownloadCounter
+           A download counter
 */
 
 /*!
     \enum QKnxInterfaceObjectProperty::Device
-    This enum describes the properties specific to Device interface object.
+    This enum describes the properties specific to device interface objects.
 
     \value RoutingCount
     \value MaxRetryCount
@@ -119,59 +177,65 @@ QT_BEGIN_NAMESPACE
     \value MeteringFilterTable
     \value GroupTelegramRateLimitTimeBase
     \value GroupTelegramRateLimitNumberOfTelegrams
-    \value Channel01Paramter
-    \value Channel02Paramter
-    \value Channel03Paramter
-    \value Channel04Paramter
-    \value Channel05Paramter
-    \value Channel06Paramter
-    \value Channel07Paramter
-    \value Channel08Paramter
-    \value Channel09Paramter
-    \value Channel10Paramter
-    \value Channel11Paramter
-    \value Channel12Paramter
-    \value Channel13Paramter
-    \value Channel14Paramter
-    \value Channel15Paramter
-    \value Channel16Paramter
-    \value Channel17Paramter
-    \value Channel18Paramter
-    \value Channel19Paramter
-    \value Channel20Paramter
-    \value Channel21Paramter
-    \value Channel22Paramter
-    \value Channel23Paramter
-    \value Channel24Paramter
-    \value Channel25Paramter
-    \value Channel26Paramter
-    \value Channel27Paramter
-    \value Channel28Paramter
-    \value Channel29Paramter
-    \value Channel30Paramter
-    \value Channel31Paramter
-    \value Channel32Paramter
+    \value Channel01Parameter
+    \value Channel02Parameter
+    \value Channel03Parameter
+    \value Channel04Parameter
+    \value Channel05Parameter
+    \value Channel06Parameter
+    \value Channel07Parameter
+    \value Channel08Parameter
+    \value Channel09Parameter
+    \value Channel10Parameter
+    \value Channel11Parameter
+    \value Channel12Parameter
+    \value Channel13Parameter
+    \value Channel14Parameter
+    \value Channel15Parameter
+    \value Channel16Parameter
+    \value Channel17Parameter
+    \value Channel18Parameter
+    \value Channel19Parameter
+    \value Channel20Parameter
+    \value Channel21Parameter
+    \value Channel22Parameter
+    \value Channel23Parameter
+    \value Channel24Parameter
+    \value Channel25Parameter
+    \value Channel26Parameter
+    \value Channel27Parameter
+    \value Channel28Parameter
+    \value Channel29Parameter
+    \value Channel30Parameter
+    \value Channel31Parameter
+    \value Channel32Parameter
 */
 
 /*!
     \enum QKnxInterfaceObjectProperty::GroupAddressTable
-    This enum describes properties specific to Address Table interface object.
+    This enum describes the properties specific to group address table interface
+    objects.
 
     \value ExtendedFrameFormat
+           The group address table contains extended addresses, which means that
+           interface objects are referenced using the format
+           \c <ObjectType>.<InstanceNumber>.
     \value AddressTable1
     \value GroupResponserTable
 */
 
 /*!
     \enum QKnxInterfaceObjectProperty::ApplicationProgram
-    This enum describes properties specific to application program interface object.
+    This enum describes the properties specific to application program interface
+    objects.
 
     \value ParameterReference
+           A reference to a parameter.
 */
 
 /*!
     \enum QKnxInterfaceObjectProperty::Router
-    This enum describes properties specific to routers interface object.
+    This enum describes the properties specific to router interface objects.
 
     \value LineStatus
     \value MainLcConfig
@@ -189,32 +253,41 @@ QT_BEGIN_NAMESPACE
 
 /*!
     \enum QKnxInterfaceObjectProperty::LteAddressRoutingTable
-    This enum describes properties specific to LTE address routing table interface object.
+    This enum describes the properties specific to Logical Tag Extended (LTE)
+    address routing table interface objects.
 
     \value LteRouteSelect
+           The selected route.
     \value LteRouteTable
+           Available routes.
 */
 
 /*!
     \enum QKnxInterfaceObjectProperty::CemiServer
-    This enum describes properties specific to CEMI server interface object.
+    This enum describes the properties specific to Common External Message
+    Interface (cEMI) server interface objects.
 
     \value MediumType
+           The type of the medium used for the connection.
     \value CommonMode
     \value MediumAvailability
+           The availability of the medium used for the connection.
     \value AdditionalInfoTypes
     \value TimeBase
     \value TransparencyModeEnabled
     \value BiBatNextBlock
     \value RfModeSelect
+           RF mode selection.
     \value RfModeSupport
+           RF mode support.
     \value RfFilteringModeSelectCemiServer
     \value RfFilteringModeSupport
 */
 
 /*!
     \enum QKnxInterfaceObjectProperty::GroupObjectTable
-    This enum describes properties specific to group object table interface object.
+    This enum describes the properties specific to group object table interface
+    objects.
 
     \value GroupObjectTableProperty
     \value ExtendedGroupObjectReference
@@ -222,37 +295,61 @@ QT_BEGIN_NAMESPACE
 
 /*!
     \enum QKnxInterfaceObjectProperty::PollingMaster
-    This enum describes properties specific to polling master interface object.
+    This enum describes the properties specific to polling master interface
+    objects.
 
     \value PollingState
+           Polling state.
     \value PollingSlaveAddress
+           The address of the polling slave.
     \value PollingCycle
+           Polling cycle.
 */
 
 /*!
     \enum QKnxInterfaceObjectProperty::KnxNetIpParameter
-    This enum describes properties specific to KNXnet/IP parameter interface object.
+    This enum describes the properties specific to KNXnet/IP parameter interface
+    objects.
 
     \value ProjectInstallationId
     \value KnxIndividualAddress
+           The individual address that uniquely identifies a device in the
+           KNXnet/IP network.
     \value AdditionalIndividualAddresses
+           Additional individual addresses.
     \value CurrentIpAssignmentMethod
+           The method used to assign the current IP address of the device.
     \value IpAssignmentMethod
+           The method used to assign IP addresses.
     \value IpCapabilities
+           The capabilities of the IP network.
     \value CurrentIpAddress
+           The current IP address.
     \value CurrentSubnetMask
+           The current subnet mask.
     \value CurrentDefaultGateway
+           The current default gateway.
     \value IpAddress
+           The IP address.
     \value SubnetMask
+           The subnet mask.
     \value DefaultGateway
+           The default gateway.
     \value DhcpBootpServer
+           The DHCP boot server.
     \value MacAddress
+           The media access control (MAC) address of the device.
     \value SystemSetupMulticastAddress
+           The system setup multicast address.
     \value RoutingMulticastAddress
+           The routing multicast address.
     \value Ttl
     \value KnxNetIpDeviceCapabilities
+           The capabilities of the KNXnet/IP device.
     \value KnxNetIpDeviceState
+           The state of the KNXnet/IP device.
     \value KnxNetIpRoutingCapabilities
+           The routing capabilities of the KNXnet/IP network.
     \value PriorityFifoEnabled
     \value QueueOverflowToIp
     \value QueueOverflowToKnx
@@ -271,7 +368,7 @@ QT_BEGIN_NAMESPACE
 
 /*!
     \enum QKnxInterfaceObjectProperty::Security
-    This enum describes properties specific to security interface object.
+    This enum describes the properties specific to security interface objects.
 
     \value SecurityMode
     \value P2pKeyTable
@@ -288,7 +385,7 @@ QT_BEGIN_NAMESPACE
 
 /*!
     \enum QKnxInterfaceObjectProperty::RfMedium
-    This enum describes properties specific to RF medium interface object.
+    This enum describes the properties specific to RF medium interface objects.
 
     \value RfMultiType
     \value RfMultiPhysicalFeatures
@@ -311,7 +408,19 @@ QT_BEGIN_NAMESPACE
 */
 
 /*!
-    Returns true if the \a property listed in this class.
+    \fn qint16 QKnxInterfaceObjectProperty::operator qint16() const
+
+    Returns the property as a 16-bit unsigned integer.
+*/
+
+/*!
+    \fn QKnxInterfaceObjectProperty::QKnxInterfaceObjectProperty(qint16 property)
+
+    Creates the KNX interface object property \a property.
+*/
+
+/*!
+    Returns \c true if \a property is listed in this class.
 */
 bool QKnxInterfaceObjectProperty::isProperty(QKnxInterfaceObjectProperty property)
 {
@@ -319,7 +428,8 @@ bool QKnxInterfaceObjectProperty::isProperty(QKnxInterfaceObjectProperty propert
 }
 
 /*!
-    Returns true if the \a property is an Independent property; false otherwise.
+    Returns \c true if \a property is a \l General property; \c false
+    otherwise.
 */
 bool QKnxInterfaceObjectProperty::isGeneralProperty(QKnxInterfaceObjectProperty property)
 {
@@ -360,11 +470,8 @@ bool QKnxInterfaceObjectProperty::isGeneralProperty(QKnxInterfaceObjectProperty 
 }
 
 /*!
-    Returns true if the \a property is an dedicated Device property; false
-    otherwise.
-
-    \note Independent properties are considered to be part of Device properties
-    and therefore the function will return \c true for these properties as well.
+    Returns \c true if \a property is a dedicated \l Device property or a
+    \l General property; \c false otherwise.
 */
 bool QKnxInterfaceObjectProperty::isDeviceProperty(QKnxInterfaceObjectProperty property)
 {
@@ -443,12 +550,8 @@ bool QKnxInterfaceObjectProperty::isDeviceProperty(QKnxInterfaceObjectProperty p
 }
 
 /*!
-    Returns true if the \a property is an dedicated Group address table property;
-    false otherwise.
-
-    \note Independent properties are considered to be part of Group address table
-    properties and therefore the function will return \c true for these properties
-    as well.
+    Returns \c true if \a property is a dedicated \l GroupAddressTable property
+    or a \l General property; \c false otherwise.
 */
 bool QKnxInterfaceObjectProperty::isGroupAddressTableProperty(QKnxInterfaceObjectProperty property)
 {
@@ -462,12 +565,8 @@ bool QKnxInterfaceObjectProperty::isGroupAddressTableProperty(QKnxInterfaceObjec
 }
 
 /*!
-    Returns true if the \a property is an dedicated Association table property;
-    false otherwise.
-
-    \note Independent properties are considered to be part of Association table
-    properties and therefore the function will return \c true for these properties
-    as well.
+    Returns \c true if \a property is a dedicated \l AssociationTable property
+    or a \l General property; \c false otherwise.
 */
 bool QKnxInterfaceObjectProperty::isAssociationTableProperty(QKnxInterfaceObjectProperty property)
 {
@@ -475,12 +574,9 @@ bool QKnxInterfaceObjectProperty::isAssociationTableProperty(QKnxInterfaceObject
 }
 
 /*!
-    Returns true if the \a property is an dedicated Application program property;
-    false otherwise.
+    Returns \c true if \a property is a dedicated \l ApplicationProgram
+    property or a \l General property; \c false otherwise.
 
-    \note Independent properties are considered to be part of Application program
-    properties and therefore the function will return \c true for these properties
-    as well.
 */
 bool QKnxInterfaceObjectProperty::isApplicationProgramProperty(QKnxInterfaceObjectProperty property)
 {
@@ -490,12 +586,8 @@ bool QKnxInterfaceObjectProperty::isApplicationProgramProperty(QKnxInterfaceObje
 }
 
 /*!
-    Returns true if the \a property is an dedicated Interface program property;
-    false otherwise.
-
-    \note Independent properties are considered to be part of Interface program
-    properties and therefore the function will return \c true for these properties
-    as well.
+    Returns \c true if \a property is a dedicated \l InterfaceProgram property
+    or a \l General property; \c false otherwise.
 */
 bool QKnxInterfaceObjectProperty::isInterfaceProgramProperty(QKnxInterfaceObjectProperty property)
 {
@@ -503,11 +595,8 @@ bool QKnxInterfaceObjectProperty::isInterfaceProgramProperty(QKnxInterfaceObject
 }
 
 /*!
-    Returns true if the \a property is an dedicated Router property; false
-    otherwise.
-
-    \note Independent properties are considered to be part of Router properties
-    and therefore the function will return \c true for these properties as well.
+    Returns \c true if \a property is a dedicated \l KnxObjectAssociationTable
+    property or a \l General property; \c false otherwise.
 */
 bool QKnxInterfaceObjectProperty::isKnxObjectAssociationTableProperty(QKnxInterfaceObjectProperty property)
 {
@@ -515,11 +604,9 @@ bool QKnxInterfaceObjectProperty::isKnxObjectAssociationTableProperty(QKnxInterf
 }
 
 /*!
-    Returns true if the \a property is an dedicated Router property; false
-    otherwise.
+    Returns \c true if \a property is a dedicated \l Router property
+    or a \l General property; \c false otherwise.
 
-    \note Independent properties are considered to be part of Router properties
-    and therefore the function will return \c true for these properties as well.
 */
 bool QKnxInterfaceObjectProperty::isRouterProperty(QKnxInterfaceObjectProperty property)
 {
@@ -542,12 +629,8 @@ bool QKnxInterfaceObjectProperty::isRouterProperty(QKnxInterfaceObjectProperty p
 }
 
 /*!
-    Returns true if the \a property is an dedicated LTE address routing table
-    property; false otherwise.
-
-    \note Independent properties are considered to be part of LTE address
-    routing table properties and therefore the function will return \c true for
-    these properties as well.
+    Returns \c true if \a property is a dedicated \l LteAddressRoutingTable
+    property or a \l General property; \c false otherwise.
 */
 bool QKnxInterfaceObjectProperty::isLteAddressRoutingTableProperty(QKnxInterfaceObjectProperty property)
 {
@@ -560,12 +643,8 @@ bool QKnxInterfaceObjectProperty::isLteAddressRoutingTableProperty(QKnxInterface
 }
 
 /*!
-    Returns true if the \a property is an dedicated cEMI server property;
-    false otherwise.
-
-    \note Independent properties are considered to be part of cEMI server
-    properties and therefore the function will return \c true for these properties
-    as well.
+    Returns \c true if \a property is a dedicated \l CemiServer property
+    or a \l General property; \c false otherwise.
 */
 bool QKnxInterfaceObjectProperty::isCemiServerProperty(QKnxInterfaceObjectProperty property)
 {
@@ -587,12 +666,8 @@ bool QKnxInterfaceObjectProperty::isCemiServerProperty(QKnxInterfaceObjectProper
 }
 
 /*!
-    Returns true if the \a property is an dedicated Group object table property;
-    false otherwise.
-
-    \note Independent properties are considered to be part of Group object table
-    properties and therefore the function will return \c true for these properties
-    as well.
+    Returns \c true if \a property is a dedicated \l GroupObjectTable property
+    or a \l General property; \c false otherwise.
 */
 bool QKnxInterfaceObjectProperty::isGroupObjectTableProperty(QKnxInterfaceObjectProperty property)
 {
@@ -605,12 +680,8 @@ bool QKnxInterfaceObjectProperty::isGroupObjectTableProperty(QKnxInterfaceObject
 }
 
 /*!
-    Returns true if the \a property is an dedicated Polling master property;
-    false otherwise.
-
-    \note Independent properties are considered to be part of Polling master
-    properties and therefore the function will return \c true for these properties
-    as well.
+    Returns \c true if \a property is a dedicated \l PollingMaster property
+    or a \l General property; \c false otherwise.
 */
 bool QKnxInterfaceObjectProperty::isPollingMasterProperty(QKnxInterfaceObjectProperty property)
 {
@@ -624,11 +695,8 @@ bool QKnxInterfaceObjectProperty::isPollingMasterProperty(QKnxInterfaceObjectPro
 }
 
 /*!
-    Returns true if the \a property is an dedicated KNXnet/IP property; false
-    otherwise.
-
-    \note Independent properties are considered to be part of KNXnet/IP properties
-    and therefore the function will return \c true for these properties as well.
+    Returns \c true if \a property is a dedicated \l KnxNetIpParameter property
+    or a \l General property; \c false otherwise.
 */
 bool QKnxInterfaceObjectProperty::isKnxNetIpParameterProperty(QKnxInterfaceObjectProperty property)
 {
@@ -673,12 +741,8 @@ bool QKnxInterfaceObjectProperty::isKnxNetIpParameterProperty(QKnxInterfaceObjec
 }
 
 /*!
-    Returns true if the \a property is an dedicated File server property; false
-    otherwise.
-
-    \note Independent properties are considered to be part of File server
-    properties and therefore the function will return \c true for these properties
-    as well.
+    Returns \c true if \a property is a dedicated \l FileServer property
+    or a \l General property; \c false otherwise.
 */
 bool QKnxInterfaceObjectProperty::isFileServerProperty(QKnxInterfaceObjectProperty property)
 {
@@ -686,11 +750,8 @@ bool QKnxInterfaceObjectProperty::isFileServerProperty(QKnxInterfaceObjectProper
 }
 
 /*!
-    Returns true if the \a property is an dedicated Security property; false
-    otherwise.
-
-    \note Independent properties are considered to be part of Security properties
-    and therefore the function will return \c true for these properties as well.
+    Returns \c true if \a property is a dedicated \l Security property
+    or a \l General property; \c false otherwise.
 */
 bool QKnxInterfaceObjectProperty::isSecurityProperty(QKnxInterfaceObjectProperty property)
 {
@@ -712,11 +773,8 @@ bool QKnxInterfaceObjectProperty::isSecurityProperty(QKnxInterfaceObjectProperty
 }
 
 /*!
-    Returns true if the \a property is an dedicated RF Medium property; false
-    otherwise.
-
-    \note Independent properties are considered to be part of RF Medium properties
-    and therefore the function will return \c true for these properties as well.
+    Returns \c true if \a property is a dedicated \l RfMedium property
+    or a \l General property; \c false otherwise.
 */
 bool QKnxInterfaceObjectProperty::isRfMediumProperty(QKnxInterfaceObjectProperty property)
 {
