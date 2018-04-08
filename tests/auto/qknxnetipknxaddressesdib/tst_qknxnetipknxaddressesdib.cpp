@@ -50,56 +50,85 @@ private slots:
 
 void tst_QKnxNetIpKnxAddressesDib::testDefaultConstructor()
 {
-    QKnxNetIpKnxAddressesDib addresses;
-    QCOMPARE(addresses.isValid(), false);
-    QCOMPARE(addresses.size(), quint16(0));
-    QCOMPARE(addresses.bytes(), QKnxByteArray {});
-    QCOMPARE(addresses.data().size(), quint16(0));
-    QCOMPARE(addresses.data(), QKnxByteArray {});
-    QCOMPARE(quint8(addresses.descriptionType()), quint8(0));
+    auto addrDib = QKnxNetIpKnxAddressesDibView::builder().create();
+    QCOMPARE(addrDib.isValid(), true);
+    QCOMPARE(addrDib.size(), quint16(2));
+    QCOMPARE(addrDib.bytes(), QKnxByteArray::fromHex("0205"));
+    QCOMPARE(addrDib.data().size(), quint16(0));
+    QCOMPARE(addrDib.data(), QKnxByteArray {});
+
+    QKnxNetIpKnxAddressesDibView view(addrDib);
+    QCOMPARE(view.isValid(), true);
+    QCOMPARE(view.descriptionType(), QKnxNetIp::DescriptionType::KnxAddresses);
+    QCOMPARE(view.individualAddresses(), QVector<QKnxAddress>{});
 }
 
 void tst_QKnxNetIpKnxAddressesDib::testConstructorWithOneArgument()
 {
-    QKnxNetIpKnxAddressesDib addresses(QKnxAddress::createIndividual(1, 1, 1));
+    auto addresses = QKnxNetIpKnxAddressesDibView::builder()
+        .setIndividualAddresses({ QKnxAddress::createIndividual(1, 1, 1) })
+        .create();
     QCOMPARE(addresses.isValid(), true);
     QCOMPARE(addresses.size(), quint16(4));
     QCOMPARE(addresses.bytes(), QKnxByteArray::fromHex("04051101"));
     QCOMPARE(addresses.data().size(), quint16(2));
     QCOMPARE(addresses.data(), QKnxByteArray::fromHex("1101"));
-    QCOMPARE(addresses.descriptionType(),
-        QKnxNetIp::DescriptionType::KnxAddresses);
+
+    QKnxNetIpKnxAddressesDibView view(addresses);
+    QCOMPARE(view.isValid(), true);
+    QCOMPARE(view.descriptionType(), QKnxNetIp::DescriptionType::KnxAddresses);
+    QCOMPARE(view.individualAddresses(), { QKnxAddress::createIndividual(1, 1, 1) });
 }
 
 void tst_QKnxNetIpKnxAddressesDib::testConstructorWithTwoArguments()
 {
-    QVector<QKnxAddress> qknxAddresses;
-    qknxAddresses.append(QKnxAddress::createIndividual(1, 1, 0));
-    qknxAddresses.append(QKnxAddress::createIndividual(1, 2, 5));
-    qknxAddresses.append(QKnxAddress::createIndividual(2, 3, 8));
-    QKnxNetIpKnxAddressesDib addresses(qknxAddresses);
+    QVector<QKnxAddress> knxAddresses;
+    knxAddresses.append(QKnxAddress::createIndividual(1, 1, 0));
+    knxAddresses.append(QKnxAddress::createIndividual(1, 2, 5));
+    knxAddresses.append(QKnxAddress::createIndividual(2, 3, 8));
+
+    auto addresses = QKnxNetIpKnxAddressesDibView::builder()
+        .setIndividualAddresses(knxAddresses)
+        .create();
+
     QCOMPARE(addresses.isValid(), true);
     QCOMPARE(addresses.size(), quint16(8));
     QCOMPARE(addresses.bytes(), QKnxByteArray::fromHex("0805110012052308"));
     QCOMPARE(addresses.data().size(), quint16(6));
     QCOMPARE(addresses.data(), QKnxByteArray::fromHex("110012052308"));
-    QCOMPARE(addresses.descriptionType(),
-        QKnxNetIp::DescriptionType::KnxAddresses);
+
+    QKnxNetIpKnxAddressesDibView view(addresses);
+    QCOMPARE(view.isValid(), true);
+    QCOMPARE(view.descriptionType(), QKnxNetIp::DescriptionType::KnxAddresses);
+    QCOMPARE(view.individualAddresses(), knxAddresses);
 }
 
 void tst_QKnxNetIpKnxAddressesDib::testIndividualAddresses()
 {
-    QVector<QKnxAddress> qknxAddresses;
-    qknxAddresses.append(QKnxAddress::createIndividual(1, 1, 0));
-    qknxAddresses.append(QKnxAddress::createIndividual(1, 2, 5));
-    qknxAddresses.append(QKnxAddress::createIndividual(2, 3, 8));
-    QKnxNetIpKnxAddressesDib addresses(qknxAddresses);
+    QVector<QKnxAddress> knxAddresses;
+    knxAddresses.append(QKnxAddress::createIndividual(1, 1, 0));
+    knxAddresses.append(QKnxAddress::createGroup(1, 2, 5));
+    knxAddresses.append(QKnxAddress::createIndividual(2, 3, 8));
 
-    auto retrievedAddresses = addresses.individualAddresses();
-    QCOMPARE(retrievedAddresses.size(), qknxAddresses.size());
-    QCOMPARE(retrievedAddresses[0].toString(), qknxAddresses[0].toString());
-    QCOMPARE(retrievedAddresses[1].toString(), qknxAddresses[1].toString());
-    QCOMPARE(retrievedAddresses[2].toString(), qknxAddresses[2].toString());
+    auto addresses = QKnxNetIpKnxAddressesDibView::builder()
+        .setIndividualAddresses(knxAddresses)
+        .create();
+
+    QCOMPARE(addresses.isValid(), true);
+    QCOMPARE(addresses.size(), quint16(6));
+    QCOMPARE(addresses.bytes(), QKnxByteArray::fromHex("060511002308"));
+    QCOMPARE(addresses.data().size(), quint16(4));
+    QCOMPARE(addresses.data(), QKnxByteArray::fromHex("11002308"));
+
+    QKnxNetIpKnxAddressesDibView view(addresses);
+    QCOMPARE(view.isValid(), true);
+    QCOMPARE(view.descriptionType(), QKnxNetIp::DescriptionType::KnxAddresses);
+
+    auto retrievedAddresses = view.individualAddresses();
+    QCOMPARE(retrievedAddresses.size(), knxAddresses.size() - 1);
+
+    QCOMPARE(retrievedAddresses[0], knxAddresses[0]);
+    QCOMPARE(retrievedAddresses[1], knxAddresses[2]);
 }
 
 void tst_QKnxNetIpKnxAddressesDib::testDebugStream()
@@ -116,17 +145,20 @@ void tst_QKnxNetIpKnxAddressesDib::testDebugStream()
         QtMessageHandler oldMessageHandler;
     } _(myMessageHandler);
 
-    qDebug() << QKnxNetIpKnxAddressesDib();
-    QCOMPARE(s_msg, QString::fromLatin1("0x1nv4l1d"));
+    qDebug() << QKnxNetIpKnxAddressesDibView::builder().create();
+    QCOMPARE(s_msg, QString::fromLatin1("0x0205"));
 
-    qDebug() << QKnxNetIpKnxAddressesDib(QKnxAddress::createIndividual(1, 1, 1));
+    qDebug() << QKnxNetIpKnxAddressesDibView::builder()
+        .setIndividualAddresses({ QKnxAddress::createIndividual(1, 1, 1) })
+        .create();
     QCOMPARE(s_msg, QString::fromLatin1("0x04051101"));
 
-    QVector<QKnxAddress> qknxAddresses;
-    qknxAddresses.append(QKnxAddress::createIndividual(1, 1, 0));
-    qknxAddresses.append(QKnxAddress::createIndividual(1, 2, 5));
-    qknxAddresses.append(QKnxAddress::createIndividual(2, 3, 8));
-    qDebug() << QKnxNetIpKnxAddressesDib(qknxAddresses);
+    qDebug() << QKnxNetIpKnxAddressesDibView::builder()
+        .setIndividualAddresses({
+            QKnxAddress::createIndividual(1, 1, 0),
+            QKnxAddress::createIndividual(1, 2, 5),
+            QKnxAddress::createIndividual(2, 3, 8)
+        }).create();
     QCOMPARE(s_msg, QString::fromLatin1("0x0805110012052308"));
 }
 
