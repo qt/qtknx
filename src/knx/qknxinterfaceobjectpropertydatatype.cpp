@@ -1,6 +1,6 @@
 /******************************************************************************
 **
-** Copyright (C) 2017 The Qt Company Ltd.
+** Copyright (C) 2018 The Qt Company Ltd.
 ** Contact: https://www.qt.io/licensing/
 **
 ** This file is part of the QtKnx module.
@@ -37,30 +37,32 @@ QT_BEGIN_NAMESPACE
     \class QKnxInterfaceObjectPropertyDataType
 
     \inmodule QtKnx
-    \brief This class holds information about the data type of the properties
-    of the KNX interface object.
+    \brief The QKnxInterfaceObjectPropertyDataType class holds information about
+    the data type of the properties of a KNX interface object.
 
-    KNX interface object holds information about the device functionalities.
-    Different properties are storing different functionalities. The data type
-    holds information about this property such as its
+    A KNX interface object holds information about device functionality.
+    This class represents the properties of interface objects, such as:
+
     \list
-        \li \l QKnxInterfaceObjectPropertyDataType::Id
-        \li \l QKnxInterfaceObjectPropertyDataType::Unit
+        \li \l Id
+        \li \l Unit
         \li \l QKnxDatapointType::Type
     \endlist
 */
 
 /*!
     \enum QKnxInterfaceObjectPropertyDataType::Unit
-    This enum describes the possible units of an interface object property.
+    This enum holds the unit of an interface object property.
 
     \value Array
+           An array of values.
     \value Single
+           A single value.
 */
 
 /*!
     \enum QKnxInterfaceObjectPropertyDataType::Id
-    This enum describes the possible Ids of an interface object property.
+    This enum holds the ID of an interface object property.
 
     \value Control
     \value Char
@@ -129,6 +131,12 @@ QT_BEGIN_NAMESPACE
     \value Invalid
 */
 
+/*!
+    \fn QKnxInterfaceObjectPropertyDataType &QKnxInterfaceObjectPropertyDataType::operator=(const QKnxInterfaceObjectPropertyDataType &o);
+
+    Assigns \a o to this object.
+*/
+
 struct QKnxInterfaceObjectPropertyDataTypePrivate final : public QSharedData
 {
     QKnxInterfaceObjectPropertyDataTypePrivate() = default;
@@ -139,13 +147,23 @@ struct QKnxInterfaceObjectPropertyDataTypePrivate final : public QSharedData
     QKnxInterfaceObjectPropertyDataType::Unit m_unit = QKnxInterfaceObjectPropertyDataType::Unit::Single;
 };
 
+/*!
+    Creates a KNX interface object property data type.
+*/
 QKnxInterfaceObjectPropertyDataType::QKnxInterfaceObjectPropertyDataType()
     : d_ptr(new QKnxInterfaceObjectPropertyDataTypePrivate)
 {}
 
+/*!
+    Destroys a KNX interface object property data type.
+*/
 QKnxInterfaceObjectPropertyDataType::~QKnxInterfaceObjectPropertyDataType()
 {}
 
+/*!
+    Creates a KNX interface object property data type with the ID \a id, type
+    \a type, and unit \a unit.
+*/
 QKnxInterfaceObjectPropertyDataType::QKnxInterfaceObjectPropertyDataType(Id id,
         QKnxDatapointType::Type type, QKnxInterfaceObjectPropertyDataType::Unit unit)
     : d_ptr(new QKnxInterfaceObjectPropertyDataTypePrivate)
@@ -155,31 +173,63 @@ QKnxInterfaceObjectPropertyDataType::QKnxInterfaceObjectPropertyDataType(Id id,
     d_ptr->m_type = type;
 }
 
+/*!
+    Returns \c true if this a valid KNX interface object property data type;
+    otherwise returns \c false.
+*/
 bool QKnxInterfaceObjectPropertyDataType::isValid() const
 {
     return d_ptr->m_id != Id::Invalid;
 }
 
+/*!
+    Returns the size of the KNX interface object property data type.
+
+    If \a read is \c false, the property is a write property. Only the object
+    property data type \c PDT_CONTROL, which is used as type indication for
+    properties controlling the standard load state machine, can be either a
+    read property or a write property.
+*/
 quint8 QKnxInterfaceObjectPropertyDataType::size(bool read) const
 {
     return QKnxInterfaceObjectPropertyDataType::size(d_ptr->m_id, read);
 }
 
+/*!
+    Returns the ID of the KNX interface object property data type.
+*/
 QKnxInterfaceObjectPropertyDataType::Id QKnxInterfaceObjectPropertyDataType::id() const
 {
     return d_ptr->m_id;
 }
 
+/*!
+    Returns the datapoint type of a KNX interface object property data type.
+
+    \sa QKnxDatapointType::Type
+*/
 QKnxDatapointType::Type QKnxInterfaceObjectPropertyDataType::datapointType() const
 {
     return d_ptr->m_type;
 }
 
+/*!
+    Returns the unit of a KNX interface object property data type.
+*/
 QKnxInterfaceObjectPropertyDataType::Unit QKnxInterfaceObjectPropertyDataType::unit() const
 {
     return d_ptr->m_unit;
 }
 
+/*!
+    Returns the size of the KNX interface object property data type with the ID
+    \a id.
+
+    If \a read is \c false, the property is a write property. Only the object
+    property data type \c PDT_CONTROL, which is used as type indication for
+    properties controlling the standard load state machine, can be either a
+    read property or a write property.
+*/
 quint8 QKnxInterfaceObjectPropertyDataType::size(Id id, bool read)
 {
     switch (id) {
@@ -277,6 +327,10 @@ quint8 QKnxInterfaceObjectPropertyDataType::size(Id id, bool read)
     return 0;
 }
 
+/*!
+    Creates a KNX interface object property data type from the property
+    \a property.
+*/
 QVector<QKnxInterfaceObjectPropertyDataType>
     QKnxInterfaceObjectPropertyDataType::fromProperty(QKnxInterfaceObjectProperty property)
 {
@@ -1027,6 +1081,9 @@ QVector<QKnxInterfaceObjectPropertyDataType>
     return {};
 }
 
+/*!
+    Creates the interface object property data type \a o.
+*/
 QKnxInterfaceObjectPropertyDataType::QKnxInterfaceObjectPropertyDataType(const QKnxInterfaceObjectPropertyDataType &o)
     : d_ptr(o.d_ptr)
 {}
@@ -1038,6 +1095,9 @@ QKnxInterfaceObjectPropertyDataType::operator=(const QKnxInterfaceObjectProperty
     return *this;
 }
 
+/*!
+    Swaps the interface object property data type \a other with this data type.
+*/
 void QKnxInterfaceObjectPropertyDataType::swap(QKnxInterfaceObjectPropertyDataType &other) Q_DECL_NOTHROW
 {
     d_ptr.swap(other.d_ptr);
@@ -1055,6 +1115,11 @@ QKnxInterfaceObjectPropertyDataType::QKnxInterfaceObjectPropertyDataType(
 }
 
 QKnxInterfaceObjectPropertyDataType &
+
+/*!
+    Move-constructs an object instance, making it point to the same object that
+    \a other was pointing to.
+*/
 QKnxInterfaceObjectPropertyDataType::operator=(QKnxInterfaceObjectPropertyDataType &&other) Q_DECL_NOTHROW
 {
     swap(other);
