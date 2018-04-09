@@ -143,6 +143,13 @@ struct Q_KNX_EXPORT QKnxNetIp final
     };
     static bool isTunnelingLayer(TunnelingLayer layer);
 
+    enum class ProgrammingMode : quint8
+    {
+        Inactive = 0x00,
+        Active = 0x01
+    };
+    static bool isProgrammingMode(ProgrammingMode mode);
+
     enum Timeout
     {
         HeartbeatTimeout = 60000,
@@ -169,9 +176,12 @@ struct Q_KNX_EXPORT QKnxNetIp final
 Q_DECLARE_TYPEINFO(QKnxNetIp::HostProtocol, Q_PRIMITIVE_TYPE);
 Q_DECLARE_TYPEINFO(QKnxNetIp::ConnectionType, Q_PRIMITIVE_TYPE);
 Q_DECLARE_TYPEINFO(QKnxNetIp::DescriptionType, Q_PRIMITIVE_TYPE);
+Q_DECLARE_TYPEINFO(QKnxNetIp::ServiceFamily, Q_PRIMITIVE_TYPE);
 Q_DECLARE_TYPEINFO(QKnxNetIp::ServiceType, Q_PRIMITIVE_TYPE);
 Q_DECLARE_TYPEINFO(QKnxNetIp::Error, Q_PRIMITIVE_TYPE);
 Q_DECLARE_TYPEINFO(QKnxNetIp::DeviceState, Q_PRIMITIVE_TYPE);
+Q_DECLARE_TYPEINFO(QKnxNetIp::TunnelingLayer, Q_PRIMITIVE_TYPE);
+Q_DECLARE_TYPEINFO(QKnxNetIp::ProgrammingMode, Q_PRIMITIVE_TYPE);
 Q_DECLARE_TYPEINFO(QKnxNetIp::Timeout, Q_PRIMITIVE_TYPE);
 
 QT_END_NAMESPACE

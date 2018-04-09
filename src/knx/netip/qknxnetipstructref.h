@@ -31,10 +31,7 @@
 #define QKNXNETIPSTRUCTREF_H
 
 #include <QtKnx/qknxnetipconfigdib.h>
-#include <QtKnx/qknxnetipcrd.h>
 #include <QtKnx/qknxnetipcurrentconfigdib.h>
-#include <QtKnx/qknxnetipdevicedib.h>
-#include <QtKnx/qknxnetipservicefamiliesdib.h>
 
 QT_BEGIN_NAMESPACE
 
@@ -53,8 +50,7 @@ public:
     {
         Null,
         QKnxNetIpConfigDib,
-        QKnxNetIpCurrentConfigDib,
-        QKnxNetIpDeviceDib
+        QKnxNetIpCurrentConfigDib
     };
 
     QKnxNetIpStructRef() = default;
@@ -70,18 +66,12 @@ public:
         , m_type(Type::QKnxNetIpCurrentConfigDib)
     {}
 
-    explicit QKnxNetIpStructRef(QKnxNetIpDeviceDib *deviceDib)
-        : e(deviceDib)
-        , m_type(Type::QKnxNetIpDeviceDib)
-    {}
-
     QKnxNetIpStructRef(const QKnxNetIpStructRef &) = default;
     QKnxNetIpStructRef &operator=(const QKnxNetIpStructRef &) = default;
 
     bool isNull() const { return m_type == Type::Null; }
     bool isIpConfigDib() const { return m_type == Type::QKnxNetIpConfigDib; }
     bool isIpCurrentConfigDib() const { return m_type == Type::QKnxNetIpCurrentConfigDib; }
-    bool isDeviceDib() const { return m_type == Type::QKnxNetIpDeviceDib; }
 
     template <typename T> T toType() const
     {
@@ -103,7 +93,6 @@ private:
     {
         QKnxNetIpConfigDib *a;
         QKnxNetIpCurrentConfigDib *d;
-        QKnxNetIpDeviceDib *e;
     };
 
     Type m_type = Type::Null;
@@ -137,15 +126,6 @@ namespace QKnxPrivate
         {
             TYPE_CHECK_RETURN_FROM_BYTES(QKnxNetIpCurrentConfigDib);
             return QKnxNetIpCurrentConfigDib(*(ref.d));
-        }
-    };
-
-    template<> struct QKnxNetIpStructTypeHelper<QKnxNetIpDeviceDib>
-    {
-        static QKnxNetIpDeviceDib invoke(const QKnxNetIpStructRef &ref)
-        {
-            TYPE_CHECK_RETURN_FROM_BYTES(QKnxNetIpDeviceDib);
-            return QKnxNetIpDeviceDib(*(ref.e));
         }
     };
 

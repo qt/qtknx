@@ -57,7 +57,7 @@ public:
 
     bool isValid() const;
 
-    QKnxNetIpDeviceDib deviceHardware() const;
+    QKnxNetIpDib deviceHardware() const;
     QKnxNetIpDib supportedFamilies() const;
 
     QVector<QKnxNetIpStructRef> optionalDibs() const
@@ -65,8 +65,6 @@ public:
         const auto codeToType = [] (QKnxNetIp::DescriptionType code) -> QKnxNetIpStructRef::Type
         {
             switch (QKnxNetIp::DescriptionType(code)) {
-            case QKnxNetIp::DescriptionType::DeviceInfo:
-                return QKnxNetIpStructRef::Type::QKnxNetIpDeviceDib;
             case QKnxNetIp::DescriptionType::IpConfiguration:
                 return QKnxNetIpStructRef::Type::QKnxNetIpConfigDib;
             case QKnxNetIp::DescriptionType::CurrentIpConfiguration:
@@ -97,13 +95,12 @@ public:
     class Q_KNX_EXPORT Builder final
     {
     public:
-        Builder &setDeviceHardware(const QKnxNetIpDeviceDib &ddib);
+        Builder &setDeviceHardware(const QKnxNetIpDib &ddib);
         Builder &setSupportedFamilies(const QKnxNetIpDib &sdib);
 
         template <typename T> void addOptionalDib(const T &dib)
         {
-            static_assert(is_type<T, QKnxNetIpDeviceDib, QKnxNetIpConfigDib,
-                QKnxNetIpCurrentConfigDib>::value,
+            static_assert(is_type<T, QKnxNetIpConfigDib, QKnxNetIpCurrentConfigDib>::value,
                 "QKnxNetIpDescriptionResponse::Builder::addOptionalDib - Type not supported.");
             m_optionalDibs += dib.bytes();
         }
@@ -111,7 +108,7 @@ public:
         QKnxNetIpFrame create() const;
 
     private:
-        QKnxNetIpDeviceDib m_ddib;
+        QKnxNetIpDib m_ddib;
         QKnxNetIpDib m_sdib;
         QKnxByteArray m_optionalDibs;
     };

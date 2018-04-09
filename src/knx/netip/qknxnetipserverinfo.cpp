@@ -53,12 +53,12 @@ QKnxNetIpServerInfo::~QKnxNetIpServerInfo()
 
 QString QKnxNetIpServerInfo::deviceName() const
 {
-    return QString::fromUtf8(static_cast<QByteArray> (d_ptr->hardware.deviceName()));
+    return QString::fromUtf8(QKnxNetIpDeviceDibView(d_ptr->hardware).deviceName());
 }
 
 QKnxAddress QKnxNetIpServerInfo::individualAddress() const
 {
-    return d_ptr->hardware.individualAddress();
+    return QKnxNetIpDeviceDibView(d_ptr->hardware).individualAddress();
 }
 
 quint16 QKnxNetIpServerInfo::controlEndpointPort() const
@@ -81,7 +81,7 @@ QKnxNetIpHpai QKnxNetIpServerInfo::endpoint() const
     return d_ptr->hpai;
 }
 
-QKnxNetIpDeviceDib QKnxNetIpServerInfo::hardware() const
+QKnxNetIpDib QKnxNetIpServerInfo::hardware() const
 {
     return d_ptr->hardware;
 }
@@ -131,8 +131,8 @@ void QKnxNetIpServerInfo::swap(QKnxNetIpServerInfo &other) Q_DECL_NOTHROW
     d_ptr.swap(other.d_ptr);
 }
 
-QKnxNetIpServerInfo::QKnxNetIpServerInfo(const QKnxNetIpHpai &hpai,
-    const QKnxNetIpDeviceDib &hardware, QKnxNetIpDib services)
+QKnxNetIpServerInfo::QKnxNetIpServerInfo(const QKnxNetIpHpai &hpai, const QKnxNetIpDib &hardware,
+        QKnxNetIpDib services)
     : QKnxNetIpServerInfo()
 {
     d_ptr->hpai = hpai;

@@ -359,6 +359,31 @@ bool QKnxNetIp::isTunnelingLayer(QKnxNetIp::TunnelingLayer layer)
     return false;
 }
 
+/*!
+    \enum QKnxNetIp::ProgrammingMode
+
+    This enum describes the programming mode state of a KNX device.
+
+    \value Inactive     The device is not in programming mode.
+    \value Active       The device is in programming mode.
+*/
+
+/*!
+    Returns \c true if the specified \a mode is a part of the \l ProgrammingMode
+    enumeration; otherwise returns \c false.
+*/
+bool QKnxNetIp::isProgrammingMode(ProgrammingMode mode)
+{
+    switch (mode) {
+    case QKnxNetIp::ProgrammingMode::Inactive:
+    case QKnxNetIp::ProgrammingMode::Active:
+        return true;
+    default:
+        break;
+    }
+    return false;
+}
+
 
 /*!
     \enum QKnxNetIp::Timeout

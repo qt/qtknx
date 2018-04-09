@@ -61,7 +61,7 @@ public:
     QVector<QKnxServiceInfo> supportedServices() const;
 
     QKnxNetIpHpai endpoint() const;
-    QKnxNetIpDeviceDib hardware() const;
+    QKnxNetIpDib hardware() const;
     QKnxNetIpDib services() const;
 
     QKnxNetIpServerInfo(const QKnxNetIpServerInfo &o);
@@ -77,7 +77,7 @@ public:
     void swap(QKnxNetIpServerInfo &other) Q_DECL_NOTHROW;
 
 private:
-    QKnxNetIpServerInfo(const QKnxNetIpHpai &hpai, const QKnxNetIpDeviceDib &hardware,
+    QKnxNetIpServerInfo(const QKnxNetIpHpai &hpai, const QKnxNetIpDib &hardware,
         QKnxNetIpDib services);
     explicit QKnxNetIpServerInfo(QKnxNetIpServerInfoPrivate &dd);
 
