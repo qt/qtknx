@@ -99,7 +99,7 @@ public:
     void setSearchFrequency(int timesPerMinute);
 
     bool natAware() const;
-    void setNatAware(bool isAware);
+    void setNatAware(bool useNat);
 
     quint8 multicastTtl() const;
     void setMulticastTtl(quint8 ttl);
