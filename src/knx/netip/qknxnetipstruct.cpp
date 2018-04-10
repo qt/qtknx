@@ -63,6 +63,7 @@ QT_BEGIN_NAMESPACE
     the header and the payload.
 */
 
+// TODO: remove
 static QDebug stream(QDebug debug, const QKnxByteArray &bytes)
 {
     return debug.nospace().noquote() << "0x" << bytes.toHex();
@@ -101,8 +102,7 @@ QDebug operator<<(QDebug debug, const QKnxNetIpStruct<QKnxNetIp::ConnectionType>
 QDebug operator<<(QDebug debug, const QKnxNetIpStruct<QKnxNetIp::DescriptionType> &dib)
 {
     QDebugStateSaver _(debug);
-    return dib.isValid() ? stream(debug, dib.bytes())
-        : debug.nospace().noquote() << "0x1nv4l1d";
+    return debug.nospace().noquote() << "0x" << dib.bytes().toHex();
 }
 
 QT_END_NAMESPACE

@@ -33,53 +33,49 @@
 #include <QtKnx/qknxglobal.h>
 #include <QtKnx/qknxnetipstruct.h>
 #include <QtNetwork/qhostaddress.h>
-#include <QtNetwork/qnetworkinterface.h>
 
 QT_BEGIN_NAMESPACE
 
-class Q_KNX_EXPORT QKnxNetIpCurrentConfigDib final : public QKnxNetIpDib
+class Q_KNX_EXPORT QKnxNetIpCurrentConfigDibView final
 {
 public:
-    // 03_08_03 Management v01.06.02 AS, 2.5.5 PID_CURRENT_IP_ASSIGNMENT_METHOD (PID = 54)
-    enum class AssignmentMethod : quint8
-    {
-        Manual = 0x01,
-        BootP = 0x02,
-        Dhcp = 0x04,
-        AutoIp = 0x08
-    };
+    QKnxNetIpCurrentConfigDibView() = delete;
+    ~QKnxNetIpCurrentConfigDibView() = default;
 
-    QKnxNetIpCurrentConfigDib() = default;
-    ~QKnxNetIpCurrentConfigDib() override = default;
+    QKnxNetIpCurrentConfigDibView(const QKnxNetIpDib &&) = delete;
+    explicit QKnxNetIpCurrentConfigDibView(const QKnxNetIpDib &dib);
 
-    QKnxNetIpCurrentConfigDib(const QHostAddress &ipAddress,
-                              const QHostAddress &subnetMask,
-                              const QHostAddress &gateway,
-                              const QHostAddress &dhcp,
-                              AssignmentMethod method);
-
-    QKnxNetIpCurrentConfigDib(const QNetworkAddressEntry &addressEntry,
-                              const QHostAddress &gateway,
-                              const QHostAddress &dhcp,
-                              AssignmentMethod method);
-
-    static QKnxNetIpCurrentConfigDib fromBytes(const QKnxByteArray &bytes, quint16 index)
-    {
-        return QKnxNetIpStruct::fromBytes(bytes, index,
-            QKnxNetIp::DescriptionType::CurrentIpConfiguration);
-    }
-
+    bool isValid() const;
     QKnxNetIp::DescriptionType descriptionType() const;
+
     QHostAddress ipAddress() const;
     QHostAddress subnetMask() const;
     QHostAddress defaultGateway() const;
     QHostAddress dhcpOrBootP() const;
-    AssignmentMethod assignmentMethod() const;
+    QKnxNetIp::AssignmentMethod assignmentMethod() const;
 
-    bool isValid() const override;
+    class Q_KNX_EXPORT Builder final
+    {
+    public:
+        Builder &setIpAddress(const QHostAddress &ipAddress);
+        Builder &setSubnetMask(const QHostAddress &subnetMask);
+        Builder &setDefaultGateway(const QHostAddress &gateway);
+        Builder &setDhcpOrBootP(const QHostAddress &dhcpBootP);
+        Builder &setAssignmentMethod(QKnxNetIp::AssignmentMethod method);
+
+        QKnxNetIpDib create() const;
+
+    private:
+        QHostAddress m_ipAddress;
+        QHostAddress m_subnetMask;
+        QHostAddress m_gateway;
+        QHostAddress m_dhcpBootP;
+        QKnxNetIp::AssignmentMethod m_method { QKnxNetIp::AssignmentMethod::Unknown };
+    };
+    static QKnxNetIpCurrentConfigDibView::Builder builder();
 
 private:
-    QKnxNetIpCurrentConfigDib(const QKnxNetIpDib &other);
+    const QKnxNetIpDib &m_dib;
 };
 
 QT_END_NAMESPACE

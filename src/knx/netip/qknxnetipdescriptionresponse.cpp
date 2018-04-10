@@ -28,12 +28,20 @@
 ******************************************************************************/
 
 #include "qknxnetipdescriptionresponse.h"
+#include "qknxnetipservicefamiliesdib.h"
+#include "qknxnetipdevicedib.h"
 
 QT_BEGIN_NAMESPACE
 
 QKnxNetIpDescriptionResponse::QKnxNetIpDescriptionResponse(const QKnxNetIpFrame &frame)
     : m_frame(frame)
 {}
+
+bool QKnxNetIpDescriptionResponse::isValid() const
+{
+    return m_frame.isValid() && m_frame.size() >= 64
+        && m_frame.serviceType() == QKnxNetIp::ServiceType::DescriptionResponse;
+}
 
 QKnxNetIpDib QKnxNetIpDescriptionResponse::deviceHardware() const
 {
@@ -45,10 +53,25 @@ QKnxNetIpDib QKnxNetIpDescriptionResponse::supportedFamilies() const
     return QKnxNetIpDib::fromBytes(m_frame.constData(), 54);
 }
 
-bool QKnxNetIpDescriptionResponse::isValid() const
+QVector<QKnxNetIpDib> QKnxNetIpDescriptionResponse::optionalDibs() const
 {
-    return m_frame.isValid() && m_frame.size() >= 64
-        && m_frame.serviceType() == QKnxNetIp::ServiceType::DescriptionResponse;
+    const auto &data = m_frame.constData();
+
+    auto header = QKnxNetIpStructHeader<QKnxNetIp::DescriptionType>::fromBytes(data, 0);
+    quint16 index = header.totalSize(); // total size of device DIB
+
+    header = QKnxNetIpStructHeader<QKnxNetIp::DescriptionType>::fromBytes(data, index);
+    index += header.totalSize(); // advance of total size of families DIB
+
+    QVector<QKnxNetIpDib> dibs;
+    while (index < data.size()) {
+        header = QKnxNetIpStructHeader<QKnxNetIp::DescriptionType>::fromBytes(data, index);
+        if (!header.isValid())
+            return {};
+        dibs.append(QKnxNetIpDib::fromBytes(data, index));
+        index += header.totalSize(); // advance of total size of last read DIB
+    }
+    return dibs;
 }
 
 QKnxNetIpDescriptionResponse::Builder QKnxNetIpDescriptionResponse::builder()
@@ -75,10 +98,25 @@ QKnxNetIpDescriptionResponse::Builder &
     return *this;
 }
 
+QKnxNetIpDescriptionResponse::Builder &
+    QKnxNetIpDescriptionResponse::Builder::setOptionalDibs(const QVector<QKnxNetIpDib> &dibs)
+{
+    m_optionalDibs = dibs;
+    return *this;
+}
+
 QKnxNetIpFrame QKnxNetIpDescriptionResponse::Builder::create() const
 {
     return { QKnxNetIp::ServiceType::DescriptionResponse, m_ddib.bytes() + m_sdib.bytes()
-        + m_optionalDibs };
+        + [&]() -> QKnxByteArray {
+            QKnxByteArray bytes;
+            for (const auto &dib : m_optionalDibs) {
+                if (dib.isValid())
+                    bytes += dib.bytes();
+            }
+            return bytes;
+        }()
+    };
 }
 
 QT_END_NAMESPACE

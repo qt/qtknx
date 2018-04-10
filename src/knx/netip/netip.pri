@@ -35,7 +35,6 @@ PUBLIC_HEADERS += $$PWD/qknxnetip.h \
     $$PWD/qknxnetipservicefamiliesdib.h \
     $$PWD/qknxnetipstruct.h \
     $$PWD/qknxnetipstructheader.h \
-    $$PWD/qknxnetipstructref.h \
     $$PWD/qknxnetiptunnelconnection.h \
     $$PWD/qknxnetiptunnelingacknowledge.h \
     $$PWD/qknxnetiptunnelingrequest.h
