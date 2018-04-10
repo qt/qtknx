@@ -74,11 +74,19 @@ QKnxDeviceConfiguration &QKnxDeviceConfiguration::operator=(const QKnxDeviceConf
     return *this;
 }
 
-#ifdef Q_COMPILER_RVALUE_REFS
-
 void QKnxDeviceConfiguration::swap(QKnxDeviceConfiguration &other) Q_DECL_NOTHROW
 {
     d_ptr.swap(other.d_ptr);
+}
+
+/*!
+    Move-constructs an object instance, making it point to the same object that
+    \a other was pointing to.
+*/
+QKnxDeviceConfiguration::QKnxDeviceConfiguration(QKnxDeviceConfiguration &&other) Q_DECL_NOTHROW
+    : d_ptr(other.d_ptr)
+{
+    other.d_ptr = nullptr;
 }
 
 QKnxDeviceConfiguration &
@@ -88,7 +96,24 @@ QKnxDeviceConfiguration &
     return *this;
 }
 
-#endif
+/*!
+    Returns \c true if this object and the given \a other are equal; otherwise
+    returns \c false.
+*/
+bool QKnxDeviceConfiguration::operator==(const QKnxDeviceConfiguration &other) const
+{
+    return d_ptr == other.d_ptr
+        || (d_ptr->m_mt == other.d_ptr->m_mt && d_ptr->m_ia == other.d_ptr->m_ia);
+}
+
+/*!
+    Returns \c true if this object and the given \a other are not equal;
+    otherwise returns \c false.
+*/
+bool QKnxDeviceConfiguration::operator!=(const QKnxDeviceConfiguration &other) const
+{
+    return !operator==(other);
+}
 
 QKnxDeviceConfiguration::QKnxDeviceConfiguration(QKnxDeviceConfigurationPrivate &dd)
     : d_ptr(new QKnxDeviceConfigurationPrivate(dd))

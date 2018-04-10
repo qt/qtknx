@@ -63,11 +63,19 @@ QKnxConnectionInfo &QKnxConnectionInfo::operator=(const QKnxConnectionInfo &othe
     return *this;
 }
 
-#ifdef Q_COMPILER_RVALUE_REFS
-
 void QKnxConnectionInfo::swap(QKnxConnectionInfo &other) Q_DECL_NOTHROW
 {
     d_ptr.swap(other.d_ptr);
+}
+
+/*!
+    Move-constructs an object instance, making it point to the same object that
+    \a other was pointing to.
+*/
+QKnxConnectionInfo::QKnxConnectionInfo(QKnxConnectionInfo &&other) Q_DECL_NOTHROW
+    : d_ptr(other.d_ptr)
+{
+    other.d_ptr = nullptr;
 }
 
 QKnxConnectionInfo &QKnxConnectionInfo::operator=(QKnxConnectionInfo &&other) Q_DECL_NOTHROW
@@ -76,7 +84,23 @@ QKnxConnectionInfo &QKnxConnectionInfo::operator=(QKnxConnectionInfo &&other) Q_
     return *this;
 }
 
-#endif
+/*!
+    Returns \c true if this object and the given \a other are equal; otherwise
+    returns \c false.
+*/
+bool QKnxConnectionInfo::operator==(const QKnxConnectionInfo &other) const
+{
+    return d_ptr == other.d_ptr || (d_ptr->m_mt == other.d_ptr->m_mt);
+}
+
+/*!
+    Returns \c true if this object and the given \a other are not equal;
+    otherwise returns \c false.
+*/
+bool QKnxConnectionInfo::operator!=(const QKnxConnectionInfo &other) const
+{
+    return !operator==(other);
+}
 
 QKnxConnectionInfo::QKnxConnectionInfo(QKnxConnectionInfoPrivate &dd)
     : d_ptr(new QKnxConnectionInfoPrivate(dd))

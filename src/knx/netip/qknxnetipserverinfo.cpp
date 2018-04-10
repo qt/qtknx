@@ -162,7 +162,16 @@ QKnxNetIpServerInfo &QKnxNetIpServerInfo::operator=(const QKnxNetIpServerInfo &o
     return *this;
 }
 
-#ifdef Q_COMPILER_RVALUE_REFS
+/*!
+    Move-constructs an object instance, making it point to the same object that
+    \a other was pointing to.
+*/
+QKnxNetIpServerInfo::QKnxNetIpServerInfo(QKnxNetIpServerInfo &&other) Q_DECL_NOTHROW
+    : d_ptr(other.d_ptr)
+{
+    other.d_ptr = nullptr;
+}
+
 QKnxNetIpServerInfo &
 
 /*!
@@ -174,7 +183,6 @@ QKnxNetIpServerInfo::operator=(QKnxNetIpServerInfo &&other) Q_DECL_NOTHROW
     swap(other);
     return *this;
 }
-#endif
 
 /*!
     Returns \c true if \a other points to the same item as this server

@@ -67,9 +67,8 @@ public:
     QKnxNetIpServerInfo(const QKnxNetIpServerInfo &other);
     QKnxNetIpServerInfo &operator=(const QKnxNetIpServerInfo &other);
 
-#ifdef Q_COMPILER_RVALUE_REFS
+    QKnxNetIpServerInfo(QKnxNetIpServerInfo &&other) Q_DECL_NOTHROW;
     QKnxNetIpServerInfo &operator=(QKnxNetIpServerInfo &&other) Q_DECL_NOTHROW;
-#endif
 
     bool operator==(const QKnxNetIpServerInfo &other) const;
     bool operator!=(const QKnxNetIpServerInfo &other) const;

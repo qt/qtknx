@@ -141,10 +141,13 @@ public:
     QKnxInterfaceObjectPropertyDataType &operator=(const QKnxInterfaceObjectPropertyDataType &o);
 
     void swap(QKnxInterfaceObjectPropertyDataType &other) Q_DECL_NOTHROW;
-#ifdef Q_COMPILER_RVALUE_REFS
+
+    QKnxInterfaceObjectPropertyDataType(QKnxInterfaceObjectPropertyDataType &&other) Q_DECL_NOTHROW;
     QKnxInterfaceObjectPropertyDataType
         &operator=(QKnxInterfaceObjectPropertyDataType &&other) Q_DECL_NOTHROW;
-#endif
+
+    bool operator==(const QKnxInterfaceObjectPropertyDataType &other) const;
+    bool operator!=(const QKnxInterfaceObjectPropertyDataType &other) const;
 
 private:
     explicit QKnxInterfaceObjectPropertyDataType(QKnxInterfaceObjectPropertyDataTypePrivate &dd);

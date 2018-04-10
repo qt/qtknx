@@ -977,13 +977,11 @@ QKnxDatapointType::QKnxDatapointType(QKnxDatapointType &&other) Q_DECL_NOTHROW
     Move assigns \a other to this datapoint type and returns a reference to this
     datapoint type.
 */
-#ifdef Q_COMPILER_RVALUE_REFS
 QKnxDatapointType &QKnxDatapointType::operator=(QKnxDatapointType &&other) Q_DECL_NOTHROW
 {
     swap(other);
     return *this;
 }
-#endif
 
 /*!
     Swaps \a other with this datapoint. This operation never fails.
