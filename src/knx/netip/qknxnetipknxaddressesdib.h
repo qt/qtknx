@@ -30,43 +30,39 @@
 #ifndef QKNXNETIPKNXADDRESSESDIB_H
 #define QKNXNETIPKNXADDRESSESDIB_H
 
-#include <QtCore/qvector.h>
-
 #include <QtKnx/qknxaddress.h>
 #include <QtKnx/qknxglobal.h>
 #include <QtKnx/qknxnetipstruct.h>
 
 QT_BEGIN_NAMESPACE
 
-class Q_KNX_EXPORT QKnxNetIpKnxAddressesDib final : public QKnxNetIpDib
+class Q_KNX_EXPORT QKnxNetIpKnxAddressesDibView final
 {
 public:
-    QKnxNetIpKnxAddressesDib() = default;
-    ~QKnxNetIpKnxAddressesDib() override = default;
+    QKnxNetIpKnxAddressesDibView() = delete;
+    ~QKnxNetIpKnxAddressesDibView() = default;
 
-    explicit QKnxNetIpKnxAddressesDib(const QKnxAddress &address);
-    explicit QKnxNetIpKnxAddressesDib(const QVector<QKnxAddress> &addresses);
+    QKnxNetIpKnxAddressesDibView(const QKnxNetIpDib &&) = delete;
+    explicit QKnxNetIpKnxAddressesDibView(const QKnxNetIpDib &dib);
 
-    static QKnxNetIpKnxAddressesDib fromBytes(const QKnxByteArray &bytes, quint16 index)
-    {
-        return QKnxNetIpStruct::fromBytes(bytes, index,
-            QKnxNetIp::DescriptionType::KnxAddresses);
-    }
+    bool isValid() const;
 
     QKnxNetIp::DescriptionType descriptionType() const;
-    QVector<QKnxAddress> individualAddresses() const
-    {
-        const auto &load = constData();
-        QVector<QKnxAddress> addresses;
-        for (quint16 i = 0; i < load.size(); i += 2)
-            addresses.push_back({ QKnxAddress::Type::Individual, load.mid(i, 2) });
-        return addresses;
-    }
+    QVector<QKnxAddress> individualAddresses() const;
 
-    bool isValid() const override;
+    class Q_KNX_EXPORT Builder final
+    {
+    public:
+        Builder &setIndividualAddresses(const QVector<QKnxAddress> &addresses);
+        QKnxNetIpDib create() const;
+
+    private:
+        QVector<QKnxAddress> m_addresses;
+    };
+    static QKnxNetIpKnxAddressesDibView::Builder builder();
 
 private:
-    QKnxNetIpKnxAddressesDib(const QKnxNetIpDib &other);
+    const QKnxNetIpDib &m_dib;
 };
 
 QT_END_NAMESPACE

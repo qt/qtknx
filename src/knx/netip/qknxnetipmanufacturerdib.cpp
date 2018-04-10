@@ -32,40 +32,168 @@
 
 QT_BEGIN_NAMESPACE
 
-QKnxNetIpManufacturerDib::QKnxNetIpManufacturerDib(const QKnxNetIpDib &other)
-    : QKnxNetIpDib(other)
+/*!
+    \class QKnxNetIpManufacturerDibView
+
+    \inmodule QtKnx
+    \brief The QKnxNetIpManufacturerDibView class provides the means to read
+    the manufacturer specific device information from the generic \l QKnxNetIpDib
+    class and to create a KNXnet/IP manufacturer specific device information
+    block (DIB) structure.
+
+    \note When using QKnxNetIpManufacturerDibView, care must be taken to
+    ensure that the referenced KNXnet/IP DIB structure outlives the view on all
+    code paths, lest the view ends up referencing deleted data.
+
+    Reading the manufacturer specific device information can be achieved like
+    this:
+    \code
+        auto dib = QKnxNetIpDib::fromBytes(...);
+
+        QKnxNetIpManufacturerDibView view(dib);
+        if (!view.isValid())
+            return;
+
+        auto id = view.manufacturerId();
+        auto data = view.manufacturerData();
+    \endcode
+
+    \sa builder()
+*/
+
+/*!
+    \internal
+    \fn QKnxNetIpManufacturerDibView::QKnxNetIpManufacturerDibView()
+*/
+
+/*!
+    \internal
+    \fn QKnxNetIpManufacturerDibView::~QKnxNetIpManufacturerDibView()
+*/
+
+/*!
+    \internal
+    \fn QKnxNetIpManufacturerDibView::QKnxNetIpManufacturerDibView(const QKnxNetIpDib &&)
+*/
+
+/*!
+    Constructs a wrapper object with the specified a KNXnet/IP DIB structure
+    \a dib to read a manufacturer specific device information block.
+*/
+QKnxNetIpManufacturerDibView::QKnxNetIpManufacturerDibView(const QKnxNetIpDib &dib)
+    : m_dib(dib)
 {}
 
-QKnxNetIpManufacturerDib::QKnxNetIpManufacturerDib(quint16 manufacturerId)
-    : QKnxNetIpManufacturerDib(manufacturerId, QKnxByteArray {})
+/*!
+    Returns \c true if the KNXnet/IP structure to create the object is a valid
+    KNXnet/IP DIB structure; otherwise returns \c false.
+*/
+bool QKnxNetIpManufacturerDibView::isValid() const
 {
+    return m_dib.isValid() && m_dib.size() >= 4
+        && m_dib.code() == QKnxNetIp::DescriptionType::ManufacturerData;
 }
 
-QKnxNetIpManufacturerDib::QKnxNetIpManufacturerDib(quint16 manufacturerId, const QKnxByteArray &data)
-    : QKnxNetIpDib(QKnxNetIp::DescriptionType::ManufacturerData)
+/*!
+    Returns the description type of this KNXnet/IP structure if the object
+    that was passed during construction was valid; otherwise returns
+    \l QKnxNetIp::Unknown.
+*/
+QKnxNetIp::DescriptionType QKnxNetIpManufacturerDibView::descriptionType() const
 {
-    setData(QKnxUtils::QUint16::bytes(manufacturerId) + data);
+    if (isValid())
+        return m_dib.code();
+    return QKnxNetIp::DescriptionType::Unknown;
 }
 
-QKnxNetIp::DescriptionType QKnxNetIpManufacturerDib::descriptionType() const
+/*!
+    Returns the manufacturer ID of this KNXnet/IP structure if the object
+    that was passed during construction was valid; otherwise returns \c 0.
+*/
+quint16 QKnxNetIpManufacturerDibView::manufacturerId() const
 {
-    return code();
+    if (isValid())
+        return QKnxUtils::QUint16::fromBytes(m_dib.constData());
+    return 0;
 }
 
-quint16 QKnxNetIpManufacturerDib::manufacturerId() const
+/*!
+    Returns the manufacturer data  if the object that was passed during
+    construction was valid; otherwise returns an empty byte array.
+*/
+QKnxByteArray QKnxNetIpManufacturerDibView::manufacturerData() const
 {
-    return QKnxUtils::QUint16::fromBytes(constData());
+    if (isValid())
+        return m_dib.constData().mid(2);
+    return {};
 }
 
-QKnxByteArray QKnxNetIpManufacturerDib::manufacturerData() const
+/*!
+    Returns a builder object to create a KNXnet/IP manufacturer DIB structure.
+*/
+QKnxNetIpManufacturerDibView::Builder QKnxNetIpManufacturerDibView::builder()
 {
-    return constData().mid(2);
+    return QKnxNetIpManufacturerDibView::Builder();
 }
 
-bool QKnxNetIpManufacturerDib::isValid() const
+
+/*!
+    \class QKnxNetIpManufacturerDibView::Builder
+
+    \inmodule QtKnx
+    \brief The QKnxNetIpManufacturerDibView::Builder class creates a
+    KNXnet/IP manufacturer DIB structure.
+
+    A KNXnet/IP manufacturer DIB structure contains the device manufacturer
+    unique ID to clearly identify the device producer. It may also contain
+    additional manufacturer specific data.
+
+    The common way to create such a DIB structure is:
+    \code
+        quint16 dummyManufacturerId = 1000;
+        constexpr quint8 data[] = "Some additional manufacturer data.";
+
+        auto dib = QKnxNetIpManufacturerDibView::builder()
+            .setManufacturerId(dummyManufacturerId)
+            .setManufacturerData({ data, sizeof(data) })
+            .create();
+    \endcode
+*/
+
+/*!
+    Sets the manufacturer ID of the KNXnet/IP DIB structure to \a manufacturerId
+    and returns a reference to the builder.
+*/
+QKnxNetIpManufacturerDibView::Builder &
+    QKnxNetIpManufacturerDibView::Builder::setManufacturerId(quint16 manufacturerId)
 {
-    return QKnxNetIpDib::isValid() && size() >= 4
-        && descriptionType() == QKnxNetIp::DescriptionType::ManufacturerData;
+    m_manufacturerId = manufacturerId;
+    return *this;
+}
+
+/*!
+    Sets the manufacturer data of the KNXnet/IP DIB structure to
+    \a manufacturerData and returns a reference to the builder.
+*/
+QKnxNetIpManufacturerDibView::Builder &
+    QKnxNetIpManufacturerDibView::Builder::setManufacturerData(const QKnxByteArray &manufacturerData)
+{
+    m_manufacturerData = manufacturerData;
+    return *this;
+}
+
+/*!
+    Creates and returns a QKnxNetIpDib.
+
+    \note The returned structure may be invalid depending on the values used
+    during setup.
+
+    \sa isValid()
+*/
+QKnxNetIpDib QKnxNetIpManufacturerDibView::Builder::create() const
+{
+    return { QKnxNetIp::DescriptionType::ManufacturerData,
+        QKnxUtils::QUint16::bytes(m_manufacturerId) + m_manufacturerData };
 }
 
 QT_END_NAMESPACE

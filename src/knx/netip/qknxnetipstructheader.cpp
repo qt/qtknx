@@ -47,7 +47,7 @@ QT_BEGIN_NAMESPACE
 */
 
 /*!
-    \fn QKnxNetIpStructHeader::QKnxNetIpStructHeader
+    \fn template <typename CodeType> QKnxNetIpStructHeader<CodeType>::QKnxNetIpStructHeader()
 
     Constructs an empty invalid header object.
 
@@ -55,13 +55,13 @@ QT_BEGIN_NAMESPACE
 */
 
 /*!
-    \fn QKnxNetIpStructHeader::~QKnxNetIpStructHeader()
+    \fn template <typename CodeType> QKnxNetIpStructHeader<CodeType>::~QKnxNetIpStructHeader()
 
     Destroys the header object and releases all allocated resources.
 */
 
 /*!
-    \fn QKnxNetIpStructHeader::QKnxNetIpStructHeader(CodeType code)
+    \fn template <typename CodeType> QKnxNetIpStructHeader<CodeType>::QKnxNetIpStructHeader(CodeType code)
 
     Constructs a valid header object and sets the KNXnet/IP structure identifier
     to \a code.
@@ -70,9 +70,9 @@ QT_BEGIN_NAMESPACE
 */
 
 /*!
-    \fn QKnxNetIpStructHeader::QKnxNetIpStructHeader(CodeType code, quint16 dataSize)
+    \fn template <typename CodeType> QKnxNetIpStructHeader<CodeType>::QKnxNetIpStructHeader(CodeType code, quint16 dataSize)
 
-    Constructs a valid header object and sets the KNXnet/IP struct identifier
+    Constructs a valid header object and sets the KNXnet/IP structure identifier
     to \a code and the data size to \a dataSize and updates the header size and
     total size accordingly.
 
@@ -80,7 +80,7 @@ QT_BEGIN_NAMESPACE
 */
 
 /*!
-    \fn bool QKnxNetIpStructHeader::isNull() const
+    \fn template <typename CodeType> bool QKnxNetIpStructHeader<CodeType>::isNull() const
 
     Returns \c true if this is a default constructed header, otherwise returns
     \c false. A header is considered null if it contains no initialized values.
@@ -89,92 +89,94 @@ QT_BEGIN_NAMESPACE
 */
 
 /*!
-    \fn bool QKnxNetIpStructHeader::isValid() const
+    \fn template <typename CodeType> bool QKnxNetIpStructHeader<CodeType>::isValid() const
 
-    Returns \c true if the KNXnet/IP struct header contains initialized values
-    and is in itself valid, otherwise returns \c false. A valid KNXnet/IP struct
-    header consist of a given total size and a known \l code identifier.
+    Returns \c true if the KNXnet/IP structure header contains initialized
+    values and is in itself valid, otherwise returns \c false. A valid KNXnet/IP
+    structure header consist of a given total size and a known \l code
+    identifier.
 
     \sa isNull()
 */
 
 /*!
-    \fn quint8 QKnxNetIpStructHeader::size() const
+    \fn template <typename CodeType> quint8 QKnxNetIpStructHeader<CodeType>::size() const
 
-    Returns the size of the KNXnet/IP struct's header.
+    Returns the size of the KNXnet/IP structure header.
 
     \sa isNull(), isValid()
 */
 
 /*!
-    \fn quint16 QKnxNetIpStructHeader::totalSize() const
+    \fn template <typename CodeType> quint16 QKnxNetIpStructHeader<CodeType>::totalSize() const
 
-    Returns the total size of the KNXnet/IP struct if the header is valid,
+    Returns the total size of the KNXnet/IP structure if the header is valid,
     otherwise returns \c null. The total size includes the size of the header
-    and the size of the KNXnet/IP struct's data.
+    and the size of the KNXnet/IP structure data.
 
     \sa isNull(), isValid(), size(), dataSize()
 */
 
 /*!
-    \fn quint16 QKnxNetIpStructHeader::dataSize() const
+    \fn template <typename CodeType> quint16 QKnxNetIpStructHeader<CodeType>::dataSize() const
 
-    Returns the size of the KNXnet/IP struct's data if the header is valid,
+    Returns the size of the KNXnet/IP structure data if the header is valid,
     otherwise returns \c null.
-    The data size excludes the size of the KNXnet/IP struct's header.
+
+    The data size excludes the size of the KNXnet/IP structure header.
 
     \sa isNull(), isValid(), size(), totalSize()
 */
 
 /*!
-    \fn void QKnxNetIpStructHeader::setDataSize(quint16 dataSize)
+    \fn template <typename CodeType> void QKnxNetIpStructHeader<CodeType>::setDataSize(quint16 dataSize)
 
-    Sets the KNXnet/IP struct's data size to \a dataSize and updates the
+    Sets the KNXnet/IP structure data size to \a dataSize and updates the
     header and total size accordingly.
 */
 
 /*!
-    \fn CodeType QKnxNetIpStructHeader::code() const
+    \fn template <typename CodeType> CodeType QKnxNetIpStructHeader<CodeType>::code() const
 
-    Returns the KNXnet/IP struct's \l code identifier.
+    Returns the KNXnet/IP structure's \l code identifier.
 */
 
 /*!
-    \fn void QKnxNetIpStructHeader::setCode(CodeType code)
+    \fn template <typename CodeType> void QKnxNetIpStructHeader<CodeType>::setCode(CodeType code)
 
-    Sets the KNXnet/IP struct's code identifier to \a code.
+    Sets the KNXnet/IP structure's code identifier to \a code.
 */
 
 /*!
-    \fn quint8 QKnxNetIpStructHeader::byte(quint8 index) const
+    \fn template <typename CodeType> quint8 QKnxNetIpStructHeader<CodeType>::byte(quint8 index) const
 
     Returns the byte at position \a index in the header.
 */
 
 /*!
-    \fn QKnxByteArray QKnxNetIpStructHeader::bytes() const
+    \fn template <typename CodeType> QKnxNetIpStructHeader<CodeType>::bytes() const
 
-    Returns an array of bytes that represent the KNXnet/IP struct header.
+    Returns an array of bytes that represent the KNXnet/IP structure header.
 */
 
 /*!
-    \fn static QKnxNetIpStructHeader QKnxNetIpStructHeader::fromBytes(const QKnxByteArray &bytes, quint16 index = 0)
+    \fn template <typename CodeType> static QKnxNetIpStructHeader<CodeType>::fromBytes(const QKnxByteArray &bytes, quint16 index = 0)
 
-    Constructs the KNXnet/IP struct header from the byte array \a bytes starting
-    at the position \a index inside the array.
+    Constructs the KNXnet/IP structure header from the byte array \a bytes
+    starting at the position \a index inside the array.
 
     \sa isNull(), isValid()
 */
 
 /*!
-    \fn  bool QKnxNetIpStructHeader::operator==(const QKnxNetIpStructHeader &other) const
+    \fn template <typename CodeType> bool QKnxNetIpStructHeader<CodeType>::operator==(const QKnxNetIpStructHeader &other) const
 
     Returns \c true if this object and the given \a other are equal; otherwise
     returns \c false.
 */
 
 /*!
-    \fn  bool QKnxNetIpStructHeader::operator!=(const QKnxNetIpStructHeader &other) const
+    \fn template <typename CodeType> bool QKnxNetIpStructHeader<CodeType>::operator!=(const QKnxNetIpStructHeader &other) const
 
     Returns \c true if this object and the given \a other are not equal;
     otherwise returns \c false.

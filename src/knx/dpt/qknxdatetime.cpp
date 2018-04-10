@@ -118,7 +118,7 @@ quint8 QKnxTimeOfDay::hour() const
     Sets the hour to \a hour.
 
     If the value is outside the allowed range (from 0 to 23 included), returns
-    \c false  and does not set the value.
+    \c false and does not set the value.
 */
 bool QKnxTimeOfDay::setHour(quint8 hour)
 {
@@ -136,7 +136,7 @@ quint8 QKnxTimeOfDay::minute() const
 }
 
 /*!
-    Sets the hour to \a hour.
+    Sets the minute to \a minute.
 
     If the value is outside the allowed range (from 0 to 59 included), returns
     \c false and does not set the value.
@@ -385,15 +385,15 @@ bool QKnxDate::isValid() const
     \enum QKnxDateTime::ClockQuality
 
     This enum type holds whether the device sending date and time information
-    sends signals which are synchronized (time to time) with external date and
-    time information source.
+    sends signals which are synchronized (time to time) with an external date
+    and time information source.
 
     \value WithoutExtendedSyncSignal  Clock without an external synchronization
         signal. The device sending date & time information has a local clock,
         which can be inaccurate.
     \value WithExtendedSyncSignal     Clock with an external synchronization
         signal (like DCF77, videotext). Also an externally synchronized
-        clock should send CLQ = 0 after start-up (until reception of first
+        clock should send \c {CLQ = 0} after start-up (until reception of first
         synchronization signal) or after a synchronization timeout.
 */
 
@@ -429,6 +429,8 @@ QKnxDateTime::QKnxDateTime(const QDate &date, const QKnxTime24 &time, Attributes
 /*!
     Sets the date stored in the datapoint type to \a date, time to \a time, the
     list of attributes to \a attributes, and clock quality to \a quality.
+
+    Returns \c true if the value was set; otherwise returns \c false.
 */
 bool QKnxDateTime::setValue(const QDate &date, const QKnxTime24 &time, Attributes attributes,
         ClockQuality quality)

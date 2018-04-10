@@ -34,8 +34,6 @@
 #include <QtKnx/qknxnetipcrd.h>
 #include <QtKnx/qknxnetipcurrentconfigdib.h>
 #include <QtKnx/qknxnetipdevicedib.h>
-#include <QtKnx/qknxnetipknxaddressesdib.h>
-#include <QtKnx/qknxnetipmanufacturerdib.h>
 #include <QtKnx/qknxnetipservicefamiliesdib.h>
 
 QT_BEGIN_NAMESPACE
@@ -56,9 +54,7 @@ public:
         Null,
         QKnxNetIpConfigDib,
         QKnxNetIpCurrentConfigDib,
-        QKnxNetIpDeviceDib,
-        QKnxNetIpKnxAddressesDib,
-        QKnxNetIpManufacturerDib
+        QKnxNetIpDeviceDib
     };
 
     QKnxNetIpStructRef() = default;
@@ -79,16 +75,6 @@ public:
         , m_type(Type::QKnxNetIpDeviceDib)
     {}
 
-    explicit QKnxNetIpStructRef(QKnxNetIpKnxAddressesDib *knxAddressesDib)
-        : g(knxAddressesDib)
-        , m_type(Type::QKnxNetIpKnxAddressesDib)
-    {}
-
-    explicit QKnxNetIpStructRef(QKnxNetIpManufacturerDib *manufacturerDib)
-        : h(manufacturerDib)
-        , m_type(Type::QKnxNetIpManufacturerDib)
-    {}
-
     QKnxNetIpStructRef(const QKnxNetIpStructRef &) = default;
     QKnxNetIpStructRef &operator=(const QKnxNetIpStructRef &) = default;
 
@@ -96,8 +82,6 @@ public:
     bool isIpConfigDib() const { return m_type == Type::QKnxNetIpConfigDib; }
     bool isIpCurrentConfigDib() const { return m_type == Type::QKnxNetIpCurrentConfigDib; }
     bool isDeviceDib() const { return m_type == Type::QKnxNetIpDeviceDib; }
-    bool isKnxAddressesDib() const { return m_type == Type::QKnxNetIpKnxAddressesDib; }
-    bool isManufacturerDib() const { return m_type == Type::QKnxNetIpManufacturerDib; }
 
     template <typename T> T toType() const
     {
@@ -120,8 +104,6 @@ private:
         QKnxNetIpConfigDib *a;
         QKnxNetIpCurrentConfigDib *d;
         QKnxNetIpDeviceDib *e;
-        QKnxNetIpKnxAddressesDib *g;
-        QKnxNetIpManufacturerDib *h;
     };
 
     Type m_type = Type::Null;
@@ -167,23 +149,6 @@ namespace QKnxPrivate
         }
     };
 
-    template<> struct QKnxNetIpStructTypeHelper<QKnxNetIpKnxAddressesDib>
-    {
-        static QKnxNetIpKnxAddressesDib invoke(const QKnxNetIpStructRef &ref)
-        {
-            TYPE_CHECK_RETURN_FROM_BYTES(QKnxNetIpKnxAddressesDib);
-            return QKnxNetIpKnxAddressesDib(*(ref.g));
-        }
-    };
-
-    template<> struct QKnxNetIpStructTypeHelper<QKnxNetIpManufacturerDib>
-    {
-        static QKnxNetIpManufacturerDib invoke(const QKnxNetIpStructRef &ref)
-        {
-            TYPE_CHECK_RETURN_FROM_BYTES(QKnxNetIpManufacturerDib);
-            return QKnxNetIpManufacturerDib(*(ref.h));
-        }
-    };
 #undef TYPE_CHECK_RETURN_FROM_BYTES
 }
 

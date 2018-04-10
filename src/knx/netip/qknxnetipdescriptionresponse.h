@@ -71,10 +71,6 @@ public:
                 return QKnxNetIpStructRef::Type::QKnxNetIpConfigDib;
             case QKnxNetIp::DescriptionType::CurrentIpConfiguration:
                 return QKnxNetIpStructRef::Type::QKnxNetIpCurrentConfigDib;
-            case QKnxNetIp::DescriptionType::KnxAddresses:
-                return QKnxNetIpStructRef::Type::QKnxNetIpKnxAddressesDib;
-            case QKnxNetIp::DescriptionType::ManufacturerData:
-                return QKnxNetIpStructRef::Type::QKnxNetIpManufacturerDib;
             default:
                 break;
             }
@@ -107,8 +103,7 @@ public:
         template <typename T> void addOptionalDib(const T &dib)
         {
             static_assert(is_type<T, QKnxNetIpDeviceDib, QKnxNetIpConfigDib,
-                QKnxNetIpCurrentConfigDib, QKnxNetIpKnxAddressesDib,
-                QKnxNetIpManufacturerDib>::value,
+                QKnxNetIpCurrentConfigDib>::value,
                 "QKnxNetIpDescriptionResponse::Builder::addOptionalDib - Type not supported.");
             m_optionalDibs += dib.bytes();
         }

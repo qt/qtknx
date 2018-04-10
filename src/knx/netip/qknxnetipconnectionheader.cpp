@@ -51,7 +51,7 @@ QT_BEGIN_NAMESPACE
 */
 
 /*!
-    \fn QKnxNetIpConnectionHeader::QKnxNetIpConnectionHeader
+    \fn QKnxNetIpConnectionHeader::QKnxNetIpConnectionHeader()
 
     Constructs an empty invalid frame header object.
 

@@ -161,6 +161,9 @@ QKnxStatusMode3::StatusFlags QKnxStatusMode3::statusFlags() const
 
 /*!
     Sets the statusFlags stored in the datapoint type to \a statusFlags.
+
+    Returns \c true if the value was set; otherwise returns \c false.
+
 */
 bool  QKnxStatusMode3::setStatusFlags(StatusFlags statusFlags)
 {
@@ -175,6 +178,8 @@ bool  QKnxStatusMode3::setStatusFlags(StatusFlags statusFlags)
 
 /*!
     Sets the status \a status in the status flags.
+
+    Returns \c true if the status was set; otherwise returns \c false.
 */
 bool QKnxStatusMode3::setStatus(Status status)
 {
@@ -183,6 +188,8 @@ bool QKnxStatusMode3::setStatus(Status status)
 
 /*!
     Removes the status \a status from the status flags.
+
+    Returns \c true if the status was removed; otherwise returns \c false.
 */
 bool QKnxStatusMode3::removeStatus(Status status)
 {

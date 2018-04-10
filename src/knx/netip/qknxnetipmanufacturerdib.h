@@ -35,30 +35,37 @@
 
 QT_BEGIN_NAMESPACE
 
-class Q_KNX_EXPORT QKnxNetIpManufacturerDib final : public QKnxNetIpDib
+class Q_KNX_EXPORT QKnxNetIpManufacturerDibView final
 {
 public:
-    QKnxNetIpManufacturerDib() = default;
-    ~QKnxNetIpManufacturerDib() override = default;
+    QKnxNetIpManufacturerDibView() = delete;
+    ~QKnxNetIpManufacturerDibView() = default;
 
-    explicit QKnxNetIpManufacturerDib(quint16 manufacturerId);
-    QKnxNetIpManufacturerDib(quint16 manufacturerId, const QKnxByteArray &manufacturerData);
+    QKnxNetIpManufacturerDibView(const QKnxNetIpDib &&) = delete;
+    explicit QKnxNetIpManufacturerDibView(const QKnxNetIpDib &dib);
 
-    static QKnxNetIpManufacturerDib fromBytes(const QKnxByteArray &bytes, quint16 index)
-    {
-        return QKnxNetIpStruct::fromBytes(bytes, index,
-            QKnxNetIp::DescriptionType::ManufacturerData);
-    }
+    bool isValid() const;
 
     QKnxNetIp::DescriptionType descriptionType() const;
-
     quint16 manufacturerId() const;
     QKnxByteArray manufacturerData() const;
 
-    bool isValid() const override;
+    class Q_KNX_EXPORT Builder final
+    {
+    public:
+        Builder &setManufacturerId(quint16 manufacturerId);
+        Builder &setManufacturerData(const QKnxByteArray &manufacturerData);
+
+        QKnxNetIpDib create() const;
+
+    private:
+        quint16 m_manufacturerId;
+        QKnxByteArray m_manufacturerData;
+    };
+    static QKnxNetIpManufacturerDibView::Builder builder();
 
 private:
-    QKnxNetIpManufacturerDib(const QKnxNetIpDib &other);
+    const QKnxNetIpDib &m_dib;
 };
 
 QT_END_NAMESPACE

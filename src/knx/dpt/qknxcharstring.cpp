@@ -108,6 +108,8 @@ QLatin1String QKnxCharString::string() const
 
 /*!
     Sets the string stored in the datapoint type to \a string.
+
+    Returns \c true if the value was set; otherwise returns \c false.
 */
 bool QKnxCharString::setString(QLatin1String string)
 {
@@ -119,6 +121,9 @@ bool QKnxCharString::setString(QLatin1String string)
     \a size.
 
     If \a size is \c -1, the full \a string is used.
+
+    If the value is outside the allowed range, returns \c false and does not set
+    the string.
 */
 bool QKnxCharString::setString(const char *string, int size)
 {
