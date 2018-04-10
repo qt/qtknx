@@ -121,17 +121,14 @@ public:
         return { header, bytes.mid(index + header.size(), header.dataSize()) };
     }
 
-    // TODO: remove
-    static QKnxNetIpStruct<CodeType> fromBytes(const QKnxByteArray &bytes, quint16 index,
-        CodeType)
+    bool operator==(const QKnxNetIpStruct &other) const
     {
-        return QKnxNetIpStruct<CodeType>::fromBytes(bytes, index);
+        return (m_header == other.m_header) && (m_data == other.m_data);
     }
 
-protected:
-    void setCode(CodeType code) // TODO: remove
+    bool operator!=(const QKnxNetIpStruct &other) const
     {
-        m_header.setCode(code);
+        return !operator==(other);
     }
 
 private:

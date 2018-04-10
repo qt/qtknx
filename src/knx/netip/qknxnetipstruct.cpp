@@ -63,12 +63,6 @@ QT_BEGIN_NAMESPACE
     the header and the payload.
 */
 
-// TODO: remove
-static QDebug stream(QDebug debug, const QKnxByteArray &bytes)
-{
-    return debug.nospace().noquote() << "0x" << bytes.toHex();
-}
-
 /*!
     \relates QKnxNetIpStruct
 

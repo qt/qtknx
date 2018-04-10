@@ -32,11 +32,11 @@
 
 #include <QtCore/qmetatype.h>
 #include <QtCore/qshareddata.h>
+
 #include <QtKnx/qknxaddress.h>
 #include <QtKnx/qknxglobal.h>
-#include <QtKnx/qknxnetipdevicedib.h>
-#include <QtKnx/qknxnetiphpai.h>
 #include <QtKnx/qknxnetipservicefamiliesdib.h>
+
 #include <QtNetwork/qhostaddress.h>
 
 QT_BEGIN_NAMESPACE

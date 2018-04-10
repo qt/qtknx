@@ -27,8 +27,10 @@
 **
 ******************************************************************************/
 
+#include "qknxnetipdevicedib.h"
 #include "qknxnetipserverinfo.h"
 #include "qknxnetipserverinfo_p.h"
+#include "qknxnetiphpai.h"
 
 QT_BEGIN_NAMESPACE
 
@@ -114,10 +116,9 @@ QKnxNetIpServerInfo::operator=(QKnxNetIpServerInfo &&other) Q_DECL_NOTHROW
 bool QKnxNetIpServerInfo::operator==(const QKnxNetIpServerInfo &other) const
 {
     return d_ptr == other.d_ptr || [&]() -> bool {
-        // TODO: Implement operator== in QKnxNetIpStruct classes and revisit this code.
-        return d_ptr->hpai.bytes() == other.d_ptr->hpai.bytes()
-            && d_ptr->hardware.bytes() == other.d_ptr->hardware.bytes()
-            && d_ptr->services.bytes() == other.d_ptr->services.bytes();
+        return d_ptr->hpai == other.d_ptr->hpai
+            && d_ptr->hardware == other.d_ptr->hardware
+            && d_ptr->services == other.d_ptr->services;
     }();
 }
 
