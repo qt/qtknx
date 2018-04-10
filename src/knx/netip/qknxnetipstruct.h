@@ -37,14 +37,14 @@
 
 QT_BEGIN_NAMESPACE
 
-template <typename CodeType> class QKnxNetIpStruct
+template <typename CodeType> class QKnxNetIpStruct final
 {
     static_assert(is_type<CodeType, QKnxNetIp::HostProtocol, QKnxNetIp::ConnectionType,
         QKnxNetIp::DescriptionType>::value, "Type not supported.");
 
 public:
     QKnxNetIpStruct() = default;
-    virtual ~QKnxNetIpStruct() = default;
+    ~QKnxNetIpStruct() = default;
 
     QKnxNetIpStruct(CodeType code, const QKnxByteArray &data = {})
         : m_header(code)
@@ -62,7 +62,7 @@ public:
         return m_header.isNull() && m_data.isNull();
     }
 
-    virtual bool isValid() const
+    bool isValid() const
     {
         return m_header.isValid() && size() == (m_header.size() + m_data.size());
     }
