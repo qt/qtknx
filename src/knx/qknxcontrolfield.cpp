@@ -45,6 +45,8 @@ const std::bitset<8> gPriorityMask = 0x0c;
     how widely the frame is \l Broadcast, and whether acknowledgment
     (\l Acknowledge) or confirmation (\l Confirm) is requested for the
     transmission or reception of the frame.
+
+    \sa builder()
 */
 
 /*!
@@ -251,6 +253,14 @@ void QKnxControlField::setPriority(QKnxControlField::Priority priority)
 }
 
 /*!
+    Returns a builder to create a KNX control field object.
+*/
+QKnxControlField::Builder QKnxControlField::builder()
+{
+    return Builder();
+}
+
+/*!
     \fn quint8 QKnxControlField::bytes() const
 
     Returns the control field as a range of bytes.
@@ -269,5 +279,113 @@ QDebug operator<<(QDebug debug, const QKnxControlField &field)
     return debug;
 }
 
+
+/*!
+    \class QKnxControlField::Builder
+
+    \inmodule QtKnx
+    \brief The QKnxControlField::Builder class creates a KNX control field with
+    some default values set.
+
+    TODO: Write some useful text with the default values
+        QKnxControlField::FrameFormat::Standard
+        QKnxControlField::Repeat::DoNotRepeat
+        QKnxControlField::Broadcast::Domain
+        QKnxControlField::Priority::Low
+        QKnxControlField::Acknowledge::NotRequested
+        QKnxControlField::Confirm::NoError
+
+    Most of the time the following code will produce the right control field
+    for group value read or group value write frames.
+
+    Example:
+    \code
+        auto ctrl = QKnxControlField::builder.create();
+    \endcode
+
+    For more advanced usages some flags can be modified:
+    \code
+        // setup a control field for used for unicast or broadcast with
+        // higher priority
+
+        auto ctrl = QKnxControlField::builder
+            .setPriority(QKnxControlField::Priority::System)
+            .create();
+    \endcode
+*/
+
+/*!
+    Sets the frame format to \a type and returns a reference to the builder.
+*/
+QKnxControlField::Builder &
+    QKnxControlField::Builder::setFrameFormat(QKnxControlField::FrameFormat type)
+{
+    m_frameFormat = type;
+    return *this;
+}
+
+/*!
+    Sets the repeat flag to \a repeat and returns a reference to the builder.
+*/
+QKnxControlField::Builder &QKnxControlField::Builder::setRepeat(QKnxControlField::Repeat repeat)
+{
+    m_repeat = repeat;
+    return *this;
+}
+
+/*!
+    Sets the broadcast flag to \a broadcast and returns a reference to the builder.
+*/
+QKnxControlField::Builder &
+    QKnxControlField::Builder::setBroadcast(QKnxControlField::Broadcast broadcast)
+{
+    m_broad = broadcast;
+    return *this;
+}
+
+/*!
+    Sets the priority flag to \a priority and returns a reference to the builder.
+*/
+QKnxControlField::Builder &
+    QKnxControlField::Builder::setPriority(QKnxControlField::Priority priority)
+{
+    m_priority = priority;
+    return *this;
+}
+
+/*!
+    Sets the acknowledge flag to \a acknowledge and returns a reference to the builder.
+*/
+QKnxControlField::Builder &
+    QKnxControlField::Builder::setAcknowledge(QKnxControlField::Acknowledge acknowledge)
+{
+    m_acknowledge = acknowledge;
+    return *this;
+}
+
+/*!
+    Sets the confirm flag to \a errorStatus and returns a reference to the builder.
+*/
+QKnxControlField::Builder &
+    QKnxControlField::Builder::setConfirm(QKnxControlField::Confirm errorStatus)
+{
+    m_errorStatus = errorStatus;
+    return *this;
+}
+
+/*!
+    Creates and returns a QKnxControlField.
+*/
+QKnxControlField QKnxControlField::Builder::create() const
+{
+    QKnxControlField ctrlField;
+    ctrlField.setFrameFormat(m_frameFormat);
+    ctrlField.setRepeat(m_repeat);
+    ctrlField.setBroadcast(m_broad);
+    ctrlField.setPriority(m_priority);
+    ctrlField.setAcknowledge(m_acknowledge);
+    ctrlField.setConfirm(m_errorStatus);
+    return ctrlField;
+}
 
 QT_END_NAMESPACE

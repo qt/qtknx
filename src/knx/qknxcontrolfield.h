@@ -108,6 +108,28 @@ public:
 
     quint8 size() const { return 1; }
 
+    class Q_KNX_EXPORT Builder
+    {
+    public:
+        Builder &setFrameFormat(QKnxControlField::FrameFormat type);
+        Builder &setRepeat(QKnxControlField::Repeat repeat);
+        Builder &setBroadcast(QKnxControlField::Broadcast broadcast);
+        Builder &setPriority(QKnxControlField::Priority priority);
+        Builder &setAcknowledge(QKnxControlField::Acknowledge acknowledge);
+        Builder &setConfirm(QKnxControlField::Confirm errorStatus);
+
+        QKnxControlField create() const;
+
+    private:
+        QKnxControlField::FrameFormat m_frameFormat { FrameFormat::Standard };
+        QKnxControlField::Repeat m_repeat { Repeat::DoNotRepeat };
+        QKnxControlField::Broadcast m_broad { Broadcast::Domain };
+        QKnxControlField::Priority m_priority { Priority::Low };
+        QKnxControlField::Acknowledge m_acknowledge { Acknowledge::NotRequested };
+        QKnxControlField::Confirm m_errorStatus { Confirm::NoError };
+    };
+    static QKnxControlField::Builder builder();
+
 private:
     std::bitset<8> m_ctrl1 = 0;
 };
