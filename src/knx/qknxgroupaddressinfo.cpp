@@ -28,7 +28,7 @@
 ******************************************************************************/
 
 #include "qknxgroupaddressinfo.h"
-#include "qknxgroupaddresses.h"
+#include "qknxgroupaddresses_p.h"
 
 QT_BEGIN_NAMESPACE
 

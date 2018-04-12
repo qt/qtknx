@@ -21,11 +21,11 @@ PRIVATE_HEADERS += $$PWD/qzipreader_p.h
     $$PWD/qzipwriter_p.h
 
 HEADERS += \
-    $$PWD/qknxbuildings.h \
-    $$PWD/qknxdeviceinstance.h \
-    $$PWD/qknxgroupaddresses.h \
-    $$PWD/qknxinstallation.h \
-    $$PWD/qknxprojectinformation.h \
-    $$PWD/qknxprojectroot.h \
-    $$PWD/qknxprojectutils.h \
-    $$PWD/qknxtopology.h
+    $$PWD/qknxbuildings_p.h \
+    $$PWD/qknxdeviceinstance_p.h \
+    $$PWD/qknxgroupaddresses_p.h \
+    $$PWD/qknxinstallation_p.h \
+    $$PWD/qknxprojectinformation_p.h \
+    $$PWD/qknxprojectroot_p.h \
+    $$PWD/qknxprojectutils_p.h \
+    $$PWD/qknxtopology_p.h

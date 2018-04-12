@@ -27,7 +27,7 @@
 ******************************************************************************/
 
 #include <QtCore/qxmlstream.h>
-#include <QtKnx/qknxprojectroot.h>
+#include <QtKnx/private/qknxprojectroot_p.h>
 #include <QtTest/qtest.h>
 
 class tst_QKnxProject : public QObject

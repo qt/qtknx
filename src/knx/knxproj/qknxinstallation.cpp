@@ -27,7 +27,7 @@
 **
 ******************************************************************************/
 
-#include "qknxinstallation.h"
+#include "qknxinstallation_p.h"
 #include "qregularexpression.h"
 
 QT_BEGIN_NAMESPACE

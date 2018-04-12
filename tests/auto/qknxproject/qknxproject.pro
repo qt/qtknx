@@ -1,7 +1,7 @@
 TARGET = tst_qknxproject
 
-QT = core testlib knx
 CONFIG += testcase c++11
+QT = core testlib knx knx-private
 
 CONFIG -= app_bundle
 RESOURCES += project.qrc

@@ -27,92 +27,94 @@
 **
 ******************************************************************************/
 
-#ifndef QKNXTOPOLOGY_H
-#define QKNXTOPOLOGY_H
+#ifndef QKNXBUILDINGS_P_H
+#define QKNXBUILDINGS_P_H
 
-#include <QtCore/qdatetime.h>
+//
+//  W A R N I N G
+//  -------------
+//
+// This file is not part of the Qt API.  It exists for the convenience
+// of the QZipReader class.  This header file may change from
+// version to version without notice, or even be removed.
+//
+// We mean it.
+//
+
 #include <QtCore/qstring.h>
 #include <QtCore/qvector.h>
-#include <QtKnx/qknxdeviceinstance.h>
-#include <QtKnx/qknxprojectutils.h>
+#include <QtKnx/private/qknxprojectutils_p.h>
 
 QT_BEGIN_NAMESPACE
 
-struct Q_KNX_EXPORT QKnxBusAccess
+struct Q_KNX_EXPORT QKnxGroupAddressRef
 {
-    Q_DECLARE_TR_FUNCTIONS(QKnxBusAccess)
-
-public:
-    QString Name;
-    QString Edi;
-    QString Parameter;
-
-    bool parseElement(QXmlStreamReader *reader, bool pedantic);
-};
-
-struct Q_KNX_EXPORT QKnxAdditionalGroupAddress
-{
-    Q_DECLARE_TR_FUNCTIONS(QKnxAdditionalGroupAddress)
-
-public:
-    quint16 Address;
-
-    bool parseElement(QXmlStreamReader *reader, bool pedantic);
-};
-
-struct Q_KNX_EXPORT QKnxLine
-{
-    Q_DECLARE_TR_FUNCTIONS(QKnxLine)
+    Q_DECLARE_TR_FUNCTIONS(QKnxGroupAddressRef)
 
 public:
     QString Id; // non-colonized name, pattern [\i-[:]][\c-[:]]*
     QString Name; // 255 character max.
-    qint32 Address; // optional, min. value 0, 15 value max.
-    QString MediumTypeRefId; // non-colonized name, pattern [\i-[:]][\c-[:]]*
-    QString Comment; // optional
-    qint32 DomainAddress; // optional
-
-    // Undefined, Editing, FinishedDesign, FinishedCommissioning, Tested, Accepted, Locked
-    QString CompletionStatus { QLatin1String("Undefined") }; // optional
-
-    QString Description; // optional
+    QString RefId; // non-colonized name, pattern [\i-[:]][\c-[:]]*
+    QString Role; // optional, 255 character max.
     qint32 Puid;
-
-    QVector<QKnxDeviceInstance> DeviceInstance; // 0..n
-    QVector<QKnxBusAccess> BusAccess; // 0..1
-    QVector<QKnxAdditionalGroupAddress> AdditionalGroupAddresses; // 0..1
 
     bool parseElement(QXmlStreamReader *reader, bool pedantic);
 };
 
-struct Q_KNX_EXPORT QKnxArea
+struct Q_KNX_EXPORT QKnxFunction
 {
-    Q_DECLARE_TR_FUNCTIONS(QKnxArea)
+    Q_DECLARE_TR_FUNCTIONS(QKnxFunction)
 
 public:
-    QString Id; // optional, non-colonized name, pattern [\i-[:]][\c-[:]]*
+    QString Id; // non-colonized name, pattern [\i-[:]][\c-[:]]*
     QString Name; // 255 character max.
-    qint32 Address; // optional, min. value 0, 15 value max.
+    QString Type; // optional, Building, BuildingPart, Floor, Room, DistributionBoard, Stairway, Corridor
+    QString Number; // optional, 255 character max.
     QString Comment; // optional
+    QString Description; // optional
 
     // Undefined, Editing, FinishedDesign, FinishedCommissioning, Tested, Accepted, Locked
     QString CompletionStatus { QLatin1String("Undefined") }; // optional
 
-    QString Description; // optional
+    QString DefaultGroupRange; // optional, non-colonized name, pattern [\i-[:]][\c-[:]]*
     qint32 Puid;
 
-    QVector<QKnxLine> Line; // 0..16
+    QVector<QKnxGroupAddressRef> GroupAddressRef; // 0..n
 
     bool parseElement(QXmlStreamReader *reader, bool pedantic);
 };
 
-struct Q_KNX_EXPORT QKnxTopology
+struct Q_KNX_EXPORT QKnxBuildingPart
 {
-    Q_DECLARE_TR_FUNCTIONS(QKnxTopology)
+    Q_DECLARE_TR_FUNCTIONS(QKnxBuildingPart)
 
 public:
-    QVector<QKnxArea> Area; // 0..16
-    QVector<QKnxDeviceInstance> UnassignedDevices; // 0..n
+    QString Id; // non-colonized name, pattern [\i-[:]][\c-[:]]*
+    QString Name; // 255 character max.
+    QString Type; // Building, BuildingPart, Floor, Room, DistributionBoard, Stairway, Corridor
+    QString Number; // optional, 255 character max.
+    QString Comment; // optional
+    QString Description; // optional
+
+    // Undefined, Editing, FinishedDesign, FinishedCommissioning, Tested, Accepted, Locked
+    QString CompletionStatus { QLatin1String("Undefined") }; // optional
+
+    QString DefaultLine; // optional
+    qint32 Puid;
+
+    QVector<QKnxBuildingPart> BuildingPart; // 0..n
+    QVector<QString> DeviceInstanceRef; // 0..n, non-colonized name, pattern [\i-[:]][\c-[:]]*
+    QVector<QKnxFunction> Function; // 0..n
+
+    bool parseElement(QXmlStreamReader *reader, bool pedantic);
+};
+
+struct Q_KNX_EXPORT QKnxBuildings
+{
+    Q_DECLARE_TR_FUNCTIONS(QKnxBuildings)
+
+public:
+    QVector<QKnxBuildingPart> BuildingPart; // 0..n
 
     bool parseElement(QXmlStreamReader *reader, bool pedantic);
 };

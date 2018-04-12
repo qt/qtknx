@@ -27,7 +27,7 @@
 **
 ******************************************************************************/
 
-#include "qknxdeviceinstance.h"
+#include "qknxdeviceinstance_p.h"
 
 QT_BEGIN_NAMESPACE
 

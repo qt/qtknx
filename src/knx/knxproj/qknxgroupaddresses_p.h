@@ -27,12 +27,23 @@
 **
 ******************************************************************************/
 
-#ifndef QKNXGROUPADDRESSES_H
-#define QKNXGROUPADDRESSES_H
+#ifndef QKNXGROUPADDRESSES_P_H
+#define QKNXGROUPADDRESSES_P_H
+
+//
+//  W A R N I N G
+//  -------------
+//
+// This file is not part of the Qt API.  It exists for the convenience
+// of the QZipReader class.  This header file may change from
+// version to version without notice, or even be removed.
+//
+// We mean it.
+//
 
 #include <QtCore/qstring.h>
 #include <QtCore/qvector.h>
-#include <QtKnx/qknxprojectutils.h>
+#include <QtKnx/private/qknxprojectutils_p.h>
 
 QT_BEGIN_NAMESPACE
 
