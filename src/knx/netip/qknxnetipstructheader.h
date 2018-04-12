@@ -188,7 +188,13 @@ private:
     // first byte denotes size, not part of the header
     quint8 m_bytes[5] { 0x00, 0x00, 0x00, 0x00, 0x00 };
 };
-// TODO: add debug stream operator
+
+template<typename CodeType>
+inline QDebug operator<<(QDebug debug, const QKnxNetIpStructHeader<CodeType> &header)
+{
+    QDebugStateSaver _(debug);
+    return debug.nospace().noquote() << "0x" << header.bytes().toHex();
+}
 
 QT_END_NAMESPACE
 

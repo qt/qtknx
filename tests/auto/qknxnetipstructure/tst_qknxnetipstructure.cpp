@@ -175,7 +175,33 @@ private slots:
 
     void testDebugStream()
     {
-        // TODO: add
+        struct DebugHandler
+        {
+            explicit DebugHandler(QtMessageHandler newMessageHandler)
+                : oldMessageHandler(qInstallMessageHandler(newMessageHandler))
+            {}
+            ~DebugHandler()
+            { qInstallMessageHandler(oldMessageHandler); }
+            QtMessageHandler oldMessageHandler;
+        } _(myMessageHandler);
+
+        qDebug() <<  QKnxNetIpStructHeader<QKnxNetIp::HostProtocol>();
+        QCOMPARE(s_msg, QStringLiteral("0x"));
+
+        QKnxByteArray payload(0xfc, 0x05);
+        auto h = QKnxNetIpStructHeader<QKnxNetIp::HostProtocol>(QKnxNetIp::HostProtocol::UDP_IPv4,
+            payload.size());
+
+        qDebug() << h;
+        QCOMPARE(s_msg, QStringLiteral("0xfe01"));
+
+        h = QKnxNetIpStructHeader<QKnxNetIp::HostProtocol>(QKnxNetIp::HostProtocol::UDP_IPv4, 2);
+        qDebug() << h;
+        QCOMPARE(s_msg, QStringLiteral("0x0401"));
+
+        h = QKnxNetIpStructHeader<QKnxNetIp::HostProtocol>(QKnxNetIp::HostProtocol::UDP_IPv4, 0xff);
+        qDebug() << h;
+        QCOMPARE(s_msg, QStringLiteral("0xff010301"));
     }
 };
 

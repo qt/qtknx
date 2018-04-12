@@ -75,7 +75,7 @@ public:
 private:
     quint8 m_bytes[6] { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
 };
-// TODO: add debug stream operator
+Q_KNX_EXPORT QDebug operator<<(QDebug debug, const QKnxNetIpFrameHeader &header);
 
 QT_END_NAMESPACE
 
