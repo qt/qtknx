@@ -273,7 +273,8 @@ void tst_QKnxNetIpDescriptionResponse::testOptionalDibs()
 
     QCOMPARE(tmpManufacturerDib.descriptionType(), QKnxNetIp::DescriptionType::ManufacturerData);
     QCOMPARE(tmpManufacturerDib.manufacturerId(), 256);
-    QCOMPARE(tmpManufacturerDib.manufacturerData(), QKnxByteArray(5, 8));
+    // add 0x00 since the specification requires even sized structures
+    QCOMPARE(tmpManufacturerDib.manufacturerData(), QKnxByteArray(5, 8).append(0x00));
 
     dib = optionalDibs[4]; // Checking optional Dib 5: QKnxNetIpServiceFamiliesDib
     QCOMPARE(dib.code(), QKnxNetIp::DescriptionType::SupportedServiceFamilies);

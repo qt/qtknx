@@ -90,7 +90,7 @@ QKnxNetIpManufacturerDibView::QKnxNetIpManufacturerDibView(const QKnxNetIpDib &d
 */
 bool QKnxNetIpManufacturerDibView::isValid() const
 {
-    return m_dib.isValid() && m_dib.size() >= 4
+    return m_dib.isValid() && m_dib.size() >= 4 && (m_dib.size() % 2 == 0) // must be even sized
         && m_dib.code() == QKnxNetIp::DescriptionType::ManufacturerData;
 }
 
@@ -179,6 +179,9 @@ QKnxNetIpManufacturerDibView::Builder &
     QKnxNetIpManufacturerDibView::Builder::setManufacturerData(const QKnxByteArray &manufacturerData)
 {
     m_manufacturerData = manufacturerData;
+    if ((m_manufacturerData.size() % 2) == 1)
+        m_manufacturerData.append(0x00); // The specification requires even sized structures.
+
     return *this;
 }
 
