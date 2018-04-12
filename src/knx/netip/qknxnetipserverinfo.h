@@ -64,8 +64,8 @@ public:
     QKnxNetIpDib hardware() const;
     QKnxNetIpDib services() const;
 
-    QKnxNetIpServerInfo(const QKnxNetIpServerInfo &o);
-    QKnxNetIpServerInfo &operator=(const QKnxNetIpServerInfo &o);
+    QKnxNetIpServerInfo(const QKnxNetIpServerInfo &other);
+    QKnxNetIpServerInfo &operator=(const QKnxNetIpServerInfo &other);
 
 #ifdef Q_COMPILER_RVALUE_REFS
     QKnxNetIpServerInfo &operator=(QKnxNetIpServerInfo &&other) Q_DECL_NOTHROW;
