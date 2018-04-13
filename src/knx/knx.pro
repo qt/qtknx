@@ -22,8 +22,6 @@ PUBLIC_HEADERS += \
     qknxdeviceconfiguration.h \
     qknxextendedcontrolfield.h \
     qknxglobal.h \
-    qknxgroupaddressinfo.h \
-    qknxgroupaddressinfos.h \
     qknxinterfaceobjectproperty.h \
     qknxinterfaceobjectpropertydatatype.h \
     qknxinterfaceobjecttype.h \
@@ -50,8 +48,6 @@ SOURCES += \
     qknxcontrolfield.cpp \
     qknxdeviceconfiguration.cpp \
     qknxextendedcontrolfield.cpp \
-    qknxgroupaddressinfo.cpp \
-    qknxgroupaddressinfos.cpp \
     qknxinterfaceobjectproperty.cpp \
     qknxinterfaceobjectpropertydatatype.cpp \
     qknxinterfaceobjecttype.cpp \
