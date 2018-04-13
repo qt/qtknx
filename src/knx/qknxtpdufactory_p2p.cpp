@@ -192,7 +192,7 @@ static QKnxTpdu createPropertyValueTpdu(QKnxTpduFactory::PointToPoint::Mode mode
             QKnxTpdu::ApplicationControlField::Invalid};
 
     auto tmp = QKnxUtils::QUint16::bytes(startIndex);
-    tmp[0] = quint8(quint8(nbElement << 4) | quint8(tmp[0]));
+    tmp.set(0, quint8(quint8(nbElement << 4) | quint8(tmp.at(0))));
     return { tpci(mode, seqNumber), apci, seqNumber, QKnxUtils::QUint8::bytes(objectIndex)
         + QKnxUtils::QUint8::bytes(property) + tmp + data };
 }

@@ -918,7 +918,7 @@ quint8 QKnxDatapointType::byte(quint16 index) const
 bool QKnxDatapointType::setByte(quint16 index, quint8 bytes)
 {
     if (index < d_ptr->m_bytes.size())
-        d_ptr->m_bytes[index] = bytes;
+        d_ptr->m_bytes.set(index, bytes);
     return (index < d_ptr->m_bytes.size());
 }
 

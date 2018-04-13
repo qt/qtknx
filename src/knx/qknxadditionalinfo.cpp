@@ -106,9 +106,9 @@ QT_BEGIN_NAMESPACE
 */
 QKnxAdditionalInfo::QKnxAdditionalInfo(QKnxAdditionalInfo::Type type, const QKnxByteArray &data)
 {
-    m_bytes[0] = quint8(type);
-    m_bytes[1] = quint8(qMin(data.size(), 252));
-    m_bytes += data.mid(0, m_bytes[1]);
+    m_bytes.set(0, quint8(type));
+    m_bytes.set(1, quint8(qMin(data.size(), 252)));
+    m_bytes += data.mid(0, m_bytes.at(1));
 }
 
 /*!
@@ -120,7 +120,7 @@ QKnxAdditionalInfo::QKnxAdditionalInfo(QKnxAdditionalInfo::Type type, const QKnx
 */
 bool QKnxAdditionalInfo::isNull() const
 {
-    return (m_bytes[0] == 0x00);
+    return (m_bytes.at(0) == 0x00);
 }
 
 /*!
@@ -135,7 +135,7 @@ bool QKnxAdditionalInfo::isValid() const
     if ((size() != m_bytes.size()) || (size() > 254))
         return false;
 
-    const auto type = QKnxAdditionalInfo::Type(m_bytes[0]);
+    const auto type = QKnxAdditionalInfo::Type(m_bytes.at(0));
     const auto expectedSize = expectedDataSize(type);
     if (expectedSize < 0)
         return false;
@@ -170,7 +170,7 @@ quint8 QKnxAdditionalInfo::size() const
 {
     if (isNull())
         return 0;
-    return m_bytes[1] + 2; // 2 -> type and length byte
+    return m_bytes.at(1) + 2; // 2 -> type and length byte
 }
 
 /*!
@@ -178,7 +178,7 @@ quint8 QKnxAdditionalInfo::size() const
 */
 QKnxAdditionalInfo::Type QKnxAdditionalInfo::type() const
 {
-    return QKnxAdditionalInfo::Type(m_bytes[0]);
+    return QKnxAdditionalInfo::Type(m_bytes.at(0));
 }
 
 /*!
@@ -186,7 +186,7 @@ QKnxAdditionalInfo::Type QKnxAdditionalInfo::type() const
 */
 void QKnxAdditionalInfo::setType(QKnxAdditionalInfo::Type type)
 {
-    m_bytes[0] = quint8(type);
+    m_bytes.set(0, quint8(type));
 }
 
 /*!
@@ -202,9 +202,9 @@ QKnxByteArray QKnxAdditionalInfo::data() const
 */
 void QKnxAdditionalInfo::setData(const QKnxByteArray &data)
 {
-    m_bytes[1] = quint8(qMin(data.size(), 252));
+    m_bytes.set(1, quint8(qMin(data.size(), 252)));
     m_bytes.resize(2);
-    m_bytes += data.mid(0, m_bytes[1]);
+    m_bytes += data.mid(0, m_bytes.at(1));
 }
 
 /*!
@@ -213,7 +213,7 @@ void QKnxAdditionalInfo::setData(const QKnxByteArray &data)
 */
 quint8 QKnxAdditionalInfo::dataSize() const
 {
-    return m_bytes[1];
+    return m_bytes.at(1);
 }
 
 /*!
@@ -257,7 +257,7 @@ qint32 QKnxAdditionalInfo::expectedDataSize(QKnxAdditionalInfo::Type type, bool 
 quint8 QKnxAdditionalInfo::byte(quint8 index) const
 {
     Q_ASSERT_X(index < size(), "QKnxAdditionalInfo::byte", "index out of range");
-    return m_bytes[index];
+    return m_bytes.at(index);
 }
 
 /*!
@@ -286,7 +286,7 @@ QKnxAdditionalInfo QKnxAdditionalInfo::fromBytes(const QKnxByteArray &bytes, qui
     if (availableSize < size)
         return {};
 
-    return { QKnxAdditionalInfo::Type(bytes[index]), bytes.mid(index + 2, bytes[index + 1]) };
+    return { QKnxAdditionalInfo::Type(bytes.at(index)), bytes.mid(index + 2, bytes.at(index + 1)) };
 }
 
 /*!

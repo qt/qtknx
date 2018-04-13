@@ -228,7 +228,7 @@ QKnxControlField::QKnxControlField(quint8 data)
 QKnxControlField::QKnxControlField(const QKnxByteArray &data)
 {
     if (data.size() > 0)
-        m_ctrl1 = quint8(data[0]);
+        m_ctrl1 = data.at(0);
 }
 
 /*!

@@ -131,7 +131,7 @@ Tunneling::Tunneling(QWidget* parent)
         ui->textOuputTunneling->append(tr("Destination address: %1").arg(frame.destinationAddress()
             .toString()));
         ui->textOuputTunneling->append(tr("Received tunnel frame with cEMI payload: "
-            + static_cast<QByteArray> (frame.bytes().toHex())));
+            + frame.bytes().toHex().toByteArray()));
     });
 
     updateControlField();
@@ -182,9 +182,8 @@ Tunneling::Tunneling(QWidget* parent)
             .toLatin1()));
         if (info.isValid()) {
             m_frame.addAdditionalInfo(info);
-            ui->cemiFrame->setText(static_cast<QByteArray> (m_frame.bytes()).toHex());
-            ui->additionalInfosList->addItem(new QListWidgetItem(static_cast<QByteArray> (info
-                .bytes())));
+            ui->cemiFrame->setText(m_frame.bytes().toHex().toByteArray());
+            ui->additionalInfosList->addItem(new QListWidgetItem(info.bytes().toByteArray()));
         }
     });
 
@@ -195,7 +194,7 @@ Tunneling::Tunneling(QWidget* parent)
             auto b = currentItem->text().toLatin1();
             m_frame.removeAdditionalInfo(QKnxAdditionalInfo::fromBytes(QKnxByteArray::fromHex(b),
                 0));
-            ui->cemiFrame->setText(static_cast<QByteArray> (m_frame.bytes().toHex()));
+            ui->cemiFrame->setText(m_frame.bytes().toHex().toByteArray());
             delete ui->additionalInfosList->takeItem(index.row());
         }
     });
@@ -282,7 +281,7 @@ void Tunneling::updateFrame()
         ui->data->setEnabled(false);
     }
     m_frame.setTpdu(tpdu);
-    ui->cemiFrame->setText(static_cast<QByteArray> (m_frame.bytes().toHex()));
+    ui->cemiFrame->setText(m_frame.bytes().toHex().toByteArray());
 
     ui->tunnelingSendRequest->setEnabled(m_frame.isValid());
 }

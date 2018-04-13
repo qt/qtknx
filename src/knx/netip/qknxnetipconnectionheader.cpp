@@ -86,10 +86,10 @@ QKnxNetIpConnectionHeader::QKnxNetIpConnectionHeader(quint8 channelId, quint8 se
 QKnxNetIpConnectionHeader::QKnxNetIpConnectionHeader(quint8 channelId, quint8 seqNumber,
         quint8 serviceTypeSpecificValue)
 {
-    m_bytes[0] = 4;
-    m_bytes[1] = channelId;
-    m_bytes[2] = seqNumber;
-    m_bytes[3] = serviceTypeSpecificValue;
+    m_bytes.set(0, 4);
+    m_bytes.set(1, channelId);
+    m_bytes.set(2, seqNumber);
+    m_bytes.set(3, serviceTypeSpecificValue);
 }
 
 /*!
@@ -98,7 +98,7 @@ QKnxNetIpConnectionHeader::QKnxNetIpConnectionHeader(quint8 channelId, quint8 se
 */
 bool QKnxNetIpConnectionHeader::isNull() const
 {
-    return m_bytes[0] == 0x00;
+    return m_bytes.at(0) == 0x00;
 }
 
 /*!
@@ -114,7 +114,7 @@ bool QKnxNetIpConnectionHeader::isValid() const
 {
     if (isNull())
         return false;
-    return (m_bytes[0] >= 4) && (m_bytes[0] == m_bytes.size());
+    return (m_bytes.at(0) >= 4) && (m_bytes.at(0) == m_bytes.size());
 }
 
 /*!
@@ -131,7 +131,7 @@ quint8 QKnxNetIpConnectionHeader::size() const
 */
 quint8 QKnxNetIpConnectionHeader::channelId() const
 {
-    return m_bytes[1];
+    return m_bytes.at(1);
 }
 
 /*!
@@ -139,8 +139,8 @@ quint8 QKnxNetIpConnectionHeader::channelId() const
 */
 void QKnxNetIpConnectionHeader::setChannelId(quint8 channelId)
 {
-    m_bytes[1] = channelId;
-    m_bytes[0] = (m_bytes.at(0) == 0x00 ? 4 : m_bytes[0]);
+    m_bytes.set(1, channelId);
+    m_bytes.set(0, (m_bytes.at(0) == 0x00 ? 4 : m_bytes.at(0)));
 }
 
 /*!
@@ -148,7 +148,7 @@ void QKnxNetIpConnectionHeader::setChannelId(quint8 channelId)
 */
 quint8 QKnxNetIpConnectionHeader::sequenceNumber() const
 {
-    return m_bytes[2];
+    return m_bytes.at(2);
 }
 
 /*!
@@ -156,8 +156,8 @@ quint8 QKnxNetIpConnectionHeader::sequenceNumber() const
 */
 void QKnxNetIpConnectionHeader::setSequenceNumber(quint8 seqNumber)
 {
-    m_bytes[2] = seqNumber;
-    m_bytes[0] = (m_bytes.at(0) == 0x00 ? 4 : m_bytes[0]);
+    m_bytes.set(2, seqNumber);
+    m_bytes.set(0, (m_bytes.at(0) == 0x00 ? 4 : m_bytes.at(0)));
 }
 
 /*!
@@ -165,7 +165,7 @@ void QKnxNetIpConnectionHeader::setSequenceNumber(quint8 seqNumber)
 */
 quint8 QKnxNetIpConnectionHeader::serviceTypeSpecificValue() const
 {
-    return m_bytes[3];
+    return m_bytes.at(3);
 }
 
 /*!
@@ -173,8 +173,8 @@ quint8 QKnxNetIpConnectionHeader::serviceTypeSpecificValue() const
 */
 void QKnxNetIpConnectionHeader::setServiceTypeSpecificValue(quint8 value)
 {
-    m_bytes[3] = value;
-    m_bytes[0] = (m_bytes.at(0) == 0x00 ? 4 : m_bytes[0]);
+    m_bytes.set(3, value);
+    m_bytes.set(0, (m_bytes.at(0) == 0x00 ? 4 : m_bytes.at(0)));
 }
 
 /*!
@@ -192,7 +192,7 @@ QKnxByteArray QKnxNetIpConnectionHeader::connectionTypeSpecificHeaderItems() con
 */
 void QKnxNetIpConnectionHeader::setConnectionTypeSpecificHeaderItems(const QKnxByteArray &items)
 {
-    m_bytes[0] = items.size() + 4;
+    m_bytes.set(0, items.size() + 4);
     m_bytes.resize(items.size() + 4);
     m_bytes.replace(4, items.size(), items);
 }
@@ -203,7 +203,7 @@ void QKnxNetIpConnectionHeader::setConnectionTypeSpecificHeaderItems(const QKnxB
 quint8 QKnxNetIpConnectionHeader::byte(quint8 index) const
 {
     Q_ASSERT_X(index < size(), "QKnxNetIpConnectionHeader::byte", "index out of range");
-    return m_bytes[index];
+    return m_bytes.at(index);
 }
 
 /*!

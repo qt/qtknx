@@ -39,933 +39,888 @@
 ****************************************************************************/
 
 #include "qknxbytearray.h"
-#include "private/qknxbytearraymatcher_p.h"
 
-#define IS_RAW_DATA(d) ((d)->offset != sizeof(QKnxByteArrayData))
+#include <new>
 
 QT_BEGIN_NAMESPACE
 
-int qFindByteArray(const quint8 *haystack0, int haystackLen, int from, const quint8 *needle0,
-    int needleLen);
+/*!
+    \class QKnxByteArray
+    \inmodule QtKnx
+    \brief The QKnxByteArray class provides an array of unsigned bytes.
 
-QKnxByteArray &QKnxByteArray::operator=(const QKnxByteArray &other) Q_DECL_NOTHROW
-{
-    other.d->ref.ref();
-    if (!d->ref.deref())
-        Data::deallocate(d);
-    d = other.d;
-    return *this;
-}
+    A KNX byte array can be used to store both raw bytes (including the string
+    \c {\0} and any characters that might come after it) and traditional 8-bit
+    \c {\0}-terminated strings. Using QKnxByteArray is much more convenient than
+    using \c{const quint8 *}. Behind the scenes, it always ensures that the data
+    is followed by a null-terminator (\c {\0}).
 
-void QKnxByteArray::truncate(int pos)
-{
-    if (pos < d->size)
-        resize(pos);
-}
+    QKnxByteArray makes a deep copy of the data given, so you
+    can modify it later without experiencing side effects.
 
-void QKnxByteArray::chop(int n)
-{
-    if (n > 0)
-        resize(d->size - n);
-}
+    Another approach is to set the size of the array using resize()
+    and to initialize the data byte per byte. QKnxByteArray uses 0-based
+    indexes, just like C++ arrays. To access the byte at a particular
+    index position, you can use at(), set(), value() and setValue().
 
+    To extract several bytes at a time, use left(), right(), or mid().
+
+    A KNX byte array can embed \c {\0} bytes. The size() function always
+    returns the size of the whole array, including the embedded \c {\0}
+    bytes, but excluding the null-terminator added by QKnxByteArray.
+
+    After a call to resize(), newly allocated bytes have undefined
+    values. To set all the bytes to a particular value, call fill().
+
+    To obtain a pointer to the actual character data, call data() or
+    constData(). These functions return a pointer to the beginning of the data.
+    The pointer is guaranteed to remain valid until a non-const function is
+    called on the byte array.
+*/
+
+/*!
+    \fn QKnxByteArray::QKnxByteArray()
+
+    Constructs an empty byte array.
+*/
+
+/*!
+    \fn QKnxByteArray::~QKnxByteArray()
+
+    Destroys the byte array.
+*/
+
+/*!
+    Constructs a byte array of the size \a size with every byte set to the
+    character \a ch.
+*/
 QKnxByteArray::QKnxByteArray(int size, quint8 ch)
-{
-    if (size <= 0) {
-        d = Data::allocate(0);
-    } else {
-        d = Data::allocate(uint(size) + 1u);
-        Q_CHECK_PTR(d);
-        d->size = size;
-        memset(d->data(), ch, size);
-        d->data()[size] = '\0';
-    }
-}
-
-QKnxByteArray::QKnxByteArray(int size, Qt::Initialization)
-{
-    d = Data::allocate(uint(size) + 1u);
-    Q_CHECK_PTR(d);
-    d->size = size;
-    d->data()[size] = '\0';
-}
-
-QKnxByteArray::QKnxByteArray(const char *data, int size)
-    : QKnxByteArray((const quint8*) data, size)
+    : m_bytes(size, char(ch))
 {}
 
-QKnxByteArray::QKnxByteArray(const quint8 *data, int size)
-{
-    if (!data) {
-        d = Data::sharedNull();
-    } else {
-        if (size < 0)
-            size = 0;
-        if (!size) {
-            d = Data::allocate(0);
-        } else {
-            d = Data::allocate(uint(size) + 1u);
-            Q_CHECK_PTR(d);
-            d->size = size;
-            memcpy(d->data(), data, size);
-            d->data()[size] = '\0';
-        }
-    }
-}
+/*!
+    \internal
 
+    Constructs a byte array of the size \a size with uninitialized contents.
+*/
+QKnxByteArray::QKnxByteArray(int size, Qt::Initialization)
+    : m_bytes(size, Qt::Uninitialized)
+{}
+
+/*!
+    Constructs a byte array from \a data containing the number of bytes
+    specified by \a size starting from the beginning of the data.
+
+    If \a data is 0, a null byte array is constructed.
+
+    If \a size is negative, \a data is assumed to point to a null-terminated
+    string and its length is determined dynamically. The terminating
+    null-character is not considered part of the byte array.
+
+    QKnxByteArray makes a deep copy of the string data.
+*/
+QKnxByteArray::QKnxByteArray(const char *data, int size)
+    : m_bytes(data, size)
+{}
+
+/*!
+    \overload QKnxByteArray()
+*/
+QKnxByteArray::QKnxByteArray(const quint8 *data, int size)
+    : m_bytes(reinterpret_cast<const char*> (data), size)
+{}
+
+/*!
+    Constructs a byte array from the \c {std::initializer_list} specified by
+    \a args.
+*/
 QKnxByteArray::QKnxByteArray(std::initializer_list<quint8> args)
 {
     if (args.size() > 0) {
-        d = Data::allocate(args.size() + 1u);
-        Q_CHECK_PTR(d);
-        d->size = int(args.size());
-        memcpy(d->data(), args.begin(), (args.end() - args.begin()) * sizeof(quint8));
-        d->data()[d->size] = '\0';
-    } else {
-        d = Data::allocate(0);
+        auto d = new (std::nothrow) quint8[args.size()];
+        if (!d)
+            return;
+        memcpy(d, args.begin(), (args.end() - args.begin()) * sizeof(quint8));
+        m_bytes = QByteArray(reinterpret_cast<const char*> (d), int(args.size()));
+        delete []d;
     }
 }
 
+/*!
+    \fn QKnxByteArray::QKnxByteArray(const QKnxByteArray &other)
+
+    Constructs a copy of \a other.
+*/
+
+/*!
+    Assigns \a other to this KNX byte array and returns a reference.
+*/
+QKnxByteArray &QKnxByteArray::operator=(const QKnxByteArray &other) Q_DECL_NOTHROW
+{
+    m_bytes.operator=(other.m_bytes);
+    return *this;
+}
+
+/*!
+    \fn QKnxByteArray::QKnxByteArray(QKnxByteArray &&other)
+
+    Move-constructs a QKnxByteArray instance, making it point to the same
+    object that \a other was pointing to.
+*/
+
+/*!
+    \fn QKnxByteArray &QKnxByteArray::operator=(QKnxByteArray &&other)
+
+    Move-assigns \a other to this QKnxByteArray instance.
+*/
+
+/*!
+    \fn void QKnxByteArray::swap(QKnxByteArray &other)
+
+    Swaps the byte array \a other with this byte array. This operation is very
+    fast and never fails.
+*/
+
+/*!
+    Returns a copy of this byte array as \l QByteArray.
+*/
+const QByteArray &QKnxByteArray::toByteArray() const
+{
+    return m_bytes;
+}
+
+/*!
+    Returns a byte array constructed from \a byteArray .
+*/
+QKnxByteArray QKnxByteArray::fromByteArray(const QByteArray &byteArray)
+{
+    QKnxByteArray ba(0, Qt::Uninitialized);
+    ba.m_bytes = byteArray;
+    return ba;
+}
+
+/*!
+    Returns \c true if this byte array is null; otherwise returns \c false.
+*/
+bool QKnxByteArray::isNull() const
+{
+    return m_bytes.isNull();
+}
+
+/*!
+    \fn bool QKnxByteArray::isEmpty() const
+
+    Returns \c true if the byte array has the size 0; otherwise returns \c
+    false.
+*/
+
+/*!
+    \fn int QKnxByteArray::size() const
+
+    Returns the number of bytes in this byte array. The last byte in the byte
+    array is at the position returned by this function minus 1.
+*/
+
+/*!
+    Clears the contents of the byte array and makes it null.
+*/
+void QKnxByteArray::clear()
+{
+    m_bytes.clear();
+}
+
+/*!
+    Sets the size of the byte array to the number of bytes specified by \a size.
+
+    If \a size is greater than the current size, the byte array is extended to
+    \a size bytes by adding uninitialized bytes to the end of the array.
+
+    If \a size is less than the current size, bytes are removed from the end of
+    the array.
+*/
 void QKnxByteArray::resize(int size)
 {
-    if (size < 0)
-        size = 0;
-
-    if (IS_RAW_DATA(d) && !d->ref.isShared() && size < d->size) {
-        d->size = size;
-        return;
-    }
-
-    if (size == 0 && !d->capacityReserved) {
-        Data *x = Data::allocate(0);
-        if (!d->ref.deref())
-            Data::deallocate(d);
-        d = x;
-    } else if (d->size == 0 && d->ref.isStatic()) {
-        //
-        // Optimize the idiom:
-        //    QKnxByteArray a;
-        //    a.resize(sz);
-        //    ...
-        // which is used in place of the Qt 3 idiom:
-        //    QKnxByteArray a(sz);
-        //
-        Data *x = Data::allocate(uint(size) + 1u);
-        Q_CHECK_PTR(x);
-        x->size = size;
-        x->data()[size] = '\0';
-        d = x;
-    } else {
-        if (d->ref.isShared() || uint(size) + 1u > d->alloc
-            || (!d->capacityReserved && size < d->size
-                && uint(size) + 1u < uint(d->alloc >> 1)))
-            reallocData(uint(size) + 1u, d->detachFlags() | Data::Grow);
-        if (d->alloc) {
-            d->size = size;
-            d->data()[size] = '\0';
-        }
-    }
+    m_bytes.resize(size);
 }
 
-QKnxByteArray &QKnxByteArray::fill(quint8 ch, int size)
-{
-    resize(size < 0 ? d->size : size);
-    if (d->size)
-        memset(d->data(), ch, d->size);
-    return *this;
-}
+/*!
+    \fn quint8 QKnxByteArray::at(int i) const
 
-void QKnxByteArray::reallocData(uint alloc, Data::AllocationOptions options)
-{
-    if (d->ref.isShared() || IS_RAW_DATA(d)) {
-        Data *x = Data::allocate(alloc, options);
-        Q_CHECK_PTR(x);
-        x->size = qMin(int(alloc) - 1, d->size);
-        ::memcpy(x->data(), d->data(), x->size);
-        x->data()[x->size] = '\0';
-        if (!d->ref.deref())
-            Data::deallocate(d);
-        d = x;
-    } else {
-        Data *x = Data::reallocateUnaligned(d, alloc, options);
-        Q_CHECK_PTR(x);
-        d = x;
-    }
-}
+    Returns the character at the index position \a i in the byte array.
 
-void QKnxByteArray::expand(int i)
-{
-    resize(qMax(i + 1, d->size));
-}
+    \a i must be a valid index position in the byte array (that is, between
+    0 and the value returned by size()).
+*/
 
-QKnxByteArray QKnxByteArray::nulTerminated() const
-{
-    // is this fromRawData?
-    if (!IS_RAW_DATA(d))
-        return *this;           // no, then we're sure we're zero terminated
+/*!
+    \fn void QKnxByteArray::set(int i, quint8 value)
 
-    QKnxByteArray copy(*this);
-    copy.detach();
-    return copy;
-}
+    Sets the character at the index position \a i in the byte array to \a value.
 
-QKnxByteArray &QKnxByteArray::prepend(const QKnxByteArray &ba)
-{
-    if (d->size == 0 && d->ref.isStatic() && !IS_RAW_DATA(ba.d)) {
-        *this = ba;
-    } else if (ba.d->size != 0) {
-        QKnxByteArray tmp = *this;
-        *this = ba;
-        append(tmp);
-    }
-    return *this;
-}
+    \a i must be a valid index position in the byte array (that is, between
+    0 and the value returned by size()).
+*/
 
-QKnxByteArray &QKnxByteArray::prepend(const quint8 *str, int len)
-{
-    if (str) {
-        if (d->ref.isShared() || uint(d->size + len) + 1u > d->alloc)
-            reallocData(uint(d->size + len) + 1u, d->detachFlags() | Data::Grow);
-        memmove(d->data() + len, d->data(), d->size);
-        memcpy(d->data(), str, len);
-        d->size += len;
-        d->data()[d->size] = '\0';
-    }
-    return *this;
-}
+/*!
+    \fn void QKnxByteArray::setValue(int i, quint8 value)
 
-QKnxByteArray &QKnxByteArray::prepend(quint8 ch)
-{
-    if (d->ref.isShared() || uint(d->size) + 2u > d->alloc)
-        reallocData(uint(d->size) + 2u, d->detachFlags() | Data::Grow);
-    memmove(d->data() + 1, d->data(), d->size);
-    d->data()[0] = ch;
-    ++d->size;
-    d->data()[d->size] = '\0';
-    return *this;
-}
+    Sets the value at the index position \a i in the byte array to \a value.
 
-QKnxByteArray &QKnxByteArray::append(const QKnxByteArray &ba)
-{
-    if (d->size == 0 && d->ref.isStatic() && !IS_RAW_DATA(ba.d)) {
-        *this = ba;
-    } else if (ba.d->size != 0) {
-        if (d->ref.isShared() || uint(d->size + ba.d->size) + 1u > d->alloc)
-            reallocData(uint(d->size + ba.d->size) + 1u, d->detachFlags() | Data::Grow);
-        memcpy(d->data() + d->size, ba.d->data(), ba.d->size);
-        d->size += ba.d->size;
-        d->data()[d->size] = '\0';
-    }
-    return *this;
-}
+    If the index \a i is out of bounds, the function does nothing. If you
+    are certain that \a i is within bounds, you can use set() instead, which
+    is slightly faster.
+*/
 
-QKnxByteArray &QKnxByteArray::append(const quint8 *str, int len)
-{
-    if (len < 0)
-        len = 0;
-    if (str && len) {
-        if (d->ref.isShared() || uint(d->size + len) + 1u > d->alloc)
-            reallocData(uint(d->size + len) + 1u, d->detachFlags() | Data::Grow);
-        memcpy(d->data() + d->size, str, len); // include null terminator
-        d->size += len;
-        d->data()[d->size] = '\0';
-    }
-    return *this;
-}
+/*!
+    \fn quint8 QKnxByteArray::value(int i, quint8 defaultValue = {}) const
 
-QKnxByteArray& QKnxByteArray::append(quint8 ch)
-{
-    if (d->ref.isShared() || uint(d->size) + 2u > d->alloc)
-        reallocData(uint(d->size) + 2u, d->detachFlags() | Data::Grow);
-    d->data()[d->size++] = ch;
-    d->data()[d->size] = '\0';
-    return *this;
-}
+    Returns the value at the index position \a i in the byte array.
 
-static inline QKnxByteArray &QKnxByteArray_insert(QKnxByteArray *ba,
-    int pos, const quint8 *arr, int len)
-{
-    Q_ASSERT(pos >= 0);
+    If the index \a i is out of bounds, the function returns \a defaultValue,
+    which may be a \l{default-constructed value}. If you are certain that \a i
+    is within bounds, you can use at() instead, which is slightly faster.
+*/
 
-    if (pos < 0 || len <= 0 || arr == 0)
-        return *ba;
+/*!
+    Returns a copy of this byte array repeated the specified number of \a times.
 
-    int oldsize = ba->size();
-    ba->resize(qMax(pos, oldsize) + len);
-    quint8 *dst = ba->data();
-    if (pos > oldsize)
-        ::memset(dst + oldsize, 0x20, pos - oldsize);
-    else
-        ::memmove(dst + pos + len, dst + pos, oldsize - pos);
-    memcpy(dst + pos, arr, len);
-    return *ba;
-}
-
-QKnxByteArray &QKnxByteArray::insert(int i, const QKnxByteArray &ba)
-{
-    QKnxByteArray copy(ba);
-    return QKnxByteArray_insert(this, i, copy.d->data(), copy.d->size);
-}
-
-QKnxByteArray &QKnxByteArray::insert(int i, const quint8 *str, int len)
-{
-    return QKnxByteArray_insert(this, i, str, len);
-}
-
-QKnxByteArray &QKnxByteArray::insert(int i, quint8 ch)
-{
-    return QKnxByteArray_insert(this, i, &ch, 1);
-}
-
-QKnxByteArray &QKnxByteArray::insert(int i, int count, quint8 ch)
-{
-    if (i < 0 || count <= 0)
-        return *this;
-
-    int oldsize = size();
-    resize(qMax(i, oldsize) + count);
-    quint8 *dst = d->data();
-    if (i > oldsize)
-        ::memset(dst + oldsize, 0x20, i - oldsize);
-    else if (i < oldsize)
-        ::memmove(dst + i + count, dst + i, oldsize - i);
-    ::memset(dst + i, ch, count);
-    return *this;
-}
-
-QKnxByteArray &QKnxByteArray::remove(int pos, int len)
-{
-    if (len <= 0 || uint(pos) >= uint(d->size))
-        return *this;
-    detach();
-    if (len >= d->size - pos) {
-        resize(pos);
-    } else {
-        memmove(d->data() + pos, d->data() + pos + len, d->size - pos - len);
-        resize(d->size - len);
-    }
-    return *this;
-}
-
-QKnxByteArray &QKnxByteArray::replace(int pos, int len, const QKnxByteArray &after)
-{
-    if (len == after.d->size && (pos + len <= d->size)) {
-        detach();
-        memmove(d->data() + pos, after.d->data(), len * sizeof(quint8));
-        return *this;
-    } else {
-        QKnxByteArray copy(after);
-        // ### optimize me
-        remove(pos, len);
-        return insert(pos, copy);
-    }
-}
-
-QKnxByteArray &QKnxByteArray::replace(int pos, int len, const quint8 *after, int alen)
-{
-    if (len == alen && (pos + len <= d->size)) {
-        detach();
-        memcpy(d->data() + pos, after, len * sizeof(quint8));
-        return *this;
-    } else {
-        remove(pos, len);
-        return QKnxByteArray_insert(this, pos, after, alen);
-    }
-}
-
-QKnxByteArray &QKnxByteArray::replace(const QKnxByteArray &before, const QKnxByteArray &after)
-{
-    if (isNull() || before.d == after.d)
-        return *this;
-
-    QKnxByteArray aft = after;
-    if (after.d == d)
-        aft.detach();
-
-    return replace(before.constData(), before.size(), aft.constData(), aft.size());
-}
-
-QKnxByteArray &QKnxByteArray::replace(const quint8 *before, int bsize, const quint8 *after, int asize)
-{
-    if (isNull() || (before == after && bsize == asize))
-        return *this;
-
-    // protect against before or after being part of this
-    const quint8 *a = after;
-    const quint8 *b = before;
-    if (after >= d->data() && after < d->data() + d->size) {
-        quint8 *copy = (quint8 *) malloc(asize);
-        Q_CHECK_PTR(copy);
-        memcpy(copy, after, asize);
-        a = copy;
-    }
-    if (before >= d->data() && before < d->data() + d->size) {
-        quint8 *copy = (quint8 *) malloc(bsize);
-        Q_CHECK_PTR(copy);
-        memcpy(copy, before, bsize);
-        b = copy;
-    }
-
-    QKnxByteArrayMatcher matcher(before, bsize);
-    int index = 0;
-    int len = d->size;
-    quint8 *d = data();
-
-    if (bsize == asize) {
-        if (bsize) {
-            while ((index = matcher.indexIn(*this, index)) != -1) {
-                memcpy(d + index, after, asize);
-                index += bsize;
-            }
-        }
-    } else if (asize < bsize) {
-        uint to = 0;
-        uint movestart = 0;
-        uint num = 0;
-        while ((index = matcher.indexIn(*this, index)) != -1) {
-            if (num) {
-                int msize = index - movestart;
-                if (msize > 0) {
-                    memmove(d + to, d + movestart, msize);
-                    to += msize;
-                }
-            } else {
-                to = index;
-            }
-            if (asize) {
-                memcpy(d + to, after, asize);
-                to += asize;
-            }
-            index += bsize;
-            movestart = index;
-            num++;
-        }
-        if (num) {
-            int msize = len - movestart;
-            if (msize > 0)
-                memmove(d + to, d + movestart, msize);
-            resize(len - num*(bsize - asize));
-        }
-    } else {
-        // the most complex case. We don't want to lose performance by doing repeated
-        // copies and reallocs of the string.
-        while (index != -1) {
-            uint indices[4096];
-            uint pos = 0;
-            while (pos < 4095) {
-                index = matcher.indexIn(*this, index);
-                if (index == -1)
-                    break;
-                indices[pos++] = index;
-                index += bsize;
-                // avoid infinite loop
-                if (!bsize)
-                    index++;
-            }
-            if (!pos)
-                break;
-
-            // we have a table of replacement positions, use them for fast replacing
-            int adjust = pos*(asize - bsize);
-            // index has to be adjusted in case we get back into the loop above.
-            if (index != -1)
-                index += adjust;
-            int newlen = len + adjust;
-            int moveend = len;
-            if (newlen > len) {
-                resize(newlen);
-                len = newlen;
-            }
-            d = this->d->data();
-
-            while (pos) {
-                pos--;
-                int movestart = indices[pos] + bsize;
-                int insertstart = indices[pos] + pos*(asize - bsize);
-                int moveto = insertstart + asize;
-                memmove(d + moveto, d + movestart, (moveend - movestart));
-                if (asize)
-                    memcpy(d + insertstart, after, asize);
-                moveend = movestart - bsize;
-            }
-        }
-    }
-
-    if (a != after)
-        ::free(const_cast<quint8 *>(a));
-    if (b != before)
-        ::free(const_cast<quint8 *>(b));
-
-    return *this;
-}
-
-QKnxByteArray &QKnxByteArray::replace(quint8 before, const QKnxByteArray &after)
-{
-    quint8 b[2] = { before, '\0' };
-    QKnxByteArray cb = fromRawData(b, 1);
-    return replace(cb, after);
-}
-
-QKnxByteArray &QKnxByteArray::replace(quint8 before, quint8 after)
-{
-    if (d->size) {
-        quint8 *i = data();
-        quint8 *e = i + d->size;
-        for (; i != e; ++i)
-            if (*i == before)
-                * i = after;
-    }
-    return *this;
-}
-
-QVector<QKnxByteArray> QKnxByteArray::split(quint8 sep) const
-{
-    QVector<QKnxByteArray> list;
-    int start = 0;
-    int end;
-    while ((end = indexOf(sep, start)) != -1) {
-        list.append(mid(start, end - start));
-        start = end + 1;
-    }
-    list.append(mid(start));
-    return list;
-}
-
+    If \a times is less than 1, an empty byte array is returned.
+*/
 QKnxByteArray QKnxByteArray::repeated(int times) const
 {
-    if (d->size == 0)
-        return *this;
-
-    if (times <= 1) {
-        if (times == 1)
-            return *this;
-        return QKnxByteArray();
-    }
-
-    const int resultSize = times * d->size;
-
-    QKnxByteArray result;
-    result.reserve(resultSize);
-    if (result.d->alloc != uint(resultSize) + 1u)
-        return QKnxByteArray(); // not enough memory
-
-    memcpy(result.d->data(), d->data(), d->size);
-
-    int sizeSoFar = d->size;
-    quint8 *end = result.d->data() + sizeSoFar;
-
-    const int halfResultSize = resultSize >> 1;
-    while (sizeSoFar <= halfResultSize) {
-        memcpy(end, result.d->data(), sizeSoFar);
-        end += sizeSoFar;
-        sizeSoFar <<= 1;
-    }
-    memcpy(end, result.d->data(), resultSize - sizeSoFar);
-    result.d->data()[resultSize] = '\0';
-    result.d->size = resultSize;
-    return result;
+    QKnxByteArray ba(0, Qt::Uninitialized);
+    ba.m_bytes = m_bytes.repeated(times);
+    return ba;
 }
 
-int QKnxByteArray::indexOf(const QKnxByteArray &ba, int from) const
+/*!
+    Sets every byte in the byte array to the character \a ch and returns a
+    reference to this byte array. If \a size is different from -1, the byte
+    array is resized to \a size beforehand.
+*/
+QKnxByteArray &QKnxByteArray::fill(quint8 ch, int size)
 {
-    const int ol = ba.d->size;
-    if (ol == 0)
-        return from;
-    if (ol == 1)
-        return indexOf(*ba.d->data(), from);
-
-    const int l = d->size;
-    if (from > d->size || ol + from > l)
-        return -1;
-    return qFindByteArray(d->data(), d->size, from, ba.d->data(), ol);
+    m_bytes.fill(ch, size);
+    return *this;
 }
 
-int QKnxByteArray::indexOf(quint8 ch, int from) const
-{
-    if (from < 0)
-        from = qMax(from + d->size, 0);
-    if (from < d->size) {
-        const quint8 *n = d->data() + from - 1;
-        const quint8 *e = d->data() + d->size;
-        while (++n != e)
-            if (*n == ch)
-                return  n - d->data();
-    }
-    return -1;
-}
+/*!
+    Returns a byte array that contains the number of leftmost bytes in the byte
+    array specified by \a len.
 
-static int lastIndexOfHelper(const quint8 *haystack, int l, const quint8 *needle, int ol, int from)
-{
-    int delta = l - ol;
-    if (from < 0)
-        from = delta;
-    if (from < 0 || from > l)
-        return -1;
-    if (from > delta)
-        from = delta;
-
-    const quint8 *end = haystack;
-    haystack += from;
-    const uint ol_minus_1 = ol - 1;
-    const quint8 *n = needle + ol_minus_1;
-    const quint8 *h = haystack + ol_minus_1;
-    uint hashNeedle = 0, hashHaystack = 0;
-    int idx;
-    for (idx = 0; idx < ol; ++idx) {
-        hashNeedle = ((hashNeedle << 1) + *(n - idx));
-        hashHaystack = ((hashHaystack << 1) + *(h - idx));
-    }
-    hashHaystack -= *haystack;
-
-#define REHASH(a) \
-    if (ol_minus_1 < sizeof(uint) * CHAR_BIT) \
-        hashHaystack -= (a) << ol_minus_1; \
-    hashHaystack <<= 1
-
-    while (haystack >= end) {
-        hashHaystack += *haystack;
-        if (hashHaystack == hashNeedle && memcmp(needle, haystack, ol) == 0)
-            return haystack - end;
-        --haystack;
-        REHASH(*(haystack + ol));
-    }
-    return -1;
-
-#undef REHASHS
-}
-
-int QKnxByteArray::lastIndexOf(const QKnxByteArray &ba, int from) const
-{
-    const int ol = ba.d->size;
-    if (ol == 1)
-        return lastIndexOf(*ba.d->data(), from);
-    return lastIndexOfHelper(d->data(), d->size, ba.d->data(), ol, from);
-}
-
-int QKnxByteArray::lastIndexOf(quint8 ch, int from) const
-{
-    if (from < 0)
-        from += d->size;
-    else if (from > d->size)
-        from = d->size - 1;
-    if (from >= 0) {
-        const quint8 *b = d->data();
-        const quint8 *n = d->data() + from + 1;
-        while (n-- != b)
-            if (*n == ch)
-                return  n - b;
-    }
-    return -1;
-}
-
-int QKnxByteArray::count(const QKnxByteArray &ba) const
-{
-    int num = 0;
-    int i = -1;
-    if (d->size > 500 && ba.d->size > 5) {
-        QKnxByteArrayMatcher matcher(ba);
-        while ((i = matcher.indexIn(*this, i + 1)) != -1)
-            ++num;
-    } else {
-        while ((i = indexOf(ba, i + 1)) != -1)
-            ++num;
-    }
-    return num;
-}
-
-int QKnxByteArray::count(quint8 ch) const
-{
-    int num = 0;
-    const quint8 *i = d->data() + d->size;
-    const quint8 *b = d->data();
-    while (i != b)
-        if (*--i == ch)
-            ++num;
-    return num;
-}
-
-bool QKnxByteArray::startsWith(const QKnxByteArray &ba) const
-{
-    if (d == ba.d || ba.d->size == 0)
-        return true;
-    if (d->size < ba.d->size)
-        return false;
-    return memcmp(d->data(), ba.d->data(), ba.d->size) == 0;
-}
-
-bool QKnxByteArray::startsWith(quint8 ch) const
-{
-    if (d->size == 0)
-        return false;
-    return d->data()[0] == ch;
-}
-
-bool QKnxByteArray::endsWith(const QKnxByteArray &ba) const
-{
-    if (d == ba.d || ba.d->size == 0)
-        return true;
-    if (d->size < ba.d->size)
-        return false;
-    return memcmp(d->data() + d->size - ba.d->size, ba.d->data(), ba.d->size) == 0;
-}
-
-bool QKnxByteArray::endsWith(quint8 ch) const
-{
-    if (d->size == 0)
-        return false;
-    return d->data()[d->size - 1] == ch;
-}
+    The entire byte array is returned if \a len is greater than the value
+    returned by size().
+*/
 
 QKnxByteArray QKnxByteArray::left(int len)  const
 {
-    if (len >= d->size)
+    if (len >= size())
         return *this;
     if (len < 0)
         len = 0;
-    return QKnxByteArray(d->data(), len);
+    return QKnxByteArray(constData(), len);
 }
 
+/*!
+    Returns a byte array that contains the number of rightmost bytes in the byte
+    array specified by \a len.
+
+    The entire byte array is returned if \a len is greater than the value
+    returned by size().
+*/
 QKnxByteArray QKnxByteArray::right(int len) const
 {
-    if (len >= d->size)
+    if (len >= size())
         return *this;
     if (len < 0)
         len = 0;
-    return QKnxByteArray(d->data() + d->size - len, len);
+    return QKnxByteArray(constData() + size() - len, len);
 }
 
+/*!
+    Returns a byte array containing the number of bytes in the byte array
+    specified by \a len, starting at the position \a pos.
+
+    If \a len is -1 (the default), or \a pos added to \a len is equal to or
+    larger than the value returned by size(), returns a byte array containing
+    all bytes starting from the position \a pos to the end of the byte array.
+*/
 QKnxByteArray QKnxByteArray::mid(int pos, int len) const
 {
-    using namespace QtPrivate;
-    switch (QContainerImplHelper::mid(size(), &pos, &len)) {
-    case QContainerImplHelper::Null:
-        return QKnxByteArray();
-    case QContainerImplHelper::Empty:
-    {
-        return QKnxByteArray(Data::allocate(0));
-    }
-    case QContainerImplHelper::Full:
-        return *this;
-    case QContainerImplHelper::Subset:
-        return QKnxByteArray(d->data() + pos, len);
-    }
-    Q_UNREACHABLE();
-    return QKnxByteArray();
+    const auto m = m_bytes.mid(pos, len);
+    if (m.isEmpty())
+        return {};
+    return QKnxByteArray(m.constData(), m.size());
 }
 
-void QKnxByteArray::clear()
+/*!
+    \fn QKnxByteArray::chop(int len) const
+
+    Returns a byte array that contains the number of leftmost bytes in this
+    byte array calculated by subtracting the amount of bytes specified by \a len
+    from the amount of bytes of returned by size().
+
+    \note The behavior is undefined if \a len is negative.
+*/
+
+/*!
+    \overload prepend()
+
+    Prepends the character \a ch to this byte array.
+*/
+QKnxByteArray &QKnxByteArray::prepend(quint8 ch)
 {
-    if (!d->ref.deref())
-        Data::deallocate(d);
-    d = Data::sharedNull();
-}
-
-#if !defined(QT_NO_DATASTREAM)
-
-QDataStream &operator<<(QDataStream &out, const QKnxByteArray &ba)
-{
-    if (ba.isNull() && out.version() >= 6) {
-        out << (quint32) 0xffffffff;
-        return out;
-    }
-    return out.writeBytes((const char*) ba.constData(), ba.size());
-}
-
-QDataStream &operator >> (QDataStream &in, QKnxByteArray &ba)
-{
-    ba.clear();
-    quint32 len;
-    in >> len;
-    if (len == 0xffffffff)
-        return in;
-
-    const quint32 Step = 1024 * 1024;
-    quint32 allocated = 0;
-
-    do {
-        int blockSize = qMin(Step, len - allocated);
-        ba.resize(allocated + blockSize);
-        if (in.readRawData((char*) ba.data() + allocated, blockSize) != blockSize) {
-            ba.clear();
-            in.setStatus(QDataStream::ReadPastEnd);
-            return in;
-        }
-        allocated += blockSize;
-    } while (allocated < len);
-
-    return in;
-}
-
-#endif // QT_NO_DATASTREAM
-
-QKnxByteArray QKnxByteArray::leftJustified(int width, quint8 fill, bool truncate) const
-{
-    QKnxByteArray result;
-    int len = d->size;
-    int padlen = width - len;
-    if (padlen > 0) {
-        result.resize(len + padlen);
-        if (len)
-            memcpy(result.d->data(), d->data(), len);
-        memset(result.d->data() + len, fill, padlen);
-    } else {
-        if (truncate)
-            result = left(width);
-        else
-            result = *this;
-    }
-    return result;
-}
-
-QKnxByteArray QKnxByteArray::rightJustified(int width, quint8 fill, bool truncate) const
-{
-    QKnxByteArray result;
-    int len = d->size;
-    int padlen = width - len;
-    if (padlen > 0) {
-        result.resize(len + padlen);
-        if (len)
-            memcpy(result.d->data() + padlen, data(), len);
-        memset(result.d->data(), fill, padlen);
-    } else {
-        if (truncate)
-            result = left(width);
-        else
-            result = *this;
-    }
-    return result;
-}
-
-bool QKnxByteArray::isNull() const
-{
-    return d == QArrayData::sharedNull();
-}
-
-QKnxByteArray &QKnxByteArray::setRawData(const quint8 *data, int size)
-{
-    if (d->ref.isShared() || d->alloc) {
-        *this = fromRawData(data, size);
-    } else {
-        if (data) {
-            d->size = size;
-            d->offset = data - reinterpret_cast<quint8 *>(d);
-        } else {
-            d->offset = sizeof(QKnxByteArrayData);
-            d->size = 0;
-            *d->data() = 0;
-        }
-    }
+    m_bytes.prepend(char(ch));
     return *this;
 }
 
-QKnxByteArray QKnxByteArray::fromRawData(const quint8 *data, int size)
+/*!
+    Prepends the byte array \a ba to this byte array and returns a
+    reference to this byte array.
+*/
+QKnxByteArray &QKnxByteArray::prepend(const QKnxByteArray &ba)
 {
-    Data *x { nullptr };
-    if (!data) {
-        x = Data::sharedNull();
-    } else if (!size) {
-        x = Data::allocate(0);
-    } else {
-        x = Data::fromRawData(data, size);
-        Q_CHECK_PTR(x);
-    }
-    return QKnxByteArray(x);
+    m_bytes.prepend(reinterpret_cast<const char*> (ba.constData()), ba.size());
+    return *this;
 }
 
-namespace QtKnxUtils {
+/*!
+    \overload prepend()
+    \fn QKnxByteArray &QKnxByteArray::prepend(int count, quint8 ch)
 
-Q_DECL_CONSTEXPR inline char toHexUpper(uint value) Q_DECL_NOTHROW
+    Prepends the number of copies of the character \a ch specified by \a count
+    to this byte array.
+*/
+
+/*!
+    \overload insert()
+
+    Inserts the character \a ch at the index position \a i in the byte array.
+    If \a i is greater than the number of bytes returned by size(), the array
+    is first extended using resize().
+*/
+QKnxByteArray &QKnxByteArray::insert(int i, quint8 ch)
 {
-    return "0123456789ABCDEF"[value & 0xF];
+    m_bytes.insert(i, char(ch));
+    return *this;
 }
 
-Q_DECL_CONSTEXPR inline char toHexLower(uint value) Q_DECL_NOTHROW
+/*!
+    \overload insert()
+
+    Inserts the number of copies of the character \a ch specified by \a count
+    at the index position \a i in the byte array.
+
+    If \a i is greater than the value returned by size(), the array is first
+    extended using resize().
+*/
+QKnxByteArray &QKnxByteArray::insert(int i, int count, quint8 ch)
 {
-    return "0123456789abcdef"[value & 0xF];
+    m_bytes.insert(i, count, char(ch));
+    return *this;
 }
 
-Q_DECL_CONSTEXPR inline int fromHex(uint c) Q_DECL_NOTHROW
+/*!
+    Inserts the byte array \a ba at the index position \a i and returns a
+    reference to this byte array.
+*/
+QKnxByteArray &QKnxByteArray::insert(int i, const QKnxByteArray &ba)
 {
-    return ((c >= '0') && (c <= '9')) ? int(c - '0') :
-           ((c >= 'A') && (c <= 'F')) ? int(c - 'A' + 10) :
-           ((c >= 'a') && (c <= 'f')) ? int(c - 'a' + 10) :
-           /* otherwise */              -1;
+    m_bytes.insert(i, reinterpret_cast<const char*> (ba.constData()), ba.size());
+    return *this;
 }
 
+/*!
+    \overload append()
+
+    Appends the character \a ch to this byte array.
+*/
+QKnxByteArray& QKnxByteArray::append(quint8 ch)
+{
+    m_bytes.append(char(ch));
+    return *this;
 }
 
+/*!
+    Appends the byte array \a ba to the end of this byte array.
+*/
+QKnxByteArray &QKnxByteArray::append(const QKnxByteArray &ba)
+{
+    m_bytes.append(reinterpret_cast<const char*> (ba.constData()), ba.size());
+    return *this;
+}
+
+/*!
+    \overload append()
+    \fn QKnxByteArray &QKnxByteArray::append(int count, quint8 ch)
+
+    Appends the number of copies of the character \a ch specified by \a count to
+    this byte array and returns a reference to this byte array.
+
+    If \a count is negative or zero, nothing is appended to the byte array.
+*/
+
+/*!
+    Replaces the number of bytes specified by \a len beginning at the index
+    position \a index with the byte array \a after, and returns a reference
+    to this byte array.
+*/
+QKnxByteArray &QKnxByteArray::replace(int index, int len, const QKnxByteArray &after)
+{
+    m_bytes.replace(index, len, reinterpret_cast<const char*> (after.constData()), after.size());
+    return *this;
+}
+
+/*!
+    \overload replace()
+
+    Replaces every occurrence of the character \a before with the
+    byte array \a after.
+*/
+QKnxByteArray &QKnxByteArray::replace(quint8 before, const QKnxByteArray &after)
+{
+    m_bytes.replace(char(before), after.toByteArray());
+    return *this;
+}
+
+/*!
+    \overload replace()
+
+    Replaces every occurrence of the byte array \a before with the
+    byte array \a after.
+*/
+QKnxByteArray &QKnxByteArray::replace(const QKnxByteArray &before, const QKnxByteArray &after)
+{
+    m_bytes.replace(before.toByteArray(), after.toByteArray());
+    return *this;
+}
+
+/*!
+    \overload replace()
+
+    Replaces every occurrence of the character \a before with the
+    character \a after.
+*/
+QKnxByteArray &QKnxByteArray::replace(quint8 before, quint8 after)
+{
+    m_bytes.replace(char(before), char(after));
+    return *this;
+}
+
+/*!
+    Removes the number of bytes specified by \a len from the array, starting at
+    the index position \a pos, and returns a reference to the array.
+
+    If \a pos is out of range, nothing happens. If \a pos is valid, but \a pos
+    added to \a len is larger than the size of the array, the array is truncated
+    at the position \a pos.
+*/
+QKnxByteArray &QKnxByteArray::remove(int pos, int len)
+{
+    m_bytes.remove(pos, len);
+    return *this;
+}
+
+/*!
+    \fn quint8 *QKnxByteArray::data()
+
+    Returns a pointer to the data stored in the byte array. The
+    pointer can be used to access and modify the bytes that compose
+    the array. The data is null-terminated, which means that the number of
+    bytes in the returned character string is the value returned by size() plus
+    1 for the null-terminator.
+
+    The pointer remains valid until the byte array is reallocated or destroyed.
+*/
+
+/*!
+    \overload data()
+    \fn const quint8 *QKnxByteArray::data() const
+*/
+
+/*!
+    \fn const quint8 *QKnxByteArray::constData() const
+
+    Returns a pointer to the data stored in the byte array. The pointer can be
+    used to access the bytes that compose the array. The data is
+    null-terminated.
+
+    The pointer remains valid until the byte array is reallocated or destroyed.
+*/
+
+/*!
+    \overload indexOf()
+
+    Returns the index position of the first occurrence of the
+    character \a ch in the byte array, searching forward from the index
+    position \a from. Returns -1 if \a ch could not be found.
+*/
+int QKnxByteArray::indexOf(quint8 ch, int from) const
+{
+    return m_bytes.indexOf(char(ch), from);
+}
+
+/*!
+    Returns the index position of the first occurrence of the byte
+    array \a ba in this byte array, searching forward from the index position
+    \a from. Returns -1 if \a ba could not be found.
+*/
+int QKnxByteArray::indexOf(const QKnxByteArray &ba, int from) const
+{
+    return m_bytes.indexOf(ba.toByteArray(), from);
+}
+
+/*!
+    \overload lastIndexOf()
+
+    Returns the index position of the last occurrence of the character \a ch in
+    the byte array, searching backward from the index position \a from. If
+    \a from is -1 (the default), the search starts at the last byte (that is,
+    the value returned by size() minus 1). Returns -1 if \a ch cannot be found.
+*/
+int QKnxByteArray::lastIndexOf(quint8 ch, int from) const
+{
+    return m_bytes.lastIndexOf(char(ch), from);
+}
+
+/*!
+    Returns the index position of the last occurrence of the byte
+    array \a ba in this byte array, searching backward from the index
+    position \a from. If \a from is -1 (the default), the search
+    starts at the last byte. Returns -1 if \a ba could not be found.
+*/
+int QKnxByteArray::lastIndexOf(const QKnxByteArray &ba, int from) const
+{
+    return m_bytes.lastIndexOf(ba.toByteArray(), from);
+}
+
+/*!
+    \overload contains()
+    \fn bool QKnxByteArray::contains(quint8 ch) const
+
+    Returns \c true if the byte array contains the character \a ch;
+    otherwise returns \c false.
+*/
+
+/*!
+    \fn bool QKnxByteArray::contains(const QKnxByteArray &ba) const
+
+    Returns \c true if the byte array contains an occurrence of the byte
+    array \a ba; otherwise returns \c false.
+*/
+
+/*! \overload startsWith()
+
+    Returns \c true if this byte array starts with the character \a ch;
+    otherwise returns \c false.
+*/
+bool QKnxByteArray::startsWith(quint8 ch) const
+{
+    return m_bytes.startsWith(char(ch));
+}
+
+/*!
+    Returns \c true if this byte array starts with the byte array \a ba;
+    otherwise returns \c false.
+*/
+bool QKnxByteArray::startsWith(const QKnxByteArray &ba) const
+{
+    return m_bytes.startsWith(ba.toByteArray());
+}
+
+/*!
+    \overload endsWith()
+
+    Returns \c true if this byte array ends with the character \a ch;
+    otherwise returns \c false.
+*/
+bool QKnxByteArray::endsWith(quint8 ch) const
+{
+    return m_bytes.endsWith(char(ch));
+}
+
+/*!
+    Returns \c true if this byte array ends with the byte array \a ba;
+    otherwise returns \c false.
+*/
+bool QKnxByteArray::endsWith(const QKnxByteArray &ba) const
+{
+    return m_bytes.endsWith(ba.toByteArray());
+}
+
+/*!
+    Returns a hex encoded copy of the byte array. The hex encoding uses the
+    numbers 0-9 and the letters a-f.
+
+    If \a separator is not \c{\0}, the separator character is inserted between
+    the hex bytes.
+
+    Example:
+    \code
+        auto macAddress = QKnxByteArray::fromHex("123456abcdef");
+        macAddress.toHex(':'); // returns "12:34:56:ab:cd:ef"
+        macAddress.toHex(0);   // returns "123456abcdef"
+    \endcode
+*/
 QKnxByteArray QKnxByteArray::toHex(quint8 separator) const
 {
-    if (!d->size)
-        return QKnxByteArray();
+    if (!size())
+        return {};
 
-    const int length = separator ? (d->size * 3 - 1) : (d->size * 2);
-    QKnxByteArray hex(length, Qt::Uninitialized);
-    quint8 *hexData = hex.data();
-    const uchar *data = (const uchar *) d->data();
-    for (int i = 0, o = 0; i < d->size; ++i) {
-        hexData[o++] = QtKnxUtils::toHexLower(data[i] >> 4);
-        hexData[o++] = QtKnxUtils::toHexLower(data[i] & 0xf);
-
-        if ((separator) && (o < length))
-            hexData[o++] = separator;
-    }
+    QKnxByteArray hex(0, Qt::Uninitialized);
+    hex.m_bytes = m_bytes.toHex(separator);
     return hex;
 }
 
+/*!
+    \overload fromHex()
+*/
 QKnxByteArray QKnxByteArray::fromHex(const QByteArray &hexEncoded)
 {
-    return QKnxByteArray::fromHex(QKnxByteArray { hexEncoded.constData(), hexEncoded.size() });
+    QKnxByteArray hex(0, Qt::Uninitialized);
+    hex.m_bytes = QByteArray::fromHex(hexEncoded);
+    return hex;
 }
 
+/*!
+    Returns a decoded copy of the hex encoded array \a hexEncoded. Input is not
+    checked for validity; invalid characters in the input are skipped, enabling
+    the decoding process to continue with subsequent characters.
+*/
 QKnxByteArray QKnxByteArray::fromHex(const QKnxByteArray &hexEncoded)
 {
-    QKnxByteArray res((hexEncoded.size() + 1) / 2, Qt::Uninitialized);
-    uchar *result = (uchar *) res.data() + res.size();
-
-    bool odd_digit = true;
-    for (int i = hexEncoded.size() - 1; i >= 0; --i) {
-        uchar ch = uchar(hexEncoded.at(i));
-        int tmp = QtKnxUtils::fromHex(ch);
-        if (tmp == -1)
-            continue;
-        if (odd_digit) {
-            --result;
-            *result = tmp;
-            odd_digit = false;
-        } else {
-            *result |= tmp << 4;
-            odd_digit = true;
-        }
-    }
-
-    res.remove(0, result - (const uchar *) res.constData());
-    return res;
+    return QKnxByteArray::fromHex(hexEncoded.m_bytes);
 }
 
-QKnxByteArray::operator QByteArray() const
-{
-    return { (const char*) data(), size() };
-}
+/*!
+    \typedef QKnxByteArray::iterator
 
-QKnxByteArray QKnxByteArray::fromByteArray(const QByteArray &ba)
-{
-    return QKnxByteArray(ba.constData(), ba.size());
-}
+    This typedef provides an STL-style non-const iterator for QKnxByteArray.
+*/
+
+/*!
+    \typedef QKnxByteArray::const_iterator
+
+    This typedef provides an STL-style const iterator for QKnxByteArray.
+*/
+
+/*!
+    \internal
+    \typedef QKnxByteArray::Iterator
+*/
+
+/*!
+    \internal
+    \typedef QKnxByteArray::ConstIterator
+*/
+
+/*!
+    \typedef QKnxByteArray::reverse_iterator
+
+    This typedef provides an STL-style non-const reverse iterator for QKnxByteArray.
+*/
+
+/*!
+    \typedef QKnxByteArray::const_reverse_iterator
+
+    This typedef provides an STL-style const reverse iterator for QKnxByteArray.
+*/
+
+/*!
+    \fn QKnxByteArray::iterator QKnxByteArray::begin()
+
+    Returns an \l{STL-style iterators}{STL-style iterator} pointing to the first character in
+    the byte array.
+*/
+
+/*!
+    \overload begin()
+    \fn QKnxByteArray::const_iterator QKnxByteArray::begin() const
+*/
+
+/*!
+    \fn QKnxByteArray::const_iterator QKnxByteArray::cbegin() const
+
+    Returns a const \l{STL-style iterators}{STL-style iterator} pointing to the first character
+    in the byte array.
+*/
+
+/*!
+    \fn QKnxByteArray::const_iterator QKnxByteArray::constBegin() const
+
+    Returns a const \l{STL-style iterators}{STL-style iterator} pointing to the first character
+    in the byte array.
+*/
+
+/*!
+    \fn QKnxByteArray::iterator QKnxByteArray::end()
+
+    Returns an \l{STL-style iterators}{STL-style iterator} pointing to the imaginary character
+    after the last character in the byte array.
+*/
+
+/*!
+    \overload end()
+    \fn QKnxByteArray::const_iterator QKnxByteArray::end() const
+
+*/
+
+/*!
+    \fn QKnxByteArray::const_iterator QKnxByteArray::cend() const
+
+    Returns a const \l{STL-style iterators}{STL-style iterator} pointing to the imaginary
+    character after the last character in the list.
+*/
+
+/*!
+    \fn QKnxByteArray::const_iterator QKnxByteArray::constEnd() const
+
+    Returns a const \l{STL-style iterators}{STL-style iterator} pointing to the imaginary
+    character after the last character in the list.
+*/
+
+/*!
+    \fn QKnxByteArray::reverse_iterator QKnxByteArray::rbegin()
+
+    Returns a \l{STL-style iterators}{STL-style} reverse iterator pointing to the first
+    character in the byte array, in reverse order.
+*/
+
+/*!
+    \fn QKnxByteArray::reverse_iterator QKnxByteArray::rend()
+
+    Returns a \l{STL-style iterators}{STL-style} reverse iterator pointing to one past
+    the last character in the byte array, in reverse order.
+*/
+
+/*!
+    \overload rbegin()
+    \fn QKnxByteArray::const_reverse_iterator QKnxByteArray::rbegin() const
+*/
+
+/*!
+    \overload rend()
+    \fn QKnxByteArray::const_reverse_iterator QKnxByteArray::rend() const
+*/
+
+/*!
+    \fn QKnxByteArray::const_reverse_iterator QKnxByteArray::crbegin() const
+
+    Returns a const \l{STL-style iterators}{STL-style} reverse iterator pointing to the first
+    character in the byte array, in reverse order.
+*/
+
+/*!
+    \fn QKnxByteArray::const_reverse_iterator QKnxByteArray::crend() const
+
+    Returns a const \l{STL-style iterators}{STL-style} reverse iterator pointing to one
+    past the last character in the byte array, in reverse order.
+*/
+
+/*! \typedef QKnxByteArray::size_type
+    \internal
+*/
+
+/*! \typedef QKnxByteArray::difference_type
+    \internal
+*/
+
+/*! \typedef QKnxByteArray::const_reference
+    \internal
+*/
+
+/*! \typedef QKnxByteArray::const_pointer
+    \internal
+*/
+
+/*! \typedef QKnxByteArray::reference
+    \internal
+*/
+
+/*! \typedef QKnxByteArray::pointer
+    \internal
+*/
+
+/*! \typedef QKnxByteArray::value_type
+  \internal
+ */
+
+/*!
+    \overload operator+=()
+    \fn QKnxByteArray &QKnxByteArray::operator+=(quint8 ch)
+
+    Appends the character \a ch onto the end of this byte array and
+    returns a reference to this byte array.
+*/
+
+/*!
+    \fn QKnxByteArray &QKnxByteArray::operator+=(const QKnxByteArray &ba)
+
+    Appends the byte array \a ba onto the end of this byte array and
+    returns a reference to this byte array.
+*/
+
+/*!
+    \relates QKnxByteArray
+    \fn bool operator==(const QKnxByteArray &a1, const QKnxByteArray &a2)
+
+    Returns \c true if the byte array \a a1 is equal to the byte array \a a2;
+    otherwise returns \c false.
+*/
+
+/*!
+    \relates QKnxByteArray
+    \fn bool operator!=(const QKnxByteArray &a1, const QKnxByteArray &a2)
+
+    Returns \c true if the byte array \a a1 is not equal to the byte array \a a2;
+    otherwise returns \c false.
+*/
+
+/*!
+    \relates QKnxByteArray
+    \fn const QKnxByteArray operator+(const QKnxByteArray &a1, const QKnxByteArray &a2)
+
+    Returns a byte array that is the result of concatenating the byte
+    array \a a1 and byte array \a a2.
+*/
+
+/*!
+    \overload operator+()
+    \relates QKnxByteArray
+    \fn const QKnxByteArray operator+(const QKnxByteArray &ba, quint8 ch)
+
+    Returns a byte array that is the result of concatenating the byte
+    array \a ba and character \a ch.
+*/
+
+/*!
+    \overload operator+()
+    \relates QKnxByteArray
+    \fn const QKnxByteArray operator+(quint8 ch, const QKnxByteArray &ba)
+
+    Returns a byte array that is the result of concatenating the character
+    \a ch and byte array \a ba.
+*/
 
 /*!
     \relates QKnxByteArray
 
-    Writes the QKnxByteArray \a byteArray to the \a debug stream.
+    Writes the byte array \a byteArray to the \a debug stream.
 */
 QDebug operator<<(QDebug debug, const QKnxByteArray &byteArray)
 {
-    debug << static_cast<QByteArray> (byteArray); return debug;
+    debug << byteArray.toByteArray(); return debug;
 }
 
+/*!
+    \relates QKnxByteArray
+    \fn uint qHash(const QKnxByteArray &key, uint seed = 0)
+
+    Returns the hash value for the \a key, using \a seed to seed the calculation.
+*/
 uint qHash(const QKnxByteArray &ba, uint seed) Q_DECL_NOTHROW
 {
-    return qHash(static_cast<QByteArray> (ba), seed);
+    return qHash(ba.toByteArray(), seed);
 }
 
 QT_END_NAMESPACE

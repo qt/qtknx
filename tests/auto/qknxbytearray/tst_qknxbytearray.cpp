@@ -30,23 +30,13 @@
 #include <QtTest/QtTest>
 
 #include <QtKnx/qknxbytearray.h>
-//#include <qfile.h>
-//#include <qhash.h>
-//#include <limits.h>
-//#include <private/qtools_p.h>
 
 class tst_QKnxByteArray : public QObject
 {
     Q_OBJECT
 
-public:
-    tst_QKnxByteArray();
-
 private slots:
     void swap();
-    void constByteArray();
-    void leftJustified();
-    void rightJustified();
     void startsWith_data();
     void startsWith();
     void startsWith_char();
@@ -54,53 +44,21 @@ private slots:
     void endsWith();
     void endsWith_char();
     void reverseIterators();
-    void split_data();
-    void split();
     void chop_data();
     void chop();
     void prepend();
-    //void append();
-    //void insert();
-    //void insertExtended_data();
-    //void insertExtended();
-    //void remove_data();
-    //void remove();
-    //void replace_data();
-    //void replace();
-    //void replaceWithSpecifiedLength();
-    //void indexOf_data();
-    //void indexOf();
-    //void lastIndexOf_data();
-    //void lastIndexOf();
-
-//    void resizeAfterFromRawData();
-//    void appendAfterFromRawData();
-//    void toFromHex_data();
-//    void toFromHex();
-
-//    void compare_data();
-//    void compare();
-//    void compareCharStar_data();
-//    void compareCharStar();
-//
-//    void repeatedSignature() const;
-//    void repeated() const;
-//    void repeated_data() const;
-//
-//    void byteRefDetaching() const;
-//
-//    void reserve();
-//    void reserveExtended_data();
-//    void reserveExtended();
-//    void movablity_data();
-//    void movablity();
-//#if defined(Q_COMPILER_LAMBDA)
-//    void literals();
-//#endif
+    void remove_data();
+    void remove();
+    void replace_data();
+    void replace();
+    void replaceWithSpecifiedLength();
+    void indexOf_data();
+    void indexOf();
+    void lastIndexOf_data();
+    void lastIndexOf();
+    void toFromHex_data();
+    void toFromHex();
 };
-
-tst_QKnxByteArray::tst_QKnxByteArray()
-{}
 
 void tst_QKnxByteArray::swap()
 {
@@ -108,65 +66,6 @@ void tst_QKnxByteArray::swap()
     b1.swap(b2);
     QCOMPARE(b1, QKnxByteArray("b2", 2));
     QCOMPARE(b2, QKnxByteArray("b1", 2));
-}
-
-void tst_QKnxByteArray::constByteArray()
-{
-    const quint8 ptr[3] = { 'a', 'b', 'c' };
-    QKnxByteArray cba = QKnxByteArray::fromRawData(ptr, 3);
-    QVERIFY(cba.constData() == ptr);
-    cba.squeeze();
-    QVERIFY(cba.constData() == ptr);
-    cba.detach();
-    QVERIFY(cba.size() == 3);
-    QVERIFY(cba.capacity() == 3);
-    QVERIFY(cba.constData() != ptr);
-    QVERIFY(cba.constData()[0] == 'a');
-    QVERIFY(cba.constData()[1] == 'b');
-    QVERIFY(cba.constData()[2] == 'c');
-    QVERIFY(cba.constData()[3] == '\0');
-}
-
-void tst_QKnxByteArray::leftJustified()
-{
-    QKnxByteArray a({ 'A', 'B', 'C' });
-    QCOMPARE(a.leftJustified(5,'-'), QKnxByteArray("ABC--", 5));
-    QCOMPARE(a.leftJustified(4,'-'), QKnxByteArray("ABC-", 4));
-    QCOMPARE(a.leftJustified(4), QKnxByteArray("ABC ", 4));
-    QCOMPARE(a.leftJustified(3), QKnxByteArray("ABC", 3));
-    QCOMPARE(a.leftJustified(2), QKnxByteArray("ABC", 3));
-    QCOMPARE(a.leftJustified(1), QKnxByteArray("ABC", 3));
-    QCOMPARE(a.leftJustified(0), QKnxByteArray("ABC", 3));
-
-    QKnxByteArray n;
-    QVERIFY(!n.leftJustified(3).isNull());    // I expected true
-    QCOMPARE(a.leftJustified(4,' ',true), QKnxByteArray("ABC ", 4));
-    QCOMPARE(a.leftJustified(3,' ',true), QKnxByteArray("ABC", 3));
-    QCOMPARE(a.leftJustified(2,' ',true), QKnxByteArray("AB", 2));
-    QCOMPARE(a.leftJustified(1,' ',true), QKnxByteArray("A", 1));
-    QCOMPARE(a.leftJustified(0,' ',true), QKnxByteArray("", 0));
-}
-
-void tst_QKnxByteArray::rightJustified()
-{
-    QKnxByteArray a({ 'A', 'B', 'C' });
-    QCOMPARE(a.rightJustified(5,'-'),QKnxByteArray("--ABC", 5));
-    QCOMPARE(a.rightJustified(4,'-'),QKnxByteArray("-ABC", 4));
-    QCOMPARE(a.rightJustified(4),QKnxByteArray(" ABC", 4));
-    QCOMPARE(a.rightJustified(3),QKnxByteArray("ABC", 3));
-    QCOMPARE(a.rightJustified(2),QKnxByteArray("ABC", 3));
-    QCOMPARE(a.rightJustified(1),QKnxByteArray("ABC", 3));
-    QCOMPARE(a.rightJustified(0),QKnxByteArray("ABC", 3));
-
-    QKnxByteArray n;
-    QVERIFY(!n.rightJustified(3).isNull());  // I expected true
-    QCOMPARE(a.rightJustified(4,'-',true),QKnxByteArray("-ABC", 4));
-    QCOMPARE(a.rightJustified(4,' ',true),QKnxByteArray(" ABC", 4));
-    QCOMPARE(a.rightJustified(3,' ',true),QKnxByteArray("ABC", 3));
-    QCOMPARE(a.rightJustified(2,' ',true),QKnxByteArray("AB", 2));
-    QCOMPARE(a.rightJustified(1,' ',true),QKnxByteArray("A", 1));
-    QCOMPARE(a.rightJustified(0,' ',true),QKnxByteArray("", 0));
-    QCOMPARE(a, QKnxByteArray("ABC", 3));
 }
 
 void tst_QKnxByteArray::startsWith_data()
@@ -285,27 +184,6 @@ void tst_QKnxByteArray::reverseIterators()
     QVERIFY(std::equal(csr.rbegin(), csr.rend(), s.begin()));
 }
 
-void tst_QKnxByteArray::split_data()
-{
-    QTest::addColumn<QKnxByteArray>("sample");
-    QTest::addColumn<int>("size");
-
-    QTest::newRow("1") << QKnxByteArray({ "-rw-r--r--  1 0  0  519240 Jul  9  2002 bigfile", 48}) << 14;
-    QTest::newRow("2") << QKnxByteArray("abcde", 5) << 1;
-    QTest::newRow("one empty") << QKnxByteArray("", 0) << 1;
-    QTest::newRow("two empty") << QKnxByteArray(" ", 1) << 2;
-    QTest::newRow("three empty") << QKnxByteArray("  ", 2) << 3;
-}
-
-void tst_QKnxByteArray::split()
-{
-    QFETCH(QKnxByteArray, sample);
-    QFETCH(int, size);
-
-    auto list = sample.split(' ');
-    QCOMPARE(list.count(), size);
-}
-
 void tst_QKnxByteArray::chop_data()
 {
     QTest::addColumn<QKnxByteArray>("src");
@@ -329,7 +207,7 @@ void tst_QKnxByteArray::chop()
     QFETCH(int, choplength);
     QFETCH(QKnxByteArray, expected);
 
-    src.chop(choplength);
+    src = src.chop(choplength);
     QCOMPARE(src, expected);
 }
 
@@ -337,546 +215,371 @@ void tst_QKnxByteArray::prepend()
 {
     QKnxByteArray ba("foo", 3);
     QCOMPARE(ba.prepend(QKnxByteArray()), QKnxByteArray("foo", 3));
-    QCOMPARE(ba.prepend((const quint8*) "1", 1), QKnxByteArray("1foo", 4));
-    QCOMPARE(ba.prepend(QKnxByteArray("2", 1)), QKnxByteArray("21foo", 5));
-    QCOMPARE(ba.prepend('3'), QKnxByteArray("321foo", 6));
-    QCOMPARE(ba.prepend(-1, 'x'), QKnxByteArray("321foo", 6));
-    QCOMPARE(ba.prepend(3, 'x'), QKnxByteArray("xxx321foo", 9));
-    QCOMPARE(ba.prepend((const quint8*) "\0 ", 2),
-        QKnxByteArray::fromRawData((const quint8*) "\0 xxx321foo", 11));
+    QCOMPARE(ba.prepend(QKnxByteArray("1", 1)), QKnxByteArray("1foo", 4));
+    QCOMPARE(ba.prepend('2'), QKnxByteArray("21foo", 5));
+    QCOMPARE(ba.prepend(-1, 'x'), QKnxByteArray("21foo", 5));
+    QCOMPARE(ba.prepend(3, 'x'), QKnxByteArray("xxx21foo", 8));
 }
 
-//void tst_QKnxByteArray::insert()
-//{
-//    QKnxByteArray ba("Meal");
-//    QCOMPARE(ba.insert(1, QKnxByteArray("ontr")), QKnxByteArray("Montreal"));
-//    QCOMPARE(ba.insert(ba.size(), "foo"), QKnxByteArray("Montrealfoo"));
-//
-//    ba = QKnxByteArray("13");
-//    QCOMPARE(ba.insert(1, QKnxByteArray("2")), QKnxByteArray("123"));
-//
-//    ba = "ac";
-//    QCOMPARE(ba.insert(1, 'b'), QKnxByteArray("abc"));
-//    QCOMPARE(ba.size(), 3);
-//
-//    ba = "ac";
-//    QCOMPARE(ba.insert(-1, 3, 'x'), QKnxByteArray("ac"));
-//    QCOMPARE(ba.insert(1, 3, 'x'), QKnxByteArray("axxxc"));
-//    QCOMPARE(ba.insert(6, 3, 'x'), QKnxByteArray("axxxc xxx"));
-//    QCOMPARE(ba.size(), 9);
-//
-//    ba = "ikl";
-//    QCOMPARE(ba.insert(1, "j"), QKnxByteArray("ijkl"));
-//    QCOMPARE(ba.size(), 4);
-//
-//    ba = "ab";
-//    QCOMPARE(ba.insert(1, "\0X\0", 3), QKnxByteArray::fromRawData("a\0X\0b", 5));
-//    QCOMPARE(ba.size(), 5);
-//}
-//
-//void tst_QKnxByteArray::insertExtended_data()
-//{
-//    prependExtended_data();
-//}
-//
-//void tst_QKnxByteArray::insertExtended()
-//{
-//    QFETCH(QKnxByteArray, array);
-//    QCOMPARE(array.insert(1, "i"), QKnxByteArray("diata"));
-//    QCOMPARE(array.insert(1, 3, 'x'), QKnxByteArray("dxxxiata"));
-//    QCOMPARE(array.size(), 8);
-//}
-//
-//void tst_QKnxByteArray::remove_data()
-//{
-//    QTest::addColumn<QKnxByteArray>("src");
-//    QTest::addColumn<int>("position");
-//    QTest::addColumn<int>("length");
-//    QTest::addColumn<QKnxByteArray>("expected");
-//
-//    QTest::newRow("1") << QKnxByteArray("Montreal") << 1 << 4
-//                    << QKnxByteArray("Meal");
-//    QTest::newRow("2") << QKnxByteArray() << 10 << 10 << QKnxByteArray();
-//    QTest::newRow("3") << QKnxByteArray("hi") << 0 << 10 << QKnxByteArray();
-//    QTest::newRow("4") << QKnxByteArray("Montreal") << 4 << 100
-//                    << QKnxByteArray("Mont");
-//
-//    // index out of range
-//    QTest::newRow("5") << QKnxByteArray("Montreal") << 8 << 1
-//                    << QKnxByteArray("Montreal");
-//    QTest::newRow("6") << QKnxByteArray("Montreal") << 18 << 4
-//                    << QKnxByteArray("Montreal");
-//}
-//
-//void tst_QKnxByteArray::remove()
-//{
-//    QFETCH(QKnxByteArray, src);
-//    QFETCH(int, position);
-//    QFETCH(int, length);
-//    QFETCH(QKnxByteArray, expected);
-//    QCOMPARE(src.remove(position, length), expected);
-//}
-//
-//void tst_QKnxByteArray::replace_data()
-//{
-//    QTest::addColumn<QKnxByteArray>("src");
-//    QTest::addColumn<int>("pos");
-//    QTest::addColumn<int>("len");
-//    QTest::addColumn<QKnxByteArray>("after");
-//    QTest::addColumn<QKnxByteArray>("expected");
-//
-//    QTest::newRow("1") << QKnxByteArray("Say yes!") << 4 << 3
-//                    << QKnxByteArray("no") << QKnxByteArray("Say no!");
-//    QTest::newRow("2") << QKnxByteArray("rock and roll") << 5 << 3
-//                    << QKnxByteArray("&") << QKnxByteArray("rock & roll");
-//    QTest::newRow("3") << QKnxByteArray("foo") << 3 << 0 << QKnxByteArray("bar")
-//                    << QKnxByteArray("foobar");
-//    QTest::newRow("4") << QKnxByteArray() << 0 << 0 << QKnxByteArray() << QKnxByteArray();
-//    // index out of range
-//    QTest::newRow("5") << QKnxByteArray() << 3 << 0 << QKnxByteArray("hi")
-//                    << QKnxByteArray("   hi");
-//    // Optimized path
-//    QTest::newRow("6") << QKnxByteArray("abcdef") << 3 << 12 << QKnxByteArray("abcdefghijkl") << QKnxByteArray("abcabcdefghijkl");
-//    QTest::newRow("7") << QKnxByteArray("abcdef") << 3 << 4  << QKnxByteArray("abcdefghijkl") << QKnxByteArray("abcabcdefghijkl");
-//    QTest::newRow("8") << QKnxByteArray("abcdef") << 3 << 3  << QKnxByteArray("abcdefghijkl") << QKnxByteArray("abcabcdefghijkl");
-//    QTest::newRow("9") << QKnxByteArray("abcdef") << 3 << 2  << QKnxByteArray("abcdefghijkl") << QKnxByteArray("abcabcdefghijklf");
-//    QTest::newRow("10") << QKnxByteArray("abcdef") << 2 << 2  << QKnxByteArray("xx") << QKnxByteArray("abxxef");
-//}
-//
-//void tst_QKnxByteArray::replace()
-//{
-//    QFETCH(QKnxByteArray, src);
-//    QFETCH(int, pos);
-//    QFETCH(int, len);
-//    QFETCH(QKnxByteArray, after);
-//    QFETCH(QKnxByteArray, expected);
-//
-//    QKnxByteArray str1 = src;
-//    QKnxByteArray str2 = src;
-//
-//    QCOMPARE(str1.replace(pos, len, after).constData(), expected.constData());
-//    QCOMPARE(str2.replace(pos, len, after.data()), expected);
-//}
-//
-//void tst_QKnxByteArray::replaceWithSpecifiedLength()
-//{
-//    const char after[] = "zxc\0vbnmqwert";
-//    int lenAfter = 6;
-//    QKnxByteArray ba("abcdefghjk");
-//    ba.replace(0,2,after,lenAfter);
-//
-//    const char _expected[] = "zxc\0vbcdefghjk";
-//    QKnxByteArray expected(_expected,sizeof(_expected)-1);
-//    QCOMPARE(ba,expected);
-//}
-//
-//void tst_QKnxByteArray::indexOf_data()
-//{
-//    QTest::addColumn<QKnxByteArray>("haystack");
-//    QTest::addColumn<QKnxByteArray>("needle");
-//    QTest::addColumn<int>("startpos");
-//    QTest::addColumn<int>("expected");
-//
-//    QTest::newRow( "1" ) << QKnxByteArray("abc") << QKnxByteArray("a") << 0 << 0;
-//    QTest::newRow( "2" ) << QKnxByteArray("abc") << QKnxByteArray("A") << 0 << -1;
-//    QTest::newRow( "3" ) << QKnxByteArray("abc") << QKnxByteArray("a") << 1 << -1;
-//    QTest::newRow( "4" ) << QKnxByteArray("abc") << QKnxByteArray("A") << 1 << -1;
-//    QTest::newRow( "5" ) << QKnxByteArray("abc") << QKnxByteArray("b") << 0 << 1;
-//    QTest::newRow( "6" ) << QKnxByteArray("abc") << QKnxByteArray("B") << 0 << -1;
-//    QTest::newRow( "7" ) << QKnxByteArray("abc") << QKnxByteArray("b") << 1 << 1;
-//    QTest::newRow( "8" ) << QKnxByteArray("abc") << QKnxByteArray("B") << 1 << -1;
-//    QTest::newRow( "9" ) << QKnxByteArray("abc") << QKnxByteArray("b") << 2 << -1;
-//    QTest::newRow( "10" ) << QKnxByteArray("abc") << QKnxByteArray("c") << 0 << 2;
-//    QTest::newRow( "11" ) << QKnxByteArray("abc") << QKnxByteArray("C") << 0 << -1;
-//    QTest::newRow( "12" ) << QKnxByteArray("abc") << QKnxByteArray("c") << 1 << 2;
-//    QTest::newRow( "13" ) << QKnxByteArray("abc") << QKnxByteArray("C") << 1 << -1;
-//    QTest::newRow( "14" ) << QKnxByteArray("abc") << QKnxByteArray("c") << 2 << 2;
-//    QTest::newRow( "15" ) << QKnxByteArray("aBc") << QKnxByteArray("bc") << 0 << -1;
-//    QTest::newRow( "16" ) << QKnxByteArray("aBc") << QKnxByteArray("Bc") << 0 << 1;
-//    QTest::newRow( "17" ) << QKnxByteArray("aBc") << QKnxByteArray("bC") << 0 << -1;
-//    QTest::newRow( "18" ) << QKnxByteArray("aBc") << QKnxByteArray("BC") << 0 << -1;
-//
-//    static const char h19[] = {'x', 0x00, (char)0xe7, 0x25, 0x1c, 0x0a};
-//    static const char n19[] = {0x00, 0x00, 0x01, 0x00};
-//    QTest::newRow( "19" ) << QKnxByteArray(h19, sizeof(h19))
-//                          << QKnxByteArray(n19, sizeof(n19)) << 0 << -1;
-//
-//    QTest::newRow( "empty" ) << QKnxByteArray("") << QKnxByteArray("x") << 0 << -1;
-//    QTest::newRow( "null" ) << QKnxByteArray() << QKnxByteArray("x") << 0 << -1;
-//    QTest::newRow( "null-in-null") << QKnxByteArray() << QKnxByteArray() << 0 << 0;
-//    QTest::newRow( "empty-in-null") << QKnxByteArray() << QKnxByteArray("") << 0 << 0;
-//    QTest::newRow( "null-in-empty") << QKnxByteArray("") << QKnxByteArray() << 0 << 0;
-//    QTest::newRow( "empty-in-empty") << QKnxByteArray("") << QKnxByteArray("") << 0 << 0;
-//
-//    QKnxByteArray veryBigHaystack(500, 'a');
-//    veryBigHaystack += 'B';
-//    QTest::newRow("BoyerMooreStressTest") << veryBigHaystack << veryBigHaystack << 0 << 0;
-//    QTest::newRow("BoyerMooreStressTest2") << QKnxByteArray(veryBigHaystack + 'c') <<  QKnxByteArray(veryBigHaystack) << 0 << 0;
-//    QTest::newRow("BoyerMooreStressTest3") << QKnxByteArray('c' + veryBigHaystack) <<  QKnxByteArray(veryBigHaystack) << 0 << 1;
-//    QTest::newRow("BoyerMooreStressTest4") << QKnxByteArray(veryBigHaystack) <<  QKnxByteArray(veryBigHaystack + 'c') << 0 << -1;
-//    QTest::newRow("BoyerMooreStressTest5") << QKnxByteArray(veryBigHaystack) <<  QKnxByteArray('c' + veryBigHaystack) << 0 << -1;
-//    QTest::newRow("BoyerMooreStressTest6") << QKnxByteArray('d' + veryBigHaystack) <<  QKnxByteArray('c' + veryBigHaystack) << 0 << -1;
-//    QTest::newRow("BoyerMooreStressTest7") << QKnxByteArray(veryBigHaystack + 'c') <<  QKnxByteArray('c' + veryBigHaystack) << 0 << -1;
-//}
-//
-//void tst_QKnxByteArray::indexOf()
-//{
-//    QFETCH( QKnxByteArray, haystack );
-//    QFETCH( QKnxByteArray, needle );
-//    QFETCH( int, startpos );
-//    QFETCH( int, expected );
-//
-//    bool hasNull = needle.contains('\0');
-//
-//    QCOMPARE( haystack.indexOf(needle, startpos), expected );
-//    if (!hasNull)
-//        QCOMPARE( haystack.indexOf(needle.data(), startpos), expected );
-//    if (needle.size() == 1)
-//        QCOMPARE( haystack.indexOf(needle.at(0), startpos), expected );
-//
-//    if (startpos == 0) {
-//        QCOMPARE( haystack.indexOf(needle), expected );
-//        if (!hasNull)
-//            QCOMPARE( haystack.indexOf(needle.data()), expected );
-//        if (needle.size() == 1)
-//            QCOMPARE( haystack.indexOf(needle.at(0)), expected );
-//    }
-//}
-//
-//void tst_QKnxByteArray::lastIndexOf_data()
-//{
-//    QTest::addColumn<QKnxByteArray>("haystack");
-//    QTest::addColumn<QKnxByteArray>("needle");
-//    QTest::addColumn<int>("startpos");
-//    QTest::addColumn<int>("expected");
-//
-//    QTest::newRow( "1" ) << QKnxByteArray("abc") << QKnxByteArray("a") << 0 << 0;
-//    QTest::newRow( "2" ) << QKnxByteArray("abc") << QKnxByteArray("A") << 0 << -1;
-//    QTest::newRow( "3" ) << QKnxByteArray("abc") << QKnxByteArray("a") << 1 << 0;
-//    QTest::newRow( "4" ) << QKnxByteArray("abc") << QKnxByteArray("A") << 1 << -1;
-//    QTest::newRow( "5" ) << QKnxByteArray("abc") << QKnxByteArray("a") << -1 << 0;
-//    QTest::newRow( "6" ) << QKnxByteArray("abc") << QKnxByteArray("b") << 0 << -1;
-//    QTest::newRow( "7" ) << QKnxByteArray("abc") << QKnxByteArray("B") << 0 << -1;
-//    QTest::newRow( "8" ) << QKnxByteArray("abc") << QKnxByteArray("b") << 1 << 1;
-//    QTest::newRow( "9" ) << QKnxByteArray("abc") << QKnxByteArray("B") << 1 << -1;
-//    QTest::newRow( "10" ) << QKnxByteArray("abc") << QKnxByteArray("b") << 2 << 1;
-//    QTest::newRow( "11" ) << QKnxByteArray("abc") << QKnxByteArray("b") << -1 << 1;
-//    QTest::newRow( "12" ) << QKnxByteArray("abc") << QKnxByteArray("c") << 0 << -1;
-//    QTest::newRow( "13" ) << QKnxByteArray("abc") << QKnxByteArray("C") << 0 << -1;
-//    QTest::newRow( "14" ) << QKnxByteArray("abc") << QKnxByteArray("c") << 1 << -1;
-//    QTest::newRow( "15" ) << QKnxByteArray("abc") << QKnxByteArray("C") << 1 << -1;
-//    QTest::newRow( "16" ) << QKnxByteArray("abc") << QKnxByteArray("c") << 2 << 2;
-//    QTest::newRow( "17" ) << QKnxByteArray("abc") << QKnxByteArray("c") << -1 << 2;
-//    QTest::newRow( "18" ) << QKnxByteArray("aBc") << QKnxByteArray("bc") << 0 << -1;
-//    QTest::newRow( "19" ) << QKnxByteArray("aBc") << QKnxByteArray("Bc") << 0 << -1;
-//    QTest::newRow( "20" ) << QKnxByteArray("aBc") << QKnxByteArray("Bc") << 2 << 1;
-//    QTest::newRow( "21" ) << QKnxByteArray("aBc") << QKnxByteArray("Bc") << 1 << 1;
-//    QTest::newRow( "22" ) << QKnxByteArray("aBc") << QKnxByteArray("Bc") << -1 << 1;
-//    QTest::newRow( "23" ) << QKnxByteArray("aBc") << QKnxByteArray("bC") << 0 << -1;
-//    QTest::newRow( "24" ) << QKnxByteArray("aBc") << QKnxByteArray("BC") << 0 << -1;
-//
-//    static const char h25[] = {0x00, (char)0xbc, 0x03, 0x10, 0x0a };
-//    static const char n25[] = {0x00, 0x00, 0x01, 0x00};
-//    QTest::newRow( "25" ) << QKnxByteArray(h25, sizeof(h25))
-//                          << QKnxByteArray(n25, sizeof(n25)) << 0 << -1;
-//
-//    QTest::newRow( "empty" ) << QKnxByteArray("") << QKnxByteArray("x") << -1 << -1;
-//    QTest::newRow( "null" ) << QKnxByteArray() << QKnxByteArray("x") << -1 << -1;
-//    QTest::newRow( "null-in-null") << QKnxByteArray() << QKnxByteArray() << -1 << 0;
-//    QTest::newRow( "empty-in-null") << QKnxByteArray() << QKnxByteArray("") << -1 << 0;
-//    QTest::newRow( "null-in-empty") << QKnxByteArray("") << QKnxByteArray() << -1 << 0;
-//    QTest::newRow( "empty-in-empty") << QKnxByteArray("") << QKnxByteArray("") << -1 << 0;
-//}
-//
-//void tst_QKnxByteArray::lastIndexOf()
-//{
-//    QFETCH( QKnxByteArray, haystack );
-//    QFETCH( QKnxByteArray, needle );
-//    QFETCH( int, startpos );
-//    QFETCH( int, expected );
-//
-//    bool hasNull = needle.contains('\0');
-//
-//    QCOMPARE( haystack.lastIndexOf(needle, startpos), expected );
-//    if (!hasNull)
-//        QCOMPARE( haystack.lastIndexOf(needle.data(), startpos), expected );
-//    if (needle.size() == 1)
-//        QCOMPARE( haystack.lastIndexOf(needle.at(0), startpos), expected );
-//
-//    if (startpos == -1) {
-//        QCOMPARE( haystack.lastIndexOf(needle), expected );
-//        if (!hasNull)
-//            QCOMPARE( haystack.lastIndexOf(needle.data()), expected );
-//        if (needle.size() == 1)
-//            QCOMPARE( haystack.lastIndexOf(needle.at(0)), expected );
-//    }
-//}
-//
-//void tst_QKnxByteArray::number()
-//{
-//    QCOMPARE(QString(QKnxByteArray::number((quint64) 0)),
-//             QString(QKnxByteArray("0")));
-//    QCOMPARE(QString(QKnxByteArray::number(Q_UINT64_C(0xFFFFFFFFFFFFFFFF))),
-//             QString(QKnxByteArray("18446744073709551615")));
-//    QCOMPARE(QString(QKnxByteArray::number(Q_INT64_C(0xFFFFFFFFFFFFFFFF))),
-//             QString(QKnxByteArray("-1")));
-//    QCOMPARE(QString(QKnxByteArray::number(qint64(0))),
-//             QString(QKnxByteArray("0")));
-//    QCOMPARE(QString(QKnxByteArray::number(Q_INT64_C(0x7FFFFFFFFFFFFFFF))),
-//             QString(QKnxByteArray("9223372036854775807")));
-//    QCOMPARE(QString(QKnxByteArray::number(Q_INT64_C(0x8000000000000000))),
-//             QString(QKnxByteArray("-9223372036854775808")));
-//}
-//
-//// defined later
-//extern const char globalChar;
-//
-//void tst_QKnxByteArray::toInt_data()
-//{
-//    QTest::addColumn<QKnxByteArray>("string");
-//    QTest::addColumn<int>("base");
-//    QTest::addColumn<int>("expectednumber");
-//    QTest::addColumn<bool>("expectedok");
-//
-//    QTest::newRow("base 10") << QKnxByteArray("100") << 10 << int(100) << true;
-//    QTest::newRow("base 16-1") << QKnxByteArray("100") << 16 << int(256) << true;
-//    QTest::newRow("base 16-2") << QKnxByteArray("0400") << 16 << int(1024) << true;
-//    QTest::newRow("base 2") << QKnxByteArray("1111") << 2 << int(15) << true;
-//    QTest::newRow("base 8") << QKnxByteArray("100") << 8 << int(64) << true;
-//    QTest::newRow("base 0-1") << QKnxByteArray("0x10") << 0 << int(16) << true;
-//    QTest::newRow("base 0-2") << QKnxByteArray("10") << 0 << int(10) << true;
-//    QTest::newRow("base 0-3") << QKnxByteArray("010") << 0 << int(8) << true;
-//    QTest::newRow("empty") << QKnxByteArray() << 0 << int(0) << false;
-//
-//    // using fromRawData
-//    QTest::newRow("raw1") << QKnxByteArray::fromRawData("1", 1) << 10 << 1 << true;
-//    QTest::newRow("raw2") << QKnxByteArray::fromRawData("1foo", 1) << 10 << 1 << true;
-//    QTest::newRow("raw3") << QKnxByteArray::fromRawData("12", 1) << 10 << 1 << true;
-//    QTest::newRow("raw4") << QKnxByteArray::fromRawData("123456789", 1) << 10 << 1 << true;
-//    QTest::newRow("raw5") << QKnxByteArray::fromRawData("123456789", 2) << 10 << 12 << true;
-//
-//    QTest::newRow("raw-static") << QKnxByteArray::fromRawData(&globalChar, 1) << 10 << 1 << true;
-//}
-//
-//void tst_QKnxByteArray::toInt()
-//{
-//    QFETCH( QKnxByteArray, string );
-//    QFETCH( int, base );
-//    QFETCH( int, expectednumber );
-//    QFETCH( bool, expectedok );
-//
-//    bool ok;
-//    int number = string.toInt(&ok, base);
-//
-//    QCOMPARE( ok, expectedok );
-//    QCOMPARE( number, expectednumber );
-//}
-//
-//void tst_QKnxByteArray::toULong_data()
-//{
-//    QTest::addColumn<QKnxByteArray>("str");
-//    QTest::addColumn<int>("base");
-//    QTest::addColumn<ulong>("result");
-//    QTest::addColumn<bool>("ok");
-//
-//    ulong LongMaxPlusOne = (ulong)LONG_MAX + 1;
-//    QTest::newRow("LONG_MAX+1") << QString::number(LongMaxPlusOne).toLatin1() << 10 << LongMaxPlusOne << true;
-//    QTest::newRow("default") << QKnxByteArray() << 10 << 0UL << false;
-//    QTest::newRow("empty") << QKnxByteArray("") << 10 << 0UL << false;
-//    QTest::newRow("ulong1") << QKnxByteArray("3234567890") << 10 << 3234567890UL << true;
-//    QTest::newRow("ulong2") << QKnxByteArray("fFFfFfFf") << 16 << 0xFFFFFFFFUL << true;
-//}
-//
-//void tst_QKnxByteArray::toULong()
-//{
-//    QFETCH(QKnxByteArray, str);
-//    QFETCH(int, base);
-//    QFETCH(ulong, result);
-//    QFETCH(bool, ok);
-//
-//    bool b;
-//    QCOMPARE(str.toULong(0, base), result);
-//    QCOMPARE(str.toULong(&b, base), result);
-//    QCOMPARE(b, ok);
-//}
-//
-//void tst_QKnxByteArray::toULongLong_data()
-//{
-//    QTest::addColumn<QKnxByteArray>("str");
-//    QTest::addColumn<int>("base");
-//    QTest::addColumn<qulonglong>("result");
-//    QTest::addColumn<bool>("ok");
-//
-//    QTest::newRow("default") << QKnxByteArray() << 10 << (qulonglong)0 << false;
-//    QTest::newRow("out of base bound") << QKnxByteArray("c") << 10 << (qulonglong)0 << false;
-//
-//}
-//
-//void tst_QKnxByteArray::toULongLong()
-//{
-//    QFETCH(QKnxByteArray, str);
-//    QFETCH(int, base);
-//    QFETCH(qulonglong, result);
-//    QFETCH(bool, ok);
-//
-//    bool b;
-//    QCOMPARE(str.toULongLong(0, base), result);
-//    QCOMPARE(str.toULongLong(&b, base), result);
-//    QCOMPARE(b, ok);
-//}
-//
-//static bool checkSize(size_t value, size_t min)
-//{
-//    return value >= min && value <= INT_MAX;
-//}
-//
-//void tst_QKnxByteArray::resizeAfterFromRawData()
-//{
-//    QKnxByteArray buffer("hello world");
-//
-//    QKnxByteArray array = QKnxByteArray::fromRawData(buffer.constData(), buffer.size());
-//    QVERIFY(array.constData() == buffer.constData());
-//    array.resize(5);
-//    QVERIFY(array.constData() == buffer.constData());
-//}
-//
-//void tst_QKnxByteArray::appendAfterFromRawData()
-//{
-//    QKnxByteArray arr;
-//    {
-//        char data[] = "X";
-//        arr += QKnxByteArray::fromRawData(data, sizeof(data));
-//        data[0] = 'Y';
-//    }
-//    QCOMPARE(arr.at(0), 'X');
-//}
-//
-//void tst_QKnxByteArray::toFromHex_data()
-//{
-//    QTest::addColumn<QKnxByteArray>("str");
-//    QTest::addColumn<char>("sep");
-//    QTest::addColumn<QKnxByteArray>("hex");
-//    QTest::addColumn<QKnxByteArray>("hex_alt1");
-//
-//    QTest::newRow("Qt is great! (default)")
-//        << QKnxByteArray("Qt is great!")
-//        << '\0'
-//        << QKnxByteArray("517420697320677265617421")
-//        << QKnxByteArray("51 74 20 69 73 20 67 72 65 61 74 21");
-//
-//    QTest::newRow("Qt is great! (with space)")
-//        << QKnxByteArray("Qt is great!")
-//        << ' '
-//        << QKnxByteArray("51 74 20 69 73 20 67 72 65 61 74 21")
-//        << QKnxByteArray("51 74 20 69 73 20 67 72 65 61 74 21");
-//
-//    QTest::newRow("Qt is great! (with minus)")
-//        << QKnxByteArray("Qt is great!")
-//        << '-'
-//        << QKnxByteArray("51-74-20-69-73-20-67-72-65-61-74-21")
-//        << QKnxByteArray("51-74-20-69-73-20-67-72-65-61-74-21");
-//
-//    QTest::newRow("Qt is so great!")
-//        << QKnxByteArray("Qt is so great!")
-//        << '\0'
-//        << QKnxByteArray("517420697320736f20677265617421")
-//        << QKnxByteArray("51 74 20 69 73 20 73 6f 20 67 72 65 61 74 21");
-//
-//    QTest::newRow("default-constructed")
-//        << QKnxByteArray()
-//        << '\0'
-//        << QKnxByteArray()
-//        << QKnxByteArray();
-//
-//    QTest::newRow("default-constructed (with space)")
-//        << QKnxByteArray()
-//        << ' '
-//        << QKnxByteArray()
-//        << QKnxByteArray();
-//
-//    QTest::newRow("empty")
-//        << QKnxByteArray("")
-//        << '\0'
-//        << QKnxByteArray("")
-//        << QKnxByteArray("");
-//
-//    QTest::newRow("empty (with space)")
-//        << QKnxByteArray("")
-//        << ' '
-//        << QKnxByteArray("")
-//        << QKnxByteArray("");
-//
-//    QTest::newRow("array-of-null")
-//        << QKnxByteArray("\0", 1)
-//        << '\0'
-//        << QKnxByteArray("00")
-//        << QKnxByteArray("0");
-//
-//    QTest::newRow("no-leading-zero")
-//        << QKnxByteArray("\xf")
-//        << '\0'
-//        << QKnxByteArray("0f")
-//        << QKnxByteArray("f");
-//
-//    QTest::newRow("single-byte")
-//        << QKnxByteArray("\xaf")
-//        << '\0'
-//        << QKnxByteArray("af")
-//        << QKnxByteArray("xaf");
-//
-//    QTest::newRow("no-leading-zero")
-//        << QKnxByteArray("\xd\xde\xad\xc0\xde")
-//        << '\0'
-//        << QKnxByteArray("0ddeadc0de")
-//        << QKnxByteArray("ddeadc0de");
-//
-//    QTest::newRow("garbage")
-//        << QKnxByteArray("\xC\xde\xeC\xea\xee\xDe\xee\xee")
-//        << '\0'
-//        << QKnxByteArray("0cdeeceaeedeeeee")
-//        << QKnxByteArray("Code less. Create more. Deploy everywhere.");
-//
-//    QTest::newRow("under-defined-1")
-//        << QKnxByteArray("\x1\x23")
-//        << '\0'
-//        << QKnxByteArray("0123")
-//        << QKnxByteArray("x123");
-//
-//    QTest::newRow("under-defined-2")
-//        << QKnxByteArray("\x12\x34")
-//        << '\0'
-//        << QKnxByteArray("1234")
-//        << QKnxByteArray("x1234");
-//}
-//
-//void tst_QKnxByteArray::toFromHex()
-//{
-//    QFETCH(QKnxByteArray, str);
-//    QFETCH(char,       sep);
-//    QFETCH(QKnxByteArray, hex);
-//    QFETCH(QKnxByteArray, hex_alt1);
-//
-//    if (sep == 0) {
-//        const QKnxByteArray th = str.toHex();
-//        QCOMPARE(th.size(), hex.size());
-//        QCOMPARE(th, hex);
-//    }
-//
-//    {
-//        const QKnxByteArray th = str.toHex(sep);
-//        QCOMPARE(th.size(), hex.size());
-//        QCOMPARE(th, hex);
-//    }
-//
-//    {
-//        const QKnxByteArray fh = QKnxByteArray::fromHex(hex);
-//        QCOMPARE(fh.size(), str.size());
-//        QCOMPARE(fh, str);
-//    }
-//
-//    QCOMPARE(QKnxByteArray::fromHex(hex_alt1), str);
-//}
-//
+void tst_QKnxByteArray::remove_data()
+{
+    QTest::addColumn<QKnxByteArray>("src");
+    QTest::addColumn<int>("position");
+    QTest::addColumn<int>("length");
+    QTest::addColumn<QKnxByteArray>("expected");
+
+    QTest::newRow("1") << QKnxByteArray::fromByteArray("Montreal") << 1 << 4
+                    << QKnxByteArray::fromByteArray("Meal");
+    QTest::newRow("2") << QKnxByteArray() << 10 << 10 << QKnxByteArray();
+    QTest::newRow("3") << QKnxByteArray::fromByteArray("hi") << 0 << 10 << QKnxByteArray();
+    QTest::newRow("4") << QKnxByteArray::fromByteArray("Montreal") << 4 << 100
+                    << QKnxByteArray::fromByteArray("Mont");
+
+    // index out of range
+    QTest::newRow("5") << QKnxByteArray::fromByteArray("Montreal") << 8 << 1
+                    << QKnxByteArray::fromByteArray("Montreal");
+    QTest::newRow("6") << QKnxByteArray::fromByteArray("Montreal") << 18 << 4
+                    << QKnxByteArray::fromByteArray("Montreal");
+}
+
+void tst_QKnxByteArray::remove()
+{
+    QFETCH(QKnxByteArray, src);
+    QFETCH(int, position);
+    QFETCH(int, length);
+    QFETCH(QKnxByteArray, expected);
+    QCOMPARE(src.remove(position, length), expected);
+}
+
+void tst_QKnxByteArray::replace_data()
+{
+    QTest::addColumn<QKnxByteArray>("src");
+    QTest::addColumn<int>("pos");
+    QTest::addColumn<int>("len");
+    QTest::addColumn<QKnxByteArray>("after");
+    QTest::addColumn<QKnxByteArray>("expected");
+
+    QTest::newRow("1") << QKnxByteArray::fromByteArray("Say yes!") << 4 << 3
+        << QKnxByteArray::fromByteArray("no") << QKnxByteArray::fromByteArray("Say no!");
+    QTest::newRow("2") << QKnxByteArray::fromByteArray("rock and roll") << 5 << 3
+        << QKnxByteArray::fromByteArray("&") << QKnxByteArray::fromByteArray("rock & roll");
+    QTest::newRow("3") << QKnxByteArray::fromByteArray("foo") << 3 << 0 << QKnxByteArray::fromByteArray("bar")
+        << QKnxByteArray::fromByteArray("foobar");
+    QTest::newRow("4") << QKnxByteArray() << 0 << 0 << QKnxByteArray() << QKnxByteArray();
+    // index out of range
+    QTest::newRow("5") << QKnxByteArray() << 3 << 0 << QKnxByteArray::fromByteArray("hi")
+        << QKnxByteArray::fromByteArray("   hi");
+    // Optimized path
+    QTest::newRow("6") << QKnxByteArray::fromByteArray("abcdef") << 3 << 12
+        << QKnxByteArray::fromByteArray("abcdefghijkl")
+        << QKnxByteArray::fromByteArray("abcabcdefghijkl");
+    QTest::newRow("7") << QKnxByteArray::fromByteArray("abcdef") << 3 << 4
+        << QKnxByteArray::fromByteArray("abcdefghijkl")
+        << QKnxByteArray::fromByteArray("abcabcdefghijkl");
+    QTest::newRow("8") << QKnxByteArray::fromByteArray("abcdef") << 3 << 3
+        << QKnxByteArray::fromByteArray("abcdefghijkl")
+        << QKnxByteArray::fromByteArray("abcabcdefghijkl");
+    QTest::newRow("9") << QKnxByteArray::fromByteArray("abcdef") << 3 << 2
+        << QKnxByteArray::fromByteArray("abcdefghijkl")
+        << QKnxByteArray::fromByteArray("abcabcdefghijklf");
+    QTest::newRow("10") << QKnxByteArray::fromByteArray("abcdef") << 2 << 2
+        << QKnxByteArray::fromByteArray("xx") << QKnxByteArray::fromByteArray("abxxef");
+}
+
+void tst_QKnxByteArray::replace()
+{
+    QFETCH(QKnxByteArray, src);
+    QFETCH(int, pos);
+    QFETCH(int, len);
+    QFETCH(QKnxByteArray, after);
+    QFETCH(QKnxByteArray, expected);
+
+    QKnxByteArray str1 = src;
+    QKnxByteArray str2 = src;
+
+    QCOMPARE(str1.replace(pos, len, after), expected);
+}
+
+void tst_QKnxByteArray::replaceWithSpecifiedLength()
+{
+    const char after[] = "zxc\0vbnmqwert";
+    int lenAfter = 6;
+    QKnxByteArray ba("abcdefghjk", 10);
+    ba.replace(0, 2, QKnxByteArray(after, lenAfter));
+
+    const char _expected[] = "zxc\0vbcdefghjk";
+    QKnxByteArray expected(_expected, sizeof(_expected) - 1);
+    QCOMPARE(ba,expected);
+}
+
+void tst_QKnxByteArray::indexOf_data()
+{
+    QTest::addColumn<QKnxByteArray>("haystack");
+    QTest::addColumn<QKnxByteArray>("needle");
+    QTest::addColumn<int>("startpos");
+    QTest::addColumn<int>("expected");
+
+    QTest::newRow( "1" ) << QKnxByteArray("abc", 3) << QKnxByteArray("a", 1) << 0 << 0;
+    QTest::newRow( "2" ) << QKnxByteArray("abc", 3) << QKnxByteArray("A", 1) << 0 << -1;
+    QTest::newRow( "3" ) << QKnxByteArray("abc", 3) << QKnxByteArray("a", 1) << 1 << -1;
+    QTest::newRow( "4" ) << QKnxByteArray("abc", 3) << QKnxByteArray("A", 1) << 1 << -1;
+    QTest::newRow( "5" ) << QKnxByteArray("abc", 3) << QKnxByteArray("b", 1) << 0 << 1;
+    QTest::newRow( "6" ) << QKnxByteArray("abc", 3) << QKnxByteArray("B", 1) << 0 << -1;
+    QTest::newRow( "7" ) << QKnxByteArray("abc", 3) << QKnxByteArray("b", 1) << 1 << 1;
+    QTest::newRow( "8" ) << QKnxByteArray("abc", 3) << QKnxByteArray("B", 1) << 1 << -1;
+    QTest::newRow( "9" ) << QKnxByteArray("abc", 3) << QKnxByteArray("b", 1) << 2 << -1;
+    QTest::newRow( "10" ) << QKnxByteArray("abc", 3) << QKnxByteArray("c", 1) << 0 << 2;
+    QTest::newRow( "11" ) << QKnxByteArray("abc", 3) << QKnxByteArray("C", 1) << 0 << -1;
+    QTest::newRow( "12" ) << QKnxByteArray("abc", 3) << QKnxByteArray("c", 1) << 1 << 2;
+    QTest::newRow( "13" ) << QKnxByteArray("abc", 3) << QKnxByteArray("C", 1) << 1 << -1;
+    QTest::newRow( "14" ) << QKnxByteArray("abc", 3) << QKnxByteArray("c", 1) << 2 << 2;
+    QTest::newRow( "15" ) << QKnxByteArray("aBc", 3) << QKnxByteArray("bc", 2) << 0 << -1;
+    QTest::newRow( "16" ) << QKnxByteArray("aBc", 3) << QKnxByteArray("Bc", 2) << 0 << 1;
+    QTest::newRow( "17" ) << QKnxByteArray("aBc", 3) << QKnxByteArray("bC", 2) << 0 << -1;
+    QTest::newRow( "18" ) << QKnxByteArray("aBc", 3) << QKnxByteArray("BC", 2) << 0 << -1;
+
+    static const char h19[] = {'x', 0x00, (char)0xe7, 0x25, 0x1c, 0x0a};
+    static const char n19[] = {0x00, 0x00, 0x01, 0x00};
+    QTest::newRow( "19" ) << QKnxByteArray(h19, sizeof(h19))
+                          << QKnxByteArray(n19, sizeof(n19)) << 0 << -1;
+
+    QTest::newRow( "empty" ) << QKnxByteArray("", 0) << QKnxByteArray("x", 1) << 0 << -1;
+    QTest::newRow( "null" ) << QKnxByteArray() << QKnxByteArray("x", 1) << 0 << -1;
+    QTest::newRow( "null-in-null") << QKnxByteArray() << QKnxByteArray() << 0 << 0;
+    QTest::newRow( "empty-in-null") << QKnxByteArray() << QKnxByteArray("", 0) << 0 << 0;
+    QTest::newRow( "null-in-empty") << QKnxByteArray("", 0) << QKnxByteArray() << 0 << 0;
+    QTest::newRow( "empty-in-empty") << QKnxByteArray("", 0) << QKnxByteArray("", 0) << 0 << 0;
+
+    QKnxByteArray veryBigHaystack(500, 'a');
+    veryBigHaystack += 'B';
+    QTest::newRow("BoyerMooreStressTest") << veryBigHaystack << veryBigHaystack << 0 << 0;
+    QTest::newRow("BoyerMooreStressTest2") << QKnxByteArray(veryBigHaystack + 'c') <<  QKnxByteArray(veryBigHaystack) << 0 << 0;
+    QTest::newRow("BoyerMooreStressTest3") << QKnxByteArray('c' + veryBigHaystack) <<  QKnxByteArray(veryBigHaystack) << 0 << 1;
+    QTest::newRow("BoyerMooreStressTest4") << QKnxByteArray(veryBigHaystack) <<  QKnxByteArray(veryBigHaystack + 'c') << 0 << -1;
+    QTest::newRow("BoyerMooreStressTest5") << QKnxByteArray(veryBigHaystack) <<  QKnxByteArray('c' + veryBigHaystack) << 0 << -1;
+    QTest::newRow("BoyerMooreStressTest6") << QKnxByteArray('d' + veryBigHaystack) <<  QKnxByteArray('c' + veryBigHaystack) << 0 << -1;
+    QTest::newRow("BoyerMooreStressTest7") << QKnxByteArray(veryBigHaystack + 'c') <<  QKnxByteArray('c' + veryBigHaystack) << 0 << -1;
+}
+
+void tst_QKnxByteArray::indexOf()
+{
+    QFETCH( QKnxByteArray, haystack );
+    QFETCH( QKnxByteArray, needle );
+    QFETCH( int, startpos );
+    QFETCH( int, expected );
+
+    bool hasNull = needle.contains('\0');
+
+    QCOMPARE( haystack.indexOf(needle, startpos), expected );
+    if (!hasNull)
+        QCOMPARE( haystack.indexOf(needle, startpos), expected );
+    if (needle.size() == 1)
+        QCOMPARE( haystack.indexOf(needle.at(0), startpos), expected );
+
+    if (startpos == 0) {
+        QCOMPARE( haystack.indexOf(needle), expected );
+        if (!hasNull)
+            QCOMPARE( haystack.indexOf(needle), expected );
+        if (needle.size() == 1)
+            QCOMPARE( haystack.indexOf(needle.at(0)), expected );
+    }
+}
+
+void tst_QKnxByteArray::lastIndexOf_data()
+{
+    QTest::addColumn<QKnxByteArray>("haystack");
+    QTest::addColumn<QKnxByteArray>("needle");
+    QTest::addColumn<int>("startpos");
+    QTest::addColumn<int>("expected");
+
+    QTest::newRow( "1" ) << QKnxByteArray("abc", 3) << QKnxByteArray("a", 1) << 0 << 0;
+    QTest::newRow( "2" ) << QKnxByteArray("abc", 3) << QKnxByteArray("A", 1) << 0 << -1;
+    QTest::newRow( "3" ) << QKnxByteArray("abc", 3) << QKnxByteArray("a", 1) << 1 << 0;
+    QTest::newRow( "4" ) << QKnxByteArray("abc", 3) << QKnxByteArray("A", 1) << 1 << -1;
+    QTest::newRow( "5" ) << QKnxByteArray("abc", 3) << QKnxByteArray("a", 1) << -1 << 0;
+    QTest::newRow( "6" ) << QKnxByteArray("abc", 3) << QKnxByteArray("b", 1) << 0 << -1;
+    QTest::newRow( "7" ) << QKnxByteArray("abc", 3) << QKnxByteArray("B", 1) << 0 << -1;
+    QTest::newRow( "8" ) << QKnxByteArray("abc", 3) << QKnxByteArray("b", 1) << 1 << 1;
+    QTest::newRow( "9" ) << QKnxByteArray("abc", 3) << QKnxByteArray("B", 1) << 1 << -1;
+    QTest::newRow( "10" ) << QKnxByteArray("abc", 3) << QKnxByteArray("b", 1) << 2 << 1;
+    QTest::newRow( "11" ) << QKnxByteArray("abc", 3) << QKnxByteArray("b", 1) << -1 << 1;
+    QTest::newRow( "12" ) << QKnxByteArray("abc", 3) << QKnxByteArray("c", 1) << 0 << -1;
+    QTest::newRow( "13" ) << QKnxByteArray("abc", 3) << QKnxByteArray("C", 1) << 0 << -1;
+    QTest::newRow( "14" ) << QKnxByteArray("abc", 3) << QKnxByteArray("c", 1) << 1 << -1;
+    QTest::newRow( "15" ) << QKnxByteArray("abc", 3) << QKnxByteArray("C", 1) << 1 << -1;
+    QTest::newRow( "16" ) << QKnxByteArray("abc", 3) << QKnxByteArray("c", 1) << 2 << 2;
+    QTest::newRow( "17" ) << QKnxByteArray("abc", 3) << QKnxByteArray("c", 1) << -1 << 2;
+    QTest::newRow( "18" ) << QKnxByteArray("aBc", 3) << QKnxByteArray("bc", 2) << 0 << -1;
+    QTest::newRow( "19" ) << QKnxByteArray("aBc", 3) << QKnxByteArray("Bc", 2) << 0 << -1;
+    QTest::newRow( "20" ) << QKnxByteArray("aBc", 3) << QKnxByteArray("Bc", 2) << 2 << 1;
+    QTest::newRow( "21" ) << QKnxByteArray("aBc", 3) << QKnxByteArray("Bc", 2) << 1 << 1;
+    QTest::newRow( "22" ) << QKnxByteArray("aBc", 3) << QKnxByteArray("Bc", 2) << -1 << 1;
+    QTest::newRow( "23" ) << QKnxByteArray("aBc", 3) << QKnxByteArray("bC", 2) << 0 << -1;
+    QTest::newRow( "24" ) << QKnxByteArray("aBc", 3) << QKnxByteArray("BC", 2) << 0 << -1;
+
+    static const char h25[] = {0x00, (char)0xbc, 0x03, 0x10, 0x0a };
+    static const char n25[] = {0x00, 0x00, 0x01, 0x00};
+    QTest::newRow( "25" ) << QKnxByteArray(h25, sizeof(h25))
+                          << QKnxByteArray(n25, sizeof(n25)) << 0 << -1;
+
+    QTest::newRow( "empty" ) << QKnxByteArray("", 0) << QKnxByteArray("x", 1) << -1 << -1;
+    QTest::newRow( "null" ) << QKnxByteArray() << QKnxByteArray("x", 1) << -1 << -1;
+    QTest::newRow( "null-in-null") << QKnxByteArray() << QKnxByteArray() << -1 << 0;
+    QTest::newRow( "empty-in-null") << QKnxByteArray() << QKnxByteArray("", 0) << -1 << 0;
+    QTest::newRow( "null-in-empty") << QKnxByteArray("", 0) << QKnxByteArray() << -1 << 0;
+    QTest::newRow( "empty-in-empty") << QKnxByteArray("", 0) << QKnxByteArray("", 0) << -1 << 0;
+}
+
+void tst_QKnxByteArray::lastIndexOf()
+{
+    QFETCH( QKnxByteArray, haystack );
+    QFETCH( QKnxByteArray, needle );
+    QFETCH( int, startpos );
+    QFETCH( int, expected );
+
+    bool hasNull = needle.contains('\0');
+
+    QCOMPARE( haystack.lastIndexOf(needle, startpos), expected );
+    if (!hasNull)
+        QCOMPARE( haystack.lastIndexOf(needle, startpos), expected );
+    if (needle.size() == 1)
+        QCOMPARE( haystack.lastIndexOf(needle.at(0), startpos), expected );
+
+    if (startpos == -1) {
+        QCOMPARE( haystack.lastIndexOf(needle), expected );
+        if (!hasNull)
+            QCOMPARE( haystack.lastIndexOf(needle), expected );
+        if (needle.size() == 1)
+            QCOMPARE( haystack.lastIndexOf(needle.at(0)), expected );
+    }
+}
+
+void tst_QKnxByteArray::toFromHex_data()
+{
+    QTest::addColumn<QKnxByteArray>("str");
+    QTest::addColumn<char>("sep");
+    QTest::addColumn<QKnxByteArray>("hex");
+    QTest::addColumn<QKnxByteArray>("hex_alt1");
+
+    QTest::newRow("Qt is great! (default)")
+        << QKnxByteArray::fromByteArray("Qt is great!")
+        << '\0'
+        << QKnxByteArray::fromByteArray("517420697320677265617421")
+        << QKnxByteArray::fromByteArray("51 74 20 69 73 20 67 72 65 61 74 21");
+
+    QTest::newRow("Qt is great! (with space)")
+        << QKnxByteArray::fromByteArray("Qt is great!")
+        << ' '
+        << QKnxByteArray::fromByteArray("51 74 20 69 73 20 67 72 65 61 74 21")
+        << QKnxByteArray::fromByteArray("51 74 20 69 73 20 67 72 65 61 74 21");
+
+    QTest::newRow("Qt is great! (with minus)")
+        << QKnxByteArray::fromByteArray("Qt is great!")
+        << '-'
+        << QKnxByteArray::fromByteArray("51-74-20-69-73-20-67-72-65-61-74-21")
+        << QKnxByteArray::fromByteArray("51-74-20-69-73-20-67-72-65-61-74-21");
+
+    QTest::newRow("Qt is so great!")
+        << QKnxByteArray::fromByteArray("Qt is so great!")
+        << '\0'
+        << QKnxByteArray::fromByteArray("517420697320736f20677265617421")
+        << QKnxByteArray::fromByteArray("51 74 20 69 73 20 73 6f 20 67 72 65 61 74 21");
+
+    QTest::newRow("default-constructed")
+        << QKnxByteArray()
+        << '\0'
+        << QKnxByteArray()
+        << QKnxByteArray();
+
+    QTest::newRow("default-constructed (with space)")
+        << QKnxByteArray()
+        << ' '
+        << QKnxByteArray()
+        << QKnxByteArray();
+
+    QTest::newRow("empty")
+        << QKnxByteArray::fromByteArray("")
+        << '\0'
+        << QKnxByteArray::fromByteArray("")
+        << QKnxByteArray::fromByteArray("");
+
+    QTest::newRow("empty (with space)")
+        << QKnxByteArray::fromByteArray("")
+        << ' '
+        << QKnxByteArray::fromByteArray("")
+        << QKnxByteArray::fromByteArray("");
+
+    QTest::newRow("array-of-null")
+        << QKnxByteArray("\0", 1)
+        << '\0'
+        << QKnxByteArray::fromByteArray("00")
+        << QKnxByteArray::fromByteArray("0");
+
+    QTest::newRow("no-leading-zero")
+        << QKnxByteArray::fromByteArray("\xf")
+        << '\0'
+        << QKnxByteArray::fromByteArray("0f")
+        << QKnxByteArray::fromByteArray("f");
+
+    QTest::newRow("single-byte")
+        << QKnxByteArray::fromByteArray("\xaf")
+        << '\0'
+        << QKnxByteArray::fromByteArray("af")
+        << QKnxByteArray::fromByteArray("xaf");
+
+    QTest::newRow("no-leading-zero")
+        << QKnxByteArray::fromByteArray("\xd\xde\xad\xc0\xde")
+        << '\0'
+        << QKnxByteArray::fromByteArray("0ddeadc0de")
+        << QKnxByteArray::fromByteArray("ddeadc0de");
+
+    QTest::newRow("garbage")
+        << QKnxByteArray::fromByteArray("\xC\xde\xeC\xea\xee\xDe\xee\xee")
+        << '\0'
+        << QKnxByteArray::fromByteArray("0cdeeceaeedeeeee")
+        << QKnxByteArray::fromByteArray("Code less. Create more. Deploy everywhere.");
+
+    QTest::newRow("under-defined-1")
+        << QKnxByteArray::fromByteArray("\x1\x23")
+        << '\0'
+        << QKnxByteArray::fromByteArray("0123")
+        << QKnxByteArray::fromByteArray("x123");
+
+    QTest::newRow("under-defined-2")
+        << QKnxByteArray::fromByteArray("\x12\x34")
+        << '\0'
+        << QKnxByteArray::fromByteArray("1234")
+        << QKnxByteArray::fromByteArray("x1234");
+}
+
+void tst_QKnxByteArray::toFromHex()
+{
+    QFETCH(QKnxByteArray, str);
+    QFETCH(char,       sep);
+    QFETCH(QKnxByteArray, hex);
+    QFETCH(QKnxByteArray, hex_alt1);
+
+    if (sep == 0) {
+        const QKnxByteArray th = str.toHex();
+        QCOMPARE(th.size(), hex.size());
+        QCOMPARE(th, hex);
+    }
+
+    {
+        const QKnxByteArray th = str.toHex(sep);
+        QCOMPARE(th.size(), hex.size());
+        QCOMPARE(th, hex);
+    }
+
+    {
+        const QKnxByteArray fh = QKnxByteArray::fromHex(hex);
+        QCOMPARE(fh.size(), str.size());
+        QCOMPARE(fh, str);
+    }
+
+    QCOMPARE(QKnxByteArray::fromHex(hex_alt1), str);
+}
+
 //void tst_QKnxByteArray::compare_data()
 //{
 //    QTest::addColumn<QKnxByteArray>("str1");
@@ -1221,7 +924,6 @@ void tst_QKnxByteArray::prepend()
 //    const int size = array.size();
 //    const bool isEmpty = array.isEmpty();
 //    const bool isNull = array.isNull();
-//    const int capacity = array.capacity();
 //
 //    QKnxByteArray memSpace;
 //
@@ -1278,31 +980,6 @@ void tst_QKnxByteArray::prepend()
 //    array.reserve(array.size() + 3);
 //    QVERIFY(true);
 //}
-//
-//#if defined(Q_COMPILER_LAMBDA)
-//// Only tested on c++0x compliant compiler or gcc
-//void tst_QKnxByteArray::literals()
-//{
-//    QKnxByteArray str(QKnxByteArrayLiteral("abcd"));
-//
-//    QVERIFY(str.length() == 4);
-//    QVERIFY(str == "abcd");
-//    QVERIFY(str.data_ptr()->ref.isStatic());
-//    QVERIFY(str.data_ptr()->offset == sizeof(QKnxByteArrayData));
-//
-//    const char *s = str.constData();
-//    QKnxByteArray str2 = str;
-//    QVERIFY(str2.constData() == s);
-//
-//    // detach on non const access
-//    QVERIFY(str.data() != s);
-//
-//    QVERIFY(str2.constData() == s);
-//    QVERIFY(str2.data() != s);
-//}
-//#endif
-//
-//const char globalChar = '1';
 
 QTEST_MAIN(tst_QKnxByteArray)
 #include "tst_qknxbytearray.moc"

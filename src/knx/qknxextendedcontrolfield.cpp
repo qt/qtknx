@@ -91,7 +91,7 @@ QKnxExtendedControlField::QKnxExtendedControlField(quint8 data)
 QKnxExtendedControlField::QKnxExtendedControlField(const QKnxByteArray &data)
 {
     if (data.size() > 0)
-        m_ctrl2 = quint8(data[0]);
+        m_ctrl2 = quint8(data.at(0));
 }
 
 /*!

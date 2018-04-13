@@ -201,7 +201,7 @@ bool QKnxEntranceAccess::setIdCode(quint32 idCode)
 
     QKnxByteArray digits;
     while (idCode != 0) {
-        digits.push_back(idCode % 10);
+        digits.append(idCode % 10);
         idCode = idCode / 10;
     }
     bool success = setByte(0, quint8(digits.value(5) << 4) | digits.value(4));

@@ -172,7 +172,7 @@ quint8 QKnxLocalDeviceManagementFrame::objectInstance() const
 
 void QKnxLocalDeviceManagementFrame::setObjectInstance(quint8 instance)
 {
-    m_serviceInformation[2] = instance;
+    m_serviceInformation.set(2, instance);
 }
 
 QKnxInterfaceObjectProperty QKnxLocalDeviceManagementFrame::property() const
@@ -182,7 +182,7 @@ QKnxInterfaceObjectProperty QKnxLocalDeviceManagementFrame::property() const
 
 void QKnxLocalDeviceManagementFrame::setProperty(QKnxInterfaceObjectProperty pid)
 {
-    m_serviceInformation[3] = quint8(pid);
+    m_serviceInformation.set(3, quint8(pid));
 }
 
 quint8 QKnxLocalDeviceManagementFrame::numberOfElements() const
@@ -194,7 +194,7 @@ void QKnxLocalDeviceManagementFrame::setNumberOfElements(quint8 numOfElements)
 {
     if (numOfElements > 0x0f)
         return;
-    m_serviceInformation[4] = (m_serviceInformation.value(4) & 0x0f) | (numOfElements << 4);
+    m_serviceInformation.set(4, (m_serviceInformation.value(4) & 0x0f) | (numOfElements << 4));
 }
 
 quint16 QKnxLocalDeviceManagementFrame::startIndex() const
@@ -220,7 +220,7 @@ QKnx::CemiServer::Error QKnxLocalDeviceManagementFrame::error() const
             auto err = data();
             if (err.size() < 1)
                 return QKnx::CemiServer::Error::Unspecified;
-            return QKnx::CemiServer::Error(quint8(err[0]));
+            return QKnx::CemiServer::Error(err.at(0));
         }
     default:
         break;
@@ -236,7 +236,7 @@ void QKnxLocalDeviceManagementFrame::setError(QKnx::CemiServer::Error error)
     case MessageCode::PropertyWriteConfirmation: {
         if (m_serviceInformation.size() < 7)
             m_serviceInformation.resize(7);
-        m_serviceInformation[6] = quint8(error);
+        m_serviceInformation.set(6, quint8(error));
     }
     default:
         break;
@@ -268,7 +268,7 @@ void QKnxLocalDeviceManagementFrame::setReturnCode(QKnx::CemiServer::ReturnCode 
 
     if (m_serviceInformation.size() < 6)
         m_serviceInformation.resize(6);
-    m_serviceInformation[5] = quint8(code);
+    m_serviceInformation.set(5, quint8(code));
 }
 
 QKnxLocalDeviceManagementFrame::QKnxLocalDeviceManagementFrame(const QKnxLocalDeviceManagementFrame &other)

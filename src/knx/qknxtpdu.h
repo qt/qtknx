@@ -195,9 +195,7 @@ public:
         const qint32 availableSize = (data.size() - index) - size;
         if (availableSize < 0)
             return tpdu;
-
-        auto begin = std::next(std::begin(data), index);
-        tpdu.setBytes(begin, std::next(begin, size));
+        tpdu.setBytes(data.mid(index, size));
         return tpdu;
     }
 
@@ -205,7 +203,7 @@ public:
     quint8 byte(quint16 index) const;
     QKnxByteArray bytes() const;
     QKnxByteArray bytes(quint16 start, quint16 count) const;
-    void setBytes(QKnxByteArray::const_iterator begin, QKnxByteArray::const_iterator end);
+    void setBytes(const QKnxByteArray &bytes);
 
 private:
     QSharedDataPointer<QKnxTpduPrivate> d_ptr;

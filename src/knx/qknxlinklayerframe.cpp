@@ -225,7 +225,7 @@ QKnxControlField QKnxLinkLayerFrame::controlField() const
 
 void QKnxLinkLayerFrame::setControlField(const QKnxControlField &controlField)
 {
-    m_serviceInformation[additionalInfosSize() + 1] = controlField.byte();
+    m_serviceInformation.set(additionalInfosSize() + 1, controlField.byte());
 }
 
 QKnxExtendedControlField QKnxLinkLayerFrame::extendedControlField() const
@@ -235,7 +235,7 @@ QKnxExtendedControlField QKnxLinkLayerFrame::extendedControlField() const
 
 void QKnxLinkLayerFrame::setExtendedControlField(const QKnxExtendedControlField &controlFieldEx)
 {
-    m_serviceInformation[additionalInfosSize() + 2] = controlFieldEx.byte();
+    m_serviceInformation.set(additionalInfosSize() + 2, controlFieldEx.byte());
 }
 
 quint8 QKnxLinkLayerFrame::additionalInfosSize() const
@@ -260,7 +260,7 @@ void QKnxLinkLayerFrame::addAdditionalInfo(const QKnxAdditionalInfo &info)
     }
 
     m_serviceInformation.insert((index > size ? size + 1 : index), info.bytes());
-    m_serviceInformation[0] = size + info.size();
+    m_serviceInformation.set(0, size + info.size());
 }
 
 void QKnxLinkLayerFrame::removeAdditionalInfo(QKnxAdditionalInfo::Type type)
@@ -279,7 +279,7 @@ void QKnxLinkLayerFrame::removeAdditionalInfo(QKnxAdditionalInfo::Type type)
         data.append(info.bytes());
     }
 
-    data[0] = data.size() - 1;
+    data.set(0, data.size() - 1);
     m_serviceInformation = data + m_serviceInformation.mid(oldSize + 1);
 }
 
@@ -301,7 +301,7 @@ void QKnxLinkLayerFrame::removeAdditionalInfo(const QKnxAdditionalInfo &info)
         data.append(tmp.bytes());
     }
 
-    data[0] = data.size() - 1;
+    data.set(0, data.size() - 1);
     m_serviceInformation = data + m_serviceInformation.mid(oldSize + 1);
 }
 
@@ -349,7 +349,7 @@ void QKnxLinkLayerFrame::setTpdu(const QKnxTpdu &tpdu)
 {
      // length field + ctrl + extCtrl + 2 * KNX address -> 7
     m_serviceInformation.resize(additionalInfosSize() + 7);
-    m_serviceInformation[additionalInfosSize() + 7]  = tpdu.dataSize();
+    m_serviceInformation.set(additionalInfosSize() + 7, tpdu.dataSize());
     m_serviceInformation += tpdu.bytes();
 }
 

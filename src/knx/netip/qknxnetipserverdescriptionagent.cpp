@@ -164,7 +164,7 @@ void QKnxNetIpServerDescriptionAgentPrivate::setupSocket()
                     .create();
 
                 const QKnxNetIpHpaiView hpai(m_server);
-                socket->writeDatagram(static_cast<QByteArray> (frame.bytes()), hpai.hostAddress(),
+                socket->writeDatagram(frame.bytes().toByteArray(), hpai.hostAddress(),
                     hpai.port());
 
                 setupAndStartReceiveTimer();

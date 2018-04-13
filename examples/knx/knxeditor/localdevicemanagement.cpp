@@ -124,7 +124,7 @@ LocalDeviceManagement::LocalDeviceManagement(QWidget* parent)
     connect(&m_management, &QKnxNetIpDeviceManagementConnection::receivedDeviceManagementFrame,
         this, [&](QKnxLocalDeviceManagementFrame frame) {
         ui->textOuputDeviceManagement->append(tr("Received device management frame with cEMI "
-            "payload: " + static_cast<QByteArray> (frame.bytes().toHex())));
+            "payload: " + frame.bytes().toHex().toByteArray()));
 
         if (m_awaitIoListResponse)
             handleIoListResponse(frame);
@@ -315,7 +315,7 @@ void LocalDeviceManagement::handleIoListResponse(const QKnxLocalDeviceManagement
     if (!dataTypes.value(0).isValid())
         return;
 
-    auto data = static_cast<QByteArray> (frame.data().toHex());
+    auto data = frame.data().toHex().toByteArray();
     quint8 expectedDataSize = dataTypes[0].size();
     if (frame.startIndex() == 0) {
         if (data.size() == expectedDataSize) {

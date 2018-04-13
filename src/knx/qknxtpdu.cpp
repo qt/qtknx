@@ -209,7 +209,7 @@ void QKnxTpduPrivate::setByte(quint16 index, quint8 byte)
 {
     if (m_tpduBytes.size() <= index)
         m_tpduBytes.resize(index + 1);
-    m_tpduBytes[index] = byte;
+    m_tpduBytes.set(index, byte);
 }
 
 void QKnxTpduPrivate::setApci()
@@ -293,7 +293,7 @@ quint16 QKnxTpdu::size() const
 quint8 QKnxTpdu::byte(quint16 index) const
 {
     if (index < size())
-        return d_ptr->m_tpduBytes[index];
+        return d_ptr->m_tpduBytes.at(index);
     return {};
 }
 
@@ -308,10 +308,9 @@ QKnxByteArray QKnxTpdu::bytes(quint16 start, quint16 count) const
     return d_ptr->m_tpduBytes.mid(start, count);
 }
 
-void QKnxTpdu::setBytes(QKnxByteArray::const_iterator begin, QKnxByteArray::const_iterator end)
+void QKnxTpdu::setBytes(const QKnxByteArray &bytes)
 {
-    d_ptr->m_tpduBytes.resize(std::distance(begin, end));
-    std::copy(begin, end, std::begin(d_ptr->m_tpduBytes));
+    d_ptr->m_tpduBytes = bytes;
     d_ptr->setTpci();
     d_ptr->setApci();
 }
@@ -383,8 +382,8 @@ void QKnxTpdu::setApplicationControlField(ApplicationControlField apci)
     if (size() < 2)
         d_ptr->m_tpduBytes.resize(2);
     auto tmp = QKnxUtils::QUint16::bytes(quint16(apci));
-    d_ptr->setByte(0, (byte(0) & 0xfc) | tmp[0]);
-    d_ptr->setByte(1, (byte(1) & 0x3f) | tmp[1]);
+    d_ptr->setByte(0, (byte(0) & 0xfc) | tmp.at(0));
+    d_ptr->setByte(1, (byte(1) & 0x3f) | tmp.at(1));
 }
 
 QKnxTpdu::QKnxTpdu()
@@ -616,7 +615,7 @@ void QKnxTpdu::setData(const QKnxByteArray &data)
     auto apciBytes = QKnxUtils::QUint16::bytes(quint16(apci));
 
     d_ptr->m_tpduBytes.resize(2); // always resize to minimum size
-    d_ptr->setByte(1, apciBytes[1]); // and clear the possible 6 bits of the upper APCI byteToTest
+    d_ptr->setByte(1, apciBytes.at(1)); // and clear the possible 6 bits of the upper APCI byteToTest
 
     if (data.isEmpty())
         return; // no data, bytes got cleared before
@@ -625,7 +624,7 @@ void QKnxTpdu::setData(const QKnxByteArray &data)
     switch (apci) {
     case ApplicationControlField::GroupValueResponse:
     case ApplicationControlField::GroupValueWrite:
-        if (data.size() > 1 || quint8(data[0]) > 0x3f)
+        if (data.size() > 1 || quint8(data.at(0)) > 0x3f)
             break;
 
     case ApplicationControlField::AdcRead:
@@ -636,7 +635,7 @@ void QKnxTpdu::setData(const QKnxByteArray &data)
     case ApplicationControlField::DeviceDescriptorRead:
     case ApplicationControlField::DeviceDescriptorResponse:
     case ApplicationControlField::Restart:
-        d_ptr->setByte(1, apciBytes[1] | quint8(data[0]));
+        d_ptr->setByte(1, apciBytes.at(1) | quint8(data.at(0)));
         remainingData = data.mid(1); Q_FALLTHROUGH();
 
     default:
