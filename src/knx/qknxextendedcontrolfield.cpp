@@ -32,7 +32,6 @@
 QT_BEGIN_NAMESPACE
 
 const std::bitset<8> gHopCountMask = 0x70;
-const std::bitset<8> gExtFormatMask = 0x0f;
 
 /*!
     \class QKnxExtendedControlField
@@ -44,6 +43,8 @@ const std::bitset<8> gExtFormatMask = 0x0f;
     A KNX frame contains several fields, one of which might be the extended
     control field. The extended control field must specify
     \l destinationAddressType(), \l hopCount(), and \l ExtendedFrameFormat.
+
+    \sa builder()
 */
 
 /*!
@@ -135,7 +136,7 @@ void QKnxExtendedControlField::setHopCount(quint8 hopCount)
 */
 QKnxExtendedControlField::ExtendedFrameFormat QKnxExtendedControlField::format() const
 {
-    return static_cast<ExtendedFrameFormat> ((m_ctrl2 & gExtFormatMask).to_ulong());
+    return static_cast<ExtendedFrameFormat> (m_ctrl2.test(3));
 }
 
 /*!
@@ -143,9 +144,15 @@ QKnxExtendedControlField::ExtendedFrameFormat QKnxExtendedControlField::format()
 */
 void QKnxExtendedControlField::setFormat(QKnxExtendedControlField::ExtendedFrameFormat format)
 {
-    m_ctrl2 &= ~gExtFormatMask; // clear
-    if (format == QKnxExtendedControlField::ExtendedFrameFormat::Lte)
-        m_ctrl2 |= gExtFormatMask; // set
+    m_ctrl2.set(3, format == QKnxExtendedControlField::ExtendedFrameFormat::Lte);
+}
+
+/*!
+    Returns a builder to create a KNX extended control field object.
+*/
+QKnxExtendedControlField::Builder QKnxExtendedControlField::builder()
+{
+    return Builder();
 }
 
 /*!
@@ -165,6 +172,81 @@ QDebug operator<<(QDebug debug, const QKnxExtendedControlField &field)
     debug.nospace().noquote() << "0x" << hex << qSetFieldWidth(2) << qSetPadChar(QLatin1Char('0'))
         << field.bytes();
     return debug;
+}
+
+
+/*!
+    \class QKnxExtendedControlField::Builder
+
+    \inmodule QtKnx
+    \brief The QKnxExtendedControlField::Builder class creates a KNX extended
+    control field with some default values set.
+
+    TODO: Write some useful text with the default values
+        QKnxAddress::Type::Group
+        Hop count is set to 6
+        QKnxExtendedControlField::ExtendedFrameFormat::Standard
+
+    Most of the time the following code will produce the right extended control
+    field for group value read or group value write frames.
+
+    Example:
+    \code
+        auto ctrl = QKnxExtendedControlField::builder.create();
+    \endcode
+
+    For more advanced usages some flags can be modified:
+    \code
+        // setup a extended control field for point-to-point addressed
+        // L_Data_Extended frame
+
+        auto ctrl = QKnxControlField::builder
+            .setDestinationAddressType(QKnxAddress::Type::Individual)
+            .create();
+    \endcode
+*/
+
+/*!
+    Sets the destination address type to \a address and returns a reference to
+    the builder.
+*/
+QKnxExtendedControlField::Builder &
+    QKnxExtendedControlField::Builder::setDestinationAddressType(QKnxAddress::Type address)
+{
+    m_address = address;
+    return *this;
+}
+
+/*!
+    Sets the hop count to \a hopCount and returns a reference to the builder.
+*/
+QKnxExtendedControlField::Builder &QKnxExtendedControlField::Builder::setHopCount(quint8 hopCount)
+{
+    m_hopCount = hopCount;
+    return *this;
+}
+
+/*!
+    Sets the extended frame format to \a format and returns a reference to the
+    builder.
+*/
+QKnxExtendedControlField::Builder &
+    QKnxExtendedControlField::Builder::setFormat(QKnxExtendedControlField::ExtendedFrameFormat format)
+{
+    m_format = format;
+    return *this;
+}
+
+/*!
+    Creates and returns a QKnxExtendedControlField.
+*/
+QKnxExtendedControlField QKnxExtendedControlField::Builder::create() const
+{
+    QKnxExtendedControlField extCtrl;
+    extCtrl.setDestinationAddressType(m_address);
+    extCtrl.setHopCount(m_hopCount);
+    extCtrl.setFormat(m_format);
+    return extCtrl;
 }
 
 QT_END_NAMESPACE

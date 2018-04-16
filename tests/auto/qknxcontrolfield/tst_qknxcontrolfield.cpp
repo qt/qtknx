@@ -44,6 +44,7 @@ class tst_QKnxControlField : public QObject
 private slots:
     void testDefaultConstructor();
     void testControlFieldBuilder();
+    void testExtendedControlFieldBuilder();
 };
 
 void tst_QKnxControlField::testDefaultConstructor()
@@ -116,6 +117,39 @@ void tst_QKnxControlField::testControlFieldBuilder()
 
     field = builder.setConfirm(QKnxControlField::Confirm::NoError).create();
     QCOMPARE(field.confirm(), QKnxControlField::Confirm::NoError);
+}
+
+void tst_QKnxControlField::testExtendedControlFieldBuilder()
+{
+    QKnxExtendedControlField crf(0xe0);
+    QCOMPARE(crf.destinationAddressType(), QKnxAddress::Type::Group);
+    QCOMPARE(crf.hopCount(), quint8(6));
+    QCOMPARE(crf.format(), QKnxExtendedControlField::ExtendedFrameFormat::Standard);
+    QCOMPARE(crf.byte(), 0xe0);
+
+    auto field = QKnxExtendedControlField::builder().create();
+    QCOMPARE(field.byte(), 0xe0);
+    QCOMPARE(field.byte(), crf.byte());
+
+    auto builder = QKnxExtendedControlField::builder();
+
+    field = builder.setDestinationAddressType(QKnxAddress::Type::Individual).create();
+    QCOMPARE(field.destinationAddressType(), QKnxAddress::Type::Individual);
+
+    field = builder.setDestinationAddressType(QKnxAddress::Type::Group).create();
+    QCOMPARE(field.destinationAddressType(), QKnxAddress::Type::Group);
+
+    field = builder.setHopCount(4).create();
+    QCOMPARE(field.hopCount(), 4);
+
+    field = builder.setHopCount(6).create();
+    QCOMPARE(field.hopCount(), 6);
+
+    field = builder.setFormat(QKnxExtendedControlField::ExtendedFrameFormat::Lte).create();
+    QCOMPARE(field.format(), QKnxExtendedControlField::ExtendedFrameFormat::Lte);
+
+    field = builder.setFormat(QKnxExtendedControlField::ExtendedFrameFormat::Standard).create();
+    QCOMPARE(field.format(), QKnxExtendedControlField::ExtendedFrameFormat::Standard);
 }
 
 QTEST_APPLESS_MAIN(tst_QKnxControlField)

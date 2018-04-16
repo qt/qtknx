@@ -70,6 +70,22 @@ public:
 
     quint8 size() const { return 1; }
 
+    class Q_KNX_EXPORT Builder final
+    {
+    public:
+        Builder &setDestinationAddressType(QKnxAddress::Type address);
+        Builder &setHopCount(quint8 hopCount);
+        Builder &setFormat(QKnxExtendedControlField::ExtendedFrameFormat format);
+
+        QKnxExtendedControlField create() const;
+
+    private:
+        QKnxAddress::Type m_address { QKnxAddress::Type::Group };
+        quint8 m_hopCount { 6 };
+        QKnxExtendedControlField::ExtendedFrameFormat m_format { ExtendedFrameFormat::Standard };
+    };
+    static QKnxExtendedControlField::Builder builder();
+
 private:
     std::bitset<8> m_ctrl2 = 0;
 };
