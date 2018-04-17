@@ -32,10 +32,10 @@
 QT_BEGIN_NAMESPACE
 
 /*!
-    \class QKnxNetIpConnectRequest
+    \class QKnxNetIpConnectRequestProxy
 
     \inmodule QtKnx
-    \brief The QKnxNetIpConnectRequest class provides the means to read
+    \brief The QKnxNetIpConnectRequestProxy class provides the means to read
     a connection request from the generic \l QKnxNetIpFrame class and to
     create a KNXnet/IP frame based on the information.
 
@@ -47,7 +47,7 @@ QT_BEGIN_NAMESPACE
     endpoint host address protocol information (HPAI) that the client
     wants to use for this communication channel.
 
-    In most programs, the QKnxNetIpConnectRequest class will not be used
+    In most programs, the QKnxNetIpConnectRequestProxy class will not be used
     directly. Instead, the \l QKnxNetIpTunnelConnection or
     \l QKnxNetIpDeviceManagementConnection class are used to establish a
     functional connection to a KNXnet/IP server.
@@ -62,7 +62,7 @@ QT_BEGIN_NAMESPACE
     \code
         auto frame = QKnxNetIpFrame::fromBytes(...);
 
-        const QKnxNetIpConnectRequest request(frame);
+        const QKnxNetIpConnectRequestProxy request(frame);
         if (!request.isValid())
             return;
 
@@ -75,25 +75,25 @@ QT_BEGIN_NAMESPACE
 */
 
 /*!
-    \fn QKnxNetIpConnectRequest::QKnxNetIpConnectRequest()
+    \fn QKnxNetIpConnectRequestProxy::QKnxNetIpConnectRequestProxy()
     \internal
 */
 
 /*!
-    \fn QKnxNetIpConnectRequest::~QKnxNetIpConnectRequest()
+    \fn QKnxNetIpConnectRequestProxy::~QKnxNetIpConnectRequestProxy()
     \internal
 */
 
 /*!
-    \fn QKnxNetIpConnectRequest::QKnxNetIpConnectRequest(const QKnxNetIpFrame &&)
+    \fn QKnxNetIpConnectRequestProxy::QKnxNetIpConnectRequestProxy(const QKnxNetIpFrame &&)
     \internal
 */
 
 /*!
-    Constructs a wrapper object to read the connection request information
+    Constructs a proxy object to read the connection request information
     carried by the specified KNXnet/IP frame \a frame.
 */
-QKnxNetIpConnectRequest::QKnxNetIpConnectRequest(const QKnxNetIpFrame &frame)
+QKnxNetIpConnectRequestProxy::QKnxNetIpConnectRequestProxy(const QKnxNetIpFrame &frame)
     : m_frame(frame)
 {}
 
@@ -101,7 +101,7 @@ QKnxNetIpConnectRequest::QKnxNetIpConnectRequest(const QKnxNetIpFrame &frame)
     Returns the control endpoint of the KNXnet/IP client sending the connection
     request.
 */
-QKnxNetIpHpai QKnxNetIpConnectRequest::controlEndpoint() const
+QKnxNetIpHpai QKnxNetIpConnectRequestProxy::controlEndpoint() const
 {
     return QKnxNetIpHpai::fromBytes(m_frame.constData(), 0);
 }
@@ -110,7 +110,7 @@ QKnxNetIpHpai QKnxNetIpConnectRequest::controlEndpoint() const
     Returns the data endpoint of the KNXnet/IP client sending the connection
     request.
 */
-QKnxNetIpHpai QKnxNetIpConnectRequest::dataEndpoint() const
+QKnxNetIpHpai QKnxNetIpConnectRequestProxy::dataEndpoint() const
 {
     return QKnxNetIpHpai::fromBytes(m_frame.constData(), 8);
 }
@@ -119,7 +119,7 @@ QKnxNetIpHpai QKnxNetIpConnectRequest::dataEndpoint() const
     Returns the connection request information (CRI) set by the KNXnet/IP client
     for the requested connection.
 */
-QKnxNetIpCri QKnxNetIpConnectRequest::requestInformation() const
+QKnxNetIpCri QKnxNetIpConnectRequestProxy::requestInformation() const
 {
     return QKnxNetIpCri::fromBytes(m_frame.constData(), 16);
 }
@@ -132,7 +132,7 @@ QKnxNetIpCri QKnxNetIpConnectRequest::requestInformation() const
 
     \sa QKnxNetIpFrameHeader::totalSize()
 */
-bool QKnxNetIpConnectRequest::isValid() const
+bool QKnxNetIpConnectRequestProxy::isValid() const
 {
     return m_frame.isValid() && m_frame.serviceType() == QKnxNetIp::ServiceType::ConnectRequest
         && m_frame.size() >= 24;
@@ -141,19 +141,19 @@ bool QKnxNetIpConnectRequest::isValid() const
 /*!
     Returns a builder object to create a KNXnet/IP connection request frame.
 */
-QKnxNetIpConnectRequest::Builder QKnxNetIpConnectRequest::builder()
+QKnxNetIpConnectRequestProxy::Builder QKnxNetIpConnectRequestProxy::builder()
 {
-    return QKnxNetIpConnectRequest::Builder();
+    return QKnxNetIpConnectRequestProxy::Builder();
 }
 
 
-// -- QKnxNetIpConnectRequest::Builder
+// -- QKnxNetIpConnectRequestProxy::Builder
 
 /*!
-    \class QKnxNetIpConnectRequest::Builder
+    \class QKnxNetIpConnectRequestProxy::Builder
 
     \inmodule QtKnx
-    \brief The QKnxNetIpConnectRequest::Builder class provides the means to
+    \brief The QKnxNetIpConnectRequestProxy::Builder class provides the means to
     create a KNXnet/IP connection request frame.
 
     A KNXnet/IP connection request contains the information that is needed to
@@ -161,7 +161,7 @@ QKnxNetIpConnectRequest::Builder QKnxNetIpConnectRequest::builder()
     and control endpoint host address protocol information (HPAI) that the
     client wants to use for this communication channel.
 
-    In most programs, the QKnxNetIpConnectRequest::Builder class will not be
+    In most programs, the QKnxNetIpConnectRequestProxy::Builder class will not be
     used directly. Instead, the \l QKnxNetIpTunnelConnection or
     \l QKnxNetIpDeviceManagementConnection class are used to establish a
     functional connection to a KNXnet/IP server.
@@ -170,19 +170,19 @@ QKnxNetIpConnectRequest::Builder QKnxNetIpConnectRequest::builder()
 
     \code
         // setup control (HPAI) and data endpoint (HPAI)
-        auto crtlHpai = QKnxNetIpHpaiView::builder()
+        auto crtlHpai = QKnxNetIpHpaiProxy::builder()
             ...
             .create();
-        auto dataHpai = QKnxNetIpHpaiView::builder()
+        auto dataHpai = QKnxNetIpHpaiProxy::builder()
             ...
             .create()
 
         // setup connection request information (CRI)
-        auto cri = QKnxNetIpCriView::builder()
+        auto cri = QKnxNetIpCriProxy::builder()
             ....
             .create();
 
-        auto connectRequest = QKnxNetIpConnectRequest::builder
+        auto connectRequest = QKnxNetIpConnectRequestProxy::builder
             .setControlEndpoint(crtlHpai)
             .setDataEndpoint(dataHpai)
             .setRequestInformation(cri)
@@ -194,7 +194,7 @@ QKnxNetIpConnectRequest::Builder QKnxNetIpConnectRequest::builder()
 
     After sending the connection request, the KNXnet/IP client waits for the
     host protocol dependent time for the response frame from the KNXnet/IP
-    server, \l QKnxNetIpConnectResponse. After the timeout, received response
+    server, \l QKnxNetIpConnectResponseProxy. After the timeout, received response
     frames are ignored by the client until it sends another connection request.
 */
 
@@ -202,8 +202,8 @@ QKnxNetIpConnectRequest::Builder QKnxNetIpConnectRequest::builder()
     Sets the control endpoint of the KNXnet/IP server to \a hpai and returns a
     reference to the builder.
 */
-QKnxNetIpConnectRequest::Builder &
-    QKnxNetIpConnectRequest::Builder::setControlEndpoint(const QKnxNetIpHpai &hpai)
+QKnxNetIpConnectRequestProxy::Builder &
+    QKnxNetIpConnectRequestProxy::Builder::setControlEndpoint(const QKnxNetIpHpai &hpai)
 {
     m_ceHpai = hpai;
     return *this;
@@ -213,8 +213,8 @@ QKnxNetIpConnectRequest::Builder &
     Sets the data endpoint of the KNXnet/IP server to \a hpai and returns a
     reference to the builder.
 */
-QKnxNetIpConnectRequest::Builder &
-    QKnxNetIpConnectRequest::Builder::setDataEndpoint(const QKnxNetIpHpai &hpai)
+QKnxNetIpConnectRequestProxy::Builder &
+    QKnxNetIpConnectRequestProxy::Builder::setDataEndpoint(const QKnxNetIpHpai &hpai)
 {
     m_deHpai = hpai;
     return *this;
@@ -224,8 +224,8 @@ QKnxNetIpConnectRequest::Builder &
     Sets the connection request information (CRI) to \a cri and returns a
     reference to the builder.
 */
-QKnxNetIpConnectRequest::Builder &
-    QKnxNetIpConnectRequest::Builder::setRequestInformation(const QKnxNetIpCri &cri)
+QKnxNetIpConnectRequestProxy::Builder &
+    QKnxNetIpConnectRequestProxy::Builder::setRequestInformation(const QKnxNetIpCri &cri)
 {
     m_cri = cri;
     return *this;
@@ -239,7 +239,7 @@ QKnxNetIpConnectRequest::Builder &
 
     \sa isValid()
 */
-QKnxNetIpFrame QKnxNetIpConnectRequest::Builder::create() const
+QKnxNetIpFrame QKnxNetIpConnectRequestProxy::Builder::create() const
 {
     return { QKnxNetIp::ServiceType::ConnectRequest, m_ceHpai.bytes() + m_deHpai.bytes() + m_cri
         .bytes() };

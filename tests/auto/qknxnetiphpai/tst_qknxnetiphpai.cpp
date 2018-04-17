@@ -48,10 +48,10 @@ private slots:
 
 void tst_QKnxNetIpHpai::testConstructor()
 {
-    auto hpai = QKnxNetIpHpaiView::builder()
+    auto hpai = QKnxNetIpHpaiProxy::builder()
         .setHostAddress(QHostAddress::LocalHost)
         .setPort(3671).create();
-    const QKnxNetIpHpaiView view(hpai);
+    const QKnxNetIpHpaiProxy view(hpai);
 
     QCOMPARE(view.isValid(), true);
     QCOMPARE(view.hostProtocol(), QKnxNetIp::HostProtocol::UDP_IPv4);
@@ -71,11 +71,11 @@ void tst_QKnxNetIpHpai::testSetFunctions()
         QKnxNetIpHpai hpai;
         QCOMPARE(hpai.isValid(), false);
 
-        hpai = QKnxNetIpHpaiView::builder()
+        hpai = QKnxNetIpHpaiProxy::builder()
             .setHostAddress(QHostAddress::LocalHost)
             .setPort(3671).create();
 
-        QKnxNetIpHpaiView view(hpai);
+        QKnxNetIpHpaiProxy view(hpai);
         QCOMPARE(view.hostProtocol(), QKnxNetIp::HostProtocol::UDP_IPv4);
         QCOMPARE(view.hostAddress(), QHostAddress(QHostAddress::LocalHost));
         QCOMPARE(view.port(), quint16(3671));
@@ -93,16 +93,16 @@ void tst_QKnxNetIpHpai::testSetFunctions()
         QKnxNetIpHpai hpai;
         QCOMPARE(hpai.isValid(), false);
 
-        hpai = QKnxNetIpHpaiView::builder().setHostAddress(QHostAddress::LocalHost)
+        hpai = QKnxNetIpHpaiProxy::builder().setHostAddress(QHostAddress::LocalHost)
             .setPort(3333).create();
 
-        QKnxNetIpHpaiView view(hpai);
+        QKnxNetIpHpaiProxy view(hpai);
         QCOMPARE(view.isValid(), true);
         QCOMPARE(view.hostProtocol(), QKnxNetIp::HostProtocol::UDP_IPv4);
         QCOMPARE(view.hostAddress(), QHostAddress(QHostAddress::LocalHost));
         QCOMPARE(view.port(), quint16(3333));
 
-        hpai = QKnxNetIpHpaiView::builder().setHostProtocol(QKnxNetIp::HostProtocol::TCP_IPv4)
+        hpai = QKnxNetIpHpaiProxy::builder().setHostProtocol(QKnxNetIp::HostProtocol::TCP_IPv4)
             .setHostAddress(QHostAddress::Broadcast).setPort(3671).create();
         QCOMPARE(view.isValid(), true);
         QCOMPARE(view.hostProtocol(), QKnxNetIp::HostProtocol::TCP_IPv4);
@@ -114,7 +114,7 @@ void tst_QKnxNetIpHpai::testSetFunctions()
         QKnxNetIpHpai hpai;
         QCOMPARE(hpai.isValid(), false);
 
-        QKnxNetIpHpaiView view(hpai);
+        QKnxNetIpHpaiProxy view(hpai);
         auto builder = view.builder();
 
         // Setting address only
@@ -144,7 +144,7 @@ void tst_QKnxNetIpHpai::testSetFunctions()
         QKnxNetIpHpai hpai;
         QCOMPARE(hpai.isValid(), false);
 
-        QKnxNetIpHpaiView view(hpai);
+        QKnxNetIpHpaiProxy view(hpai);
         auto builder = view.builder();
 
         // Setting code only
@@ -170,11 +170,11 @@ void tst_QKnxNetIpHpai::testSetFunctions()
     }
 
     {
-        auto builder = QKnxNetIpHpaiView::builder();
+        auto builder = QKnxNetIpHpaiProxy::builder();
         auto hpai = builder. setHostProtocol(QKnxNetIp::HostProtocol::UDP_IPv4)
             .setHostAddress(QHostAddress::AnyIPv4).setPort(3333).create();
 
-        QKnxNetIpHpaiView view(hpai);
+        QKnxNetIpHpaiProxy view(hpai);
 
         // Original values
         QCOMPARE(view.hostProtocol(), QKnxNetIp::HostProtocol::UDP_IPv4);
@@ -219,10 +219,10 @@ void tst_QKnxNetIpHpai::testDebugStream()
         QtMessageHandler oldMessageHandler;
     } _(myMessageHandler);
 
-    qDebug() << QKnxNetIpHpaiView::builder().create();
+    qDebug() << QKnxNetIpHpaiProxy::builder().create();
     QCOMPARE(s_msg, QString::fromLatin1("0x08017f0000010000"));
 
-    qDebug() << QKnxNetIpHpaiView::builder()
+    qDebug() << QKnxNetIpHpaiProxy::builder()
         .setHostProtocol(QKnxNetIp::HostProtocol::UDP_IPv4)
         .setHostAddress(QHostAddress::LocalHost)
         .setPort(3671).create();

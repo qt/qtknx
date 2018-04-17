@@ -31,38 +31,38 @@
 
 QT_BEGIN_NAMESPACE
 
-QKnxNetIpRoutingIndication::QKnxNetIpRoutingIndication(const QKnxNetIpFrame &frame)
+QKnxNetIpRoutingIndicationProxy::QKnxNetIpRoutingIndicationProxy(const QKnxNetIpFrame &frame)
     : m_frame(frame)
 {}
 
-QKnxLinkLayerFrame QKnxNetIpRoutingIndication::linkLayerFrame() const
+QKnxLinkLayerFrame QKnxNetIpRoutingIndicationProxy::linkLayerFrame() const
 {
     return QKnxLinkLayerFrame::fromBytes(m_frame.constData(), 0, m_frame.dataSize());
 }
 
-bool QKnxNetIpRoutingIndication::isValid() const
+bool QKnxNetIpRoutingIndicationProxy::isValid() const
 {
     // TODO: fix size check once the minimum CEMI frame size is known
     return m_frame.isValid() && m_frame.size() >= 8
         && m_frame.serviceType() == QKnxNetIp::ServiceType::RoutingIndication;
 }
 
-QKnxNetIpRoutingIndication::Builder QKnxNetIpRoutingIndication::builder()
+QKnxNetIpRoutingIndicationProxy::Builder QKnxNetIpRoutingIndicationProxy::builder()
 {
-    return QKnxNetIpRoutingIndication::Builder();
+    return QKnxNetIpRoutingIndicationProxy::Builder();
 }
 
 
-// -- QKnxNetIpRoutingIndication::Builder
+// -- QKnxNetIpRoutingIndicationProxy::Builder
 
-QKnxNetIpRoutingIndication::Builder &
-    QKnxNetIpRoutingIndication::Builder::setLinkLayerFrame(const QKnxLinkLayerFrame &llf)
+QKnxNetIpRoutingIndicationProxy::Builder &
+    QKnxNetIpRoutingIndicationProxy::Builder::setLinkLayerFrame(const QKnxLinkLayerFrame &llf)
 {
     m_llf = llf;
     return *this;
 }
 
-QKnxNetIpFrame QKnxNetIpRoutingIndication::Builder::create() const
+QKnxNetIpFrame QKnxNetIpRoutingIndicationProxy::Builder::create() const
 {
     return { QKnxNetIp::ServiceType::RoutingIndication, m_llf.bytes() };
 }

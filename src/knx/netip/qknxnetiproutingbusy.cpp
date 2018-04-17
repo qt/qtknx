@@ -32,26 +32,26 @@
 
 QT_BEGIN_NAMESPACE
 
-QKnxNetIpRoutingBusy::QKnxNetIpRoutingBusy(const QKnxNetIpFrame &frame)
+QKnxNetIpRoutingBusyProxy::QKnxNetIpRoutingBusyProxy(const QKnxNetIpFrame &frame)
     : m_frame(frame)
 {}
 
-QKnxNetIp::DeviceState QKnxNetIpRoutingBusy::deviceState() const
+QKnxNetIp::DeviceState QKnxNetIpRoutingBusyProxy::deviceState() const
 {
     return QKnxNetIp::DeviceState(m_frame.constData().value(1));
 }
 
-quint16 QKnxNetIpRoutingBusy::routingBusyWaitTime() const
+quint16 QKnxNetIpRoutingBusyProxy::routingBusyWaitTime() const
 {
     return QKnxUtils::QUint16::fromBytes(m_frame.constData(), 2);
 }
 
-quint16 QKnxNetIpRoutingBusy::routingBusyControl() const
+quint16 QKnxNetIpRoutingBusyProxy::routingBusyControl() const
 {
     return QKnxUtils::QUint16::fromBytes(m_frame.constData(), 4);
 }
 
-bool QKnxNetIpRoutingBusy::isValid() const
+bool QKnxNetIpRoutingBusyProxy::isValid() const
 {
     quint16 time = routingBusyWaitTime();
     if (time < 20)
@@ -60,36 +60,36 @@ bool QKnxNetIpRoutingBusy::isValid() const
         && m_frame.serviceType() == QKnxNetIp::ServiceType::RoutingBusy;
 }
 
-QKnxNetIpRoutingBusy::Builder QKnxNetIpRoutingBusy::builder()
+QKnxNetIpRoutingBusyProxy::Builder QKnxNetIpRoutingBusyProxy::builder()
 {
-    return QKnxNetIpRoutingBusy::Builder();
+    return QKnxNetIpRoutingBusyProxy::Builder();
 }
 
 
-// -- QKnxNetIpRoutingBusy::Builder
+// -- QKnxNetIpRoutingBusyProxy::Builder
 
-QKnxNetIpRoutingBusy::Builder &
-    QKnxNetIpRoutingBusy::Builder::setDeviceState(QKnxNetIp::DeviceState state)
+QKnxNetIpRoutingBusyProxy::Builder &
+    QKnxNetIpRoutingBusyProxy::Builder::setDeviceState(QKnxNetIp::DeviceState state)
 {
     m_state = state;
     return *this;
 }
 
-QKnxNetIpRoutingBusy::Builder &
-    QKnxNetIpRoutingBusy::Builder::setRoutingBusyWaitTime(quint16 waitTime)
+QKnxNetIpRoutingBusyProxy::Builder &
+    QKnxNetIpRoutingBusyProxy::Builder::setRoutingBusyWaitTime(quint16 waitTime)
 {
     m_waitTime = waitTime < 20 ? 20 : waitTime;
     return *this;
 }
 
-QKnxNetIpRoutingBusy::Builder &
-    QKnxNetIpRoutingBusy::Builder::setRoutingBusyControl(quint16 busyControl)
+QKnxNetIpRoutingBusyProxy::Builder &
+    QKnxNetIpRoutingBusyProxy::Builder::setRoutingBusyControl(quint16 busyControl)
 {
     m_busyControl = busyControl;
     return *this;
 }
 
-QKnxNetIpFrame QKnxNetIpRoutingBusy::Builder::create() const
+QKnxNetIpFrame QKnxNetIpRoutingBusyProxy::Builder::create() const
 {
     return { QKnxNetIp::ServiceType::RoutingBusy, QKnxByteArray { 0x06, quint8(m_state) }
         + QKnxUtils::QUint16::bytes(m_waitTime) + QKnxUtils::QUint16::bytes(m_busyControl) };

@@ -36,14 +36,14 @@
 
 QT_BEGIN_NAMESPACE
 
-class Q_KNX_EXPORT QKnxNetIpConfigDibView final
+class Q_KNX_EXPORT QKnxNetIpConfigDibProxy final
 {
 public:
-    QKnxNetIpConfigDibView() = delete;
-    ~QKnxNetIpConfigDibView() = default;
+    QKnxNetIpConfigDibProxy() = delete;
+    ~QKnxNetIpConfigDibProxy() = default;
 
-    QKnxNetIpConfigDibView(const QKnxNetIpDib &&) = delete;
-    explicit QKnxNetIpConfigDibView(const QKnxNetIpDib &dib);
+    QKnxNetIpConfigDibProxy(const QKnxNetIpDib &&) = delete;
+    explicit QKnxNetIpConfigDibProxy(const QKnxNetIpDib &dib);
 
     bool isValid() const;
     QKnxNetIp::DescriptionType descriptionType() const;
@@ -72,7 +72,7 @@ public:
         QKnxNetIp::Capabilities m_caps { QKnxNetIp::Capability::Unknown };
         QKnxNetIp::AssignmentMethods m_methods { QKnxNetIp::AssignmentMethod::Unknown };
     };
-    static QKnxNetIpConfigDibView::Builder builder();
+    static QKnxNetIpConfigDibProxy::Builder builder();
 
 private:
     const QKnxNetIpDib &m_dib;

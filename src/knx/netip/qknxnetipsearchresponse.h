@@ -38,14 +38,14 @@
 
 QT_BEGIN_NAMESPACE
 
-class Q_KNX_EXPORT QKnxNetIpSearchResponse final
+class Q_KNX_EXPORT QKnxNetIpSearchResponseProxy final
 {
 public:
-    QKnxNetIpSearchResponse() = delete;
-    ~QKnxNetIpSearchResponse() = default;
+    QKnxNetIpSearchResponseProxy() = delete;
+    ~QKnxNetIpSearchResponseProxy() = default;
 
-    QKnxNetIpSearchResponse(const QKnxNetIpFrame &&) = delete;
-    explicit QKnxNetIpSearchResponse(const QKnxNetIpFrame &frame);
+    QKnxNetIpSearchResponseProxy(const QKnxNetIpFrame &&) = delete;
+    explicit QKnxNetIpSearchResponseProxy(const QKnxNetIpFrame &frame);
 
     bool isValid() const;
 
@@ -67,7 +67,7 @@ public:
         QKnxNetIpDib m_ddib;
         QKnxNetIpDib m_sdib;
     };
-    static QKnxNetIpSearchResponse::Builder builder();
+    static QKnxNetIpSearchResponseProxy::Builder builder();
 
 private:
     const QKnxNetIpFrame &m_frame;

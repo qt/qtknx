@@ -49,7 +49,7 @@ private slots:
 void tst_QKnxNetIpConnectRequest::testDefaultConstructor()
 {
     QKnxNetIpFrame frame;
-    QKnxNetIpConnectRequest connectRequest(frame);
+    QKnxNetIpConnectRequestProxy connectRequest(frame);
     QCOMPARE(connectRequest.isValid(), false);
     QCOMPARE(connectRequest.controlEndpoint().isValid(), false);
     QCOMPARE(connectRequest.dataEndpoint().isValid(), false);
@@ -58,17 +58,17 @@ void tst_QKnxNetIpConnectRequest::testDefaultConstructor()
 
 void tst_QKnxNetIpConnectRequest::testConstructor()
 {
-    const auto hpai = QKnxNetIpHpaiView::builder()
+    const auto hpai = QKnxNetIpHpaiProxy::builder()
             .setHostAddress(QHostAddress::LocalHost)
             .setPort(3671).create();
 
-    auto builder = QKnxNetIpConnectRequest::builder();
+    auto builder = QKnxNetIpConnectRequestProxy::builder();
     auto frame = builder
         .setControlEndpoint(hpai)
         .setDataEndpoint(hpai)
         .create();
 
-    QKnxNetIpConnectRequest connectRequest(frame);
+    QKnxNetIpConnectRequestProxy connectRequest(frame);
 
     QCOMPARE(connectRequest.isValid(), false);
     QCOMPARE(frame.size(), quint16(22));
@@ -79,7 +79,7 @@ void tst_QKnxNetIpConnectRequest::testConstructor()
     QCOMPARE(connectRequest.dataEndpoint().bytes(), QKnxByteArray::fromHex("08017f0000010e57"));
     QCOMPARE(connectRequest.requestInformation().bytes(), QKnxByteArray {});
 
-    auto cri = QKnxNetIpCriView::builder()
+    auto cri = QKnxNetIpCriProxy::builder()
         .setTunnelingLayer(QKnxNetIp::TunnelingLayer::Link)
         .setConnectionType(QKnxNetIp::ConnectionType::Tunnel)
         .create();
@@ -110,14 +110,14 @@ void tst_QKnxNetIpConnectRequest::testDebugStream()
         QtMessageHandler oldMessageHandler;
     } _(myMessageHandler);
 
-    qDebug() << QKnxNetIpConnectRequest::builder().create();
+    qDebug() << QKnxNetIpConnectRequestProxy::builder().create();
     QCOMPARE(s_msg, QString::fromLatin1("0x061002050006"));
 
     auto frame = QKnxNetIpFrame::fromBytes(QKnxByteArray::fromHex("06100205001a0801c0a80001c3"
         "b40801c0a80001c3b404040200"), 0);
 
-    QKnxNetIpConnectRequest request(frame);
-    qDebug() << QKnxNetIpConnectRequest::builder()
+    QKnxNetIpConnectRequestProxy request(frame);
+    qDebug() << QKnxNetIpConnectRequestProxy::builder()
         .setControlEndpoint(request.controlEndpoint())
         .setDataEndpoint(request.dataEndpoint())
         .setRequestInformation(request.requestInformation())

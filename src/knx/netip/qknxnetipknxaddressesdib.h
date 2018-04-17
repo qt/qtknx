@@ -36,14 +36,14 @@
 
 QT_BEGIN_NAMESPACE
 
-class Q_KNX_EXPORT QKnxNetIpKnxAddressesDibView final
+class Q_KNX_EXPORT QKnxNetIpKnxAddressesDibProxy final
 {
 public:
-    QKnxNetIpKnxAddressesDibView() = delete;
-    ~QKnxNetIpKnxAddressesDibView() = default;
+    QKnxNetIpKnxAddressesDibProxy() = delete;
+    ~QKnxNetIpKnxAddressesDibProxy() = default;
 
-    QKnxNetIpKnxAddressesDibView(const QKnxNetIpDib &&) = delete;
-    explicit QKnxNetIpKnxAddressesDibView(const QKnxNetIpDib &dib);
+    QKnxNetIpKnxAddressesDibProxy(const QKnxNetIpDib &&) = delete;
+    explicit QKnxNetIpKnxAddressesDibProxy(const QKnxNetIpDib &dib);
 
     bool isValid() const;
 
@@ -59,7 +59,7 @@ public:
     private:
         QVector<QKnxAddress> m_addresses;
     };
-    static QKnxNetIpKnxAddressesDibView::Builder builder();
+    static QKnxNetIpKnxAddressesDibProxy::Builder builder();
 
 private:
     const QKnxNetIpDib &m_dib;

@@ -43,7 +43,7 @@ class tst_QKnxNetIpDeviceDib : public QObject
 private slots:
     void testConstructor()
     {
-        auto dib = QKnxNetIpDeviceDibView::builder()
+        auto dib = QKnxNetIpDeviceDibProxy::builder()
             .setMediumType(QKnx::MediumType::NetIP)
             .setDeviceStatus(QKnxNetIp::ProgrammingMode::Active)
             .setIndividualAddress(QKnxAddress::Individual::Unregistered)
@@ -54,7 +54,7 @@ private slots:
             .setDeviceName(QByteArray("qt.io KNX device"))
             .create();
 
-        const QKnxNetIpDeviceDibView deviceDib(dib);
+        const QKnxNetIpDeviceDibProxy deviceDib(dib);
         QCOMPARE(deviceDib.mediumType(), QKnx::MediumType::NetIP);
         QCOMPARE(deviceDib.descriptionType(), QKnxNetIp::DescriptionType::DeviceInfo);
         QCOMPARE(deviceDib.deviceStatus(), QKnxNetIp::ProgrammingMode::Active);
@@ -90,10 +90,10 @@ private slots:
         QtMessageHandler oldMessageHandler;
     } _(myMessageHandler);
 
-    qDebug() << QKnxNetIpDeviceDibView::builder().create();
+    qDebug() << QKnxNetIpDeviceDibProxy::builder().create();
     QCOMPARE(s_msg, QString::fromLatin1("0x0201"));
 
-    qDebug() << QKnxNetIpDeviceDibView::builder()
+    qDebug() << QKnxNetIpDeviceDibProxy::builder()
         .setMediumType(QKnx::MediumType::NetIP)
         .setDeviceStatus(QKnxNetIp::ProgrammingMode::Active)
         .setIndividualAddress(QKnxAddress::Individual::Unregistered)

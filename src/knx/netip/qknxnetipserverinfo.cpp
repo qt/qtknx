@@ -56,10 +56,10 @@ QT_BEGIN_NAMESPACE
     management, tunneling, routing, remote logging and configuration, and
     object server. The supported services are returned by \l supportedServices()
     as a vector of \l QKnxServiceInfo objects or by \l services() as a
-    \l QKnxNetIpDib object which can be accessed via \l QKnxNetIpServiceFamiliesDibView.
+    \l QKnxNetIpDib object which can be accessed via \l QKnxNetIpServiceFamiliesDibProxy.
 
-    \sa QKnxAddress, QKnxNetIpHpai, QKnxNetIpHpaiView, QKnxNetIpDib,
-    QKnxNetIpDeviceDibView, QKnxNetIpServiceFamiliesDibView
+    \sa QKnxAddress, QKnxNetIpHpai, QKnxNetIpHpaiProxy, QKnxNetIpDib,
+    QKnxNetIpDeviceDibProxy, QKnxNetIpServiceFamiliesDibProxy
 */
 
 /*!
@@ -80,7 +80,7 @@ QKnxNetIpServerInfo::~QKnxNetIpServerInfo()
 */
 QString QKnxNetIpServerInfo::deviceName() const
 {
-    return QString::fromUtf8(QKnxNetIpDeviceDibView(d_ptr->hardware).deviceName());
+    return QString::fromUtf8(QKnxNetIpDeviceDibProxy(d_ptr->hardware).deviceName());
 }
 
 /*!
@@ -88,7 +88,7 @@ QString QKnxNetIpServerInfo::deviceName() const
 */
 QKnxAddress QKnxNetIpServerInfo::individualAddress() const
 {
-    return QKnxNetIpDeviceDibView(d_ptr->hardware).individualAddress();
+    return QKnxNetIpDeviceDibProxy(d_ptr->hardware).individualAddress();
 }
 
 /*!
@@ -96,7 +96,7 @@ QKnxAddress QKnxNetIpServerInfo::individualAddress() const
 */
 quint16 QKnxNetIpServerInfo::controlEndpointPort() const
 {
-    return QKnxNetIpHpaiView(d_ptr->hpai).port();
+    return QKnxNetIpHpaiProxy(d_ptr->hpai).port();
 }
 
 /*!
@@ -105,7 +105,7 @@ quint16 QKnxNetIpServerInfo::controlEndpointPort() const
 */
 QHostAddress QKnxNetIpServerInfo::controlEndpointAddress() const
 {
-    return QKnxNetIpHpaiView(d_ptr->hpai).hostAddress();
+    return QKnxNetIpHpaiProxy(d_ptr->hpai).hostAddress();
 }
 
 /*!
@@ -113,13 +113,13 @@ QHostAddress QKnxNetIpServerInfo::controlEndpointAddress() const
 */
 QVector<QKnxServiceInfo> QKnxNetIpServerInfo::supportedServices() const
 {
-    return QKnxNetIpServiceFamiliesDibView(d_ptr->services).serviceInfos();
+    return QKnxNetIpServiceFamiliesDibProxy(d_ptr->services).serviceInfos();
 }
 
 /*!
     Returns a KNXnet/IP transport connection endpoint.
 
-    \sa QKnxNetIpHpaiView
+    \sa QKnxNetIpHpaiProxy
 */
 QKnxNetIpHpai QKnxNetIpServerInfo::endpoint() const
 {
@@ -129,7 +129,7 @@ QKnxNetIpHpai QKnxNetIpServerInfo::endpoint() const
 /*!
     Returns information about the KNXnet/IP server hardware.
 
-    \sa QKnxNetIpDeviceDibView
+    \sa QKnxNetIpDeviceDibProxy
 */
 QKnxNetIpDib QKnxNetIpServerInfo::hardware() const
 {
@@ -139,7 +139,7 @@ QKnxNetIpDib QKnxNetIpServerInfo::hardware() const
 /*!
     Returns the services available on a KNXnet/IP server.
 
-    \sa QKnxNetIpServiceFamiliesDibView
+    \sa QKnxNetIpServiceFamiliesDibProxy
 */
 QKnxNetIpDib QKnxNetIpServerInfo::services() const
 {

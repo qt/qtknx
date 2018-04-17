@@ -32,10 +32,10 @@
 QT_BEGIN_NAMESPACE
 
 /*!
-    \class QKnxNetIpCriView
+    \class QKnxNetIpCriProxy
 
     \inmodule QtKnx
-    \brief The QKnxNetIpCriView class provides the means to read the connection
+    \brief The QKnxNetIpCriProxy class provides the means to read the connection
     request information (CRI) from the generic \l QKnxNetIpCri class and to
     create a KNXnet/IP CRI structure based on the information.
 
@@ -46,7 +46,7 @@ QT_BEGIN_NAMESPACE
     but the current KNX specification foresees additional data only in the
     case of tunneling.
 
-    \note When using QKnxNetIpCriView, care must be taken to ensure that the
+    \note When using QKnxNetIpCriProxy, care must be taken to ensure that the
     referenced KNXnet/IP CRI structure outlives the view on all code paths, lest
     the view ends up referencing deleted data.
 
@@ -54,7 +54,7 @@ QT_BEGIN_NAMESPACE
     \code
         auto cri = QKnxNetIpCri::fromBytes(...);
 
-        QKnxNetIpCriView view(cri);
+        QKnxNetIpCriProxy view(cri);
         if (!view.isValid())
             return;
 
@@ -67,25 +67,25 @@ QT_BEGIN_NAMESPACE
 */
 
 /*!
-    \fn QKnxNetIpCriView::QKnxNetIpCriView()
+    \fn QKnxNetIpCriProxy::QKnxNetIpCriProxy()
     \internal
 */
 
 /*!
-    \fn QKnxNetIpCriView::~QKnxNetIpCriView()
+    \fn QKnxNetIpCriProxy::~QKnxNetIpCriProxy()
     \internal
 */
 
 /*!
-    \fn QKnxNetIpCriView::QKnxNetIpCriView(const QKnxNetIpCri &&)
+    \fn QKnxNetIpCriProxy::QKnxNetIpCriProxy(const QKnxNetIpCri &&)
     \internal
 */
 
 /*!
-    Constructs a wrapper object with the specified a KNXnet/IP structure
+    Constructs a proxy object with the specified a KNXnet/IP structure
     \a cri to read the connection request information (CRI).
 */
-QKnxNetIpCriView::QKnxNetIpCriView(const QKnxNetIpCri &cri)
+QKnxNetIpCriProxy::QKnxNetIpCriProxy(const QKnxNetIpCri &cri)
     : m_cri(cri)
 {}
 
@@ -93,7 +93,7 @@ QKnxNetIpCriView::QKnxNetIpCriView(const QKnxNetIpCri &cri)
     Returns \c true if the KNXnet/IP structure to create the object is a valid
     KNXnet/IP CRI structure; otherwise returns \c false.
 */
-bool QKnxNetIpCriView::isValid() const
+bool QKnxNetIpCriProxy::isValid() const
 {
     switch (m_cri.code()) {
         case QKnxNetIp::ConnectionType::Tunnel: {
@@ -117,7 +117,7 @@ bool QKnxNetIpCriView::isValid() const
     that was passed during construction was valid; otherwise returns
     \l QKnxNetIp::Unknown.
 */
-QKnxNetIp::ConnectionType QKnxNetIpCriView::connectionType() const
+QKnxNetIp::ConnectionType QKnxNetIpCriProxy::connectionType() const
 {
     if (isValid())
         return m_cri.code();
@@ -131,7 +131,7 @@ QKnxNetIp::ConnectionType QKnxNetIpCriView::connectionType() const
 
     \sa additionalData()
 */
-QKnxNetIp::TunnelingLayer QKnxNetIpCriView::tunnelingLayer() const
+QKnxNetIp::TunnelingLayer QKnxNetIpCriProxy::tunnelingLayer() const
 {
     if (isValid())
         return QKnxNetIp::TunnelingLayer(m_cri.constData().value(0));
@@ -146,7 +146,7 @@ QKnxNetIp::TunnelingLayer QKnxNetIpCriView::tunnelingLayer() const
 
     \sa tunnelingLayer()
 */
-QKnxByteArray QKnxNetIpCriView::additionalData() const
+QKnxByteArray QKnxNetIpCriProxy::additionalData() const
 {
     return m_cri.data();
 }
@@ -155,17 +155,17 @@ QKnxByteArray QKnxNetIpCriView::additionalData() const
     Returns a builder object to create a KNXnet/IP connection request
     information structure.
 */
-QKnxNetIpCriView::Builder QKnxNetIpCriView::builder()
+QKnxNetIpCriProxy::Builder QKnxNetIpCriProxy::builder()
 {
-    return QKnxNetIpCriView::Builder();
+    return QKnxNetIpCriProxy::Builder();
 }
 
 
 /*!
-    \class QKnxNetIpCriView::Builder
+    \class QKnxNetIpCriProxy::Builder
 
     \inmodule QtKnx
-    \brief The QKnxNetIpCriView::Builder class creates a KNXnet/IP connection
+    \brief The QKnxNetIpCriProxy::Builder class creates a KNXnet/IP connection
     request information structure (CRI).
 
     The connection request information structure contains additional
@@ -174,7 +174,7 @@ QKnxNetIpCriView::Builder QKnxNetIpCriView::builder()
 
     The common way to create such a CRI structure is:
     \code
-        auto cri = QKnxNetIpCriView::builder()
+        auto cri = QKnxNetIpCriProxy::builder()
             .setConnectionType(QKnxNetIp::ConnectionType::Tunnel)
             .setTunnelingLayer(QKnxNetIp::TunnelingLayer::Link)
             .create();
@@ -186,8 +186,8 @@ QKnxNetIpCriView::Builder QKnxNetIpCriView::builder()
 
     Does nothing if \a type is not a \l QKnxNetIp::ConnectionType.
 */
-QKnxNetIpCriView::Builder &
-    QKnxNetIpCriView::Builder::setConnectionType(QKnxNetIp::ConnectionType type)
+QKnxNetIpCriProxy::Builder &
+    QKnxNetIpCriProxy::Builder::setConnectionType(QKnxNetIp::ConnectionType type)
 {
     if (QKnxNetIp::isStructType(type))
         m_cType = type;
@@ -202,8 +202,8 @@ QKnxNetIpCriView::Builder &
 
     \sa setAdditionalData()
 */
-QKnxNetIpCriView::Builder &
-    QKnxNetIpCriView::Builder::setTunnelingLayer(QKnxNetIp::TunnelingLayer layer)
+QKnxNetIpCriProxy::Builder &
+    QKnxNetIpCriProxy::Builder::setTunnelingLayer(QKnxNetIp::TunnelingLayer layer)
 {
     if (QKnxNetIp::isTunnelingLayer(layer))
         setAdditionalData({ quint8(layer), 0x00 /* reserved byte */ });
@@ -219,8 +219,8 @@ QKnxNetIpCriView::Builder &
 
     \sa setTunnelingLayer()
 */
-QKnxNetIpCriView::Builder &
-    QKnxNetIpCriView::Builder::setAdditionalData(const QKnxByteArray &additionalData)
+QKnxNetIpCriProxy::Builder &
+    QKnxNetIpCriProxy::Builder::setAdditionalData(const QKnxByteArray &additionalData)
 {
     m_additionalData = additionalData;
     return *this;
@@ -234,7 +234,7 @@ QKnxNetIpCriView::Builder &
 
     \sa isValid()
 */
-QKnxNetIpCri QKnxNetIpCriView::Builder::create() const
+QKnxNetIpCri QKnxNetIpCriProxy::Builder::create() const
 {
     return { m_cType, m_additionalData };
 }

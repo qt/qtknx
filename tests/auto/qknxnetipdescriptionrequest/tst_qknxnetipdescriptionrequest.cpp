@@ -49,7 +49,7 @@ private slots:
 void tst_QKnxNetIpDescriptionRequest::testDefaultConstructor()
 {
     QKnxNetIpFrame frame;
-    QKnxNetIpDescriptionRequest descriptionRequest(frame);
+    QKnxNetIpDescriptionRequestProxy descriptionRequest(frame);
 
     QCOMPARE(descriptionRequest.isValid(), false);
     QCOMPARE(descriptionRequest.controlEndpoint().isValid(), false);
@@ -57,12 +57,12 @@ void tst_QKnxNetIpDescriptionRequest::testDefaultConstructor()
 
 void tst_QKnxNetIpDescriptionRequest::testConstructor()
 {
-    auto frame = QKnxNetIpDescriptionRequest::builder()
-        .setControlEndpoint(QKnxNetIpHpaiView::builder()
+    auto frame = QKnxNetIpDescriptionRequestProxy::builder()
+        .setControlEndpoint(QKnxNetIpHpaiProxy::builder()
             .setHostAddress(QHostAddress::LocalHost)
             .setPort(3671).create())
         .create();
-    QKnxNetIpDescriptionRequest descriptionRequest(frame);
+    QKnxNetIpDescriptionRequestProxy descriptionRequest(frame);
 
     QCOMPARE(descriptionRequest.isValid(), true);
     QCOMPARE(frame.size(), quint16(14));
@@ -87,11 +87,11 @@ void tst_QKnxNetIpDescriptionRequest::testDebugStream()
         QtMessageHandler oldMessageHandler;
     } _(myMessageHandler);
 
-    qDebug() << QKnxNetIpDescriptionRequest::builder().create();
+    qDebug() << QKnxNetIpDescriptionRequestProxy::builder().create();
     QCOMPARE(s_msg, QString::fromLatin1("0x061002030006"));
 
-    qDebug() << QKnxNetIpDescriptionRequest::builder()
-        .setControlEndpoint(QKnxNetIpHpaiView::builder()
+    qDebug() << QKnxNetIpDescriptionRequestProxy::builder()
+        .setControlEndpoint(QKnxNetIpHpaiProxy::builder()
             .setHostAddress(QHostAddress::LocalHost)
             .setPort(3671).create())
         .create();

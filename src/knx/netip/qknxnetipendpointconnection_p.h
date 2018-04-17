@@ -53,14 +53,14 @@
 
 QT_BEGIN_NAMESPACE
 
-class QKnxNetIpConnectResponse;
-class QKnxNetIpConnectionStateResponse;
-class QKnxNetIpDeviceConfigurationAcknowledge;
-class QKnxNetIpDeviceConfigurationRequest;
-class QKnxNetIpDisconnectRequest;
-class QKnxNetIpDisconnectResponse;
-class QKnxNetIpTunnelingAcknowledge;
-class QKnxNetIpTunnelingRequest;
+class QKnxNetIpConnectResponseProxy;
+class QKnxNetIpConnectionStateResponseProxy;
+class QKnxNetIpDeviceConfigurationAcknowledgeProxy;
+class QKnxNetIpDeviceConfigurationRequestProxy;
+class QKnxNetIpDisconnectRequestProxy;
+class QKnxNetIpDisconnectResponseProxy;
+class QKnxNetIpTunnelingAcknowledgeProxy;
+class QKnxNetIpTunnelingRequestProxy;
 class QUdpSocket;
 
 struct UserProperties
@@ -78,7 +78,7 @@ struct Endpoint final
         : address(addr)
         , port(p)
     {}
-    explicit Endpoint(const QKnxNetIpHpaiView &hpai)
+    explicit Endpoint(const QKnxNetIpHpaiProxy &hpai)
         : address(hpai.hostAddress())
         , port(hpai.port())
     {}
@@ -88,13 +88,13 @@ struct Endpoint final
 
     Endpoint &operator=(const QKnxNetIpHpai &s)
     {
-        const QKnxNetIpHpaiView hpai(s);
+        const QKnxNetIpHpaiProxy hpai(s);
         address = hpai.hostAddress(); port = hpai.port();
         return *this;
     }
     operator QKnxNetIpHpai() const
     {
-        return QKnxNetIpHpaiView::builder().setHostAddress(address).setPort(port).create();
+        return QKnxNetIpHpaiProxy::builder().setHostAddress(address).setPort(port).create();
     }
 
     QHostAddress address { QHostAddress::LocalHost };

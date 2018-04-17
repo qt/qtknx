@@ -36,14 +36,14 @@
 
 QT_BEGIN_NAMESPACE
 
-class Q_KNX_EXPORT QKnxNetIpRoutingBusy final
+class Q_KNX_EXPORT QKnxNetIpRoutingBusyProxy final
 {
 public:
-    QKnxNetIpRoutingBusy() = delete;
-    ~QKnxNetIpRoutingBusy() = default;
+    QKnxNetIpRoutingBusyProxy() = delete;
+    ~QKnxNetIpRoutingBusyProxy() = default;
 
-    QKnxNetIpRoutingBusy(const QKnxNetIpFrame &&) = delete;
-    explicit QKnxNetIpRoutingBusy(const QKnxNetIpFrame &frame);
+    QKnxNetIpRoutingBusyProxy(const QKnxNetIpFrame &&) = delete;
+    explicit QKnxNetIpRoutingBusyProxy(const QKnxNetIpFrame &frame);
 
     bool isValid() const;
 
@@ -65,7 +65,7 @@ public:
         quint16 m_waitTime { quint16(QKnxNetIp::RoutingBusyWaitTime) };
         quint16 m_busyControl { 0x0000 };
     };
-    static QKnxNetIpRoutingBusy::Builder builder();
+    static QKnxNetIpRoutingBusyProxy::Builder builder();
 
 private:
     const QKnxNetIpFrame &m_frame;};

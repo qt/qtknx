@@ -33,27 +33,27 @@
 
 QT_BEGIN_NAMESPACE
 
-QKnxNetIpDescriptionResponse::QKnxNetIpDescriptionResponse(const QKnxNetIpFrame &frame)
+QKnxNetIpDescriptionResponseProxy::QKnxNetIpDescriptionResponseProxy(const QKnxNetIpFrame &frame)
     : m_frame(frame)
 {}
 
-bool QKnxNetIpDescriptionResponse::isValid() const
+bool QKnxNetIpDescriptionResponseProxy::isValid() const
 {
     return m_frame.isValid() && m_frame.size() >= 64
         && m_frame.serviceType() == QKnxNetIp::ServiceType::DescriptionResponse;
 }
 
-QKnxNetIpDib QKnxNetIpDescriptionResponse::deviceHardware() const
+QKnxNetIpDib QKnxNetIpDescriptionResponseProxy::deviceHardware() const
 {
     return QKnxNetIpDib::fromBytes(m_frame.constData(), 0);
 }
 
-QKnxNetIpDib QKnxNetIpDescriptionResponse::supportedFamilies() const
+QKnxNetIpDib QKnxNetIpDescriptionResponseProxy::supportedFamilies() const
 {
     return QKnxNetIpDib::fromBytes(m_frame.constData(), 54);
 }
 
-QVector<QKnxNetIpDib> QKnxNetIpDescriptionResponse::optionalDibs() const
+QVector<QKnxNetIpDib> QKnxNetIpDescriptionResponseProxy::optionalDibs() const
 {
     const auto &data = m_frame.constData();
 
@@ -74,38 +74,38 @@ QVector<QKnxNetIpDib> QKnxNetIpDescriptionResponse::optionalDibs() const
     return dibs;
 }
 
-QKnxNetIpDescriptionResponse::Builder QKnxNetIpDescriptionResponse::builder()
+QKnxNetIpDescriptionResponseProxy::Builder QKnxNetIpDescriptionResponseProxy::builder()
 {
-    return QKnxNetIpDescriptionResponse::Builder();
+    return QKnxNetIpDescriptionResponseProxy::Builder();
 }
 
 
-// -- QKnxNetIpSearchResponse::Builder
+// -- QKnxNetIpSearchResponseProxy::Builder
 
-QKnxNetIpDescriptionResponse::Builder &
-QKnxNetIpDescriptionResponse::Builder::setDeviceHardware(const QKnxNetIpDib &ddib)
+QKnxNetIpDescriptionResponseProxy::Builder &
+QKnxNetIpDescriptionResponseProxy::Builder::setDeviceHardware(const QKnxNetIpDib &ddib)
 {
-    if (QKnxNetIpDeviceDibView(ddib).isValid())
+    if (QKnxNetIpDeviceDibProxy(ddib).isValid())
         m_ddib = ddib;
     return *this;
 }
 
-QKnxNetIpDescriptionResponse::Builder &
-    QKnxNetIpDescriptionResponse::Builder::setSupportedFamilies(const QKnxNetIpDib &sdib)
+QKnxNetIpDescriptionResponseProxy::Builder &
+    QKnxNetIpDescriptionResponseProxy::Builder::setSupportedFamilies(const QKnxNetIpDib &sdib)
 {
-    if (QKnxNetIpServiceFamiliesDibView(sdib).isValid())
+    if (QKnxNetIpServiceFamiliesDibProxy(sdib).isValid())
         m_sdib = sdib;
     return *this;
 }
 
-QKnxNetIpDescriptionResponse::Builder &
-    QKnxNetIpDescriptionResponse::Builder::setOptionalDibs(const QVector<QKnxNetIpDib> &dibs)
+QKnxNetIpDescriptionResponseProxy::Builder &
+    QKnxNetIpDescriptionResponseProxy::Builder::setOptionalDibs(const QVector<QKnxNetIpDib> &dibs)
 {
     m_optionalDibs = dibs;
     return *this;
 }
 
-QKnxNetIpFrame QKnxNetIpDescriptionResponse::Builder::create() const
+QKnxNetIpFrame QKnxNetIpDescriptionResponseProxy::Builder::create() const
 {
     return { QKnxNetIp::ServiceType::DescriptionResponse, m_ddib.bytes() + m_sdib.bytes()
         + [&]() -> QKnxByteArray {

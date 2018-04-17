@@ -37,14 +37,14 @@
 
 QT_BEGIN_NAMESPACE
 
-class Q_KNX_EXPORT QKnxNetIpRoutingIndication final
+class Q_KNX_EXPORT QKnxNetIpRoutingIndicationProxy final
 {
 public:
-    QKnxNetIpRoutingIndication() = delete;
-    ~QKnxNetIpRoutingIndication() = default;
+    QKnxNetIpRoutingIndicationProxy() = delete;
+    ~QKnxNetIpRoutingIndicationProxy() = default;
 
-    QKnxNetIpRoutingIndication(const QKnxNetIpFrame &&) = delete;
-    explicit QKnxNetIpRoutingIndication(const QKnxNetIpFrame &frame);
+    QKnxNetIpRoutingIndicationProxy(const QKnxNetIpFrame &&) = delete;
+    explicit QKnxNetIpRoutingIndicationProxy(const QKnxNetIpFrame &frame);
 
     bool isValid() const;
     QKnxLinkLayerFrame linkLayerFrame() const;
@@ -58,7 +58,7 @@ public:
     private:
         QKnxLinkLayerFrame m_llf;
     };
-    static QKnxNetIpRoutingIndication::Builder builder();
+    static QKnxNetIpRoutingIndicationProxy::Builder builder();
 
 private:
     const QKnxNetIpFrame &m_frame;

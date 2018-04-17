@@ -50,7 +50,7 @@ private slots:
 void tst_QKnxNetIpDisconnectResponse::testDefaultConstructor()
 {
     QKnxNetIpFrame frame;
-    QKnxNetIpDisconnectResponse response(frame);
+    QKnxNetIpDisconnectResponseProxy response(frame);
 
     QCOMPARE(response.isValid(), false);
     QCOMPARE(response.channelId(), quint8(0));
@@ -59,11 +59,11 @@ void tst_QKnxNetIpDisconnectResponse::testDefaultConstructor()
 
 void tst_QKnxNetIpDisconnectResponse::testConstructor()
 {
-    auto frame = QKnxNetIpDisconnectResponse::builder()
+    auto frame = QKnxNetIpDisconnectResponseProxy::builder()
         .setChannelId(200)
         .setStatus(QKnxNetIp::Error::NoMoreConnections)
         .create();
-    QKnxNetIpDisconnectResponse response(frame);
+    QKnxNetIpDisconnectResponseProxy response(frame);
 
     QCOMPARE(response.isValid(), true);
     QCOMPARE(frame.size(), quint16(8));
@@ -77,11 +77,11 @@ void tst_QKnxNetIpDisconnectResponse::testConstructor()
 
 void tst_QKnxNetIpDisconnectResponse::testConstructorNoError()
 {
-    auto frame = QKnxNetIpDisconnectResponse::builder()
+    auto frame = QKnxNetIpDisconnectResponseProxy::builder()
         .setChannelId(200)
         .setStatus(QKnxNetIp::Error::None)
         .create();
-    QKnxNetIpDisconnectResponse response(frame);
+    QKnxNetIpDisconnectResponseProxy response(frame);
 
     QCOMPARE(response.isValid(), true);
     QCOMPARE(frame.size(), quint16(8));
@@ -105,10 +105,10 @@ void tst_QKnxNetIpDisconnectResponse::testDebugStream()
         QtMessageHandler oldMessageHandler;
     } _(myMessageHandler);
 
-    qDebug() << QKnxNetIpDisconnectResponse::builder().create();
+    qDebug() << QKnxNetIpDisconnectResponseProxy::builder().create();
     QCOMPARE(s_msg, QString::fromLatin1("0x0610020a00080000"));
 
-    qDebug() << QKnxNetIpDisconnectResponse::builder()
+    qDebug() << QKnxNetIpDisconnectResponseProxy::builder()
         .setChannelId(200)
         .setStatus(QKnxNetIp::Error::None)
         .create();

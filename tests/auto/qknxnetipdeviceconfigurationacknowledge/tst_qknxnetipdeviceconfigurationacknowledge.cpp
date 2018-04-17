@@ -49,19 +49,19 @@ private slots:
 void tst_QKnxNetIpDeviceConfigurationAcknowledge::testDefaultConstructor()
 {
     QKnxNetIpFrame frame;
-    QKnxNetIpDeviceConfigurationAcknowledge acknowledge(frame);
+    QKnxNetIpDeviceConfigurationAcknowledgeProxy acknowledge(frame);
 
     QCOMPARE(acknowledge.isValid(), false);
 }
 
 void tst_QKnxNetIpDeviceConfigurationAcknowledge::testConstructor()
 {
-    auto frame = QKnxNetIpDeviceConfigurationAcknowledge::builder()
+    auto frame = QKnxNetIpDeviceConfigurationAcknowledgeProxy::builder()
         .setChannelId(255)
         .setSequenceNumber(250)
         .setStatus(QKnxNetIp::Error::ConnectionId)
         .create();
-    QKnxNetIpDeviceConfigurationAcknowledge acknowledge(frame);
+    QKnxNetIpDeviceConfigurationAcknowledgeProxy acknowledge(frame);
 
     QCOMPARE(acknowledge.isValid(), true);
     QCOMPARE(frame.size(), quint16(10));
@@ -87,10 +87,10 @@ void tst_QKnxNetIpDeviceConfigurationAcknowledge::testDebugStream()
         QtMessageHandler oldMessageHandler;
     } _(myMessageHandler);
 
-    qDebug() << QKnxNetIpDeviceConfigurationAcknowledge::builder().create();
+    qDebug() << QKnxNetIpDeviceConfigurationAcknowledgeProxy::builder().create();
     QCOMPARE(s_msg, QString::fromLatin1("0x06100311000a04000000"));
 
-    qDebug() << QKnxNetIpDeviceConfigurationAcknowledge::builder()
+    qDebug() << QKnxNetIpDeviceConfigurationAcknowledgeProxy::builder()
         .setChannelId(255)
         .setSequenceNumber(250)
         .setStatus(QKnxNetIp::Error::None)

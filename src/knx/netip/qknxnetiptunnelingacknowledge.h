@@ -36,14 +36,14 @@
 
 QT_BEGIN_NAMESPACE
 
-class Q_KNX_EXPORT QKnxNetIpTunnelingAcknowledge final
+class Q_KNX_EXPORT QKnxNetIpTunnelingAcknowledgeProxy final
 {
 public:
-    QKnxNetIpTunnelingAcknowledge() = delete;
-    ~QKnxNetIpTunnelingAcknowledge() = default;
+    QKnxNetIpTunnelingAcknowledgeProxy() = delete;
+    ~QKnxNetIpTunnelingAcknowledgeProxy() = default;
 
-    QKnxNetIpTunnelingAcknowledge(const QKnxNetIpFrame &&) = delete;
-    explicit QKnxNetIpTunnelingAcknowledge(const QKnxNetIpFrame &frame);
+    QKnxNetIpTunnelingAcknowledgeProxy(const QKnxNetIpFrame &&) = delete;
+    explicit QKnxNetIpTunnelingAcknowledgeProxy(const QKnxNetIpFrame &frame);
 
     bool isValid() const;
 
@@ -65,7 +65,7 @@ public:
         quint8 m_sequenceNumber;
         QKnxNetIp::Error m_status;
     };
-    static QKnxNetIpTunnelingAcknowledge::Builder builder();
+    static QKnxNetIpTunnelingAcknowledgeProxy::Builder builder();
 
 private:
     const QKnxNetIpFrame &m_frame;

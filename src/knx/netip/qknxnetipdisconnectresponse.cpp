@@ -31,49 +31,49 @@
 
 QT_BEGIN_NAMESPACE
 
-QKnxNetIpDisconnectResponse::QKnxNetIpDisconnectResponse(const QKnxNetIpFrame &frame)
+QKnxNetIpDisconnectResponseProxy::QKnxNetIpDisconnectResponseProxy(const QKnxNetIpFrame &frame)
     : m_frame(frame)
 {}
 
-quint8 QKnxNetIpDisconnectResponse::channelId() const
+quint8 QKnxNetIpDisconnectResponseProxy::channelId() const
 {
     return m_frame.constData().value(0);
 }
 
-QKnxNetIp::Error QKnxNetIpDisconnectResponse::status() const
+QKnxNetIp::Error QKnxNetIpDisconnectResponseProxy::status() const
 {
     return QKnxNetIp::Error(m_frame.constData().value(1));
 }
 
-bool QKnxNetIpDisconnectResponse::isValid() const
+bool QKnxNetIpDisconnectResponseProxy::isValid() const
 {
     return m_frame.isValid() && m_frame.size() == 8
         && m_frame.serviceType() == QKnxNetIp::ServiceType::DisconnectResponse;
 }
 
-QKnxNetIpDisconnectResponse::Builder QKnxNetIpDisconnectResponse::builder()
+QKnxNetIpDisconnectResponseProxy::Builder QKnxNetIpDisconnectResponseProxy::builder()
 {
-    return QKnxNetIpDisconnectResponse::Builder();
+    return QKnxNetIpDisconnectResponseProxy::Builder();
 }
 
 
-// -- QKnxNetIpDisconnectResponse::Builder
+// -- QKnxNetIpDisconnectResponseProxy::Builder
 
-QKnxNetIpDisconnectResponse::Builder &
-    QKnxNetIpDisconnectResponse::Builder::setChannelId(quint8 channelId)
+QKnxNetIpDisconnectResponseProxy::Builder &
+    QKnxNetIpDisconnectResponseProxy::Builder::setChannelId(quint8 channelId)
 {
     m_channelId = channelId;
     return *this;
 }
 
-QKnxNetIpDisconnectResponse::Builder &
-    QKnxNetIpDisconnectResponse::Builder::setStatus(QKnxNetIp::Error status)
+QKnxNetIpDisconnectResponseProxy::Builder &
+    QKnxNetIpDisconnectResponseProxy::Builder::setStatus(QKnxNetIp::Error status)
 {
     m_status = status;
     return *this;
 }
 
-QKnxNetIpFrame QKnxNetIpDisconnectResponse::Builder::create() const
+QKnxNetIpFrame QKnxNetIpDisconnectResponseProxy::Builder::create() const
 {
     return { QKnxNetIp::ServiceType::DisconnectResponse, QKnxByteArray { m_channelId,
         quint8(m_status) } };

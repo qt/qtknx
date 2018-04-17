@@ -49,7 +49,7 @@ private slots:
 void tst_QKnxNetIpSearchResponse::testDefaultConstructor()
 {
     QKnxNetIpFrame frame;
-    QKnxNetIpSearchResponse search(frame);
+    QKnxNetIpSearchResponseProxy search(frame);
 
     QCOMPARE(search.isValid(), false);
     QCOMPARE(search.controlEndpoint().isValid(), false);
@@ -59,9 +59,9 @@ void tst_QKnxNetIpSearchResponse::testDefaultConstructor()
 
 void tst_QKnxNetIpSearchResponse::testConstructor()
 {
-    auto endpoint = QKnxNetIpHpaiView::builder().setHostAddress(QHostAddress::LocalHost)
+    auto endpoint = QKnxNetIpHpaiProxy::builder().setHostAddress(QHostAddress::LocalHost)
         .setPort(3671).create();
-    auto hardware = QKnxNetIpDeviceDibView::builder()
+    auto hardware = QKnxNetIpDeviceDibProxy::builder()
         .setMediumType(QKnx::MediumType::NetIP)
         .setDeviceStatus(QKnxNetIp::ProgrammingMode::Active)
         .setIndividualAddress(QKnxAddress::Individual::Unregistered)
@@ -71,15 +71,15 @@ void tst_QKnxNetIpSearchResponse::testConstructor()
         .setMacAddress(QKnxByteArray::fromHex("bcaec56690f9"))
         .setDeviceName(QByteArray("qt.io KNX device"))
         .create();
-    auto families = QKnxNetIpServiceFamiliesDibView::builder()
+    auto families = QKnxNetIpServiceFamiliesDibProxy::builder()
         .setServiceInfos({ { QKnxNetIp::ServiceFamily::Core, 10 } }).create();
 
-    auto frame = QKnxNetIpSearchResponse::builder()
+    auto frame = QKnxNetIpSearchResponseProxy::builder()
         .setControlEndpoint(endpoint)
         .setDeviceHardware(hardware)
         .setSupportedFamilies(families)
         .create();
-    QKnxNetIpSearchResponse search(frame);
+    QKnxNetIpSearchResponseProxy search(frame);
 
     QCOMPARE(search.isValid(), true);
     QCOMPARE(frame.size(), quint16(72));
@@ -122,16 +122,16 @@ void tst_QKnxNetIpSearchResponse::testDebugStream()
         QtMessageHandler oldMessageHandler;
     } _(myMessageHandler);
 
-    qDebug() << QKnxNetIpSearchResponse::builder().create();
+    qDebug() << QKnxNetIpSearchResponseProxy::builder().create();
     QCOMPARE(s_msg, QString::fromLatin1("0x061002020006"));
 
-    qDebug() << QKnxNetIpSearchResponse::builder()
-        .setControlEndpoint(QKnxNetIpHpaiView::builder()
+    qDebug() << QKnxNetIpSearchResponseProxy::builder()
+        .setControlEndpoint(QKnxNetIpHpaiProxy::builder()
             .setHostAddress(QHostAddress::LocalHost)
             .setPort(3671).create())
-        .setSupportedFamilies(QKnxNetIpServiceFamiliesDibView::builder()
+        .setSupportedFamilies(QKnxNetIpServiceFamiliesDibProxy::builder()
             .setServiceInfos({ { QKnxNetIp::ServiceFamily::Core, 10 } }).create())
-        .setDeviceHardware(QKnxNetIpDeviceDibView::builder()
+        .setDeviceHardware(QKnxNetIpDeviceDibProxy::builder()
             .setMediumType(QKnx::MediumType::NetIP)
             .setDeviceStatus(QKnxNetIp::ProgrammingMode::Active)
             .setIndividualAddress(QKnxAddress::Individual::Unregistered)

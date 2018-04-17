@@ -49,7 +49,7 @@ private slots:
 void tst_QKnxNetIpConnectionStateResponse::testDefaultConstructor()
 {
     QKnxNetIpFrame frame;
-    QKnxNetIpConnectionStateResponse connectionStateResponse(frame);
+    QKnxNetIpConnectionStateResponseProxy connectionStateResponse(frame);
 
     QCOMPARE(connectionStateResponse.isValid(), false);
     QCOMPARE(connectionStateResponse.channelId(), quint8(0));
@@ -59,11 +59,11 @@ void tst_QKnxNetIpConnectionStateResponse::testDefaultConstructor()
 void tst_QKnxNetIpConnectionStateResponse::testConstructor()
 {
     quint8 channelId = 200;
-    auto frame = QKnxNetIpConnectionStateResponse::builder()
+    auto frame = QKnxNetIpConnectionStateResponseProxy::builder()
         .setChannelId(channelId)
         .setStatus(QKnxNetIp::Error::ConnectionId)
         .create();
-    QKnxNetIpConnectionStateResponse connectionStateResponse(frame);
+    QKnxNetIpConnectionStateResponseProxy connectionStateResponse(frame);
 
     QCOMPARE(connectionStateResponse.isValid(), true);
     QCOMPARE(frame.size(), quint16(8));
@@ -86,10 +86,10 @@ void tst_QKnxNetIpConnectionStateResponse::testDebugStream()
         QtMessageHandler oldMessageHandler;
     } _(myMessageHandler);
 
-    qDebug() << QKnxNetIpConnectionStateResponse::builder().create();
+    qDebug() << QKnxNetIpConnectionStateResponseProxy::builder().create();
     QCOMPARE(s_msg, QString::fromLatin1("0x0610020800080000"));
 
-    qDebug() << QKnxNetIpConnectionStateResponse::builder()
+    qDebug() << QKnxNetIpConnectionStateResponseProxy::builder()
         .setChannelId(200)
         .setStatus(QKnxNetIp::Error::ConnectionId)
         .create();

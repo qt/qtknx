@@ -49,20 +49,20 @@ private slots:
 void tst_QKnxNetIpSearchRequest::testDefaultConstructor()
 {
     QKnxNetIpFrame frame;
-    QKnxNetIpSearchRequest search(frame);
+    QKnxNetIpSearchRequestProxy search(frame);
     QCOMPARE(search.isValid(), false);
     QCOMPARE(search.discoveryEndpoint().isValid(), false);
 }
 
 void tst_QKnxNetIpSearchRequest::testConstructor()
 {
-    auto frame = QKnxNetIpSearchRequest::builder()
-        .setDiscoveryEndpoint(QKnxNetIpHpaiView::builder()
+    auto frame = QKnxNetIpSearchRequestProxy::builder()
+        .setDiscoveryEndpoint(QKnxNetIpHpaiProxy::builder()
             .setHostAddress(QHostAddress::LocalHost)
             .setPort(3671).create()
         ).create();
 
-    QKnxNetIpSearchRequest search(frame);
+    QKnxNetIpSearchRequestProxy search(frame);
     QCOMPARE(search.isValid(), true);
     QCOMPARE(frame.size(), quint16(14));
     QCOMPARE(frame.bytes(), QKnxByteArray::fromHex("06100201000e08017f0000010e57"));
@@ -84,11 +84,11 @@ void tst_QKnxNetIpSearchRequest::testDebugStream()
         QtMessageHandler oldMessageHandler;
     } _(myMessageHandler);
 
-    qDebug() << QKnxNetIpSearchRequest::builder().create();
+    qDebug() << QKnxNetIpSearchRequestProxy::builder().create();
     QCOMPARE(s_msg, QStringLiteral("0x061002010006"));
 
-    qDebug() << QKnxNetIpSearchRequest::builder()
-        .setDiscoveryEndpoint(QKnxNetIpHpaiView::builder()
+    qDebug() << QKnxNetIpSearchRequestProxy::builder()
+        .setDiscoveryEndpoint(QKnxNetIpHpaiProxy::builder()
             .setHostAddress(QHostAddress::LocalHost)
             .setPort(3671).create()
         ).create();

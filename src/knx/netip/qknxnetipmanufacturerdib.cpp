@@ -33,15 +33,15 @@
 QT_BEGIN_NAMESPACE
 
 /*!
-    \class QKnxNetIpManufacturerDibView
+    \class QKnxNetIpManufacturerDibProxy
 
     \inmodule QtKnx
-    \brief The QKnxNetIpManufacturerDibView class provides the means to read
+    \brief The QKnxNetIpManufacturerDibProxy class provides the means to read
     the manufacturer specific device information from the generic \l QKnxNetIpDib
     class and to create a KNXnet/IP manufacturer specific device information
     block (DIB) structure.
 
-    \note When using QKnxNetIpManufacturerDibView, care must be taken to
+    \note When using QKnxNetIpManufacturerDibProxy, care must be taken to
     ensure that the referenced KNXnet/IP DIB structure outlives the view on all
     code paths, lest the view ends up referencing deleted data.
 
@@ -50,7 +50,7 @@ QT_BEGIN_NAMESPACE
     \code
         auto dib = QKnxNetIpDib::fromBytes(...);
 
-        QKnxNetIpManufacturerDibView view(dib);
+        QKnxNetIpManufacturerDibProxy view(dib);
         if (!view.isValid())
             return;
 
@@ -63,24 +63,24 @@ QT_BEGIN_NAMESPACE
 
 /*!
     \internal
-    \fn QKnxNetIpManufacturerDibView::QKnxNetIpManufacturerDibView()
+    \fn QKnxNetIpManufacturerDibProxy::QKnxNetIpManufacturerDibProxy()
 */
 
 /*!
     \internal
-    \fn QKnxNetIpManufacturerDibView::~QKnxNetIpManufacturerDibView()
+    \fn QKnxNetIpManufacturerDibProxy::~QKnxNetIpManufacturerDibProxy()
 */
 
 /*!
     \internal
-    \fn QKnxNetIpManufacturerDibView::QKnxNetIpManufacturerDibView(const QKnxNetIpDib &&)
+    \fn QKnxNetIpManufacturerDibProxy::QKnxNetIpManufacturerDibProxy(const QKnxNetIpDib &&)
 */
 
 /*!
-    Constructs a wrapper object with the specified a KNXnet/IP DIB structure
+    Constructs a proxy object with the specified a KNXnet/IP DIB structure
     \a dib to read a manufacturer specific device information block.
 */
-QKnxNetIpManufacturerDibView::QKnxNetIpManufacturerDibView(const QKnxNetIpDib &dib)
+QKnxNetIpManufacturerDibProxy::QKnxNetIpManufacturerDibProxy(const QKnxNetIpDib &dib)
     : m_dib(dib)
 {}
 
@@ -88,7 +88,7 @@ QKnxNetIpManufacturerDibView::QKnxNetIpManufacturerDibView(const QKnxNetIpDib &d
     Returns \c true if the KNXnet/IP structure to create the object is a valid
     KNXnet/IP DIB structure; otherwise returns \c false.
 */
-bool QKnxNetIpManufacturerDibView::isValid() const
+bool QKnxNetIpManufacturerDibProxy::isValid() const
 {
     return m_dib.isValid() && m_dib.size() >= 4 && (m_dib.size() % 2 == 0) // must be even sized
         && m_dib.code() == QKnxNetIp::DescriptionType::ManufacturerData;
@@ -99,7 +99,7 @@ bool QKnxNetIpManufacturerDibView::isValid() const
     that was passed during construction was valid; otherwise returns
     \l QKnxNetIp::Unknown.
 */
-QKnxNetIp::DescriptionType QKnxNetIpManufacturerDibView::descriptionType() const
+QKnxNetIp::DescriptionType QKnxNetIpManufacturerDibProxy::descriptionType() const
 {
     if (isValid())
         return m_dib.code();
@@ -110,7 +110,7 @@ QKnxNetIp::DescriptionType QKnxNetIpManufacturerDibView::descriptionType() const
     Returns the manufacturer ID of this KNXnet/IP structure if the object
     that was passed during construction was valid; otherwise returns \c 0.
 */
-quint16 QKnxNetIpManufacturerDibView::manufacturerId() const
+quint16 QKnxNetIpManufacturerDibProxy::manufacturerId() const
 {
     if (isValid())
         return QKnxUtils::QUint16::fromBytes(m_dib.constData());
@@ -121,7 +121,7 @@ quint16 QKnxNetIpManufacturerDibView::manufacturerId() const
     Returns the manufacturer data  if the object that was passed during
     construction was valid; otherwise returns an empty byte array.
 */
-QKnxByteArray QKnxNetIpManufacturerDibView::manufacturerData() const
+QKnxByteArray QKnxNetIpManufacturerDibProxy::manufacturerData() const
 {
     if (isValid())
         return m_dib.constData().mid(2);
@@ -131,17 +131,17 @@ QKnxByteArray QKnxNetIpManufacturerDibView::manufacturerData() const
 /*!
     Returns a builder object to create a KNXnet/IP manufacturer DIB structure.
 */
-QKnxNetIpManufacturerDibView::Builder QKnxNetIpManufacturerDibView::builder()
+QKnxNetIpManufacturerDibProxy::Builder QKnxNetIpManufacturerDibProxy::builder()
 {
-    return QKnxNetIpManufacturerDibView::Builder();
+    return QKnxNetIpManufacturerDibProxy::Builder();
 }
 
 
 /*!
-    \class QKnxNetIpManufacturerDibView::Builder
+    \class QKnxNetIpManufacturerDibProxy::Builder
 
     \inmodule QtKnx
-    \brief The QKnxNetIpManufacturerDibView::Builder class creates a
+    \brief The QKnxNetIpManufacturerDibProxy::Builder class creates a
     KNXnet/IP manufacturer DIB structure.
 
     A KNXnet/IP manufacturer DIB structure contains the device manufacturer
@@ -153,7 +153,7 @@ QKnxNetIpManufacturerDibView::Builder QKnxNetIpManufacturerDibView::builder()
         quint16 dummyManufacturerId = 1000;
         constexpr quint8 data[] = "Some additional manufacturer data.";
 
-        auto dib = QKnxNetIpManufacturerDibView::builder()
+        auto dib = QKnxNetIpManufacturerDibProxy::builder()
             .setManufacturerId(dummyManufacturerId)
             .setManufacturerData({ data, sizeof(data) })
             .create();
@@ -164,8 +164,8 @@ QKnxNetIpManufacturerDibView::Builder QKnxNetIpManufacturerDibView::builder()
     Sets the manufacturer ID of the KNXnet/IP DIB structure to \a manufacturerId
     and returns a reference to the builder.
 */
-QKnxNetIpManufacturerDibView::Builder &
-    QKnxNetIpManufacturerDibView::Builder::setManufacturerId(quint16 manufacturerId)
+QKnxNetIpManufacturerDibProxy::Builder &
+    QKnxNetIpManufacturerDibProxy::Builder::setManufacturerId(quint16 manufacturerId)
 {
     m_manufacturerId = manufacturerId;
     return *this;
@@ -175,8 +175,8 @@ QKnxNetIpManufacturerDibView::Builder &
     Sets the manufacturer data of the KNXnet/IP DIB structure to
     \a manufacturerData and returns a reference to the builder.
 */
-QKnxNetIpManufacturerDibView::Builder &
-    QKnxNetIpManufacturerDibView::Builder::setManufacturerData(const QKnxByteArray &manufacturerData)
+QKnxNetIpManufacturerDibProxy::Builder &
+    QKnxNetIpManufacturerDibProxy::Builder::setManufacturerData(const QKnxByteArray &manufacturerData)
 {
     m_manufacturerData = manufacturerData;
     if ((m_manufacturerData.size() % 2) == 1)
@@ -193,7 +193,7 @@ QKnxNetIpManufacturerDibView::Builder &
 
     \sa isValid()
 */
-QKnxNetIpDib QKnxNetIpManufacturerDibView::Builder::create() const
+QKnxNetIpDib QKnxNetIpManufacturerDibProxy::Builder::create() const
 {
     return { QKnxNetIp::DescriptionType::ManufacturerData,
         QKnxUtils::QUint16::bytes(m_manufacturerId) + m_manufacturerData };

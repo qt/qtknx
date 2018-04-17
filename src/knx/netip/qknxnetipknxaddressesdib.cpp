@@ -32,15 +32,15 @@
 QT_BEGIN_NAMESPACE
 
 /*!
-    \class QKnxNetIpKnxAddressesDibView
+    \class QKnxNetIpKnxAddressesDibProxy
 
     \inmodule QtKnx
-    \brief The QKnxNetIpKnxAddressesDibView class provides the means to read
+    \brief The QKnxNetIpKnxAddressesDibProxy class provides the means to read
     all assigned individual addresses of a KNXnet/IP device from the generic
     \l QKnxNetIpDib class and to create a KNXnet/IP addresses device information
     block (DIB) structure.
 
-    \note When using QKnxNetIpKnxAddressesDibView, care must be taken to
+    \note When using QKnxNetIpKnxAddressesDibProxy, care must be taken to
     ensure that the referenced KNXnet/IP DIB structure outlives the view on all
     code paths, lest the view ends up referencing deleted data.
 
@@ -48,7 +48,7 @@ QT_BEGIN_NAMESPACE
     \code
         auto dib = QKnxNetIpDib::fromBytes(...);
 
-        QKnxNetIpKnxAddressesDibView view(dib);
+        QKnxNetIpKnxAddressesDibProxy view(dib);
         if (!view.isValid())
             return;
 
@@ -60,24 +60,24 @@ QT_BEGIN_NAMESPACE
 
 /*!
     \internal
-    \fn QKnxNetIpKnxAddressesDibView::QKnxNetIpKnxAddressesDibView()
+    \fn QKnxNetIpKnxAddressesDibProxy::QKnxNetIpKnxAddressesDibProxy()
 */
 
 /*!
     \internal
-    \fn QKnxNetIpKnxAddressesDibView::~QKnxNetIpKnxAddressesDibView()
+    \fn QKnxNetIpKnxAddressesDibProxy::~QKnxNetIpKnxAddressesDibProxy()
 */
 
 /*!
     \internal
-    \fn QKnxNetIpKnxAddressesDibView::QKnxNetIpKnxAddressesDibView(const QKnxNetIpDib &&)
+    \fn QKnxNetIpKnxAddressesDibProxy::QKnxNetIpKnxAddressesDibProxy(const QKnxNetIpDib &&)
 */
 
 /*!
-    Constructs a wrapper object with the specified a KNXnet/IP DIB structure
+    Constructs a proxy object with the specified a KNXnet/IP DIB structure
     \a dib to read all assigned individual addresses of a KNXnet/IP device.
 */
-QKnxNetIpKnxAddressesDibView::QKnxNetIpKnxAddressesDibView(const QKnxNetIpDib &dib)
+QKnxNetIpKnxAddressesDibProxy::QKnxNetIpKnxAddressesDibProxy(const QKnxNetIpDib &dib)
     : m_dib(dib)
 {}
 
@@ -85,7 +85,7 @@ QKnxNetIpKnxAddressesDibView::QKnxNetIpKnxAddressesDibView(const QKnxNetIpDib &d
     Returns \c true if the KNXnet/IP structure to create the object is a valid
     KNXnet/IP DIB structure; otherwise returns \c false.
 */
-bool QKnxNetIpKnxAddressesDibView::isValid() const
+bool QKnxNetIpKnxAddressesDibProxy::isValid() const
 {
     return m_dib.isValid() && (m_dib.size() % 2 == 0) // must be even sized
         && m_dib.size() >= 2 // and stores the header and at least one address
@@ -97,7 +97,7 @@ bool QKnxNetIpKnxAddressesDibView::isValid() const
     that was passed during construction was valid; otherwise returns
     \l QKnxNetIp::Unknown.
 */
-QKnxNetIp::DescriptionType QKnxNetIpKnxAddressesDibView::descriptionType() const
+QKnxNetIp::DescriptionType QKnxNetIpKnxAddressesDibProxy::descriptionType() const
 {
     if (isValid())
         return m_dib.code();
@@ -109,7 +109,7 @@ QKnxNetIp::DescriptionType QKnxNetIpKnxAddressesDibView::descriptionType() const
     carried by this KNXnet/IP DIB structure if the object that was passed
     during construction was valid; otherwise returns an empty vector.
 */
-QVector<QKnxAddress> QKnxNetIpKnxAddressesDibView::individualAddresses() const
+QVector<QKnxAddress> QKnxNetIpKnxAddressesDibProxy::individualAddresses() const
 {
     QVector<QKnxAddress> addresses;
     if (!isValid())
@@ -124,17 +124,17 @@ QVector<QKnxAddress> QKnxNetIpKnxAddressesDibView::individualAddresses() const
 /*!
     Returns a builder object to create a KNXnet/IP addresses DIB structure.
 */
-QKnxNetIpKnxAddressesDibView::Builder QKnxNetIpKnxAddressesDibView::builder()
+QKnxNetIpKnxAddressesDibProxy::Builder QKnxNetIpKnxAddressesDibProxy::builder()
 {
-    return QKnxNetIpKnxAddressesDibView::Builder();
+    return QKnxNetIpKnxAddressesDibProxy::Builder();
 }
 
 
 /*!
-    \class QKnxNetIpKnxAddressesDibView::Builder
+    \class QKnxNetIpKnxAddressesDibProxy::Builder
 
     \inmodule QtKnx
-    \brief The QKnxNetIpKnxAddressesDibView::Builder class creates a
+    \brief The QKnxNetIpKnxAddressesDibProxy::Builder class creates a
     KNXnet/IP addresses DIB structure.
 
     A KNXnet/IP addresses DIB structure contains the assigned individual
@@ -142,7 +142,7 @@ QKnxNetIpKnxAddressesDibView::Builder QKnxNetIpKnxAddressesDibView::builder()
 
     The common way to create such a DIB structure is:
     \code
-         auto dib = QKnxNetIpKnxAddressesDibView::builder()
+         auto dib = QKnxNetIpKnxAddressesDibProxy::builder()
             .setIndividualAddresses({
                 { QKnxAddress::Type::Individual, 1976 },
                 { QKnxAddress::Type::Individual, 1978 },
@@ -156,8 +156,8 @@ QKnxNetIpKnxAddressesDibView::Builder QKnxNetIpKnxAddressesDibView::builder()
     Sets the individual addresses of the KNXnet/IP DIB structure to \a addresses
     and returns a reference to the builder.
 */
-QKnxNetIpKnxAddressesDibView::Builder &
-    QKnxNetIpKnxAddressesDibView::Builder::setIndividualAddresses(const QVector<QKnxAddress> &addresses)
+QKnxNetIpKnxAddressesDibProxy::Builder &
+    QKnxNetIpKnxAddressesDibProxy::Builder::setIndividualAddresses(const QVector<QKnxAddress> &addresses)
 {
     m_addresses = addresses;
 
@@ -178,7 +178,7 @@ QKnxNetIpKnxAddressesDibView::Builder &
 
     \sa isValid()
 */
-QKnxNetIpDib QKnxNetIpKnxAddressesDibView::Builder::create() const
+QKnxNetIpDib QKnxNetIpKnxAddressesDibProxy::Builder::create() const
 {
     return { QKnxNetIp::DescriptionType::KnxAddresses, [&]() -> QKnxByteArray {
         QKnxByteArray bytes;

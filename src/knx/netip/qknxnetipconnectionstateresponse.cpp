@@ -31,49 +31,49 @@
 
 QT_BEGIN_NAMESPACE
 
-QKnxNetIpConnectionStateResponse::QKnxNetIpConnectionStateResponse(const QKnxNetIpFrame &frame)
+QKnxNetIpConnectionStateResponseProxy::QKnxNetIpConnectionStateResponseProxy(const QKnxNetIpFrame &frame)
     : m_frame(frame)
 {}
 
-quint8 QKnxNetIpConnectionStateResponse::channelId() const
+quint8 QKnxNetIpConnectionStateResponseProxy::channelId() const
 {
     return m_frame.constData().value(0);
 }
 
-QKnxNetIp::Error QKnxNetIpConnectionStateResponse::status() const
+QKnxNetIp::Error QKnxNetIpConnectionStateResponseProxy::status() const
 {
     return QKnxNetIp::Error(m_frame.constData().value(1));
 }
 
-bool QKnxNetIpConnectionStateResponse::isValid() const
+bool QKnxNetIpConnectionStateResponseProxy::isValid() const
 {
     return m_frame.isValid() && m_frame.size() == 8
         && m_frame.serviceType() == QKnxNetIp::ServiceType::ConnectionStateResponse;
 }
 
-QKnxNetIpConnectionStateResponse::Builder QKnxNetIpConnectionStateResponse::builder()
+QKnxNetIpConnectionStateResponseProxy::Builder QKnxNetIpConnectionStateResponseProxy::builder()
 {
-    return QKnxNetIpConnectionStateResponse::Builder();
+    return QKnxNetIpConnectionStateResponseProxy::Builder();
 }
 
 
-// -- QKnxNetIpConnectionStateResponse::Builder
+// -- QKnxNetIpConnectionStateResponseProxy::Builder
 
-QKnxNetIpConnectionStateResponse::Builder &
-    QKnxNetIpConnectionStateResponse::Builder::setChannelId(quint8 channelId)
+QKnxNetIpConnectionStateResponseProxy::Builder &
+    QKnxNetIpConnectionStateResponseProxy::Builder::setChannelId(quint8 channelId)
 {
     m_channelId = channelId;
     return *this;
 }
 
-QKnxNetIpConnectionStateResponse::Builder &
-    QKnxNetIpConnectionStateResponse::Builder::setStatus(QKnxNetIp::Error status)
+QKnxNetIpConnectionStateResponseProxy::Builder &
+    QKnxNetIpConnectionStateResponseProxy::Builder::setStatus(QKnxNetIp::Error status)
 {
     m_status = status;
     return *this;
 }
 
-QKnxNetIpFrame QKnxNetIpConnectionStateResponse::Builder::create() const
+QKnxNetIpFrame QKnxNetIpConnectionStateResponseProxy::Builder::create() const
 {
     QKnxByteArray data;
     switch (m_status) {

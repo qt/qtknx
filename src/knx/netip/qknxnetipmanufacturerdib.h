@@ -35,14 +35,14 @@
 
 QT_BEGIN_NAMESPACE
 
-class Q_KNX_EXPORT QKnxNetIpManufacturerDibView final
+class Q_KNX_EXPORT QKnxNetIpManufacturerDibProxy final
 {
 public:
-    QKnxNetIpManufacturerDibView() = delete;
-    ~QKnxNetIpManufacturerDibView() = default;
+    QKnxNetIpManufacturerDibProxy() = delete;
+    ~QKnxNetIpManufacturerDibProxy() = default;
 
-    QKnxNetIpManufacturerDibView(const QKnxNetIpDib &&) = delete;
-    explicit QKnxNetIpManufacturerDibView(const QKnxNetIpDib &dib);
+    QKnxNetIpManufacturerDibProxy(const QKnxNetIpDib &&) = delete;
+    explicit QKnxNetIpManufacturerDibProxy(const QKnxNetIpDib &dib);
 
     bool isValid() const;
 
@@ -62,7 +62,7 @@ public:
         quint16 m_manufacturerId;
         QKnxByteArray m_manufacturerData;
     };
-    static QKnxNetIpManufacturerDibView::Builder builder();
+    static QKnxNetIpManufacturerDibProxy::Builder builder();
 
 private:
     const QKnxNetIpDib &m_dib;

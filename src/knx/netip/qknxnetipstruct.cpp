@@ -41,7 +41,7 @@ QT_BEGIN_NAMESPACE
     The size of a KNXnet/IP host protocol address information (HPAI) structure
     varies depending on the host protocol.
 
-    \sa QKnxNetIpConnectResponse, QKnxNetIpHpaiView
+    \sa QKnxNetIpConnectResponseProxy, QKnxNetIpHpaiProxy
 */
 
 /*!
@@ -55,7 +55,7 @@ QT_BEGIN_NAMESPACE
     substructures that contain both host protocol independent data and host
     protocol dependent data.
 
-    \sa QKnxNetIpConnectResponse, QKnxNetIpCriView
+    \sa QKnxNetIpConnectResponseProxy, QKnxNetIpCriProxy
 */
 
 /*!
@@ -69,7 +69,7 @@ QT_BEGIN_NAMESPACE
     substructures that contain both host protocol independent data and host
     protocol dependent data.
 
-    \sa QKnxNetIpConnectResponse, QKnxNetIpCrdView
+    \sa QKnxNetIpConnectResponseProxy, QKnxNetIpCrdProxy
 */
 
 /*!
@@ -80,18 +80,18 @@ QT_BEGIN_NAMESPACE
     that is used when responding to a KNXnet/IP description request.
 
     At least two KNXnet/IP description information block (DIB) structures are
-    returned in response to \l QKnxNetIpDescriptionRequest. They contain
+    returned in response to \l QKnxNetIpDescriptionRequestProxy. They contain
     information about the device capabilities on device hardware and the
     supported service families. More than two DIB structures may be returned
-    in one \l QKnxNetIpDescriptionResponse frame.
+    in one \l QKnxNetIpDescriptionResponseProxy frame.
 
     The first octet of each DIB contains the length of the DIB structure.
     The second octet declares the DIB structure type. Then the actual data of
     the DIB follows.
 
-    \sa QKnxNetIpConfigDibView, QKnxNetIpCurrentConfigDibView,
-        QKnxNetIpDeviceDibView, QKnxNetIpKnxAddressesDibView,
-        QKnxNetIpManufacturerDibView, QKnxNetIpServiceFamiliesDibView
+    \sa QKnxNetIpConfigDibProxy, QKnxNetIpCurrentConfigDibProxy,
+        QKnxNetIpDeviceDibProxy, QKnxNetIpKnxAddressesDibProxy,
+        QKnxNetIpManufacturerDibProxy, QKnxNetIpServiceFamiliesDibProxy
 */
 
 /*!

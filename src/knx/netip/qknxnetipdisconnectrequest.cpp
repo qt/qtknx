@@ -31,49 +31,49 @@
 
 QT_BEGIN_NAMESPACE
 
-QKnxNetIpDisconnectRequest::QKnxNetIpDisconnectRequest(const QKnxNetIpFrame &frame)
+QKnxNetIpDisconnectRequestProxy::QKnxNetIpDisconnectRequestProxy(const QKnxNetIpFrame &frame)
     : m_frame(frame)
 {}
 
-quint8 QKnxNetIpDisconnectRequest::channelId() const
+quint8 QKnxNetIpDisconnectRequestProxy::channelId() const
 {
     return m_frame.constData().value(0);
 }
 
-QKnxNetIpHpai QKnxNetIpDisconnectRequest::controlEndpoint() const
+QKnxNetIpHpai QKnxNetIpDisconnectRequestProxy::controlEndpoint() const
 {
     return QKnxNetIpHpai::fromBytes(m_frame.constData(), 2);
 }
 
-bool QKnxNetIpDisconnectRequest::isValid() const
+bool QKnxNetIpDisconnectRequestProxy::isValid() const
 {
     return m_frame.isValid() && m_frame.size() == 16
          && m_frame.serviceType() == QKnxNetIp::ServiceType::DisconnectRequest;
 }
 
-QKnxNetIpDisconnectRequest::Builder QKnxNetIpDisconnectRequest::builder()
+QKnxNetIpDisconnectRequestProxy::Builder QKnxNetIpDisconnectRequestProxy::builder()
 {
-    return QKnxNetIpDisconnectRequest::Builder();
+    return QKnxNetIpDisconnectRequestProxy::Builder();
 }
 
 
-// -- QKnxNetIpDisconnectRequest::Builder
+// -- QKnxNetIpDisconnectRequestProxy::Builder
 
-QKnxNetIpDisconnectRequest::Builder &
-    QKnxNetIpDisconnectRequest::Builder::setChannelId(quint8 channelId)
+QKnxNetIpDisconnectRequestProxy::Builder &
+    QKnxNetIpDisconnectRequestProxy::Builder::setChannelId(quint8 channelId)
 {
     m_channelId = channelId;
     return *this;
 }
 
-QKnxNetIpDisconnectRequest::Builder &
-    QKnxNetIpDisconnectRequest::Builder::setControlEndpoint(const QKnxNetIpHpai &hpai)
+QKnxNetIpDisconnectRequestProxy::Builder &
+    QKnxNetIpDisconnectRequestProxy::Builder::setControlEndpoint(const QKnxNetIpHpai &hpai)
 {
     m_hpai = hpai;
     return *this;
 }
 
-QKnxNetIpFrame QKnxNetIpDisconnectRequest::Builder::create() const
+QKnxNetIpFrame QKnxNetIpDisconnectRequestProxy::Builder::create() const
 {
     return { QKnxNetIp::ServiceType::DisconnectRequest, QKnxByteArray { m_channelId, 0x00 }
         + m_hpai.bytes() };

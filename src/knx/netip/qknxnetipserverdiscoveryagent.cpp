@@ -206,8 +206,8 @@ void QKnxNetIpServerDiscoveryAgentPrivate::setupSocket()
             if (q->state() == QKnxNetIpServerDiscoveryAgent::State::Running) {
                 servers.clear();
 
-                auto frame = QKnxNetIpSearchRequest::builder()
-                    .setDiscoveryEndpoint(QKnxNetIpHpaiView::builder()
+                auto frame = QKnxNetIpSearchRequestProxy::builder()
+                    .setDiscoveryEndpoint(QKnxNetIpHpaiProxy::builder()
                         .setHostAddress(nat ? QHostAddress::AnyIPv4 : usedAddress)
                         .setPort(nat ? quint16(0u) : usedPort).create()
                     ).create();
@@ -246,7 +246,7 @@ void QKnxNetIpServerDiscoveryAgentPrivate::setupSocket()
                 continue;
 
             auto frame = QKnxNetIpFrame::fromBytes(data);
-            auto response = QKnxNetIpSearchResponse(frame);
+            auto response = QKnxNetIpSearchResponseProxy(frame);
             if (!response.isValid())
                 continue;
 
@@ -297,8 +297,8 @@ void QKnxNetIpServerDiscoveryAgentPrivate::setupAndStartFrequencyTimer()
             if (q->state() == QKnxNetIpServerDiscoveryAgent::State::Running) {
                 servers.clear();
 
-                auto frame = QKnxNetIpSearchRequest::builder()
-                    .setDiscoveryEndpoint(QKnxNetIpHpaiView::builder()
+                auto frame = QKnxNetIpSearchRequestProxy::builder()
+                    .setDiscoveryEndpoint(QKnxNetIpHpaiProxy::builder()
                         .setHostAddress(nat ? QHostAddress::AnyIPv4 : address)
                         .setPort(nat ? quint16(0u) : port).create()
                     ).create();

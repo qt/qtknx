@@ -113,7 +113,7 @@ void QKnxNetIpEndpointConnectionPrivate::setupTimer()
     QObject::connect(m_disconnectRequestTimer, &QTimer::timeout, [&] () {
         setAndEmitErrorOccurred(QKnxNetIpEndpointConnection::Error::Acknowledge,
             QKnxNetIpEndpointConnection::tr("Disconnect request timeout."));
-        processDisconnectResponse(QKnxNetIpDisconnectResponse::builder()
+        processDisconnectResponse(QKnxNetIpDisconnectResponseProxy::builder()
             .setChannelId(m_channelId).setStatus(QKnxNetIp::Error::None).create());
     });
 
@@ -304,7 +304,7 @@ void QKnxNetIpEndpointConnectionPrivate::processTunnelingRequest(const QKnxNetIp
             || (frame.sequenceNumber() + 1 == m_receiveCount)) {
                 // sequence equals -> acknowledge -> process frame
                 // sequence -1 -> acknowledge -> drop frame
-                auto ack = QKnxNetIpTunnelingAcknowledge::builder()
+                auto ack = QKnxNetIpTunnelingAcknowledgeProxy::builder()
                     .setChannelId(m_channelId)
                     .setSequenceNumber(m_receiveCount)
                     .setStatus(QKnxNetIp::Error::None)
@@ -317,7 +317,7 @@ void QKnxNetIpEndpointConnectionPrivate::processTunnelingRequest(const QKnxNetIp
                 if (!counterEquals)
                     return;
                 m_receiveCount++;
-                process(QKnxNetIpTunnelingRequest(frame).cemi());
+                process(QKnxNetIpTunnelingRequestProxy(frame).cemi());
         }
     } else {
         qDebug() << "Request was ignored due to wrong channel ID. Expected:" << m_channelId
@@ -333,7 +333,7 @@ void QKnxNetIpEndpointConnectionPrivate::processTunnelingAcknowledge(const QKnxN
         m_acknowledgeTimer->stop();
         m_waitForAcknowledgement = false;
 
-        QKnxNetIpTunnelingAcknowledge acknowledge(frame);
+        const QKnxNetIpTunnelingAcknowledgeProxy acknowledge(frame);
         if (acknowledge.status() == QKnxNetIp::Error::None
             && acknowledge.sequenceNumber() == m_sendCount) {
                 m_sendCount++;
@@ -349,7 +349,7 @@ void QKnxNetIpEndpointConnectionPrivate::processTunnelingAcknowledge(const QKnxN
 
 bool QKnxNetIpEndpointConnectionPrivate::sendTunnelingRequest(const QKnxLinkLayerFrame &frame)
 {
-    m_lastSendCemiRequest = QKnxNetIpTunnelingRequest::builder()
+    m_lastSendCemiRequest = QKnxNetIpTunnelingRequestProxy::builder()
         .setChannelId(m_channelId)
         .setSequenceNumber(m_sendCount)
         .setCemi(frame)
@@ -369,14 +369,14 @@ void QKnxNetIpEndpointConnectionPrivate::processDeviceConfigurationRequest(const
         return;
     }
 
-    QKnxNetIpDeviceConfigurationRequest request(frame);
+    QKnxNetIpDeviceConfigurationRequestProxy request(frame);
     if (request.sequenceNumber() != m_receiveCount) {
         qDebug() << "Request was ignored due to wrong sequence number. Expected:" << m_receiveCount
             << "Current:" << request.sequenceNumber();
         return;
     }
 
-    auto ack = QKnxNetIpDeviceConfigurationAcknowledge::builder()
+    auto ack = QKnxNetIpDeviceConfigurationAcknowledgeProxy::builder()
         .setChannelId(m_channelId)
         .setSequenceNumber(m_receiveCount)
         .setStatus(QKnxNetIp::Error::None)
@@ -401,12 +401,12 @@ void QKnxNetIpEndpointConnectionPrivate::processDeviceConfigurationAcknowledge(c
         m_acknowledgeTimer->stop();
         m_waitForAcknowledgement = false;
 
-        QKnxNetIpDeviceConfigurationAcknowledge ack(frame);
+        const QKnxNetIpDeviceConfigurationAcknowledgeProxy ack(frame);
         if (ack.status() == QKnxNetIp::Error::None && ack.sequenceNumber() == m_sendCount) {
             m_sendCount++;
             m_cemiRequests = 0;
             if (!m_lastReceivedCemiRequest.isNull()) {
-                process(QKnxNetIpDeviceConfigurationRequest(m_lastReceivedCemiRequest).cemi());
+                process(QKnxNetIpDeviceConfigurationRequestProxy(m_lastReceivedCemiRequest).cemi());
                 m_lastReceivedCemiRequest = {};
             }
         } else {
@@ -420,7 +420,7 @@ void QKnxNetIpEndpointConnectionPrivate::processDeviceConfigurationAcknowledge(c
 
 bool QKnxNetIpEndpointConnectionPrivate::sendDeviceConfigurationRequest(const QKnxLocalDeviceManagementFrame &frame)
 {
-    m_lastSendCemiRequest = QKnxNetIpDeviceConfigurationRequest::builder()
+    m_lastSendCemiRequest = QKnxNetIpDeviceConfigurationRequestProxy::builder()
         .setChannelId(m_channelId)
         .setSequenceNumber(m_sendCount)
         .setCemi(frame)
@@ -442,7 +442,7 @@ void QKnxNetIpEndpointConnectionPrivate::processConnectResponse(const QKnxNetIpF
 {
     qDebug() << "Received connect response:" << frame;
 
-    QKnxNetIpConnectResponse response(frame);
+    QKnxNetIpConnectResponseProxy response(frame);
     if (m_state == QKnxNetIpEndpointConnection::State::Connecting) {
         if (response.status() == QKnxNetIp::Error::None) {
             QKnxPrivate::clearTimer(&m_connectRequestTimer);
@@ -457,7 +457,7 @@ void QKnxNetIpEndpointConnectionPrivate::processConnectResponse(const QKnxNetIpF
                 }
             }
 
-            m_lastStateRequest = QKnxNetIpConnectionStateRequest::builder()
+            m_lastStateRequest = QKnxNetIpConnectionStateRequestProxy::builder()
                 .setChannelId(m_channelId)
                 .setControlEndpoint(m_nat ? m_natEndpoint : m_localControlEndpoint)
                 .create();
@@ -482,7 +482,7 @@ void QKnxNetIpEndpointConnectionPrivate::processConnectionStateResponse(const QK
 {
     qDebug() << "Received connection state response:" << frame;
 
-    QKnxNetIpConnectionStateResponse response(frame);
+    QKnxNetIpConnectionStateResponseProxy response(frame);
     if (response.channelId() == m_channelId) {
         if (response.status() == QKnxNetIp::Error::None) {
             m_stateRequests = 0;
@@ -501,9 +501,9 @@ void QKnxNetIpEndpointConnectionPrivate::processDisconnectRequest(const QKnxNetI
 {
     qDebug() << "Received disconnect request:" << frame;
 
-    QKnxNetIpDisconnectRequest request(frame);
+    QKnxNetIpDisconnectRequestProxy request(frame);
     if (request.channelId() == m_channelId) {
-        auto frame = QKnxNetIpDisconnectResponse::builder()
+        auto frame = QKnxNetIpDisconnectResponseProxy::builder()
             .setChannelId(m_channelId)
             .setStatus(QKnxNetIp::Error::None)
             .create();
@@ -524,7 +524,7 @@ void QKnxNetIpEndpointConnectionPrivate::processDisconnectResponse(const QKnxNet
 {
     qDebug() << "Received disconnect response:" << frame;
 
-    QKnxNetIpDisconnectResponse response(frame);
+    QKnxNetIpDisconnectResponseProxy response(frame);
     if (response.channelId() == m_channelId) {
         cleanup();
     } else {
@@ -672,7 +672,7 @@ void QKnxNetIpEndpointConnection::setSupportedProtocolVersions(const QKnxByteArr
 
 void QKnxNetIpEndpointConnection::connectToHost(const QKnxNetIpHpai &controlEndpoint)
 {
-    const QKnxNetIpHpaiView view(controlEndpoint);
+    const QKnxNetIpHpaiProxy view(controlEndpoint);
     connectToHost(view.hostAddress(), view.port());
 }
 
@@ -735,7 +735,7 @@ void QKnxNetIpEndpointConnection::connectToHost(const QHostAddress &address, qui
 
     d->setAndEmitStateChanged(QKnxNetIpEndpointConnection::State::Connecting);
 
-    auto request = QKnxNetIpConnectRequest::builder()
+    auto request = QKnxNetIpConnectRequestProxy::builder()
         .setControlEndpoint(d->m_nat ? d->m_natEndpoint : d->m_localControlEndpoint)
         // TODO: Fix this. It cannot work in NAT mode, because the sever does not know the data
         // endpoint address if we pass a NAT endpoint. The most likely solution will be to use a
@@ -766,7 +766,7 @@ void QKnxNetIpEndpointConnection::disconnectFromHost()
     if (oldState != State::Connected) {
         d->cleanup();
     } else {
-        auto frame = QKnxNetIpDisconnectRequest::builder()
+        auto frame = QKnxNetIpDisconnectRequestProxy::builder()
             .setChannelId(d->m_channelId)
             .setControlEndpoint(d->m_nat ? d->m_natEndpoint : d->m_localControlEndpoint)
             .create();

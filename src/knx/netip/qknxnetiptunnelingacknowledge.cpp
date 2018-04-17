@@ -31,61 +31,61 @@
 
 QT_BEGIN_NAMESPACE
 
-QKnxNetIpTunnelingAcknowledge::QKnxNetIpTunnelingAcknowledge(const QKnxNetIpFrame &frame)
+QKnxNetIpTunnelingAcknowledgeProxy::QKnxNetIpTunnelingAcknowledgeProxy(const QKnxNetIpFrame &frame)
     : m_frame(frame)
 {}
 
-bool QKnxNetIpTunnelingAcknowledge::isValid() const
+bool QKnxNetIpTunnelingAcknowledgeProxy::isValid() const
 {
     return m_frame.isValid() && m_frame.size() == 10
         && m_frame.serviceType() == QKnxNetIp::ServiceType::TunnelingAcknowledge;
 }
 
-quint8 QKnxNetIpTunnelingAcknowledge::channelId() const
+quint8 QKnxNetIpTunnelingAcknowledgeProxy::channelId() const
 {
     return m_frame.channelId();
 }
 
-quint8 QKnxNetIpTunnelingAcknowledge::sequenceNumber() const
+quint8 QKnxNetIpTunnelingAcknowledgeProxy::sequenceNumber() const
 {
     return m_frame.sequenceNumber();
 }
 
-QKnxNetIp::Error QKnxNetIpTunnelingAcknowledge::status() const
+QKnxNetIp::Error QKnxNetIpTunnelingAcknowledgeProxy::status() const
 {
     return QKnxNetIp::Error(m_frame.serviceTypeSpecificValue());
 }
 
-QKnxNetIpTunnelingAcknowledge::Builder QKnxNetIpTunnelingAcknowledge::builder()
+QKnxNetIpTunnelingAcknowledgeProxy::Builder QKnxNetIpTunnelingAcknowledgeProxy::builder()
 {
-    return QKnxNetIpTunnelingAcknowledge::Builder();
+    return QKnxNetIpTunnelingAcknowledgeProxy::Builder();
 }
 
 
-// -- QKnxNetIpTunnelingAcknowledge::Builder
+// -- QKnxNetIpTunnelingAcknowledgeProxy::Builder
 
-QKnxNetIpTunnelingAcknowledge::Builder &
-    QKnxNetIpTunnelingAcknowledge::Builder::setChannelId(quint8 channelId)
+QKnxNetIpTunnelingAcknowledgeProxy::Builder &
+    QKnxNetIpTunnelingAcknowledgeProxy::Builder::setChannelId(quint8 channelId)
 {
     m_channelId = channelId;
     return *this;
 }
 
-QKnxNetIpTunnelingAcknowledge::Builder &
-    QKnxNetIpTunnelingAcknowledge::Builder::setSequenceNumber(quint8 sequenceNumber)
+QKnxNetIpTunnelingAcknowledgeProxy::Builder &
+    QKnxNetIpTunnelingAcknowledgeProxy::Builder::setSequenceNumber(quint8 sequenceNumber)
 {
     m_sequenceNumber = sequenceNumber;
     return *this;
 }
 
-QKnxNetIpTunnelingAcknowledge::Builder &
-    QKnxNetIpTunnelingAcknowledge::Builder::setStatus(QKnxNetIp::Error status)
+QKnxNetIpTunnelingAcknowledgeProxy::Builder &
+    QKnxNetIpTunnelingAcknowledgeProxy::Builder::setStatus(QKnxNetIp::Error status)
 {
     m_status = status;
     return *this;
 }
 
-QKnxNetIpFrame QKnxNetIpTunnelingAcknowledge::Builder::create() const
+QKnxNetIpFrame QKnxNetIpTunnelingAcknowledgeProxy::Builder::create() const
 {
     return { QKnxNetIp::ServiceType::TunnelingAcknowledge,
         QKnxNetIpConnectionHeader { m_channelId, m_sequenceNumber, quint8(m_status) } };

@@ -31,49 +31,49 @@
 
 QT_BEGIN_NAMESPACE
 
-QKnxNetIpConnectionStateRequest::QKnxNetIpConnectionStateRequest(const QKnxNetIpFrame &frame)
+QKnxNetIpConnectionStateRequestProxy::QKnxNetIpConnectionStateRequestProxy(const QKnxNetIpFrame &frame)
     : m_frame(frame)
 {}
 
-quint8 QKnxNetIpConnectionStateRequest::channelId() const
+quint8 QKnxNetIpConnectionStateRequestProxy::channelId() const
 {
     return m_frame.constData().value(0);
 }
 
-QKnxNetIpHpai QKnxNetIpConnectionStateRequest::controlEndpoint() const
+QKnxNetIpHpai QKnxNetIpConnectionStateRequestProxy::controlEndpoint() const
 {
     return QKnxNetIpHpai::fromBytes(m_frame.constData(), 2);
 }
 
-bool QKnxNetIpConnectionStateRequest::isValid() const
+bool QKnxNetIpConnectionStateRequestProxy::isValid() const
 {
     return m_frame.isValid() && m_frame.size() == 16
          && m_frame.serviceType() == QKnxNetIp::ServiceType::ConnectionStateRequest;
 }
 
-QKnxNetIpConnectionStateRequest::Builder QKnxNetIpConnectionStateRequest::builder()
+QKnxNetIpConnectionStateRequestProxy::Builder QKnxNetIpConnectionStateRequestProxy::builder()
 {
-    return QKnxNetIpConnectionStateRequest::Builder();
+    return QKnxNetIpConnectionStateRequestProxy::Builder();
 }
 
 
-// -- QKnxNetIpConnectionStateRequest::Builder
+// -- QKnxNetIpConnectionStateRequestProxy::Builder
 
-QKnxNetIpConnectionStateRequest::Builder &
-    QKnxNetIpConnectionStateRequest::Builder::setChannelId(quint8 channelId)
+QKnxNetIpConnectionStateRequestProxy::Builder &
+    QKnxNetIpConnectionStateRequestProxy::Builder::setChannelId(quint8 channelId)
 {
     m_channelId = channelId;
     return *this;
 }
 
-QKnxNetIpConnectionStateRequest::Builder &
-    QKnxNetIpConnectionStateRequest::Builder::setControlEndpoint(const QKnxNetIpHpai &hpai)
+QKnxNetIpConnectionStateRequestProxy::Builder &
+    QKnxNetIpConnectionStateRequestProxy::Builder::setControlEndpoint(const QKnxNetIpHpai &hpai)
 {
     m_hpai = hpai;
     return *this;
 }
 
-QKnxNetIpFrame QKnxNetIpConnectionStateRequest::Builder::create() const
+QKnxNetIpFrame QKnxNetIpConnectionStateRequestProxy::Builder::create() const
 {
     return { QKnxNetIp::ServiceType::ConnectionStateRequest, QKnxByteArray { m_channelId, 0x00 }
         + m_hpai.bytes() };

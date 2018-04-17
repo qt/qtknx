@@ -157,13 +157,13 @@ void QKnxNetIpServerDescriptionAgentPrivate::setupSocket()
                 m_description = {};
                 usedPort = socket->localPort();
 
-                auto frame = QKnxNetIpDescriptionRequest::builder()
-                    .setControlEndpoint(QKnxNetIpHpaiView::builder()
+                auto frame = QKnxNetIpDescriptionRequestProxy::builder()
+                    .setControlEndpoint(QKnxNetIpHpaiProxy::builder()
                         .setHostAddress(nat ? QHostAddress::AnyIPv4 : socket->localAddress())
                         .setPort(nat ? quint16(0u) : usedPort).create())
                     .create();
 
-                const QKnxNetIpHpaiView hpai(m_server);
+                const QKnxNetIpHpaiProxy hpai(m_server);
                 socket->writeDatagram(frame.bytes().toByteArray(), hpai.hostAddress(),
                     hpai.port());
 
@@ -198,7 +198,7 @@ void QKnxNetIpServerDescriptionAgentPrivate::setupSocket()
                 continue;
 
             auto frame = QKnxNetIpFrame::fromBytes(data, 0);
-            QKnxNetIpDescriptionResponse response(frame);
+            QKnxNetIpDescriptionResponseProxy response(frame);
             if (!response.isValid())
                 continue;
 
@@ -499,7 +499,7 @@ void QKnxNetIpServerDescriptionAgent::start(const QKnxNetIpServerInfo &server)
 */
 void QKnxNetIpServerDescriptionAgent::start(const QHostAddress &address, quint16 port)
 {
-    start(QKnxNetIpHpaiView::builder().setHostAddress(address).setPort(port).create());
+    start(QKnxNetIpHpaiProxy::builder().setHostAddress(address).setPort(port).create());
 }
 
 /*!

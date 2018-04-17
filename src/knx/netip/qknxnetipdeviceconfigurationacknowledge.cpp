@@ -31,61 +31,63 @@
 
 QT_BEGIN_NAMESPACE
 
-QKnxNetIpDeviceConfigurationAcknowledge::QKnxNetIpDeviceConfigurationAcknowledge(const QKnxNetIpFrame &frame)
+QKnxNetIpDeviceConfigurationAcknowledgeProxy::
+    QKnxNetIpDeviceConfigurationAcknowledgeProxy(const QKnxNetIpFrame &frame)
     : m_frame(frame)
 {}
 
-bool QKnxNetIpDeviceConfigurationAcknowledge::isValid() const
+bool QKnxNetIpDeviceConfigurationAcknowledgeProxy::isValid() const
 {
     return m_frame.isValid() && m_frame.size() == 10
         && m_frame.serviceType() == QKnxNetIp::ServiceType::DeviceConfigurationAcknowledge;
 }
 
-quint8 QKnxNetIpDeviceConfigurationAcknowledge::channelId() const
+quint8 QKnxNetIpDeviceConfigurationAcknowledgeProxy::channelId() const
 {
     return m_frame.channelId();
 }
 
-quint8 QKnxNetIpDeviceConfigurationAcknowledge::sequenceNumber() const
+quint8 QKnxNetIpDeviceConfigurationAcknowledgeProxy::sequenceNumber() const
 {
     return m_frame.sequenceNumber();
 }
 
-QKnxNetIp::Error QKnxNetIpDeviceConfigurationAcknowledge::status() const
+QKnxNetIp::Error QKnxNetIpDeviceConfigurationAcknowledgeProxy::status() const
 {
     return QKnxNetIp::Error(m_frame.serviceTypeSpecificValue());
 }
 
-QKnxNetIpDeviceConfigurationAcknowledge::Builder QKnxNetIpDeviceConfigurationAcknowledge::builder()
+QKnxNetIpDeviceConfigurationAcknowledgeProxy::Builder
+    QKnxNetIpDeviceConfigurationAcknowledgeProxy::builder()
 {
-    return QKnxNetIpDeviceConfigurationAcknowledge::Builder();
+    return QKnxNetIpDeviceConfigurationAcknowledgeProxy::Builder();
 }
 
 
-// -- QKnxNetIpDeviceConfigurationAcknowledge::Builder
+// -- QKnxNetIpDeviceConfigurationAcknowledgeProxy::Builder
 
-QKnxNetIpDeviceConfigurationAcknowledge::Builder &
-    QKnxNetIpDeviceConfigurationAcknowledge::Builder::setChannelId(quint8 channelId)
+QKnxNetIpDeviceConfigurationAcknowledgeProxy::Builder &
+    QKnxNetIpDeviceConfigurationAcknowledgeProxy::Builder::setChannelId(quint8 channelId)
 {
     m_channelId = channelId;
     return *this;
 }
 
-QKnxNetIpDeviceConfigurationAcknowledge::Builder &
-    QKnxNetIpDeviceConfigurationAcknowledge::Builder::setSequenceNumber(quint8 sequenceNumber)
+QKnxNetIpDeviceConfigurationAcknowledgeProxy::Builder &
+    QKnxNetIpDeviceConfigurationAcknowledgeProxy::Builder::setSequenceNumber(quint8 sequenceNumber)
 {
     m_sequenceNumber = sequenceNumber;
     return *this;
 }
 
-QKnxNetIpDeviceConfigurationAcknowledge::Builder &
-    QKnxNetIpDeviceConfigurationAcknowledge::Builder::setStatus(QKnxNetIp::Error status)
+QKnxNetIpDeviceConfigurationAcknowledgeProxy::Builder &
+    QKnxNetIpDeviceConfigurationAcknowledgeProxy::Builder::setStatus(QKnxNetIp::Error status)
 {
     m_status = status;
     return *this;
 }
 
-QKnxNetIpFrame QKnxNetIpDeviceConfigurationAcknowledge::Builder::create() const
+QKnxNetIpFrame QKnxNetIpDeviceConfigurationAcknowledgeProxy::Builder::create() const
 {
     return { QKnxNetIp::ServiceType::DeviceConfigurationAcknowledge,
         QKnxNetIpConnectionHeader { m_channelId, m_sequenceNumber, quint8(m_status) } };

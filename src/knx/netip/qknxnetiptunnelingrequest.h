@@ -37,14 +37,14 @@
 
 QT_BEGIN_NAMESPACE
 
-class Q_KNX_EXPORT QKnxNetIpTunnelingRequest final
+class Q_KNX_EXPORT QKnxNetIpTunnelingRequestProxy final
 {
 public:
-    QKnxNetIpTunnelingRequest() = delete;
-    ~QKnxNetIpTunnelingRequest() = default;
+    QKnxNetIpTunnelingRequestProxy() = delete;
+    ~QKnxNetIpTunnelingRequestProxy() = default;
 
-    QKnxNetIpTunnelingRequest(const QKnxNetIpFrame &&) = delete;
-    explicit QKnxNetIpTunnelingRequest(const QKnxNetIpFrame &frame);
+    QKnxNetIpTunnelingRequestProxy(const QKnxNetIpFrame &&) = delete;
+    explicit QKnxNetIpTunnelingRequestProxy(const QKnxNetIpFrame &frame);
 
     bool isValid() const;
 
@@ -66,7 +66,7 @@ public:
         quint8 m_sequenceNumber;
         QKnxLinkLayerFrame m_cemi;
     };
-    static QKnxNetIpTunnelingRequest::Builder builder();
+    static QKnxNetIpTunnelingRequestProxy::Builder builder();
 
 private:
     const QKnxNetIpFrame &m_frame;

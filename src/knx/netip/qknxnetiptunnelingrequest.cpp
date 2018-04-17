@@ -31,61 +31,61 @@
 
 QT_BEGIN_NAMESPACE
 
-QKnxNetIpTunnelingRequest::QKnxNetIpTunnelingRequest(const QKnxNetIpFrame &frame)
+QKnxNetIpTunnelingRequestProxy::QKnxNetIpTunnelingRequestProxy(const QKnxNetIpFrame &frame)
     : m_frame(frame)
 {}
 
-bool QKnxNetIpTunnelingRequest::isValid() const
+bool QKnxNetIpTunnelingRequestProxy::isValid() const
 {
     return m_frame.isValid() && m_frame.size() >= 12 && cemi().isValid()
         && m_frame.serviceType() == QKnxNetIp::ServiceType::TunnelingRequest;
 }
 
-quint8 QKnxNetIpTunnelingRequest::channelId() const
+quint8 QKnxNetIpTunnelingRequestProxy::channelId() const
 {
     return m_frame.channelId();
 }
 
-quint8 QKnxNetIpTunnelingRequest::sequenceNumber() const
+quint8 QKnxNetIpTunnelingRequestProxy::sequenceNumber() const
 {
     return m_frame.sequenceNumber();
 }
 
-QKnxLinkLayerFrame QKnxNetIpTunnelingRequest::cemi() const
+QKnxLinkLayerFrame QKnxNetIpTunnelingRequestProxy::cemi() const
 {
     return QKnxLinkLayerFrame::fromBytes(m_frame.data(), 0, m_frame.dataSize());
 }
 
-QKnxNetIpTunnelingRequest::Builder QKnxNetIpTunnelingRequest::builder()
+QKnxNetIpTunnelingRequestProxy::Builder QKnxNetIpTunnelingRequestProxy::builder()
 {
-    return QKnxNetIpTunnelingRequest::Builder();
+    return QKnxNetIpTunnelingRequestProxy::Builder();
 }
 
 
-// -- QKnxNetIpTunnelingRequest::Builder
+// -- QKnxNetIpTunnelingRequestProxy::Builder
 
-QKnxNetIpTunnelingRequest::Builder &
-    QKnxNetIpTunnelingRequest::Builder::setChannelId(quint8 channelId)
+QKnxNetIpTunnelingRequestProxy::Builder &
+    QKnxNetIpTunnelingRequestProxy::Builder::setChannelId(quint8 channelId)
 {
     m_channelId = channelId;
     return *this;
 }
 
-QKnxNetIpTunnelingRequest::Builder &
-    QKnxNetIpTunnelingRequest::Builder::setSequenceNumber(quint8 sequenceNumber)
+QKnxNetIpTunnelingRequestProxy::Builder &
+    QKnxNetIpTunnelingRequestProxy::Builder::setSequenceNumber(quint8 sequenceNumber)
 {
     m_sequenceNumber = sequenceNumber;
     return *this;
 }
 
-QKnxNetIpTunnelingRequest::Builder &
-    QKnxNetIpTunnelingRequest::Builder::setCemi(const QKnxLinkLayerFrame &cemi)
+QKnxNetIpTunnelingRequestProxy::Builder &
+    QKnxNetIpTunnelingRequestProxy::Builder::setCemi(const QKnxLinkLayerFrame &cemi)
 {
     m_cemi = cemi;
     return *this;
 }
 
-QKnxNetIpFrame QKnxNetIpTunnelingRequest::Builder::create() const
+QKnxNetIpFrame QKnxNetIpTunnelingRequestProxy::Builder::create() const
 {
     return { QKnxNetIp::ServiceType::TunnelingRequest, { m_channelId, m_sequenceNumber },
         m_cemi.bytes() };

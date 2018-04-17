@@ -32,49 +32,49 @@
 
 QT_BEGIN_NAMESPACE
 
-QKnxNetIpRoutingLostMessage::QKnxNetIpRoutingLostMessage(const QKnxNetIpFrame &frame)
+QKnxNetIpRoutingLostMessageProxy::QKnxNetIpRoutingLostMessageProxy(const QKnxNetIpFrame &frame)
     : m_frame(frame)
 {}
 
-QKnxNetIp::DeviceState QKnxNetIpRoutingLostMessage::deviceState() const
+QKnxNetIp::DeviceState QKnxNetIpRoutingLostMessageProxy::deviceState() const
 {
     return QKnxNetIp::DeviceState(m_frame.constData().value(1));
 }
 
-quint16 QKnxNetIpRoutingLostMessage::lostMessageCount() const
+quint16 QKnxNetIpRoutingLostMessageProxy::lostMessageCount() const
 {
     return QKnxUtils::QUint16::fromBytes(m_frame.constData(), 2);
 }
 
-bool QKnxNetIpRoutingLostMessage::isValid() const
+bool QKnxNetIpRoutingLostMessageProxy::isValid() const
 {
     return m_frame.isValid() && m_frame.size() == 10
         && m_frame.serviceType() == QKnxNetIp::ServiceType::RoutingLostMessage;
 }
 
-QKnxNetIpRoutingLostMessage::Builder QKnxNetIpRoutingLostMessage::builder()
+QKnxNetIpRoutingLostMessageProxy::Builder QKnxNetIpRoutingLostMessageProxy::builder()
 {
-    return QKnxNetIpRoutingLostMessage::Builder();
+    return QKnxNetIpRoutingLostMessageProxy::Builder();
 }
 
 
-// -- QKnxNetIpRoutingLostMessage::Builder
+// -- QKnxNetIpRoutingLostMessageProxy::Builder
 
-QKnxNetIpRoutingLostMessage::Builder &
-    QKnxNetIpRoutingLostMessage::Builder::setDeviceState(QKnxNetIp::DeviceState state)
+QKnxNetIpRoutingLostMessageProxy::Builder &
+    QKnxNetIpRoutingLostMessageProxy::Builder::setDeviceState(QKnxNetIp::DeviceState state)
 {
     m_state = state;
     return *this;
 }
 
-QKnxNetIpRoutingLostMessage::Builder &
-    QKnxNetIpRoutingLostMessage::Builder::setLostMessageCount(quint16 messageCount)
+QKnxNetIpRoutingLostMessageProxy::Builder &
+    QKnxNetIpRoutingLostMessageProxy::Builder::setLostMessageCount(quint16 messageCount)
 {
     m_lostMessageCount = messageCount;
     return *this;
 }
 
-QKnxNetIpFrame QKnxNetIpRoutingLostMessage::Builder::create() const
+QKnxNetIpFrame QKnxNetIpRoutingLostMessageProxy::Builder::create() const
 {
     return { QKnxNetIp::ServiceType::RoutingLostMessage, QKnxByteArray { 0x04, quint8(m_state) }
         + QKnxUtils::QUint16::bytes(m_lostMessageCount) };

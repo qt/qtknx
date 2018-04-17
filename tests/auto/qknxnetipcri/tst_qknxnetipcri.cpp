@@ -55,13 +55,13 @@ void tst_QKnxNetIpCri::testDefaultConstructor()
     QCOMPARE(cri.bytes(), QKnxByteArray {});
     QCOMPARE(cri.data().size(), quint16(0));
     QCOMPARE(cri.data(), QKnxByteArray {});
-    QCOMPARE(QKnxNetIpCriView(cri).connectionType(), QKnxNetIp::ConnectionType::Unknown);
+    QCOMPARE(QKnxNetIpCriProxy(cri).connectionType(), QKnxNetIp::ConnectionType::Unknown);
 }
 
 void tst_QKnxNetIpCri::testConstructorTunnelingLayer()
 {
     {
-        auto builder = QKnxNetIpCriView::builder();
+        auto builder = QKnxNetIpCriProxy::builder();
         auto cri = builder
             .setTunnelingLayer(QKnxNetIp::TunnelingLayer::Unknown)
             .create();
@@ -72,7 +72,7 @@ void tst_QKnxNetIpCri::testConstructorTunnelingLayer()
         QCOMPARE(cri.data().size(), quint16());
         QCOMPARE(cri.data(), QKnxByteArray {});
 
-        QKnxNetIpCriView view(cri);
+        QKnxNetIpCriProxy view(cri);
         QCOMPARE(view.isValid(), false);
         QCOMPARE(view.connectionType(), QKnxNetIp::ConnectionType::Unknown);
         QCOMPARE(view.tunnelingLayer(), QKnxNetIp::TunnelingLayer::Unknown);
@@ -90,7 +90,7 @@ void tst_QKnxNetIpCri::testConstructorTunnelingLayer()
     }
 
     {
-        auto cri = QKnxNetIpCriView::builder()
+        auto cri = QKnxNetIpCriProxy::builder()
             .setTunnelingLayer(QKnxNetIp::TunnelingLayer::Raw)
             .create();
         QCOMPARE(cri.isValid(), true);
@@ -99,7 +99,7 @@ void tst_QKnxNetIpCri::testConstructorTunnelingLayer()
         QCOMPARE(cri.data().size(), quint16(2));
         QCOMPARE(cri.data(), QKnxByteArray({ 0x04, 0x00 }));
 
-        QKnxNetIpCriView view(cri);
+        QKnxNetIpCriProxy view(cri);
         QCOMPARE(view.connectionType(), QKnxNetIp::ConnectionType::Tunnel);
         QCOMPARE(view.tunnelingLayer(), QKnxNetIp::TunnelingLayer::Raw);
     }
@@ -114,10 +114,10 @@ void tst_QKnxNetIpCri::testConstructorConnectionType()
     QCOMPARE(cri.data().size(), quint16(0));
     QCOMPARE(cri.data(), QKnxByteArray {});
 
-    QKnxNetIpCriView view(cri);
+    QKnxNetIpCriProxy view(cri);
     QCOMPARE(view.connectionType(), QKnxNetIp::ConnectionType::Unknown);
 
-    auto builder = QKnxNetIpCriView::builder();
+    auto builder = QKnxNetIpCriProxy::builder();
     cri = builder
         .setConnectionType(QKnxNetIp::ConnectionType::DeviceManagement)
         .create();
@@ -188,7 +188,7 @@ void tst_QKnxNetIpCri::testDebugStream()
         QtMessageHandler oldMessageHandler;
     } _(myMessageHandler);
 
-    qDebug() << QKnxNetIpCriView::builder().create();
+    qDebug() << QKnxNetIpCriProxy::builder().create();
     QCOMPARE(s_msg, QString::fromLatin1("0x0204"));
 
     qDebug() << QKnxNetIpCri::fromBytes(QKnxByteArray::fromHex("04048000"), 0);

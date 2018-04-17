@@ -33,10 +33,10 @@
 QT_BEGIN_NAMESPACE
 
 /*!
-    \class QKnxNetIpHpaiView
+    \class QKnxNetIpHpaiProxy
 
     \inmodule QtKnx
-    \brief The QKnxNetIpHpaiView class provides the means to read the
+    \brief The QKnxNetIpHpaiProxy class provides the means to read the
     KNXnet/IP host address protocol information (HPAI) from the generic
     QKnxNetIpHpai class and to create such a structure.
 
@@ -47,15 +47,15 @@ QT_BEGIN_NAMESPACE
     endpoint includes the \l{hostProtocol()}{protocol}, \l{hostAddress()}
     {IP address}, and \l port number.
 
-    \note When using QKnxNetIpHpaiView care must be taken to ensure that the
-    referenced KNXnet/IP HPAI structure outlives the QKnxNetIpHpaiView on all
+    \note When using QKnxNetIpHpaiProxy care must be taken to ensure that the
+    referenced KNXnet/IP HPAI structure outlives the QKnxNetIpHpaiProxy on all
     code paths, lest the view ends up referencing deleted data.
 
     Reading the host address and port number can be achieved like this:
     \code
         auto hpai = QKnxNetIpHpai::fromBytes(...);
 
-        QKnxNetIpHpaiView view(hpai);
+        QKnxNetIpHpaiProxy view(hpai);
         if (!view.isValid())
             return;
 
@@ -72,24 +72,24 @@ QT_BEGIN_NAMESPACE
 
 /*!
     \internal
-    \fn QKnxNetIpHpaiView::QKnxNetIpHpaiView()
+    \fn QKnxNetIpHpaiProxy::QKnxNetIpHpaiProxy()
 */
 
 /*!
     \internal
-    \fn QKnxNetIpHpaiView::~QKnxNetIpHpaiView()
+    \fn QKnxNetIpHpaiProxy::~QKnxNetIpHpaiProxy()
 */
 
 /*!
     \internal
-    \fn QKnxNetIpHpaiView::QKnxNetIpHpaiView(const QKnxNetIpHpai &&)
+    \fn QKnxNetIpHpaiProxy::QKnxNetIpHpaiProxy(const QKnxNetIpHpai &&)
 */
 
 /*!
-    Constructs a wrapper object with the given a KNXnet/IP structure \a hpai to
+    Constructs a proxy object with the given a KNXnet/IP structure \a hpai to
     read the host protocol address information (HPAI).
 */
-QKnxNetIpHpaiView::QKnxNetIpHpaiView(const QKnxNetIpHpai &hpai)
+QKnxNetIpHpaiProxy::QKnxNetIpHpaiProxy(const QKnxNetIpHpai &hpai)
     : m_hpai(hpai)
 {}
 
@@ -97,7 +97,7 @@ QKnxNetIpHpaiView::QKnxNetIpHpaiView(const QKnxNetIpHpai &hpai)
     Returns \c true if the KNXnet/IP structure to create the object is a valid
     KNXnet/IP HPAI structure, returns \c false otherwise.
 */
-bool QKnxNetIpHpaiView::isValid() const
+bool QKnxNetIpHpaiProxy::isValid() const
 {
     bool validHostProtocolCode = m_hpai.code() == QKnxNetIp::HostProtocol::UDP_IPv4
         || m_hpai.code() == QKnxNetIp::HostProtocol::TCP_IPv4;
@@ -108,7 +108,7 @@ bool QKnxNetIpHpaiView::isValid() const
     Return the host protocol from KNXnet/IP structure if the object passed
     during construction was valid, otherwise returns QKnxNetIp::Unknown.
 */
-QKnxNetIp::HostProtocol QKnxNetIpHpaiView::hostProtocol() const
+QKnxNetIp::HostProtocol QKnxNetIpHpaiProxy::hostProtocol() const
 {
     if (isValid())
         return m_hpai.code();
@@ -120,7 +120,7 @@ QKnxNetIp::HostProtocol QKnxNetIpHpaiView::hostProtocol() const
     during construction was valid, otherwise returns a \e {default-constructed}
     QHostAddress.
 */
-QHostAddress QKnxNetIpHpaiView::hostAddress() const
+QHostAddress QKnxNetIpHpaiProxy::hostAddress() const
 {
     if (isValid())
         return QKnxUtils::HostAddress::fromBytes(m_hpai.constData());
@@ -131,7 +131,7 @@ QHostAddress QKnxNetIpHpaiView::hostAddress() const
     Returns the port number carried inside the KNXnet/IP host protocol address
     information structure.
 */
-quint16 QKnxNetIpHpaiView::port() const
+quint16 QKnxNetIpHpaiProxy::port() const
 {
     return QKnxUtils::QUint16::fromBytes(m_hpai.constData(), 4);
 }
@@ -140,17 +140,17 @@ quint16 QKnxNetIpHpaiView::port() const
     Returns a builder object to create a KNXnet/IP host protocol address
     information structure.
 */
-QKnxNetIpHpaiView::Builder QKnxNetIpHpaiView::builder()
+QKnxNetIpHpaiProxy::Builder QKnxNetIpHpaiProxy::builder()
 {
-    return QKnxNetIpHpaiView::Builder();
+    return QKnxNetIpHpaiProxy::Builder();
 }
 
 
 /*!
-    \class QKnxNetIpHpaiView::Builder
+    \class QKnxNetIpHpaiProxy::Builder
 
     \inmodule QtKnx
-    \brief The QKnxNetIpHpaiView::Builder class provides the means to create a
+    \brief The QKnxNetIpHpaiProxy::Builder class provides the means to create a
     KNXnet/IP host address protocol information.
 
     A KNXnet/IP HPAI structure contains the information that is necessary to
@@ -162,7 +162,7 @@ QKnxNetIpHpaiView::Builder QKnxNetIpHpaiView::builder()
 
     The common way to create such a HPAI structure is:
     \code
-        auto hpai = QKnxNetIpHpaiView::builder()
+        auto hpai = QKnxNetIpHpaiProxy::builder()
             .setHostProtocol(QKnxNetIp::HostProtocol::TCP_IPv4
             .setHostAddress(QHostAddress::AnyIPv4)
             .setPort(2013)
@@ -176,7 +176,7 @@ QKnxNetIpHpaiView::Builder QKnxNetIpHpaiView::builder()
 /*!
     Sets the host protocol to \a code and returns a reference to the builder.
 */
-QKnxNetIpHpaiView::Builder &QKnxNetIpHpaiView::Builder::setHostProtocol(QKnxNetIp::HostProtocol code)
+QKnxNetIpHpaiProxy::Builder &QKnxNetIpHpaiProxy::Builder::setHostProtocol(QKnxNetIp::HostProtocol code)
 {
     m_code = code;
     return *this;
@@ -185,7 +185,7 @@ QKnxNetIpHpaiView::Builder &QKnxNetIpHpaiView::Builder::setHostProtocol(QKnxNetI
 /*!
     Sets the host address to \a address and returns a reference to the builder.
 */
-QKnxNetIpHpaiView::Builder &QKnxNetIpHpaiView::Builder::setHostAddress(const QHostAddress &address)
+QKnxNetIpHpaiProxy::Builder &QKnxNetIpHpaiProxy::Builder::setHostAddress(const QHostAddress &address)
 {
     m_address = address;
     return *this;
@@ -194,7 +194,7 @@ QKnxNetIpHpaiView::Builder &QKnxNetIpHpaiView::Builder::setHostAddress(const QHo
 /*!
     Sets the host port to \a port and returns a reference to the builder.
 */
-QKnxNetIpHpaiView::Builder &QKnxNetIpHpaiView::Builder::setPort(quint16 port)
+QKnxNetIpHpaiProxy::Builder &QKnxNetIpHpaiProxy::Builder::setPort(quint16 port)
 {
     m_port = port;
     return *this;
@@ -208,7 +208,7 @@ QKnxNetIpHpaiView::Builder &QKnxNetIpHpaiView::Builder::setPort(quint16 port)
 
     \sa isValid()
 */
-QKnxNetIpHpai QKnxNetIpHpaiView::Builder::create() const
+QKnxNetIpHpai QKnxNetIpHpaiProxy::Builder::create() const
 {
     return { m_code, QKnxUtils::HostAddress::bytes(m_address) + QKnxUtils::QUint16::bytes(m_port) };
 }

@@ -31,63 +31,63 @@
 
 QT_BEGIN_NAMESPACE
 
-QKnxNetIpSearchResponse::QKnxNetIpSearchResponse(const QKnxNetIpFrame &frame)
+QKnxNetIpSearchResponseProxy::QKnxNetIpSearchResponseProxy(const QKnxNetIpFrame &frame)
     : m_frame(frame)
 {}
 
-QKnxNetIpHpai QKnxNetIpSearchResponse::controlEndpoint() const
+QKnxNetIpHpai QKnxNetIpSearchResponseProxy::controlEndpoint() const
 {
     return QKnxNetIpHpai::fromBytes(m_frame.constData(), 0);
 }
 
-QKnxNetIpDib QKnxNetIpSearchResponse::deviceHardware() const
+QKnxNetIpDib QKnxNetIpSearchResponseProxy::deviceHardware() const
 {
     return QKnxNetIpDib::fromBytes(m_frame.constData(), 8);
 }
 
-QKnxNetIpDib QKnxNetIpSearchResponse::supportedFamilies() const
+QKnxNetIpDib QKnxNetIpSearchResponseProxy::supportedFamilies() const
 {
     return QKnxNetIpDib::fromBytes(m_frame.constData(), 62);
 }
 
-bool QKnxNetIpSearchResponse::isValid() const
+bool QKnxNetIpSearchResponseProxy::isValid() const
 {
     return m_frame.isValid() && m_frame.serviceType() == QKnxNetIp::ServiceType::SearchResponse
         && m_frame.size() >= 70;
 }
 
-QKnxNetIpSearchResponse::Builder QKnxNetIpSearchResponse::builder()
+QKnxNetIpSearchResponseProxy::Builder QKnxNetIpSearchResponseProxy::builder()
 {
-    return QKnxNetIpSearchResponse::Builder();
+    return QKnxNetIpSearchResponseProxy::Builder();
 }
 
 
-// -- QKnxNetIpSearchResponse::Builder
+// -- QKnxNetIpSearchResponseProxy::Builder
 
-QKnxNetIpSearchResponse::Builder &
-    QKnxNetIpSearchResponse::Builder::setControlEndpoint(const QKnxNetIpHpai &hpai)
+QKnxNetIpSearchResponseProxy::Builder &
+    QKnxNetIpSearchResponseProxy::Builder::setControlEndpoint(const QKnxNetIpHpai &hpai)
 {
     m_hpai = hpai;
     return *this;
 }
 
-QKnxNetIpSearchResponse::Builder &
-    QKnxNetIpSearchResponse::Builder::setDeviceHardware(const QKnxNetIpDib &ddib)
+QKnxNetIpSearchResponseProxy::Builder &
+    QKnxNetIpSearchResponseProxy::Builder::setDeviceHardware(const QKnxNetIpDib &ddib)
 {
-    if (QKnxNetIpDeviceDibView(ddib).isValid())
+    if (QKnxNetIpDeviceDibProxy(ddib).isValid())
         m_ddib = ddib;
     return *this;
 }
 
-QKnxNetIpSearchResponse::Builder &
-    QKnxNetIpSearchResponse::Builder::setSupportedFamilies(const QKnxNetIpDib &sdib)
+QKnxNetIpSearchResponseProxy::Builder &
+    QKnxNetIpSearchResponseProxy::Builder::setSupportedFamilies(const QKnxNetIpDib &sdib)
 {
-    if (QKnxNetIpServiceFamiliesDibView(sdib).isValid())
+    if (QKnxNetIpServiceFamiliesDibProxy(sdib).isValid())
         m_sdib = sdib;
     return *this;
 }
 
-QKnxNetIpFrame QKnxNetIpSearchResponse::Builder::create() const
+QKnxNetIpFrame QKnxNetIpSearchResponseProxy::Builder::create() const
 {
     return { QKnxNetIp::ServiceType::SearchResponse, m_hpai.bytes() + m_ddib.bytes() + m_sdib
         .bytes() };

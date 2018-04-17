@@ -202,7 +202,7 @@ void MainWindow::newServerSelected(int serverBoxIndex)
     );
 
     const auto &hpai = info.endpoint();
-    const QKnxNetIpHpaiView endpoint(hpai);
+    const QKnxNetIpHpaiProxy endpoint(hpai);
     if (endpoint.hostProtocol() != QKnxNetIp::HostProtocol::UDP_IPv4)
         return;
 
