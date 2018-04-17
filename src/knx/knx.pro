@@ -56,6 +56,7 @@ SOURCES += \
     qknxlinklayerframefactory.cpp \
     qknxlocaldevicemanagementframe.cpp \
     qknxlocaldevicemanagementframefactory.cpp \
+    qknxnamespace.cpp \
     qknxtpdu.cpp \
     qknxtpdufactory_broadcast.cpp \
     qknxtpdufactory_multicast.cpp \

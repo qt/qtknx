@@ -62,7 +62,7 @@ public:
             QKnxInterfaceObjectProperty pid,
             quint8 numberOfElements,
             quint16 startIndex,
-            QKnx::CemiServer::Error error = QKnx::CemiServer::Error::None);
+            QKnx::NetIp::CemiServer::Error error = QKnx::NetIp::CemiServer::Error::None);
 
         static QKnxLocalDeviceManagementFrame createConfirmation(
             const QKnxLocalDeviceManagementFrame &request,
@@ -70,7 +70,7 @@ public:
 
         static QKnxLocalDeviceManagementFrame createConfirmation(
             const QKnxLocalDeviceManagementFrame &request,
-            QKnx::CemiServer::Error error);
+            QKnx::NetIp::CemiServer::Error error);
     };
 
     struct Q_KNX_EXPORT PropertyWrite final
@@ -89,11 +89,11 @@ public:
             QKnxInterfaceObjectProperty pid,
             quint8 numberOfElements,
             quint16 startIndex,
-            QKnx::CemiServer::Error error = QKnx::CemiServer::Error::None);
+            QKnx::NetIp::CemiServer::Error error = QKnx::NetIp::CemiServer::Error::None);
 
         static QKnxLocalDeviceManagementFrame createConfirmation(
             const QKnxLocalDeviceManagementFrame &request,
-            QKnx::CemiServer::Error error = QKnx::CemiServer::Error::None);
+            QKnx::NetIp::CemiServer::Error error = QKnx::NetIp::CemiServer::Error::None);
     };
 
     struct Q_KNX_EXPORT PropertyInfo final
@@ -124,7 +124,7 @@ public:
         static QKnxLocalDeviceManagementFrame createConfirmation(QKnxInterfaceObjectType type,
             quint8 instance,
             QKnxInterfaceObjectProperty pid,
-            QKnx::CemiServer::ReturnCode code,
+            QKnx::NetIp::CemiServer::ReturnCode code,
             const QKnxByteArray &data);
 
         static QKnxLocalDeviceManagementFrame createConfirmation(
@@ -132,7 +132,7 @@ public:
 
         static QKnxLocalDeviceManagementFrame createConfirmation(
             const QKnxLocalDeviceManagementFrame &request,
-            QKnx::CemiServer::ReturnCode code,
+            QKnx::NetIp::CemiServer::ReturnCode code,
             const QKnxByteArray &data);
     };
 
@@ -157,7 +157,7 @@ public:
         static QKnxLocalDeviceManagementFrame createConfirmation(QKnxInterfaceObjectType type,
             quint8 instance,
             QKnxInterfaceObjectProperty pid,
-            QKnx::CemiServer::ReturnCode code,
+            QKnx::NetIp::CemiServer::ReturnCode code,
             const QKnxByteArray &data);
 
         static QKnxLocalDeviceManagementFrame createConfirmation(
@@ -165,7 +165,7 @@ public:
 
         static QKnxLocalDeviceManagementFrame createConfirmation(
             const QKnxLocalDeviceManagementFrame &request,
-            QKnx::CemiServer::ReturnCode code,
+            QKnx::NetIp::CemiServer::ReturnCode code,
             const QKnxByteArray &data);
     };
 

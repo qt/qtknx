@@ -30,47 +30,51 @@
 #ifndef QKNXLOCALDEVICEMANAGEMENTFRAME_H
 #define QKNXLOCALDEVICEMANAGEMENTFRAME_H
 
+#include <QtCore/qshareddata.h>
+
+#include <QtKnx/qknxbytearray.h>
 #include <QtKnx/qknxglobal.h>
 #include <QtKnx/qknxinterfaceobjectproperty.h>
 #include <QtKnx/qknxinterfaceobjecttype.h>
 #include <QtKnx/qknxnamespace.h>
-#include <QtKnx/qknxutils.h>
 
 QT_BEGIN_NAMESPACE
 
+class QKnxLocalDeviceManagementFramePrivate;
 class Q_KNX_EXPORT QKnxLocalDeviceManagementFrame final
 {
-    friend class QKnxLocalDeviceManagementFrameFactory;
     Q_GADGET
+    friend class QKnxLocalDeviceManagementFrameFactory;
 
 public:
     enum class MessageCode : quint8
     {
         Unknown = 0x00,
-        // Device Management
-        PropertyReadRequest = 0xfc,                     // M_PropRead.req
-        PropertyReadConfirmation = 0xfb,                // M_PropRead.con
 
-        PropertyWriteRequest = 0xf6,                    // M_PropWrite.req
-        PropertyWriteConfirmation = 0xf5,               // M_PropWrite.con
+        PropertyReadRequest = 0xfc,
+        PropertyReadConfirmation = 0xfb,
 
-        PropertyInfoIndication = 0xf7,                  // M_PropInfo.ind
+        PropertyWriteRequest = 0xf6,
+        PropertyWriteConfirmation = 0xf5,
 
-        FunctionPropertyCommandRequest = 0xf8,          // M_FuncPropCommand.req
-        FunctionPropertyStateReadRequest = 0xf9,        // M_FuncPropStateRead.req
-        FunctionPropertyCommandConfirmation = 0xfa,     // M_FuncPropCommand.con
-        FunctionPropertyStateReadConfirmation = 0xfa,   // M_FuncPropStateRead.con
+        PropertyInfoIndication = 0xf7,
 
-        ResetRequest = 0xf1,                            // M_Reset.req
-        ResetIndication = 0xf0,                         // M_Reset.ind
+        FunctionPropertyCommandRequest = 0xf8,
+        FunctionPropertyStateReadRequest = 0xf9,
+        FunctionPropertyCommandConfirmation = 0xfa,
+        FunctionPropertyStateReadConfirmation = 0xfa,
+
+        ResetRequest = 0xf1,
+        ResetIndication = 0xf0,
     };
     Q_ENUM(MessageCode)
 
-    QKnxLocalDeviceManagementFrame() = default;
-    ~QKnxLocalDeviceManagementFrame() = default;
+    QKnxLocalDeviceManagementFrame();
+    ~QKnxLocalDeviceManagementFrame();
 
     explicit QKnxLocalDeviceManagementFrame(MessageCode code);
-    QKnxLocalDeviceManagementFrame(const QKnxLocalDeviceManagementFrame &other);
+    QKnxLocalDeviceManagementFrame(QKnxLocalDeviceManagementFrame::MessageCode messageCode,
+        const QKnxByteArray &serviceInfo);
 
     quint16 size() const;
 
@@ -95,72 +99,45 @@ public:
     quint16 startIndex() const;
     void setStartIndex(quint16 index);
 
-    QKnx::CemiServer::Error error() const;
-    void setError(QKnx::CemiServer::Error error);
+    QKnxByteArray data() const;
+    void setData(const QKnxByteArray &newData);
 
-    QKnx::CemiServer::ReturnCode returnCode() const;
-    void setReturnCode(QKnx::CemiServer::ReturnCode code);
+    QKnx::NetIp::CemiServer::Error error() const;
+    void setError(QKnx::NetIp::CemiServer::Error error);
+
+    QKnx::NetIp::CemiServer::ReturnCode returnCode() const;
+    void setReturnCode(QKnx::NetIp::CemiServer::ReturnCode code);
 
     QKnxByteArray serviceInformation() const;
+    void setServiceInformation(const QKnxByteArray &serviceInfo);
 
-    QKnxByteArray bytes() const
-    {
-        return QKnxByteArray { quint8(m_code) } + m_serviceInformation;
-    }
-
+    QKnxByteArray bytes() const;
     static QKnxLocalDeviceManagementFrame fromBytes(const QKnxByteArray &data, quint16 index,
-        quint16 size)
-    {
-        if (data.size() < 1)
-            return {};
-        return { MessageCode(data.at(index)), data.mid(index + 1, size - 1) };
-    }
+        quint16 size);
 
-    QKnxByteArray data() const
-    {
-        return m_serviceInformation.mid(6);
-    }
+    QKnxLocalDeviceManagementFrame(const QKnxLocalDeviceManagementFrame &other);
+    QKnxLocalDeviceManagementFrame &operator=(const QKnxLocalDeviceManagementFrame &other);
 
-    void setData(const QKnxByteArray &newData)
-    {
-        m_serviceInformation.resize(6);
-        m_serviceInformation += newData;
-    }
+    QKnxLocalDeviceManagementFrame(QKnxLocalDeviceManagementFrame &&other) Q_DECL_NOTHROW;
+    QKnxLocalDeviceManagementFrame &operator=(QKnxLocalDeviceManagementFrame &&other) Q_DECL_NOTHROW;
 
-protected:
-    QKnxLocalDeviceManagementFrame(QKnxLocalDeviceManagementFrame::MessageCode messageCode,
-        const QKnxByteArray &serviceInfo);
-    void setServiceInformation(const QKnxByteArray &serviceInformation);
+    void swap(QKnxLocalDeviceManagementFrame &other) Q_DECL_NOTHROW;
+
+    bool operator==(const QKnxLocalDeviceManagementFrame &other) const;
+    bool operator!=(const QKnxLocalDeviceManagementFrame &other) const;
 
 private:
     QKnxLocalDeviceManagementFrame(MessageCode code, QKnxInterfaceObjectType type,
             quint8 instance, QKnxInterfaceObjectProperty pid, quint8 noe, quint16 index,
-            const QKnxByteArray &payload = {})
-        : QKnxLocalDeviceManagementFrame(code)
-    {
-        m_serviceInformation = QKnxUtils::QUint16::bytes(quint16(type));
-        m_serviceInformation.append(instance);
-        m_serviceInformation.append(pid);
-        m_serviceInformation.append(QKnxUtils::QUint16::bytes((quint16(noe) << 12) | index));
-        m_serviceInformation + payload;
-    }
+            const QKnxByteArray &payload = {});
 
     QKnxLocalDeviceManagementFrame(MessageCode code, QKnxInterfaceObjectType type,
-            quint8 instance, QKnxInterfaceObjectProperty pid, const QKnxByteArray &payload = {})
-        : QKnxLocalDeviceManagementFrame(code)
-    {
-        m_serviceInformation = QKnxUtils::QUint16::bytes(quint16(type));
-        m_serviceInformation.append(instance);
-        m_serviceInformation.append(pid);
-        m_serviceInformation + payload;
-    }
+            quint8 instance, QKnxInterfaceObjectProperty pid, const QKnxByteArray &payload = {});
 
 private:
-    // TODO: d_ptr
-    MessageCode m_code;
-    QKnxByteArray m_serviceInformation;
+    QSharedDataPointer<QKnxLocalDeviceManagementFramePrivate> d_ptr;
 };
-// TODO: add debug stream operator
+Q_KNX_EXPORT QDebug operator<<(QDebug debug, const QKnxLocalDeviceManagementFrame &frame);
 
 QT_END_NAMESPACE
 
