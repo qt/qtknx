@@ -1,6 +1,6 @@
 /******************************************************************************
 **
-** Copyright (C) 2017 The Qt Company Ltd.
+** Copyright (C) 2018 The Qt Company Ltd.
 ** Contact: https://www.qt.io/licensing/
 **
 ** This file is part of the QtKnx module.
@@ -31,34 +31,140 @@
 
 QT_BEGIN_NAMESPACE
 
+/*!
+    \class QKnxNetIpConnectionStateResponseProxy
+
+    \inmodule QtKnx
+    \brief The QKnxNetIpConnectionStateResponseProxy class provides the means to
+    read a KNXnet/IP connection state response from the generic
+    \l QKnxNetIpFrame class and to create a connection state response frame
+    based on the information.
+
+    A KNXnet/IP client reqularly sends a connection state request frame,
+    \l QKnxNetIpConnectionStateRequestProxy, to the KNXnet/IP server's control
+    endpoint to check the state of a connection established to the server.
+    The server responds immediately with a connection state response frame.
+
+    In most programs, this class will not be used directly. Instead, the
+    \l QKnxNetIpTunnel or \l QKnxNetIpDeviceManagement
+    class is used to establish a functional connection to a KNXnet/IP server.
+
+    The following code sample illustrates how to read the connection state
+    response information sent by a KNXnet/IP server:
+
+    \code
+    QKnxNetIpFrame netIpFrame;
+    QKnxNetIpConnectionStateResponseProxy connectionStateResponse(netIpFrame);
+    if (!connectionStateResponse.isValid())
+        return;
+    auto chanId = connectionStateResponse.channelId();
+    auto status = connectionStateResponse.status();
+    // ...
+    \endcode
+
+    \sa builder(), QKnxNetIpConnectionStateRequestProxy
+*/
+
+/*!
+    \fn QKnxNetIpConnectionStateResponseProxy::QKnxNetIpConnectionStateResponseProxy()
+    \internal
+*/
+
+/*!
+    \fn QKnxNetIpConnectionStateResponseProxy::~QKnxNetIpConnectionStateResponseProxy()
+    \internal
+*/
+
+/*!
+    \fn QKnxNetIpConnectionStateResponseProxy::QKnxNetIpConnectionStateResponseProxy(const QKnxNetIpFrame &&)
+    \internal
+*/
+
+/*!
+    Constructs a proxy object to read the connection state response
+    information carried by the specified KNXnet/IP frame \a frame.
+*/
 QKnxNetIpConnectionStateResponseProxy::QKnxNetIpConnectionStateResponseProxy(const QKnxNetIpFrame &frame)
     : m_frame(frame)
 {}
 
+/*!
+    Returns the ID of the communication channel prepared by the KNXnet/IP
+    server.
+*/
 quint8 QKnxNetIpConnectionStateResponseProxy::channelId() const
 {
     return m_frame.constData().value(0);
 }
 
+/*!
+    Returns the state of the connection channel established to a KNXnet/IP
+    server.
+*/
 QKnxNetIp::Error QKnxNetIpConnectionStateResponseProxy::status() const
 {
     return QKnxNetIp::Error(m_frame.constData().value(1));
 }
 
+/*!
+    Returns \c true if the frame contains initialized values and is in itself
+    valid, otherwise returns \c false. A valid KNXnet/IP frame consist of
+    at least a valid header and a size in bytes corresponding to the total size
+    of the KNXnet/IP frame header.
+
+    \sa QKnxNetIpFrameHeader::totalSize()
+*/
 bool QKnxNetIpConnectionStateResponseProxy::isValid() const
 {
     return m_frame.isValid() && m_frame.size() == 8
         && m_frame.serviceType() == QKnxNetIp::ServiceType::ConnectionStateResponse;
 }
 
+/*!
+    Returns a builder object to create a KNXnet/IP connection state response
+    frame.
+*/
 QKnxNetIpConnectionStateResponseProxy::Builder QKnxNetIpConnectionStateResponseProxy::builder()
 {
     return QKnxNetIpConnectionStateResponseProxy::Builder();
 }
 
 
-// -- QKnxNetIpConnectionStateResponseProxy::Builder
+/*!
+    \class QKnxNetIpConnectionStateResponseProxy::Builder
 
+    \inmodule QtKnx
+    \brief The QKnxNetIpConnectionStateResponseProxy::Builder class provides the
+    means to create a KNXnet/IP connection state response frame.
+
+    A KNXnet/IP connection state response contains the status of a communication
+    channel between a KNXnet/IP client and a KNXnet/IP server.
+
+    In most programs, this class will not be used directly. Instead, the
+    \l QKnxNetIpTunnel or \l QKnxNetIpDeviceManagement
+    class is used to establish a functional connection to a KNXnet/IP server.
+
+    The common way to create a connection state response is:
+
+    \code
+    QKnxNetIpFrame netIpFrame = QKnxNetIpConnectionStateResponseProxy.builder()
+                                .setChannelId(25)
+                                .setStatus(QKnx::NetIp::Error::ConnectionId)
+                                .create();
+    // ...
+    \endcode
+
+    If the KNXnet/IP client does not receive the connection state response
+    within a timeout, or the status of the received response indicates that
+    errors occurred, the client repeats the connection state request three
+    times. It then terminates the connection by sending a disconnect request,
+    \l QKnxNetIpDisconnectRequestProxy, to the server's control endpoint.
+*/
+
+/*!
+    Sets the ID of the communication channel to \a channelId and returns a
+    reference to the builder.
+*/
 QKnxNetIpConnectionStateResponseProxy::Builder &
     QKnxNetIpConnectionStateResponseProxy::Builder::setChannelId(quint8 channelId)
 {
@@ -66,6 +172,10 @@ QKnxNetIpConnectionStateResponseProxy::Builder &
     return *this;
 }
 
+/*!
+    Returns the state of the connection channel established to a KNXnet/IP
+    server to \a status and returns a reference to the builder.
+*/
 QKnxNetIpConnectionStateResponseProxy::Builder &
     QKnxNetIpConnectionStateResponseProxy::Builder::setStatus(QKnxNetIp::Error status)
 {
@@ -73,6 +183,14 @@ QKnxNetIpConnectionStateResponseProxy::Builder &
     return *this;
 }
 
+/*!
+    Creates and returns a KNXnet/IP connection state response frame.
+
+    \note The returned frame may be invalid depending on the values used during
+    setup.
+
+    \sa isValid()
+*/
 QKnxNetIpFrame QKnxNetIpConnectionStateResponseProxy::Builder::create() const
 {
     QKnxByteArray data;
