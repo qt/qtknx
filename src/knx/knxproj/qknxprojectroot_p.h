@@ -27,15 +27,26 @@
 **
 ******************************************************************************/
 
-#ifndef QKNXPROJECTROOT_H
-#define QKNXPROJECTROOT_H
+#ifndef QKNXPROJECTROOT_P_H
+#define QKNXPROJECTROOT_P_H
+
+//
+//  W A R N I N G
+//  -------------
+//
+// This file is not part of the Qt API.  It exists for the convenience
+// of the QZipReader class.  This header file may change from
+// version to version without notice, or even be removed.
+//
+// We mean it.
+//
 
 #include <QtCore/qdatetime.h>
 #include <QtCore/qstring.h>
 #include <QtCore/qvector.h>
-#include <QtKnx/qknxinstallation.h>
-#include <QtKnx/qknxprojectinformation.h>
-#include <QtKnx/qknxprojectutils.h>
+#include <QtKnx/private/qknxinstallation_p.h>
+#include <QtKnx/private/qknxprojectinformation_p.h>
+#include <QtKnx/private/qknxprojectutils_p.h>
 
 QT_BEGIN_NAMESPACE
 

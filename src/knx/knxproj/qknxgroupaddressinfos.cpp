@@ -28,8 +28,8 @@
 ******************************************************************************/
 
 #include "qknxgroupaddressinfos.h"
-#include "qknxgroupaddresses.h"
-#include "qknxprojectroot.h"
+#include "qknxgroupaddresses_p.h"
+#include "qknxprojectroot_p.h"
 
 #include "qzipreader_p.h"
 

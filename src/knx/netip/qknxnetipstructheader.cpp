@@ -182,4 +182,11 @@ QT_BEGIN_NAMESPACE
     otherwise returns \c false.
 */
 
+/*!
+    \relates QKnxNetIpStructHeader
+    \fn template<typename CodeType> QDebug operator<<(QDebug debug, const QKnxNetIpStructHeader<CodeType> &header)
+
+    Writes the KNXnet/IP structure header \a header to the \a debug stream.
+*/
+
 QT_END_NAMESPACE

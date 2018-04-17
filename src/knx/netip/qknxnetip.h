@@ -143,6 +143,35 @@ struct Q_KNX_EXPORT QKnxNetIp final
     };
     static bool isTunnelingLayer(TunnelingLayer layer);
 
+    enum class ProgrammingMode : quint8
+    {
+        Inactive = 0x00,
+        Active = 0x01,
+        Unknown = 0xff
+    };
+    static bool isProgrammingMode(ProgrammingMode mode);
+
+    enum class AssignmentMethod : quint8
+    {
+        Unknown = 0x00,
+        Manual = 0x01,
+        BootP = 0x02,
+        Dhcp = 0x04,
+        AutoIp = 0x08
+    };
+    Q_DECLARE_FLAGS(AssignmentMethods, AssignmentMethod)
+    static bool isAssignmentMethod(AssignmentMethod method);
+
+    enum class Capability : quint8
+    {
+        Unknown = 0x00,
+        BootP = 0x01,
+        Dhcp = 0x02,
+        AutoIp = 0x04,
+    };
+    Q_DECLARE_FLAGS(Capabilities, Capability)
+    static bool isCapability(Capability capability);
+
     enum Timeout
     {
         HeartbeatTimeout = 60000,
@@ -166,12 +195,20 @@ struct Q_KNX_EXPORT QKnxNetIp final
         RoutingBusyWaitTime = 100
     };
 };
+Q_DECLARE_OPERATORS_FOR_FLAGS(QKnxNetIp::AssignmentMethods)
+Q_DECLARE_OPERATORS_FOR_FLAGS(QKnxNetIp::Capabilities)
+
 Q_DECLARE_TYPEINFO(QKnxNetIp::HostProtocol, Q_PRIMITIVE_TYPE);
 Q_DECLARE_TYPEINFO(QKnxNetIp::ConnectionType, Q_PRIMITIVE_TYPE);
 Q_DECLARE_TYPEINFO(QKnxNetIp::DescriptionType, Q_PRIMITIVE_TYPE);
+Q_DECLARE_TYPEINFO(QKnxNetIp::ServiceFamily, Q_PRIMITIVE_TYPE);
 Q_DECLARE_TYPEINFO(QKnxNetIp::ServiceType, Q_PRIMITIVE_TYPE);
 Q_DECLARE_TYPEINFO(QKnxNetIp::Error, Q_PRIMITIVE_TYPE);
 Q_DECLARE_TYPEINFO(QKnxNetIp::DeviceState, Q_PRIMITIVE_TYPE);
+Q_DECLARE_TYPEINFO(QKnxNetIp::TunnelingLayer, Q_PRIMITIVE_TYPE);
+Q_DECLARE_TYPEINFO(QKnxNetIp::ProgrammingMode, Q_PRIMITIVE_TYPE);
+Q_DECLARE_TYPEINFO(QKnxNetIp::AssignmentMethod, Q_PRIMITIVE_TYPE);
+Q_DECLARE_TYPEINFO(QKnxNetIp::Capability, Q_PRIMITIVE_TYPE);
 Q_DECLARE_TYPEINFO(QKnxNetIp::Timeout, Q_PRIMITIVE_TYPE);
 
 QT_END_NAMESPACE

@@ -61,14 +61,16 @@ void tst_QKnxNetIpSearchResponse::testConstructor()
 {
     auto endpoint = QKnxNetIpHpaiView::builder().setHostAddress(QHostAddress::LocalHost)
         .setPort(3671).create();
-    QKnxNetIpDeviceDib hardware(QKnx::MediumType::NetIP,
-                                QKnxNetIpDeviceDib::DeviceStatus::ActiveProgrammingMode,
-                                QKnxAddress::Individual::Unregistered,
-                                0x1111,
-                                QKnxByteArray::fromHex("123456123456"),
-                                QHostAddress::AnyIPv4,
-                                QKnxByteArray::fromHex("bcaec56690f9"),
-                                QKnxByteArray("qt.io KNX device", 16));
+    auto hardware = QKnxNetIpDeviceDibView::builder()
+        .setMediumType(QKnx::MediumType::NetIP)
+        .setDeviceStatus(QKnxNetIp::ProgrammingMode::Active)
+        .setIndividualAddress(QKnxAddress::Individual::Unregistered)
+        .setProjectInstallationId(0x1111)
+        .setSerialNumber(QKnxByteArray::fromHex("123456123456"))
+        .setMulticastAddress(QHostAddress::AnyIPv4)
+        .setMacAddress(QKnxByteArray::fromHex("bcaec56690f9"))
+        .setDeviceName(QByteArray("qt.io KNX device"))
+        .create();
     auto families = QKnxNetIpServiceFamiliesDibView::builder()
         .setServiceInfos({ { QKnxNetIp::ServiceFamily::Core, 10 } }).create();
 
@@ -129,16 +131,17 @@ void tst_QKnxNetIpSearchResponse::testDebugStream()
             .setPort(3671).create())
         .setSupportedFamilies(QKnxNetIpServiceFamiliesDibView::builder()
             .setServiceInfos({ { QKnxNetIp::ServiceFamily::Core, 10 } }).create())
-        .setDeviceHardware({
-            QKnx::MediumType::NetIP,
-            QKnxNetIpDeviceDib::DeviceStatus::ActiveProgrammingMode,
-            QKnxAddress::Individual::Unregistered,
-            0x1111,
-            QKnxByteArray::fromHex("123456123456"),
-            QHostAddress::AnyIPv4,
-            QKnxByteArray::fromHex("bcaec56690f9"),
-            QKnxByteArray("qt.io KNX device", 16)
-        }).create();
+        .setDeviceHardware(QKnxNetIpDeviceDibView::builder()
+            .setMediumType(QKnx::MediumType::NetIP)
+            .setDeviceStatus(QKnxNetIp::ProgrammingMode::Active)
+            .setIndividualAddress(QKnxAddress::Individual::Unregistered)
+            .setProjectInstallationId(0x1111)
+            .setSerialNumber(QKnxByteArray::fromHex("123456123456"))
+            .setMulticastAddress(QHostAddress::AnyIPv4)
+            .setMacAddress(QKnxByteArray::fromHex("bcaec56690f9"))
+            .setDeviceName(QByteArray("qt.io KNX device"))
+            .create()
+        ).create();
     QCOMPARE(s_msg, QString::fromLatin1("0x06100202004808017f0000010e5736012001ffff1111123456123456"
             "00000000bcaec56690f971742e696f204b4e582064657669636500000000000000000000000000000"
             "402020a"));

@@ -258,4 +258,15 @@ bool QKnxNetIpConnectionHeader::operator!=(const QKnxNetIpConnectionHeader &othe
     return !operator==(other);
 }
 
+/*!
+    \relates QKnxNetIpConnectionHeader
+
+    Writes the KNXnet/IP connection header \a header to the \a debug stream.
+*/
+QDebug operator<<(QDebug debug, const QKnxNetIpConnectionHeader &header)
+{
+    QDebugStateSaver _(debug);
+    return debug.nospace().noquote() << "0x" << header.bytes().toHex();
+}
+
 QT_END_NAMESPACE

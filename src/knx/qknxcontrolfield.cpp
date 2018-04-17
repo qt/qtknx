@@ -37,16 +37,184 @@ const std::bitset<8> gPriorityMask = 0x0c;
     \class QKnxControlField
 
     \inmodule QtKnx
-    \brief The QKnxControlField class represents a 8 bit KNX control field.
+    \brief The QKnxControlField class represents an 8-bit KNX control field.
 
-    A KNX frame is made up out of several field, one might be the Control
-    field. The Control field shall contain at least the Frame Type, the Repeat
-    flag and the frame Priority.
+    A KNX frame contains several fields, one of which might be the control
+    field. The control field must specify at least the \l FrameFormat, the
+    \l Repeat flag, and the frame \l Priority. In addition, it may specify
+    how widely the frame is \l Broadcast, and whether acknowledgment
+    (\l Acknowledge) or confirmation (\l Confirm) is requested for the
+    transmission or reception of the frame.
 */
 
 /*!
-    Creates a new control field  from a 8 Bit \a data value. Hexadecimal, octal
-    and decimal notation are supported.
+    \enum QKnxControlField::FrameFormat
+
+    This enum type specifies the frame format that is used for transmission or
+    reception of a frame.
+
+    \value Extended
+           The frame has extended format.
+    \value Standard
+           The frame has standard format.
+*/
+
+/*!
+    \enum QKnxControlField::Repeat
+
+    This enum type holds whether the frame transmission is repeated.
+    If one of the addressed bus devices has returned a negative acknowledgment,
+    the repeat flag is set to \c Repeat.
+
+    \value Repeat
+           Frame transmission is repeated.
+    \value DoNotRepeat
+           Frame transmission is not repeated.
+*/
+
+/*!
+    \enum QKnxControlField::Broadcast
+
+    This enum type specifies whether the frame is transmitted using system
+    broadcast communication mode or broadcast communication mode.
+
+    \value System
+           The frame is transmitted using system broadcast communication mode.
+    \value Domain
+           The frame is transmitted using broadcast communication mode.
+*/
+
+/*!
+    \enum QKnxControlField::Priority
+
+    This enum type holds the priority used for the transmission or reception of
+    the frame.
+
+    \value System
+           System priority is used.
+    \value Normal
+           Normal priority is used.
+    \value Urgent
+           High priority is used.
+    \value Low
+           Low priority is used.
+*/
+
+/*!
+    \enum QKnxControlField::Acknowledge
+
+    This enum type holds whether a Layer 2 acknowledge is requested for an
+    \c {L_Data.req} frame. This is not valid for all media.
+
+    \value NotRequested
+           Acknowledgment is not requested.
+    \value Requested
+           Acknowledgment is requested.
+
+    \sa QKnxLinkLayerFrame::MessageCode
+*/
+
+/*!
+    \enum QKnxControlField::Confirm
+
+    This enum type holds whether there is an error in the transmitted frame.
+
+    \value NoError
+           No errors found.
+    \value Error
+           Errors found.
+*/
+
+/*!
+    \fn QKnxControlField::frameFormat() const
+
+    Returns the frame format.
+*/
+
+/*!
+    \fn QKnxControlField::repeat() const
+
+    Returns whether frame transmission is repeated.
+*/
+
+/*!
+    \fn QKnxControlField::broadcast() const
+
+    Returns whether the frame is transmitted using system broadcast
+    communication mode or broadcast communication mode.
+*/
+
+/*!
+    \fn QKnxControlField::acknowledge() const
+
+    Returns whether a Layer 2 acknowledge is requested for an \c {L_Data.req}
+    frame.
+
+    \sa QKnxLinkLayerFrame::MessageCode
+*/
+
+/*!
+    \fn QKnxControlField::confirm() const
+
+    For an \c {L_Data.con} frame, returns \c true if there is an error in the
+    transmitted frame; otherwise returns \c false.
+
+    \sa QKnxLinkLayerFrame::MessageCode
+*/
+
+/*!
+    \fn QKnxControlField::setFrameFormat(QKnxControlField::FrameFormat type)
+
+    Sets the frame format to \a type.
+*/
+
+/*!
+    \fn QKnxControlField::setRepeat(QKnxControlField::Repeat repeat)
+
+    Sets the repetition flag to \a repeat.
+*/
+
+/*!
+    \fn QKnxControlField::setBroadcast(QKnxControlField::Broadcast bcst)
+
+    Sets the broadcast flag to \a bcst.
+*/
+
+/*!
+    \fn QKnxControlField::setAcknowledge(QKnxControlField::Acknowledge ack)
+
+    Sets whether acknowledgment for an \c {L_Data.req} frame is requested to
+    \a ack.
+
+    \sa QKnxLinkLayerFrame::MessageCode
+*/
+
+/*!
+    \fn QKnxControlField::setConfirm(QKnxControlField::Confirm confirm)
+
+    Sets the confirm flag to \a confirm.
+*/
+
+/*!
+    \fn quint8 QKnxControlField::byte() const
+
+    Returns the control field as single byte.
+*/
+
+/*!
+    \fn quint8 QKnxControlField::size() const
+
+    Returns the number of bytes in the control field.
+*/
+
+/*!
+    \fn QKnxControlField::QKnxControlField()
+
+    Creates a KNX control field.
+*/
+
+/*!
+    Creates a new control field from an 8-bit \a data value.
 */
 QKnxControlField::QKnxControlField(quint8 data)
     : m_ctrl1(data)
@@ -54,9 +222,8 @@ QKnxControlField::QKnxControlField(quint8 data)
 
 /*!
     Creates a new control field from the first byte of the \a data byte array.
-    Hexadecimal, octal and decimal notation are supported.
 
-    \note The byte array must contain at least one elements.
+    \note The byte array must contain at least one element.
 */
 QKnxControlField::QKnxControlField(const QKnxByteArray &data)
 {
@@ -65,7 +232,7 @@ QKnxControlField::QKnxControlField(const QKnxByteArray &data)
 }
 
 /*!
-    Returns the priority that shall be used for transmission or reception of
+    Returns the priority that is used for the transmission or reception of
     the frame.
 */
 QKnxControlField::Priority QKnxControlField::priority() const
@@ -74,7 +241,7 @@ QKnxControlField::Priority QKnxControlField::priority() const
 }
 
 /*!
-    Sets the \a priority that shall be used for transmission or reception of
+    Sets the \a priority that is used for the transmission or reception of
     the frame.
 */
 void QKnxControlField::setPriority(QKnxControlField::Priority priority)
@@ -86,13 +253,13 @@ void QKnxControlField::setPriority(QKnxControlField::Priority priority)
 /*!
     \fn quint8 QKnxControlField::bytes() const
 
-    Returns the control field as range of bytes.
+    Returns the control field as a range of bytes.
 */
 
 /*!
     \relates QKnxControlField
 
-    Writes the control \a field to the \a debug stream.
+    Writes the control field \a field to the \a debug stream.
 */
 QDebug operator<<(QDebug debug, const QKnxControlField &field)
 {

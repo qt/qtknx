@@ -288,4 +288,15 @@ bool QKnxNetIpFrameHeader::operator!=(const QKnxNetIpFrameHeader &other) const
     return !operator==(other);
 }
 
+/*!
+    \relates QKnxNetIpFrameHeader
+
+    Writes the KNXnet/IP frame header \a header to the \a debug stream.
+*/
+QDebug operator<<(QDebug debug, const QKnxNetIpFrameHeader &header)
+{
+    QDebugStateSaver _(debug);
+    return debug.nospace().noquote() << "0x" << header.bytes().toHex();
+}
+
 QT_END_NAMESPACE

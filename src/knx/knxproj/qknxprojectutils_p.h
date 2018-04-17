@@ -27,8 +27,19 @@
 **
 ******************************************************************************/
 
-#ifndef QKNXPROJECTUTILS_H
-#define QKNXPROJECTUTILS_H
+#ifndef QKNXPROJECTUTILS_P_H
+#define QKNXPROJECTUTILS_P_H
+
+//
+//  W A R N I N G
+//  -------------
+//
+// This file is not part of the Qt API.  It exists for the convenience
+// of the QZipReader class.  This header file may change from
+// version to version without notice, or even be removed.
+//
+// We mean it.
+//
 
 #include <QtCore/qcoreapplication.h>
 #include <QtCore/qxmlstream.h>

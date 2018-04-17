@@ -70,7 +70,6 @@ bool QKnxNetIp::isStructType(QKnxNetIp::HostProtocol type)
     case QKnxNetIp::HostProtocol::TCP_IPv4:
         return true;
     case QKnxNetIp::HostProtocol::Unknown:
-    default:
         break;
     }
     return false;
@@ -111,7 +110,6 @@ bool QKnxNetIp::isStructType(QKnxNetIp::ConnectionType type)
     case QKnxNetIp::ConnectionType::ObjectServer:
         return true;
     case QKnxNetIp::ConnectionType::Unknown:
-    default:
         break;
     }
     return false;
@@ -150,7 +148,6 @@ bool QKnxNetIp::isStructType(QKnxNetIp::DescriptionType type)
         return true;
     case QKnxNetIp::DescriptionType::NotUsed:
     case QKnxNetIp::DescriptionType::Unknown:
-    default:
         break;
     }
     return false;
@@ -285,7 +282,6 @@ bool QKnxNetIp::isServiceType(QKnxNetIp::ServiceType type)
     case QKnxNetIp::ServiceType::RoutingBusy:
         return true;
     case QKnxNetIp::ServiceType::Unknown:
-    default:
         break;
     }
     return false;
@@ -353,12 +349,97 @@ bool QKnxNetIp::isTunnelingLayer(QKnxNetIp::TunnelingLayer layer)
     case QKnxNetIp::TunnelingLayer::Raw:
     case QKnxNetIp::TunnelingLayer::Busmonitor:
         return true;
-    default:
+    case QKnxNetIp::TunnelingLayer::Unknown:
         break;
     }
     return false;
 }
 
+/*!
+    \enum QKnxNetIp::ProgrammingMode
+
+    This enum describes the programming mode state of a KNX device.
+
+    \value Inactive     The device is not in programming mode.
+    \value Active       The device is in programming mode.
+    \value Unknown      The programming state of the device is unknown.
+*/
+
+/*!
+    Returns \c true if the specified \a mode is a part of the \l ProgrammingMode
+    enumeration; otherwise returns \c false.
+*/
+bool QKnxNetIp::isProgrammingMode(ProgrammingMode mode)
+{
+    switch (mode) {
+    case QKnxNetIp::ProgrammingMode::Inactive:
+    case QKnxNetIp::ProgrammingMode::Active:
+        return true;
+    case QKnxNetIp::ProgrammingMode::Unknown:
+        break;
+    }
+    return false;
+}
+
+/*!
+    \enum QKnxNetIp::AssignmentMethod
+
+    This enum describes the enabled IP address assignment methods for setting
+    the current IP address of a KNXnet/IP device.
+
+    \value Unknown      The IP address assignment method is unknown.
+    \value Manual       Manual IP address assignment.
+    \value BootP        IP address assignment via BootP.
+    \value Dhcp         IP address assignment via DHCP.
+    \value AutoIp       IP address is self-assigned by the device.
+*/
+
+/*!
+    Returns \c true if the specified \a method is a part of the
+    \l AssignmentMethod enumeration; otherwise returns \c false.
+*/
+bool QKnxNetIp::isAssignmentMethod(AssignmentMethod method)
+{
+    switch (method) {
+    case QKnxNetIp::AssignmentMethod::Manual:
+    case QKnxNetIp::AssignmentMethod::BootP:
+    case QKnxNetIp::AssignmentMethod::Dhcp:
+    case QKnxNetIp::AssignmentMethod::AutoIp:
+        return true;
+    case QKnxNetIp::AssignmentMethod::Unknown:
+        break;
+    }
+    return false;
+}
+
+/*!
+    \enum QKnxNetIp::Capability
+
+    This enum describes the IP capabilities supported by the KNXnet/IP device.
+
+    \value Unknown      The supported IP address assignment capability is unknown.
+    \value BootP        The device supports IP address assignment via BootP.
+    \value Dhcp         The device supports IP address assignment via DHCP.
+    \value AutoIp       The device is capable of assigning itself a unicast IP
+                        address in the range of 169.254.1.0 to 169.254.254.255.
+*/
+
+/*!
+    Returns \c true if the specified \a capability is a part of the
+    \l Capability enumeration; otherwise returns \c false.
+*/
+bool QKnxNetIp::isCapability(Capability capability)
+{
+    switch (capability) {
+    case QKnxNetIp::Capability::BootP:
+    case QKnxNetIp::Capability::Dhcp:
+    case QKnxNetIp::Capability::AutoIp:
+        return true;
+    case QKnxNetIp::Capability::Unknown:
+        break;
+    }
+    return false;
+}
 
 /*!
     \enum QKnxNetIp::Timeout

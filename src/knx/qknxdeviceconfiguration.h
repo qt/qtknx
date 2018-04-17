@@ -53,10 +53,13 @@ public:
     QKnxDeviceConfiguration(const QKnxDeviceConfiguration &other);
     QKnxDeviceConfiguration &operator=(const QKnxDeviceConfiguration &other);
 
-#ifdef Q_COMPILER_RVALUE_REFS
     void swap(QKnxDeviceConfiguration &other) Q_DECL_NOTHROW;
+
+    QKnxDeviceConfiguration(QKnxDeviceConfiguration &&other) Q_DECL_NOTHROW;
     QKnxDeviceConfiguration &operator=(QKnxDeviceConfiguration &&other) Q_DECL_NOTHROW;
-#endif
+
+    bool operator==(const QKnxDeviceConfiguration &other) const;
+    bool operator!=(const QKnxDeviceConfiguration &other) const;
 
 private:
     explicit QKnxDeviceConfiguration(QKnxDeviceConfigurationPrivate &dd);

@@ -40,38 +40,56 @@ QT_BEGIN_NAMESPACE
     \inmodule QtKnx
     \brief The QKnxAdditionalInfo class represents the additional information
     that can be placed inside a KNX cEMI frame.
+
+    A Common External Message Interface (cEMI) frame can be used for KNX
+    information transport, independent of the KNX medium: twisted pair (TP),
+    power line (PL), or radio frequency (RF). The \l Type enum holds the type
+    of additional information to be placed into the frame.
+
+    The KNX specification limits the size of the data stored in the additional
+    info object to a maximum of 252 bytes. The class implementation acknowledges
+    this and silently truncates the data, when necessary.
 */
 
 /*!
     \enum QKnxAdditionalInfo::Type
 
+    This enum type holds the type of additional information to be placed into
+    a KNX cEMI frame.
+
     \omitvalue Reserved
-    \value PlMediumInformation          Domain Address used by PL medium.
-    \value RfMediumInformation          RF-Info byte (formerly named
-                                        RF-Ctrl) and KNX Serial Number/DoA
-                                        and Data Link Layer Frame Number (LFN).
-    \value BusmonitorStatusInfo         Busmonitor Error Flags.
-    \value TimestampRelative            Relative timestamp; e.g. for L_Raw.ind.
-    \value TimeDelayUntilSending        Time delay; e.g. for L_Raw.req.
-    \value ExtendedRelativeTimestamp    Device independent time stamp, e.g.
-                                        for L_Raw.ind or L_Busmon.ind.
+    \value PlMediumInformation
+           Domain address used by the power line (PL) medium.
+    \value RfMediumInformation
+           RF-Info byte (formerly named RF-Ctrl), KNX Serial Number/DoA, and
+           Data Link Layer Frame Number (LFN) used by the radio frequency
+           (RF) medium.
+    \value BusmonitorStatusInfo
+           Bus monitor error flags.
+    \value TimestampRelative
+           Relative timestamp. For example, for \c L_Raw.ind.
+    \value TimeDelayUntilSending
+           Time delay. For example, for \c L_Raw.req.
+    \value ExtendedRelativeTimestamp
+           Device independent time stamp. For example, for \c L_Raw.ind or
+           \c L_Busmon.ind.
     \value BiBatInformation             Contains b7-b4 of the RF KNX-Ctrl
                                         field and BiBat Block-number.
-    \value RfMultiInformation           RF Multi frequency, call channel and
-                                        Fast Ack number.
+    \value RfMultiInformation
+           RF multifrequency, call channel, and Fast Ack number.
     \value PreambleAndPostamble         Preamble and postamble length.
-    \value RfFastAckInformation         Status and information about each
-                                        expected number of Fast Ack (N)
-    \value ManufacturerSpecificData       Manufacturer specific data, including
-                                        manufacturer ID (2 byte) and
-                                        Subfunction ID (1 byte).
+    \value RfFastAckInformation
+           Status and information of each expected number of Fast Ack (N).
+    \value ManufacturerSpecificData
+           Manufacturer-specific data, including manufacturer ID (2-byte) and
+           Subfunction ID (1-byte).
     \omitvalue EscCode
 */
 
 /*!
     \fn QKnxAdditionalInfo::QKnxAdditionalInfo()
 
-    Constructs an new, empty, invalid additional info object.
+    Constructs a new, empty, invalid additional info object.
 */
 
 /*!
@@ -81,12 +99,8 @@ QT_BEGIN_NAMESPACE
 */
 
 /*!
-    Constructs an new additional info object and sets its \l Type to \a type
+    Constructs a new additional info object and sets its \l Type to \a type
     and data to \a data.
-
-    \note The KNX specification limits the size of the data to a maximum
-    of 252 bytes. The class implementation acknowledges this and silently
-    truncates the data stored in the additional info object.
 
     \sa isNull(), isValid()
 */
@@ -99,7 +113,7 @@ QKnxAdditionalInfo::QKnxAdditionalInfo(QKnxAdditionalInfo::Type type, const QKnx
 
 /*!
     If this is an additional info object that is constructed by default,
-    returns \c true, otherwise returns \c false. An additional info's object
+    returns \c true; otherwise returns \c false. An additional info object
     is considered null if it contains no initialized type value.
 
     \sa isValid()
@@ -150,7 +164,7 @@ bool QKnxAdditionalInfo::isValid() const
 
 /*!
     Returns the number of bytes representing the additional info, including the
-    byte for \l Type id and the byte for length information.
+    byte for the \l Type id and the byte for length information.
 */
 quint8 QKnxAdditionalInfo::size() const
 {
@@ -160,7 +174,7 @@ quint8 QKnxAdditionalInfo::size() const
 }
 
 /*!
-    Returns the additional info \l Type.
+    Returns the type of the information stored in the additional info object.
 */
 QKnxAdditionalInfo::Type QKnxAdditionalInfo::type() const
 {
@@ -176,7 +190,7 @@ void QKnxAdditionalInfo::setType(QKnxAdditionalInfo::Type type)
 }
 
 /*!
-    Returns the additional info's object data.
+    Returns the data stored in the additional info object.
 */
 QKnxByteArray QKnxAdditionalInfo::data() const
 {
@@ -184,11 +198,7 @@ QKnxByteArray QKnxAdditionalInfo::data() const
 }
 
 /*!
-    Sets the additional info's object data to \a data.
-
-    \note The KNX specification limits the size of the data to a maximum
-    of 252 bytes. The class implementation acknowledges this and silently
-    truncates the data stored in the additional info object.
+    Sets the data stored in the additional info object to \a data.
 */
 void QKnxAdditionalInfo::setData(const QKnxByteArray &data)
 {
@@ -198,7 +208,8 @@ void QKnxAdditionalInfo::setData(const QKnxByteArray &data)
 }
 
 /*!
-    Returns the number of bytes representing the additional info's data.
+    Returns the number of bytes representing the data stored in the additional
+    info object.
 */
 quint8 QKnxAdditionalInfo::dataSize() const
 {
@@ -206,12 +217,12 @@ quint8 QKnxAdditionalInfo::dataSize() const
 }
 
 /*!
-    Returns the number of expected bytes for \l Type id \a type. The additional
-    \c bool parameter \a isFixedSize is set to \c true if the \a type expects
-    a fixed size of bytes; otherwise to false. If the \a type is unknown, the
-    function will return a negative value.
+    Returns the number of expected bytes for the \l Type id \a type. The
+    additional boolean parameter \a isFixedSize is set to \c true if the type
+    expects a fixed size of bytes; otherwise it is to \c false. If the type is
+    unknown, the function returns a negative value.
 
-    Know types of variable size are:
+    Known types of variable size are:
     \list
         \li \l QKnxAdditionalInfo::RfFastAckInformation - a multiple of two
                bytes, two bytes minimum.
@@ -241,7 +252,7 @@ qint32 QKnxAdditionalInfo::expectedDataSize(QKnxAdditionalInfo::Type type, bool 
 }
 
 /*!
-    Returns the byte at position \a index in the additional info's object.
+    Returns the byte at the position \a index in the additional info object.
 */
 quint8 QKnxAdditionalInfo::byte(quint8 index) const
 {
@@ -250,7 +261,7 @@ quint8 QKnxAdditionalInfo::byte(quint8 index) const
 }
 
 /*!
-    Returns an array of bytes that represent the additional info's object.
+    Returns an array of bytes that represent the additional info object.
 */
 QKnxByteArray QKnxAdditionalInfo::bytes() const
 {
@@ -281,7 +292,7 @@ QKnxAdditionalInfo QKnxAdditionalInfo::fromBytes(const QKnxByteArray &bytes, qui
 /*!
     \relates QKnxAdditionalInfo
 
-    Writes the KNX cEMI frame's additional \a info to the \a debug stream.
+    Writes the KNX cEMI frame's additional info \a info to the \a debug stream.
 */
 QDebug operator<<(QDebug debug, const QKnxAdditionalInfo &info)
 {

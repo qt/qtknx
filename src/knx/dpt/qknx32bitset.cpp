@@ -89,6 +89,8 @@ quint32 QKnx32BitSet::value() const
 
 /*!
     Sets the value of the datapoint type to \a value.
+
+    Returns \c true if the value was set; otherwise returns \c false.
 */
 bool QKnx32BitSet::setValue(quint32 value)
 {
@@ -102,8 +104,17 @@ bool QKnx32BitSet::setValue(quint32 value)
     \inherits QKnx32BitSet
     \inmodule QtKnx
 
-    \brief The QKnxCombinedInfoOnOff class is a datapoint type for combined
-    information about the on and off states.
+    \brief The QKnxCombinedInfoOnOff class is a datapoint type for storing
+    combined information about the on and off states of a multiple-channel
+    binary actuator.
+
+    This datapoint type may only be used for encoding the combined binary output
+    information of a multiple-channel binary actuator. It avoids the bus load
+    that is caused by individual single bit state outputs, especially in case of
+    simultaneous changes, such as \e {all off}.
+
+    If one or more output bits are not used or the output states are not valid,
+    the assigned mask bits of the output shall be set to the value \c 0.
 
     This is a fixed size datapoint type with the length of 4 bytes.
 
@@ -114,7 +125,8 @@ bool QKnx32BitSet::setValue(quint32 value)
 
     \enum QKnxCombinedInfoOnOff::Output
 
-    This enum type holds the output of the datapoint type.
+    This enum type holds the output bit stored in the datapoint type.
+
     \value First
     \value Second
     \value Third
@@ -137,24 +149,29 @@ bool QKnx32BitSet::setValue(quint32 value)
 
     \enum QKnxCombinedInfoOnOff::OutputState
 
-    This enum type holds the state of the output of the datapoint type.
+    This enum type holds the state of the output stored in the datapoint type.
 
     \value Off
+           The output state is \c Off.
     \value On
+           The output state is \c On.
 */
 
 /*!
 
     \enum QKnxCombinedInfoOnOff::OutputValidity
 
-    This enum type holds the validity of the output of the datapoint type.
+    This enum type holds the validity of the output stored in the datapoint
+    type.
 
     \value Invalid
+           The output state is invalid.
     \value Valid
+           The output state is valid.
 */
 
 /*!
-    Creates a fixed size datapoint type with output set to
+    Creates a fixed size datapoint type with the output bit set to
     QKnxCombinedInfoOnOff::First, output state to QKnxCombinedInfoOnOff::Off,
     and output validity to QKnxCombinedInfoOnOff::Invalid.
 */
@@ -175,15 +192,15 @@ QKnxCombinedInfoOnOff::QKnxCombinedInfoOnOff(const QVector<OutputInfo> &infos)
 }
 
 /*!
-    Creates a fixed size datapoint type with the output \a output, output
-    state \a state, and output validity \a validity.
+    Creates a fixed size datapoint type with the output bit \a output, state
+    \a state, and validity \a validity.
 */
 QKnxCombinedInfoOnOff::QKnxCombinedInfoOnOff(Output output, OutputState state, OutputValidity validity)
     : QKnxCombinedInfoOnOff({ { output, state, validity } })
 {}
 
 /*!
-    Returns the state of \a output.
+    Returns the state of the output bit \a output.
 */
 QKnxCombinedInfoOnOff::OutputState QKnxCombinedInfoOnOff::state(Output output) const
 {
@@ -191,8 +208,8 @@ QKnxCombinedInfoOnOff::OutputState QKnxCombinedInfoOnOff::state(Output output) c
 }
 
 /*!
-    Sets the datapoint type's output to \a output and its output state to
-    \a state.
+    Sets the output bit stored in the datapoint type to \a output and the
+    state to \a state.
 
     If the value is outside the allowed range, returns \c false and does not set
     the value.
@@ -205,7 +222,7 @@ bool QKnxCombinedInfoOnOff::setState(Output output, OutputState state)
 }
 
 /*!
-    Returns the validity of \a output.
+    Returns the validity of the output bit \a output.
 */
 QKnxCombinedInfoOnOff::OutputValidity QKnxCombinedInfoOnOff::validity(Output output) const
 {
@@ -213,8 +230,8 @@ QKnxCombinedInfoOnOff::OutputValidity QKnxCombinedInfoOnOff::validity(Output out
 }
 
 /*!
-    Sets the datapoint type's output to \a output and its output validity to
-    \a validity.
+    Sets the output bit stored in the datapoint type to \a output and the
+    validity to \a validity.
 
     If the value is outside the allowed range, returns \c false and does not set
     the value.
@@ -228,9 +245,10 @@ bool QKnxCombinedInfoOnOff::setValidity(Output output, OutputValidity validity)
 }
 
 /*!
-    Sets the value of the datapoint type to \a infos.
+    Sets the value stored in the datapoint type to \a infos.
 
-    Returns \c true if the value was set successfully.
+    Returns \c true if the value was set successfully; otherwise returns
+    \c false.
 */
 bool QKnxCombinedInfoOnOff::setValue(const QVector<OutputInfo>& infos)
 {
@@ -241,8 +259,10 @@ bool QKnxCombinedInfoOnOff::setValue(const QVector<OutputInfo>& infos)
 }
 
 /*!
-    Sets the output of the datapoint type to \a output, its output state to
-    \a state, and its output validity to \a validity.
+    Sets the output bit stored in the datapoint type to \a output, the output
+    state to \a state, and output validity to \a validity.
+
+    Returns \c true if the value was set; otherwise returns \c false.
 */
 bool QKnxCombinedInfoOnOff::setValue(Output output, OutputState state, OutputValidity validity)
 {

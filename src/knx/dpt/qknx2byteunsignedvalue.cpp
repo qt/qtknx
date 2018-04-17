@@ -48,15 +48,22 @@ QT_BEGIN_NAMESPACE
     \list
         \li \c QKnxBrightness - Brightness in LUX
         \li \c QKnxLengthMilliMeter - Length in millimeters
-        \li \c QKnxPropDataType - Property data type
-        \li \c QKnxTimePeriod10Msec - Time in 10 milliseconds
-        \li \c QKnxTimePeriod100Msec - Time in 100 milliseconds
+        \li \c QKnxPropDataType - Identifier Interface Object Property data
+            type (no unit)
+        \li \c QKnxTimePeriod10Msec - Time in multiples of 10 milliseconds. Not
+            allowed for runtime communication. This datapoint type shall only be
+            used for parameters and diagnostic data or if specified as such in a
+            functional block specification.
+        \li \c QKnxTimePeriod100Msec - Time in multiples of 100 milliseconds.
+            Not allowed for runtime communication.
         \li \c QKnxTimePeriodHrs - Time in hours
-        \li \c QKnxTimePeriodMin - Time in minutes
+        \li \c QKnxTimePeriodMin - Time in minutes. Not allowed for runtime
+            communication.
         \li \c QKnxTimePeriodMsec - Time in milliseconds
         \li \c QKnxTimePeriodSec - Time in seconds
-        \li \c QKnxUEICurrentMilliA - Current in milliampere (no bus poser
-            supply functionality available)
+        \li \c QKnxUEICurrentMilliA - Current in milliampere. The minimum value
+            is \c 0, which means that no bus poser supply functionality is
+            available.
         \li \c QKnxValue2Ucount - Pulses
     \endlist
 
@@ -105,6 +112,8 @@ quint32 QKnx2ByteUnsignedValue::value() const
 
 /*!
     Sets the value of the datapoint type to \a value.
+
+    Returns \c true if the value was set; otherwise returns \c false.
 */
 bool QKnx2ByteUnsignedValue::setValue(quint32 value)
 {

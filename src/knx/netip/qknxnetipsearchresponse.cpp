@@ -40,9 +40,9 @@ QKnxNetIpHpai QKnxNetIpSearchResponse::controlEndpoint() const
     return QKnxNetIpHpai::fromBytes(m_frame.constData(), 0);
 }
 
-QKnxNetIpDeviceDib QKnxNetIpSearchResponse::deviceHardware() const
+QKnxNetIpDib QKnxNetIpSearchResponse::deviceHardware() const
 {
-    return QKnxNetIpDeviceDib::fromBytes(m_frame.constData(), 8);
+    return QKnxNetIpDib::fromBytes(m_frame.constData(), 8);
 }
 
 QKnxNetIpDib QKnxNetIpSearchResponse::supportedFamilies() const
@@ -72,9 +72,10 @@ QKnxNetIpSearchResponse::Builder &
 }
 
 QKnxNetIpSearchResponse::Builder &
-QKnxNetIpSearchResponse::Builder::setDeviceHardware(const QKnxNetIpDeviceDib &ddib)
+    QKnxNetIpSearchResponse::Builder::setDeviceHardware(const QKnxNetIpDib &ddib)
 {
-    m_ddib = ddib;
+    if (QKnxNetIpDeviceDibView(ddib).isValid())
+        m_ddib = ddib;
     return *this;
 }
 

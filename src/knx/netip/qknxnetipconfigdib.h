@@ -33,66 +33,50 @@
 #include <QtKnx/qknxglobal.h>
 #include <QtKnx/qknxnetipstruct.h>
 #include <QtNetwork/qhostaddress.h>
-#include <QtNetwork/qnetworkinterface.h>
 
 QT_BEGIN_NAMESPACE
 
-class Q_KNX_EXPORT QKnxNetIpConfigDib final : public QKnxNetIpDib
+class Q_KNX_EXPORT QKnxNetIpConfigDibView final
 {
 public:
-    // 03_08_03 Management v01.06.02 AS, 2.5.7 PID_IP_CAPABILITIES (PID = 56)
-    enum class Capability : quint8
-    {
-        BootP = 0x00,
-        Dhcp = 0x01,
-        AutoIp = 0x02
-    };
-    Q_DECLARE_FLAGS(Capabilities, Capability)
+    QKnxNetIpConfigDibView() = delete;
+    ~QKnxNetIpConfigDibView() = default;
 
-    // 03_08_03 Management v01.06.02 AS, 2.5.6 PID_IP_ASSIGNMENT_METHOD (PID = 55)
-    enum class AssignmentMethod : quint8
-    {
-        Manual = 0x01,
-        BootP = 0x02,
-        Dhcp = 0x04,
-        AutoIp = 0x08
-    };
-    Q_DECLARE_FLAGS(AssignmentMethods, AssignmentMethod)
+    QKnxNetIpConfigDibView(const QKnxNetIpDib &&) = delete;
+    explicit QKnxNetIpConfigDibView(const QKnxNetIpDib &dib);
 
-    QKnxNetIpConfigDib() = default;
-    ~QKnxNetIpConfigDib() override = default;
-
-    QKnxNetIpConfigDib(const QHostAddress &ipAddress,
-                       const QHostAddress &subnetMask,
-                       const QHostAddress &gateway,
-                       Capabilities capabilitys,
-                       AssignmentMethods methods);
-
-    QKnxNetIpConfigDib(const QNetworkAddressEntry &addressEntry,
-                       const QHostAddress &gateway,
-                       Capabilities capabilitys,
-                       AssignmentMethods methods);
-
-    static QKnxNetIpConfigDib fromBytes(const QKnxByteArray &bytes, quint16 index)
-    {
-        return QKnxNetIpStruct::fromBytes(bytes, index,
-            QKnxNetIp::DescriptionType::IpConfiguration);
-    }
-
+    bool isValid() const;
     QKnxNetIp::DescriptionType descriptionType() const;
+
     QHostAddress ipAddress() const;
     QHostAddress subnetMask() const;
     QHostAddress defaultGateway() const;
-    Capabilities capabilities() const;
-    AssignmentMethods assignmentMethods() const;
+    QKnxNetIp::Capabilities capabilities() const;
+    QKnxNetIp::AssignmentMethods assignmentMethods() const;
 
-    bool isValid() const override;
+    class Q_KNX_EXPORT Builder final
+    {
+    public:
+        Builder &setIpAddress(const QHostAddress &ipAddress);
+        Builder &setSubnetMask(const QHostAddress &subnetMask);
+        Builder &setDefaultGateway(const QHostAddress &gateway);
+        Builder &setCapabilities(QKnxNetIp::Capabilities capabilities);
+        Builder &setAssignmentMethods(QKnxNetIp::AssignmentMethods methods);
+
+        QKnxNetIpDib create() const;
+
+    private:
+        QHostAddress m_ipAddress;
+        QHostAddress m_subnetMask;
+        QHostAddress m_gateway;
+        QKnxNetIp::Capabilities m_caps { QKnxNetIp::Capability::Unknown };
+        QKnxNetIp::AssignmentMethods m_methods { QKnxNetIp::AssignmentMethod::Unknown };
+    };
+    static QKnxNetIpConfigDibView::Builder builder();
 
 private:
-    QKnxNetIpConfigDib(const QKnxNetIpDib &other);
+    const QKnxNetIpDib &m_dib;
 };
-Q_DECLARE_OPERATORS_FOR_FLAGS(QKnxNetIpConfigDib::Capabilities)
-Q_DECLARE_OPERATORS_FOR_FLAGS(QKnxNetIpConfigDib::AssignmentMethods)
 
 QT_END_NAMESPACE
 

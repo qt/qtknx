@@ -49,10 +49,13 @@ public:
     QKnxConnectionInfo(const QKnxConnectionInfo &other);
     QKnxConnectionInfo &operator=(const QKnxConnectionInfo &other);
 
-#ifdef Q_COMPILER_RVALUE_REFS
     void swap(QKnxConnectionInfo &other) Q_DECL_NOTHROW;
+
+    QKnxConnectionInfo(QKnxConnectionInfo &&other) Q_DECL_NOTHROW;
     QKnxConnectionInfo &operator=(QKnxConnectionInfo &&other) Q_DECL_NOTHROW;
-#endif
+
+    bool operator==(const QKnxConnectionInfo &other) const;
+    bool operator!=(const QKnxConnectionInfo &other) const;
 
 private:
     explicit QKnxConnectionInfo(QKnxConnectionInfoPrivate &dd);

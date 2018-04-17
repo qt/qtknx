@@ -71,7 +71,7 @@ public:
 private:
     QKnxByteArray m_bytes { 0x00, 0x00, 0x00, 0x00 };
 };
-// TODO: add debug stream operator
+Q_KNX_EXPORT QDebug operator<<(QDebug debug, const QKnxNetIpConnectionHeader &header);
 
 QT_END_NAMESPACE
 

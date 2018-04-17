@@ -55,7 +55,7 @@ struct Q_KNX_EXPORT QKnxNetIpServerInfoPrivate final : public QSharedData
     ~QKnxNetIpServerInfoPrivate() = default;
 
     QKnxNetIpHpai hpai;
-    QKnxNetIpDeviceDib hardware;
+    QKnxNetIpDib hardware;
     QKnxNetIpDib services;
 };
 

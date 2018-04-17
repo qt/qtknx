@@ -27,7 +27,7 @@
 **
 ******************************************************************************/
 
-#include "qknxprojectutils.h"
+#include "qknxprojectutils_p.h"
 #include "private/qxmlutils_p.h"
 
 QT_BEGIN_NAMESPACE

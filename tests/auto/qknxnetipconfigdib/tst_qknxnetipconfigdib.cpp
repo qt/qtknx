@@ -49,70 +49,85 @@ private slots:
 
 void tst_QKnxNetIpConfigDib::testDefaultConstructor()
 {
-    QKnxNetIpConfigDib configDib;
-    QCOMPARE(configDib.isValid(), false);
-    QCOMPARE(configDib.size(), quint16(0));
-    QCOMPARE(configDib.bytes(), QKnxByteArray {});
+    auto configDib = QKnxNetIpConfigDibView::builder().create();
+    QCOMPARE(configDib.isValid(), true);
+    QCOMPARE(configDib.size(), quint16(2));
+    QCOMPARE(configDib.bytes(), QKnxByteArray({ 0x02, 0x03 }));
     QCOMPARE(configDib.data().size(), quint16(0));
     QCOMPARE(configDib.data(), QKnxByteArray {});
-    QCOMPARE(quint8(configDib.descriptionType()), quint8(0));
-    QCOMPARE(configDib.ipAddress(), QHostAddress());
-    QCOMPARE(configDib.subnetMask(), QHostAddress());
-    QCOMPARE(configDib.defaultGateway(), QHostAddress());
-    QCOMPARE(configDib.capabilities(), 0);
-    QCOMPARE(configDib.assignmentMethods(), 0);
+
+    const QKnxNetIpConfigDibView view(configDib);
+    QCOMPARE(view.isValid(), false);
+    QCOMPARE(view.descriptionType(), QKnxNetIp::DescriptionType::Unknown);
+    QCOMPARE(view.ipAddress(), QHostAddress());
+    QCOMPARE(view.subnetMask(), QHostAddress());
+    QCOMPARE(view.defaultGateway(), QHostAddress());
+    QCOMPARE(view.capabilities(), QKnxNetIp::Capability::Unknown);
+    QCOMPARE(view.assignmentMethods(), QKnxNetIp::AssignmentMethod::Unknown);
 }
 
 void tst_QKnxNetIpConfigDib::testConstructorWithFourArguments()
 {
-    QNetworkAddressEntry addressEntry;
-    addressEntry.setIp(QHostAddress("192.168.2.12"));
-    addressEntry.setNetmask(QHostAddress("255.255.255.0"));
-    QKnxNetIpConfigDib configDib(addressEntry,
-                                 QHostAddress("192.168.2.1"),
-                                 QKnxNetIpConfigDib::Capability::AutoIp,
-                                 QKnxNetIpConfigDib::AssignmentMethod::Manual);
+    auto configDib = QKnxNetIpConfigDibView::builder()
+        .setIpAddress(QHostAddress("192.168.2.12"))
+        .setSubnetMask(QHostAddress("255.255.255.0"))
+        .setDefaultGateway(QHostAddress("192.168.2.1"))
+        .setCapabilities(QKnxNetIp::Capability::AutoIp | QKnxNetIp::Capability::Dhcp)
+        .setAssignmentMethods(QKnxNetIp::AssignmentMethod::Manual
+            | QKnxNetIp::AssignmentMethod::AutoIp | QKnxNetIp::AssignmentMethod::Dhcp)
+        .create();
 
     QCOMPARE(configDib.isValid(), true);
     QCOMPARE(configDib.size(), quint16(16));
     QCOMPARE(configDib.bytes(),
         QKnxByteArray({ 0x10, 0x03, 0xc0, 0xa8, 0x02, 0x0c, 0xff, 0xff, 0xff, 0x00, 0xc0, 0xa8,
-            0x02, 0x01, 0x02, 0x01 }));
+            0x02, 0x01, 0x06, 0x0d }));
     QCOMPARE(configDib.data().size(), quint16(14));
     QCOMPARE(configDib.data(),
         QKnxByteArray({ 0xc0, 0xa8, 0x02, 0x0c, 0xff, 0xff, 0xff, 0x00, 0xc0, 0xa8, 0x02,
-            0x01, 0x02, 0x01 }));
-    QCOMPARE(configDib.descriptionType(), QKnxNetIp::DescriptionType::IpConfiguration);
-    QCOMPARE(configDib.ipAddress(), QHostAddress("192.168.2.12"));
-    QCOMPARE(configDib.subnetMask(), QHostAddress("255.255.255.0"));
-    QCOMPARE(configDib.defaultGateway(), QHostAddress("192.168.2.1"));
-    QCOMPARE(configDib.capabilities(), QKnxNetIpConfigDib::Capability::AutoIp);
-    QCOMPARE(configDib.assignmentMethods(), QKnxNetIpConfigDib::AssignmentMethod::Manual);
+            0x01, 0x06, 0x0d }));
+
+    const QKnxNetIpConfigDibView view(configDib);
+    QCOMPARE(view.isValid(), true);
+    QCOMPARE(view.descriptionType(), QKnxNetIp::DescriptionType::IpConfiguration);
+    QCOMPARE(view.ipAddress(), QHostAddress("192.168.2.12"));
+    QCOMPARE(view.subnetMask(), QHostAddress("255.255.255.0"));
+    QCOMPARE(view.defaultGateway(), QHostAddress("192.168.2.1"));
+    QCOMPARE(view.capabilities(), QKnxNetIp::Capability::AutoIp | QKnxNetIp::Capability::Dhcp);
+    QCOMPARE(view.assignmentMethods(), QKnxNetIp::AssignmentMethod::Manual
+        | QKnxNetIp::AssignmentMethod::AutoIp | QKnxNetIp::AssignmentMethod::Dhcp);
 }
 
 void tst_QKnxNetIpConfigDib::testConstructorWithFiveArguments()
 {
-    QKnxNetIpConfigDib configDib(QHostAddress("192.168.2.12"),
-                                 QHostAddress("255.255.255.0"),
-                                 QHostAddress("192.168.2.1"),
-                                 QKnxNetIpConfigDib::Capability::AutoIp,
-                                 QKnxNetIpConfigDib::AssignmentMethod::Manual);
+    auto configDib = QKnxNetIpConfigDibView::builder()
+        .setIpAddress(QHostAddress("192.168.2.12"))
+        .setSubnetMask(QHostAddress("255.255.255.0"))
+        .setDefaultGateway(QHostAddress("192.168.2.1"))
+        .setCapabilities(QKnxNetIp::Capability::BootP)
+        .setAssignmentMethods(QKnxNetIp::AssignmentMethod::Manual
+            | QKnxNetIp::AssignmentMethod::BootP)
+        .create();
 
     QCOMPARE(configDib.isValid(), true);
     QCOMPARE(configDib.size(), quint16(16));
     QCOMPARE(configDib.bytes(),
         QKnxByteArray({ 0x10, 0x03, 0xc0, 0xa8, 0x02, 0x0c, 0xff, 0xff, 0xff, 0x00, 0xc0, 0xa8,
-            0x02, 0x01, 0x02, 0x01 }));
+            0x02, 0x01, 0x01, 0x03 }));
     QCOMPARE(configDib.data().size(), quint16(14));
     QCOMPARE(configDib.data(),
         QKnxByteArray({ 0xc0, 0xa8, 0x02, 0x0c, 0xff, 0xff, 0xff, 0x00, 0xc0, 0xa8, 0x02,
-            0x01, 0x02, 0x01 }));
-    QCOMPARE(configDib.descriptionType(), QKnxNetIp::DescriptionType::IpConfiguration);
-    QCOMPARE(configDib.ipAddress(), QHostAddress("192.168.2.12"));
-    QCOMPARE(configDib.subnetMask(), QHostAddress("255.255.255.0"));
-    QCOMPARE(configDib.defaultGateway(), QHostAddress("192.168.2.1"));
-    QCOMPARE(configDib.capabilities(), QKnxNetIpConfigDib::Capability::AutoIp);
-    QCOMPARE(configDib.assignmentMethods(), QKnxNetIpConfigDib::AssignmentMethod::Manual);
+            0x01, 0x01, 0x03 }));
+
+    const QKnxNetIpConfigDibView view(configDib);
+    QCOMPARE(view.isValid(), true);
+    QCOMPARE(view.descriptionType(), QKnxNetIp::DescriptionType::IpConfiguration);
+    QCOMPARE(view.ipAddress(), QHostAddress("192.168.2.12"));
+    QCOMPARE(view.subnetMask(), QHostAddress("255.255.255.0"));
+    QCOMPARE(view.defaultGateway(), QHostAddress("192.168.2.1"));
+    QCOMPARE(view.capabilities(), QKnxNetIp::Capability::BootP);
+    QCOMPARE(view.assignmentMethods(), QKnxNetIp::AssignmentMethod::Manual
+        | QKnxNetIp::AssignmentMethod::BootP);
 }
 
 void tst_QKnxNetIpConfigDib::testDebugStream()
@@ -129,24 +144,17 @@ void tst_QKnxNetIpConfigDib::testDebugStream()
         QtMessageHandler oldMessageHandler;
     } _(myMessageHandler);
 
-    qDebug() << QKnxNetIpConfigDib();
-    QCOMPARE(s_msg, QString::fromLatin1("0x1nv4l1d"));
+    qDebug() << QKnxNetIpConfigDibView::builder().create();
+    QCOMPARE(s_msg, QString::fromLatin1("0x0203"));
 
-    QNetworkAddressEntry addressEntry;
-    addressEntry.setIp(QHostAddress("192.168.2.12"));
-    addressEntry.setNetmask(QHostAddress("255.255.255.0"));
-    qDebug() << QKnxNetIpConfigDib(addressEntry,
-                                   QHostAddress("192.168.2.1"),
-                                   QKnxNetIpConfigDib::Capability::AutoIp,
-                                   QKnxNetIpConfigDib::AssignmentMethod::Manual);
-    QCOMPARE(s_msg, QString::fromLatin1("0x1003c0a8020cffffff00c0a802010201"));
-
-    qDebug() << QKnxNetIpConfigDib(QHostAddress("192.168.2.12"),
-                                   QHostAddress("255.255.255.0"),
-                                   QHostAddress("192.168.2.1"),
-                                   QKnxNetIpConfigDib::Capability::AutoIp,
-                                   QKnxNetIpConfigDib::AssignmentMethod::Manual);
-    QCOMPARE(s_msg, QString::fromLatin1("0x1003c0a8020cffffff00c0a802010201"));
+    qDebug() << QKnxNetIpConfigDibView::builder()
+        .setIpAddress(QHostAddress("192.168.2.12"))
+        .setSubnetMask(QHostAddress("255.255.255.0"))
+        .setDefaultGateway(QHostAddress("192.168.2.1"))
+        .setCapabilities(QKnxNetIp::Capability::AutoIp)
+        .setAssignmentMethods(QKnxNetIp::AssignmentMethod::Manual)
+        .create();
+    QCOMPARE(s_msg, QString::fromLatin1("0x1003c0a8020cffffff00c0a802010401"));
 }
 
 QTEST_APPLESS_MAIN(tst_QKnxNetIpConfigDib)

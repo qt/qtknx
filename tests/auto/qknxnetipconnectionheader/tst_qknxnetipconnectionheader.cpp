@@ -26,8 +26,15 @@
 **
 ******************************************************************************/
 
+#include <QtCore/qdebug.h>
 #include <QtKnx/qknxnetipconnectionheader.h>
 #include <QtTest/qtest.h>
+
+static QString s_msg;
+static void myMessageHandler(QtMsgType, const QMessageLogContext &, const QString &msg)
+{
+    s_msg = msg;
+}
 
 class tst_QKnxNetIpConnectionHeader : public QObject
 {
@@ -130,6 +137,26 @@ private slots:
 
     void testDebugStream()
     {
+        struct DebugHandler
+        {
+            explicit DebugHandler(QtMessageHandler newMessageHandler)
+                : oldMessageHandler(qInstallMessageHandler(newMessageHandler))
+            {}
+            ~DebugHandler()
+            { qInstallMessageHandler(oldMessageHandler); }
+            QtMessageHandler oldMessageHandler;
+        } _(myMessageHandler);
+
+        qDebug() << QKnxNetIpConnectionHeader();
+        QCOMPARE(s_msg, QStringLiteral("0x"));
+
+        QKnxNetIpConnectionHeader header(1, 2);
+        qDebug() << header;
+        QCOMPARE(s_msg, QStringLiteral("0x04010200"));
+
+        header.setConnectionTypeSpecificHeaderItems(QKnxByteArray { 0x01, 0x02, 0x03, 0x04, 0x05 });
+        qDebug() << header;
+        QCOMPARE(s_msg, QStringLiteral("0x090102000102030405"));
     }
 };
 

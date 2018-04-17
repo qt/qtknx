@@ -37,8 +37,8 @@
 **
 ****************************************************************************/
 
-#ifndef QZIPREADER_H
-#define QZIPREADER_H
+#ifndef QZIPREADER_P_H
+#define QZIPREADER_P_H
 
 #include <QtCore/qglobal.h>
 
@@ -121,4 +121,4 @@ Q_DECLARE_TYPEINFO(QZipReader::Status, Q_PRIMITIVE_TYPE);
 
 QT_END_NAMESPACE
 
-#endif // QZIPREADER_H
+#endif // QZIPREADER_P_H

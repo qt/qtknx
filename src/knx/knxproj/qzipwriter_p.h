@@ -37,8 +37,8 @@
 **
 ****************************************************************************/
 
-#ifndef QZIPWRITER_H
-#define QZIPWRITER_H
+#ifndef QZIPWRITER_P_H
+#define QZIPWRITER_P_H
 
 //
 //  W A R N I N G
@@ -111,4 +111,4 @@ private:
 
 QT_END_NAMESPACE
 
-#endif // QZIPWRITER_H
+#endif // QZIPWRITER_P_H

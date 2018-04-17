@@ -31,9 +31,9 @@
 #include <QtCore/qvector.h>
 #include <QtCore/qversionnumber.h>
 #include <QtCore/qxmlstream.h>
-#include <QtKnx/qknxinstallation.h>
-#include <QtKnx/qknxprojectroot.h>
-#include <QtKnx/qknxprojectinformation.h>
+#include <QtKnx/private/qknxinstallation_p.h>
+#include <QtKnx/private/qknxprojectroot_p.h>
+#include <QtKnx/private/qknxprojectinformation_p.h>
 
 #include <QtKnx/private/qzipreader_p.h>
 #include <QtKnx/private/qzipwriter_p.h>

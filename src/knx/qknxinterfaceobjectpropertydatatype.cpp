@@ -1043,14 +1043,44 @@ void QKnxInterfaceObjectPropertyDataType::swap(QKnxInterfaceObjectPropertyDataTy
     d_ptr.swap(other.d_ptr);
 }
 
-#ifdef Q_COMPILER_RVALUE_REFS
+/*!
+    Move-constructs an object instance, making it point to the same object that
+    \a other was pointing to.
+*/
+QKnxInterfaceObjectPropertyDataType::QKnxInterfaceObjectPropertyDataType(
+                                        QKnxInterfaceObjectPropertyDataType &&other) Q_DECL_NOTHROW
+    : d_ptr(other.d_ptr)
+{
+    other.d_ptr = nullptr;
+}
+
 QKnxInterfaceObjectPropertyDataType &
 QKnxInterfaceObjectPropertyDataType::operator=(QKnxInterfaceObjectPropertyDataType &&other) Q_DECL_NOTHROW
 {
     swap(other);
     return *this;
 }
-#endif
+
+/*!
+    Returns \c true if this object and the given \a other are equal; otherwise
+    returns \c false.
+*/
+bool QKnxInterfaceObjectPropertyDataType::operator==(const QKnxInterfaceObjectPropertyDataType &other) const
+{
+    return d_ptr == other.d_ptr
+        || (d_ptr->m_id == other.d_ptr->m_id
+            && d_ptr->m_type == other.d_ptr->m_type
+            && d_ptr->m_unit == other.d_ptr->m_unit);
+}
+
+/*!
+    Returns \c true if this object and the given \a other are not equal;
+    otherwise returns \c false.
+*/
+bool QKnxInterfaceObjectPropertyDataType::operator!=(const QKnxInterfaceObjectPropertyDataType &other) const
+{
+    return !operator==(other);
+}
 
 #include "moc_qknxinterfaceobjectpropertydatatype.cpp"
 

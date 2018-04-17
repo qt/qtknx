@@ -27,16 +27,27 @@
 **
 ******************************************************************************/
 
-#ifndef QKNXINSTALLATION_H
-#define QKNXINSTALLATION_H
+#ifndef QKNXINSTALLATION_P_H
+#define QKNXINSTALLATION_P_H
+
+//
+//  W A R N I N G
+//  -------------
+//
+// This file is not part of the Qt API.  It exists for the convenience
+// of the QZipReader class.  This header file may change from
+// version to version without notice, or even be removed.
+//
+// We mean it.
+//
 
 #include <QtCore/qdatetime.h>
 #include <QtCore/qstring.h>
 #include <QtCore/qvector.h>
-#include <QtKnx/qknxbuildings.h>
-#include <QtKnx/qknxgroupaddresses.h>
-#include <QtKnx/qknxprojectutils.h>
-#include <QtKnx/qknxtopology.h>
+#include <QtKnx/private/qknxbuildings_p.h>
+#include <QtKnx/private/qknxgroupaddresses_p.h>
+#include <QtKnx/private/qknxprojectutils_p.h>
+#include <QtKnx/private/qknxtopology_p.h>
 
 QT_BEGIN_NAMESPACE
 

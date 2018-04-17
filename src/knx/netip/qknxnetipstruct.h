@@ -37,14 +37,14 @@
 
 QT_BEGIN_NAMESPACE
 
-template <typename CodeType> class QKnxNetIpStruct
+template <typename CodeType> class QKnxNetIpStruct final
 {
     static_assert(is_type<CodeType, QKnxNetIp::HostProtocol, QKnxNetIp::ConnectionType,
         QKnxNetIp::DescriptionType>::value, "Type not supported.");
 
 public:
     QKnxNetIpStruct() = default;
-    virtual ~QKnxNetIpStruct() = default;
+    ~QKnxNetIpStruct() = default;
 
     QKnxNetIpStruct(CodeType code, const QKnxByteArray &data = {})
         : m_header(code)
@@ -62,7 +62,7 @@ public:
         return m_header.isNull() && m_data.isNull();
     }
 
-    virtual bool isValid() const
+    bool isValid() const
     {
         return m_header.isValid() && size() == (m_header.size() + m_data.size());
     }
@@ -121,17 +121,14 @@ public:
         return { header, bytes.mid(index + header.size(), header.dataSize()) };
     }
 
-    // TODO: remove
-    static QKnxNetIpStruct<CodeType> fromBytes(const QKnxByteArray &bytes, quint16 index,
-        CodeType)
+    bool operator==(const QKnxNetIpStruct &other) const
     {
-        return QKnxNetIpStruct<CodeType>::fromBytes(bytes, index);
+        return (m_header == other.m_header) && (m_data == other.m_data);
     }
 
-protected:
-    void setCode(CodeType code) // TODO: remove
+    bool operator!=(const QKnxNetIpStruct &other) const
     {
-        m_header.setCode(code);
+        return !operator==(other);
     }
 
 private:
@@ -139,10 +136,17 @@ private:
     QKnxByteArray m_data;
 };
 
-using QKnxNetIpHpai = QKnxNetIpStruct<QKnxNetIp::HostProtocol>;
-using QKnxNetIpCri = QKnxNetIpStruct<QKnxNetIp::ConnectionType>;
-using QKnxNetIpCrd = QKnxNetIpStruct<QKnxNetIp::ConnectionType>;
-using QKnxNetIpDib = QKnxNetIpStruct<QKnxNetIp::DescriptionType>;
+#ifndef Q_CLANG_QDOC
+    using QKnxNetIpHpai = QKnxNetIpStruct<QKnxNetIp::HostProtocol>;
+    using QKnxNetIpCri = QKnxNetIpStruct<QKnxNetIp::ConnectionType>;
+    using QKnxNetIpCrd = QKnxNetIpStruct<QKnxNetIp::ConnectionType>;
+    using QKnxNetIpDib = QKnxNetIpStruct<QKnxNetIp::DescriptionType>;
+#else
+    class QKnxNetIpHpai final {public:};
+    class QKnxNetIpCri final {public:};
+    class QKnxNetIpCrd final {public:};
+    class QKnxNetIpDib final {public:};
+#endif
 
 Q_KNX_EXPORT QDebug operator<<(QDebug debug, const QKnxNetIpStruct<QKnxNetIp::HostProtocol> &hpai);
 Q_KNX_EXPORT QDebug operator<<(QDebug debug, const QKnxNetIpStruct<QKnxNetIp::ConnectionType> &cr);

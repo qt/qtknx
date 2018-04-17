@@ -47,15 +47,20 @@ QT_BEGIN_NAMESPACE
     It is a base class for the following classes:
 
     \list
-        \li \c QKnxDeltaTime10Msec - Time lag in 10 milliseconds
-        \li \c QKnxDeltaTime100Msec - Time lag in 100 milliseconds
+        \li \c QKnxDeltaTime10Msec - Time lag in multiples of 10 milliseconds.
+            Not allowed for runtime communication. This datapoint type shall
+            only be used for parameters and diagnostic data or if specified as
+            such in a functional block specification.
+        \li \c QKnxDeltaTime100Msec - Time lag in multiples of 100 milliseconds.
+            Not allowed for runtime communication.
         \li \c QKnxDeltaTimeHrs - Time lag in hours
-        \li \c QKnxDeltaTimeMin - Time lag in minutes
+        \li \c QKnxDeltaTimeMin - Time lag in minutes. Not allowed for runtime
+            communication.
         \li \c QKnxDeltaTimeMsec - Time lag in milliseconds
         \li \c QKnxDeltaTimeSec - Time lag in seconds
         \li \c QKnxPercentV16 - Percentage difference
         \li \c QKnxRotationAngle - Rotation angle in degrees
-        \li \c QKnxValue2Count - Pulses difference
+        \li \c QKnxValue2Count - Pulse difference
     \endlist
 
     Integer values from -32 768 to 32 767 can be encoded in this datapoint type.
@@ -101,6 +106,8 @@ double QKnx2ByteSignedValue::value() const
 
 /*!
     Sets the value of the datapoint type to \a value.
+
+    Returns \c true if the value was set; otherwise returns \c false.
 */
 bool QKnx2ByteSignedValue::setValue(double value)
 {

@@ -32,11 +32,11 @@
 
 #include <QtCore/qmetatype.h>
 #include <QtCore/qshareddata.h>
+
 #include <QtKnx/qknxaddress.h>
 #include <QtKnx/qknxglobal.h>
-#include <QtKnx/qknxnetipdevicedib.h>
-#include <QtKnx/qknxnetiphpai.h>
 #include <QtKnx/qknxnetipservicefamiliesdib.h>
+
 #include <QtNetwork/qhostaddress.h>
 
 QT_BEGIN_NAMESPACE
@@ -61,15 +61,14 @@ public:
     QVector<QKnxServiceInfo> supportedServices() const;
 
     QKnxNetIpHpai endpoint() const;
-    QKnxNetIpDeviceDib hardware() const;
+    QKnxNetIpDib hardware() const;
     QKnxNetIpDib services() const;
 
-    QKnxNetIpServerInfo(const QKnxNetIpServerInfo &o);
-    QKnxNetIpServerInfo &operator=(const QKnxNetIpServerInfo &o);
+    QKnxNetIpServerInfo(const QKnxNetIpServerInfo &other);
+    QKnxNetIpServerInfo &operator=(const QKnxNetIpServerInfo &other);
 
-#ifdef Q_COMPILER_RVALUE_REFS
+    QKnxNetIpServerInfo(QKnxNetIpServerInfo &&other) Q_DECL_NOTHROW;
     QKnxNetIpServerInfo &operator=(QKnxNetIpServerInfo &&other) Q_DECL_NOTHROW;
-#endif
 
     bool operator==(const QKnxNetIpServerInfo &other) const;
     bool operator!=(const QKnxNetIpServerInfo &other) const;
@@ -77,7 +76,7 @@ public:
     void swap(QKnxNetIpServerInfo &other) Q_DECL_NOTHROW;
 
 private:
-    QKnxNetIpServerInfo(const QKnxNetIpHpai &hpai, const QKnxNetIpDeviceDib &hardware,
+    QKnxNetIpServerInfo(const QKnxNetIpHpai &hpai, const QKnxNetIpDib &hardware,
         QKnxNetIpDib services);
     explicit QKnxNetIpServerInfo(QKnxNetIpServerInfoPrivate &dd);
 

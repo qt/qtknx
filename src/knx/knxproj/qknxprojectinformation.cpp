@@ -27,7 +27,7 @@
 **
 ******************************************************************************/
 
-#include "qknxprojectinformation.h"
+#include "qknxprojectinformation_p.h"
 
 QT_BEGIN_NAMESPACE
 

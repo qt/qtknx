@@ -27,7 +27,7 @@
 **
 ******************************************************************************/
 
-#include "qknxtopology.h"
+#include "qknxtopology_p.h"
 #include "qregularexpression.h"
 
 QT_BEGIN_NAMESPACE
