@@ -80,7 +80,7 @@ public:
         QKnxAddress m_address;
         quint16 m_projectId { 0 };
         QKnxByteArray m_serialNumber;
-        QHostAddress m_multicastAddress { QLatin1String(QKnxNetIp::MulticastAddress) };
+        QHostAddress m_multicastAddress { QLatin1String(QKnxNetIp::Constants::MulticastAddress) };
         QKnxByteArray m_macAddress;
         QByteArray m_deviceName;
     };

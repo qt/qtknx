@@ -32,20 +32,20 @@
 QT_BEGIN_NAMESPACE
 
 /*!
-    \class QKnxNetIp
+    \namespace QKnx::NetIp
 
     \inmodule QtKnx
-    \brief The QKnxNetIp structure defines constants, methods, and enumerations
+    \brief The QKnx::NetIp namespace defines constants, methods, and enumerations
     related to KNXnet/IP communication.
 */
 
 /*!
-    \variable QKnxNetIp::DefaultPort
+    \variable QKnxNetIp::Constants::DefaultPort
     \brief The default KNXnet/IP port number used for UDP/IPv4.
 */
 
 /*!
-    \variable QKnxNetIp::MulticastAddress
+    \variable QKnxNetIp::Constants::MulticastAddress
     \brief The default KNXnet/IP system setup multicast address.
 */
 
@@ -477,6 +477,59 @@ bool QKnxNetIp::isCapability(Capability capability)
     The timeout used to empty the incoming queue of a KNXnet/IP router or KNX
     IP device if the received datagrams exceeded the amount the device can
     actually process.
+*/
+
+/*!
+    \enum QKnxNetIpCemiServer::ReturnCode
+
+    This enum describes the possible error codes returned by the remote cEMI
+    Server after cEMI function properties service requests.
+
+    \value NoError The function was successfully executed. The return code
+                   indicates the positive result of the function.
+    \value Error   The function was not successfully executed. The return code
+                   indicates the negative result of the function. Can be any
+                   number larger than \c NoError.
+*/
+
+/*!
+    \enum QKnxNetIpCemiServer::Error
+
+    This enum describes the possible error codes returned by the remote cEMI
+    Server after cEMI service management requests.
+
+    \value Unspecified
+           The error that happened is unknown. Can occur in negative read/ write
+           confirmation frames.
+    \value OutOfRange
+           Denotes a general write error if OutOfMaxRange or OutOfMinRange are
+           not applicable. Can occur in negative write confirmation frames.
+    \value OutOfMaxRange
+           The value to write was to high. Can occur in negative write
+           confirmation frames.
+    \value OutOfMinRange
+           The value to write was to low. Can occur in negative write
+           confirmation frames.
+    \value Memory
+           The memory can not be written or only with fault(s). Can occur in
+           negative write confirmation frames.
+    \value ReadOnly
+           Write access to a read-only or a write protected property. Can occur
+           in negative write confirmation frames.
+    \value IllegalCommand
+           The used command is not valid or not supported by the cEMI server.
+    \value NonExistingProperty
+           Read or write access to an non existing Property. Can occur in
+           negative read/ write confirmation frames.
+    \value TypeConflict
+           Write access with a wrong data type (datapoint length).
+    \value PropertyIndexRangeError
+           Read or write access to a non existing property-array index. Can
+           occur in negative read/ write confirmation frames.
+    \value TemporaryNotWritable
+           The Property exists but cannot be set to a new value at the time.
+           Can occur in negative write confirmation frames.
+    \value None     No error happened. Please do not use.
 */
 
 QT_END_NAMESPACE

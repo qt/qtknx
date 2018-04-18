@@ -379,7 +379,7 @@ void QKnxDeviceManagementFrame::setData(const QKnxByteArray &newData)
 
     \sa data()
 */
-QKnx::NetIp::CemiServer::Error QKnxDeviceManagementFrame::error() const
+QKnxNetIpCemiServer::Error QKnxDeviceManagementFrame::error() const
 {
     switch (messageCode()) {
     case MessageCode::PropertyReadConfirmation:
@@ -387,13 +387,13 @@ QKnx::NetIp::CemiServer::Error QKnxDeviceManagementFrame::error() const
         if (numberOfElements() == 0) {
             auto err = data();
             if (err.size() < 1)
-                return QKnx::NetIp::CemiServer::Error::Unspecified;
-            return QKnx::NetIp::CemiServer::Error(err.at(0));
+                return QKnxNetIpCemiServer::Error::Unspecified;
+            return QKnxNetIpCemiServer::Error(err.at(0));
         }
     default:
         break;
     }
-    return QKnx::NetIp::CemiServer::Error::None;
+    return QKnxNetIpCemiServer::Error::None;
 }
 
 /*!
@@ -401,7 +401,7 @@ QKnx::NetIp::CemiServer::Error QKnxDeviceManagementFrame::error() const
     \l PropertyReadConfirmation or \l PropertyWriteConfirmation frame; does
     nothing otherwise.
 */
-void QKnxDeviceManagementFrame::setError(QKnx::NetIp::CemiServer::Error error)
+void QKnxDeviceManagementFrame::setError(QKnxNetIpCemiServer::Error error)
 {
     // Set error code on confirmed messages only. See paragraph 4.1.7.3.7.1
     switch (messageCode()) {
@@ -423,24 +423,24 @@ void QKnxDeviceManagementFrame::setError(QKnx::NetIp::CemiServer::Error error)
 
     In all other cases the function will always return \l Error.
 */
-QKnx::NetIp::CemiServer::ReturnCode QKnxDeviceManagementFrame::returnCode() const
+QKnxNetIpCemiServer::ReturnCode QKnxDeviceManagementFrame::returnCode() const
 {
     switch (messageCode()) {
     //case MessageCode::FunctionPropertyStateReadConfirmation:
     case MessageCode::FunctionPropertyCommandConfirmation:
         if (size() >= 6)
-            return QKnx::NetIp::CemiServer::ReturnCode(d_ptr->m_serviceInformation.value(5));
+            return QKnxNetIpCemiServer::ReturnCode(d_ptr->m_serviceInformation.value(5));
     default:
         break;
     }
-    return QKnx::NetIp::CemiServer::ReturnCode::Error;
+    return QKnxNetIpCemiServer::ReturnCode::Error;
 }
 
 /*!
     Returns the code set by the cEMI server after a cEMI function property
     service request.
 */
-void QKnxDeviceManagementFrame::setReturnCode(QKnx::NetIp::CemiServer::ReturnCode code)
+void QKnxDeviceManagementFrame::setReturnCode(QKnxNetIpCemiServer::ReturnCode code)
 {
     switch (messageCode()) {
     //case MessageCode::FunctionPropertyStateReadConfirmation:

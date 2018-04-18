@@ -84,7 +84,8 @@ QString interfaceFromAddress(const QHostAddress &address)
         if (interface.allAddresses().contains(address))
             return interface.humanReadableName();
     }
-    return QString(address == QHostAddress(QKnxNetIp::MulticastAddress) ? "Multicast" : "Unknown");
+    return QString(address == QHostAddress(QKnxNetIp::Constants::MulticastAddress)
+        ? "Multicast" : "Unknown");
 }
 
 int main(int argc, char *argv[])

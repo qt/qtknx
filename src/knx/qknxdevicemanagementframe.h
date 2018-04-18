@@ -36,7 +36,7 @@
 #include <QtKnx/qknxglobal.h>
 #include <QtKnx/qknxinterfaceobjectproperty.h>
 #include <QtKnx/qknxinterfaceobjecttype.h>
-#include <QtKnx/qknxnamespace.h>
+#include <QtKnx/qknxnetip.h>
 
 QT_BEGIN_NAMESPACE
 
@@ -102,11 +102,11 @@ public:
     QKnxByteArray data() const;
     void setData(const QKnxByteArray &newData);
 
-    QKnx::NetIp::CemiServer::Error error() const;
-    void setError(QKnx::NetIp::CemiServer::Error error);
+    QKnxNetIpCemiServer::Error error() const;
+    void setError(QKnxNetIpCemiServer::Error error);
 
-    QKnx::NetIp::CemiServer::ReturnCode returnCode() const;
-    void setReturnCode(QKnx::NetIp::CemiServer::ReturnCode code);
+    QKnxNetIpCemiServer::ReturnCode returnCode() const;
+    void setReturnCode(QKnxNetIpCemiServer::ReturnCode code);
 
     QKnxByteArray serviceInformation() const;
     void setServiceInformation(const QKnxByteArray &serviceInfo);

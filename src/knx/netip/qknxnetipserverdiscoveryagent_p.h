@@ -80,8 +80,8 @@ private:
     quint16 port { 0 }, usedPort;
     QHostAddress address { QHostAddress::AnyIPv4 }, usedAddress;
 
-    const quint16 multicastPort { QKnxNetIp::DefaultPort };
-    const QHostAddress multicastAddress { QLatin1String(QKnxNetIp::MulticastAddress) };
+    const quint16 multicastPort { QKnxNetIp::Constants::DefaultPort };
+    const QHostAddress multicastAddress { QLatin1String(QKnxNetIp::Constants::MulticastAddress) };
 
     quint8 ttl { 60 };
     bool nat { false };

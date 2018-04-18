@@ -94,7 +94,7 @@ QKnxDeviceManagementFrame QKnxDeviceManagementFrameFactory::PropertyRead::create
 
 QKnxDeviceManagementFrame QKnxDeviceManagementFrameFactory::PropertyRead::createConfirmation(
     QKnxInterfaceObjectType type, quint8 instance, QKnxInterfaceObjectProperty pid,
-    quint8 numberOfElements, quint16 startIndex, QKnx::NetIp::CemiServer::Error error)
+    quint8 numberOfElements, quint16 startIndex, QKnxNetIpCemiServer::Error error)
 {
     QKnxDeviceManagementFrame frame { QKnxDeviceManagementFrame::MessageCode::PropertyReadConfirmation, type,
         instance, pid, numberOfElements, startIndex };
@@ -111,7 +111,7 @@ QKnxDeviceManagementFrame QKnxDeviceManagementFrameFactory::PropertyRead::create
 }
 
 QKnxDeviceManagementFrame QKnxDeviceManagementFrameFactory::PropertyRead::createConfirmation(
-    const QKnxDeviceManagementFrame &request, QKnx::NetIp::CemiServer::Error error)
+    const QKnxDeviceManagementFrame &request, QKnxNetIpCemiServer::Error error)
 {
     QKnxDeviceManagementFrame frame = { QKnxDeviceManagementFrame::MessageCode::PropertyReadConfirmation,
         request.objectType(), request.objectInstance(), request.property(), 0, request.startIndex() };
@@ -132,21 +132,21 @@ QKnxDeviceManagementFrame QKnxDeviceManagementFrameFactory::PropertyWrite::creat
 
 QKnxDeviceManagementFrame QKnxDeviceManagementFrameFactory::PropertyWrite::createConfirmation(
     QKnxInterfaceObjectType type, quint8 instance, QKnxInterfaceObjectProperty pid,
-    quint8 numberOfElements, quint16 startIndex, QKnx::NetIp::CemiServer::Error error)
+    quint8 numberOfElements, quint16 startIndex, QKnxNetIpCemiServer::Error error)
 {
     QKnxDeviceManagementFrame frame = { QKnxDeviceManagementFrame::MessageCode::PropertyWriteConfirmation, type,
         instance, pid, numberOfElements, startIndex };
-    if (error != QKnx::NetIp::CemiServer::Error::None)
+    if (error != QKnxNetIpCemiServer::Error::None)
         frame.setError(error);
     return frame;
 }
 
 QKnxDeviceManagementFrame QKnxDeviceManagementFrameFactory::PropertyWrite::createConfirmation(
-    const QKnxDeviceManagementFrame &request, QKnx::NetIp::CemiServer::Error error)
+    const QKnxDeviceManagementFrame &request, QKnxNetIpCemiServer::Error error)
 {
     QKnxDeviceManagementFrame frame = { QKnxDeviceManagementFrame::MessageCode::PropertyWriteConfirmation,
         request.objectType(), request.objectInstance(), request.property(), 0, request.startIndex() };
-    if (error != QKnx::NetIp::CemiServer::Error::None)
+    if (error != QKnxNetIpCemiServer::Error::None)
         frame.setError(error);
     return frame;
 }
@@ -182,7 +182,7 @@ QKnxDeviceManagementFrame QKnxDeviceManagementFrameFactory::FunctionPropertyComm
 
 QKnxDeviceManagementFrame QKnxDeviceManagementFrameFactory::FunctionPropertyCommand::createConfirmation(
     QKnxInterfaceObjectType type, quint8 instance, QKnxInterfaceObjectProperty pid,
-    QKnx::NetIp::CemiServer::ReturnCode code, const QKnxByteArray &data)
+    QKnxNetIpCemiServer::ReturnCode code, const QKnxByteArray &data)
 {
     return { QKnxDeviceManagementFrame::MessageCode::FunctionPropertyCommandConfirmation,
         type, instance, pid, QKnxByteArray { quint8(code) } +data };
@@ -196,7 +196,7 @@ QKnxDeviceManagementFrame QKnxDeviceManagementFrameFactory::FunctionPropertyComm
 }
 
 QKnxDeviceManagementFrame QKnxDeviceManagementFrameFactory::FunctionPropertyCommand::createConfirmation(
-    const QKnxDeviceManagementFrame &request, QKnx::NetIp::CemiServer::ReturnCode code,
+    const QKnxDeviceManagementFrame &request, QKnxNetIpCemiServer::ReturnCode code,
     const QKnxByteArray &data)
 {
     return { QKnxDeviceManagementFrame::MessageCode::FunctionPropertyCommandConfirmation, request.objectType(),
@@ -227,7 +227,7 @@ QKnxDeviceManagementFrame QKnxDeviceManagementFrameFactory::FunctionPropertyStat
 
 QKnxDeviceManagementFrame QKnxDeviceManagementFrameFactory::FunctionPropertyStateResponse
     ::createConfirmation(QKnxInterfaceObjectType type, quint8 instance,
-        QKnxInterfaceObjectProperty pid, QKnx::NetIp::CemiServer::ReturnCode code,
+        QKnxInterfaceObjectProperty pid, QKnxNetIpCemiServer::ReturnCode code,
         const QKnxByteArray &data)
 {
     return { QKnxDeviceManagementFrame::MessageCode::FunctionPropertyStateReadConfirmation,
@@ -243,7 +243,7 @@ QKnxDeviceManagementFrame QKnxDeviceManagementFrameFactory::FunctionPropertyStat
 
 QKnxDeviceManagementFrame QKnxDeviceManagementFrameFactory::FunctionPropertyStateResponse
     ::createConfirmation(const QKnxDeviceManagementFrame &request,
-        QKnx::NetIp::CemiServer::ReturnCode code, const QKnxByteArray &data)
+        QKnxNetIpCemiServer::ReturnCode code, const QKnxByteArray &data)
 {
     return { QKnxDeviceManagementFrame::MessageCode::FunctionPropertyStateReadConfirmation,
         request.objectType(), request.objectInstance(), request.property(),

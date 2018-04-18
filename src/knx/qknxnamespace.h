@@ -48,38 +48,6 @@ namespace QKnx
         NetIP = 0x20
     };
     Q_ENUM_NS(MediumType)
-
-    namespace NetIp
-    {
-        namespace CemiServer
-        {
-            Q_NAMESPACE
-
-            enum class ReturnCode : quint8
-            {
-                NoError = 0x00,
-                Error = 0x01
-            };
-            Q_ENUM_NS(ReturnCode)
-
-            enum class Error : quint8
-            {
-                Unspecified = 0x00,
-                OutOfRange = 0x01,
-                OutOfMaxRange = 0x02,
-                OutOfMinRange = 0x03,
-                Memory = 0x04,
-                ReadOnly = 0x05,
-                IllegalCommand = 0x06,
-                NonExistingProperty = 0x07,
-                TypeConflict = 0x08,
-                PropertyIndexRangeError = 0x09,
-                TemporaryNotWritable = 0x0a,
-                None = 0xff  // Qt extension
-            };
-            Q_ENUM_NS(Error)
-        }
-    }
 }
 
 QT_END_NAMESPACE
