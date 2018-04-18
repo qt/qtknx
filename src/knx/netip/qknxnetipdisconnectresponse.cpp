@@ -1,6 +1,6 @@
 /******************************************************************************
 **
-** Copyright (C) 2017 The Qt Company Ltd.
+** Copyright (C) 2018 The Qt Company Ltd.
 ** Contact: https://www.qt.io/licensing/
 **
 ** This file is part of the QtKnx module.
@@ -31,34 +31,137 @@
 
 QT_BEGIN_NAMESPACE
 
+/*!
+    \class QKnxNetIpDisconnectResponseProxy
+
+    \inmodule QtKnx
+    \brief The QKnxNetIpDisconnectResponseProxy class provides the means to read
+    a KNXnet/IP disconnection response from the generic \l QKnxNetIpFrame
+    class and to create a disconnection response frame based on the information.
+
+    A KNXnet/IP device terminates a data channel connection by sending a
+    disconnection request to its communication partner's control endpoint.
+    The KNXnet/IP device receiving the disconnection request acknowledges the
+    operation with a KNXnet/IP disconnection response frame, which signals the
+    final termination of a communication channel.
+
+    In most programs, this class will not be used directly. Instead, the
+    \l QKnxNetIpTunnel or \l QKnxNetIpDeviceManagement
+    class is used to establish a functional connection to a KNXnet/IP server.
+
+    The following code sample illustrates how to read the disconnection response
+    information sent by a KNXnet/IP client:
+
+    \code
+    QKnxNetIpFrame netIpFrame;
+    QKnxNetIpDisconnectRequestProxy disconnectRequest(netIpFrame);
+    if (!disconnectRequest.isValid())
+        return;
+    quint8 chanId = disconnectRequest.channelId();
+    QKnx::NetIp::Error state = disconnectRequest.status();
+    // ...
+    \endcode
+
+    \sa builder(), QKnxNetIpDisconnectRequestProxy
+*/
+
+/*!
+    \fn QKnxNetIpDisconnectResponseProxy::QKnxNetIpDisconnectResponseProxy()
+    \internal
+*/
+
+/*!
+    \fn QKnxNetIpDisconnectResponseProxy::~QKnxNetIpDisconnectResponseProxy()
+    \internal
+*/
+
+/*!
+    \fn QKnxNetIpDisconnectResponseProxy::QKnxNetIpDisconnectResponseProxy(const QKnxNetIpFrame &&)
+    \internal
+*/
+
+/*!
+    Constructs a proxy object to read the disconnection response information
+    carried by the specified KNXnet/IP frame \a frame.
+*/
 QKnxNetIpDisconnectResponseProxy::QKnxNetIpDisconnectResponseProxy(const QKnxNetIpFrame &frame)
     : m_frame(frame)
 {}
 
+/*!
+    Returns the ID of the communication channel between a KNXnet/IP client and
+    server.
+*/
 quint8 QKnxNetIpDisconnectResponseProxy::channelId() const
 {
     return m_frame.constData().value(0);
 }
 
+/*!
+    Returns the status of the communication channel between a KNXnet/IP client
+    and server.
+*/
 QKnxNetIp::Error QKnxNetIpDisconnectResponseProxy::status() const
 {
     return QKnxNetIp::Error(m_frame.constData().value(1));
 }
 
+/*!
+    Returns \c true if the frame contains initialized values and is in itself
+    valid, otherwise returns \c false. A valid KNXnet/IP frame consist of
+    at least a valid header and a size in bytes corresponding to the total size
+    of the KNXnet/IP frame header.
+
+    \sa QKnxNetIpFrameHeader::totalSize()
+*/
 bool QKnxNetIpDisconnectResponseProxy::isValid() const
 {
     return m_frame.isValid() && m_frame.size() == 8
         && m_frame.serviceType() == QKnxNetIp::ServiceType::DisconnectResponse;
 }
 
+/*!
+    Returns a builder object to create a KNXnet/IP disconnection response frame.
+*/
 QKnxNetIpDisconnectResponseProxy::Builder QKnxNetIpDisconnectResponseProxy::builder()
 {
     return QKnxNetIpDisconnectResponseProxy::Builder();
 }
 
 
-// -- QKnxNetIpDisconnectResponseProxy::Builder
+/*!
+    \class QKnxNetIpDisconnectResponseProxy::Builder
 
+    \inmodule QtKnx
+    \brief The QKnxNetIpDisconnectResponseProxy::Builder class provides
+    the means to read a KNXnet/IP disconnection response from the generic
+    \l QKnxNetIpFrame class and to create a disconnection response frame
+    based on the information.
+
+    A KNXnet/IP device terminates a data channel connection by sending a
+    disconnection request to its communication partner's control endpoint.
+    The KNXnet/IP device receiving the disconnection request acknowledges the
+    operation with a KNXnet/IP disconnection response frame, which signals the
+    final termination of a communication channel.
+
+    In most programs, this class will not be used directly. Instead, the
+    \l QKnxNetIpTunnel or \l QKnxNetIpDeviceManagement
+    class is used to establish a functional connection to a KNXnet/IP server.
+
+    The common way to create a disconnection response is:
+
+    \code
+    auto frame = QKnxNetIpDisconnectResponseProxy::builder()
+                 .setChannelId(200)
+                 .setStatus(QKnx::NetIp::Error::NoMoreConnections)
+                 .create();
+    \endcode
+*/
+
+/*!
+    Sets the ID of the communication channel between the KNXnet/IP client and
+    server to \a channelId and returns a reference to the builder.
+*/
 QKnxNetIpDisconnectResponseProxy::Builder &
     QKnxNetIpDisconnectResponseProxy::Builder::setChannelId(quint8 channelId)
 {
@@ -66,6 +169,10 @@ QKnxNetIpDisconnectResponseProxy::Builder &
     return *this;
 }
 
+/*!
+    Sets the status of the communication channel between the KNXnet/IP client
+    and server to \a status and returns a reference to the builder.
+*/
 QKnxNetIpDisconnectResponseProxy::Builder &
     QKnxNetIpDisconnectResponseProxy::Builder::setStatus(QKnxNetIp::Error status)
 {
@@ -73,6 +180,14 @@ QKnxNetIpDisconnectResponseProxy::Builder &
     return *this;
 }
 
+/*!
+    Creates and returns a KNXnet/IP disconnection response frame.
+
+    \note The returned frame may be invalid depending on the values used during
+    setup.
+
+    \sa isValid()
+*/
 QKnxNetIpFrame QKnxNetIpDisconnectResponseProxy::Builder::create() const
 {
     return { QKnxNetIp::ServiceType::DisconnectResponse, QKnxByteArray { m_channelId,
