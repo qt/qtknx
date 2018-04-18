@@ -1,6 +1,6 @@
 /******************************************************************************
 **
-** Copyright (C) 2017 The Qt Company Ltd.
+** Copyright (C) 2018 The Qt Company Ltd.
 ** Contact: https://www.qt.io/licensing/
 **
 ** This file is part of the QtKnx module.
@@ -46,19 +46,41 @@ const std::bitset<8> gPriorityMask = 0x0c;
     (\l Acknowledge) or confirmation (\l Confirm) is requested for the
     transmission or reception of the frame.
 
-    \sa builder()
+    \section2 Selecting Frame Format
+
+    The control field selects the standard or extended frame format for the data
+    link layer and includes information for the used extended frame type. The
+    standard format should be preferred and the extended format should only be
+    used when the encoding capabilities of the standard format are insufficient.
+
+    \section2 Selecting Frame Priority
+
+    The priority of frames should be selected carefully to ensure fair bus
+    access. The maximum priority that is allowed for run-time communication is
+    \e normal. The \e system priority is reserved for system configuration
+    and management procedures.
+
+    The \e urgent priority is only allowed for implementations of datapoints of
+    functional blocks or channels for which this is specified explicitly. In a
+    network, the frame traffic using urgent priority shall not exceed five
+    percent of the total traffic.
+
+    \sa builder(), QKnxExtendedControlField
 */
 
 /*!
     \enum QKnxControlField::FrameFormat
 
-    This enum type specifies the frame format that is used for transmission or
-    reception of a frame.
+    This enum type selects the standard or extended frame format for the data
+    link layer and includes information for the used extended frame type.
 
     \value Extended
-           The frame has extended format.
+           This parameter is mapped to
+           \l QKnxExtendedControlField::ExtendedFrameFormat. The extended frame
+           format is used and the frame type is selected by the frame type
+           parameter bit.
     \value Standard
-           The frame has standard format.
+           The standard frame format is used.
 */
 
 /*!
@@ -93,20 +115,23 @@ const std::bitset<8> gPriorityMask = 0x0c;
     the frame.
 
     \value System
-           System priority is used.
+           System priority is used. It is reserved for high priority frames, as
+           well as system configuration and management procedures.
     \value Normal
-           Normal priority is used.
+           Normal priority is used. It is the default priority for short frames.
     \value Urgent
-           High priority is used.
+           High priority is used. It is reserved for urgent frames.
     \value Low
-           Low priority is used.
+           Low priority is used. It is mandatory for long frames, burst traffic,
+           and so on.
 */
 
 /*!
     \enum QKnxControlField::Acknowledge
 
     This enum type holds whether a Layer 2 acknowledge is requested for an
-    \c {L_Data.req} frame. This is not valid for all media.
+    \c {L_Data.req} frame that is used in client-to-server communiction on
+    the KNX data link layer. This is not valid for all media.
 
     \value NotRequested
            Acknowledgment is not requested.
@@ -167,7 +192,7 @@ const std::bitset<8> gPriorityMask = 0x0c;
 /*!
     \fn QKnxControlField::setFrameFormat(QKnxControlField::FrameFormat type)
 
-    Sets the frame format to \a type.
+    Sets the frame type bit of the the frame format parameter to \a type.
 */
 
 /*!
@@ -305,27 +330,50 @@ QDebug operator<<(QDebug debug, const QKnxControlField &field)
     \brief The QKnxControlField::Builder class creates a KNX control field with
     some default values set.
 
-    TODO: Write some useful text with the default values
-        QKnxControlField::FrameFormat::Standard
-        QKnxControlField::Repeat::DoNotRepeat
-        QKnxControlField::Broadcast::Domain
-        QKnxControlField::Priority::Low
-        QKnxControlField::Acknowledge::NotRequested
-        QKnxControlField::Confirm::NoError
+    The control field of a KNX frame must specify at least the \l FrameFormat,
+    the \l Repeat flag, and the frame \l Priority. In addition, it may specify
+    how widely the frame is \l Broadcast, and whether acknowledgment
+    (\l Acknowledge) or confirmation (\l Confirm) is requested for the
+    transmission or reception of the frame.
 
-    Most of the time the following code will produce the right control field
-    for group value read or group value write frames.
+    The default values produce control fields that are suitable for multicast
+    frames that read or write group values.
 
-    Example:
+    The control field selects the standard or extended frame format for the data
+    link layer and includes information for the used extended frame type. By
+    default, the frame format is set to \l Standard, which is the preferred
+    format for short frames.
+
+    The repeat flag determines whether the frame transmission is repeated if the
+    status of an acknowledgment frame received from a bus device indicates that
+    an error has occurred. By default, the repeat flag is set to \l DoNotRepeat.
+
+    The broadcast flag selects the communication mode used for transmitting
+    the frame. By default, it is set to \l Domain to transmit frames using
+    broadcast communication mode.
+
+    The priority of frames should be selected carefully to ensure fair bus
+    access. By default, the priority of a frame is set to \l Low, which is
+    mandatory for long frames. The maximum priority that is allowed for
+    run-time communication is \l Normal.
+
+    The acknowledge flag determines whether a Layer 2 acknowledge is requested
+    for an \c {L_Data.req} frame that is used in client-to-server communiction
+    on the KNX data link layer. By default, it is set to \l NotRequested.
+
+    The confirm flag indicates whether there is an error in the transmitted
+    frame. By default, it is set to \l NoError.
+
+    The following sample code creates a control field using the default values:
+
     \code
         auto ctrl = QKnxControlField::builder.create();
     \endcode
 
-    For more advanced usages some flags can be modified:
-    \code
-        // setup a control field for used for unicast or broadcast with
-        // higher priority
+    Some flags can be modified for more advanced use, such as setting up a
+    control field used for unicast or broadcast with a higher priority:
 
+    \code
         auto ctrl = QKnxControlField::builder
             .setPriority(QKnxControlField::Priority::System)
             .create();
@@ -333,7 +381,8 @@ QDebug operator<<(QDebug debug, const QKnxControlField &field)
 */
 
 /*!
-    Sets the frame format to \a type and returns a reference to the builder.
+    Sets the frame type bit of the frame format parameter to \a type and returns
+    a reference to the builder.
 */
 QKnxControlField::Builder &
     QKnxControlField::Builder::setFrameFormat(QKnxControlField::FrameFormat type)
@@ -392,7 +441,7 @@ QKnxControlField::Builder &
 }
 
 /*!
-    Creates and returns a QKnxControlField.
+    Creates and returns a KNX control field.
 */
 QKnxControlField QKnxControlField::Builder::create() const
 {
