@@ -252,6 +252,24 @@ qint32 QKnxAdditionalInfo::expectedDataSize(QKnxAdditionalInfo::Type type, bool 
 }
 
 /*!
+    Returns \c true if this object and the given \a other are equal; otherwise
+    returns \c false.
+*/
+bool QKnxAdditionalInfo::operator==(const QKnxAdditionalInfo &other) const
+{
+    return m_bytes == other.m_bytes;
+}
+
+/*!
+    Returns \c true if this object and the given \a other are not equal;
+    otherwise returns \c false.
+*/
+bool QKnxAdditionalInfo::operator!=(const QKnxAdditionalInfo &other) const
+{
+    return !operator==(other);
+}
+
+/*!
     Returns the byte at the position \a index in the additional info object.
 */
 quint8 QKnxAdditionalInfo::byte(quint8 index) const

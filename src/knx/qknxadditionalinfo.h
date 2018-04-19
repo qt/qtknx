@@ -83,6 +83,9 @@ public:
     static QKnxAdditionalInfo fromBytes(const QKnxByteArray &bytes, quint16 index = 0);
     static qint32 expectedDataSize(QKnxAdditionalInfo::Type type, bool *isFixedSize = nullptr);
 
+    bool operator==(const QKnxAdditionalInfo &other) const;
+    bool operator!=(const QKnxAdditionalInfo &other) const;
+
 private:
     QKnxByteArray m_bytes { 0x00, 0x00 };
 };

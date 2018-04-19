@@ -108,6 +108,9 @@ public:
 
     quint8 size() const { return 1; }
 
+    bool operator==(const QKnxControlField &other) const;
+    bool operator!=(const QKnxControlField &other) const;
+
     class Q_KNX_EXPORT Builder
     {
     public:

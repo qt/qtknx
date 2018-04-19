@@ -253,6 +253,24 @@ void QKnxControlField::setPriority(QKnxControlField::Priority priority)
 }
 
 /*!
+    Returns \c true if this object and the given \a other are equal; otherwise
+    returns \c false.
+*/
+bool QKnxControlField::operator==(const QKnxControlField &other) const
+{
+    return m_ctrl1 == other.m_ctrl1;
+}
+
+/*!
+    Returns \c true if this object and the given \a other are not equal;
+    otherwise returns \c false.
+*/
+bool QKnxControlField::operator!=(const QKnxControlField &other) const
+{
+    return !operator==(other);
+}
+
+/*!
     Returns a builder to create a KNX control field object.
 */
 QKnxControlField::Builder QKnxControlField::builder()

@@ -96,6 +96,24 @@ QKnxExtendedControlField::QKnxExtendedControlField(const QKnxByteArray &data)
 }
 
 /*!
+    Returns \c true if this object and the given \a other are equal; otherwise
+    returns \c false.
+*/
+bool QKnxExtendedControlField::operator==(const QKnxExtendedControlField &other) const
+{
+    return m_ctrl2 == other.m_ctrl2;
+}
+
+/*!
+    Returns \c true if this object and the given \a other are not equal;
+    otherwise returns \c false.
+*/
+bool QKnxExtendedControlField::operator!=(const QKnxExtendedControlField &other) const
+{
+    return !operator==(other);
+}
+
+/*!
     Returns the destination address type.
 */
 QKnxAddress::Type QKnxExtendedControlField::destinationAddressType() const

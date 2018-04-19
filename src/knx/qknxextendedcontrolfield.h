@@ -70,6 +70,9 @@ public:
 
     quint8 size() const { return 1; }
 
+    bool operator==(const QKnxExtendedControlField &other) const;
+    bool operator!=(const QKnxExtendedControlField &other) const;
+
     class Q_KNX_EXPORT Builder final
     {
     public:
