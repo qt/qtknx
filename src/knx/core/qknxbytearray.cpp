@@ -232,15 +232,19 @@ void QKnxByteArray::clear()
 /*!
     Sets the size of the byte array to the number of bytes specified by \a size.
 
-    If \a size is greater than the current size, the byte array is extended to
-    \a size bytes by adding uninitialized bytes to the end of the array.
+    If \a size is greater than the current size, the byte array is
+    extended to \a size bytes by adding \l {default-constructed value}
+    {default-constructed values} to the end of the array.
 
     If \a size is less than the current size, bytes are removed from the end of
     the array.
 */
 void QKnxByteArray::resize(int size)
 {
-    m_bytes.resize(size);
+    if (size > m_bytes.size())
+        m_bytes.append(size - m_bytes.size(), 0x00);
+    else
+        m_bytes.resize(size);
 }
 
 /*!

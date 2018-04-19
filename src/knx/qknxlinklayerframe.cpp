@@ -170,7 +170,7 @@ bool QKnxLinkLayerFrame::isValid() const
         // 4; 03_03_02 Data Link Layer General v01.02.02 AS.pdf page 12 paragraph 2.2.5
         // control field frame type standard -> max. length value is 15
         if (controlField().frameFormat() == QKnxControlField::FrameFormat::Standard
-            && tpdu().byte(0) > 15)
+            && tpdu().dataSize() > 15)
             return false;
         //  control field frame type extended -> max. length value is 255
         return true;
