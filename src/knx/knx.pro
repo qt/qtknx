@@ -30,8 +30,7 @@ PUBLIC_HEADERS += \
     qknxtpdu.h \
     qknxtpdufactory.h \
     qknxtraits.h \
-    qknxutils.h \
-    qknxlinklayerframefactory.h
+    qknxutils.h
 
 PRIVATE_HEADERS +=
 
@@ -51,7 +50,6 @@ SOURCES += \
     qknxtpdufactory_broadcast.cpp \
     qknxtpdufactory_multicast.cpp \
     qknxtpdufactory_p2p.cpp \
-    qknxlinklayerframefactory.cpp \
     qknxlinklayerframebuilder.cpp
 
 
