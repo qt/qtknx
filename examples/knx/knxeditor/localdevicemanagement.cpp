@@ -85,14 +85,14 @@ LocalDeviceManagement::LocalDeviceManagement(QWidget* parent)
         m_management.connectToHost(m_server.controlEndpointAddress(), m_server.controlEndpointPort());
     });
 
-    connect(&m_management, &QKnxNetIpDeviceManagementConnection::connected, this, [&] {
+    connect(&m_management, &QKnxNetIpDeviceManagement::connected, this, [&] {
         ui->deviceManagementSendRequest->setEnabled(true);
         ui->connectRequestDeviceManagement->setEnabled(false);
         ui->disconnectRequestDeviceManagement->setEnabled(true);
         ui->textOuputDeviceManagement->append(tr("Successfully connected to: %1 on port: %2")
             .arg(m_server.controlEndpointAddress().toString()).arg(m_server.controlEndpointPort()));
 
-        m_management.sendDeviceManagementFrame(QKnxLocalDeviceManagementFrameFactory::PropertyRead
+        m_management.sendFrame(QKnxLocalDeviceManagementFrameFactory::PropertyRead
             ::createRequest(QKnxInterfaceObjectType::System::Device, 1,
                 QKnxInterfaceObjectProperty::Device::IoList, 1, 0));
     });
@@ -101,7 +101,7 @@ LocalDeviceManagement::LocalDeviceManagement(QWidget* parent)
         m_management.disconnectFromHost();
     });
 
-    connect(&m_management, &QKnxNetIpDeviceManagementConnection::disconnected, this, [&] {
+    connect(&m_management, &QKnxNetIpDeviceManagement::disconnected, this, [&] {
         m_awaitIoListResponse = true;
         ui->deviceManagementSendRequest->setEnabled(false);
         ui->connectRequestDeviceManagement->setEnabled(true);
@@ -117,11 +117,11 @@ LocalDeviceManagement::LocalDeviceManagement(QWidget* parent)
         auto data = QKnxByteArray::fromHex(ui->cemiFrame->text().toUtf8());
         if (ui->cemiData->isEnabled())
             data.append(QKnxByteArray::fromHex(ui->cemiData->text().toUtf8()));
-        m_management.sendDeviceManagementFrame(QKnxLocalDeviceManagementFrame::fromBytes(data, 0,
+        m_management.sendFrame(QKnxLocalDeviceManagementFrame::fromBytes(data, 0,
             data.size()));
     });
 
-    connect(&m_management, &QKnxNetIpDeviceManagementConnection::receivedDeviceManagementFrame,
+    connect(&m_management, &QKnxNetIpDeviceManagement::frameReceived,
         this, [&](QKnxLocalDeviceManagementFrame frame) {
         ui->textOuputDeviceManagement->append(tr("Received device management frame with cEMI "
             "payload: " + frame.bytes().toHex().toByteArray()));
@@ -319,7 +319,7 @@ void LocalDeviceManagement::handleIoListResponse(const QKnxLocalDeviceManagement
     quint8 expectedDataSize = dataTypes[0].size();
     if (frame.startIndex() == 0) {
         if (data.size() == expectedDataSize) {
-            m_management.sendDeviceManagementFrame(QKnxLocalDeviceManagementFrameFactory::PropertyRead
+            m_management.sendFrame(QKnxLocalDeviceManagementFrameFactory::PropertyRead
                 ::createRequest(QKnxInterfaceObjectType::System::Device, 1,
                     QKnxInterfaceObjectProperty::Device::IoList, data.toUShort(nullptr, 16), 1));
         }

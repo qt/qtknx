@@ -34,13 +34,13 @@
 QT_BEGIN_NAMESPACE
 
 /*!
-    \class QKnxNetIpDeviceManagementConnection
+    \class QKnxNetIpDeviceManagement
 
     \inmodule QtKnx
-    \brief The QKnxNetIpDeviceManagementConnection class enables the opening and
+    \brief The QKnxNetIpDeviceManagement class enables the opening and
     handling of a client connection to a KNXnet/IP server.
 
-    The QKnxNetIpDeviceManagementConnection is a data connection between a
+    The QKnxNetIpDeviceManagement is a data connection between a
     client and a KNXnet/IP server endpoint. This is used by the client side to
     access management functionalities on the KNXnet/IP server. The IP address
     of the client must be set. It is then possible to connect to a chosen
@@ -52,7 +52,7 @@ QT_BEGIN_NAMESPACE
     connection, and monitoring the connection.
 
     \code
-        QKnxNetIpDeviceManagementConnection connection;
+        QKnxNetIpDeviceManagement connection;
         QHostAddress clientLocalAddress = ...
         connection.setLocalAddress(clientLocalAddress);
 
@@ -65,12 +65,12 @@ QT_BEGIN_NAMESPACE
     \endcode
 */
 
-class QKnxNetIpDeviceManagementConnectionPrivate : public QKnxNetIpEndpointConnectionPrivate
+class QKnxNetIpDeviceManagementPrivate : public QKnxNetIpEndpointConnectionPrivate
 {
-    Q_DECLARE_PUBLIC(QKnxNetIpDeviceManagementConnection)
+    Q_DECLARE_PUBLIC(QKnxNetIpDeviceManagement)
 
 public:
-    QKnxNetIpDeviceManagementConnectionPrivate(const QHostAddress &address, quint16 port)
+    QKnxNetIpDeviceManagementPrivate(const QHostAddress &address, quint16 port)
         : QKnxNetIpEndpointConnectionPrivate(address, port,
             QKnxNetIpCri(QKnxNetIp::ConnectionType::DeviceManagement), 3,
             QKnxNetIp::DeviceConfigurationRequestTimeout)
@@ -78,31 +78,31 @@ public:
 
     void process(const QKnxLocalDeviceManagementFrame &frame) override
     {
-        Q_Q(QKnxNetIpDeviceManagementConnection);
-        emit q->receivedDeviceManagementFrame(frame);
+        Q_Q(QKnxNetIpDeviceManagement);
+        emit q->frameReceived(frame);
     }
 };
 
-QKnxNetIpDeviceManagementConnection::QKnxNetIpDeviceManagementConnection(QObject *parent)
-    : QKnxNetIpDeviceManagementConnection({ QHostAddress::LocalHost }, 0, parent)
+QKnxNetIpDeviceManagement::QKnxNetIpDeviceManagement(QObject *parent)
+    : QKnxNetIpDeviceManagement({ QHostAddress::LocalHost }, 0, parent)
 {}
 
-QKnxNetIpDeviceManagementConnection::QKnxNetIpDeviceManagementConnection(const QHostAddress &addr,
+QKnxNetIpDeviceManagement::QKnxNetIpDeviceManagement(const QHostAddress &addr,
         QObject *o)
-    : QKnxNetIpDeviceManagementConnection(addr, 0, o)
+    : QKnxNetIpDeviceManagement(addr, 0, o)
 {}
 
-QKnxNetIpDeviceManagementConnection::QKnxNetIpDeviceManagementConnection(const QHostAddress &addr,
+QKnxNetIpDeviceManagement::QKnxNetIpDeviceManagement(const QHostAddress &addr,
         quint16 port, QObject *obj)
-    : QKnxNetIpEndpointConnection(*new QKnxNetIpDeviceManagementConnectionPrivate(addr, port), obj)
+    : QKnxNetIpEndpointConnection(*new QKnxNetIpDeviceManagementPrivate(addr, port), obj)
 {}
 
-bool QKnxNetIpDeviceManagementConnection::sendDeviceManagementFrame(const QKnxLocalDeviceManagementFrame &frame)
+bool QKnxNetIpDeviceManagement::sendFrame(const QKnxLocalDeviceManagementFrame &frame)
 {
     if (state() != State::Connected)
         return false;
 
-    Q_D(QKnxNetIpDeviceManagementConnection);
+    Q_D(QKnxNetIpDeviceManagement);
     return d->sendDeviceConfigurationRequest(frame);
 }
 

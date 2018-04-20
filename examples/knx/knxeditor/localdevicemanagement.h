@@ -52,7 +52,7 @@
 #define LOCALDEVICEMANAGEMENT_H
 
 #include <QWidget>
-#include <QKnxNetIpDeviceManagementConnection>
+#include <QKnxNetIpDeviceManagement>
 #include <QKnxNetIpServerInfo>
 
 QT_BEGIN_NAMESPACE
@@ -107,7 +107,7 @@ private:
     bool m_awaitIoListResponse { true };
 
     QKnxNetIpServerInfo m_server;
-    QKnxNetIpDeviceManagementConnection m_management;
+    QKnxNetIpDeviceManagement m_management;
 };
 
 #endif
