@@ -28,6 +28,7 @@
 
 #include <QtCore/qdebug.h>
 #include <QtKnx/qknxlinklayerframe.h>
+#include <QtKnx/qknxlinklayerframebuilder.h>
 #include <QtKnx/qknxtpdufactory.h>
 #include <QtTest/qtest.h>
 
@@ -108,6 +109,47 @@ private slots:
         QCOMPARE(tpdu4.bytes(), QKnxByteArray({ 0x00, 0x80, 0xff }));
         frame.setTpdu(tpdu4);
         QCOMPARE(frame.tpdu().bytes(), QKnxByteArray({ 0x00, 0x80, 0xff }));
+    }
+
+    void testEmptyAdditionalInformation()
+    {
+        QKnxLinkLayerFrame frame(QKnx::MediumType::NetIP, QKnxLinkLayerFrame::MessageCode::DataRequest);
+        QVERIFY(frame.additionalInfosSize() == 0);
+    }
+
+    void testAdditionalInformationBytes()
+    {
+        QKnxAdditionalInfo info { QKnxAdditionalInfo::Type::BiBatInformation, QKnxByteArray::fromHex("1020") };
+        QVERIFY(info.bytes() == QKnxByteArray::fromHex("07021020"));
+
+        auto ctrl = QKnxControlField::builder()
+            .setFrameFormat(QKnxControlField::FrameFormat::Extended)
+            .setBroadcast(QKnxControlField::Broadcast::Domain)
+            .setPriority(QKnxControlField::Priority::Normal)
+            .create();
+
+        auto extCtrl = QKnxExtendedControlField::builder()
+            .setDestinationAddressType(QKnxAddress::Type::Group)
+            .create();
+
+        auto tpdu = QKnxTpduFactory::Multicast::createGroupValueReadTpdu();
+        auto frame = QKnxLinkLayerFrameBuilder()
+            .setControlField(ctrl)
+            .setExtendedControlField(extCtrl)
+            .setTpdu(tpdu)
+            .setDestinationAddress({ QKnxAddress::Type::Group, QString("0/0/2") })
+            .setSourceAddress({ QKnxAddress::Type::Individual, 0 })
+            .setMsgCode(QKnxLinkLayerFrame::MessageCode::DataRequest)
+            .setMedium(QKnx::MediumType::NetIP)
+            .setAdditionalInfos({ info })
+            .createFrame();
+
+        const quint8 numberAdditionalInfos = 1;
+        QCOMPARE(frame.additionalInfos().size(), numberAdditionalInfos);
+        const quint8 sizeBytes = 4;
+        QCOMPARE(frame.additionalInfosSize(), sizeBytes);
+        QCOMPARE(frame.additionalInfos().at(0), info);
+        QCOMPARE(frame.bytes().mid(2, frame.additionalInfosSize()), info.bytes());
     }
 
     void testDebugStream()
