@@ -29,7 +29,7 @@
 
 #include "qknxnetipendpointconnection_p.h"
 #include "qknxnetipdeviceconfigurationrequest.h"
-#include "qknxnetipdevicemanagementconnection.h"
+#include "qknxnetipdevicemanagement.h"
 
 QT_BEGIN_NAMESPACE
 

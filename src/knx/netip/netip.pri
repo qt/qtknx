@@ -15,7 +15,7 @@ PUBLIC_HEADERS += $$PWD/qknxnetip.h \
     $$PWD/qknxnetipdeviceconfigurationacknowledge.h \
     $$PWD/qknxnetipdeviceconfigurationrequest.h \
     $$PWD/qknxnetipdevicedib.h \
-    $$PWD/qknxnetipdevicemanagementconnection.h \
+    $$PWD/qknxnetipdevicemanagement.h \
     $$PWD/qknxnetipdisconnectrequest.h \
     $$PWD/qknxnetipdisconnectresponse.h \
     $$PWD/qknxnetipendpointconnection.h \
@@ -59,7 +59,7 @@ SOURCES += $$PWD/qknxnetip.cpp \
     $$PWD/qknxnetipdeviceconfigurationacknowledge.cpp \
     $$PWD/qknxnetipdeviceconfigurationrequest.cpp \
     $$PWD/qknxnetipdevicedib.cpp \
-    $$PWD/qknxnetipdevicemanagementconnection.cpp \
+    $$PWD/qknxnetipdevicemanagement.cpp \
     $$PWD/qknxnetipdisconnectrequest.cpp \
     $$PWD/qknxnetipdisconnectresponse.cpp \
     $$PWD/qknxnetipendpointconnection.cpp \
