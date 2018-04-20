@@ -57,7 +57,7 @@ void tst_QKnxNetIpDeviceConfigurationRequest::testDefaultConstructor()
 
 void tst_QKnxNetIpDeviceConfigurationRequest::testConstructor()
 {
-    auto cemi = QKnxLocalDeviceManagementFrameFactory::PropertyRead
+    auto cemi = QKnxDeviceManagementFrameFactory::PropertyRead
         ::createRequest(QKnxInterfaceObjectType::KnxNetIpParameter, 1,
             QKnxInterfaceObjectProperty::FriendlyName, 1, 0);
     auto frame = QKnxNetIpDeviceConfigurationRequestProxy::builder()
@@ -90,7 +90,7 @@ void tst_QKnxNetIpDeviceConfigurationRequest::testDebugStream()
     qDebug() << QKnxNetIpDeviceConfigurationRequestProxy::builder().create();
     QCOMPARE(s_msg, QString::fromLatin1("0x06100310000b0400000000"));
 
-    auto cemi = QKnxLocalDeviceManagementFrameFactory::PropertyRead
+    auto cemi = QKnxDeviceManagementFrameFactory::PropertyRead
         ::createRequest(QKnxInterfaceObjectType::System::Device, 1,
             QKnxInterfaceObjectProperty::Device::DeviceDescriptor, 1, 1);
     qDebug() << QKnxNetIpDeviceConfigurationRequestProxy::builder()

@@ -52,10 +52,10 @@ public:
     QKnxNetIpDeviceManagement(const QHostAddress &localAddress, quint16 localPort,
         QObject *parent = nullptr);
 
-    bool sendFrame(const QKnxLocalDeviceManagementFrame &frame);
+    bool sendFrame(const QKnxDeviceManagementFrame &frame);
 
 Q_SIGNALS:
-    void frameReceived(QKnxLocalDeviceManagementFrame frame);
+    void frameReceived(QKnxDeviceManagementFrame frame);
 };
 
 QT_END_NAMESPACE

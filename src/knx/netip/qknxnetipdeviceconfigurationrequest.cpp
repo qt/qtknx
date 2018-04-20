@@ -51,9 +51,9 @@ quint8 QKnxNetIpDeviceConfigurationRequestProxy::sequenceNumber() const
     return m_frame.sequenceNumber();
 }
 
-QKnxLocalDeviceManagementFrame QKnxNetIpDeviceConfigurationRequestProxy::cemi() const
+QKnxDeviceManagementFrame QKnxNetIpDeviceConfigurationRequestProxy::cemi() const
 {
-    return QKnxLocalDeviceManagementFrame::fromBytes(m_frame.data(), 0, m_frame.dataSize());
+    return QKnxDeviceManagementFrame::fromBytes(m_frame.data(), 0, m_frame.dataSize());
 }
 
 QKnxNetIpDeviceConfigurationRequestProxy::Builder QKnxNetIpDeviceConfigurationRequestProxy::builder()
@@ -79,7 +79,7 @@ QKnxNetIpDeviceConfigurationRequestProxy::Builder &
 }
 
 QKnxNetIpDeviceConfigurationRequestProxy::Builder &
-    QKnxNetIpDeviceConfigurationRequestProxy::Builder::setCemi(const QKnxLocalDeviceManagementFrame &cemi)
+    QKnxNetIpDeviceConfigurationRequestProxy::Builder::setCemi(const QKnxDeviceManagementFrame &cemi)
 {
     m_cemi = cemi;
     return *this;

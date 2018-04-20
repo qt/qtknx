@@ -50,21 +50,21 @@ public:
 
     quint8 channelId() const;
     quint8 sequenceNumber() const;
-    QKnxLocalDeviceManagementFrame cemi() const;
+    QKnxDeviceManagementFrame cemi() const;
 
     class Q_KNX_EXPORT Builder final
     {
     public:
         Builder &setChannelId(quint8 channelId);
         Builder &setSequenceNumber(quint8 sequenceNumber);
-        Builder &setCemi(const QKnxLocalDeviceManagementFrame &cemi);
+        Builder &setCemi(const QKnxDeviceManagementFrame &cemi);
 
         QKnxNetIpFrame create() const;
 
     private:
         quint8 m_channelId;
         quint8 m_sequenceNumber;
-        QKnxLocalDeviceManagementFrame m_cemi;
+        QKnxDeviceManagementFrame m_cemi;
     };
     static QKnxNetIpDeviceConfigurationRequestProxy::Builder builder();
 

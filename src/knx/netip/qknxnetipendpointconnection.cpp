@@ -292,7 +292,7 @@ void QKnxNetIpEndpointConnectionPrivate::sendStateRequest()
 void QKnxNetIpEndpointConnectionPrivate::process(const QKnxLinkLayerFrame &)
 {}
 
-void QKnxNetIpEndpointConnectionPrivate::process(const QKnxLocalDeviceManagementFrame &)
+void QKnxNetIpEndpointConnectionPrivate::process(const QKnxDeviceManagementFrame &)
 {}
 
 void QKnxNetIpEndpointConnectionPrivate::processTunnelingRequest(const QKnxNetIpFrame &frame)
@@ -418,7 +418,7 @@ void QKnxNetIpEndpointConnectionPrivate::processDeviceConfigurationAcknowledge(c
     }
 }
 
-bool QKnxNetIpEndpointConnectionPrivate::sendDeviceConfigurationRequest(const QKnxLocalDeviceManagementFrame &frame)
+bool QKnxNetIpEndpointConnectionPrivate::sendDeviceConfigurationRequest(const QKnxDeviceManagementFrame &frame)
 {
     m_lastSendCemiRequest = QKnxNetIpDeviceConfigurationRequestProxy::builder()
         .setChannelId(m_channelId)

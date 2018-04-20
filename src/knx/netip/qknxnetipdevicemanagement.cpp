@@ -45,7 +45,7 @@ QT_BEGIN_NAMESPACE
     access management functionalities on the KNXnet/IP server. The IP address
     of the client must be set. It is then possible to connect to a chosen
 
-    KNXnet/IP server and to send \l QKnxLocalDeviceManagementFrame frames
+    KNXnet/IP server and to send \l QKnxDeviceManagementFrame frames
     to the KNXnet/IP server.
 
     The class takes care of connecting to the server, asking for a data
@@ -60,7 +60,7 @@ QT_BEGIN_NAMESPACE
         quint16 knxNetIpServerDataEndPointPort = ...
         connection.connectToHost(knxNetIpServerAddress, knxNetIpServerDataEndPointPort);
 
-        QKnxLocalDeviceManagementFrame frame = ...
+        QKnxDeviceManagementFrame frame = ...
         connection.sendFrame(frame);
     \endcode
 */
@@ -76,7 +76,7 @@ public:
             QKnxNetIp::DeviceConfigurationRequestTimeout)
     {}
 
-    void process(const QKnxLocalDeviceManagementFrame &frame) override
+    void process(const QKnxDeviceManagementFrame &frame) override
     {
         Q_Q(QKnxNetIpDeviceManagement);
         emit q->frameReceived(frame);
@@ -97,7 +97,7 @@ QKnxNetIpDeviceManagement::QKnxNetIpDeviceManagement(const QHostAddress &addr,
     : QKnxNetIpEndpointConnection(*new QKnxNetIpDeviceManagementPrivate(addr, port), obj)
 {}
 
-bool QKnxNetIpDeviceManagement::sendFrame(const QKnxLocalDeviceManagementFrame &frame)
+bool QKnxNetIpDeviceManagement::sendFrame(const QKnxDeviceManagementFrame &frame)
 {
     if (state() != State::Connected)
         return false;

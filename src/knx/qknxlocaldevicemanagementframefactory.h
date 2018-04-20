@@ -27,49 +27,49 @@
 **
 ******************************************************************************/
 
-#ifndef QKNXLOCALDEVICEMANAGEMENTFRAMEFACTORY_H
-#define QKNXLOCALDEVICEMANAGEMENTFRAMEFACTORY_H
+#ifndef QKNXDEVICEMANAGEMENTFRAMEFACTORY_H
+#define QKNXDEVICEMANAGEMENTFRAMEFACTORY_H
 
 #include <QtKnx/qknxlocaldevicemanagementframe.h>
 #include <QtKnx/qknxglobal.h>
 
 QT_BEGIN_NAMESPACE
 
-class Q_KNX_EXPORT QKnxLocalDeviceManagementFrameFactory final
+class Q_KNX_EXPORT QKnxDeviceManagementFrameFactory final
 {
 public:
-    QKnxLocalDeviceManagementFrameFactory() = delete;
+    QKnxDeviceManagementFrameFactory() = delete;
 
     struct Q_KNX_EXPORT PropertyRead final
     {
         PropertyRead() = delete;
 
-        static QKnxLocalDeviceManagementFrame createRequest(QKnxInterfaceObjectType type,
+        static QKnxDeviceManagementFrame createRequest(QKnxInterfaceObjectType type,
             quint8 instance,
             QKnxInterfaceObjectProperty pid,
             quint8 numberOfElements,
             quint16 startIndex);
 
-        static QKnxLocalDeviceManagementFrame createConfirmation(QKnxInterfaceObjectType type,
+        static QKnxDeviceManagementFrame createConfirmation(QKnxInterfaceObjectType type,
             quint8 instance,
             QKnxInterfaceObjectProperty pid,
             quint8 numberOfElements,
             quint16 startIndex,
             const QKnxByteArray &data);
 
-        static QKnxLocalDeviceManagementFrame createConfirmation(QKnxInterfaceObjectType type,
+        static QKnxDeviceManagementFrame createConfirmation(QKnxInterfaceObjectType type,
             quint8 instance,
             QKnxInterfaceObjectProperty pid,
             quint8 numberOfElements,
             quint16 startIndex,
             QKnx::NetIp::CemiServer::Error error = QKnx::NetIp::CemiServer::Error::None);
 
-        static QKnxLocalDeviceManagementFrame createConfirmation(
-            const QKnxLocalDeviceManagementFrame &request,
+        static QKnxDeviceManagementFrame createConfirmation(
+            const QKnxDeviceManagementFrame &request,
             const QKnxByteArray &data);
 
-        static QKnxLocalDeviceManagementFrame createConfirmation(
-            const QKnxLocalDeviceManagementFrame &request,
+        static QKnxDeviceManagementFrame createConfirmation(
+            const QKnxDeviceManagementFrame &request,
             QKnx::NetIp::CemiServer::Error error);
     };
 
@@ -77,22 +77,22 @@ public:
     {
         PropertyWrite() = delete;
 
-        static QKnxLocalDeviceManagementFrame createRequest(QKnxInterfaceObjectType type,
+        static QKnxDeviceManagementFrame createRequest(QKnxInterfaceObjectType type,
             quint8 instance,
             QKnxInterfaceObjectProperty pid,
             quint8 numberOfElements,
             quint16 startIndex,
             const QKnxByteArray &data);
 
-        static QKnxLocalDeviceManagementFrame createConfirmation(QKnxInterfaceObjectType type,
+        static QKnxDeviceManagementFrame createConfirmation(QKnxInterfaceObjectType type,
             quint8 instance,
             QKnxInterfaceObjectProperty pid,
             quint8 numberOfElements,
             quint16 startIndex,
             QKnx::NetIp::CemiServer::Error error = QKnx::NetIp::CemiServer::Error::None);
 
-        static QKnxLocalDeviceManagementFrame createConfirmation(
-            const QKnxLocalDeviceManagementFrame &request,
+        static QKnxDeviceManagementFrame createConfirmation(
+            const QKnxDeviceManagementFrame &request,
             QKnx::NetIp::CemiServer::Error error = QKnx::NetIp::CemiServer::Error::None);
     };
 
@@ -100,7 +100,7 @@ public:
     {
         PropertyInfo() = delete;
 
-        static QKnxLocalDeviceManagementFrame createIndication(QKnxInterfaceObjectType type,
+        static QKnxDeviceManagementFrame createIndication(QKnxInterfaceObjectType type,
             quint8 instance,
             QKnxInterfaceObjectProperty pid,
             quint8 numberOfElements,
@@ -112,26 +112,26 @@ public:
     {
         FunctionPropertyCommand() = delete;
 
-        static QKnxLocalDeviceManagementFrame createRequest(QKnxInterfaceObjectType type,
+        static QKnxDeviceManagementFrame createRequest(QKnxInterfaceObjectType type,
             quint8 instance,
             QKnxInterfaceObjectProperty pid,
             const QKnxByteArray &data);
 
-        static QKnxLocalDeviceManagementFrame createConfirmation(QKnxInterfaceObjectType type,
+        static QKnxDeviceManagementFrame createConfirmation(QKnxInterfaceObjectType type,
             quint8 instance,
             QKnxInterfaceObjectProperty pid);
 
-        static QKnxLocalDeviceManagementFrame createConfirmation(QKnxInterfaceObjectType type,
+        static QKnxDeviceManagementFrame createConfirmation(QKnxInterfaceObjectType type,
             quint8 instance,
             QKnxInterfaceObjectProperty pid,
             QKnx::NetIp::CemiServer::ReturnCode code,
             const QKnxByteArray &data);
 
-        static QKnxLocalDeviceManagementFrame createConfirmation(
-                                                    const QKnxLocalDeviceManagementFrame &request);
+        static QKnxDeviceManagementFrame createConfirmation(
+            const QKnxDeviceManagementFrame &request);
 
-        static QKnxLocalDeviceManagementFrame createConfirmation(
-            const QKnxLocalDeviceManagementFrame &request,
+        static QKnxDeviceManagementFrame createConfirmation(
+            const QKnxDeviceManagementFrame &request,
             QKnx::NetIp::CemiServer::ReturnCode code,
             const QKnxByteArray &data);
     };
@@ -140,7 +140,7 @@ public:
     {
         FunctionPropertyStateRead() = delete;
 
-        static QKnxLocalDeviceManagementFrame createRequest(QKnxInterfaceObjectType type,
+        static QKnxDeviceManagementFrame createRequest(QKnxInterfaceObjectType type,
             quint8 instance,
             QKnxInterfaceObjectProperty pid,
             const QKnxByteArray &data);
@@ -150,21 +150,21 @@ public:
     {
         FunctionPropertyStateResponse() = delete;
 
-        static QKnxLocalDeviceManagementFrame createConfirmation(QKnxInterfaceObjectType type,
+        static QKnxDeviceManagementFrame createConfirmation(QKnxInterfaceObjectType type,
             quint8 instance,
             QKnxInterfaceObjectProperty pid);
 
-        static QKnxLocalDeviceManagementFrame createConfirmation(QKnxInterfaceObjectType type,
+        static QKnxDeviceManagementFrame createConfirmation(QKnxInterfaceObjectType type,
             quint8 instance,
             QKnxInterfaceObjectProperty pid,
             QKnx::NetIp::CemiServer::ReturnCode code,
             const QKnxByteArray &data);
 
-        static QKnxLocalDeviceManagementFrame createConfirmation(
-                                                    const QKnxLocalDeviceManagementFrame &request);
+        static QKnxDeviceManagementFrame createConfirmation(
+            const QKnxDeviceManagementFrame &request);
 
-        static QKnxLocalDeviceManagementFrame createConfirmation(
-            const QKnxLocalDeviceManagementFrame &request,
+        static QKnxDeviceManagementFrame createConfirmation(
+            const QKnxDeviceManagementFrame &request,
             QKnx::NetIp::CemiServer::ReturnCode code,
             const QKnxByteArray &data);
     };
@@ -173,8 +173,8 @@ public:
     {
         Reset() = delete;
 
-        static QKnxLocalDeviceManagementFrame createRequest();
-        static QKnxLocalDeviceManagementFrame createIndication();
+        static QKnxDeviceManagementFrame createRequest();
+        static QKnxDeviceManagementFrame createIndication();
     };
 };
 

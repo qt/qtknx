@@ -27,8 +27,8 @@
 **
 ******************************************************************************/
 
-#ifndef QKNXLOCALDEVICEMANAGEMENTFRAME_H
-#define QKNXLOCALDEVICEMANAGEMENTFRAME_H
+#ifndef QKNXDEVICEMANAGEMENTFRAME_H
+#define QKNXDEVICEMANAGEMENTFRAME_H
 
 #include <QtCore/qshareddata.h>
 
@@ -40,11 +40,11 @@
 
 QT_BEGIN_NAMESPACE
 
-class QKnxLocalDeviceManagementFramePrivate;
-class Q_KNX_EXPORT QKnxLocalDeviceManagementFrame final
+class QKnxDeviceManagementFramePrivate;
+class Q_KNX_EXPORT QKnxDeviceManagementFrame final
 {
     Q_GADGET
-    friend class QKnxLocalDeviceManagementFrameFactory;
+    friend class QKnxDeviceManagementFrameFactory;
 
 public:
     enum class MessageCode : quint8
@@ -69,11 +69,11 @@ public:
     };
     Q_ENUM(MessageCode)
 
-    QKnxLocalDeviceManagementFrame();
-    ~QKnxLocalDeviceManagementFrame();
+    QKnxDeviceManagementFrame();
+    ~QKnxDeviceManagementFrame();
 
-    explicit QKnxLocalDeviceManagementFrame(MessageCode code);
-    QKnxLocalDeviceManagementFrame(QKnxLocalDeviceManagementFrame::MessageCode messageCode,
+    explicit QKnxDeviceManagementFrame(MessageCode code);
+    QKnxDeviceManagementFrame(QKnxDeviceManagementFrame::MessageCode messageCode,
         const QKnxByteArray &serviceInfo);
 
     quint16 size() const;
@@ -112,32 +112,32 @@ public:
     void setServiceInformation(const QKnxByteArray &serviceInfo);
 
     QKnxByteArray bytes() const;
-    static QKnxLocalDeviceManagementFrame fromBytes(const QKnxByteArray &data, quint16 index,
+    static QKnxDeviceManagementFrame fromBytes(const QKnxByteArray &data, quint16 index,
         quint16 size);
 
-    QKnxLocalDeviceManagementFrame(const QKnxLocalDeviceManagementFrame &other);
-    QKnxLocalDeviceManagementFrame &operator=(const QKnxLocalDeviceManagementFrame &other);
+    QKnxDeviceManagementFrame(const QKnxDeviceManagementFrame &other);
+    QKnxDeviceManagementFrame &operator=(const QKnxDeviceManagementFrame &other);
 
-    QKnxLocalDeviceManagementFrame(QKnxLocalDeviceManagementFrame &&other) Q_DECL_NOTHROW;
-    QKnxLocalDeviceManagementFrame &operator=(QKnxLocalDeviceManagementFrame &&other) Q_DECL_NOTHROW;
+    QKnxDeviceManagementFrame(QKnxDeviceManagementFrame &&other) Q_DECL_NOTHROW;
+    QKnxDeviceManagementFrame &operator=(QKnxDeviceManagementFrame &&other) Q_DECL_NOTHROW;
 
-    void swap(QKnxLocalDeviceManagementFrame &other) Q_DECL_NOTHROW;
+    void swap(QKnxDeviceManagementFrame &other) Q_DECL_NOTHROW;
 
-    bool operator==(const QKnxLocalDeviceManagementFrame &other) const;
-    bool operator!=(const QKnxLocalDeviceManagementFrame &other) const;
-
-private:
-    QKnxLocalDeviceManagementFrame(MessageCode code, QKnxInterfaceObjectType type,
-            quint8 instance, QKnxInterfaceObjectProperty pid, quint8 noe, quint16 index,
-            const QKnxByteArray &payload = {});
-
-    QKnxLocalDeviceManagementFrame(MessageCode code, QKnxInterfaceObjectType type,
-            quint8 instance, QKnxInterfaceObjectProperty pid, const QKnxByteArray &payload = {});
+    bool operator==(const QKnxDeviceManagementFrame &other) const;
+    bool operator!=(const QKnxDeviceManagementFrame &other) const;
 
 private:
-    QSharedDataPointer<QKnxLocalDeviceManagementFramePrivate> d_ptr;
+    QKnxDeviceManagementFrame(MessageCode code, QKnxInterfaceObjectType type,
+        quint8 instance, QKnxInterfaceObjectProperty pid, quint8 noe, quint16 index,
+        const QKnxByteArray &payload = {});
+
+    QKnxDeviceManagementFrame(MessageCode code, QKnxInterfaceObjectType type,
+        quint8 instance, QKnxInterfaceObjectProperty pid, const QKnxByteArray &payload = {});
+
+private:
+    QSharedDataPointer<QKnxDeviceManagementFramePrivate> d_ptr;
 };
-Q_KNX_EXPORT QDebug operator<<(QDebug debug, const QKnxLocalDeviceManagementFrame &frame);
+Q_KNX_EXPORT QDebug operator<<(QDebug debug, const QKnxDeviceManagementFrame &frame);
 
 QT_END_NAMESPACE
 

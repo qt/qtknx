@@ -123,14 +123,14 @@ public:
     void sendStateRequest();
 
     virtual void process(const QKnxLinkLayerFrame &frame);
-    virtual void process(const QKnxLocalDeviceManagementFrame &frame);
+    virtual void process(const QKnxDeviceManagementFrame &frame);
 
     // datapoint related processing
     bool sendTunnelingRequest(const QKnxLinkLayerFrame &frame);
     virtual void processTunnelingRequest(const QKnxNetIpFrame &frame);
     virtual void processTunnelingAcknowledge(const QKnxNetIpFrame &frame);
 
-    bool sendDeviceConfigurationRequest(const QKnxLocalDeviceManagementFrame &frame);
+    bool sendDeviceConfigurationRequest(const QKnxDeviceManagementFrame &frame);
     virtual void processDeviceConfigurationRequest(const QKnxNetIpFrame &frame);
     virtual void processDeviceConfigurationAcknowledge(const QKnxNetIpFrame &frame);
 
