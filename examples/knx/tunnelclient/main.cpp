@@ -53,6 +53,7 @@
 #include <QtCore/QCoreApplication>
 #include <QtKnx/QKnxByteArray>
 #include <QtKnx/QKnxNetIpTunnelConnection>
+#include <QtKnx/QKnxLinkLayerFrameBuilder>
 #include <QtNetwork/QNetworkInterface>
 
 #ifdef Q_OS_WIN
@@ -106,7 +107,11 @@ int main(int argc, char *argv[])
         auto tmp = input.readLine().toLatin1();
         if (tmp != "quit") {
             const auto bytes = QKnxByteArray::fromHex(tmp);
-            tunnel.sendTunnelFrame(QKnxLinkLayerFrame::fromBytes(bytes, 0, bytes.size()));
+            auto frame = QKnxLinkLayerFrameBuilder()
+                .setData(bytes)
+                .setMedium(QKnx::MediumType::NetIP)
+                .createFrame();
+            tunnel.sendTunnelFrame(frame);
         } else {
             tunnel.disconnectFromHost();
         }

@@ -55,6 +55,7 @@
 #include <QMetaType>
 #include <QStandardItemModel>
 #include <QTreeView>
+#include <QtKnx/QKnxLinkLayerFrameBuilder>
 
 // -- KnxAddressValidator
 
@@ -121,7 +122,11 @@ Tunneling::Tunneling(QWidget* parent)
         ui->textOuputTunneling->append(tr("Send tunnel frame with cEMI payload: ")
             + ui->cemiFrame->text());
         auto data = QKnxByteArray::fromHex(ui->cemiFrame->text().toLatin1());
-        m_tunnel.sendTunnelFrame(QKnxLinkLayerFrame::fromBytes(data, 0, data.size()));
+        auto frame = QKnxLinkLayerFrameBuilder()
+                .setData(data)
+                .setMedium(QKnx::MediumType::NetIP)
+                .createFrame();
+        m_tunnel.sendTunnelFrame(frame);
     });
 
     connect(&m_tunnel, &QKnxNetIpTunnelConnection::receivedTunnelFrame, this,

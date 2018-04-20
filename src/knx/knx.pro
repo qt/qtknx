@@ -27,7 +27,7 @@ PUBLIC_HEADERS += \
     qknxinterfaceobjecttype.h \
     qknxlinklayerdevice.h \
     qknxlinklayerframe.h \
-    qknxlinklayerframefactory.h \
+    qknxlinklayerframebuilder.h \
     qknxlocaldevicemanagementframe.h \
     qknxlocaldevicemanagementframefactory.h \
     qknxnamespace.h \
@@ -35,7 +35,8 @@ PUBLIC_HEADERS += \
     qknxtpdufactory.h \
     qknxtraits.h \
     qknxtransportlayer.h \
-    qknxutils.h
+    qknxutils.h \
+    qknxlinklayerframefactory.h
 
 PRIVATE_HEADERS += \
     qknxlinklayerdevice_p.h \
@@ -53,7 +54,6 @@ SOURCES += \
     qknxinterfaceobjecttype.cpp \
     qknxlinklayerdevice.cpp \
     qknxlinklayerframe.cpp \
-    qknxlinklayerframefactory.cpp \
     qknxlocaldevicemanagementframe.cpp \
     qknxlocaldevicemanagementframefactory.cpp \
     qknxnamespace.cpp \
@@ -61,7 +61,10 @@ SOURCES += \
     qknxtpdufactory_broadcast.cpp \
     qknxtpdufactory_multicast.cpp \
     qknxtpdufactory_p2p.cpp \
-    qknxtransportlayer.cpp
+    qknxtransportlayer.cpp \
+    qknxlinklayerframefactory.cpp \
+    qknxlinklayerframebuilder.cpp
+
 
 HEADERS += $$PUBLIC_HEADERS $$PRIVATE_HEADERS
 

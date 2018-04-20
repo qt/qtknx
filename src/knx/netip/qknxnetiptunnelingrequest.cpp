@@ -28,6 +28,7 @@
 ******************************************************************************/
 
 #include "qknxnetiptunnelingrequest.h"
+#include "qknxlinklayerframebuilder.h"
 
 QT_BEGIN_NAMESPACE
 
@@ -53,7 +54,10 @@ quint8 QKnxNetIpTunnelingRequestProxy::sequenceNumber() const
 
 QKnxLinkLayerFrame QKnxNetIpTunnelingRequestProxy::cemi() const
 {
-    return QKnxLinkLayerFrame::fromBytes(m_frame.data(), 0, QKnx::MediumType::NetIP);
+    return QKnxLinkLayerFrameBuilder()
+        .setMedium(QKnx::MediumType::NetIP)
+        .setData(m_frame.constData())
+        .createFrame();
 }
 
 QKnxNetIpTunnelingRequestProxy::Builder QKnxNetIpTunnelingRequestProxy::builder()

@@ -28,7 +28,7 @@
 ******************************************************************************/
 
 #include "qknxnetiproutingindication.h"
-
+#include "qknxlinklayerframebuilder.h"
 QT_BEGIN_NAMESPACE
 
 QKnxNetIpRoutingIndicationProxy::QKnxNetIpRoutingIndicationProxy(const QKnxNetIpFrame &frame)
@@ -37,7 +37,10 @@ QKnxNetIpRoutingIndicationProxy::QKnxNetIpRoutingIndicationProxy(const QKnxNetIp
 
 QKnxLinkLayerFrame QKnxNetIpRoutingIndicationProxy::linkLayerFrame() const
 {
-    return QKnxLinkLayerFrame::fromBytes(m_frame.constData(), 0, QKnx::MediumType::NetIP);
+    return QKnxLinkLayerFrameBuilder()
+        .setMedium(QKnx::MediumType::NetIP)
+        .setData(m_frame.constData())
+        .createFrame();
 }
 
 bool QKnxNetIpRoutingIndicationProxy::isValid() const
