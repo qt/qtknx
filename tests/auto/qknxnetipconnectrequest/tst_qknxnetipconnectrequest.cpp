@@ -80,7 +80,7 @@ void tst_QKnxNetIpConnectRequest::testConstructor()
     QCOMPARE(connectRequest.requestInformation().bytes(), QKnxByteArray {});
 
     auto cri = QKnxNetIpCriProxy::builder()
-        .setTunnelingLayer(QKnxNetIp::TunnelingLayer::Link)
+        .setTunnelLayer(QKnxNetIp::TunnelLayer::Link)
         .setConnectionType(QKnxNetIp::ConnectionType::Tunnel)
         .create();
 

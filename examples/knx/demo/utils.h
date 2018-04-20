@@ -71,20 +71,20 @@ QKnxLinkLayerFrame createRequestFrame(const QKnxAddress &address, const QKnxTpdu
 void sendGroupValueWrite(QmlKnxTunnel &tunnel, const QKnxAddress &address,
     const QKnxByteArray &data, quint8 ctrl = 0xa4, quint8 extCtrl = 0xe0)
 {
-    tunnel.sendTunnelFrame(createRequestFrame(address,
+    tunnel.sendFrame(createRequestFrame(address,
         QKnxTpduFactory::Multicast::createGroupValueWriteTpdu(data), ctrl, extCtrl));
 }
 
 void sendColorLedGroupValueWriteFrames(QmlKnxTunnel &tunnel, const DemoColorLed *const dpt)
 {
     if (dpt) {
-        tunnel.sendTunnelFrame(createRequestFrame(QKnxAddress::createGroup(0, 0, 12),
+        tunnel.sendFrame(createRequestFrame(QKnxAddress::createGroup(0, 0, 12),
             QKnxTpduFactory::Multicast::createGroupValueWriteTpdu(dpt->redBytes())));
 
-        tunnel.sendTunnelFrame(createRequestFrame(QKnxAddress::createGroup(0, 0, 13),
+        tunnel.sendFrame(createRequestFrame(QKnxAddress::createGroup(0, 0, 13),
             QKnxTpduFactory::Multicast::createGroupValueWriteTpdu(dpt->greenBytes())));
 
-        tunnel.sendTunnelFrame(createRequestFrame(QKnxAddress::createGroup(0, 0, 14),
+        tunnel.sendFrame(createRequestFrame(QKnxAddress::createGroup(0, 0, 14),
             QKnxTpduFactory::Multicast::createGroupValueWriteTpdu(dpt->blueBytes())));
     }
 }
@@ -99,11 +99,11 @@ void initBoard(EtsDevelopmentBoard &board, QmlKnxTunnel &tunnel)
             continue; // skip checking blinds state
 
         if (QKnxAddress::createGroup(0, 0, 12) == board.getAddress(i)) {
-            tunnel.sendTunnelFrame(createRequestFrame(QKnxAddress::createGroup(0, 0, 12), tpdu));
-            tunnel.sendTunnelFrame(createRequestFrame(QKnxAddress::createGroup(0, 0, 13), tpdu));
-            tunnel.sendTunnelFrame(createRequestFrame(QKnxAddress::createGroup(0, 0, 14), tpdu));
+            tunnel.sendFrame(createRequestFrame(QKnxAddress::createGroup(0, 0, 12), tpdu));
+            tunnel.sendFrame(createRequestFrame(QKnxAddress::createGroup(0, 0, 13), tpdu));
+            tunnel.sendFrame(createRequestFrame(QKnxAddress::createGroup(0, 0, 14), tpdu));
         } else {
-            tunnel.sendTunnelFrame(createRequestFrame(board.getAddress(i), tpdu, 0xa4));
+            tunnel.sendFrame(createRequestFrame(board.getAddress(i), tpdu, 0xa4));
         }
     }
 }

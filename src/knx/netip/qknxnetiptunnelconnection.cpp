@@ -35,13 +35,13 @@
 QT_BEGIN_NAMESPACE
 
 /*!
-    \class QKnxNetIpTunnelConnection
+    \class QKnxNetIpTunnel
 
     \inmodule QtKnx
-    \brief The QKnxNetIpTunnelConnection class enables the opening and handling
+    \brief The QKnxNetIpTunnel class enables the opening and handling
     of a client connection to a KNXnet/IP server.
 
-    The QKnxNetIpTunnelConnection is a data connection between a client and a
+    The QKnxNetIpTunnel is a data connection between a client and a
     KNXnet/IP server endpoint. This is used to access functionalities of devices
     on a KNX bus. The IP address of the client must be set. It is then possible
     to connect to a chosen KNXnet/IP server and to send \l QKnxLinkLayerFrame
@@ -51,7 +51,7 @@ QT_BEGIN_NAMESPACE
     connection, and monitoring the connection:
 
     \code
-        QKnxNetIpTunnelConnection tunnel;
+        QKnxNetIpTunnel tunnel;
         QHostAddress clientLocalAddress = ...
         tunnel.setLocalAddress(clientLocalAddress);
 
@@ -60,38 +60,38 @@ QT_BEGIN_NAMESPACE
         tunnel.connectToHost(knxNetIpServerAddress, knxNetIpServerDataEndPointPort);
 
         QKnxLinkLayerFrame frame = ...
-        tunnel.sendTunnelFrame(frame);
+        tunnel.sendFrame(frame);
     \endcode
 */
 
-class QKnxNetIpTunnelConnectionPrivate : public QKnxNetIpEndpointConnectionPrivate
+class QKnxNetIpTunnelPrivate : public QKnxNetIpEndpointConnectionPrivate
 {
-    Q_DECLARE_PUBLIC(QKnxNetIpTunnelConnection)
+    Q_DECLARE_PUBLIC(QKnxNetIpTunnel)
 
 public:
-    QKnxNetIpTunnelConnectionPrivate(const QHostAddress &a, quint16 p, QKnxNetIp::TunnelingLayer l)
-        : QKnxNetIpEndpointConnectionPrivate(a, p, QKnxNetIpCriProxy::builder().setTunnelingLayer(l)
+    QKnxNetIpTunnelPrivate(const QHostAddress &a, quint16 p, QKnxNetIp::TunnelLayer l)
+        : QKnxNetIpEndpointConnectionPrivate(a, p, QKnxNetIpCriProxy::builder().setTunnelLayer(l)
             .create(), 1, QKnxNetIp::TunnelingRequestTimeout)
         , m_layer(l)
     {}
 
     void process(const QKnxLinkLayerFrame &frame) override
     {
-        Q_Q(QKnxNetIpTunnelConnection);
-        emit q->receivedTunnelFrame(frame);
+        Q_Q(QKnxNetIpTunnel);
+        emit q->frameReceived(frame);
     }
 
     void processConnectResponse(const QKnxNetIpFrame &frame, const QNetworkDatagram &dg) override
     {
         QKnxNetIpConnectResponseProxy response(frame);
         if (response.status() == QKnxNetIp::Error::NoMoreUniqueConnections) {
-            Q_ASSERT_X(false, "QKnxNetIpTunnelConnectionPrivate::process", "NoMoreUniqueConnections "
+            Q_ASSERT_X(false, "QKnxNetIpTunnelPrivate::process", "NoMoreUniqueConnections "
                 "error handling not implemented yet.");
             // TODO: Maybe implement 03_08_04 Tunneling v01.05.03 AS.pdf, paragraph 3.3
         }
 
-        Q_Q(QKnxNetIpTunnelConnection);
-        if (q->state() != QKnxNetIpTunnelConnection::Connected) {
+        Q_Q(QKnxNetIpTunnel);
+        if (q->state() != QKnxNetIpTunnel::Connected) {
             const auto &crd = response.responseData();
             m_address = QKnxNetIpCrdProxy(crd).individualAddress();
         }
@@ -100,36 +100,36 @@ public:
 
 private:
     QKnxAddress m_address;
-    QKnxNetIp::TunnelingLayer m_layer { QKnxNetIp::TunnelingLayer::Unknown };
+    QKnxNetIp::TunnelLayer m_layer { QKnxNetIp::TunnelLayer::Unknown };
 };
 
-QKnxNetIpTunnelConnection::QKnxNetIpTunnelConnection(QObject *parent)
-    : QKnxNetIpTunnelConnection({ QHostAddress::LocalHost }, 0, QKnxNetIp::TunnelingLayer::Link,
+QKnxNetIpTunnel::QKnxNetIpTunnel(QObject *parent)
+    : QKnxNetIpTunnel({ QHostAddress::LocalHost }, 0, QKnxNetIp::TunnelLayer::Link,
         parent)
 {}
 
-QKnxNetIpTunnelConnection::QKnxNetIpTunnelConnection(const QHostAddress &localAddress,
+QKnxNetIpTunnel::QKnxNetIpTunnel(const QHostAddress &localAddress,
         QObject *parent)
-    : QKnxNetIpTunnelConnection(localAddress, 0, QKnxNetIp::TunnelingLayer::Link, parent)
+    : QKnxNetIpTunnel(localAddress, 0, QKnxNetIp::TunnelLayer::Link, parent)
 {}
 
-QKnxNetIpTunnelConnection::QKnxNetIpTunnelConnection(const QHostAddress &localAddress,
+QKnxNetIpTunnel::QKnxNetIpTunnel(const QHostAddress &localAddress,
         quint16 localPort, QObject *parent)
-    : QKnxNetIpTunnelConnection(localAddress, localPort, QKnxNetIp::TunnelingLayer::Link, parent)
+    : QKnxNetIpTunnel(localAddress, localPort, QKnxNetIp::TunnelLayer::Link, parent)
 {}
 
-QKnxNetIpTunnelConnection::QKnxNetIpTunnelConnection(const QHostAddress &localAddress,
-        quint16 localPort, QKnxNetIp::TunnelingLayer layer, QObject *parent)
-    : QKnxNetIpEndpointConnection(*new QKnxNetIpTunnelConnectionPrivate(localAddress, localPort,
+QKnxNetIpTunnel::QKnxNetIpTunnel(const QHostAddress &localAddress,
+        quint16 localPort, QKnxNetIp::TunnelLayer layer, QObject *parent)
+    : QKnxNetIpEndpointConnection(*new QKnxNetIpTunnelPrivate(localAddress, localPort,
         layer), parent)
 {}
 
-QKnxAddress QKnxNetIpTunnelConnection::individualAddress() const
+QKnxAddress QKnxNetIpTunnel::individualAddress() const
 {
     return d_func()->m_address;
 }
 
-void QKnxNetIpTunnelConnection::setIndividualAddress(const QKnxAddress &address)
+void QKnxNetIpTunnel::setIndividualAddress(const QKnxAddress &address)
 {
     Q_ASSERT_X(false, "QKnxNetIpTunnelClient::setIndividualAddress", "Setting the individual "
         "address used for tunnel connections not implemented yet.");
@@ -137,25 +137,25 @@ void QKnxNetIpTunnelConnection::setIndividualAddress(const QKnxAddress &address)
     Q_UNUSED(address) // TODO: Maybe implement 03_08_04 Tunneling v01.05.03 AS.pdf, paragraph 3.2
 }
 
-QKnxNetIp::TunnelingLayer QKnxNetIpTunnelConnection::layer() const
+QKnxNetIp::TunnelLayer QKnxNetIpTunnel::layer() const
 {
     return d_func()->m_layer;
 }
 
-void QKnxNetIpTunnelConnection::setTunnelingLayer(QKnxNetIp::TunnelingLayer layer)
+void QKnxNetIpTunnel::setTunnelLayer(QKnxNetIp::TunnelLayer layer)
 {
     if (state() != State::Disconnected)
         return;
     d_func()->m_layer = layer;
 }
 
-bool QKnxNetIpTunnelConnection::sendTunnelFrame(const QKnxLinkLayerFrame &frame)
+bool QKnxNetIpTunnel::sendFrame(const QKnxLinkLayerFrame &frame)
 {
     if (state() != State::Connected)
         return false;
 
-    Q_D(QKnxNetIpTunnelConnection);
-    if (d->m_layer == QKnxNetIp::TunnelingLayer::Busmonitor)
+    Q_D(QKnxNetIpTunnel);
+    if (d->m_layer == QKnxNetIp::TunnelLayer::Busmonitor)
         return false; // 03_08_04 Tunneling v01.05.03, paragraph 2.4
 
     return d->sendTunnelingRequest(frame);

@@ -314,7 +314,7 @@ bool QKnxNetIp::isServiceType(QKnxNetIp::ServiceType type)
     \value KnxConnection
     The KNXnet/IP server device detects an error concerning the KNX connection
     with the specified ID.
-    \value TunnelingLayer
+    \value TunnelLayer
     The requested tunneling layer is not supported by the KNXnet/IP server device.
 */
 
@@ -328,7 +328,7 @@ bool QKnxNetIp::isServiceType(QKnxNetIp::ServiceType type)
 */
 
 /*!
-    \enum QKnxNetIp::TunnelingLayer
+    \enum QKnxNetIp::TunnelLayer
 
     This enum describes the KNX tunneling layer to establish.
 
@@ -339,17 +339,17 @@ bool QKnxNetIp::isServiceType(QKnxNetIp::ServiceType type)
 */
 
 /*!
-    Returns \c true if the specified \a layer is a part of the \l TunnelingLayer
+    Returns \c true if the specified \a layer is a part of the \l TunnelLayer
     enumeration; otherwise returns \c false.
 */
-bool QKnxNetIp::isTunnelingLayer(QKnxNetIp::TunnelingLayer layer)
+bool QKnxNetIp::isTunnelLayer(QKnxNetIp::TunnelLayer layer)
 {
     switch (layer) {
-    case QKnxNetIp::TunnelingLayer::Link:
-    case QKnxNetIp::TunnelingLayer::Raw:
-    case QKnxNetIp::TunnelingLayer::Busmonitor:
+    case QKnxNetIp::TunnelLayer::Link:
+    case QKnxNetIp::TunnelLayer::Raw:
+    case QKnxNetIp::TunnelLayer::Busmonitor:
         return true;
-    case QKnxNetIp::TunnelingLayer::Unknown:
+    case QKnxNetIp::TunnelLayer::Unknown:
         break;
     }
     return false;

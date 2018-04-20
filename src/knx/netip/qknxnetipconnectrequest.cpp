@@ -48,7 +48,7 @@ QT_BEGIN_NAMESPACE
     wants to use for this communication channel.
 
     In most programs, the QKnxNetIpConnectRequestProxy class will not be used
-    directly. Instead, the \l QKnxNetIpTunnelConnection or
+    directly. Instead, the \l QKnxNetIpTunnel or
     \l QKnxNetIpDeviceManagementConnection class are used to establish a
     functional connection to a KNXnet/IP server.
 
@@ -162,7 +162,7 @@ QKnxNetIpConnectRequestProxy::Builder QKnxNetIpConnectRequestProxy::builder()
     client wants to use for this communication channel.
 
     In most programs, the QKnxNetIpConnectRequestProxy::Builder class will not be
-    used directly. Instead, the \l QKnxNetIpTunnelConnection or
+    used directly. Instead, the \l QKnxNetIpTunnel or
     \l QKnxNetIpDeviceManagementConnection class are used to establish a
     functional connection to a KNXnet/IP server.
 

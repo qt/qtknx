@@ -27,8 +27,8 @@
 **
 ******************************************************************************/
 
-#ifndef QKNXNETIPTUNNELCONNECTION_H
-#define QKNXNETIPTUNNELCONNECTION_H
+#ifndef QKNXNETIPTUNNEL_H
+#define QKNXNETIPTUNNEL_H
 
 #include <QtKnx/qknxaddress.h>
 #include <QtKnx/qknxglobal.h>
@@ -37,34 +37,33 @@
 
 QT_BEGIN_NAMESPACE
 
-class QKnxNetIpTunnelConnectionPrivate;
+class QKnxNetIpTunnelPrivate;
 
-class Q_KNX_EXPORT QKnxNetIpTunnelConnection final : public QKnxNetIpEndpointConnection
+class Q_KNX_EXPORT QKnxNetIpTunnel final : public QKnxNetIpEndpointConnection
 {
     Q_OBJECT
-    Q_DISABLE_COPY(QKnxNetIpTunnelConnection)
-    Q_DECLARE_PRIVATE(QKnxNetIpTunnelConnection)
+    Q_DISABLE_COPY(QKnxNetIpTunnel)
+    Q_DECLARE_PRIVATE(QKnxNetIpTunnel)
 
 public:
-    QKnxNetIpTunnelConnection(QObject *parent = nullptr);
-    ~QKnxNetIpTunnelConnection() override = default;
+    QKnxNetIpTunnel(QObject *parent = nullptr);
+    ~QKnxNetIpTunnel() override = default;
 
-    QKnxNetIpTunnelConnection(const QHostAddress &localAddress, QObject *parent = nullptr);
-    QKnxNetIpTunnelConnection(const QHostAddress &localAddress, quint16 localPort,
-        QObject *parent = nullptr);
-    QKnxNetIpTunnelConnection(const QHostAddress &localAddress, quint16 localPort,
-        QKnxNetIp::TunnelingLayer layer, QObject *parent = nullptr);
+    QKnxNetIpTunnel(const QHostAddress &localAddress, QObject *parent = nullptr);
+    QKnxNetIpTunnel(const QHostAddress &localAddress, quint16 localPort, QObject *parent = nullptr);
+    QKnxNetIpTunnel(const QHostAddress &localAddress, quint16 localPort,
+        QKnxNetIp::TunnelLayer layer, QObject *parent = nullptr);
 
     QKnxAddress individualAddress() const;
     void setIndividualAddress(const QKnxAddress &address);
 
-    QKnxNetIp::TunnelingLayer layer() const;
-    void setTunnelingLayer(QKnxNetIp::TunnelingLayer layer);
+    QKnxNetIp::TunnelLayer layer() const;
+    void setTunnelLayer(QKnxNetIp::TunnelLayer layer);
 
-    bool sendTunnelFrame(const QKnxLinkLayerFrame &frame);
+    bool sendFrame(const QKnxLinkLayerFrame &frame);
 
 Q_SIGNALS:
-    void receivedTunnelFrame(QKnxLinkLayerFrame frame);
+    void frameReceived(QKnxLinkLayerFrame frame);
 };
 
 QT_END_NAMESPACE

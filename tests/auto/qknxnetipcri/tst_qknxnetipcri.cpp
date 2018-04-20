@@ -63,7 +63,7 @@ void tst_QKnxNetIpCri::testConstructorTunnelingLayer()
     {
         auto builder = QKnxNetIpCriProxy::builder();
         auto cri = builder
-            .setTunnelingLayer(QKnxNetIp::TunnelingLayer::Unknown)
+            .setTunnelLayer(QKnxNetIp::TunnelLayer::Unknown)
             .create();
 
         QCOMPARE(cri.isValid(), true);
@@ -75,10 +75,10 @@ void tst_QKnxNetIpCri::testConstructorTunnelingLayer()
         QKnxNetIpCriProxy view(cri);
         QCOMPARE(view.isValid(), false);
         QCOMPARE(view.connectionType(), QKnxNetIp::ConnectionType::Unknown);
-        QCOMPARE(view.tunnelingLayer(), QKnxNetIp::TunnelingLayer::Unknown);
+        QCOMPARE(view.tunnelLayer(), QKnxNetIp::TunnelLayer::Unknown);
 
-        // make the Cri valid by setting the QKnxNetIp::TunnelingLayer
-        cri = builder.setTunnelingLayer(QKnxNetIp::TunnelingLayer::Busmonitor)
+        // make the Cri valid by setting the QKnxNetIp::TunnelLayer
+        cri = builder.setTunnelLayer(QKnxNetIp::TunnelLayer::Busmonitor)
             .create();
         QCOMPARE(cri.isValid(), true);
         QCOMPARE(cri.size(), quint16(4));
@@ -86,12 +86,12 @@ void tst_QKnxNetIpCri::testConstructorTunnelingLayer()
         QCOMPARE(cri.data().size(), quint16(2));
         QCOMPARE(cri.data(), QKnxByteArray({ 0x80, 0x00 }));
         QCOMPARE(view.connectionType(), QKnxNetIp::ConnectionType::Tunnel);
-        QCOMPARE(view.tunnelingLayer(), QKnxNetIp::TunnelingLayer::Busmonitor);
+        QCOMPARE(view.tunnelLayer(), QKnxNetIp::TunnelLayer::Busmonitor);
     }
 
     {
         auto cri = QKnxNetIpCriProxy::builder()
-            .setTunnelingLayer(QKnxNetIp::TunnelingLayer::Raw)
+            .setTunnelLayer(QKnxNetIp::TunnelLayer::Raw)
             .create();
         QCOMPARE(cri.isValid(), true);
         QCOMPARE(cri.size(), quint16(4));
@@ -101,7 +101,7 @@ void tst_QKnxNetIpCri::testConstructorTunnelingLayer()
 
         QKnxNetIpCriProxy view(cri);
         QCOMPARE(view.connectionType(), QKnxNetIp::ConnectionType::Tunnel);
-        QCOMPARE(view.tunnelingLayer(), QKnxNetIp::TunnelingLayer::Raw);
+        QCOMPARE(view.tunnelLayer(), QKnxNetIp::TunnelLayer::Raw);
     }
 }
 

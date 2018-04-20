@@ -57,7 +57,7 @@
 #include <QtCore/QTimer>
 #include <QtGui/QColor>
 #include <QtKnx/QKnxNetIpServerDiscoveryAgent>
-#include <QtKnx/QKnxNetIpTunnelConnection>
+#include <QtKnx/QKnxNetIpTunnel>
 #include <QtKnx/QKnxLinkLayerFrame>
 
 class QmlKnxDemo;
@@ -68,7 +68,7 @@ class QmlKnxTunnel : public QObject
 
 public:
     QmlKnxTunnel(QmlKnxDemo *demo);
-    void sendTunnelFrame(const QKnxLinkLayerFrame &frame);
+    void sendFrame(const QKnxLinkLayerFrame &frame);
     void changeIp(const QString &ip, quint16 port = 3671);
 
 public slots:
@@ -81,7 +81,7 @@ private:
 
 private:
     QQueue<QKnxLinkLayerFrame> m_frames;
-    QKnxNetIpTunnelConnection m_connection;
+    QKnxNetIpTunnel m_connection;
     QKnxNetIpServerDiscoveryAgent m_discoveryAgent;
 
     QTimer m_timer;

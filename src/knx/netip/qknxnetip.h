@@ -125,7 +125,7 @@ struct Q_KNX_EXPORT QKnxNetIp final
         NoMoreUniqueConnections = 0x25,
         DataConnection = 0x26,
         KnxConnection = 0x27,
-        TunnelingLayer = 0x29
+        TunnelLayer = 0x29
     };
 
     enum class DeviceState : quint8
@@ -134,14 +134,14 @@ struct Q_KNX_EXPORT QKnxNetIp final
         IpFault = 0x01
     };
 
-    enum class TunnelingLayer : quint8
+    enum class TunnelLayer : quint8
     {
         Unknown = 0x00,
         Link = 0x02,
         Raw = 0x04,
         Busmonitor = 0x80
     };
-    static bool isTunnelingLayer(TunnelingLayer layer);
+    static bool isTunnelLayer(TunnelLayer layer);
 
     enum class ProgrammingMode : quint8
     {
@@ -205,7 +205,7 @@ Q_DECLARE_TYPEINFO(QKnxNetIp::ServiceFamily, Q_PRIMITIVE_TYPE);
 Q_DECLARE_TYPEINFO(QKnxNetIp::ServiceType, Q_PRIMITIVE_TYPE);
 Q_DECLARE_TYPEINFO(QKnxNetIp::Error, Q_PRIMITIVE_TYPE);
 Q_DECLARE_TYPEINFO(QKnxNetIp::DeviceState, Q_PRIMITIVE_TYPE);
-Q_DECLARE_TYPEINFO(QKnxNetIp::TunnelingLayer, Q_PRIMITIVE_TYPE);
+Q_DECLARE_TYPEINFO(QKnxNetIp::TunnelLayer, Q_PRIMITIVE_TYPE);
 Q_DECLARE_TYPEINFO(QKnxNetIp::ProgrammingMode, Q_PRIMITIVE_TYPE);
 Q_DECLARE_TYPEINFO(QKnxNetIp::AssignmentMethod, Q_PRIMITIVE_TYPE);
 Q_DECLARE_TYPEINFO(QKnxNetIp::Capability, Q_PRIMITIVE_TYPE);

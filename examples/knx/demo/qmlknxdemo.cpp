@@ -229,9 +229,9 @@ static QHostAddress obtainLocalAddress()
 
 QmlKnxTunnel::QmlKnxTunnel(QmlKnxDemo *demo)
 {
-    connect(&m_connection, &QKnxNetIpTunnelConnection::stateChanged,
+    connect(&m_connection, &QKnxNetIpTunnel::stateChanged,
             this, &QmlKnxTunnel::handleConnection);
-    connect(&m_connection, &QKnxNetIpTunnelConnection::receivedTunnelFrame,
+    connect(&m_connection, &QKnxNetIpTunnel::frameReceived,
             demo, &QmlKnxDemo::handleFrame);
     connect(&m_timer, &QTimer::timeout, this, &QmlKnxTunnel::send);
 
@@ -254,7 +254,7 @@ QmlKnxTunnel::QmlKnxTunnel(QmlKnxDemo *demo)
     autoDiscoverKnxServers();
 }
 
-void QmlKnxTunnel::sendTunnelFrame(const QKnxLinkLayerFrame &frame)
+void QmlKnxTunnel::sendFrame(const QKnxLinkLayerFrame &frame)
 {
     if (frame.size() == 0)
         return;
@@ -284,7 +284,7 @@ void QmlKnxTunnel::changeIp(const QString &ip, quint16 port)
 
 void QmlKnxTunnel::send()
 {
-    m_connection.sendTunnelFrame(m_frames.dequeue());
+    m_connection.sendFrame(m_frames.dequeue());
     if (m_frames.size() == 0)
         m_timer.stop();
 }

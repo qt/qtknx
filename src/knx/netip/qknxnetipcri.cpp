@@ -60,7 +60,7 @@ QT_BEGIN_NAMESPACE
 
         if (view.connectionType() != QKnxNetIp::ConnectionType::Tunnel)
             return;
-        auto layer = view.tunnelingLayer(); // read the requested tunneling layer
+        auto layer = view.tunnelLayer(); // read the requested tunneling layer
     \endcode
 
     \sa builder()
@@ -99,7 +99,7 @@ bool QKnxNetIpCriProxy::isValid() const
         case QKnxNetIp::ConnectionType::Tunnel: {
             auto tmp = m_cri.constData().value(0);
             return m_cri.isValid() && m_cri.size() == 4
-                && QKnxNetIp::isTunnelingLayer(QKnxNetIp::TunnelingLayer(tmp));
+                && QKnxNetIp::isTunnelLayer(QKnxNetIp::TunnelLayer(tmp));
         }
         case QKnxNetIp::ConnectionType::DeviceManagement:
         case QKnxNetIp::ConnectionType::RemoteLogging:
@@ -131,11 +131,11 @@ QKnxNetIp::ConnectionType QKnxNetIpCriProxy::connectionType() const
 
     \sa additionalData()
 */
-QKnxNetIp::TunnelingLayer QKnxNetIpCriProxy::tunnelingLayer() const
+QKnxNetIp::TunnelLayer QKnxNetIpCriProxy::tunnelLayer() const
 {
     if (isValid())
-        return QKnxNetIp::TunnelingLayer(m_cri.constData().value(0));
-    return QKnxNetIp::TunnelingLayer::Unknown;
+        return QKnxNetIp::TunnelLayer(m_cri.constData().value(0));
+    return QKnxNetIp::TunnelLayer::Unknown;
 }
 
 /*!
@@ -144,7 +144,7 @@ QKnxNetIp::TunnelingLayer QKnxNetIpCriProxy::tunnelingLayer() const
     The current KNX specification foresees additional data only in the case of
     tunneling.
 
-    \sa tunnelingLayer()
+    \sa tunnelLayer()
 */
 QKnxByteArray QKnxNetIpCriProxy::additionalData() const
 {
@@ -176,7 +176,7 @@ QKnxNetIpCriProxy::Builder QKnxNetIpCriProxy::builder()
     \code
         auto cri = QKnxNetIpCriProxy::builder()
             .setConnectionType(QKnxNetIp::ConnectionType::Tunnel)
-            .setTunnelingLayer(QKnxNetIp::TunnelingLayer::Link)
+            .setTunnelLayer(QKnxNetIp::TunnelLayer::Link)
             .create();
     \endcode
 */
@@ -198,14 +198,14 @@ QKnxNetIpCriProxy::Builder &
     Sets the additional data to the requested KNX tunneling layer \a layer and
     returns a reference to the builder.
 
-    Does nothing if \a layer is not a \l QKnxNetIp::TunnelingLayer value.
+    Does nothing if \a layer is not a \l QKnxNetIp::TunnelLayer value.
 
     \sa setAdditionalData()
 */
 QKnxNetIpCriProxy::Builder &
-    QKnxNetIpCriProxy::Builder::setTunnelingLayer(QKnxNetIp::TunnelingLayer layer)
+    QKnxNetIpCriProxy::Builder::setTunnelLayer(QKnxNetIp::TunnelLayer layer)
 {
-    if (QKnxNetIp::isTunnelingLayer(layer))
+    if (QKnxNetIp::isTunnelLayer(layer))
         setAdditionalData({ quint8(layer), 0x00 /* reserved byte */ });
     return *this;
 }
@@ -217,7 +217,7 @@ QKnxNetIpCriProxy::Builder &
     The current KNX specification foresees additional data only in the case of
     tunneling.
 
-    \sa setTunnelingLayer()
+    \sa setTunnelLayer()
 */
 QKnxNetIpCriProxy::Builder &
     QKnxNetIpCriProxy::Builder::setAdditionalData(const QKnxByteArray &additionalData)

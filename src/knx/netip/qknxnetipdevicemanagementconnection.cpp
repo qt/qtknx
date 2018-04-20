@@ -61,7 +61,7 @@ QT_BEGIN_NAMESPACE
         connection.connectToHost(knxNetIpServerAddress, knxNetIpServerDataEndPointPort);
 
         QKnxLocalDeviceManagementFrame frame = ...
-        connection.sendTunnelFrame(frame);
+        connection.sendFrame(frame);
     \endcode
 */
 

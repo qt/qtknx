@@ -97,7 +97,7 @@ Tunneling::Tunneling(QWidget* parent)
         m_tunnel.connectToHost(m_server.controlEndpointAddress(), m_server.controlEndpointPort());
     });
 
-    connect(&m_tunnel, &QKnxNetIpTunnelConnection::connected, this, [&] {
+    connect(&m_tunnel, &QKnxNetIpTunnel::connected, this, [&] {
         ui->connectTunneling->setEnabled(false);
         ui->disconnectTunneling->setEnabled(true);
         ui->tunnelingSendRequest->setEnabled(true);
@@ -110,7 +110,7 @@ Tunneling::Tunneling(QWidget* parent)
         m_tunnel.disconnectFromHost();
     });
 
-    connect(&m_tunnel, &QKnxNetIpTunnelConnection::disconnected, this, [&] {
+    connect(&m_tunnel, &QKnxNetIpTunnel::disconnected, this, [&] {
         ui->connectTunneling->setEnabled(true);
         ui->disconnectTunneling->setEnabled(false);
         ui->tunnelingSendRequest->setEnabled(false);
@@ -126,10 +126,10 @@ Tunneling::Tunneling(QWidget* parent)
                 .setData(data)
                 .setMedium(QKnx::MediumType::NetIP)
                 .createFrame();
-        m_tunnel.sendTunnelFrame(frame);
+        m_tunnel.sendFrame(frame);
     });
 
-    connect(&m_tunnel, &QKnxNetIpTunnelConnection::receivedTunnelFrame, this,
+    connect(&m_tunnel, &QKnxNetIpTunnel::frameReceived, this,
         [&](QKnxLinkLayerFrame frame) {
         ui->textOuputTunneling->append(tr("Source address: %1").arg(frame.sourceAddress()
             .toString()));
