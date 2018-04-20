@@ -75,7 +75,7 @@ void tst_QKnxNetIpTunnelingRequest::testDebugStream()
     } _(myMessageHandler);
 
     qDebug() << QKnxNetIpTunnelingRequestProxy::builder().create();
-    QCOMPARE(s_msg, QString::fromLatin1("0x06100420000c040000000000"));
+    QCOMPARE(s_msg, QString::fromLatin1("0x06100420000a04000000"));
 }
 
 QTEST_APPLESS_MAIN(tst_QKnxNetIpTunnelingRequest)

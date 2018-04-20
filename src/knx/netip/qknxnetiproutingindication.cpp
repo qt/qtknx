@@ -37,7 +37,7 @@ QKnxNetIpRoutingIndicationProxy::QKnxNetIpRoutingIndicationProxy(const QKnxNetIp
 
 QKnxLinkLayerFrame QKnxNetIpRoutingIndicationProxy::linkLayerFrame() const
 {
-    return QKnxLinkLayerFrame::fromBytes(m_frame.constData(), 0, m_frame.dataSize());
+    return QKnxLinkLayerFrame::fromBytes(m_frame.constData(), 0, QKnx::MediumType::NetIP);
 }
 
 bool QKnxNetIpRoutingIndicationProxy::isValid() const
