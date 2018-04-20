@@ -1102,6 +1102,17 @@ bool QKnxVariableSizeDatapointType::setBytes(const QKnxByteArray &bytesToSet, qu
     return QKnxDatapointType::setBytes(bytesToSet, index, count);
 }
 
+/*!
+    \relates QKnxDatapointType
+
+    Writes the datapoint type \a dpt to the \a debug stream.
+*/
+QDebug operator<<(QDebug debug, const QKnxDatapointType &dpt)
+{
+    QDebugStateSaver _(debug);
+    return debug.nospace().noquote() << "0x" << dpt.bytes().toHex();
+}
+
 #include "moc_qknxdatapointtype.cpp"
 
 QT_END_NAMESPACE

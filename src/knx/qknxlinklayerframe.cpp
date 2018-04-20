@@ -438,4 +438,15 @@ void QKnxLinkLayerFrame::clearAdditionalInfos()
     m_additionalInfos.clear();
 }
 
+/*!
+    \relates QKnxLinkLayerFrame
+
+    Writes the link layer frame \a frame to the \a debug stream.
+*/
+QDebug operator<<(QDebug debug, const QKnxLinkLayerFrame &frame)
+{
+    QDebugStateSaver _(debug);
+    return debug.nospace().noquote() << "0x" << frame.bytes().toHex();
+}
+
 QT_END_NAMESPACE

@@ -140,7 +140,7 @@ private:
     mutable bool m_additionalInfosSorted { true };
     mutable QVector<QKnxAdditionalInfo> m_additionalInfos;
 };
-// TODO: add debug stream operator
+Q_KNX_EXPORT QDebug operator<<(QDebug debug, const QKnxLinkLayerFrame &frame);
 
 QT_END_NAMESPACE
 
