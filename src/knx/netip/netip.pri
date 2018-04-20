@@ -35,7 +35,7 @@ PUBLIC_HEADERS += $$PWD/qknxnetip.h \
     $$PWD/qknxnetipservicefamiliesdib.h \
     $$PWD/qknxnetipstruct.h \
     $$PWD/qknxnetipstructheader.h \
-    $$PWD/qknxnetiptunnelconnection.h \
+    $$PWD/qknxnetiptunnel.h \
     $$PWD/qknxnetiptunnelingacknowledge.h \
     $$PWD/qknxnetiptunnelingrequest.h
 
@@ -79,6 +79,6 @@ SOURCES += $$PWD/qknxnetip.cpp \
     $$PWD/qknxnetipservicefamiliesdib.cpp \
     $$PWD/qknxnetipstruct.cpp \
     $$PWD/qknxnetipstructheader.cpp \
-    $$PWD/qknxnetiptunnelconnection.cpp \
+    $$PWD/qknxnetiptunnel.cpp \
     $$PWD/qknxnetiptunnelingacknowledge.cpp \
     $$PWD/qknxnetiptunnelingrequest.cpp

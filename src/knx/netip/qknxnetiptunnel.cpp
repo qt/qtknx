@@ -29,7 +29,7 @@
 
 #include "qknxnetipconnectresponse.h"
 #include "qknxnetipendpointconnection_p.h"
-#include "qknxnetiptunnelconnection.h"
+#include "qknxnetiptunnel.h"
 #include "qknxnetiptunnelingrequest.h"
 
 QT_BEGIN_NAMESPACE
