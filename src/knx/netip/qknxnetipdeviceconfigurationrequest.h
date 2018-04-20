@@ -30,7 +30,7 @@
 #ifndef QKNXNETIPDEVICECONFIGURATIONREQUEST_H
 #define QKNXNETIPDEVICECONFIGURATIONREQUEST_H
 
-#include <QtKnx/qknxlocaldevicemanagementframe.h>
+#include <QtKnx/qknxdevicemanagementframe.h>
 #include <QtKnx/qknxnetip.h>
 #include <QtKnx/qknxnetipframe.h>
 #include <QtKnx/qknxglobal.h>

@@ -30,7 +30,7 @@
 #ifndef QKNXNETIPDEVICEMANAGEMENT_H
 #define QKNXNETIPDEVICEMANAGEMENT_H
 
-#include <QtKnx/qknxlocaldevicemanagementframe.h>
+#include <QtKnx/qknxdevicemanagementframe.h>
 #include <QtKnx/qknxglobal.h>
 #include <QtKnx/qknxnetipendpointconnection.h>
 

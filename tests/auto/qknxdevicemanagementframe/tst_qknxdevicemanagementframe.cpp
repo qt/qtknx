@@ -27,8 +27,8 @@
 ******************************************************************************/
 
 #include <QtCore/qdebug.h>
-#include <QtKnx/qknxlocaldevicemanagementframe.h>
-#include <QtKnx/qknxlocaldevicemanagementframefactory.h>
+#include <QtKnx/qknxdevicemanagementframe.h>
+#include <QtKnx/qknxdevicemanagementframefactory.h>
 #include <QtTest/qtest.h>
 
 static QString s_msg;

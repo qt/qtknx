@@ -30,7 +30,7 @@
 #ifndef QKNXDEVICEMANAGEMENTFRAMEFACTORY_H
 #define QKNXDEVICEMANAGEMENTFRAMEFACTORY_H
 
-#include <QtKnx/qknxlocaldevicemanagementframe.h>
+#include <QtKnx/qknxdevicemanagementframe.h>
 #include <QtKnx/qknxglobal.h>
 
 QT_BEGIN_NAMESPACE

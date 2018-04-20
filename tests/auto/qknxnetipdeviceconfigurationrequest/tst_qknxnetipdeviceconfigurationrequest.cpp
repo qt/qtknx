@@ -29,7 +29,7 @@
 #include <QtCore/qdebug.h>
 #include <QtTest/qtest.h>
 #include <QtKnx/qknxnetipdeviceconfigurationrequest.h>
-#include <QtKnx/qknxlocaldevicemanagementframefactory.h>
+#include <QtKnx/qknxdevicemanagementframefactory.h>
 
 static QString s_msg;
 static void myMessageHandler(QtMsgType, const QMessageLogContext &, const QString &msg)

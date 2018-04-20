@@ -28,8 +28,8 @@ PUBLIC_HEADERS += \
     qknxlinklayerdevice.h \
     qknxlinklayerframe.h \
     qknxlinklayerframebuilder.h \
-    qknxlocaldevicemanagementframe.h \
-    qknxlocaldevicemanagementframefactory.h \
+    qknxdevicemanagementframe.h \
+    qknxdevicemanagementframefactory.h \
     qknxnamespace.h \
     qknxtpdu.h \
     qknxtpdufactory.h \
@@ -54,8 +54,8 @@ SOURCES += \
     qknxinterfaceobjecttype.cpp \
     qknxlinklayerdevice.cpp \
     qknxlinklayerframe.cpp \
-    qknxlocaldevicemanagementframe.cpp \
-    qknxlocaldevicemanagementframefactory.cpp \
+    qknxdevicemanagementframe.cpp \
+    qknxdevicemanagementframefactory.cpp \
     qknxnamespace.cpp \
     qknxtpdu.cpp \
     qknxtpdufactory_broadcast.cpp \

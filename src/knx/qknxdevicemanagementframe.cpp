@@ -27,7 +27,7 @@
 **
 ******************************************************************************/
 
-#include "qknxlocaldevicemanagementframe.h"
+#include "qknxdevicemanagementframe.h"
 #include "qknxutils.h"
 
 QT_BEGIN_NAMESPACE
