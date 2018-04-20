@@ -54,7 +54,7 @@
 #include "demodatapoint.h"
 
 #include <QtKnx/QKnxAddress>
-#include <QtKnx/QKnxTpduFactory>
+#include <QtKnx/private/qknxtpdufactory_p.h>
 
 QKnxLinkLayerFrame createRequestFrame(const QKnxAddress &address, const QKnxTpdu &tpdu,
     quint8 ctrl = 0xac, quint8 extCtrl = 0xe0)

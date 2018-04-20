@@ -27,8 +27,19 @@
 **
 ******************************************************************************/
 
-#ifndef QKNXTPDUFACTORY_H
-#define QKNXTPDUFACTORY_H
+#ifndef QKNXTPDUFACTORY_P_H
+#define QKNXTPDUFACTORY_P_H
+
+//
+//  W A R N I N G
+//  -------------
+//
+// This file is not part of the Qt KNX API.  It exists for the convenience
+// of the Qt KNX implementation.  This header file may change from version
+// to version without notice, or even be removed.
+//
+// We mean it.
+//
 
 #include <QtKnx/qknxaddress.h>
 #include <QtKnx/qknxglobal.h>

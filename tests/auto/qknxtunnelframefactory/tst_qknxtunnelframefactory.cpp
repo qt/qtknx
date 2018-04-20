@@ -29,7 +29,7 @@
 #include <QtKnx/qknxlinklayerframebuilder.h>
 #include <QtKnx/QKnxLinkLayerFrame>
 #include <QtKnx/qknxextendedcontrolfield.h>
-#include <QtKnx/qknxtpdufactory.h>
+#include <QtKnx/private/qknxtpdufactory_p.h>
 #include <QtTest/qtest.h>
 
 class tst_QKnxLinkLayerFrameBuilder : public QObject

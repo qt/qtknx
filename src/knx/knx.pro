@@ -28,11 +28,11 @@ PUBLIC_HEADERS += \
     qknxdevicemanagementframefactory.h \
     qknxnamespace.h \
     qknxtpdu.h \
-    qknxtpdufactory.h \
     qknxtraits.h \
     qknxutils.h
 
-PRIVATE_HEADERS +=
+PRIVATE_HEADERS += \
+    qknxtpdufactory_p.h
 
 SOURCES += \
     qknxadditionalinfo.cpp \

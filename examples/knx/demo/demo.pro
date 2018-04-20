@@ -1,6 +1,6 @@
 TEMPLATE = app
 
-QT += qml quick knx
+QT += qml quick knx knx-private
 CONFIG += c++11
 
 # The following define makes your compiler emit warnings if you use

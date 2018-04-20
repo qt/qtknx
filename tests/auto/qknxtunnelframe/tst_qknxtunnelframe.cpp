@@ -29,7 +29,7 @@
 #include <QtCore/qdebug.h>
 #include <QtKnx/qknxlinklayerframe.h>
 #include <QtKnx/qknxlinklayerframebuilder.h>
-#include <QtKnx/qknxtpdufactory.h>
+#include <QtKnx/private/qknxtpdufactory_p.h>
 #include <QtTest/qtest.h>
 
 static QString s_msg;

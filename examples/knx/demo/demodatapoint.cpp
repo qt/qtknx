@@ -53,8 +53,8 @@
 #include <QtCore/QTimer>
 #include <QtGui/QColor>
 #include <QtKnx/QKnxTpdu>
-#include <QtKnx/QKnxTpduFactory>
 #include <QtKnx/QKnxLinkLayerFrame>
+#include <QtKnx/private/qknxtpdufactory_p.h>
 
 const QKnxByteArray DemoDataPoint::BytesOn { 0x01 };
 const QKnxByteArray DemoDataPoint::BytesOff { 0x00 };
