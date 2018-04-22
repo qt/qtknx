@@ -89,56 +89,68 @@ QT_BEGIN_NAMESPACE
     \value DataIndividualIndication                   T_Data_Individual.ind
 */
 
+class QKnxLinkLayerFramePrivate : public QSharedData
+{
+public:
+    QKnxLinkLayerFramePrivate() = default;
+    ~QKnxLinkLayerFramePrivate() = default;
+
+    QKnxLinkLayerFrame::MessageCode m_code { QKnxLinkLayerFrame::MessageCode::Unknown };
+    QKnx::MediumType m_mediumType { QKnx::MediumType::NetIP };
+    QKnxAddress m_srcAddress;
+    QKnxAddress m_dstAddress;
+    QKnxTpdu m_tpdu;
+    QKnxControlField m_ctrl;
+    QKnxExtendedControlField m_extCtrl;
+    quint8 m_additionalInfoSize { 0 };
+    mutable bool m_additionalInfosSorted { true };
+    mutable QVector<QKnxAdditionalInfo> m_additionalInfos;
+};
+
 /*!
-    Constructs an empty LinkLayer frame. The MediumType is set to QKnx::MediumType::NetIP.
+    Constructs an empty link layer frame.
+    The MediumType is set to QKnx::MediumType::NetIp.
+
+    \sa setMediumType()
 */
 QKnxLinkLayerFrame::QKnxLinkLayerFrame()
-{}
-
-QKnxLinkLayerFrame::QKnxLinkLayerFrame(const QKnxLinkLayerFrame &other)
-{
-    m_code = other.m_code;
-    m_mediumType = other.m_mediumType;
-    m_tpdu = other.m_tpdu;
-    m_srcAddress = other.m_srcAddress;
-    m_dstAddress = other.m_dstAddress;
-    m_ctrl = other.m_ctrl;
-    m_extCtrl = other.m_extCtrl;
-
-    m_additionalInfos = other.m_additionalInfos;
-    m_additionalInfoSize = other.m_additionalInfoSize;
-    m_additionalInfosSorted = other.m_additionalInfosSorted;
-}
-
-/*!
-    Constructs a LinkLayer frame starting with \a messageCode.
-
-    \note The LinkLayer frame will be other wise empty and needs to be set by hand.
-*/
-QKnxLinkLayerFrame::QKnxLinkLayerFrame(QKnx::MediumType mediumType,
-    QKnxLinkLayerFrame::MessageCode messageCode)
-    : m_code(messageCode)
-    , m_mediumType(mediumType)
+    : d_ptr(new QKnxLinkLayerFramePrivate)
 {}
 
 /*!
-    Constructs a LinkLayer frame starting with \a messageCode and sets the
-    service information to \a serviceInfo.
+    Destroys the link layer management frame and frees all allocated resources.
 */
-QKnxLinkLayerFrame::QKnxLinkLayerFrame(QKnx::MediumType mediumType,
-    QKnxLinkLayerFrame::MessageCode messageCode, const QKnxByteArray &serviceInfo)
-    : m_code(messageCode)
-    , m_mediumType(mediumType)
-{
-    setServiceInformation(serviceInfo);
-}
-
 QKnxLinkLayerFrame::~QKnxLinkLayerFrame()
 {}
 
-QKnxLinkLayerFrame::QKnxLinkLayerFrame(QKnx::MediumType mediumType)
-    : m_mediumType(mediumType)
-{}
+/*!
+    Constructs a link layer frame starting with \a messageCode. The medium is
+    set to QKnx::MediumType::NetIp.
+
+    \note The LinkLayer frame will be empty otherwise and needs to be setup by
+    hand.
+
+    \sa setMediumType()
+*/
+QKnxLinkLayerFrame::QKnxLinkLayerFrame(QKnxLinkLayerFrame::MessageCode messageCode)
+    : d_ptr(new QKnxLinkLayerFramePrivate)
+{
+    d_ptr->m_code = messageCode;
+}
+
+/*!
+    Constructs a link layer frame starting with \a messageCode and sets the
+    service information to \a serviceInfo.
+    The medium type is set to QKnx::MediumType::NetIp.
+
+    \sa setMediumType()
+*/
+QKnxLinkLayerFrame::QKnxLinkLayerFrame(QKnxLinkLayerFrame::MessageCode messageCode,
+        const QKnxByteArray &serviceInfo)
+    : QKnxLinkLayerFrame(messageCode)
+{
+    setServiceInformation(serviceInfo);
+}
 
 /*!
   Returns true if the message code is valid.
@@ -152,26 +164,26 @@ bool QKnxLinkLayerFrame::isValid() const
         return false;
 
     // Tpdu is valid
-    if (!m_tpdu.isValid())
+    if (!d_ptr->m_tpdu.isValid())
         return false;
 
     // For the moment we only check for netIp Tunnel
     // TP and PL send L_Data_Standard and L_Data_Extended
     // TODO: Make the check more general (maybe other MediumType could use the following check)
-    if (m_mediumType == QKnx::MediumType::NetIP) {
+    if (d_ptr->m_mediumType == QKnx::MediumType::NetIP) {
         // TODO: Make sure all constraints from 3.3.2 paragraph 2.2 L_Data is checked here
 
         //Extended control field destination address type corresponds to the destination address
-        if (m_dstAddress.type() != m_extCtrl.destinationAddressType())
+        if (d_ptr->m_dstAddress.type() != d_ptr->m_extCtrl.destinationAddressType())
             return false;
 
-        switch (m_code) {
+        switch (d_ptr->m_code) {
             // L_Data
         case MessageCode::DataRequest:
         case MessageCode::DataConfirmation:
         case MessageCode::DataIndication:
             // From 3.3.2 paragraph 2.2.1
-            if (m_srcAddress.type() != QKnxAddress::Type::Individual)
+            if (d_ptr->m_srcAddress.type() != QKnxAddress::Type::Individual)
                 return false;
         default:
             break;
@@ -179,7 +191,7 @@ bool QKnxLinkLayerFrame::isValid() const
         // TODO: check NPDU/ TPDU size, several cases need to be taken into account:
         // 1; Information-Length (max. value is 255); number of TPDU octets, TPCI octet not included!
         // Low Priority is Mandatory for long frame 3.3.2 paragraph 2.2.3
-        if (m_tpdu.dataSize() > 15 && m_ctrl.priority() != QKnxControlField::Priority::Low)
+        if (d_ptr->m_tpdu.dataSize() > 15 && d_ptr->m_ctrl.priority() != QKnxControlField::Priority::Low)
             return false;
         // 2; Check presence of Pl/RF medium information in the additional info -> size always needs
         //    to be greater then 15 bytes because both need additional information.
@@ -188,8 +200,8 @@ bool QKnxLinkLayerFrame::isValid() const
         //    03_06_03 EMI_IMI v01.03.03 AS.pdf page 75 NOTE 1
         // 4; 03_03_02 Data Link Layer General v01.02.02 AS.pdf page 12 paragraph 2.2.5
         // control field frame type standard -> max. length value is 15
-        if (m_ctrl.frameFormat() == QKnxControlField::FrameFormat::Standard
-            && m_tpdu.dataSize() > 15)
+        if (d_ptr->m_ctrl.frameFormat() == QKnxControlField::FrameFormat::Standard
+            && d_ptr->m_tpdu.dataSize() > 15)
             return false;
         //  control field frame type extended -> max. length value is 255
         return true;
@@ -211,7 +223,7 @@ bool QKnxLinkLayerFrame::isMessageCodeValid() const
     // TODO: some message code could be valid for other MediumType as well.
     // TODO: Adapt the function when other Medium type get implemented.
 
-    switch (m_code) {
+    switch (d_ptr->m_code) {
     case MessageCode::BusmonitorIndication:
     case MessageCode::DataRequest:
     case MessageCode::DataConfirmation:
@@ -220,7 +232,7 @@ bool QKnxLinkLayerFrame::isMessageCodeValid() const
     case MessageCode::RawIndication:
     case MessageCode::RawConfirmation:
     case MessageCode::ResetRequest:
-        return (m_mediumType == QKnx::MediumType::NetIP);
+        return (d_ptr->m_mediumType == QKnx::MediumType::NetIP);
     case MessageCode::PollDataRequest:
     case MessageCode::PollDataConfirmation:
     case MessageCode::DataConnectedRequest:
@@ -235,43 +247,42 @@ bool QKnxLinkLayerFrame::isMessageCodeValid() const
 
 QKnxControlField QKnxLinkLayerFrame::controlField() const
 {
-    return m_ctrl;
+    return d_ptr->m_ctrl;
 }
 
 void QKnxLinkLayerFrame::setControlField(const QKnxControlField &controlField)
 {
-    m_ctrl = controlField;
+    d_ptr->m_ctrl = controlField;
 }
 
 QKnxExtendedControlField QKnxLinkLayerFrame::extendedControlField() const
 {
-     // TODO: check if there is an extended control field needed!
-    return m_extCtrl;
+    return d_ptr->m_extCtrl;
 }
 
 void QKnxLinkLayerFrame::setExtendedControlField(const QKnxExtendedControlField &controlFieldEx)
 {
-    m_extCtrl = controlFieldEx;
+    d_ptr->m_extCtrl = controlFieldEx;
 }
 
 const QKnxAddress QKnxLinkLayerFrame::sourceAddress() const
 {
-    return m_srcAddress;
+    return d_ptr->m_srcAddress;
 }
 
 void QKnxLinkLayerFrame::setSourceAddress(const QKnxAddress &source)
 {
-    m_srcAddress = source;
+    d_ptr->m_srcAddress = source;
 }
 
 const QKnxAddress QKnxLinkLayerFrame::destinationAddress() const
 {
-    return m_dstAddress;
+    return d_ptr->m_dstAddress;
 }
 
 void QKnxLinkLayerFrame::setDestinationAddress(const QKnxAddress &destination)
 {
-    m_dstAddress = destination;
+    d_ptr->m_dstAddress = destination;
 }
 
 QKnxTpdu QKnxLinkLayerFrame::tpdu() const
@@ -281,12 +292,12 @@ QKnxTpdu QKnxLinkLayerFrame::tpdu() const
     // length field + ctrl + extCtrl + 2 * KNX address -> 7 bytes
     //    const quint8 tpduOffset = additionalInfosSize() + 7 + 1/* bytes */;
     //    return QKnxTpdu::fromBytes(m_serviceInformation, tpduOffset, (size() - 1) - tpduOffset);
-    return m_tpdu;
+    return d_ptr->m_tpdu;
 }
 
 void QKnxLinkLayerFrame::setTpdu(const QKnxTpdu &tpdu)
 {
-    m_tpdu = tpdu;
+    d_ptr->m_tpdu = tpdu;
 }
 
 /*!
@@ -294,7 +305,7 @@ void QKnxLinkLayerFrame::setTpdu(const QKnxTpdu &tpdu)
 */
 QKnxLinkLayerFrame::MessageCode QKnxLinkLayerFrame::messageCode() const
 {
-    return m_code;
+    return d_ptr->m_code;
 }
 
 /*!
@@ -302,7 +313,7 @@ QKnxLinkLayerFrame::MessageCode QKnxLinkLayerFrame::messageCode() const
 */
 void QKnxLinkLayerFrame::setMessageCode(QKnxLinkLayerFrame::MessageCode code)
 {
-    m_code = code;
+    d_ptr->m_code = code;
 }
 
 /*!
@@ -310,7 +321,7 @@ void QKnxLinkLayerFrame::setMessageCode(QKnxLinkLayerFrame::MessageCode code)
 */
 QKnx::MediumType QKnxLinkLayerFrame::mediumType() const
 {
-    return m_mediumType;
+    return d_ptr->m_mediumType;
 }
 
 /*!
@@ -318,7 +329,7 @@ QKnx::MediumType QKnxLinkLayerFrame::mediumType() const
 */
 void QKnxLinkLayerFrame::setMediumType(QKnx::MediumType type)
 {
-    m_mediumType = type;
+    d_ptr->m_mediumType = type;
 }
 
 /*!
@@ -330,7 +341,7 @@ quint16 QKnxLinkLayerFrame::size() const
 }
 
 /*!
-      Returns the service information the frame carries. This is the cEMI frame
+      Returns the service information the frame carries. This is the frame
       without the message code.
 */
 QKnxByteArray QKnxLinkLayerFrame::serviceInformation() const
@@ -350,76 +361,88 @@ void QKnxLinkLayerFrame::setServiceInformation(const QKnxByteArray &data)
         addAdditionalInfo(info);
         index = index + info.size() + 1;
     }
-    m_ctrl = QKnxControlField(data.at(index));
+    d_ptr->m_ctrl = QKnxControlField(data.at(index));
     ++index;
-    m_extCtrl = QKnxExtendedControlField(data.at(index));
+    d_ptr->m_extCtrl = QKnxExtendedControlField(data.at(index));
     ++index;
-    m_srcAddress = { QKnxAddress::Type::Individual, data.mid(index, 2) };
+    d_ptr->m_srcAddress = { QKnxAddress::Type::Individual, data.mid(index, 2) };
     index += 2;
-    m_dstAddress = { m_extCtrl.destinationAddressType(), data.mid(index, 2) };
+    d_ptr->m_dstAddress = { d_ptr->m_extCtrl.destinationAddressType(), data.mid(index, 2) };
     index += 2;
     // length doesn't include TPCI therefore add +1
-    m_tpdu = QKnxTpdu::fromBytes(data, index + 1, data.at(index) + 1);
+    d_ptr->m_tpdu = QKnxTpdu::fromBytes(data, index + 1, data.at(index) + 1);
 }
 
+/*!
+    Returns an array of bytes that represent the link layer frame if it is
+    valid; otherwise returns a \e {default-constructed} frame.
+*/
 QKnxByteArray QKnxLinkLayerFrame::bytes() const
 {
     if (!isValid())
         return {};
 
     QKnxByteArray addAdditionalInfoBytes;
-    for (const auto &info : m_additionalInfos)
+    for (const auto &info : d_ptr->m_additionalInfos)
         addAdditionalInfoBytes += info.bytes();
 
-    return QKnxByteArray { quint8(m_code), m_additionalInfoSize }
+    return QKnxByteArray { quint8(d_ptr->m_code), d_ptr->m_additionalInfoSize }
         + addAdditionalInfoBytes
-        + m_ctrl.bytes()
-        + m_extCtrl.bytes()
-        + m_srcAddress.bytes()
-        + m_dstAddress.bytes()
-        + QKnxUtils::QUint8::bytes(m_tpdu.dataSize())
-        + m_tpdu.bytes();
+        + d_ptr->m_ctrl.bytes()
+        + d_ptr->m_extCtrl.bytes()
+        + d_ptr->m_srcAddress.bytes()
+        + d_ptr->m_dstAddress.bytes()
+        + QKnxUtils::QUint8::bytes(d_ptr->m_tpdu.dataSize())
+        + d_ptr->m_tpdu.bytes();
 }
 
+/*!
+    Constructs the link layer frame from the byte array \a data starting at
+    position \a index inside the array with given medium type \a mediumType.
+*/
 QKnxLinkLayerFrame QKnxLinkLayerFrame::fromBytes(const QKnxByteArray &data, quint16 index,
     QKnx::MediumType mediumType)
 {
     if (data.size() < 1)
         return {};
-    return { mediumType, MessageCode(data.value(index)), data.mid(index + 1) };
+
+    QKnxLinkLayerFrame frame(MessageCode(data.value(index)));
+    frame.setMediumType(mediumType);
+    frame.setServiceInformation(data.mid(index + 1));
+    return frame;
 }
 
 quint8 QKnxLinkLayerFrame::additionalInfosSize() const
 {
-    return m_additionalInfoSize;
+    return d_ptr->m_additionalInfoSize;
 }
 
 void QKnxLinkLayerFrame::addAdditionalInfo(const QKnxAdditionalInfo &info)
 {
-    m_additionalInfos.append(info);
-    m_additionalInfosSorted = false;
-    m_additionalInfoSize += info.size();
+    d_ptr->m_additionalInfos.append(info);
+    d_ptr->m_additionalInfosSorted = false;
+    d_ptr->m_additionalInfoSize += info.size();
 }
 
 QVector<QKnxAdditionalInfo> QKnxLinkLayerFrame::additionalInfos() const
 {
-    if (!m_additionalInfosSorted) {
-        std::sort(m_additionalInfos.begin(), m_additionalInfos.end(),
+    if (!d_ptr->m_additionalInfosSorted) {
+        std::sort(d_ptr->m_additionalInfos.begin(), d_ptr->m_additionalInfos.end(),
             [](const QKnxAdditionalInfo &lhs, const QKnxAdditionalInfo &rhs) {
             return lhs.type() < rhs.type();
         });
-        m_additionalInfosSorted = true;
+        d_ptr->m_additionalInfosSorted = true;
     }
-    return m_additionalInfos;
+    return d_ptr->m_additionalInfos;
 }
 
 void QKnxLinkLayerFrame::removeAdditionalInfo(QKnxAdditionalInfo::Type type)
 {
-    auto info = m_additionalInfos.begin();
-    while (info != m_additionalInfos.end()) {
+    auto info = d_ptr->m_additionalInfos.begin();
+    while (info != d_ptr->m_additionalInfos.end()) {
         if (info->type() == type) {
-            m_additionalInfos.erase(info);
-            m_additionalInfoSize -= info->size();
+            d_ptr->m_additionalInfos.erase(info);
+            d_ptr->m_additionalInfoSize -= info->size();
             break;
         }
         info++;
@@ -428,14 +451,83 @@ void QKnxLinkLayerFrame::removeAdditionalInfo(QKnxAdditionalInfo::Type type)
 
 void QKnxLinkLayerFrame::removeAdditionalInfo(const QKnxAdditionalInfo &info)
 {
-    if (m_additionalInfos.removeOne(info))
-        m_additionalInfoSize -= info.size();
+    if (d_ptr->m_additionalInfos.removeOne(info))
+        d_ptr->m_additionalInfoSize -= info.size();
 }
 
 void QKnxLinkLayerFrame::clearAdditionalInfos()
 {
-    m_additionalInfoSize = 0;
-    m_additionalInfos.clear();
+    d_ptr->m_additionalInfoSize = 0;
+    d_ptr->m_additionalInfos.clear();
+}
+
+/*!
+    Constructs a copy of \a other.
+*/
+QKnxLinkLayerFrame::QKnxLinkLayerFrame(const QKnxLinkLayerFrame &other)
+    : d_ptr(other.d_ptr)
+{}
+
+/*!
+    Assigns the specified \a other to this object.
+*/
+QKnxLinkLayerFrame &QKnxLinkLayerFrame::operator=(const QKnxLinkLayerFrame &other)
+{
+  d_ptr = other.d_ptr;
+  return *this;
+}
+
+/*!
+    Move-constructs an object instance, making it point to the same object that
+    \a other was pointing to.
+*/
+QKnxLinkLayerFrame::QKnxLinkLayerFrame(QKnxLinkLayerFrame &&other) Q_DECL_NOTHROW
+    : d_ptr(other.d_ptr)
+{
+    other.d_ptr = nullptr;
+}
+
+/*!
+    Move-assigns \a other to this object instance.
+*/
+QKnxLinkLayerFrame &QKnxLinkLayerFrame::operator=(QKnxLinkLayerFrame &&other) Q_DECL_NOTHROW
+{
+    d_ptr.swap(other.d_ptr);
+    return *this;
+}
+
+/*!
+    Swaps \a other with this object. This operation is very fast and never fails.
+*/
+void QKnxLinkLayerFrame::swap(QKnxLinkLayerFrame &other) Q_DECL_NOTHROW
+{
+    d_ptr.swap(other.d_ptr);
+}
+
+/*!
+    Returns \c true if this object and the given \a other are equal; otherwise
+    returns \c false.
+*/
+bool QKnxLinkLayerFrame::operator==(const QKnxLinkLayerFrame &other) const
+{
+    return  d_ptr == other.d_ptr
+        || (d_ptr->m_code == other.d_ptr->m_code
+            && d_ptr->m_mediumType == other.d_ptr->m_mediumType
+            && d_ptr->m_srcAddress == other.d_ptr->m_srcAddress
+            && d_ptr->m_dstAddress == other.d_ptr->m_dstAddress
+            && d_ptr->m_tpdu == other.d_ptr->m_tpdu
+            && d_ptr->m_ctrl == other.d_ptr->m_ctrl
+            && d_ptr->m_extCtrl == other.d_ptr->m_extCtrl
+            && d_ptr->m_additionalInfos == other.d_ptr->m_additionalInfos);
+}
+
+/*!
+    Returns \c true if this object and the given \a other are not equal;
+    otherwise returns \c false.
+*/
+bool QKnxLinkLayerFrame::operator!=(const QKnxLinkLayerFrame &other) const
+{
+    return !operator==(other);
 }
 
 /*!

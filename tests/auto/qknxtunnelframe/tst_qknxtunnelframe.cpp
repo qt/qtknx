@@ -51,7 +51,8 @@ private slots:
             { QKnxAdditionalInfo::Type::ManufacturerSpecificData, QKnxByteArray::fromHex("708090") }
         };
 
-        QKnxLinkLayerFrame frame(QKnx::MediumType::NetIP, QKnxLinkLayerFrame::MessageCode::DataRequest);
+        QKnxLinkLayerFrame frame(QKnxLinkLayerFrame::MessageCode::DataRequest);
+        frame.setMediumType (QKnx::MediumType::NetIP);
         frame.setControlField(QKnxControlField(1));
         frame.setExtendedControlField(QKnxExtendedControlField(2));
         frame.addAdditionalInfo(addInfos.first());
@@ -90,7 +91,8 @@ private slots:
             { QKnxAdditionalInfo::Type::ManufacturerSpecificData, QKnxByteArray::fromHex("708090") }
         };
 
-        QKnxLinkLayerFrame frame(QKnx::MediumType::NetIP, QKnxLinkLayerFrame::MessageCode::DataRequest);
+        QKnxLinkLayerFrame frame(QKnxLinkLayerFrame::MessageCode::DataRequest);
+        frame.setMediumType(QKnx::MediumType::NetIP);
         frame.setControlField(QKnxControlField(1));
         frame.setExtendedControlField(QKnxExtendedControlField(2));
         frame.addAdditionalInfo(addInfos.first());
@@ -113,7 +115,8 @@ private slots:
 
     void testEmptyAdditionalInformation()
     {
-        QKnxLinkLayerFrame frame(QKnx::MediumType::NetIP, QKnxLinkLayerFrame::MessageCode::DataRequest);
+        QKnxLinkLayerFrame frame(QKnxLinkLayerFrame::MessageCode::DataRequest);
+        frame.setMediumType(QKnx::MediumType::NetIP);
         QVERIFY(frame.additionalInfosSize() == 0);
     }
 

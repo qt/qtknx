@@ -41,6 +41,9 @@
 
 QT_BEGIN_NAMESPACE
 
+class QKnxFrameSerialization;
+class QKnxLinkLayerFramePrivate;
+
 class Q_KNX_EXPORT QKnxLinkLayerFrame final
 {
     Q_GADGET
@@ -75,9 +78,8 @@ public:
     QKnxLinkLayerFrame();
     ~QKnxLinkLayerFrame();
 
-    explicit QKnxLinkLayerFrame(QKnx::MediumType mediumType);
-    QKnxLinkLayerFrame(QKnx::MediumType mediumType, QKnxLinkLayerFrame::MessageCode messageCode);
-    QKnxLinkLayerFrame(const QKnxLinkLayerFrame &other);
+    explicit QKnxLinkLayerFrame(QKnxLinkLayerFrame::MessageCode messageCode);
+    QKnxLinkLayerFrame(QKnxLinkLayerFrame::MessageCode messageCode, const QKnxByteArray &serviceInfo);
 
     quint16 size() const;
 
@@ -122,23 +124,19 @@ public:
     void removeAdditionalInfo(const QKnxAdditionalInfo &info);
     void clearAdditionalInfos();
 
-protected:
-    QKnxLinkLayerFrame(QKnx::MediumType mediumType, QKnxLinkLayerFrame::MessageCode messageCode,
-        const QKnxByteArray &serviceInfo);
+    QKnxLinkLayerFrame(const QKnxLinkLayerFrame &other);
+    QKnxLinkLayerFrame &operator=(const QKnxLinkLayerFrame &other);
+
+    QKnxLinkLayerFrame(QKnxLinkLayerFrame &&other) Q_DECL_NOTHROW;
+    QKnxLinkLayerFrame &operator=(QKnxLinkLayerFrame &&other) Q_DECL_NOTHROW;
+
+    void swap(QKnxLinkLayerFrame &other) Q_DECL_NOTHROW;
+
+    bool operator==(const QKnxLinkLayerFrame &other) const;
+    bool operator!=(const QKnxLinkLayerFrame &other) const;
 
 private:
-    // TODO: introduce d pointer
-    MessageCode m_code = MessageCode::Unknown;
-    QKnx::MediumType m_mediumType = { QKnx::MediumType::NetIP };
-    QKnxAddress m_srcAddress;
-    QKnxAddress m_dstAddress;
-    QKnxTpdu m_tpdu;
-    QKnxControlField m_ctrl;
-    QKnxExtendedControlField m_extCtrl;
-
-    quint8 m_additionalInfoSize { 0 };
-    mutable bool m_additionalInfosSorted { true };
-    mutable QVector<QKnxAdditionalInfo> m_additionalInfos;
+    QSharedDataPointer<QKnxLinkLayerFramePrivate> d_ptr;
 };
 Q_KNX_EXPORT QDebug operator<<(QDebug debug, const QKnxLinkLayerFrame &frame);
 
