@@ -44,7 +44,30 @@ const std::bitset<8> gHopCountMask = 0x70;
     control field. The extended control field must specify
     \l destinationAddressType(), \l hopCount(), and \l ExtendedFrameFormat.
 
-    \sa builder()
+    The address type determines whether group addresses or individual addresses
+    are used to establish a communication channel between devices.
+
+    The hop count specifies the number of subnetworks that the frame is allowed
+    to pass. It prevents the endless circulation of messages in incorrectly
+    configured installations.
+
+    The value of the \l ExtendedFrameFormat flag is mapped to the value of
+    \l QKnxControlField::FrameFormat. If it is set to \c Extended, the
+    extended frame format is used and the frame type is selected by the frame
+    type parameter bit.
+
+    The following is an example of how to create a control field from a
+    KNX byte array:
+
+    \code
+    QKnxByteArray data;
+    QKnxExtendedControlField extCtrlField(data);
+    auto hopCount = extCtrlField.hopCount();
+    auto frameFormat = extCtrlField.format();
+    auto size = extCtrlField.size();
+    \endcode
+
+    \sa builder(), QKnxControlField
 */
 
 /*!
@@ -200,27 +223,33 @@ QDebug operator<<(QDebug debug, const QKnxExtendedControlField &field)
     \brief The QKnxExtendedControlField::Builder class creates a KNX extended
     control field with some default values set.
 
-    TODO: Write some useful text with the default values
-        QKnxAddress::Type::Group
-        Hop count is set to 6
-        QKnxExtendedControlField::ExtendedFrameFormat::Standard
+    The default values produce extended control fields that are suitable for
+    multicast frames that read or write group values.
 
-    Most of the time the following code will produce the right extended control
-    field for group value read or group value write frames.
+    By default, the address type is set to \l{QKnxAddress::Type}{Group} to
+    specify that the frame is sent to a group address. The hop count is set
+    to 6 to limit the number of subnetworks the frame is allowed to pass to
+    six. This prevents the endless circulation of messages in incorrectly
+    configured installations. The frame format is mapped to the value of
+    \l QKnxControlField::FrameFormat, which is set to \c Standard by default.
+    That is the preferred format for short frames.
+
+    The following sample code creates an extended control field using the
+    default values:
 
     Example:
     \code
-        auto ctrl = QKnxExtendedControlField::builder.create();
+    auto ctrl = QKnxExtendedControlField::builder.create();
     \endcode
 
-    For more advanced usages some flags can be modified:
-    \code
-        // setup a extended control field for point-to-point addressed
-        // L_Data_Extended frame
+    Some flags can be modified for more advanced use, such as setting up an
+    extended control field used for transmitting a \c {L_Data_Extended} frame
+    to the individual address of a device:
 
-        auto ctrl = QKnxControlField::builder
-            .setDestinationAddressType(QKnxAddress::Type::Individual)
-            .create();
+    \code
+    auto ctrl = QKnxControlField::builder
+        .setDestinationAddressType(QKnxAddress::Type::Individual)
+        .create();
     \endcode
 */
 
