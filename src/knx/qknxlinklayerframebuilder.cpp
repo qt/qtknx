@@ -195,7 +195,7 @@ QKnxLinkLayerFrame QKnxLinkLayerFrameBuilder::createFrame() const
         return {};
 
     if (m_data.size() > 0) // ignore member variables and create frame from byte representation
-        return QKnxLinkLayerFrame::fromBytes(m_data, m_dataOffset, m_mediumType);
+        return QKnxLinkLayerFrame::fromBytes(m_data, m_dataOffset, m_data.size(), m_mediumType);
 
     if (m_dest.type() != m_extCtrl.destinationAddressType()
         || !m_src.isValid()

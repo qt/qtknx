@@ -31,8 +31,9 @@
 #define QKNXTPDU_H
 
 #include <QtCore/qshareddata.h>
-#include <QtKnx/qknxglobal.h>
 #include <QtKnx/qknxbytearray.h>
+#include <QtKnx/qknxglobal.h>
+#include <QtKnx/qknxnetip.h>
 
 QT_BEGIN_NAMESPACE
 
@@ -173,6 +174,9 @@ public:
 
     bool isValid() const;
 
+    QKnx::MediumType mediumType() const;
+    void setMediumType(QKnx::MediumType mediumType);
+
     QKnxTpdu::TransportControlField transportControlField() const;
     void setTransportControlField(QKnxTpdu::TransportControlField tpci);
 
@@ -180,7 +184,7 @@ public:
     void setApplicationControlField(QKnxTpdu::ApplicationControlField apci);
 
     quint16 size() const;
-    quint8 dataSize() const;
+    quint16 dataSize() const;
 
     quint8 sequenceNumber() const;
     void setSequenceNumber(quint8 seqNumber);
@@ -189,7 +193,8 @@ public:
     void setData(const QKnxByteArray &data);
 
     QKnxByteArray bytes() const;
-    static QKnxTpdu fromBytes(const QKnxByteArray &data, quint16 index, quint8 size);
+    static QKnxTpdu fromBytes(const QKnxByteArray &data, quint16 index, quint16 size,
+        QKnx::MediumType mediumType = QKnx::MediumType::NetIP);
 
     static QKnxTpdu::TransportControlField tpci(const QKnxByteArray &data, quint8 index);
     static QKnxTpdu::ApplicationControlField apci(const QKnxByteArray &data, quint8 index);

@@ -32,6 +32,16 @@
 #include <QtKnx/private/qknxtpdufactory_p.h>
 #include <QtTest/qtest.h>
 
+QT_BEGIN_NAMESPACE
+
+char *toString(const QKnxByteArray &ba)
+{
+    using QTest::toString;
+    return toString("QKnxByteArray(" + ba.toByteArray() + ')');
+}
+
+QT_END_NAMESPACE
+
 class tst_QKnxLinkLayerFrameBuilder : public QObject
 {
     Q_OBJECT
@@ -56,11 +66,11 @@ private:
 void tst_QKnxLinkLayerFrameBuilder::initTestCase()
 {
     m_ctrl = QKnxControlField::builder()
-        .setFrameFormat(QKnxControlField::FrameFormat::Extended)
+        .setFrameFormat(QKnxControlField::FrameFormat::Standard)
         .setBroadcast(QKnxControlField::Broadcast::Domain)
         .setPriority(QKnxControlField::Priority::Normal)
         .create();
-    QCOMPARE(m_ctrl.bytes(), QKnxByteArray({ 0x34 }));
+    QCOMPARE(m_ctrl.bytes(), QKnxByteArray({ 0xB4 }));
 
     m_extCtrl = QKnxExtendedControlField::builder()
         .setDestinationAddressType(QKnxAddress::Type::Group)
@@ -88,15 +98,15 @@ void tst_QKnxLinkLayerFrameBuilder::testGroupValueRead()
             .setMsgCode(QKnxLinkLayerFrame::MessageCode::DataRequest)
             .setMedium(QKnx::MediumType::NetIP)
             .createFrame();
-    QCOMPARE(frame.bytes(), QKnxByteArray::fromHex("110034e000000002010000"));
+    QCOMPARE(frame.bytes(), QKnxByteArray::fromHex("1100b4e000000002010000"));
     QCOMPARE(frame.extendedControlField().destinationAddressType(), QKnxAddress::Type::Group);
-    QCOMPARE(frame.controlField().frameFormat(), QKnxControlField::FrameFormat::Extended);
+    QCOMPARE(frame.controlField().frameFormat(), QKnxControlField::FrameFormat::Standard);
 
     auto frameFromBytesString = QKnxLinkLayerFrameBuilder()
             .setMedium(QKnx::MediumType::NetIP)
-            .setData(QKnxByteArray::fromHex("110034e000000002010000"))
+            .setData(QKnxByteArray::fromHex("1100b4e000000002010000"))
             .createFrame();
-    QCOMPARE(frameFromBytesString.bytes(), QKnxByteArray::fromHex("110034e000000002010000"));
+    QCOMPARE(frameFromBytesString.bytes(), QKnxByteArray::fromHex("1100b4e000000002010000"));
 }
 
 void tst_QKnxLinkLayerFrameBuilder::testGroupValueReadWrongParameters() {
@@ -150,15 +160,15 @@ void tst_QKnxLinkLayerFrameBuilder::testGroupValueResponse()
             .setMsgCode(QKnxLinkLayerFrame::MessageCode::DataIndication)
             .setMedium(QKnx::MediumType::NetIP)
             .createFrame();
-    QCOMPARE(frame.bytes(), QKnxByteArray::fromHex("290034e011010002010041"));
+    QCOMPARE(frame.bytes(), QKnxByteArray::fromHex("2900b4e011010002010041"));
     QCOMPARE(frame.extendedControlField().destinationAddressType(), QKnxAddress::Type::Group);
-    QCOMPARE(frame.controlField().frameFormat(), QKnxControlField::FrameFormat::Extended);
+    QCOMPARE(frame.controlField().frameFormat(), QKnxControlField::FrameFormat::Standard);
 
     auto frameFromBytesString = QKnxLinkLayerFrameBuilder()
             .setMedium(QKnx::MediumType::NetIP)
-            .setData(QKnxByteArray::fromHex("290034e011010002010041"))
+            .setData(QKnxByteArray::fromHex("2900b4e011010002010041"))
             .createFrame();
-    QCOMPARE(frameFromBytesString.bytes(), QKnxByteArray::fromHex("290034e011010002010041"));
+    QCOMPARE(frameFromBytesString.bytes(), QKnxByteArray::fromHex("2900b4e011010002010041"));
 
     frame = QKnxLinkLayerFrameBuilder()
             .setControlField(m_ctrl)
@@ -169,15 +179,15 @@ void tst_QKnxLinkLayerFrameBuilder::testGroupValueResponse()
             .setMsgCode(QKnxLinkLayerFrame::MessageCode::DataRequest)
             .setMedium(QKnx::MediumType::NetIP)
             .createFrame();
-    QCOMPARE(frame.bytes(), QKnxByteArray::fromHex("110034e011010002010041"));
+    QCOMPARE(frame.bytes(), QKnxByteArray::fromHex("1100b4e011010002010041"));
     QCOMPARE(frame.extendedControlField().destinationAddressType(), QKnxAddress::Type::Group);
-    QCOMPARE(frame.controlField().frameFormat(), QKnxControlField::FrameFormat::Extended);
+    QCOMPARE(frame.controlField().frameFormat(), QKnxControlField::FrameFormat::Standard);
 
     frameFromBytesString = QKnxLinkLayerFrameBuilder()
                 .setMedium(QKnx::MediumType::NetIP)
-                .setData(QKnxByteArray::fromHex("110034e011010002010041"))
+                .setData(QKnxByteArray::fromHex("1100b4e011010002010041"))
                 .createFrame();
-        QCOMPARE(frameFromBytesString.bytes(), QKnxByteArray::fromHex("110034e011010002010041"));
+        QCOMPARE(frameFromBytesString.bytes(), QKnxByteArray::fromHex("1100b4e011010002010041"));
 
     frame = QKnxLinkLayerFrameBuilder()
             .setControlField(m_ctrl)
@@ -188,15 +198,15 @@ void tst_QKnxLinkLayerFrameBuilder::testGroupValueResponse()
             .setMsgCode(QKnxLinkLayerFrame::MessageCode::DataConfirmation)
             .setMedium(QKnx::MediumType::NetIP)
             .createFrame();
-    QCOMPARE(frame.bytes(), QKnxByteArray::fromHex("2e0034e011010002010041"));
+    QCOMPARE(frame.bytes(), QKnxByteArray::fromHex("2e00b4e011010002010041"));
     QCOMPARE(frame.extendedControlField().destinationAddressType(), QKnxAddress::Type::Group);
-    QCOMPARE(frame.controlField().frameFormat(), QKnxControlField::FrameFormat::Extended);
+    QCOMPARE(frame.controlField().frameFormat(), QKnxControlField::FrameFormat::Standard);
 
     frameFromBytesString = QKnxLinkLayerFrameBuilder()
                 .setMedium(QKnx::MediumType::NetIP)
-                .setData(QKnxByteArray::fromHex("2e0034e011010002010041"))
+                .setData(QKnxByteArray::fromHex("2e00b4e011010002010041"))
                 .createFrame();
-        QCOMPARE(frameFromBytesString.bytes(), QKnxByteArray::fromHex("2e0034e011010002010041"));
+        QCOMPARE(frameFromBytesString.bytes(), QKnxByteArray::fromHex("2e00b4e011010002010041"));
 }
 
 void tst_QKnxLinkLayerFrameBuilder::testGroupValueWrite()
@@ -219,15 +229,15 @@ void tst_QKnxLinkLayerFrameBuilder::testGroupValueWrite()
             .setMsgCode(QKnxLinkLayerFrame::MessageCode::DataIndication)
             .setMedium(QKnx::MediumType::NetIP)
             .createFrame();
-    QCOMPARE(frame.bytes(), QKnxByteArray::fromHex("290034e011010002010081"));
+    QCOMPARE(frame.bytes(), QKnxByteArray::fromHex("2900b4e011010002010081"));
     QCOMPARE(frame.extendedControlField().destinationAddressType(), QKnxAddress::Type::Group);
-    QCOMPARE(frame.controlField().frameFormat(), QKnxControlField::FrameFormat::Extended);
+    QCOMPARE(frame.controlField().frameFormat(), QKnxControlField::FrameFormat::Standard);
 
     auto frameFromBytesString = QKnxLinkLayerFrameBuilder()
             .setMedium(QKnx::MediumType::NetIP)
-            .setData(QKnxByteArray::fromHex("290034e011010002010081"))
+            .setData(QKnxByteArray::fromHex("2900b4e011010002010081"))
             .createFrame();
-    QCOMPARE(frameFromBytesString.bytes(), QKnxByteArray::fromHex("290034e011010002010081"));
+    QCOMPARE(frameFromBytesString.bytes(), QKnxByteArray::fromHex("2900b4e011010002010081"));
 
     // group value write request
     frame = QKnxLinkLayerFrameBuilder()
@@ -239,15 +249,15 @@ void tst_QKnxLinkLayerFrameBuilder::testGroupValueWrite()
             .setMsgCode(QKnxLinkLayerFrame::MessageCode::DataRequest)
             .setMedium(QKnx::MediumType::NetIP)
             .createFrame();
-    QCOMPARE(frame.bytes(), QKnxByteArray::fromHex("110034e011010002010081"));
+    QCOMPARE(frame.bytes(), QKnxByteArray::fromHex("1100b4e011010002010081"));
     QCOMPARE(frame.extendedControlField().destinationAddressType(), QKnxAddress::Type::Group);
-    QCOMPARE(frame.controlField().frameFormat(), QKnxControlField::FrameFormat::Extended);
+    QCOMPARE(frame.controlField().frameFormat(), QKnxControlField::FrameFormat::Standard);
 
     frameFromBytesString = QKnxLinkLayerFrameBuilder()
                 .setMedium(QKnx::MediumType::NetIP)
-                .setData(QKnxByteArray::fromHex("110034e011010002010081"))
+                .setData(QKnxByteArray::fromHex("1100b4e011010002010081"))
                 .createFrame();
-    QCOMPARE(frameFromBytesString.bytes(), QKnxByteArray::fromHex("110034e011010002010081"));
+    QCOMPARE(frameFromBytesString.bytes(), QKnxByteArray::fromHex("1100b4e011010002010081"));
 
     // group value write confirmation
     frame = QKnxLinkLayerFrameBuilder()
@@ -259,15 +269,15 @@ void tst_QKnxLinkLayerFrameBuilder::testGroupValueWrite()
             .setMsgCode(QKnxLinkLayerFrame::MessageCode::DataConfirmation)
             .setMedium(QKnx::MediumType::NetIP)
             .createFrame();
-    QCOMPARE(frame.bytes(), QKnxByteArray::fromHex("2e0034e011010002010081"));
+    QCOMPARE(frame.bytes(), QKnxByteArray::fromHex("2e00b4e011010002010081"));
     QCOMPARE(frame.extendedControlField().destinationAddressType(), QKnxAddress::Type::Group);
-    QCOMPARE(frame.controlField().frameFormat(), QKnxControlField::FrameFormat::Extended);
+    QCOMPARE(frame.controlField().frameFormat(), QKnxControlField::FrameFormat::Standard);
 
     frameFromBytesString = QKnxLinkLayerFrameBuilder()
                 .setMedium(QKnx::MediumType::NetIP)
-                .setData(QKnxByteArray::fromHex("2e0034e011010002010081"))
+                .setData(QKnxByteArray::fromHex("2e00b4e011010002010081"))
                 .createFrame();
-    QCOMPARE(frameFromBytesString.bytes(), QKnxByteArray::fromHex("2e0034e011010002010081"));
+    QCOMPARE(frameFromBytesString.bytes(), QKnxByteArray::fromHex("2e00b4e011010002010081"));
 }
 
 void tst_QKnxLinkLayerFrameBuilder::testMemoryRead()
@@ -279,11 +289,11 @@ void tst_QKnxLinkLayerFrameBuilder::testMemoryRead()
     QCOMPARE(tpdu.bytes(), QKnxByteArray({ 0x42, 0x03, 0x00, 0x34 }));
 
     auto ctrl = QKnxControlField::builder()
-                .setFrameFormat(QKnxControlField::FrameFormat::Extended)
+                .setFrameFormat(QKnxControlField::FrameFormat::Standard)
                 .setBroadcast(QKnxControlField::Broadcast::Domain)
                 .setPriority(QKnxControlField::Priority::Normal)
                 .create();
-    QCOMPARE(ctrl.frameFormat(), QKnxControlField::FrameFormat::Extended);
+    QCOMPARE(ctrl.frameFormat(), QKnxControlField::FrameFormat::Standard);
 
     auto extctr = QKnxExtendedControlField::builder()
             .setDestinationAddressType(QKnxAddress::Type::Individual)
@@ -297,7 +307,7 @@ void tst_QKnxLinkLayerFrameBuilder::testMemoryRead()
             .setMsgCode(QKnxLinkLayerFrame::MessageCode::DataRequest)
             .setMedium(QKnx::MediumType::NetIP)
             .createFrame();
-    QCOMPARE(frame.bytes(), QKnxByteArray::fromHex("11003460000012030342030034"));
+    QCOMPARE(frame.bytes(), QKnxByteArray::fromHex("1100b460000012030342030034"));
 
     QKnxAddress destinationWrong = { QKnxAddress::Type::Group, QString("0.0.2") };
     frame = QKnxLinkLayerFrameBuilder().setControlField(ctrl).setExtendedControlField(extctr)
@@ -313,14 +323,14 @@ void tst_QKnxLinkLayerFrameBuilder::testMemoryRead()
                 .setMsgCode(QKnxLinkLayerFrame::MessageCode::DataConfirmation)
                 .setMedium(QKnx::MediumType::NetIP)
                 .createFrame();
-    QCOMPARE(frame.bytes(), QKnxByteArray::fromHex("2e003460110212030342030034"));
+    QCOMPARE(frame.bytes(), QKnxByteArray::fromHex("2e00b460110212030342030034"));
 
     frame = QKnxLinkLayerFrameBuilder().setControlField(ctrl).setExtendedControlField(extctr)
                 .setTpdu(tpdu).setDestinationAddress(destination).setSourceAddress(source)
                 .setMsgCode(QKnxLinkLayerFrame::MessageCode::DataIndication)
                 .setMedium(QKnx::MediumType::NetIP)
                 .createFrame();
-    QCOMPARE(frame.bytes(), QKnxByteArray::fromHex("29003460110212030342030034"));
+    QCOMPARE(frame.bytes(), QKnxByteArray::fromHex("2900b460110212030342030034"));
 }
 
 void tst_QKnxLinkLayerFrameBuilder::testMemoryResponse()
@@ -329,7 +339,7 @@ void tst_QKnxLinkLayerFrameBuilder::testMemoryResponse()
     QKnxAddress source { QKnxAddress::Type::Individual, 0 };
     QKnxAddress destination { QKnxAddress::Type::Individual, QString("1.2.3") };
     auto ctrl = QKnxControlField::builder()
-                .setFrameFormat(QKnxControlField::FrameFormat::Extended)
+                .setFrameFormat(QKnxControlField::FrameFormat::Standard)
                 .setBroadcast(QKnxControlField::Broadcast::Domain)
                 .setPriority(QKnxControlField::Priority::Normal)
                 .create();
@@ -350,8 +360,8 @@ void tst_QKnxLinkLayerFrameBuilder::testMemoryResponse()
     QCOMPARE(frame.extendedControlField().destinationAddressType(), QKnxAddress::Type::Individual);
     QCOMPARE(frame.extendedControlField().bytes(), QKnxByteArray({0x60}));
     QCOMPARE(frame.tpdu().bytes(), QKnxByteArray({ 0x42, 0x43, 0x00, 0x34, 0x01, 0x02, 0x03 }));
-    QCOMPARE(frame.bytes(), QKnxByteArray::fromHex("11003460000012030642430034010203"));
-    QCOMPARE(frame.controlField().frameFormat(), QKnxControlField::FrameFormat::Extended);
+    QCOMPARE(frame.bytes(), QKnxByteArray::fromHex("1100b460000012030642430034010203"));
+    QCOMPARE(frame.controlField().frameFormat(), QKnxControlField::FrameFormat::Standard);
 
     QKnxAddress destinationWrong = { QKnxAddress::Type::Group, QString("0.0.2") };
     frame = QKnxLinkLayerFrameBuilder()
@@ -376,8 +386,8 @@ void tst_QKnxLinkLayerFrameBuilder::testMemoryResponse()
             .setMedium(QKnx::MediumType::NetIP)
             .createFrame();
 
-    QCOMPARE(frame.bytes(), QKnxByteArray::fromHex("2e003460110212030642430034010203"));
-    QCOMPARE(frame.controlField().frameFormat(), QKnxControlField::FrameFormat::Extended);
+    QCOMPARE(frame.bytes(), QKnxByteArray::fromHex("2e00b460110212030642430034010203"));
+    QCOMPARE(frame.controlField().frameFormat(), QKnxControlField::FrameFormat::Standard);
 
     frame = QKnxLinkLayerFrameBuilder()
             .setControlField(ctrl)
@@ -388,8 +398,8 @@ void tst_QKnxLinkLayerFrameBuilder::testMemoryResponse()
             .setMsgCode(QKnxLinkLayerFrame::MessageCode::DataIndication)
             .setMedium(QKnx::MediumType::NetIP)
             .createFrame();
-    QCOMPARE(frame.bytes(), QKnxByteArray::fromHex("29003460110212030642430034010203"));
-    QCOMPARE(frame.controlField().frameFormat(), QKnxControlField::FrameFormat::Extended);
+    QCOMPARE(frame.bytes(), QKnxByteArray::fromHex("2900b460110212030642430034010203"));
+    QCOMPARE(frame.controlField().frameFormat(), QKnxControlField::FrameFormat::Standard);
 }
 
 void tst_QKnxLinkLayerFrameBuilder::testMemoryWrite()
@@ -399,7 +409,7 @@ void tst_QKnxLinkLayerFrameBuilder::testMemoryWrite()
     QKnxAddress destination { QKnxAddress::Type::Individual, QString("1.2.3") };
     auto tpdu = QKnxTpduFactory::PointToPointConnectionOriented::createMemoryWriteTpdu(3, 52, data);
     auto ctrl = QKnxControlField::builder()
-                .setFrameFormat(QKnxControlField::FrameFormat::Extended)
+                .setFrameFormat(QKnxControlField::FrameFormat::Standard)
                 .setBroadcast(QKnxControlField::Broadcast::Domain)
                 .setPriority(QKnxControlField::Priority::Normal)
                 .create();
@@ -418,8 +428,8 @@ void tst_QKnxLinkLayerFrameBuilder::testMemoryWrite()
     QCOMPARE(frame.extendedControlField().destinationAddressType(), QKnxAddress::Type::Individual);
     QCOMPARE(frame.extendedControlField().bytes(), QKnxByteArray({0x60}));
     QCOMPARE(frame.tpdu().bytes(), QKnxByteArray({ 0x42, 0x83, 0x00, 0x34, 0x01, 0x02, 0x03 }));
-    QCOMPARE(frame.bytes(), QKnxByteArray::fromHex("11003460000012030642830034010203"));
-    QCOMPARE(frame.controlField().frameFormat(), QKnxControlField::FrameFormat::Extended);
+    QCOMPARE(frame.bytes(), QKnxByteArray::fromHex("1100b460000012030642830034010203"));
+    QCOMPARE(frame.controlField().frameFormat(), QKnxControlField::FrameFormat::Standard);
 
     QKnxAddress destinationWrong = { QKnxAddress::Type::Group, QString("0.0.2") };
     frame = QKnxLinkLayerFrameBuilder()
@@ -443,8 +453,8 @@ void tst_QKnxLinkLayerFrameBuilder::testMemoryWrite()
             .setMsgCode(QKnxLinkLayerFrame::MessageCode::DataConfirmation)
             .setMedium(QKnx::MediumType::NetIP)
             .createFrame();
-    QCOMPARE(frame.bytes(), QKnxByteArray::fromHex("2e003460110212030642830034010203"));
-    QCOMPARE(frame.controlField().frameFormat(), QKnxControlField::FrameFormat::Extended);
+    QCOMPARE(frame.bytes(), QKnxByteArray::fromHex("2e00b460110212030642830034010203"));
+    QCOMPARE(frame.controlField().frameFormat(), QKnxControlField::FrameFormat::Standard);
 
     frame = QKnxLinkLayerFrameBuilder()
             .setControlField(ctrl)
@@ -455,8 +465,8 @@ void tst_QKnxLinkLayerFrameBuilder::testMemoryWrite()
             .setMsgCode(QKnxLinkLayerFrame::MessageCode::DataIndication)
             .setMedium(QKnx::MediumType::NetIP)
             .createFrame();
-    QCOMPARE(frame.bytes(), QKnxByteArray::fromHex("29003460110212030642830034010203"));
-    QCOMPARE(frame.controlField().frameFormat(), QKnxControlField::FrameFormat::Extended);
+    QCOMPARE(frame.bytes(), QKnxByteArray::fromHex("2900b460110212030642830034010203"));
+    QCOMPARE(frame.controlField().frameFormat(), QKnxControlField::FrameFormat::Standard);
 }
 
 void tst_QKnxLinkLayerFrameBuilder::testDeviceDescriptorRead()
@@ -466,7 +476,7 @@ void tst_QKnxLinkLayerFrameBuilder::testDeviceDescriptorRead()
     QKnxTpduFactory::PointToPoint::Mode mode =
         QKnxTpduFactory::PointToPoint::Mode::ConnectionOriented;
     auto ctrl = QKnxControlField::builder()
-                .setFrameFormat(QKnxControlField::FrameFormat::Extended)
+                .setFrameFormat(QKnxControlField::FrameFormat::Standard)
                 .setBroadcast(QKnxControlField::Broadcast::Domain)
                 .setPriority(QKnxControlField::Priority::Normal)
                 .create();
@@ -485,8 +495,8 @@ void tst_QKnxLinkLayerFrameBuilder::testDeviceDescriptorRead()
             .createFrame();
     QCOMPARE(frame.extendedControlField().destinationAddressType(), QKnxAddress::Type::Individual);
     QCOMPARE(frame.tpdu().bytes(), QKnxByteArray({ 0x43, 0x03 }));
-    QCOMPARE(frame.bytes(), QKnxByteArray::fromHex("1100346000001203014303"));
-    QCOMPARE(frame.controlField().frameFormat(), QKnxControlField::FrameFormat::Extended);
+    QCOMPARE(frame.bytes(), QKnxByteArray::fromHex("1100b46000001203014303"));
+    QCOMPARE(frame.controlField().frameFormat(), QKnxControlField::FrameFormat::Standard);
 
     QKnxAddress destinationWrong = { QKnxAddress::Type::Group, QString("0.0.2") };
     frame = QKnxLinkLayerFrameBuilder()
@@ -510,8 +520,8 @@ void tst_QKnxLinkLayerFrameBuilder::testDeviceDescriptorRead()
             .setMsgCode(QKnxLinkLayerFrame::MessageCode::DataIndication)
             .setMedium(QKnx::MediumType::NetIP)
             .createFrame();
-    QCOMPARE(frame.bytes(), QKnxByteArray::fromHex("2900346011021203014303"));
-    QCOMPARE(frame.controlField().frameFormat(), QKnxControlField::FrameFormat::Extended);
+    QCOMPARE(frame.bytes(), QKnxByteArray::fromHex("2900b46011021203014303"));
+    QCOMPARE(frame.controlField().frameFormat(), QKnxControlField::FrameFormat::Standard);
 
     frame = QKnxLinkLayerFrameBuilder()
             .setControlField(ctrl)
@@ -522,8 +532,8 @@ void tst_QKnxLinkLayerFrameBuilder::testDeviceDescriptorRead()
             .setMsgCode(QKnxLinkLayerFrame::MessageCode::DataConfirmation)
             .setMedium(QKnx::MediumType::NetIP)
             .createFrame();
-    QCOMPARE(frame.bytes(), QKnxByteArray::fromHex("2e00346011021203014303"));
-    QCOMPARE(frame.controlField().frameFormat(), QKnxControlField::FrameFormat::Extended);
+    QCOMPARE(frame.bytes(), QKnxByteArray::fromHex("2e00b46011021203014303"));
+    QCOMPARE(frame.controlField().frameFormat(), QKnxControlField::FrameFormat::Standard);
 }
 
 void tst_QKnxLinkLayerFrameBuilder::testDeviceDescriptorResponse()
@@ -534,7 +544,7 @@ void tst_QKnxLinkLayerFrameBuilder::testDeviceDescriptorResponse()
     QKnxTpduFactory::PointToPoint::Mode mode =
         QKnxTpduFactory::PointToPoint::Mode::ConnectionOriented;
     auto ctrl = QKnxControlField::builder()
-                .setFrameFormat(QKnxControlField::FrameFormat::Extended)
+                .setFrameFormat(QKnxControlField::FrameFormat::Standard)
                 .setBroadcast(QKnxControlField::Broadcast::Domain)
                 .setPriority(QKnxControlField::Priority::Normal)
                 .create();
@@ -555,8 +565,8 @@ void tst_QKnxLinkLayerFrameBuilder::testDeviceDescriptorResponse()
     QCOMPARE(frame.extendedControlField().destinationAddressType(), QKnxAddress::Type::Individual);
 
     QCOMPARE(frame.tpdu().bytes(), QKnxByteArray({ 0x43, 0x43, 0x01, 0x02, 0x03 }));
-    QCOMPARE(frame.bytes(), QKnxByteArray::fromHex("1100346000001203044343010203"));
-    QCOMPARE(frame.controlField().frameFormat(), QKnxControlField::FrameFormat::Extended);
+    QCOMPARE(frame.bytes(), QKnxByteArray::fromHex("1100b46000001203044343010203"));
+    QCOMPARE(frame.controlField().frameFormat(), QKnxControlField::FrameFormat::Standard);
 
     QKnxAddress destinationWrong = { QKnxAddress::Type::Group, QString("0.0.2") };
     frame = QKnxLinkLayerFrameBuilder()
@@ -580,8 +590,8 @@ void tst_QKnxLinkLayerFrameBuilder::testDeviceDescriptorResponse()
             .setMsgCode(QKnxLinkLayerFrame::MessageCode::DataIndication)
             .setMedium(QKnx::MediumType::NetIP)
             .createFrame();
-    QCOMPARE(frame.bytes(), QKnxByteArray::fromHex("2900346011021203044343010203"));
-    QCOMPARE(frame.controlField().frameFormat(), QKnxControlField::FrameFormat::Extended);
+    QCOMPARE(frame.bytes(), QKnxByteArray::fromHex("2900b46011021203044343010203"));
+    QCOMPARE(frame.controlField().frameFormat(), QKnxControlField::FrameFormat::Standard);
 
     frame = QKnxLinkLayerFrameBuilder()
             .setControlField(ctrl)
@@ -592,8 +602,8 @@ void tst_QKnxLinkLayerFrameBuilder::testDeviceDescriptorResponse()
             .setMsgCode(QKnxLinkLayerFrame::MessageCode::DataConfirmation)
             .setMedium(QKnx::MediumType::NetIP)
             .createFrame();
-    QCOMPARE(frame.bytes(), QKnxByteArray::fromHex("2e00346011021203044343010203"));
-    QCOMPARE(frame.controlField().frameFormat(), QKnxControlField::FrameFormat::Extended);
+    QCOMPARE(frame.bytes(), QKnxByteArray::fromHex("2e00b46011021203044343010203"));
+    QCOMPARE(frame.controlField().frameFormat(), QKnxControlField::FrameFormat::Standard);
 
     QKnxByteArray dataLong({0x01, 0x02, 0x03, 0x34, 0x05, 0x06, 0x07, 0x08, 0x09, 0x10, 0x11,
         0x12, 0x13, 0x14, 0x15, 0x16});

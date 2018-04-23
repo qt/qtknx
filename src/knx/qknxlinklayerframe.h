@@ -96,8 +96,8 @@ public:
     void setServiceInformation(const QKnxByteArray &serviceInfo);
 
     QKnxByteArray bytes() const;
-    static QKnxLinkLayerFrame fromBytes(const QKnxByteArray &data, quint16 index,
-        QKnx::MediumType mediumType);
+    static QKnxLinkLayerFrame fromBytes(const QKnxByteArray &data, quint16 index, quint16 size,
+        QKnx::MediumType mediumType = QKnx::MediumType::NetIP);
 
     // Parts of the LinkLayer frame alway there (regardless of the MessageCode/Frame Type)
     const QKnxAddress sourceAddress() const;

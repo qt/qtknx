@@ -177,6 +177,7 @@ public:
     qint32 m_apci { -1 };
     qint16 m_tpci { -1 };
     QKnxByteArray m_tpduBytes;
+    QKnx::MediumType m_mediumType { QKnx::MediumType::NetIP };
 
     quint8 byte(quint16 index) const
     {
@@ -272,6 +273,7 @@ bool QKnxTpdu::isValid() const
         break;
     }
 
+// TODO: adjust the constants to depending on the medium type
 #define HEADER_SIZE 2 // [TCPI|APCI][APCI] 2 bytes
 #define L_DATA_PAYLOAD 14 // 3_02_02 Communication Medium TP1, Paragraph 2.2.4.1
 #define L_DATA_MEMORY_PAYLOAD 66 // Max APDU + 2 bites for the tpdu AN177 Table 1
@@ -371,6 +373,16 @@ bool QKnxTpdu::isValid() const
 #undef L_DATA_EXTENDED_PAYLOAD
 }
 
+QKnx::MediumType QKnxTpdu::mediumType() const
+{
+    return d_ptr->m_mediumType;
+}
+
+void QKnxTpdu::setMediumType(QKnx::MediumType mediumType)
+{
+     d_ptr->m_mediumType = mediumType;
+}
+
 /*!
     Returns the Transport layer control field of the \c QKnxTpdu.
 */
@@ -458,7 +470,7 @@ quint16 QKnxTpdu::size() const
     \note The data part of a TPDU may contain the low byte of the APCI, but
     excludes the byte for the TPCI.
 */
-quint8 QKnxTpdu::dataSize() const
+quint16 QKnxTpdu::dataSize() const
 {
     return (size() - 1); // data size start after the TPCI/APCI byte.
 }
@@ -584,7 +596,8 @@ QKnxByteArray QKnxTpdu::bytes() const
     Constructs the transport protocol data unit from the byte array \a data
     starting at position \a index inside the array with given size \a size.
 */
-QKnxTpdu QKnxTpdu::fromBytes(const QKnxByteArray &data, quint16 index, quint8 size)
+QKnxTpdu QKnxTpdu::fromBytes(const QKnxByteArray &data, quint16 index, quint16 size,
+    QKnx::MediumType mediumType)
 {
     // data is not big enough according to the given size to be read
     const qint32 availableSize = (data.size() - index) - size;
@@ -592,6 +605,7 @@ QKnxTpdu QKnxTpdu::fromBytes(const QKnxByteArray &data, quint16 index, quint8 si
         return { TransportControlField::Invalid, ApplicationControlField::Invalid };
 
     QKnxTpdu tpdu(data.mid(index, size));
+    tpdu.setMediumType(mediumType);
     tpdu.setTransportControlField(QKnxTpdu::tpci(data, index));
     tpdu.setApplicationControlField(QKnxTpdu::apci(data, index));
     return tpdu;
@@ -756,7 +770,8 @@ bool QKnxTpdu::operator==(const QKnxTpdu &other) const
     return d_ptr == other.d_ptr
         || (d_ptr->m_tpci == other.d_ptr->m_tpci
             && d_ptr->m_apci == other.d_ptr->m_apci
-            && d_ptr->m_tpduBytes == other.d_ptr->m_tpduBytes);
+            && d_ptr->m_tpduBytes == other.d_ptr->m_tpduBytes
+            && d_ptr->m_mediumType == other.d_ptr->m_mediumType);
 }
 
 /*!

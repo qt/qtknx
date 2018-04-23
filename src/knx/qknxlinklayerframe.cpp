@@ -163,7 +163,6 @@ bool QKnxLinkLayerFrame::isValid() const
     if (!isMessageCodeValid())
         return false;
 
-    // Tpdu is valid
     if (!d_ptr->m_tpdu.isValid())
         return false;
 
@@ -188,22 +187,27 @@ bool QKnxLinkLayerFrame::isValid() const
         default:
             break;
         }
+
+        if (d_ptr->m_tpdu.dataSize() > 15) {
+            if (d_ptr->m_tpdu.dataSize() > 255)
+                return false;
+            // Low Priority is mandatory for long frame 3.3.2 paragraph 2.2.3
+            if (d_ptr->m_ctrl.priority() != QKnxControlField::Priority::Low)
+                return false;
+            if (d_ptr->m_ctrl.frameFormat() != QKnxControlField::FrameFormat::Extended)
+                return false;
+        } else {
+            if (d_ptr->m_ctrl.frameFormat() != QKnxControlField::FrameFormat::Standard)
+                return false;
+        }
+
         // TODO: check NPDU/ TPDU size, several cases need to be taken into account:
-        // 1; Information-Length (max. value is 255); number of TPDU octets, TPCI octet not included!
-        // Low Priority is Mandatory for long frame 3.3.2 paragraph 2.2.3
-        if (d_ptr->m_tpdu.dataSize() > 15 && d_ptr->m_ctrl.priority() != QKnxControlField::Priority::Low)
-            return false;
-        // 2; Check presence of Pl/RF medium information in the additional info -> size always needs
+        // 1; Check presence of Pl/RF medium information in the additional info -> size always needs
         //    to be greater then 15 bytes because both need additional information.
         //    03_06_03 EMI_IMI v01.03.03 AS.pdf page 76 Table(Use of flags in control field)
-        // 3; RF frames do not include a length field at all, it is supposed to be set to 0x00.
+        // 2; RF frames do not include a length field at all, it is supposed to be set to 0x00.
         //    03_06_03 EMI_IMI v01.03.03 AS.pdf page 75 NOTE 1
-        // 4; 03_03_02 Data Link Layer General v01.02.02 AS.pdf page 12 paragraph 2.2.5
-        // control field frame type standard -> max. length value is 15
-        if (d_ptr->m_ctrl.frameFormat() == QKnxControlField::FrameFormat::Standard
-            && d_ptr->m_tpdu.dataSize() > 15)
-            return false;
-        //  control field frame type extended -> max. length value is 255
+        // 3; 03_03_02 Data Link Layer General v01.02.02 AS.pdf page 12 paragraph 2.2.5
         return true;
     }
 
@@ -370,7 +374,7 @@ void QKnxLinkLayerFrame::setServiceInformation(const QKnxByteArray &data)
     d_ptr->m_dstAddress = { d_ptr->m_extCtrl.destinationAddressType(), data.mid(index, 2) };
     index += 2;
     // length doesn't include TPCI therefore add +1
-    d_ptr->m_tpdu = QKnxTpdu::fromBytes(data, index + 1, data.at(index) + 1);
+    d_ptr->m_tpdu = QKnxTpdu::fromBytes(data, index + 1, data.at(index) + 1, d_ptr->m_mediumType);
 }
 
 /*!
@@ -401,14 +405,16 @@ QKnxByteArray QKnxLinkLayerFrame::bytes() const
     position \a index inside the array with given medium type \a mediumType.
 */
 QKnxLinkLayerFrame QKnxLinkLayerFrame::fromBytes(const QKnxByteArray &data, quint16 index,
-    QKnx::MediumType mediumType)
+    quint16 size, QKnx::MediumType mediumType)
 {
-    if (data.size() < 1)
+    // data is not big enough according to the given size to be read
+    const qint32 availableSize = (data.size() - index) - size;
+    if (availableSize < 0)
         return {};
 
     QKnxLinkLayerFrame frame(MessageCode(data.value(index)));
     frame.setMediumType(mediumType);
-    frame.setServiceInformation(data.mid(index + 1));
+    frame.setServiceInformation(data.mid(index + 1, size - 1));
     return frame;
 }
 

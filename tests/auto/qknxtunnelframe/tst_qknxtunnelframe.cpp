@@ -126,7 +126,7 @@ private slots:
         QVERIFY(info.bytes() == QKnxByteArray::fromHex("07021020"));
 
         auto ctrl = QKnxControlField::builder()
-            .setFrameFormat(QKnxControlField::FrameFormat::Extended)
+            .setFrameFormat(QKnxControlField::FrameFormat::Standard)
             .setBroadcast(QKnxControlField::Broadcast::Domain)
             .setPriority(QKnxControlField::Priority::Normal)
             .create();
