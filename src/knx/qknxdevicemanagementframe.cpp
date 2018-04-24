@@ -44,52 +44,80 @@ public:
     \class QKnxDeviceManagementFrame
 
     \inmodule QtKnx
-    \brief This class represents a cEMI frame dedicated to communication
-    between a cEMI client and a cEMI server. The communication allows access
-    to device management functionalities.
+    \brief The QKnxDeviceManagementFrame class represents a cEMI frame dedicated
+    to device management.
 
-    \l QKnxDeviceManagementFrameFactory can be used to construct local
+    A device management connection is established between a common external
+    message interface (cEMI) client and a cEMI server to transmit cEMI frames.
+    A cEMI frame specifies the service to use and the \l MessageCode that
+    determines whether the frame carries a request, confirmation, or indication
+    related to the selected service.
+
+    The following services are available:
+
+    \list
+        \li \c PropertyRead
+        \li \c PropertyWrite
+        \li \c FunctionPropertyCommand (client-only)
+        \li \c FunctionPropertyStateRead (client-only)
+        \li \c Reset (client-only)
+        \li \c PropertyInfo (server-only)
+        \li \c FunctionPropertyStateResponse (server-only)
+    \endlist
+
+    Typically, a device management frame contains the following arguments:
+
+    \list
+        \li The type of the interface object holding the property to access,
+            \l QKnxInterfaceObjectType.
+        \li The instance of this interface object, because it is possible to
+            have more than one realization of an interface object in a given
+            device.
+        \li The property of the interface object to access,
+           \l QKnxInterfaceObjectProperty.
+        \li The number of elements to read in this property.
+    \endlist
+
+    The \l QKnxDeviceManagementFrameFactory class can be used to construct local
     device management cEMI frames.
 */
 
 /*!
     \enum QKnxDeviceManagementFrame::MessageCode
 
-    This enum describes the different message codes of the local device
-    management frame.
+    This enum holds the message codes of a local device management frame.
 
     \value Unknown                          Unknown message code, do not use.
     \value PropertyReadRequest
-            The message code to be used for a property read request frame
-            (M_PropRead.req).
+           Message code for a property read request frame, \c {M_PropRead.req}.
     \value PropertyReadConfirmation
-            Message code to be used for a property read confirmation frame
-            (M_PropRead.con).
+           Message code for a property read confirmation frame,
+           \c {M_PropRead.con}.
     \value PropertyWriteRequest
-            Message code to be used for a property write request frame
-            (M_PropWrite.req).
+           Message code for a property write request frame,
+           \c {M_PropWrite.req}.
     \value PropertyWriteConfirmation
-            Message code to be used for a property write confirmation frame
-            (M_PropWrite.con).
+           Message code for a property write confirmation frame,
+           \c {M_PropWrite.con}.
     \value PropertyInfoIndication
-            Message code to be used for a property info indication frame
-            (M_PropInfo.ind).
+           Message code for a property info indication frame,
+           \c {M_PropInfo.ind}.
     \value FunctionPropertyCommandRequest
-            Message code to be used for a function property command frame
-            (M_FuncPropCommand.req).
+           Message code for a function property command frame,
+           \c {M_FuncPropCommand.req}.
     \value FunctionPropertyStateReadRequest
-            Message code to be used for a function property state read request
-            frame (M_FuncPropStateRead.req).
+           Message code for a function property state read request frame,
+           \c {M_FuncPropStateRead.req}.
     \value FunctionPropertyCommandConfirmation
-            Message code to be used for a function property command
-            confirmation frame (M_FuncPropCommand.con).
+           Message code for a function property command confirmation frame,
+           \c {M_FuncPropCommand.con}.
     \value FunctionPropertyStateReadConfirmation
-            Message code to be used for a function property state read
-            confirmation frame (M_FuncPropStateRead.con).
+           Message code for a function property state read confirmation frame,
+           \c {M_FuncPropStateRead.con}.
     \value ResetRequest
-           Message code to be used for a reset request frame (M_Reset.req).
+           Message code for a reset request frame, \c {M_Reset.req}.
     \value ResetIndication
-           Message code to be used for a reset indication frame (M_Reset.ind).
+           Message code for a reset indication frame, \c {M_Reset.ind}.
 */
 
 /*!
@@ -106,8 +134,8 @@ QKnxDeviceManagementFrame::~QKnxDeviceManagementFrame()
 {}
 
 /*!
-    Constructs a empty local device management frame with message code set
-    to \a messageCode.
+    Constructs an empty local device management frame with the message code set
+    to \a code.
 */
 QKnxDeviceManagementFrame::QKnxDeviceManagementFrame(MessageCode code)
     : d_ptr(new QKnxDeviceManagementFramePrivate)
@@ -118,8 +146,8 @@ QKnxDeviceManagementFrame::QKnxDeviceManagementFrame(MessageCode code)
 }
 
 /*!
-    Constructs a local device management frame with message code set to
-    \a messageCode and service information set to \a serviceInfo.
+    Constructs a local device management frame with the message code set to
+    \a code and service information set to \a serviceInfo.
 */
 QKnxDeviceManagementFrame::QKnxDeviceManagementFrame(
         QKnxDeviceManagementFrame::MessageCode code, const QKnxByteArray &serviceInfo)
@@ -233,9 +261,9 @@ void QKnxDeviceManagementFrame::setMessageCode(QKnxDeviceManagementFrame::Messag
     d_ptr->m_code = code;
 }
 
-/*
-    Returns the object type carried if available;
-    otherwise returns \l QKnxInterfaceObjectType::Invalid;
+/*!
+    Returns the object type carried by the frame if available;
+    otherwise returns \l QKnxInterfaceObjectType::Invalid.
 */
 QKnxInterfaceObjectType QKnxDeviceManagementFrame::objectType() const
 {
@@ -244,8 +272,8 @@ QKnxInterfaceObjectType QKnxDeviceManagementFrame::objectType() const
     return QKnxInterfaceObjectType::Invalid;
 }
 
-/*
-    Set the interface object type to \a type if the argument is a valid;
+/*!
+    Sets the interface object type to \a type if the argument is a valid;
     otherwise does nothing.
 */
 void QKnxDeviceManagementFrame::setObjectType(QKnxInterfaceObjectType type)
@@ -277,7 +305,7 @@ void QKnxDeviceManagementFrame::setObjectInstance(quint8 instance)
 
 /*!
     Returns the interface object property if available; otherwise returns
-    \ QKnxInterfaceObjectProperty::Invalid.
+    \l QKnxInterfaceObjectProperty::Invalid.
 */
 QKnxInterfaceObjectProperty QKnxDeviceManagementFrame::property() const
 {
@@ -286,9 +314,9 @@ QKnxInterfaceObjectProperty QKnxDeviceManagementFrame::property() const
     return QKnxInterfaceObjectProperty::Invalid;
 }
 
-/*
-    Set the interface object property to \a property if the argument is a valid;
-    otherwise does nothing.
+/*!
+    Sets the interface object property identifier to \a pid if the argument is
+    valid; otherwise does nothing.
 */
 void QKnxDeviceManagementFrame::setProperty(QKnxInterfaceObjectProperty pid)
 {
@@ -308,10 +336,10 @@ quint8 QKnxDeviceManagementFrame::numberOfElements() const
 }
 
 /*!
-    Sets the number of elements for an array-structured property. A value of
-    \c 0 is used to indicate a negative response.
+    Sets the number of elements for an array-structured property to
+    \a numOfElements. A value of \c 0 is used to indicate a negative response.
 
-    \note The range for number of elements is from \c 0 to \c 15.
+    \note The range for the number of elements is from \c 0 to \c 15.
 */
 void QKnxDeviceManagementFrame::setNumberOfElements(quint8 numOfElements)
 {
@@ -330,11 +358,11 @@ quint16 QKnxDeviceManagementFrame::startIndex() const
 }
 
 /*!
-    Sets the start index within an array-structured property, the first
-    element is placed at index \c 1; the array element \c 0 contains the
+    Sets the start \a index within an array-structured property. The first
+    element is placed at the index \c 1. The array element \c 0 contains the
     current number of valid array elements.
 
-    \note The range for number of elements is from \c 0 to \c 4095.
+    \note The range for the number of elements is from \c 0 to \c 4095.
 */
 void QKnxDeviceManagementFrame::setStartIndex(quint16 index)
 {
@@ -353,7 +381,7 @@ void QKnxDeviceManagementFrame::setStartIndex(quint16 index)
     and in case of an array-structured property value also on the number of
     array elements that are accessed.
 
-    In case of an error the data field stores the error code as single byte.
+    In case of an error, the data field stores the error code as a single byte.
 */
 QKnxByteArray QKnxDeviceManagementFrame::data() const
 {
@@ -362,7 +390,7 @@ QKnxByteArray QKnxDeviceManagementFrame::data() const
 
 /*!
     Sets the data field of the local device management frame to \a newData.
-    No validation checks or done on the function argument.
+    No validation checks are done on the function argument.
 
     \sa isValid()
 */
@@ -375,7 +403,7 @@ void QKnxDeviceManagementFrame::setData(const QKnxByteArray &newData)
 /*!
     Returns the error code stored in the local device management frame if
     the frame is a \l PropertyReadConfirmation or \l PropertyWriteConfirmation
-    frame and the number of elements is set to \0. Otherwise returns \l None.
+    frame and the number of elements is set to \c 0. Otherwise returns \c None.
 
     \sa data()
 */
@@ -421,7 +449,7 @@ void QKnxDeviceManagementFrame::setError(QKnxNetIpCemiServer::Error error)
     service request if the frame is a \l FunctionPropertyCommandConfirmation
     or \l FunctionPropertyStateReadConfirmation frame.
 
-    In all other cases the function will always return \l Error.
+    In all other cases, the function returns the error code stored in the frame.
 */
 QKnxNetIpCemiServer::ReturnCode QKnxDeviceManagementFrame::returnCode() const
 {
@@ -437,7 +465,7 @@ QKnxNetIpCemiServer::ReturnCode QKnxDeviceManagementFrame::returnCode() const
 }
 
 /*!
-    Returns the code set by the cEMI server after a cEMI function property
+    Returns the \a code set by the cEMI server after a cEMI function property
     service request.
 */
 void QKnxDeviceManagementFrame::setReturnCode(QKnxNetIpCemiServer::ReturnCode code)
@@ -466,7 +494,7 @@ QKnxByteArray QKnxDeviceManagementFrame::serviceInformation() const
 
 /*!
     Sets the service information of the local device management frame to
-    \a serviceInfo. No validation checks or done on the function argument.
+    \a serviceInfo. No validation checks are done on the function argument.
 
     \sa isValid()
 */
@@ -485,7 +513,7 @@ QKnxByteArray QKnxDeviceManagementFrame::bytes() const
 
 /*!
     Constructs the local device management frame from the byte array \a data
-    starting at position \a index inside the array with given size \a size.
+    starting at the position \a index inside the array with the size \a size.
 */
 QKnxDeviceManagementFrame QKnxDeviceManagementFrame::fromBytes(const QKnxByteArray &data,
     quint16 index, quint16 size)
