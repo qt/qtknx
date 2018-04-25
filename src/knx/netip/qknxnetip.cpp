@@ -40,17 +40,17 @@ QT_BEGIN_NAMESPACE
 */
 
 /*!
-    \variable QKnxNetIp::Constants::DefaultPort
+    \variable QKnx::NetIp::Constants::DefaultPort
     \brief The default KNXnet/IP port number used for UDP/IPv4.
 */
 
 /*!
-    \variable QKnxNetIp::Constants::MulticastAddress
+    \variable QKnx::NetIp::Constants::MulticastAddress
     \brief The default KNXnet/IP system setup multicast address.
 */
 
 /*!
-    \enum QKnxNetIp::HostProtocol
+    \enum QKnx::NetIp::HostProtocol
 
     This enum describes the KNXnet/IP host protocol codes for an IP network.
 
@@ -59,7 +59,10 @@ QT_BEGIN_NAMESPACE
     \value TCP_IPv4    The supported KNXnet/IP device host protocol is TCP/IPv4.
 */
 
+
 /*!
+    \fn QKnx::NetIp::isStructType(QKnx::NetIp::HostProtocol type)
+
     Returns \c true if the specified \a type is a part of the \l HostProtocol
     enumeration; otherwise returns \c false.
 */
@@ -76,7 +79,7 @@ bool QKnxNetIp::isStructType(QKnxNetIp::HostProtocol type)
 }
 
 /*!
-    \enum QKnxNetIp::ConnectionType
+    \enum QKnx::NetIp::ConnectionType
 
     This enum describes the supported KNXnet/IP connection types.
 
@@ -97,6 +100,8 @@ bool QKnxNetIp::isStructType(QKnxNetIp::HostProtocol type)
 */
 
 /*!
+    \fn QKnx::NetIp::isStructType(QKnx::NetIp::ConnectionType type)
+
     Returns \c true if the specified \a type is a part of the \l ConnectionType
     enumeration; otherwise returns \c false.
 */
@@ -116,7 +121,7 @@ bool QKnxNetIp::isStructType(QKnxNetIp::ConnectionType type)
 }
 
 /*!
-    \enum QKnxNetIp::DescriptionType
+    \enum QKnx::NetIp::DescriptionType
 
     This enum contains values to self-describe a KNXnet/IP server device.
 
@@ -133,6 +138,8 @@ bool QKnxNetIp::isStructType(QKnxNetIp::ConnectionType type)
 */
 
 /*!
+    \fn QKnxNetIp::isStructType(QKnx::NetIp::DescriptionType type)
+
     Returns \c true if the specified \a type is a part of the \l DescriptionType
     enumeration; otherwise returns \c false.
 */
@@ -154,8 +161,9 @@ bool QKnxNetIp::isStructType(QKnxNetIp::DescriptionType type)
 }
 
 /*!
-    \enum QKnxNetIp::ServiceFamily
+    \enum QKnx::NetIp::ServiceFamily
 
+    This enum holds the service family that the communication is related to.
     The service family is the high octet of the values of the \l ServiceType
     enumeration.
 
@@ -171,6 +179,8 @@ bool QKnxNetIp::isStructType(QKnxNetIp::DescriptionType type)
 */
 
 /*!
+    \fn QKnxNetIp::isServiceFamily(QKnx::NetIp::ServiceFamily family)
+
     Returns \c true if the specified \a family is a part of the \l ServiceFamily
     enumeration; otherwise returns \c false.
 */
@@ -192,7 +202,7 @@ bool QKnxNetIp::isServiceFamily(QKnxNetIp::ServiceFamily family)
 }
 
 /*!
-    \enum QKnxNetIp::ServiceType
+    \enum QKnx::NetIp::ServiceType
 
     This enum describes KNXnet/IP frame service type identifiers.
 
@@ -253,10 +263,12 @@ bool QKnxNetIp::isServiceFamily(QKnxNetIp::ServiceFamily family)
            lost.
     \value RoutingBusy
            The service type used to indicate that a KNXnet/IP router or KNX IP
-           device exceeded the number of received datagrams that it can process.
+           device received more datagrams than it can process.
 */
 
 /*!
+    \fn QKnxNetIp::isServiceType(QKnx::NetIp::ServiceType type)
+
     Returns \c true if the specified \a type is a part of the \l ServiceType
     enumeration; otherwise returns \c false.
 */
@@ -288,7 +300,7 @@ bool QKnxNetIp::isServiceType(QKnxNetIp::ServiceType type)
 }
 
 /*!
-    \enum QKnxNetIp::Error
+    \enum QKnx::NetIp::Error
 
     This enum describes the KNXnet/IP communication errors that can occur.
 
@@ -314,12 +326,12 @@ bool QKnxNetIp::isServiceType(QKnxNetIp::ServiceType type)
     \value KnxConnection
     The KNXnet/IP server device detects an error concerning the KNX connection
     with the specified ID.
-    \value TunnelLayer
+    \value TunnelingLayer
     The requested tunneling layer is not supported by the KNXnet/IP server device.
 */
 
 /*!
-    \enum QKnxNetIp::DeviceState
+    \enum QKnx::NetIp::DeviceState
 
     This enum describes the state information of a KNXnet/IP device.
 
@@ -328,7 +340,7 @@ bool QKnxNetIp::isServiceType(QKnxNetIp::ServiceType type)
 */
 
 /*!
-    \enum QKnxNetIp::TunnelLayer
+    \enum QKnx::NetIp::TunnelLayer
 
     This enum describes the KNX tunneling layer to establish.
 
@@ -339,6 +351,8 @@ bool QKnxNetIp::isServiceType(QKnxNetIp::ServiceType type)
 */
 
 /*!
+    \fn QKnxNetIp::isTunnelLayer(QKnx::NetIp::TunnelLayer layer)
+
     Returns \c true if the specified \a layer is a part of the \l TunnelLayer
     enumeration; otherwise returns \c false.
 */
@@ -356,7 +370,7 @@ bool QKnxNetIp::isTunnelLayer(QKnxNetIp::TunnelLayer layer)
 }
 
 /*!
-    \enum QKnxNetIp::ProgrammingMode
+    \enum QKnx::NetIp::ProgrammingMode
 
     This enum describes the programming mode state of a KNX device.
 
@@ -382,7 +396,7 @@ bool QKnxNetIp::isProgrammingMode(ProgrammingMode mode)
 }
 
 /*!
-    \enum QKnxNetIp::AssignmentMethod
+    \enum QKnx::NetIp::AssignmentMethod
 
     This enum describes the enabled IP address assignment methods for setting
     the current IP address of a KNXnet/IP device.
@@ -413,7 +427,7 @@ bool QKnxNetIp::isAssignmentMethod(AssignmentMethod method)
 }
 
 /*!
-    \enum QKnxNetIp::Capability
+    \enum QKnx::NetIp::Capability
 
     This enum describes the IP capabilities supported by the KNXnet/IP device.
 
@@ -442,13 +456,13 @@ bool QKnxNetIp::isCapability(Capability capability)
 }
 
 /*!
-    \enum QKnxNetIp::Timeout
+    \enum QKnx::NetIp::Timeout
 
     This enum describes the timeouts used during KNXnet/IP communication.
 
     \value HeartbeatTimeout
     Timeout used between sending the next connection state request frame to the
-    KNXnet/IP server device.
+    KNXnet/IP server.
     \value ConnectionAliveTimeout
     Timeout before sending a disconnect request to the KNXnet/IP client after
     the last correctly received message frame.
@@ -460,30 +474,43 @@ bool QKnxNetIp::isCapability(Capability capability)
     wait for description response frames from KNXnet/IP servers.
     \value ConnectRequestTimeout
     The KNXnet/IP client will wait for 10 seconds to receive a connect response
-    frame from KNXnet/IP server.
+    frame from the KNXnet/IP server.
     \value ConnectionStateRequestTimeout
     The KNXnet/IP client will wait for 10 seconds for a connection state
-    response from KNXnet/IP server after sending a connection state request.
+    response from the KNXnet/IP server after sending a connection state request.
     \value DisconnectRequestTimeout
     The KNXnet/IP client will wait for 10 seconds to receive a disconnect
-    response frame from KNXnet/IP server.
+    response frame from the KNXnet/IP server.
     \value DeviceConfigurationRequestTimeout
     The KNXnet/IP client will wait for 10 seconds for a device configuration
-    response from KNXnet/IP server after sending a device configuration request.
+    response from the KNXnet/IP server after sending a device configuration
+    request.
     \value TunnelingRequestTimeout
     The KNXnet/IP client will wait for 1 second for a tunneling acknowledge
-    response from KNXnet/IP server after sending a tunneling request.
+    response from the KNXnet/IP server after sending a tunneling request.
     \value RoutingBusyWaitTime
     The timeout used to empty the incoming queue of a KNXnet/IP router or KNX
-    IP device if the received datagrams exceeded the amount the device can
-    actually process.
+    IP device if the number of received datagrams exceeds the number of frames
+    that the device can actually process.
 */
 
 /*!
-    \enum QKnxNetIpCemiServer::ReturnCode
+    \namespace QKnx::NetIp::CemiServer
+
+    \inmodule QtKnx
+    \brief The QKnx::NetIp::CemiServer namespace defines enumerations related to
+    KNXnet/IP communication with a cEMI server.
+
+    The common external message interface (cEMI) message format is a generic
+    structure for transmitting KNX frames between cEMI servers and cEMI clients
+    independently of the medium.
+*/
+
+/*!
+    \enum QKnx::NetIp::CemiServer::ReturnCode
 
     This enum describes the possible error codes returned by the remote cEMI
-    Server after cEMI function properties service requests.
+    server after cEMI function properties service requests.
 
     \value NoError The function was successfully executed. The return code
                    indicates the positive result of the function.
@@ -493,43 +520,43 @@ bool QKnxNetIp::isCapability(Capability capability)
 */
 
 /*!
-    \enum QKnxNetIpCemiServer::Error
+    \enum QKnx::NetIp::CemiServer::Error
 
     This enum describes the possible error codes returned by the remote cEMI
-    Server after cEMI service management requests.
+    server after cEMI service management requests.
 
     \value Unspecified
-           The error that happened is unknown. Can occur in negative read/ write
-           confirmation frames.
+           The error that occurred is unknown. Can occur in negative read or
+           write confirmation frames.
     \value OutOfRange
-           Denotes a general write error if OutOfMaxRange or OutOfMinRange are
-           not applicable. Can occur in negative write confirmation frames.
+           Denotes a general write error if \c OutOfMaxRange or \c OutOfMinRange
+           are not applicable. Can occur in negative write confirmation frames.
     \value OutOfMaxRange
-           The value to write was to high. Can occur in negative write
+           The value to write was too high. Can occur in negative write
            confirmation frames.
     \value OutOfMinRange
-           The value to write was to low. Can occur in negative write
+           The value to write was too low. Can occur in negative write
            confirmation frames.
     \value Memory
-           The memory can not be written or only with fault(s). Can occur in
-           negative write confirmation frames.
+           The memory cannot be written or can only be written with faults.
+           Can occur in negative write confirmation frames.
     \value ReadOnly
            Write access to a read-only or a write protected property. Can occur
            in negative write confirmation frames.
     \value IllegalCommand
            The used command is not valid or not supported by the cEMI server.
     \value NonExistingProperty
-           Read or write access to an non existing Property. Can occur in
-           negative read/ write confirmation frames.
+           Read or write access to an non-existing property. Can occur in
+           negative read or write confirmation frames.
     \value TypeConflict
            Write access with a wrong data type (datapoint length).
     \value PropertyIndexRangeError
-           Read or write access to a non existing property-array index. Can
-           occur in negative read/ write confirmation frames.
+           Read or write access to a non-existing property-array index. Can
+           occur in negative read or write confirmation frames.
     \value TemporaryNotWritable
-           The Property exists but cannot be set to a new value at the time.
+           The property exists but cannot be set to a new value at the time.
            Can occur in negative write confirmation frames.
-    \value None     No error happened. Please do not use.
+    \value None     No error occurred. Please do not use.
 */
 
 QT_END_NAMESPACE
