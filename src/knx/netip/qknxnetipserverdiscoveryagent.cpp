@@ -27,6 +27,7 @@
 **
 ******************************************************************************/
 
+#include "qknxnetiphpai.h"
 #include "qknxnetipserverdiscoveryagent.h"
 #include "qknxnetipserverdiscoveryagent_p.h"
 
@@ -239,8 +240,8 @@ void QKnxNetIpServerDiscoveryAgentPrivate::setupSocket()
             if (q->state() != QKnxNetIpServerDiscoveryAgent::State::Running)
                 break;
 
-            auto ba = socket->receiveDatagram().data();
-            QKnxByteArray data(ba.constData(), ba.size());
+            auto datagram = socket->receiveDatagram();
+            auto data = QKnxByteArray::fromByteArray(datagram.data());
             const auto header = QKnxNetIpFrameHeader::fromBytes(data, 0);
             if (!header.isValid() || header.serviceType() != QKnxNetIp::ServiceType::SearchResponse)
                 continue;
@@ -250,8 +251,13 @@ void QKnxNetIpServerDiscoveryAgentPrivate::setupSocket()
             if (!response.isValid())
                 continue;
 
-            setAndEmitDeviceDiscovered({ response.controlEndpoint(), response.deviceHardware(),
-                response.supportedFamilies() });
+            setAndEmitDeviceDiscovered({
+                (nat ? QKnxNetIpHpaiProxy::builder()
+                            .setHostAddress(datagram.senderAddress())
+                            .setPort(datagram.senderPort()).create()
+                    : response.controlEndpoint()
+                ), response.deviceHardware(), response.supportedFamilies()
+            });
         }
     });
 }
