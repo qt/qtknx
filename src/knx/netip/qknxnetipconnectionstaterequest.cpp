@@ -57,13 +57,14 @@ QT_BEGIN_NAMESPACE
     request information sent by a KNXnet/IP client:
 
     \code
-    QKnxNetIpFrame netIpFrame;
-    QKnxNetIpConnectionStateRequestProxy connectionStateRequest(netIpFrame);
-    if (!connectionStateRequest.isValid())
-        return;
-    quint8 chanId = connectionStateRequest.channelId();
-    QKnxNetIpHpai seqNum = connectionStateRequest.controlEndpoint();
-    // ...
+        auto frame = QKnxNetIpFrame::fromBytes(...);
+
+        const QKnxNetIpConnectionStateRequestProxy connectionStateRequest(netIpFrame);
+        if (!connectionStateRequest.isValid())
+            return;
+
+        quint8 chanId = connectionStateRequest.channelId();
+        auto hpai = connectionStateRequest.controlEndpoint();
     \endcode
 
     \sa builder(), QKnxNetIpConnectionStateResponseProxy
@@ -153,11 +154,12 @@ QKnxNetIpConnectionStateRequestProxy::Builder QKnxNetIpConnectionStateRequestPro
     The common way to create a connection state request is:
 
     \code
-    QKnxNetIpHpaiProxy hpai = // build QKnxNetIpHpaiProxy;
-    QKnxNetIpFrame netIpFrame = QKnxNetIpConnectionStateRequestProxy::builder()
-                                .setChannelId(255)
-                                .setControlEndpoint(hpai)
-                                .create();
+        auto hpai = QKnxNetIpHpaiProxy::builder().create();
+
+        auto netIpFrame = QKnxNetIpConnectionStateRequestProxy::builder()
+            .setChannelId(255)
+            .setControlEndpoint(hpai)
+            .create();
     \endcode
 
     If the KNXnet/IP client does not receive the connection state response

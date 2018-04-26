@@ -63,14 +63,15 @@ QT_BEGIN_NAMESPACE
     acknowledgment information sent by a KNXnet/IP client:
 
     \code
-    QKnxNetIpFrame netIpFrame;
-    QKnxNetIpDeviceConfigurationAcknowledgeProxy configAck(netIpFrame);
-    if (!configAck.isValid())
-        return;
-    quint8 chanId = configAck.channelId();
-    quint8 seqNum = configAck.sequenceNumber();
-    QKnx::NetIp::Error knxLinkFrame = configAck.status();
-    // ...
+        auto frame = QKnxNetIpFrame::fromBytes(...);
+
+        const QKnxNetIpDeviceConfigurationAcknowledgeProxy configAck(netIpFrame);
+        if (!configAck.isValid())
+            return;
+
+        quint8 chanId = configAck.channelId();
+        quint8 seqNum = configAck.sequenceNumber();
+        QKnx::NetIp::Error error = configAck.status();
     \endcode
 
     \sa builder(), QKnxNetIpDeviceConfigurationRequestProxy
@@ -182,12 +183,11 @@ QKnxNetIpDeviceConfigurationAcknowledgeProxy::Builder
     request information sent by a KNXnet/IP client:
 
     \code
-    QKnxNetIpFrame netIpFrame = QKnxNetIpDeviceConfigurationAcknowledgeProxy::builder()
-                                .setChannelId(200)
-                                .setSequenceNumber(250)
-                                .setStatus(QKnx::NetIp::Error::ConnectionId)
-                                .create();
-    // ...
+        auto netIpFrame = QKnxNetIpDeviceConfigurationAcknowledgeProxy::builder()
+            .setChannelId(200)
+            .setSequenceNumber(250)
+            .setStatus(QKnx::NetIp::Error::ConnectionId)
+            .create();
     \endcode
 
     If the KNXnet/IP client does not receive a device configuration

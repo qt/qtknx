@@ -60,12 +60,14 @@ QT_BEGIN_NAMESPACE
     information sent by a KNXnet/IP client:
 
     \code
-    QKnxNetIpFrame netIpFrame;
-    QKnxNetIpSearchRequestProxy searchRequest(netIpFrame);
-    if (!searchRequest.isValid())
-        return;
-    QKnxNetIpHpai chanId = searchRequest.discoveryEndpoint();
-    // ...
+        auto netIpFrame = QKnxNetIpFrame::fromBytes(...);
+
+        QKnxNetIpSearchRequestProxy searchRequest(netIpFrame);
+        if (!searchRequest.isValid())
+            return;
+
+        QKnxNetIpHpai hpai = searchRequest.discoveryEndpoint();
+        // ...
     \endcode
 
     \sa builder()
@@ -148,10 +150,11 @@ QKnxNetIpSearchRequestProxy::Builder QKnxNetIpSearchRequestProxy::builder()
     The common way to create a search request is:
 
     \code
-    QKnxNetIpHpai hpai = // discovery endpoint creation here;
-    QKnxNetIpFrame netIpFrame = QKnxNetIpSearchRequestProxy::builder()
-                                .setDiscoveryEndpoint(hpai)
-                                .create();
+        auto hpai = QKnxNetIpHpaiProxy::builder().create();
+
+        auto netIpFrame = QKnxNetIpSearchRequestProxy::builder()
+            .setDiscoveryEndpoint(hpai)
+            .create();
     \endcode
 
     After sending the search request, the KNXnet/IP client waits until timeout

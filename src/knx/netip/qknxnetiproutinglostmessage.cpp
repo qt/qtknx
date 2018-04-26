@@ -55,13 +55,15 @@ QT_BEGIN_NAMESPACE
     information sent by a KNXnet/IP router:
 
     \code
-    QKnxNetIpFrame receivedFrame;
-    QKnxNetIpRoutingLostMessageProxy routingProxy(QKnxNetIpRoutingLostMessageProxy);
-    if (routingProxy.isValid()) {
+        auto netIpFrame = QKnxNetIpFrame::fromBytes(...);
+
+        QKnxNetIpRoutingLostMessageProxy routingProxy(netIpFrame);
+        if (!routingProxy.isValid())
+            return;
+
         if (routingProxy.deviceState() == QKnx::NetIp::DeviceState::KnxFault) {
             ....
         }
-    }
     \endcode
 
     \sa builder(), QKnxNetIpRoutingIndicationProxy, QKnxNetIpRoutingBusyProxy
@@ -145,10 +147,10 @@ QKnxNetIpRoutingLostMessageProxy::Builder QKnxNetIpRoutingLostMessageProxy::buil
     about three frames being lost because an error occurred in the IP network:
 
     \code
-     QKnxNetIpFrame frame = QKnxNetIpRoutingLostMessageProxy::builder()
-                            .setDeviceState(QKnx::NetIp::DeviceState::IpFault)
-                            .setLostMessageCount(3)
-                            .create();
+        auto frame = QKnxNetIpRoutingLostMessageProxy::builder()
+            .setDeviceState(QKnx::NetIp::DeviceState::IpFault)
+            .setLostMessageCount(3)
+            .create();
     \endcode
 */
 

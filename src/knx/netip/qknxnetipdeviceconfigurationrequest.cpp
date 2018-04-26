@@ -78,18 +78,18 @@ QT_BEGIN_NAMESPACE
     request information sent by a KNXnet/IP client:
 
     \code
-    QKnxNetIpFrame netIpFrame;
-    QKnxNetIpDeviceConfigurationRequestProxy configRequest(netIpFrame);
-    if (!configRequest.isValid())
-        return;
-    quint8 chanId = configRequest.channelId();
-    quint8 seqNum = configRequest.sequenceNumber();
-    QKnxDeviceManagementFrame knxLinkFrame = configRequest.cemi();
-    // ...
+        auto netIpFrame = QKnxNetIpFrame::fromBytes(...);
+
+        const QKnxNetIpDeviceConfigurationRequestProxy configRequest(netIpFrame);
+        if (!configRequest.isValid())
+            return;
+
+        quint8 chanId = configRequest.channelId();
+        quint8 seqNum = configRequest.sequenceNumber();
+        auto knxLinkFrame = configRequest.cemi();
     \endcode
 
-    \sa builder(), QKnxNetIpServerDiscoveryAgent,
-    QKnxNetIpDeviceConfigurationAcknowledgeProxy
+    \sa builder(), QKnxNetIpServerDiscoveryAgent, QKnxNetIpDeviceConfigurationAcknowledgeProxy
 */
 
 /*!
@@ -193,12 +193,12 @@ QKnxNetIpDeviceConfigurationRequestProxy::Builder QKnxNetIpDeviceConfigurationRe
     The common way to create a device configuration request is:
 
     \code
-    QKnxDeviceManagementFrame cemi = // build cemi;
-    QKnxNetIpFrame netIpFrame = QKnxNetIpDeviceConfigurationRequestProxy::builder()
-                                .setChannelId(1)
-                                .setSequenceNumber(1)
-                                .setCemi(cemi)
-                                .create();
+        QKnxDeviceManagementFrame cemi = // build cEMI frame
+        auto netIpFrame = QKnxNetIpDeviceConfigurationRequestProxy::builder()
+            .setChannelId(1)
+            .setSequenceNumber(1)
+            .setCemi(cemi)
+            .create();
     \endcode
 
     If the KNXnet/IP client does not receive a device configuration

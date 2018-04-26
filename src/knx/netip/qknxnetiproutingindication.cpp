@@ -46,12 +46,13 @@ QT_BEGIN_NAMESPACE
     information sent by a KNXnet/IP router or device:
 
     \code
-    QKnxNetIpFrame receivedFrame;
-    QKnxNetIpRoutingIndicationProxy routingIndication(receivedFrame);
-    if (routingIndication.isValid()) {
+        auto netIpFrame = QKnxNetIpFrame::fromBytes(...);
+
+        const QKnxNetIpRoutingIndicationProxy routingIndication(netIpFrame);
+        if (!routingIndication.isValid())
+            return;
+
         auto linkFrame = routingIndication.linkLayerFrame();
-        // ...
-    }
     \endcode
 
     \sa builder(), QKnxNetIpRoutingLostMessageProxy, QKnxNetIpRoutingBusyProxy
@@ -128,10 +129,10 @@ QKnxNetIpRoutingIndicationProxy::Builder QKnxNetIpRoutingIndicationProxy::builde
     The common way to create a routing indication is:
 
     \code
-    QKnxLinkLayerFrame linkFrame = // create a link frame ....;
-    netIpframe = QKnxNetIpRoutingIndicationProxy::builder()
-                 .setLinkLayerFrame(linkFrame)
-                 .create();
+        QKnxLinkLayerFrame linkFrame = // create a link frame ....;
+        auto netIpframe = QKnxNetIpRoutingIndicationProxy::builder()
+            .setLinkLayerFrame(linkFrame)
+            .create();
     \endcode
 
     If a KNXnet/IP router or device receives a router busy message from another

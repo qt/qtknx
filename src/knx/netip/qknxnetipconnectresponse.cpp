@@ -54,15 +54,15 @@ QT_BEGIN_NAMESPACE
     information sent by a KNXnet/IP server:
 
     \code
-    QKnxNetIpFrame netIpFrame;
-    QKnxNetIpConnectResponseProxy connectResponse(netIpFrame);
-    if (!connectResponse.isValid())
-        return;
-    quint8 chanId = connectResponse.channelId();
-    QKnxNetIpCrd data = connectResponse.responseData();
-    QKnxNetIpHpai endPoint = connectResponse.dataEndpoint();
-    QKnx::NetIp::Error knxLinkFrame = connectResponse.status();
-    // ...
+        auto netIpFrame = QKnxNetIpFrame::fromBytes(...);
+        const QKnxNetIpConnectResponseProxy connectResponse(netIpFrame);
+        if (!connectResponse.isValid())
+            return;
+
+        auto chanId = connectResponse.channelId();
+        auto data = connectResponse.responseData();
+        auto endPoint = connectResponse.dataEndpoint();
+        auto netIpError = connectResponse.status();
     \endcode
 
     \sa builder()
@@ -174,14 +174,14 @@ QKnxNetIpConnectResponseProxy::Builder QKnxNetIpConnectResponseProxy::builder()
     The common way to create a connection response is:
 
     \code
-    QKnxNetIpHpai hpai;
-    QKnxNetIpCrdProxy data;
-    QKnxNetIpFrame netIpFrame = QKnxNetIpConnectResponseProxy::builder().
-                                .setChannelId(200)
-                                .setStatus(QKnx::NetIp::Error::None)
-                                .setDataEndpoint(hpai)
-                                .setResponseData(data)
-                                .create();
+        QKnxNetIpHpai hpai;
+        QKnxNetIpCrdProxy data;
+        auto netIpFrame = QKnxNetIpConnectResponseProxy::builder()
+            .setChannelId(200)
+            .setStatus(QKnx::NetIp::Error::None)
+            .setDataEndpoint(hpai)
+            .setResponseData(data)
+            .create();
     \endcode
 */
 
@@ -208,7 +208,7 @@ QKnxNetIpConnectResponseProxy::Builder &
 }
 
 /*!
-    Sets the data endpoint of the KNXnet/IP server to \a hpai and retuns a
+    Sets the data endpoint of the KNXnet/IP server to \a hpai and returns a
     reference to the builder.
 */
 QKnxNetIpConnectResponseProxy::Builder &

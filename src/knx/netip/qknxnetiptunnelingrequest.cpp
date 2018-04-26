@@ -66,14 +66,15 @@ QT_BEGIN_NAMESPACE
     information sent by a KNXnet/IP client:
 
     \code
-    QKnxNetIpFrame netIpFrame;
-    QKnxNetIpTunnelingRequestProxy tunnelRequest(netIpFrame);
-    if (tunnelRequest.isValid()) {
+        auto netIpFrame = QKnxNetIpFrame::fromBytes(...);
+
+        const QKnxNetIpTunnelingRequestProxy tunnelRequest(netIpFrame);
+        if (!tunnelRequest.isValid())
+            return;
+
         auto chanId = tunnelRequest.channelId();
         auto seqNum = tunnelRequest.sequenceNumber();
         auto knxLinkFrame = tunnelRequest.cemi();
-        // ...
-    }
     \endcode
 
     \sa builder(), QKnxNetIpTunnelingAcknowledgeProxy
@@ -174,12 +175,12 @@ QKnxNetIpTunnelingRequestProxy::Builder QKnxNetIpTunnelingRequestProxy::builder(
     The common way to create a tunneling request is:
 
     \code
-    QKnxLinkLayerFrame linkFrame;
-    auto tunnelRequest = QKnxNetIpTunnelingRequestProxy.builder()
-                         .setCemi(linkFrame)
-                         .setChannelId(10)
-                         .setSequenceNumber(0)
-                         .create();
+        QKnxLinkLayerFrame linkFrame;
+        auto tunnelRequest = QKnxNetIpTunnelingRequestProxy.builder()
+            .setCemi(linkFrame)
+            .setChannelId(10)
+            .setSequenceNumber(0)
+            .create();
     \endcode
 
     If the KNXnet/IP client does not receive a tunneling acknowledgment within

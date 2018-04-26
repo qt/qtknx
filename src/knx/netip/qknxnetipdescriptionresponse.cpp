@@ -54,7 +54,16 @@ QT_BEGIN_NAMESPACE
     The following code sample illustrates how to read the description response
     information sent by a KNXnet/IP server:
 
-    //TODO: Add sample code.
+    \code
+        auto netIpFrame = QKnxNetIpFrame::fromBytes(...);
+
+        const QKnxNetIpDescriptionResponseProxy response(netIpFrame);
+        if (!response.isValid())
+            return;
+
+        auto hardware = response.deviceHardware();
+        auto families = response.supportedFamilies();
+    \endcode
 
     \sa builder(), QKnxNetIpDescriptionRequestProxy
 */
@@ -165,7 +174,15 @@ QKnxNetIpDescriptionResponseProxy::Builder QKnxNetIpDescriptionResponseProxy::bu
 
     The common way to create a a description response is:
 
-    //TODO: Add sample code.
+    \code
+        auto ddib = QKnxNetIpDeviceDibProxy::builder().create();
+        auto sdib = QKnxNetIpServiceFamiliesDibProxy::builder().create();
+
+        auto response = QKnxNetIpDescriptionResponseProxy::builder()
+            .setDeviceHardware(ddib)
+            .setSupportedFamilies(sdib)
+            .create();
+    \endcode
 */
 
 /*!

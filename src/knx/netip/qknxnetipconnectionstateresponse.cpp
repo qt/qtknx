@@ -53,13 +53,14 @@ QT_BEGIN_NAMESPACE
     response information sent by a KNXnet/IP server:
 
     \code
-    QKnxNetIpFrame netIpFrame;
-    QKnxNetIpConnectionStateResponseProxy connectionStateResponse(netIpFrame);
-    if (!connectionStateResponse.isValid())
-        return;
-    auto chanId = connectionStateResponse.channelId();
-    auto status = connectionStateResponse.status();
-    // ...
+        auto netIpFrame = QKnxNetIpFrame::fromBytes(...);
+
+        const QKnxNetIpConnectionStateResponseProxy connectionStateResponse(netIpFrame);
+        if (!connectionStateResponse.isValid())
+            return;
+
+        auto chanId = connectionStateResponse.channelId();
+        auto status = connectionStateResponse.status();
     \endcode
 
     \sa builder(), QKnxNetIpConnectionStateRequestProxy
@@ -147,11 +148,10 @@ QKnxNetIpConnectionStateResponseProxy::Builder QKnxNetIpConnectionStateResponseP
     The common way to create a connection state response is:
 
     \code
-    QKnxNetIpFrame netIpFrame = QKnxNetIpConnectionStateResponseProxy.builder()
-                                .setChannelId(25)
-                                .setStatus(QKnx::NetIp::Error::ConnectionId)
-                                .create();
-    // ...
+        auto netIpFrame = QKnxNetIpConnectionStateResponseProxy.builder()
+            .setChannelId(25)
+            .setStatus(QKnx::NetIp::Error::None)
+            .create();
     \endcode
 
     If the KNXnet/IP client does not receive the connection state response

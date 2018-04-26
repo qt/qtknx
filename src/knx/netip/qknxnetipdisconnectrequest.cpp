@@ -60,13 +60,14 @@ QT_BEGIN_NAMESPACE
     information sent by a KNXnet/IP client:
 
     \code
-    QKnxNetIpFrame netIpFrame;
-    QKnxNetIpDisconnectRequestProxy disconnectRequest(netIpFrame);
-    if (!disconnectRequest.isValid())
-        return;
-    quint8 chanId = disconnectRequest.channelId();
-    QKnxNetIpHpai ctrlEndPoint = disconnectRequest.controlEndpoint();
-    // ...
+        auto netIpFrame = QKnxNetIpFrame::fromBytes(...);
+
+        const QKnxNetIpDisconnectRequestProxy disconnectRequest(netIpFrame);
+        if (!disconnectRequest.isValid())
+            return;
+
+        quint8 chanId = disconnectRequest.channelId();
+        auto hpai = disconnectRequest.controlEndpoint();
     \endcode
 
     \sa builder()
@@ -164,12 +165,12 @@ QKnxNetIpDisconnectRequestProxy::Builder QKnxNetIpDisconnectRequestProxy::builde
     The common way to create a disconnection request is:
 
     \code
-    QKnxNetIpFrame netIpFrame = QKnxNetIpDisconnectRequestProxy::builder()
-                                .setChannelId(200)
-                                .setControlEndpoint(QKnxNetIpHpaiProxy::builder()
-                                    .setHostAddress(QHostAddress::LocalHost)
-                                    .setPort(3671).create())
-                                .create();
+        auto netIpFrame = QKnxNetIpDisconnectRequestProxy::builder()
+            .setChannelId(200)
+            .setControlEndpoint(QKnxNetIpHpaiProxy::builder()
+                .setHostAddress(QHostAddress::LocalHost)
+                .setPort(3671).create())
+            .create();
     \endcode
 */
 

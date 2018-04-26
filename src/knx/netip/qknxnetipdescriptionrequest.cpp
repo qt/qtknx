@@ -55,12 +55,13 @@ QT_BEGIN_NAMESPACE
     information sent by a KNXnet/IP client:
 
     \code
-    QKnxNetIpFrame netIpFrame;
-    QKnxNetIpDescriptionRequestProxy descriptionRequest(netIpFrame);
-    if (!descriptionRequest.isValid())
-        return;
-    QKnxNetIpHpai endPoint = descriptionRequest.controlEndpoint();
-    // ...
+        auto netIpFrame = QKnxNetIpFrame::fromBytes(...);
+
+        const QKnxNetIpDescriptionRequestProxy descriptionRequest(netIpFrame);
+        if (!descriptionRequest.isValid())
+            return;
+
+        auto endPoint = descriptionRequest.controlEndpoint();
     \endcode
 
     \sa builder(), QKnxNetIpDescriptionResponseProxy
@@ -139,11 +140,11 @@ QKnxNetIpDescriptionRequestProxy::Builder QKnxNetIpDescriptionRequestProxy::buil
     The common way to create a a search response is:
 
     \code
-    QKnxNetIpFrame netIpFrame = QKnxNetIpDescriptionRequestProxy::builder()
-                                .setControlEndpoint(QKnxNetIpHpaiProxy::builder()
-                                    .setHostAddress(QHostAddress::LocalHost)
-                                    .setPort(3671).create())
-                                .create();
+        auto netIpFrame = QKnxNetIpDescriptionRequestProxy::builder()
+            .setControlEndpoint(QKnxNetIpHpaiProxy::builder()
+                .setHostAddress(QHostAddress::LocalHost)
+                .setPort(3671).create())
+            .create();
     \endcode
 */
 

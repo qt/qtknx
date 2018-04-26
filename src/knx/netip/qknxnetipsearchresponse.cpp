@@ -61,14 +61,16 @@ QT_BEGIN_NAMESPACE
     information sent by a KNXnet/IP server:
 
     \code
-    QKnxNetIpFrame netIpFrame;
-    QKnxNetIpSearchResponseProxy searchResponse(netIpFrame);
-    if (searchResponse.isValid()) {
+        auto netIpFrame = QKnxNetIpFrame::fromBytes(...);
+
+        const QKnxNetIpSearchResponseProxy searchResponse(netIpFrame);
+        if (!searchResponse.isValid())
+            return
+
         auto netIpHpai = searchResponse.controlEndpoint();
         auto hardwareNetIpDib = searchResponse.deviceHardware();
         auto supportedFamillies = searchResponse.supportedFamilies();
         // ...
-    }
     \endcode
 
     \sa builder(), QKnxNetIpSearchRequestProxy
@@ -166,13 +168,13 @@ QKnxNetIpSearchResponseProxy::Builder QKnxNetIpSearchResponseProxy::builder()
     The common way to create a a search response is:
 
     \code
-    QKnxNetIpHpai controlEndpoint;
-    QKnxNetIpDib deviceHardware, supportedFamillies;
-    QKnxNetIpFrame netIpFrame = QKnxNetIpSearchResponseProxy::builder()
-                                .setControlEndpoint(controlEndpoint)
-                                .setSupportedFamilies(deviceHardware)
-                                .setDeviceHardware(supportedFamillies)
-                                .create();
+        QKnxNetIpHpai controlEndpoint;
+        QKnxNetIpDib deviceHardware, supportedFamillies;
+        auto netIpFrame = QKnxNetIpSearchResponseProxy::builder()
+            .setControlEndpoint(controlEndpoint)
+            .setSupportedFamilies(deviceHardware)
+            .setDeviceHardware(supportedFamillies)
+            .create();
     \endcode
 
     \sa QKnxNetIpHpaiProxy::builder(), QKnxNetIpServiceFamiliesDibProxy::builder(), QKnxNetIpDeviceDibProxy::builder()

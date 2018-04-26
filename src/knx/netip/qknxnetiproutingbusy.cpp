@@ -60,11 +60,13 @@ QT_BEGIN_NAMESPACE
     information sent by a KNXnet/IP router or device:
 
     \code
-    QKnxNetIpFrame receivedFrame; QKnxNetIpRoutingBusyProxy routerAnswer(receivedFrame);
+        auto netIpFrame = QKnxNetIpFrame::fromBytes(...);
 
-    if (routerAnswer.isValid()) {
+        const QKnxNetIpRoutingBusyProxy routerAnswer(netIpFrame);
+        if (!routerAnswer.isValid())
+            return;
+
         auto busyTime = routerAnswer.routingBusyWaitTime();
-    }
     \endcode
 
     The sending device will wait for \c busyTime before sending the next frame.
@@ -165,7 +167,7 @@ QKnxNetIpRoutingBusyProxy::Builder QKnxNetIpRoutingBusyProxy::builder()
     The common way to create a routing-busy message is:
 
     \code
-    auto frame = QKnxNetIpRoutingBusyProxy::builder()
+        auto frame = QKnxNetIpRoutingBusyProxy::builder()
             .setDeviceState(QKnx::NetIp::DeviceState::IpFault)
             .setRoutingBusyWaitTime(99)
             .setRoutingBusyControl(0xffff)

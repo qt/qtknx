@@ -53,13 +53,14 @@ QT_BEGIN_NAMESPACE
     information sent by a KNXnet/IP client:
 
     \code
-    QKnxNetIpFrame netIpFrame;
-    QKnxNetIpDisconnectRequestProxy disconnectRequest(netIpFrame);
-    if (!disconnectRequest.isValid())
-        return;
-    quint8 chanId = disconnectRequest.channelId();
-    QKnx::NetIp::Error state = disconnectRequest.status();
-    // ...
+        auto netIpFrame = QKnxNetIpFrame::fromBytes(...);
+
+        const QKnxNetIpDisconnectRequestProxy disconnectRequest(netIpFrame);
+        if (!disconnectRequest.isValid())
+            return;
+
+        quint8 chanId = disconnectRequest.channelId();
+        QKnx::NetIp::Error state = disconnectRequest.status();
     \endcode
 
     \sa builder(), QKnxNetIpDisconnectRequestProxy
@@ -151,10 +152,10 @@ QKnxNetIpDisconnectResponseProxy::Builder QKnxNetIpDisconnectResponseProxy::buil
     The common way to create a disconnection response is:
 
     \code
-    auto frame = QKnxNetIpDisconnectResponseProxy::builder()
-                 .setChannelId(200)
-                 .setStatus(QKnx::NetIp::Error::NoMoreConnections)
-                 .create();
+        auto frame = QKnxNetIpDisconnectResponseProxy::builder()
+            .setChannelId(200)
+            .setStatus(QKnx::NetIp::Error::None)
+            .create();
     \endcode
 */
 

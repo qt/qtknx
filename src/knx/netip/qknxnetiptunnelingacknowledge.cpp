@@ -65,14 +65,15 @@ QT_BEGIN_NAMESPACE
     acknowledgment information sent by a KNXnet/IP client:
 
     \code
-    QKnxNetIpFrame netIpFrame;
-    QKnxNetIpTunnelingAcknowledgeProxy tunnelAck(netIpFrame);
-    if (tunnelAck.isValid()) {
+        auto netIpFrame = QKnxNetIpFrame::fromBytes(...);
+
+        const QKnxNetIpTunnelingAcknowledgeProxy tunnelAck(netIpFrame);
+        if (!tunnelAck.isValid())
+            return;
+
         auto chanId = tunnelAck.channelId();
         auto seqNum = tunnelAck.sequenceNumber();
         auto tunnelStatus = tunnelAck.status();
-        // ...
-    }
     \endcode
 
     \sa builder(), QKnxNetIpTunnelingRequestProxy
@@ -173,11 +174,11 @@ QKnxNetIpTunnelingAcknowledgeProxy::Builder QKnxNetIpTunnelingAcknowledgeProxy::
     The common way to create a tunneling acknowledgment is:
 
     \code
-    QKnxNetIpFrame netIpFrame = QKnxNetIpTunnelingAcknowledgeProxy::Builder
-                                .setChannelId(4)
-                                .setSequenceNumber(3)
-                                .setStatus(QKnx::NetIp::Error::NoMoreConnections)
-                                .create()
+        auto netIpFrame = QKnxNetIpTunnelingAcknowledgeProxy::builder()
+            .setChannelId(4)
+            .setSequenceNumber(3)
+            .setStatus(QKnx::NetIp::Error::None)
+            .create()
     \endcode
 
     If the KNXnet/IP client does not receive a tunneling acknowledgment within

@@ -60,11 +60,18 @@ const std::bitset<8> gHopCountMask = 0x70;
     KNX byte array:
 
     \code
-    QKnxByteArray data;
-    QKnxExtendedControlField extCtrlField(data);
-    auto hopCount = extCtrlField.hopCount();
-    auto frameFormat = extCtrlField.format();
-    auto size = extCtrlField.size();
+        auto data = QKnxByteArray::fromHex("e0");
+        const QKnxExtendedControlField extCtrlField(data);
+    \endcode
+
+    In addition to the default constructors a builder can be used:
+
+    \code
+        auto extCtrl = QKnxExtendedControlField::builder()
+            .setDestinationAddressType(QKnxAddress::Type::Group)
+            .setHopCount(6)
+            .setFormat(QKnxExtendedControlField::ExtendedFrameFormat::Standard)
+            .create();
     \endcode
 
     \sa builder(), QKnxControlField
@@ -239,7 +246,7 @@ QDebug operator<<(QDebug debug, const QKnxExtendedControlField &field)
 
     Example:
     \code
-    auto ctrl = QKnxExtendedControlField::builder.create();
+        auto ctrl = QKnxExtendedControlField::builder.create();
     \endcode
 
     Some flags can be modified for more advanced use, such as setting up an
@@ -247,9 +254,9 @@ QDebug operator<<(QDebug debug, const QKnxExtendedControlField &field)
     to the individual address of a device:
 
     \code
-    auto ctrl = QKnxControlField::builder
-        .setDestinationAddressType(QKnxAddress::Type::Individual)
-        .create();
+        auto ctrl = QKnxControlField::builder
+            .setDestinationAddressType(QKnxAddress::Type::Individual)
+            .create();
     \endcode
 */
 
