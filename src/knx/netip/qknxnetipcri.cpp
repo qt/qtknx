@@ -115,7 +115,7 @@ bool QKnxNetIpCriProxy::isValid() const
 /*!
     Returns the connection type of this KNXnet/IP structure if the object
     that was passed during construction was valid; otherwise returns
-    \l QKnxNetIp::Unknown.
+    \l QKnx::NetIp::Unknown.
 */
 QKnxNetIp::ConnectionType QKnxNetIpCriProxy::connectionType() const
 {
@@ -127,7 +127,7 @@ QKnxNetIp::ConnectionType QKnxNetIpCriProxy::connectionType() const
 /*!
     Returns the tunneling layer of this KNXnet/IP structure if the object that
     was passed during construction was valid and the connection type
-    is \l QKnxNetIp::Tunnel, otherwise returns \l QKnxNetIp::Unknown.
+    is \l QKnx::NetIp::Tunnel, otherwise returns \l QKnx::NetIp::Unknown.
 
     \sa additionalData()
 */
@@ -184,7 +184,7 @@ QKnxNetIpCriProxy::Builder QKnxNetIpCriProxy::builder()
 /*!
     Sets the connection type to \a type and returns a reference to the builder.
 
-    Does nothing if \a type is not a \l QKnxNetIp::ConnectionType.
+    Does nothing if \a type is not a \l QKnx::NetIp::ConnectionType.
 */
 QKnxNetIpCriProxy::Builder &
     QKnxNetIpCriProxy::Builder::setConnectionType(QKnxNetIp::ConnectionType type)
@@ -198,7 +198,7 @@ QKnxNetIpCriProxy::Builder &
     Sets the additional data to the requested KNX tunneling layer \a layer and
     returns a reference to the builder.
 
-    Does nothing if \a layer is not a \l QKnxNetIp::TunnelLayer value.
+    Does nothing if \a layer is not a \l QKnx::NetIp::TunnelLayer value.
 
     \sa setAdditionalData()
 */

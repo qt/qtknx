@@ -116,7 +116,7 @@ bool QKnxNetIpCrdProxy::isValid() const
 /*!
     Returns the connection type of this KNXnet/IP structure if the object that
     was passed during construction was valid; otherwise returns
-    \l QKnxNetIp::Unknown.
+    \l QKnx::NetIp::Unknown.
 */
 QKnxNetIp::ConnectionType QKnxNetIpCrdProxy::connectionType() const
 {
@@ -128,7 +128,7 @@ QKnxNetIp::ConnectionType QKnxNetIpCrdProxy::connectionType() const
 /*!
     Returns the individual address of this KNXnet/IP structure if the object
     that was passed during construction was valid and the connection type
-    is \l QKnxNetIp::Tunnel; otherwise returns \l QKnxNetIp::Unknown.
+    is \l QKnx::NetIp::Tunnel; otherwise returns \l QKnx::NetIp::Unknown.
 
     \sa additionalData()
 */
@@ -184,7 +184,7 @@ QKnxNetIpCrdProxy::Builder QKnxNetIpCrdProxy::builder()
 /*!
     Sets the connection type to \a type and returns a reference to the builder.
 
-    Does nothing if \a type is not \l QKnxNetIp::ConnectionType.
+    Does nothing if \a type is not \l QKnx::NetIp::ConnectionType.
 */
 QKnxNetIpCrdProxy::Builder &
     QKnxNetIpCrdProxy::Builder::setConnectionType(QKnxNetIp::ConnectionType type)

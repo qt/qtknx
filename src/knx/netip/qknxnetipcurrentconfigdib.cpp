@@ -102,7 +102,7 @@ bool QKnxNetIpCurrentConfigDibProxy::isValid() const
 /*!
     Returns the description type of this KNXnet/IP structure if the
     object that was passed during construction was valid; otherwise
-    returns \l QKnxNetIp::Unknown.
+    returns \l QKnx::NetIp::Unknown.
 */
 QKnxNetIp::DescriptionType QKnxNetIpCurrentConfigDibProxy::descriptionType() const
 {
@@ -163,7 +163,7 @@ QHostAddress QKnxNetIpCurrentConfigDibProxy::dhcpOrBootP() const
 /*!
     Returns the currently employed IP address assignment method of this
     KNXnet/IP structure if the object that was passed during construction
-    was valid; otherwise returns \l QKnxNetIp::Unknown.
+    was valid; otherwise returns \l QKnx::NetIp::Unknown.
 */
 QKnxNetIp::AssignmentMethod QKnxNetIpCurrentConfigDibProxy::assignmentMethod() const
 {

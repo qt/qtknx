@@ -95,7 +95,7 @@ bool QKnxNetIpKnxAddressesDibProxy::isValid() const
 /*!
     Returns the description type of this KNXnet/IP structure if the object
     that was passed during construction was valid; otherwise returns
-    \l QKnxNetIp::Unknown.
+    \l QKnx::NetIp::Unknown.
 */
 QKnxNetIp::DescriptionType QKnxNetIpKnxAddressesDibProxy::descriptionType() const
 {

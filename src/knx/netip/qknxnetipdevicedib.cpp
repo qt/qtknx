@@ -97,7 +97,7 @@ bool QKnxNetIpDeviceDibProxy::isValid() const
 /*!
     Returns the description type of this KNXnet/IP structure if the
     object that was passed during construction was valid; otherwise
-    returns \l QKnxNetIp::Unknown.
+    returns \l QKnx::NetIp::Unknown.
 */
 QKnxNetIp::DescriptionType QKnxNetIpDeviceDibProxy::descriptionType() const
 {
@@ -121,7 +121,7 @@ QKnx::MediumType QKnxNetIpDeviceDibProxy::mediumType() const
 /*!
     Returns the device status contained inside the KNXnet/IP DIB structure.
 
-    \l QKnxNetIp::ProgrammingMode
+    \sa QKnx::NetIp::ProgrammingMode
 */
 QKnxNetIp::ProgrammingMode QKnxNetIpDeviceDibProxy::deviceStatus() const
 {
@@ -272,7 +272,7 @@ QKnxNetIpDeviceDibProxy::Builder &
 
 /*!
     Sets the device status to \a mode if the passed argument is a valid
-    \l QKnxNetIp::ProgrammingMode and returns a reference to the builder.
+    \l QKnx::NetIp::ProgrammingMode and returns a reference to the builder.
 */
 QKnxNetIpDeviceDibProxy::Builder &
     QKnxNetIpDeviceDibProxy::Builder::setDeviceStatus(QKnxNetIp::ProgrammingMode mode)

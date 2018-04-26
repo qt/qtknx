@@ -98,7 +98,7 @@ bool QKnxNetIpConfigDibProxy::isValid() const
 /*!
     Returns the description type of this KNXnet/IP structure if the
     object that was passed during construction was valid; otherwise
-    returns \l QKnxNetIp::Unknown.
+    returns \l QKnx::NetIp::Unknown.
 */
 QKnxNetIp::DescriptionType QKnxNetIpConfigDibProxy::descriptionType() const
 {
@@ -146,7 +146,7 @@ QHostAddress QKnxNetIpConfigDibProxy::defaultGateway() const
 /*!
     Returns the IP capabilities supported by the KNXnet/IP device if the
     object that was passed during construction was valid; otherwise returns
-    \l QKnxNetIp::Unknown.
+    \l QKnx::NetIp::Unknown.
 */
 QKnxNetIp::Capabilities QKnxNetIpConfigDibProxy::capabilities() const
 {
@@ -158,7 +158,7 @@ QKnxNetIp::Capabilities QKnxNetIpConfigDibProxy::capabilities() const
 /*!
     Returns the enabled IP address assignment methods for setting the current
     IP address if the object that was passed during construction was valid;
-    otherwise returns \l QKnxNetIp::Unknown.
+    otherwise returns \l QKnx::NetIp::Unknown.
 */
 QKnxNetIp::AssignmentMethods QKnxNetIpConfigDibProxy::assignmentMethods() const
 {
