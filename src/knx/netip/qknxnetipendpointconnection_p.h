@@ -109,7 +109,7 @@ public:
     QKnxNetIpEndpointConnectionPrivate(const QHostAddress &address, quint16 port,
             const QKnxNetIpCri &cri, int sendAttempts, QKnxNetIp::Timeout ackTimeout)
         : m_cri(cri)
-        , m_localControlEndpoint { address, port }
+        , m_localEndpoint { address, port }
         , m_maxCemiRequest(sendAttempts)
         , m_acknowledgeTimeout(ackTimeout)
     {}
@@ -140,7 +140,7 @@ public:
     virtual void processDisconnectRequest(const QKnxNetIpFrame &frame);
     virtual void processDisconnectResponse(const QKnxNetIpFrame &frame);
 
-    virtual void processDatagram(QKnxNetIpEndpointConnection::EndpointType, const QNetworkDatagram &);
+    virtual void processDatagram(const QNetworkDatagram &);
 
     void setAndEmitStateChanged(QKnxNetIpEndpointConnection::State newState);
     void setAndEmitErrorOccurred(QKnxNetIpEndpointConnection::Error newError, const QString &message);
@@ -151,9 +151,7 @@ private:
     Endpoint m_remoteControlEndpoint;
 
     Endpoint m_natEndpoint { QHostAddress::AnyIPv4 };
-
-    Endpoint m_localDataEndpoint { QHostAddress::LocalHost };
-    Endpoint m_localControlEndpoint { QHostAddress::LocalHost };
+    Endpoint m_localEndpoint { QHostAddress::LocalHost };
 
     int m_channelId { -1 };
     quint8 m_sendCount { 0 };
@@ -188,8 +186,7 @@ private:
     QTimer *m_acknowledgeTimer { nullptr };
     bool m_waitForAcknowledgement { false };
 
-    QUdpSocket *m_dataEndpoint { nullptr };
-    QUdpSocket *m_controlEndpoint { nullptr };
+    QUdpSocket *m_socket { nullptr };
 
     UserProperties m_user;
 };
