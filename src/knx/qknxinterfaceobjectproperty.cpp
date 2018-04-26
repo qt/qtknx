@@ -405,38 +405,38 @@ bool QKnxInterfaceObjectProperty::isDeviceProperty(QKnxInterfaceObjectProperty p
     case QKnxInterfaceObjectProperty::Device::MeteringFilterTable:
     case QKnxInterfaceObjectProperty::Device::GroupTelegramRateLimitTimeBase:
     case QKnxInterfaceObjectProperty::Device::GroupTelegramRateLimitNumberOfTelegrams:
-    case QKnxInterfaceObjectProperty::Device::Channel01Paramter:
-    case QKnxInterfaceObjectProperty::Device::Channel02Paramter:
-    case QKnxInterfaceObjectProperty::Device::Channel03Paramter:
-    case QKnxInterfaceObjectProperty::Device::Channel04Paramter:
-    case QKnxInterfaceObjectProperty::Device::Channel05Paramter:
-    case QKnxInterfaceObjectProperty::Device::Channel06Paramter:
-    case QKnxInterfaceObjectProperty::Device::Channel07Paramter:
-    case QKnxInterfaceObjectProperty::Device::Channel08Paramter:
-    case QKnxInterfaceObjectProperty::Device::Channel09Paramter:
-    case QKnxInterfaceObjectProperty::Device::Channel10Paramter:
-    case QKnxInterfaceObjectProperty::Device::Channel11Paramter:
-    case QKnxInterfaceObjectProperty::Device::Channel12Paramter:
-    case QKnxInterfaceObjectProperty::Device::Channel13Paramter:
-    case QKnxInterfaceObjectProperty::Device::Channel14Paramter:
-    case QKnxInterfaceObjectProperty::Device::Channel15Paramter:
-    case QKnxInterfaceObjectProperty::Device::Channel16Paramter:
-    case QKnxInterfaceObjectProperty::Device::Channel17Paramter:
-    case QKnxInterfaceObjectProperty::Device::Channel18Paramter:
-    case QKnxInterfaceObjectProperty::Device::Channel19Paramter:
-    case QKnxInterfaceObjectProperty::Device::Channel20Paramter:
-    case QKnxInterfaceObjectProperty::Device::Channel21Paramter:
-    case QKnxInterfaceObjectProperty::Device::Channel22Paramter:
-    case QKnxInterfaceObjectProperty::Device::Channel23Paramter:
-    case QKnxInterfaceObjectProperty::Device::Channel24Paramter:
-    case QKnxInterfaceObjectProperty::Device::Channel25Paramter:
-    case QKnxInterfaceObjectProperty::Device::Channel26Paramter:
-    case QKnxInterfaceObjectProperty::Device::Channel27Paramter:
-    case QKnxInterfaceObjectProperty::Device::Channel28Paramter:
-    case QKnxInterfaceObjectProperty::Device::Channel29Paramter:
-    case QKnxInterfaceObjectProperty::Device::Channel30Paramter:
-    case QKnxInterfaceObjectProperty::Device::Channel31Paramter:
-    case QKnxInterfaceObjectProperty::Device::Channel32Paramter:
+    case QKnxInterfaceObjectProperty::Device::Channel01Parameter:
+    case QKnxInterfaceObjectProperty::Device::Channel02Parameter:
+    case QKnxInterfaceObjectProperty::Device::Channel03Parameter:
+    case QKnxInterfaceObjectProperty::Device::Channel04Parameter:
+    case QKnxInterfaceObjectProperty::Device::Channel05Parameter:
+    case QKnxInterfaceObjectProperty::Device::Channel06Parameter:
+    case QKnxInterfaceObjectProperty::Device::Channel07Parameter:
+    case QKnxInterfaceObjectProperty::Device::Channel08Parameter:
+    case QKnxInterfaceObjectProperty::Device::Channel09Parameter:
+    case QKnxInterfaceObjectProperty::Device::Channel10Parameter:
+    case QKnxInterfaceObjectProperty::Device::Channel11Parameter:
+    case QKnxInterfaceObjectProperty::Device::Channel12Parameter:
+    case QKnxInterfaceObjectProperty::Device::Channel13Parameter:
+    case QKnxInterfaceObjectProperty::Device::Channel14Parameter:
+    case QKnxInterfaceObjectProperty::Device::Channel15Parameter:
+    case QKnxInterfaceObjectProperty::Device::Channel16Parameter:
+    case QKnxInterfaceObjectProperty::Device::Channel17Parameter:
+    case QKnxInterfaceObjectProperty::Device::Channel18Parameter:
+    case QKnxInterfaceObjectProperty::Device::Channel19Parameter:
+    case QKnxInterfaceObjectProperty::Device::Channel20Parameter:
+    case QKnxInterfaceObjectProperty::Device::Channel21Parameter:
+    case QKnxInterfaceObjectProperty::Device::Channel22Parameter:
+    case QKnxInterfaceObjectProperty::Device::Channel23Parameter:
+    case QKnxInterfaceObjectProperty::Device::Channel24Parameter:
+    case QKnxInterfaceObjectProperty::Device::Channel25Parameter:
+    case QKnxInterfaceObjectProperty::Device::Channel26Parameter:
+    case QKnxInterfaceObjectProperty::Device::Channel27Parameter:
+    case QKnxInterfaceObjectProperty::Device::Channel28Parameter:
+    case QKnxInterfaceObjectProperty::Device::Channel29Parameter:
+    case QKnxInterfaceObjectProperty::Device::Channel30Parameter:
+    case QKnxInterfaceObjectProperty::Device::Channel31Parameter:
+    case QKnxInterfaceObjectProperty::Device::Channel32Parameter:
         return true;
     };
     return QKnxInterfaceObjectProperty::isGeneralProperty(property);
