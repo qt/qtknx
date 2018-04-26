@@ -134,7 +134,7 @@
           <item row="3" column="2">
            <widget class="QComboBox" name="priority">
             <property name="currentIndex">
-             <number>0</number>
+             <number>3</number>
             </property>
             <item>
              <property name="text">
