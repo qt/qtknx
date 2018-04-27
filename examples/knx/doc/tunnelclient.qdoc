@@ -40,7 +40,7 @@
     \skipto int main(
     \printuntil {
     \dots
-    \skipto QKnxNetIpTunnelConnection tunnel
+    \skipto QKnxNetIpTunnel tunnel
     \printuntil ;
 
     Then, we connect to the server using the server address and port number:
