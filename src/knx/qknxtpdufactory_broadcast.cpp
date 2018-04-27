@@ -33,6 +33,7 @@ QT_BEGIN_NAMESPACE
 
 /*!
     \class QKnxTpduFactory::Broadcast
+    \internal
 
     \inmodule QtKnx
     \brief The QKnxTpduFactory::Broadcast class is used to create a valid
@@ -154,6 +155,8 @@ QKnxTpduFactory::Broadcast::createSystemNetworkParameterWriteTpdu(QKnxInterfaceO
 // -- A_IndividualAddress
 
 /*!
+    \internal
+
     Returns a TPDU for Individual Address Read Application Service.
 */
 QKnxTpdu QKnxTpduFactory::Broadcast::createIndividualAddressReadTpdu()
@@ -163,6 +166,8 @@ QKnxTpdu QKnxTpduFactory::Broadcast::createIndividualAddressReadTpdu()
 }
 
 /*!
+    \internal
+
     Returns a TPDU for Individual Address Write Application Service with the
     given \l QKnxAddress \a address; or an empty TPDU if the \a address is not
     of type \l QKnxAddress::Individual.
@@ -188,6 +193,8 @@ QKnxTpduFactory::Broadcast::createIndividualAddressResponseTpdu()
 // -- A_IndividualAddressSerialNumber
 
 /*!
+    \internal
+
     Returns a TPDU for Individual Address Serial Number Read Application Service
     with the given \a sn set; or an empty TPDU if the \a sn
     has a different size then six octets.
@@ -217,6 +224,8 @@ QKnxTpduFactory::Broadcast::createIndividualAddressSerialNumberResponseTpdu(cons
 }
 
 /*!
+    \internal
+
     Returns a TPDU for Individual Address Serial Number Write Application Service
     with the given \a sn and \l QKnxAddress \a newAddress set; or otherwise an
     empty TPDU if the \a sn has a different size then six octets or the type of
@@ -239,6 +248,8 @@ QKnxTpduFactory::Broadcast::createIndividualAddressSerialNumberWriteTpdu(const Q
 // -- A_DomainAddress
 
 /*!
+    \internal
+
     Returns a TPDU for Domain Address Read Application Service.
 */
 QKnxTpdu QKnxTpduFactory::Broadcast::createDomainAddressReadTpdu()
@@ -258,6 +269,8 @@ QKnxTpdu QKnxTpduFactory::Broadcast::createDomainAddressResponseTpdu(const QKnxB
 }
 
 /*!
+    \internal
+
     Returns a TPDU for Domain Address Write Application Service with the given
     \l QKnxAddress \a address set.
 */
@@ -275,6 +288,8 @@ QKnxTpdu QKnxTpduFactory::Broadcast::createDomainAddressWriteTpdu(const QKnxByte
 // -- A_CreateDomainAddressSerialNumber
 
 /*!
+    \internal
+
     Returns a TPDU for Domain Address Serial Number Read Application Service
     with the given \a sn set; or an empty TPDU if the \a sn has a different size
     then six octets.
@@ -303,6 +318,8 @@ QKnxTpduFactory::Broadcast::createDomainAddressSerialNumberResponseTpdu(const QK
 }
 
 /*!
+    \internal
+
     Returns a TPDU for Domain Address Serial Number Write Application Service
     with the given \a sn and \l QKnxAddress \a domainAddress set; or otherwise
     an empty TPDU if the \a sn has a different size then six octets.

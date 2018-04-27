@@ -34,6 +34,7 @@ QT_BEGIN_NAMESPACE
 
 /*!
     \class QKnxTpduFactory
+    \internal
 
     \inmodule QtKnx
     \brief The QKnxTpduFactory class is used to create a valid Transport protocol
@@ -65,6 +66,7 @@ static QKnxTpdu::TransportControlField tpci(QKnxTpduFactory::PointToPoint::Mode 
 
 /*!
     \class QKnxTpduFactory::PointToPoint
+    \internal
 
     \inmodule QtKnx
     \brief The QKnxTpduFactory::PointToPoint class is used to create a valid
@@ -80,6 +82,8 @@ static QKnxTpdu::TransportControlField tpci(QKnxTpduFactory::PointToPoint::Mode 
 */
 
 /*!
+    \internal
+
     \enum QKnxTpduFactory::PointToPoint::Mode
 
     \value Connectionless,
@@ -325,6 +329,7 @@ QKnxTpdu QKnxTpduFactory::PointToPoint::createFileStreamInfoReportTpdu(Mode mode
 
 /*!
     \class QKnxTpduFactory::PointToPointConnectionless
+    \internal
 
     \inmodule QtKnx
     \brief The QKnxTpduFactory::PointToPointConnectionless class is used to
@@ -384,6 +389,7 @@ QKnxTpduFactory::PointToPointConnectionless::createNetworkParameterWriteTpdu(QKn
 
 /*!
     \class QKnxTpduFactory::PointToPointConnectionOriented
+    \internal
 
     \inmodule QtKnx
     \brief The QKnxTpduFactory::PointToPointConnectionOriented class is used to
@@ -398,6 +404,8 @@ QKnxTpduFactory::PointToPointConnectionless::createNetworkParameterWriteTpdu(QKn
 */
 
 /*!
+    \internal
+
     Returns a TPDU for Memory Read Application Service with the given \a number,
     \a address and sequence number \a seqNumber set.
 */
@@ -410,6 +418,8 @@ QKnxTpdu QKnxTpduFactory::PointToPointConnectionOriented::createMemoryReadTpdu(q
 }
 
 /*!
+    \internal
+
     Returns a TPDU for Memory Response Application Service with the given
     \a number, \a address, \a data and sequence number \a seqNumber set.
 */
@@ -426,6 +436,8 @@ QKnxTpdu QKnxTpduFactory::PointToPointConnectionOriented::createMemoryResponseTp
 }
 
 /*!
+    \internal
+
     Returns a TPDU for Memory Write Application Service with the given
     \a number, \a address, \a data and sequence number \a seqNumber set.
 */
@@ -442,6 +454,8 @@ QKnxTpdu QKnxTpduFactory::PointToPointConnectionOriented::createMemoryWriteTpdu(
 }
 
 /*!
+    \internal
+
     Returns a \l QKnxTpdu for ADC Read Application Service with the given
     \a channel, \a readCount and \a seqNumber set.
 */
@@ -471,6 +485,8 @@ QKnxTpdu QKnxTpduFactory::PointToPointConnectionOriented::createAdcResponseTpdu(
 }
 
 /*!
+    \internal
+
     Returns a \l QKnxTpdu for User Memory Read Application Service with
     \a addressExtention, \a number, \a address and sequence number \a seqNumber
     set.
@@ -505,6 +521,8 @@ QKnxTpduFactory::PointToPointConnectionOriented::createUserMemoryResponseTpdu(qu
 }
 
 /*!
+    \internal
+
     Returns a TPDU for User Memory Write Application Service with
     \a addressExtention, \a number, \a address, \a data and \a seqNumber
     set.
@@ -525,6 +543,8 @@ QKnxTpduFactory::PointToPointConnectionOriented::createUserMemoryWriteTpdu(quint
 }
 
 /*!
+    \internal
+
     Returns a TPDU for User Manufacturer Info Read Application Service with the
     given sequence number \a seqNumber set.
 */

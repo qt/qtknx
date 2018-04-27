@@ -33,6 +33,7 @@ QT_BEGIN_NAMESPACE
 
 /*!
     \class QKnxTpduFactory::Multicast
+    \internal
 
     \inmodule QtKnx
     \brief The QKnxTpduFactory::Broadcast class is used to create a valid
@@ -46,6 +47,8 @@ QT_BEGIN_NAMESPACE
 // -- A_GroupValue
 
 /*!
+    \internal
+
     Returns a TPDU for a Group value read application service.
 */
 QKnxTpdu QKnxTpduFactory::Multicast::createGroupValueReadTpdu()
@@ -55,6 +58,8 @@ QKnxTpdu QKnxTpduFactory::Multicast::createGroupValueReadTpdu()
 }
 
 /*!
+    \internal
+
     Creates and returns a TPDU for a Group value response application service
     with the given \a data.
 */
@@ -69,6 +74,8 @@ QKnxTpdu QKnxTpduFactory::Multicast::createGroupValueResponseTpdu(const QKnxByte
 }
 
 /*!
+    \internal
+
     Creates and returns a TPDU for a Group value write application service with
     the given \a data.
 */
