@@ -37,9 +37,8 @@ QT_BEGIN_NAMESPACE
 /*!
     \enum QKnxTpdu::ErrorCode
 
-    This enum describes the possible error codes needing in the building
-    of TPDU with service \l QKnxTpdu::FunctionPropertyStateResponse or
-    \l QKnxTpdu::Restart
+    This enum describes the error codes needed when building a TPDU with the
+    \l FunctionPropertyStateResponse or \l Restart service.
 
     \value NoError
     \value Error
@@ -48,8 +47,8 @@ QT_BEGIN_NAMESPACE
 /*!
     \enum QKnxTpdu::ResetType
 
-    This enum describes the possible reset types needing in the building of
-    TPDU with service \l QKnxTpdu::Restart.
+    This enum describes the reset types needed when building a TPDU with the
+    \l Restart service.
 
     \value BasicRestart
     \value MasterRestart
@@ -58,8 +57,8 @@ QT_BEGIN_NAMESPACE
 /*!
     \enum QKnxTpdu::EraseCode
 
-    This enum describes the possible erase codes needing in the building of
-    TPDU with service \l QKnxTpdu::Restart.
+    This enum describes the erase codes needed when building a TPDU with the
+    \l Restart service.
 
     \value Reserved
     \value ConfirmedRestart
@@ -75,8 +74,8 @@ QT_BEGIN_NAMESPACE
 /*!
     \enum QKnxTpdu::LinkWriteFlags
 
-    This enum describes the possible link write flags needing in the building
-    of TPDU with service \l QKnxTpdu::LinkWrite.
+    This enum describes the link write flags needed when building a TPDU with
+    the \l LinkWrite service.
 
     \value AddGroupAddress
     \value AddSendingGroupAddress
@@ -87,8 +86,7 @@ QT_BEGIN_NAMESPACE
 /*!
     \enum QKnxTpdu::TransportControlField
 
-    This enum describes the possible message code dedicated to the transport
-    layer.
+    This enum describes the message codes dedicated to the transport layer.
 
     \value DataGroup
     \value DataBroadcast
@@ -106,7 +104,7 @@ QT_BEGIN_NAMESPACE
 /*!
     \enum QKnxTpdu::ApplicationControlField
 
-    This enum describes the message code dedicated to the application and
+    This enum describes the message codes dedicated to the application and
     representing an application service.
 
     \value GroupValueRead
@@ -200,36 +198,55 @@ public:
     \class QKnxTpdu
 
     \inmodule QtKnx
-    \brief This class represents the part of the \l QKnxLinkLayerFrame to be
-    read by the network, transport and application layers.
+    \brief The QKnxTpdu class represents a TPDU, which is the part of a link
+    layer frame to be read by the network, transport, and application layers.
 
-    To build a valid TPDU it is recommended to use the \l QKnxTpduFactory.
-    Reading the bytes from left to right, a TPDU is composed of the following
-    information:
+    Reading the bytes from left to right, a transport protocol data unit (TPDU)
+    contains the following information:
 
     \list
-        \li The transport layer code \l TransportControlField,
-        \li The application layer service code \l ApplicationControlField
+        \li The transport layer code indication (TPCI), \l TransportControlField
+        \li The application layer code indication (APCI),
+            \l ApplicationControlField
     \endlist
 
-    If applicable, the T_CONNECT TPDU holds no application layer service for
-    example, and the data and other information (if applicable, depending on
-    the chosen service).
+    The other fields contained by the TPDU depend on the selected service.
+    For example, the \c T_CONNECT TPDU holds no application layer service.
+
+    The sequence number of the TPDU is used when transmitting frames between
+    KNXNet/IP clients and servers to make sure the all packages are received
+    and that they arrive in the correct order.
+
+    \sa QKnxLinkLayerFrame
 */
 
+/*!
+    Creates a TPDU.
+*/
 QKnxTpdu::QKnxTpdu()
     : d_ptr(new QKnxTpduPrivate)
 {}
 
+/*!
+    Deletes a TPDU.
+*/
 QKnxTpdu::~QKnxTpdu()
 {}
 
+/*!
+    Creates a TPDU with the transport layer code indication set to \a tpci.
+*/
 QKnxTpdu::QKnxTpdu(TransportControlField tpci)
     : d_ptr(new QKnxTpduPrivate)
 {
     setTransportControlField(tpci);
 }
 
+/*!
+    Creates a TPDU with the transport layer code indication set to \a tpci,
+    the application layer code indication set to \a apci, and the data set
+    to \a data.
+*/
 QKnxTpdu::QKnxTpdu(TransportControlField tpci, ApplicationControlField apci,
         const QKnxByteArray &data)
     : QKnxTpdu(tpci)
@@ -238,12 +255,21 @@ QKnxTpdu::QKnxTpdu(TransportControlField tpci, ApplicationControlField apci,
     setData(data);
 }
 
+/*!
+    Creates a TPDU with the transport layer code indication set to \a tpci and
+    the sequence number set to \a seqNumber.
+*/
 QKnxTpdu::QKnxTpdu(TransportControlField tpci, quint8 seqNumber)
     : QKnxTpdu(tpci)
 {
     setSequenceNumber(seqNumber);
 }
 
+/*!
+    Creates a TPDU with the transport layer code indication set to \a tpci,
+    sequence number set to \a seqNumber, application layer code indication
+    set to \a apci, and the data set to \a data.
+*/
 QKnxTpdu::QKnxTpdu(TransportControlField tpci, quint8 seqNumber, ApplicationControlField apci,
         const QKnxByteArray &data)
     : QKnxTpdu(tpci)
@@ -254,11 +280,11 @@ QKnxTpdu::QKnxTpdu(TransportControlField tpci, quint8 seqNumber, ApplicationCont
 }
 
 /*!
-    Returns true if the current TPDU is valid.
+    Returns \c true if the TPDU is valid.
 
-    \note This function is not implemented for every services.
-    To make sure your TPDU is correct, use the \l QKnxTpduFactory.
- */
+    \note This function is not implemented for all services and medium types.
+    At the time of this writing, only KNXnet/IP is supported.
+*/
 bool QKnxTpdu::isValid() const
 {
     switch (transportControlField()) {
@@ -373,18 +399,24 @@ bool QKnxTpdu::isValid() const
 #undef L_DATA_EXTENDED_PAYLOAD
 }
 
+/*!
+    Returns the medium type of the TPDU.
+*/
 QKnx::MediumType QKnxTpdu::mediumType() const
 {
     return d_ptr->m_mediumType;
 }
 
+/*!
+    Sets the medium type of the TPDU to \a mediumType.
+*/
 void QKnxTpdu::setMediumType(QKnx::MediumType mediumType)
 {
      d_ptr->m_mediumType = mediumType;
 }
 
 /*!
-    Returns the Transport layer control field of the \c QKnxTpdu.
+    Returns the transport layer code indication field of the TPDU.
 */
 QKnxTpdu::TransportControlField QKnxTpdu::transportControlField() const
 {
@@ -394,7 +426,7 @@ QKnxTpdu::TransportControlField QKnxTpdu::transportControlField() const
 }
 
 /*!
-    Sets the Transport layer control field to \a tpci.
+    Sets the transport layer control indication field to \a tpci.
 */
 void QKnxTpdu::setTransportControlField(TransportControlField tpci)
 {
@@ -429,7 +461,7 @@ void QKnxTpdu::setTransportControlField(TransportControlField tpci)
 }
 
 /*!
-    Returns the Application layer control field of the \c QKnxTpdu.
+    Returns the application layer control indication field of the TPDU.
 */
 QKnxTpdu::ApplicationControlField QKnxTpdu::applicationControlField() const
 {
@@ -439,7 +471,7 @@ QKnxTpdu::ApplicationControlField QKnxTpdu::applicationControlField() const
 }
 
 /*!
-    Sets the Application layer control field to \a apci.
+    Sets the application layer control indication field to \a apci.
 */
 void QKnxTpdu::setApplicationControlField(ApplicationControlField apci)
 {
@@ -457,7 +489,7 @@ void QKnxTpdu::setApplicationControlField(ApplicationControlField apci)
 }
 
 /*!
-    Returns the number of bytes of the transport protocol data unit.
+    Returns the number of bytes of the TPDU.
 */
 quint16 QKnxTpdu::size() const
 {
@@ -465,10 +497,11 @@ quint16 QKnxTpdu::size() const
 }
 
 /*!
-    Returns the number of bytes of the transport protocol data unit data.
+    Returns the number of bytes of the TPDU data.
 
-    \note The data part of a TPDU may contain the low byte of the APCI, but
-    excludes the byte for the TPCI.
+    \note The data part of a TPDU may contain the low byte of the application
+    layer control indication (APCI), but excludes the byte for the transport
+    layer control indication (TPCI) field.
 */
 quint16 QKnxTpdu::dataSize() const
 {
@@ -487,7 +520,7 @@ quint8 QKnxTpdu::sequenceNumber() const
 }
 
 /*!
-    Set the sequence number if the frame is connection oriented to \a seqNumber;
+    Sets the sequence number to \a seqNumber if the frame is connection oriented;
     otherwise does nothing.
 */
 void QKnxTpdu::setSequenceNumber(quint8 seqNumber)
@@ -531,9 +564,9 @@ QKnxByteArray QKnxTpdu::data() const
 }
 
 /*!
-    Sets the data of the TPDU to \a data.
+    Sets the data part of the TPDU to \a data.
 
-    \note The TPCI and APCI may not be part of the passed argument.
+    \note The TPCI and APCI may not be a part of the passed argument.
 */
 void QKnxTpdu::setData(const QKnxByteArray &data)
 {
@@ -593,8 +626,9 @@ QKnxByteArray QKnxTpdu::bytes() const
 }
 
 /*!
-    Constructs the transport protocol data unit from the byte array \a data
-    starting at position \a index inside the array with given size \a size.
+    Creates a TPDU with the medium type \a mediumType from the byte array
+    \a data starting at the position \a index inside the array with the size
+    \a size.
 */
 QKnxTpdu QKnxTpdu::fromBytes(const QKnxByteArray &data, quint16 index, quint16 size,
     QKnx::MediumType mediumType)
@@ -612,12 +646,14 @@ QKnxTpdu QKnxTpdu::fromBytes(const QKnxByteArray &data, quint16 index, quint16 s
 }
 
 /*!
-    Returns the sequence number extracted out of the \data byte array if the
-    byte at position \index can be verified as valid transport control field;
-    otherwise returns a negative value on error.
+    Returns the sequence number extracted from the \a data byte array if the
+    byte at position \a index can be verified as a valid TPCI field.
+
+    If an error occurs, \a ok is set to \c false and this function returns a
+    negative value.
 
     \note The given byte array is not further validated, so you need to be sure
-    to pass data that is an TPDU.
+    to pass data that is a TPDU.
 */
 quint8 QKnxTpdu::sequenceNumber(const QKnxByteArray &data, quint8 index, bool *ok)
 {
@@ -643,14 +679,14 @@ quint8 QKnxTpdu::sequenceNumber(const QKnxByteArray &data, quint8 index, bool *o
 }
 
 /*!
-    Returns the transport control field extracted out of the \data byte array;
-    otherwise returns \l Invalid.
+    Returns the TPCI field extracted from the \a data byte array at the position
+    \a index; otherwise returns \l Invalid.
 
-    \note If the transport control field carries a sequence number, the value
+    \note If the TPCI field carries a sequence number, the value
     is removed from the return value.
 
     \note The given byte array is not further validated, so you need to be sure
-    to pass data that is an TPDU.
+    to pass data that is a TPDU.
 */
 QKnxTpdu::TransportControlField QKnxTpdu::tpci(const QKnxByteArray &data, quint8 index)
 {
@@ -678,11 +714,11 @@ QKnxTpdu::TransportControlField QKnxTpdu::tpci(const QKnxByteArray &data, quint8
 }
 
 /*!
-    Returns the application control field extracted out of the \data byte array;
-    otherwise returns \l Invalid.
+    Returns the APCI field extracted out of the \a data byte array at the
+    position \a index; otherwise returns \l Invalid.
 
     \note The given byte array is not further validated, so you need to be sure
-    to pass data that is an TPDU.
+    to pass data that is a TPDU.
 */
 QKnxTpdu::ApplicationControlField QKnxTpdu::apci(const QKnxByteArray &data, quint8 index)
 {
