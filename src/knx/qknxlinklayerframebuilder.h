@@ -70,7 +70,6 @@ private:
     QKnx::MediumType m_mediumType { QKnx::MediumType::NetIP };
     QKnxByteArray m_data;
     quint16 m_dataOffset { 0 };
-    quint16 m_dataSize { 0 };
 };
 
 QT_END_NAMESPACE
