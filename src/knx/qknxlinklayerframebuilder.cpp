@@ -41,49 +41,49 @@ QT_BEGIN_NAMESPACE
     \class QKnxLinkLayerFrameBuilder
 
     \inmodule QtKnx
-    \brief The QKnxLinkLayerFrameBuilder class allows you to create a
-    QKnxLinkLayerFrame.
+    \brief The QKnxLinkLayerFrameBuilder class provides the means to create a
+    KNX link layer frame.
 
     A KNX link layer frame contains several fields: message code, additional
-    information, control field, maybe an extended control field, a TPDU, source
-    address and destination address. The builder requires valid fields to be
-    able to create a frame.
+    information, control field, maybe an extended control field, a TPDU, as
+    well as a source address and destination address. The fields must be valid
+    for the builder to be able to create a frame.
 
-    The builder is setup with default values to create a cEMI group value read
-    frame, only the destination address needs to be specified during creation.
+    The builder is set up with default values to create a common external
+    message interface (cEMI) group value read frame, except for the destination
+    address, which needs to be specified during the creation of the frame.
+
+    The following code sample illustrates how to establish a KNXnet/IP tunnel
+    connection, to create group value read and write frames, and to send the
+    frames over the connection:
 
     \code
-        // establish a KNXnet/IP tunnel connection
-        QKnxNetIpTunnelConnection tunnel(...);
+        QKnxNetIpTunnel tunnel(...);
         tunnel.connectToHost(...);
 
-        // create a group value read frame to be send via a KNXnet/IP tunnel
         auto frame = QKnxLinkLayerFrameBuilder()
             .setDestinationAddress({ QKnxAddress::Type::Group, QLatin1String("2/1/4") })
             .create();
 
-        // send the frame
-        tunnel.sendTunnelFrame(frame);
+        tunnel.sendFrame(frame);
 
-        // create a group value write frame to be send via a KNXnet/IP tunnel
         frame = QKnxLinkLayerFrameBuilder()
             .setDestinationAddress({ QKnxAddress::Type::Group, QLatin1String("2/1/4") })
             .setTpdu({
                 QKnxTpdu::TransportControlField::DataGroup,
                 QKnxTpdu::ApplicationControlField::GroupValueWrite,
                 QKnxSwitch(QKnxSwitch::State::On).bytes()
-             })
-            .create();
+            }).create();
 
-        // send the frame
-        tunnel.sendTunnelFrame(frame);
+        tunnel.sendFrame(frame);
     \endcode
 
     \sa QKnxLinkLayerFrame
 */
 
 /*!
-    Sets the source address to \a source and returns a reference to the builder.
+    Sets the source address to be used by the builder to \a source and returns
+    a reference to the builder.
 
     \sa QKnxAddress
 */
@@ -94,7 +94,8 @@ QKnxLinkLayerFrameBuilder &QKnxLinkLayerFrameBuilder::setSourceAddress(const QKn
 }
 
 /*!
-    Sets the destination address to \a dest and returns a reference to the builder.
+    Sets the destination address to be used by the builder to \a dest and
+    returns a reference to the builder.
 
     \sa QKnxAddress
 */
@@ -105,7 +106,8 @@ QKnxLinkLayerFrameBuilder &QKnxLinkLayerFrameBuilder::setDestinationAddress(cons
 }
 
 /*!
-    Sets the control field to \a ctrl and returns a reference to the builder.
+    Sets the control field to be used by the builder to \a ctrl and returns a
+    reference to the builder.
 
     \sa QKnxControlField
 */
@@ -116,7 +118,8 @@ QKnxLinkLayerFrameBuilder &QKnxLinkLayerFrameBuilder::setControlField(const QKnx
 }
 
 /*!
-    Sets the extended control field to \a extCtrl and returns a reference to the builder.
+    Sets the extended control field to be used by the builder to \a extCtrl and
+    returns a reference to the builder.
 
     \sa QKnxExtendedControlField
 */
@@ -128,7 +131,8 @@ QKnxLinkLayerFrameBuilder &
 }
 
 /*!
-    Sets a TPDU to \a tpdu and returns a reference to the builder.
+    Sets the TPDU to be used by the builder to \a tpdu and returns a reference
+    to the builder.
 
     \sa QKnxTpdu
 */
@@ -141,6 +145,8 @@ QKnxLinkLayerFrameBuilder &QKnxLinkLayerFrameBuilder::setTpdu(const QKnxTpdu &tp
 /*!
     Sets the medium that will determine the format and order of fields to
     \a type and returns a reference to the builder.
+
+    \sa QKnx::MediumType
 */
 QKnxLinkLayerFrameBuilder &QKnxLinkLayerFrameBuilder::setMedium(QKnx::MediumType type)
 {
@@ -149,10 +155,11 @@ QKnxLinkLayerFrameBuilder &QKnxLinkLayerFrameBuilder::setMedium(QKnx::MediumType
 }
 
 /*!
-    Sets an array of bytes with all the fields encoded into the QKnxByteArray. Avoids
-    using each of the field setters.
+    Sets an array of bytes specified by \a data with all the fields encoded into
+    a byte array starting from the position \a offset to avoid having to use
+    each of the field setters separately.
 
-    \sa createFrame()
+    \sa createFrame(), QKnxByteArray
 */
 QKnxLinkLayerFrameBuilder &QKnxLinkLayerFrameBuilder::setData(const QKnxByteArray &data, quint16 offset)
 {
@@ -162,8 +169,10 @@ QKnxLinkLayerFrameBuilder &QKnxLinkLayerFrameBuilder::setData(const QKnxByteArra
 }
 
 /*!
-    Sets a QKnxLinkLayerFrame::MessageCode to be used by the
-    builder when createFrame() is called.
+    Sets the link layer frame message code to be used by the builder to \a code
+    and returns a reference to the builder.
+
+    \sa QKnxLinkLayerFrame::MessageCode
 */
 QKnxLinkLayerFrameBuilder &QKnxLinkLayerFrameBuilder::setMsgCode(QKnxLinkLayerFrame::MessageCode code)
 {
@@ -172,8 +181,10 @@ QKnxLinkLayerFrameBuilder &QKnxLinkLayerFrameBuilder::setMsgCode(QKnxLinkLayerFr
 }
 
 /*!
-    Sets a QVector<QKnxAdditionalInfo> to be used by the builder
-    when createFrame() is called.
+    Sets the additional information to be used by the builder to \a infos
+    and returns a reference to the builder.
+
+    \sa QKnxAdditionalInfo
 */
 QKnxLinkLayerFrameBuilder &QKnxLinkLayerFrameBuilder::setAdditionalInfos(const QVector<QKnxAdditionalInfo> &infos)
 {
@@ -182,12 +193,14 @@ QKnxLinkLayerFrameBuilder &QKnxLinkLayerFrameBuilder::setAdditionalInfos(const Q
 }
 
 /*!
-    Creates a frame from: QKnxLinkLayerFrame::MessageCode, additional information,
-    QKnxControlField, QKnxExtendedControlField, QKnxTpdu, source
-    address and destination address; or from a QKnxByteArray with
-    all fields already encoded into it.
+    Creates a frame from the values set for the link layer frame message code,
+    additional information, control field, extended control field, TPDU, source
+    address, and destination address. Alternatively, uses a byte array with all
+    the fields already encoded into it.
 
-    \sa QKnxLinkLayerFrame
+    \sa QKnxLinkLayerFrame, QKnxLinkLayerFrame::MessageCode, QKnxAdditionalInfo,
+    QKnxControlField, QKnxExtendedControlField, QKnxTpdu, QKnxAddress,
+    QKnxByteArray
 */
 QKnxLinkLayerFrame QKnxLinkLayerFrameBuilder::createFrame() const
 {
