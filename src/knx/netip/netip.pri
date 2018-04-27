@@ -15,7 +15,7 @@ PUBLIC_HEADERS += $$PWD/qknxnetip.h \
     $$PWD/qknxnetipdeviceconfigurationacknowledge.h \
     $$PWD/qknxnetipdeviceconfigurationrequest.h \
     $$PWD/qknxnetipdevicedib.h \
-    $$PWD/qknxnetipdevicemanagementconnection.h \
+    $$PWD/qknxnetipdevicemanagement.h \
     $$PWD/qknxnetipdisconnectrequest.h \
     $$PWD/qknxnetipdisconnectresponse.h \
     $$PWD/qknxnetipendpointconnection.h \
@@ -35,7 +35,7 @@ PUBLIC_HEADERS += $$PWD/qknxnetip.h \
     $$PWD/qknxnetipservicefamiliesdib.h \
     $$PWD/qknxnetipstruct.h \
     $$PWD/qknxnetipstructheader.h \
-    $$PWD/qknxnetiptunnelconnection.h \
+    $$PWD/qknxnetiptunnel.h \
     $$PWD/qknxnetiptunnelingacknowledge.h \
     $$PWD/qknxnetiptunnelingrequest.h
 
@@ -59,7 +59,7 @@ SOURCES += $$PWD/qknxnetip.cpp \
     $$PWD/qknxnetipdeviceconfigurationacknowledge.cpp \
     $$PWD/qknxnetipdeviceconfigurationrequest.cpp \
     $$PWD/qknxnetipdevicedib.cpp \
-    $$PWD/qknxnetipdevicemanagementconnection.cpp \
+    $$PWD/qknxnetipdevicemanagement.cpp \
     $$PWD/qknxnetipdisconnectrequest.cpp \
     $$PWD/qknxnetipdisconnectresponse.cpp \
     $$PWD/qknxnetipendpointconnection.cpp \
@@ -79,6 +79,6 @@ SOURCES += $$PWD/qknxnetip.cpp \
     $$PWD/qknxnetipservicefamiliesdib.cpp \
     $$PWD/qknxnetipstruct.cpp \
     $$PWD/qknxnetipstructheader.cpp \
-    $$PWD/qknxnetiptunnelconnection.cpp \
+    $$PWD/qknxnetiptunnel.cpp \
     $$PWD/qknxnetiptunnelingacknowledge.cpp \
     $$PWD/qknxnetiptunnelingrequest.cpp

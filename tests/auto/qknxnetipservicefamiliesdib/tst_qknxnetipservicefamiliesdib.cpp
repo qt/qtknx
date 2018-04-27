@@ -51,14 +51,14 @@ private slots:
 
 void tst_QKnxNetIpServiceFamiliesDib::testDefaultConstructor()
 {
-    auto serviceFamiliesDib = QKnxNetIpServiceFamiliesDibView::builder().create();
+    auto serviceFamiliesDib = QKnxNetIpServiceFamiliesDibProxy::builder().create();
     QCOMPARE(serviceFamiliesDib.isValid(), true);
     QCOMPARE(serviceFamiliesDib.size(), quint16(2));
     QCOMPARE(serviceFamiliesDib.bytes(), QKnxByteArray::fromHex("0202"));
     QCOMPARE(serviceFamiliesDib.data().size(), quint16(0));
     QCOMPARE(serviceFamiliesDib.data(), QKnxByteArray {});
 
-    QKnxNetIpServiceFamiliesDibView view(serviceFamiliesDib);
+    QKnxNetIpServiceFamiliesDibProxy view(serviceFamiliesDib);
     QCOMPARE(view.isValid(), true);
     QCOMPARE(view.descriptionType(), QKnxNetIp::DescriptionType::SupportedServiceFamilies);
 }
@@ -75,7 +75,7 @@ void tst_QKnxNetIpServiceFamiliesDib::testConstructorWithOneArgument()
     infos.append({ QKnxNetIp::ServiceFamily::RemoteLogging, 13 });
     infos.append({ QKnxNetIp::ServiceFamily::RemoteConfigAndDiagnosis, 14 });
     infos.append({ QKnxNetIp::ServiceFamily::ObjectServer, 15 });
-    auto serviceFamiliesDib = QKnxNetIpServiceFamiliesDibView::Builder()
+    auto serviceFamiliesDib = QKnxNetIpServiceFamiliesDibProxy::Builder()
         .setServiceInfos(infos).create();
 
     QCOMPARE(serviceFamiliesDib.isValid(), true);
@@ -85,14 +85,14 @@ void tst_QKnxNetIpServiceFamiliesDib::testConstructorWithOneArgument()
     QCOMPARE(serviceFamiliesDib.data().size(), quint16(16));
     QCOMPARE(serviceFamiliesDib.data(), QKnxByteArray::fromHex("020903010302040B050C060D070E080F"));
 
-    QKnxNetIpServiceFamiliesDibView view(serviceFamiliesDib);
+    QKnxNetIpServiceFamiliesDibProxy view(serviceFamiliesDib);
     QCOMPARE(view.isValid(), true);
     QCOMPARE(view.descriptionType(), QKnxNetIp::DescriptionType::SupportedServiceFamilies);
 }
 
 void tst_QKnxNetIpServiceFamiliesDib::testConstructorWithTwoArguments()
 {
-    auto families = QKnxNetIpServiceFamiliesDibView::Builder()
+    auto families = QKnxNetIpServiceFamiliesDibProxy::Builder()
         .setServiceInfos({ { QKnxNetIp::ServiceFamily::Core, 10 } }).create();
 
     QCOMPARE(families.isValid(), true);
@@ -101,15 +101,15 @@ void tst_QKnxNetIpServiceFamiliesDib::testConstructorWithTwoArguments()
     QCOMPARE(families.size(), quint16(4));
     QCOMPARE(families.data(), QKnxByteArray::fromHex("020A"));
 
-    QKnxNetIpServiceFamiliesDibView view(families);
+    QKnxNetIpServiceFamiliesDibProxy view(families);
     QCOMPARE(view.isValid(), true);
     QCOMPARE(view.descriptionType(), QKnxNetIp::DescriptionType::SupportedServiceFamilies);
 }
 
 void tst_QKnxNetIpServiceFamiliesDib::testAddFunctions()
 {
-    auto builder = QKnxNetIpServiceFamiliesDibView::Builder();
-    auto families = QKnxNetIpServiceFamiliesDibView::Builder()
+    auto builder = QKnxNetIpServiceFamiliesDibProxy::Builder();
+    auto families = QKnxNetIpServiceFamiliesDibProxy::Builder()
         .setServiceInfos({ { QKnxNetIp::ServiceFamily::Core, 9 } }).create();
 
     QCOMPARE(families.isValid(), true);
@@ -118,12 +118,12 @@ void tst_QKnxNetIpServiceFamiliesDib::testAddFunctions()
     QCOMPARE(families.data().size(), quint16(2));
     QCOMPARE(families.data(), QKnxByteArray::fromHex("0209"));
 
-    QKnxNetIpServiceFamiliesDibView view(families);
+    QKnxNetIpServiceFamiliesDibProxy view(families);
     QCOMPARE(view.isValid(), true);
     QCOMPARE(view.serviceInfos().count(), 1);
     QCOMPARE(view.descriptionType(), QKnxNetIp::DescriptionType::SupportedServiceFamilies);
 
-    families = QKnxNetIpServiceFamiliesDibView::Builder()
+    families = QKnxNetIpServiceFamiliesDibProxy::Builder()
         .setServiceInfos(view.serviceInfos() += { QKnxNetIp::ServiceFamily::DeviceManagement, 10 })
         .create();
     QCOMPARE(families.isValid(), true);
@@ -136,7 +136,7 @@ void tst_QKnxNetIpServiceFamiliesDib::testAddFunctions()
     QCOMPARE(view.serviceInfos().count(), 2);
     QCOMPARE(view.descriptionType(), QKnxNetIp::DescriptionType::SupportedServiceFamilies);
 
-    families = QKnxNetIpServiceFamiliesDibView::Builder()
+    families = QKnxNetIpServiceFamiliesDibProxy::Builder()
         .setServiceInfos(view.serviceInfos() += { QKnxNetIp::ServiceFamily::IpTunneling, 11 })
         .create();
     QCOMPARE(families.isValid(), true);
@@ -152,7 +152,7 @@ void tst_QKnxNetIpServiceFamiliesDib::testAddFunctions()
 
 void tst_QKnxNetIpServiceFamiliesDib::testGetFunction()
 {
-    auto serviceFamiliesDib = QKnxNetIpServiceFamiliesDibView::builder()
+    auto serviceFamiliesDib = QKnxNetIpServiceFamiliesDibProxy::builder()
         .setServiceInfos({
             { QKnxNetIp::ServiceFamily::ObjectServer, 15 },
             { QKnxNetIp::ServiceFamily::Core, 9 },
@@ -163,7 +163,7 @@ void tst_QKnxNetIpServiceFamiliesDib::testGetFunction()
             { QKnxNetIp::ServiceFamily::RemoteConfigAndDiagnosis, 14 }
         }).create();
 
-    QKnxNetIpServiceFamiliesDibView view(serviceFamiliesDib);
+    QKnxNetIpServiceFamiliesDibProxy view(serviceFamiliesDib);
     QCOMPARE(serviceFamiliesDib.isValid(), true);
     QCOMPARE(view.serviceInfos().count(), 7);
 
@@ -204,7 +204,7 @@ void tst_QKnxNetIpServiceFamiliesDib::testDebugStream()
         QtMessageHandler oldMessageHandler;
     } _(myMessageHandler);
 
-    qDebug() << QKnxNetIpServiceFamiliesDibView::builder().create();
+    qDebug() << QKnxNetIpServiceFamiliesDibProxy::builder().create();
     QCOMPARE(s_msg, QString::fromLatin1("0x0202"));
 
     QVector<QKnxServiceInfo> families;
@@ -216,10 +216,10 @@ void tst_QKnxNetIpServiceFamiliesDib::testDebugStream()
     families.append({ QKnxNetIp::ServiceFamily::RemoteConfigAndDiagnosis, 14 });
     families.append({ QKnxNetIp::ServiceFamily::ObjectServer, 15 });
 
-    qDebug() << QKnxNetIpServiceFamiliesDibView::builder().setServiceInfos(families).create();
+    qDebug() << QKnxNetIpServiceFamiliesDibProxy::builder().setServiceInfos(families).create();
     QCOMPARE(s_msg, QString::fromLatin1("0x10020209030a040b050c060d070e080f"));
 
-    qDebug() << QKnxNetIpServiceFamiliesDibView::builder()
+    qDebug() << QKnxNetIpServiceFamiliesDibProxy::builder()
         .setServiceInfos({ { QKnxNetIp::ServiceFamily::Core, 10 } }).create();
     QCOMPARE(s_msg, QString::fromLatin1("0x0402020a"));
 }

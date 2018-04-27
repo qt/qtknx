@@ -36,14 +36,14 @@
 
 QT_BEGIN_NAMESPACE
 
-class Q_KNX_EXPORT QKnxNetIpRoutingLostMessage final
+class Q_KNX_EXPORT QKnxNetIpRoutingLostMessageProxy final
 {
 public:
-    QKnxNetIpRoutingLostMessage() = delete;
-    ~QKnxNetIpRoutingLostMessage() = default;
+    QKnxNetIpRoutingLostMessageProxy() = delete;
+    ~QKnxNetIpRoutingLostMessageProxy() = default;
 
-    QKnxNetIpRoutingLostMessage(const QKnxNetIpFrame &&) = delete;
-    explicit QKnxNetIpRoutingLostMessage(const QKnxNetIpFrame &frame);
+    QKnxNetIpRoutingLostMessageProxy(const QKnxNetIpFrame &&) = delete;
+    explicit QKnxNetIpRoutingLostMessageProxy(const QKnxNetIpFrame &frame);
 
     bool isValid() const;
 
@@ -63,7 +63,7 @@ public:
         quint16 m_lostMessageCount;
 
     };
-    static QKnxNetIpRoutingLostMessage::Builder builder();
+    static QKnxNetIpRoutingLostMessageProxy::Builder builder();
 
 private:
     const QKnxNetIpFrame &m_frame;

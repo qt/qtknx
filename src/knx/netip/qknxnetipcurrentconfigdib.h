@@ -36,14 +36,14 @@
 
 QT_BEGIN_NAMESPACE
 
-class Q_KNX_EXPORT QKnxNetIpCurrentConfigDibView final
+class Q_KNX_EXPORT QKnxNetIpCurrentConfigDibProxy final
 {
 public:
-    QKnxNetIpCurrentConfigDibView() = delete;
-    ~QKnxNetIpCurrentConfigDibView() = default;
+    QKnxNetIpCurrentConfigDibProxy() = delete;
+    ~QKnxNetIpCurrentConfigDibProxy() = default;
 
-    QKnxNetIpCurrentConfigDibView(const QKnxNetIpDib &&) = delete;
-    explicit QKnxNetIpCurrentConfigDibView(const QKnxNetIpDib &dib);
+    QKnxNetIpCurrentConfigDibProxy(const QKnxNetIpDib &&) = delete;
+    explicit QKnxNetIpCurrentConfigDibProxy(const QKnxNetIpDib &dib);
 
     bool isValid() const;
     QKnxNetIp::DescriptionType descriptionType() const;
@@ -72,7 +72,7 @@ public:
         QHostAddress m_dhcpBootP;
         QKnxNetIp::AssignmentMethod m_method { QKnxNetIp::AssignmentMethod::Unknown };
     };
-    static QKnxNetIpCurrentConfigDibView::Builder builder();
+    static QKnxNetIpCurrentConfigDibProxy::Builder builder();
 
 private:
     const QKnxNetIpDib &m_dib;

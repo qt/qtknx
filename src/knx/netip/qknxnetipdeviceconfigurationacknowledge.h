@@ -36,14 +36,14 @@
 
 QT_BEGIN_NAMESPACE
 
-class Q_KNX_EXPORT QKnxNetIpDeviceConfigurationAcknowledge final
+class Q_KNX_EXPORT QKnxNetIpDeviceConfigurationAcknowledgeProxy final
 {
 public:
-    QKnxNetIpDeviceConfigurationAcknowledge() = delete;
-    ~QKnxNetIpDeviceConfigurationAcknowledge() = default;
+    QKnxNetIpDeviceConfigurationAcknowledgeProxy() = delete;
+    ~QKnxNetIpDeviceConfigurationAcknowledgeProxy() = default;
 
-    QKnxNetIpDeviceConfigurationAcknowledge(const QKnxNetIpFrame &&) = delete;
-    explicit QKnxNetIpDeviceConfigurationAcknowledge(const QKnxNetIpFrame &frame);
+    QKnxNetIpDeviceConfigurationAcknowledgeProxy(const QKnxNetIpFrame &&) = delete;
+    explicit QKnxNetIpDeviceConfigurationAcknowledgeProxy(const QKnxNetIpFrame &frame);
 
     bool isValid() const;
 
@@ -65,7 +65,7 @@ public:
         quint8 m_sequenceNumber;
         QKnxNetIp::Error m_status;
     };
-    static QKnxNetIpDeviceConfigurationAcknowledge::Builder builder();
+    static QKnxNetIpDeviceConfigurationAcknowledgeProxy::Builder builder();
 
 private:
     const QKnxNetIpFrame &m_frame;

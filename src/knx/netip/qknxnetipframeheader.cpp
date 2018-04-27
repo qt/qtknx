@@ -255,7 +255,7 @@ QKnxNetIpFrameHeader QKnxNetIpFrameHeader::fromBytes(const QKnxByteArray &bytes,
     if (availableSize < headerSize || headerSize < 2)
         return {}; // Not enough bytes for the header or to read the version info.
 
-    if (bytes[index + 1] == KnxNetIpVersion10) {
+    if (bytes.at(index + 1) == KnxNetIpVersion10) {
         if (headerSize != HeaderSize10)
             return {};
     } else { // TODO: Adapt once we support other versions.

@@ -35,26 +35,26 @@
 
 QT_BEGIN_NAMESPACE
 
-class Q_KNX_EXPORT QKnxNetIpCriView final
+class Q_KNX_EXPORT QKnxNetIpCriProxy final
 {
 public:
-    QKnxNetIpCriView() = delete;
-    ~QKnxNetIpCriView() = default;
+    QKnxNetIpCriProxy() = delete;
+    ~QKnxNetIpCriProxy() = default;
 
-    QKnxNetIpCriView(const QKnxNetIpCri &&) = delete;
-    explicit QKnxNetIpCriView(const QKnxNetIpCri &cri);
+    QKnxNetIpCriProxy(const QKnxNetIpCri &&) = delete;
+    explicit QKnxNetIpCriProxy(const QKnxNetIpCri &cri);
 
     bool isValid() const;
 
     QKnxNetIp::ConnectionType connectionType() const;
-    QKnxNetIp::TunnelingLayer tunnelingLayer() const;
+    QKnxNetIp::TunnelLayer tunnelLayer() const;
     QKnxByteArray additionalData() const;
 
     class Q_KNX_EXPORT Builder final
     {
     public:
         Builder &setConnectionType(QKnxNetIp::ConnectionType type);
-        Builder &setTunnelingLayer(QKnxNetIp::TunnelingLayer layer);
+        Builder &setTunnelLayer(QKnxNetIp::TunnelLayer layer);
         Builder &setAdditionalData(const QKnxByteArray &additionalData);
 
         QKnxNetIpCri create() const;
@@ -63,7 +63,7 @@ public:
         QKnxNetIp::ConnectionType m_cType = QKnxNetIp::ConnectionType::Tunnel;
         QKnxByteArray m_additionalData;
     };
-    static QKnxNetIpCriView::Builder builder();
+    static QKnxNetIpCriProxy::Builder builder();
 
 private:
     const QKnxNetIpCri &m_cri;

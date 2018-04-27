@@ -35,27 +35,6 @@
 QT_BEGIN_NAMESPACE
 
 /*!
-    \class QKnxTpdu
-
-    \inmodule QtKnx
-    \brief This class represents the part of the \l QKnxLinkLayerFrame to be
-    read by the network, transport and application layers.
-
-    To build a valid TPDU it is recommended to use the \l QKnxTpduFactory.
-    Reading the bytes from left to right, a TPDU is composed of the following
-    information:
-
-    \list
-        \li The transport layer code \l TransportControlField,
-        \li The application layer service code \l ApplicationControlField
-    \endlist
-
-    If applicable, the T_CONNECT TPDU holds no application layer service for
-    example, and the data and other information (if applicable, depending on
-    the chosen service).
-*/
-
-/*!
     \enum QKnxTpdu::ErrorCode
 
     This enum describes the possible error codes needing in the building
@@ -68,6 +47,7 @@ QT_BEGIN_NAMESPACE
 
 /*!
     \enum QKnxTpdu::ResetType
+
     This enum describes the possible reset types needing in the building of
     TPDU with service \l QKnxTpdu::Restart.
 
@@ -77,6 +57,7 @@ QT_BEGIN_NAMESPACE
 
 /*!
     \enum QKnxTpdu::EraseCode
+
     This enum describes the possible erase codes needing in the building of
     TPDU with service \l QKnxTpdu::Restart.
 
@@ -93,6 +74,7 @@ QT_BEGIN_NAMESPACE
 
 /*!
     \enum QKnxTpdu::LinkWriteFlags
+
     This enum describes the possible link write flags needing in the building
     of TPDU with service \l QKnxTpdu::LinkWrite.
 
@@ -104,6 +86,7 @@ QT_BEGIN_NAMESPACE
 
 /*!
     \enum QKnxTpdu::TransportControlField
+
     This enum describes the possible message code dedicated to the transport
     layer.
 
@@ -122,6 +105,7 @@ QT_BEGIN_NAMESPACE
 
 /*!
     \enum QKnxTpdu::ApplicationControlField
+
     This enum describes the message code dedicated to the application and
     representing an application service.
 
@@ -184,217 +168,61 @@ QT_BEGIN_NAMESPACE
     \value Invalid
 */
 
-
-static bool isBitSet(quint8 byteToTest, quint8 bit)
-{
-    return (byteToTest & (quint8(1) << bit)) != 0;
-};
-
 class QKnxTpduPrivate final : public QSharedData
 {
 public:
     QKnxTpduPrivate() = default;
     ~QKnxTpduPrivate() = default;
 
+    qint32 m_apci { -1 };
+    qint16 m_tpci { -1 };
     QKnxByteArray m_tpduBytes;
-    qint32 m_apci = -1;
-    qint16 m_tpci = -1;
-    void setApci();
-    void setTpci();
-    void setByte(quint16 index, quint8 byte);
-    void appendBytes(const QKnxByteArray &bytesToAppend);
+    QKnx::MediumType m_mediumType { QKnx::MediumType::NetIP };
+
+    quint8 byte(quint16 index) const
+    {
+        return m_tpduBytes.value(index, 0x00);
+    }
+    void setByte(quint16 index, quint8 byte)
+    {
+        if (m_tpduBytes.size() <= index)
+            m_tpduBytes.resize(index + 1);
+        m_tpduBytes.setValue(index, byte);
+    }
+    static bool isBitSet(quint8 byteToTest, quint8 bit)
+    {
+        return (byteToTest & (quint8(1) << bit)) != 0;
+    };
 };
 
-void QKnxTpduPrivate::setByte(quint16 index, quint8 byte)
-{
-    if (m_tpduBytes.size() <= index)
-        m_tpduBytes.resize(index + 1);
-    m_tpduBytes[index] = byte;
-}
-
-void QKnxTpduPrivate::setApci()
-{
-    std::bitset<8> apciHigh = m_tpduBytes.at(0) & 0x03; // mask out all bits except the first two
-    std::bitset<8> apciLow = m_tpduBytes.at(1) & 0xc0;  // mask out all bits except the last two
-
-    const auto fourBitsApci = [&apciHigh, &apciLow]() {
-        QKnxByteArray apciBytes { quint8(apciHigh.to_ulong()), quint8(apciLow.to_ulong()) };
-        return (QKnxUtils::QUint16::fromBytes(apciBytes));
-    };
-    const auto tenBitsApci = [apciHigh](quint8 octet7) {
-        QKnxByteArray apciBytes { quint8(apciHigh.to_ulong()), octet7 };
-        return (QKnxUtils::QUint16::fromBytes(apciBytes));
-    };
-    if ((apciHigh[0] == 0 && apciHigh[1] == 0) || (apciHigh[0] == 1 && apciHigh[1] == 1)) {
-        std::bitset<8> octet7 = m_tpduBytes.at(1);
-        if (octet7[7] == 1 && octet7[6] == 1) {
-            m_apci  = qint32(tenBitsApci(m_tpduBytes.at(1)));
-            return;
-        }
-        m_apci = qint32(fourBitsApci());
-        return;
-    }
-    if (apciHigh[1] == 0 && apciHigh[0] == 1) {
-        // connection oriented, it's one of the A_ADC service
-        if (m_tpci > 0) {
-            m_apci = qint32(fourBitsApci());
-            return;
-        }
-        m_apci = qint32(tenBitsApci(m_tpduBytes.at(1)));
-        return;
-    }
-    // it's one of the A_Memory Service (only the 2 last bits of octet 6 are needed for the APCI)
-    if (apciLow[7] == 0 || apciLow[6] == 0) {
-        m_apci = qint32(fourBitsApci());
-        return;
-    }
-    m_apci = qint32(m_tpduBytes.at(1));
-    return;
-}
-
-void QKnxTpduPrivate::setTpci()
-{
-    if (m_tpduBytes.size() < 1) {
-        m_tpci = -1;
-        return;
-    }
-    if (isBitSet(m_tpduBytes.at(0), 7) && isBitSet(m_tpduBytes.at(0), 6)
-        && isBitSet(m_tpduBytes.at(0), 1)) { // T_ACK/ T_NACK
-            m_tpci = qint16(m_tpduBytes.at(0) & 0xc3); // no APCI, mask out sequence number
-            return;
-    }
-    if (isBitSet(m_tpduBytes.at(0), 7) && (!isBitSet(m_tpduBytes.at(0), 6))) {// T_CONNECT/ T_DISCONNECT
-        m_tpci = qint16(m_tpduBytes.at(0)); // no APCI, no sequence number
-        return;
-    }
-    if (isBitSet(m_tpduBytes.at(0), 6) && (!isBitSet(m_tpduBytes.at(0), 7))) {// T_DATA_CONNECTED, mask out the APCI
-        m_tpci = qint16((m_tpduBytes.at(0) & 0xfc) & 0xc3); // mask out the APCI and the sequence number
-        return;
-    }
-    m_tpci = qint16(m_tpduBytes.at(0) & 0xfc); // mask out the APCI
-    return;
-}
-
-void QKnxTpduPrivate::appendBytes(const QKnxByteArray &bytesToAppend)
-{
-    quint16 pos = quint16(m_tpduBytes.size());
-    if (bytesToAppend.size() <= 0)
-        return;
-    m_tpduBytes.resize(pos + quint16(bytesToAppend.size()));
-
-    std::copy(std::begin(bytesToAppend), std::end(bytesToAppend),
-        std::next(std::begin(m_tpduBytes), pos));
-}
-
-quint16 QKnxTpdu::size() const
-{
-    return quint16(d_ptr->m_tpduBytes.size());
-}
-quint8 QKnxTpdu::byte(quint16 index) const
-{
-    if (index < size())
-        return d_ptr->m_tpduBytes[index];
-    return {};
-}
-
-QKnxByteArray QKnxTpdu::bytes() const
-{
-    return d_ptr->m_tpduBytes;
-}
-QKnxByteArray QKnxTpdu::bytes(quint16 start, quint16 count) const
-{
-    if (size() < start + count)
-        return {};
-    return d_ptr->m_tpduBytes.mid(start, count);
-}
-
-void QKnxTpdu::setBytes(QKnxByteArray::const_iterator begin, QKnxByteArray::const_iterator end)
-{
-    d_ptr->m_tpduBytes.resize(std::distance(begin, end));
-    std::copy(begin, end, std::begin(d_ptr->m_tpduBytes));
-    d_ptr->setTpci();
-    d_ptr->setApci();
-}
 
 /*!
-    Returns the Transport layer control field of the \c QKnxTpdu.
+    \class QKnxTpdu
+
+    \inmodule QtKnx
+    \brief This class represents the part of the \l QKnxLinkLayerFrame to be
+    read by the network, transport and application layers.
+
+    To build a valid TPDU it is recommended to use the \l QKnxTpduFactory.
+    Reading the bytes from left to right, a TPDU is composed of the following
+    information:
+
+    \list
+        \li The transport layer code \l TransportControlField,
+        \li The application layer service code \l ApplicationControlField
+    \endlist
+
+    If applicable, the T_CONNECT TPDU holds no application layer service for
+    example, and the data and other information (if applicable, depending on
+    the chosen service).
 */
-QKnxTpdu::TransportControlField QKnxTpdu::transportControlField() const
-{
-    if (d_ptr->m_tpci < 0)
-        return TransportControlField::Invalid;
-    return TransportControlField(d_ptr->m_tpci);
-}
-
-/*!
-    Sets the Transport layer control field to \a tpci.
-*/
-void QKnxTpdu::setTransportControlField(TransportControlField tpci)
-{
-    d_ptr->m_tpci = qint16(tpci);
-
-    if (size() < 1)
-        d_ptr->m_tpduBytes.resize(1);
-
-    switch (tpci ) {
-    case TransportControlField::DataBroadcast:
-    //case TransportControlField::DataGroup:
-    case TransportControlField::DataTagGroup:
-    //case TransportControlField::DataIndividual:
-        d_ptr->setByte(0, (byte(0) & 0x03) | quint8(tpci)); // keep the APCI
-        break;
-    case TransportControlField::Acknowledge:
-    case TransportControlField::NoAcknowledge:
-        d_ptr->setByte(0, (byte(0) & 0x3c) | quint8(tpci)); // keep the sequence number
-        break;
-    case TransportControlField::DataConnected:
-        d_ptr->setByte(0, (byte(0) & 0x3F) | quint8(tpci)); // keep the APCI and the sequence number
-        break;
-    case TransportControlField::Connect:
-    case TransportControlField::Disconnect:
-    case TransportControlField::Invalid:
-        d_ptr->m_tpci = -1;
-    default:
-        d_ptr->setByte(0, quint8(tpci)); // replace everything
-    }
-}
-
-/*!
-    Returns the Application layer control field of the \c QKnxTpdu.
-*/
-QKnxTpdu::ApplicationControlField QKnxTpdu::applicationControlField() const
-{
-    if (size() < 2 || d_ptr->m_apci < 0)
-        return ApplicationControlField::Invalid;
-    else
-        return ApplicationControlField(d_ptr->m_apci);
-}
-
-/*!
-    Sets the Application layer control field to \a apci.
-*/
-void QKnxTpdu::setApplicationControlField(ApplicationControlField apci)
-{
-    if (apci == ApplicationControlField::Invalid)
-        d_ptr->m_apci = -1;
-    else
-        d_ptr->m_apci = qint32(apci);
-
-    if (size() < 2)
-        d_ptr->m_tpduBytes.resize(2);
-    auto tmp = QKnxUtils::QUint16::bytes(quint16(apci));
-    d_ptr->setByte(0, (byte(0) & 0xfc) | tmp[0]);
-    d_ptr->setByte(1, (byte(1) & 0x3f) | tmp[1]);
-}
 
 QKnxTpdu::QKnxTpdu()
     : d_ptr(new QKnxTpduPrivate)
-{
-}
+{}
 
 QKnxTpdu::~QKnxTpdu()
-{
-}
+{}
 
 QKnxTpdu::QKnxTpdu(TransportControlField tpci)
     : d_ptr(new QKnxTpduPrivate)
@@ -402,33 +230,27 @@ QKnxTpdu::QKnxTpdu(TransportControlField tpci)
     setTransportControlField(tpci);
 }
 
-QKnxTpdu::QKnxTpdu(TransportControlField tpci, ApplicationControlField apci)
-    : d_ptr(new QKnxTpduPrivate)
-{
-    setTransportControlField(tpci);
-    setApplicationControlField(apci);
-}
-
-QKnxTpdu::QKnxTpdu(TransportControlField tpci, ApplicationControlField apci, const QKnxByteArray &data)
-    : QKnxTpdu(tpci, apci, 0, data)
-{}
-
-QKnxTpdu::QKnxTpdu(TransportControlField tpci, ApplicationControlField apci, quint8 seqNumber,
+QKnxTpdu::QKnxTpdu(TransportControlField tpci, ApplicationControlField apci,
         const QKnxByteArray &data)
-    : QKnxTpdu(tpci, apci)
+    : QKnxTpdu(tpci)
 {
-    setSequenceNumber(seqNumber);
+    setApplicationControlField(apci);
     setData(data);
 }
 
-QKnxTpdu::QKnxTpdu(const QKnxTpdu &o)
-    : d_ptr(o.d_ptr)
-{}
-
-QKnxTpdu &QKnxTpdu::operator=(const QKnxTpdu &other)
+QKnxTpdu::QKnxTpdu(TransportControlField tpci, quint8 seqNumber)
+    : QKnxTpdu(tpci)
 {
-    d_ptr = other.d_ptr;
-    return *this;
+    setSequenceNumber(seqNumber);
+}
+
+QKnxTpdu::QKnxTpdu(TransportControlField tpci, quint8 seqNumber, ApplicationControlField apci,
+        const QKnxByteArray &data)
+    : QKnxTpdu(tpci)
+{
+    setApplicationControlField(apci);
+    setSequenceNumber(seqNumber);
+    setData(data);
 }
 
 /*!
@@ -451,9 +273,10 @@ bool QKnxTpdu::isValid() const
         break;
     }
 
+// TODO: adjust the constants to depending on the medium type
 #define HEADER_SIZE 2 // [TCPI|APCI][APCI] 2 bytes
 #define L_DATA_PAYLOAD 14 // 3_02_02 Communication Medium TP1, Paragraph 2.2.4.1
-#define L_DATA_MEMORY_PAYLOAD 66 // Max APDU + 2 bites for the address AN177 Table 1
+#define L_DATA_MEMORY_PAYLOAD 66 // Max APDU + 2 bites for the tpdu AN177 Table 1
 #define L_DATA_EXTENDED_PAYLOAD 253 // 3_02_02 Communication Medium TP1, Paragraph 2.2.5.1
 
     switch (applicationControlField()) {
@@ -467,7 +290,7 @@ bool QKnxTpdu::isValid() const
 
     case ApplicationControlField::MemoryRead:
     case ApplicationControlField::IndividualAddressWrite:
-        return size() == HEADER_SIZE + 2; // 2 bytes individual address
+        return size() == HEADER_SIZE + 2; // 2 bytes individual tpdu
 
     case ApplicationControlField::GroupValueResponse:
     case ApplicationControlField::GroupValueWrite:
@@ -498,24 +321,24 @@ bool QKnxTpdu::isValid() const
     case ApplicationControlField::DomainAddressSerialNumberRead:
         return (size() >= HEADER_SIZE) && (size() <= HEADER_SIZE + 6); // 6 bytes serial number
     case ApplicationControlField::IndividualAddressSerialNumberResponse:
-         // 6 bytes serial number, 2 bytes new address, 2 reserved bytes
+         // 6 bytes serial number, 2 bytes new tpdu, 2 reserved bytes
         return (size() >= HEADER_SIZE) && (size() <= HEADER_SIZE + 10);
     case ApplicationControlField::IndividualAddressSerialNumberWrite:
-         // 6 bytes serial number, 2 bytes new address, 4 reserved bytes
+         // 6 bytes serial number, 2 bytes new tpdu, 4 reserved bytes
         return (size() >= HEADER_SIZE) && (size() <= HEADER_SIZE + 12);
 
     case ApplicationControlField::DomainAddressWrite:
     case ApplicationControlField::DomainAddressResponse:
-       return (size() == HEADER_SIZE + 2) || (size() == HEADER_SIZE + 6); // 2 or 6 byteToTest domain address
+       return (size() == HEADER_SIZE + 2) || (size() == HEADER_SIZE + 6); // 2 or 6 byteToTest domain tpdu
     case ApplicationControlField::DomainAddressSelectiveRead:
         if (size() >= HEADER_SIZE) // 03_05_02 Management Procedures
-            return size() == (byte(2) == 0x00 ? 8 : 14); // Paragraph: 2.12.1.1/2.12.1.2
+            return size() == (d_ptr->byte(2) == 0x00 ? 8 : 14); // Paragraph: 2.12.1.1/2.12.1.2
         return false;
 
     case ApplicationControlField::DomainAddressSerialNumberResponse:
     case ApplicationControlField::DomainAddressSerialNumberWrite: // 6 byteToTest serial number
-        return (size() == HEADER_SIZE + 8) || (size() == HEADER_SIZE + 12); // 2 or 6 byteToTest domain address
 
+        return (size() == HEADER_SIZE + 8) || (size() == HEADER_SIZE + 12); // 2 or 6 byteToTest domain tpdu
     case ApplicationControlField::AdcRead:
     case ApplicationControlField::AdcResponse:
     case ApplicationControlField::UserMemoryRead:
@@ -550,25 +373,135 @@ bool QKnxTpdu::isValid() const
 #undef L_DATA_EXTENDED_PAYLOAD
 }
 
-quint8 QKnxTpdu::dataSize() const
+QKnx::MediumType QKnxTpdu::mediumType() const
+{
+    return d_ptr->m_mediumType;
+}
+
+void QKnxTpdu::setMediumType(QKnx::MediumType mediumType)
+{
+     d_ptr->m_mediumType = mediumType;
+}
+
+/*!
+    Returns the Transport layer control field of the \c QKnxTpdu.
+*/
+QKnxTpdu::TransportControlField QKnxTpdu::transportControlField() const
+{
+    if (size() < 1 || d_ptr->m_tpci < 0)
+        return TransportControlField::Invalid;
+    return TransportControlField(d_ptr->m_tpci);
+}
+
+/*!
+    Sets the Transport layer control field to \a tpci.
+*/
+void QKnxTpdu::setTransportControlField(TransportControlField tpci)
+{
+    d_ptr->m_tpci = qint16(tpci);
+
+    if (size() < 1)
+        d_ptr->m_tpduBytes.resize(1);
+
+    switch (tpci ) {
+    case TransportControlField::DataBroadcast:
+    case TransportControlField::DataTagGroup:
+         // keep the APCI
+        d_ptr->setByte(0, (d_ptr->byte(0) & 0x03) | quint8(tpci));
+        break;
+    case TransportControlField::Acknowledge:
+    case TransportControlField::NoAcknowledge:
+         // keep the sequence number
+        d_ptr->setByte(0, (d_ptr->byte(0) & 0x3c) | quint8(tpci));
+        break;
+    case TransportControlField::DataConnected:
+         // keep the APCI and the sequence number
+        d_ptr->setByte(0, (d_ptr->byte(0) & 0x3F) | quint8(tpci));
+        break;
+    case TransportControlField::Connect:
+    case TransportControlField::Disconnect:
+        // replace everything
+        d_ptr->setByte(0, quint8(tpci));
+        break;
+    default:
+        d_ptr->m_tpci = -1;
+    }
+}
+
+/*!
+    Returns the Application layer control field of the \c QKnxTpdu.
+*/
+QKnxTpdu::ApplicationControlField QKnxTpdu::applicationControlField() const
+{
+    if (size() < 2 || d_ptr->m_apci < 0)
+        return ApplicationControlField::Invalid;
+    return ApplicationControlField(d_ptr->m_apci);
+}
+
+/*!
+    Sets the Application layer control field to \a apci.
+*/
+void QKnxTpdu::setApplicationControlField(ApplicationControlField apci)
+{
+    d_ptr->m_apci = qint32(apci);
+    if (size() < 2)
+        d_ptr->m_tpduBytes.resize(2);
+
+    if (apci != ApplicationControlField::Invalid) {
+        auto tmp = QKnxUtils::QUint16::bytes(quint16(apci));
+        d_ptr->setByte(0, (d_ptr->byte(0) & 0xfc) | tmp.at(0));
+        d_ptr->setByte(1, (d_ptr->byte(1) & 0x3f) | tmp.at(1));
+    } else {
+        d_ptr->m_apci = -1;
+    }
+}
+
+/*!
+    Returns the number of bytes of the transport protocol data unit.
+*/
+quint16 QKnxTpdu::size() const
+{
+    return quint16(d_ptr->m_tpduBytes.size());
+}
+
+/*!
+    Returns the number of bytes of the transport protocol data unit data.
+
+    \note The data part of a TPDU may contain the low byte of the APCI, but
+    excludes the byte for the TPCI.
+*/
+quint16 QKnxTpdu::dataSize() const
 {
     return (size() - 1); // data size start after the TPCI/APCI byte.
 }
 
+/*!
+    Returns the sequence number if the frame is connection oriented; otherwise
+    returns \c 0.
+*/
 quint8 QKnxTpdu::sequenceNumber() const
 {
-    if (isBitSet(byte(0), 6))
-        return quint8((byte(0) & 0x3c) >> 2);
+    if (QKnxTpduPrivate::isBitSet(d_ptr->byte(0), 6))
+        return quint8((d_ptr->byte(0) & 0x3c) >> 2);
     return 0;
 }
 
+/*!
+    Set the sequence number if the frame is connection oriented to \a seqNumber;
+    otherwise does nothing.
+*/
 void QKnxTpdu::setSequenceNumber(quint8 seqNumber)
 {
-    if ((seqNumber > 15) || (!isBitSet(byte(0), 6)))
+    if ((seqNumber > 15) || (!QKnxTpduPrivate::isBitSet(d_ptr->byte(0), 6)))
         return;
-    d_ptr->setByte(0, (byte(0) & 0xc3) | quint8(seqNumber << 2));
+    d_ptr->setByte(0, (d_ptr->byte(0) & 0xc3) | quint8(seqNumber << 2));
 }
 
+/*!
+    Returns the data part of the TPDU as an array of bytes.
+
+    \note TPCI and APCI are not part of the returned byte array.
+*/
 QKnxByteArray QKnxTpdu::data() const
 {
     if (size() < 2)
@@ -589,14 +522,19 @@ QKnxByteArray QKnxTpdu::data() const
     case ApplicationControlField::DeviceDescriptorRead:
     case ApplicationControlField::DeviceDescriptorResponse:
     case ApplicationControlField::Restart: // 6 bits from an optimized TPDU
-        dataApci = QKnxUtils::QUint8::bytes(quint8(byte(1) & 0x3f));
+        dataApci = QKnxUtils::QUint8::bytes(quint8(d_ptr->byte(1) & 0x3f));
     default:
         break;
     }
 
-    return dataApci + bytes(2, dataSize() - 1);
+    return dataApci + d_ptr->m_tpduBytes.mid(2, dataSize() - 1);
 }
 
+/*!
+    Sets the data of the TPDU to \a data.
+
+    \note The TPCI and APCI may not be part of the passed argument.
+*/
 void QKnxTpdu::setData(const QKnxByteArray &data)
 {
     // In those cases there should be no data.
@@ -616,7 +554,8 @@ void QKnxTpdu::setData(const QKnxByteArray &data)
     auto apciBytes = QKnxUtils::QUint16::bytes(quint16(apci));
 
     d_ptr->m_tpduBytes.resize(2); // always resize to minimum size
-    d_ptr->setByte(1, apciBytes[1]); // and clear the possible 6 bits of the upper APCI byteToTest
+    if (apci != ApplicationControlField::Invalid)
+        d_ptr->setByte(1, apciBytes.at(1)); // and clear the possible 6 bits of the upper APCI byteToTest
 
     if (data.isEmpty())
         return; // no data, bytes got cleared before
@@ -625,7 +564,7 @@ void QKnxTpdu::setData(const QKnxByteArray &data)
     switch (apci) {
     case ApplicationControlField::GroupValueResponse:
     case ApplicationControlField::GroupValueWrite:
-        if (data.size() > 1 || quint8(data[0]) > 0x3f)
+        if (data.size() > 1 || quint8(data.at(0)) > 0x3f)
             break;
 
     case ApplicationControlField::AdcRead:
@@ -636,13 +575,232 @@ void QKnxTpdu::setData(const QKnxByteArray &data)
     case ApplicationControlField::DeviceDescriptorRead:
     case ApplicationControlField::DeviceDescriptorResponse:
     case ApplicationControlField::Restart:
-        d_ptr->setByte(1, apciBytes[1] | quint8(data[0]));
+        d_ptr->setByte(1, apciBytes.at(1) | quint8(data.at(0)));
         remainingData = data.mid(1); Q_FALLTHROUGH();
 
     default:
         break;
     }
-    d_ptr->appendBytes(remainingData);
+    d_ptr->m_tpduBytes += remainingData;
+}
+
+/*!
+    Returns the TPDU as an array of bytes.
+*/
+QKnxByteArray QKnxTpdu::bytes() const
+{
+    return d_ptr->m_tpduBytes;
+}
+
+/*!
+    Constructs the transport protocol data unit from the byte array \a data
+    starting at position \a index inside the array with given size \a size.
+*/
+QKnxTpdu QKnxTpdu::fromBytes(const QKnxByteArray &data, quint16 index, quint16 size,
+    QKnx::MediumType mediumType)
+{
+    // data is not big enough according to the given size to be read
+    const qint32 availableSize = (data.size() - index) - size;
+    if (availableSize < 0) // the TPDU consists at least out of a single byte (TPCI)
+        return { TransportControlField::Invalid, ApplicationControlField::Invalid };
+
+    QKnxTpdu tpdu(data.mid(index, size));
+    tpdu.setMediumType(mediumType);
+    tpdu.setTransportControlField(QKnxTpdu::tpci(data, index));
+    tpdu.setApplicationControlField(QKnxTpdu::apci(data, index));
+    return tpdu;
+}
+
+/*!
+    Returns the sequence number extracted out of the \data byte array if the
+    byte at position \index can be verified as valid transport control field;
+    otherwise returns a negative value on error.
+
+    \note The given byte array is not further validated, so you need to be sure
+    to pass data that is an TPDU.
+*/
+quint8 QKnxTpdu::sequenceNumber(const QKnxByteArray &data, quint8 index, bool *ok)
+{
+    if (ok)
+        *ok = false;
+
+    if (data.size() - index < 1)
+        return 0;
+
+    auto tpci = QKnxTpdu::tpci(data, index);
+    if (!QKnxTpduPrivate::isBitSet(quint8(tpci), 6))
+        return 0;
+
+    if (tpci == QKnxTpdu::TransportControlField::Invalid)
+        return 0;
+
+    auto byte = data.at(index);
+    if (QKnxTpduPrivate::isBitSet(byte, 6)) {
+        if (ok) *ok = true;
+        return quint8((byte & 0x3c) >> 2);
+    }
+    return -1;
+}
+
+/*!
+    Returns the transport control field extracted out of the \data byte array;
+    otherwise returns \l Invalid.
+
+    \note If the transport control field carries a sequence number, the value
+    is removed from the return value.
+
+    \note The given byte array is not further validated, so you need to be sure
+    to pass data that is an TPDU.
+*/
+QKnxTpdu::TransportControlField QKnxTpdu::tpci(const QKnxByteArray &data, quint8 index)
+{
+    if (data.size() - index < 1)
+        return QKnxTpdu::TransportControlField::Invalid;
+
+    auto byte = data.at(index);
+    if (QKnxTpduPrivate::isBitSet(byte, 7) && QKnxTpduPrivate::isBitSet(byte, 6)
+        && QKnxTpduPrivate::isBitSet(byte, 1)) {
+            // T_ACK/ T_NACK, mask out sequence number (no APCI)
+            return QKnxTpdu::TransportControlField(byte & 0xc3);
+    }
+
+    if (QKnxTpduPrivate::isBitSet(byte, 7) && (!QKnxTpduPrivate::isBitSet(byte, 6))) {
+        // T_CONNECT/ T_DISCONNECT, no sequence number (no APCI)
+        return QKnxTpdu::TransportControlField(byte);
+    }
+
+    if (QKnxTpduPrivate::isBitSet(byte, 6) && (!QKnxTpduPrivate::isBitSet(byte, 7))) {
+        // T_DATA_CONNECTED, mask out the APCI and sequence number
+        return QKnxTpdu::TransportControlField((byte & 0xfc) & 0xc3);
+    }
+
+    return QKnxTpdu::TransportControlField(byte & 0xfc); // mask out the APCI
+}
+
+/*!
+    Returns the application control field extracted out of the \data byte array;
+    otherwise returns \l Invalid.
+
+    \note The given byte array is not further validated, so you need to be sure
+    to pass data that is an TPDU.
+*/
+QKnxTpdu::ApplicationControlField QKnxTpdu::apci(const QKnxByteArray &data, quint8 index)
+{
+    if (data.size() - index < 2)
+        return QKnxTpdu::ApplicationControlField::Invalid;
+
+    std::bitset<8> apciHigh = data.at(index) & 0x03; // mask out all bits except the first two
+    std::bitset<8> apciLow = data.at(index + 1) & 0xc0;  // mask out all bits except the last two
+
+    const auto fourBitsApci = [&apciHigh, &apciLow]() {
+        return (QKnxUtils::QUint16::fromBytes({ quint8(apciHigh.to_ulong()),
+            quint8(apciLow.to_ulong()) }));
+    };
+    const auto tenBitsApci = [apciHigh](quint8 octet7) {
+        return (QKnxUtils::QUint16::fromBytes({ quint8(apciHigh.to_ulong()), octet7 }));
+    };
+
+    if ((apciHigh[0] == 0 && apciHigh[1] == 0) || (apciHigh[0] == 1 && apciHigh[1] == 1)) {
+        std::bitset<8> octet7 = data.at(index + 1);
+        if (octet7[7] == 1 && octet7[6] == 1)
+            return QKnxTpdu::ApplicationControlField(tenBitsApci(data.at(index + 1)));
+        return QKnxTpdu::ApplicationControlField(fourBitsApci());
+    }
+    if (apciHigh[1] == 0 && apciHigh[0] == 1) {
+        // connection oriented, it's one of the A_ADC service
+        if (QKnxTpdu::tpci(data, index) >= QKnxTpdu::TransportControlField::DataTagGroup)
+            return QKnxTpdu::ApplicationControlField(fourBitsApci());
+        return QKnxTpdu::ApplicationControlField(tenBitsApci(data.at(index + 1)));
+    }
+    // it's one of the A_Memory Service (only the 2 last bits of octet 6 are needed for the APCI)
+    if (apciLow[7] == 0 || apciLow[6] == 0)
+        return QKnxTpdu::ApplicationControlField(fourBitsApci());
+    return QKnxTpdu::ApplicationControlField(data.at(index + 1));
+}
+
+/*!
+    Constructs a copy of \a other.
+*/
+QKnxTpdu::QKnxTpdu(const QKnxTpdu &other)
+    : d_ptr(other.d_ptr)
+{}
+
+/*!
+    Assigns the specified \a other to this object.
+*/
+QKnxTpdu &QKnxTpdu::operator=(const QKnxTpdu &other)
+{
+    d_ptr = other.d_ptr;
+    return *this;
+}
+
+/*!
+    Swaps \a other with this object. This operation is very fast and never fails.
+*/
+void QKnxTpdu::swap(QKnxTpdu &other) Q_DECL_NOTHROW
+{
+    d_ptr.swap(other.d_ptr);
+}
+
+/*!
+    Move-constructs an object instance, making it point to the same object that
+    \a other was pointing to.
+*/
+QKnxTpdu::QKnxTpdu(QKnxTpdu &&other) Q_DECL_NOTHROW
+    : d_ptr(other.d_ptr)
+{
+    other.d_ptr = nullptr;
+}
+
+/*!
+    Move-assigns \a other to this object instance.
+*/
+QKnxTpdu &QKnxTpdu::operator=(QKnxTpdu &&other) Q_DECL_NOTHROW
+{
+    swap(other);
+    return *this;
+}
+
+/*!
+    Returns \c true if this object and the given \a other are equal; otherwise
+    returns \c false.
+*/
+bool QKnxTpdu::operator==(const QKnxTpdu &other) const
+{
+    return d_ptr == other.d_ptr
+        || (d_ptr->m_tpci == other.d_ptr->m_tpci
+            && d_ptr->m_apci == other.d_ptr->m_apci
+            && d_ptr->m_tpduBytes == other.d_ptr->m_tpduBytes
+            && d_ptr->m_mediumType == other.d_ptr->m_mediumType);
+}
+
+/*!
+    Returns \c true if this object and the given \a other are not equal;
+    otherwise returns \c false.
+*/
+bool QKnxTpdu::operator!=(const QKnxTpdu &other) const
+{
+    return !operator==(other);
+}
+
+/*!
+    \internal
+*/
+QKnxTpdu::QKnxTpdu(const QKnxByteArray &data)
+    : QKnxTpdu()
+{
+    d_ptr->m_tpduBytes = data;
+}
+
+/*!
+    \relates QKnxTpdu
+
+    Writes the KNX TPDU \a tpdu to the \a debug stream.
+*/
+QDebug operator<<(QDebug debug, const QKnxTpdu &tpdu)
+{
+    QDebugStateSaver _(debug);
+    return debug.nospace().noquote() << "0x" << tpdu.bytes().toHex();
 }
 
 #include "moc_qknxtpdu.cpp"

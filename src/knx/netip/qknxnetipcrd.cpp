@@ -32,22 +32,22 @@
 QT_BEGIN_NAMESPACE
 
 /*!
-    \class QKnxNetIpCrdView
+    \class QKnxNetIpCrdProxy
 
     \inmodule QtKnx
-    \brief The QKnxNetIpCrdView class provides the means to read the KNXnet/IP
+    \brief The QKnxNetIpCrdProxy class provides the means to read the KNXnet/IP
     connection response data (CRD) from the generic \l QKnxNetIpCrd class and to
     create a KNXnet/IP CRD structure based on the information.
 
     A KNXnet/IP CRD structure contains the data block returned with the connect
     response \l QKnxNetIpFrame. The content of such a frame can be viewed
-    by using the \l QKnxNetIpConnectResponse view class.
+    by using the \l QKnxNetIpConnectResponseProxy view class.
 
     The structure may contain host protocol dependent and independent data,
     but the current KNX specification foresees additional data only in the
     case of tunneling.
 
-    \note When using QKnxNetIpCrdView, care must be taken to ensure that the
+    \note When using QKnxNetIpCrdProxy, care must be taken to ensure that the
     referenced KNXnet/IP CRD structure outlives the view on all
     code paths, lest the view ends up referencing deleted data.
 
@@ -56,7 +56,7 @@ QT_BEGIN_NAMESPACE
     \code
         auto crd = QKnxNetIpCrd::fromBytes(...);
 
-        QKnxNetIpCrdView view(crd);
+        QKnxNetIpCrdProxy view(crd);
         if (!view.isValid())
             return;
 
@@ -69,25 +69,25 @@ QT_BEGIN_NAMESPACE
 */
 
 /*!
-    \fn QKnxNetIpCrdView::QKnxNetIpCrdView()
+    \fn QKnxNetIpCrdProxy::QKnxNetIpCrdProxy()
     \internal
 */
 
 /*!
-    \fn QKnxNetIpCrdView::~QKnxNetIpCrdView()
+    \fn QKnxNetIpCrdProxy::~QKnxNetIpCrdProxy()
     \internal
 */
 
 /*!
-    \fn QKnxNetIpCrdView::QKnxNetIpCrdView(const QKnxNetIpCrd &&)
+    \fn QKnxNetIpCrdProxy::QKnxNetIpCrdProxy(const QKnxNetIpCrd &&)
     \internal
 */
 
 /*!
-    Constructs a wrapper object with the specified a KNXnet/IP structure \a crd
+    Constructs a proxy object with the specified a KNXnet/IP structure \a crd
     to read the connection response data block (CRD).
 */
-QKnxNetIpCrdView::QKnxNetIpCrdView(const QKnxNetIpCrd &crd)
+QKnxNetIpCrdProxy::QKnxNetIpCrdProxy(const QKnxNetIpCrd &crd)
     : m_crd(crd)
 {}
 
@@ -95,7 +95,7 @@ QKnxNetIpCrdView::QKnxNetIpCrdView(const QKnxNetIpCrd &crd)
     Returns \c true if the KNXnet/IP structure to create the object is a valid
     KNXnet/IP CRD structure; otherwise returns \c false.
 */
-bool QKnxNetIpCrdView::isValid() const
+bool QKnxNetIpCrdProxy::isValid() const
 {
     switch (m_crd.code()) {
         case QKnxNetIp::ConnectionType::Tunnel: {
@@ -116,9 +116,9 @@ bool QKnxNetIpCrdView::isValid() const
 /*!
     Returns the connection type of this KNXnet/IP structure if the object that
     was passed during construction was valid; otherwise returns
-    \l QKnxNetIp::Unknown.
+    \l QKnx::NetIp::Unknown.
 */
-QKnxNetIp::ConnectionType QKnxNetIpCrdView::connectionType() const
+QKnxNetIp::ConnectionType QKnxNetIpCrdProxy::connectionType() const
 {
     if (isValid())
         return m_crd.code();
@@ -128,11 +128,11 @@ QKnxNetIp::ConnectionType QKnxNetIpCrdView::connectionType() const
 /*!
     Returns the individual address of this KNXnet/IP structure if the object
     that was passed during construction was valid and the connection type
-    is \l QKnxNetIp::Tunnel; otherwise returns \l QKnxNetIp::Unknown.
+    is \l QKnx::NetIp::Tunnel; otherwise returns \l QKnx::NetIp::Unknown.
 
     \sa additionalData()
 */
-QKnxAddress QKnxNetIpCrdView::individualAddress() const
+QKnxAddress QKnxNetIpCrdProxy::individualAddress() const
 {
     if (isValid())
         return { QKnxAddress::Type::Individual, m_crd.constData() };
@@ -147,7 +147,7 @@ QKnxAddress QKnxNetIpCrdView::individualAddress() const
 
     \sa individualAddress()
 */
-QKnxByteArray QKnxNetIpCrdView::additionalData() const
+QKnxByteArray QKnxNetIpCrdProxy::additionalData() const
 {
     return m_crd.data();
 }
@@ -156,17 +156,17 @@ QKnxByteArray QKnxNetIpCrdView::additionalData() const
     Returns a builder object to create a KNXnet/IP connection response
     data block structure.
 */
-QKnxNetIpCrdView::Builder QKnxNetIpCrdView::builder()
+QKnxNetIpCrdProxy::Builder QKnxNetIpCrdProxy::builder()
 {
-    return QKnxNetIpCrdView::Builder();
+    return QKnxNetIpCrdProxy::Builder();
 }
 
 
 /*!
-    \class QKnxNetIpCrdView::Builder
+    \class QKnxNetIpCrdProxy::Builder
 
     \inmodule QtKnx
-    \brief The QKnxNetIpCrdView::Builder class creates a KNXnet/IP connection
+    \brief The QKnxNetIpCrdProxy::Builder class creates a KNXnet/IP connection
     response data (CDR) structure.
 
     A KNXnet/IP CRD structure contains the data block returned with the
@@ -174,7 +174,7 @@ QKnxNetIpCrdView::Builder QKnxNetIpCrdView::builder()
 
     The common way to create such a CRD structure is:
     \code
-        auto crd = QKnxNetIpCrdView::builder()
+        auto crd = QKnxNetIpCrdProxy::builder()
             .setConnectionType(QKnxNetIp::ConnectionType::Tunnel)
             .setIndividualAddress(QKnxAddress::createIndividual(1, 1, 1))
             .create();
@@ -184,10 +184,10 @@ QKnxNetIpCrdView::Builder QKnxNetIpCrdView::builder()
 /*!
     Sets the connection type to \a type and returns a reference to the builder.
 
-    Does nothing if \a type is not \l QKnxNetIp::ConnectionType.
+    Does nothing if \a type is not \l QKnx::NetIp::ConnectionType.
 */
-QKnxNetIpCrdView::Builder &
-    QKnxNetIpCrdView::Builder::setConnectionType(QKnxNetIp::ConnectionType type)
+QKnxNetIpCrdProxy::Builder &
+    QKnxNetIpCrdProxy::Builder::setConnectionType(QKnxNetIp::ConnectionType type)
 {
     if (QKnxNetIp::isStructType(type))
         m_cType = type;
@@ -202,8 +202,8 @@ QKnxNetIpCrdView::Builder &
 
     \sa setAdditionalData()
 */
-QKnxNetIpCrdView::Builder &
-    QKnxNetIpCrdView::Builder::setIndividualAddress(const QKnxAddress &address)
+QKnxNetIpCrdProxy::Builder &
+    QKnxNetIpCrdProxy::Builder::setIndividualAddress(const QKnxAddress &address)
 {
     if (address.isValid() && (address.type() == QKnxAddress::Type::Individual))
         setAdditionalData(address.bytes());
@@ -219,8 +219,8 @@ QKnxNetIpCrdView::Builder &
 
     \sa setIndividualAddress()
 */
-QKnxNetIpCrdView::Builder &
-    QKnxNetIpCrdView::Builder::setAdditionalData(const QKnxByteArray &additionalData)
+QKnxNetIpCrdProxy::Builder &
+    QKnxNetIpCrdProxy::Builder::setAdditionalData(const QKnxByteArray &additionalData)
 {
     m_additionalData = additionalData;
     return *this;
@@ -234,7 +234,7 @@ QKnxNetIpCrdView::Builder &
 
     \sa isValid()
 */
-QKnxNetIpCrd QKnxNetIpCrdView::Builder::create() const
+QKnxNetIpCrd QKnxNetIpCrdProxy::Builder::create() const
 {
     return { m_cType, m_additionalData };
 }

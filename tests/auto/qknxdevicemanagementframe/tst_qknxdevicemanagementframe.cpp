@@ -27,8 +27,8 @@
 ******************************************************************************/
 
 #include <QtCore/qdebug.h>
-#include <QtKnx/qknxlocaldevicemanagementframe.h>
-#include <QtKnx/qknxlocaldevicemanagementframefactory.h>
+#include <QtKnx/qknxdevicemanagementframe.h>
+#include <QtKnx/qknxdevicemanagementframefactory.h>
 #include <QtTest/qtest.h>
 
 static QString s_msg;
@@ -44,7 +44,7 @@ class tst_QKnxLocalDeviceManagementFrame : public QObject
 private slots:
     void testClass()
     {
-        QKnxLocalDeviceManagementFrame frame(QKnxLocalDeviceManagementFrame::MessageCode::PropertyReadRequest);
+        QKnxDeviceManagementFrame frame(QKnxDeviceManagementFrame::MessageCode::PropertyReadRequest);
         frame.setObjectType(QKnxInterfaceObjectType::System::KnxNetIpParameter);
         frame.setObjectInstance(1);
         frame.setProperty(QKnxInterfaceObjectProperty::KnxNetIpParameter::CurrentIpAddress);
@@ -52,7 +52,7 @@ private slots:
         frame.setStartIndex(25);
         frame.setData(QKnxByteArray { 0x01, 0x02, 0x03, 0x04, 0x05 });
 
-        QCOMPARE(frame.messageCode(), QKnxLocalDeviceManagementFrame::MessageCode::PropertyReadRequest);
+        QCOMPARE(frame.messageCode(), QKnxDeviceManagementFrame::MessageCode::PropertyReadRequest);
         QCOMPARE(quint16(frame.objectType()), quint16(QKnxInterfaceObjectType::KnxNetIpParameter));
         QCOMPARE(frame.objectInstance(), quint8(1));
         QCOMPARE(quint8(frame.property()), quint8(QKnxInterfaceObjectProperty::CurrentIpAddress));
@@ -68,7 +68,7 @@ private slots:
         // setError(...)
         // returnCode()
         // setReturnCode(...)
-        // QKnxLocalDeviceManagementFrame(const QKnxLocalDeviceManagementFrame&)
+        // QKnxDeviceManagementFrame(const QKnxDeviceManagementFrame&)
         // size()
         // serviceInformation()
         // setMessageCode(...)
@@ -77,10 +77,10 @@ private slots:
     void testFromBytes()
     {
         auto objectTypeProperty = QKnxByteArray { 0xfc, 0x00, 0x08, 0x01, 0x01, 0x10, 0x01 };
-        QKnxLocalDeviceManagementFrame frame = QKnxLocalDeviceManagementFrame::fromBytes(objectTypeProperty,
+        QKnxDeviceManagementFrame frame = QKnxDeviceManagementFrame::fromBytes(objectTypeProperty,
             0, objectTypeProperty.size());
 
-        QCOMPARE(frame.messageCode(), QKnxLocalDeviceManagementFrame::MessageCode::PropertyReadRequest);
+        QCOMPARE(frame.messageCode(), QKnxDeviceManagementFrame::MessageCode::PropertyReadRequest);
         QCOMPARE(quint16(frame.objectType()), quint16(QKnxInterfaceObjectType::CemiServer));
         QCOMPARE(frame.objectInstance(), quint8(1));
         QCOMPARE(quint8(frame.property()), quint8(QKnxInterfaceObjectProperty::ObjectType));
@@ -88,19 +88,19 @@ private slots:
         QCOMPARE(frame.startIndex(), quint16(1));
 
         auto bytes = QKnxByteArray { 0xfc, 0x00, 0x0b, 0x01, 0x4c, 0x10, 0x00 };
-        frame = QKnxLocalDeviceManagementFrame::fromBytes(bytes, 0, objectTypeProperty.size());
+        frame = QKnxDeviceManagementFrame::fromBytes(bytes, 0, objectTypeProperty.size());
         frame.setNumberOfElements(15);
         bytes = frame.bytes();  // TODO: Fix this, what was the idea to test here?
     }
 
     void testFactory()
     {
-        auto cemi = QKnxLocalDeviceManagementFrameFactory::PropertyRead
+        auto cemi = QKnxDeviceManagementFrameFactory::PropertyRead
             ::createRequest(QKnxInterfaceObjectType::KnxNetIpParameter, 1,
                 QKnxInterfaceObjectProperty::FriendlyName, 1, 0);
         // TODO: add some checks against above created cEMI
 
-        cemi = QKnxLocalDeviceManagementFrameFactory::FunctionPropertyCommand
+        cemi = QKnxDeviceManagementFrameFactory::FunctionPropertyCommand
             ::createRequest(QKnxInterfaceObjectType::KnxNetIpParameter, 1,
                 QKnxInterfaceObjectProperty::FriendlyName, {});
         // TODO: add some checks against above created cEMI

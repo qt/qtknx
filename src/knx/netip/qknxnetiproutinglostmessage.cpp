@@ -32,49 +32,159 @@
 
 QT_BEGIN_NAMESPACE
 
-QKnxNetIpRoutingLostMessage::QKnxNetIpRoutingLostMessage(const QKnxNetIpFrame &frame)
+/*!
+    \class QKnxNetIpRoutingLostMessageProxy
+
+    \inmodule QtKnx
+    \brief The QKnxNetIpRoutingLostMessageProxy class provides the means to read
+    a routing-lost message from the generic \l QKnxNetIpFrame class and to
+    create a KNXnet/IP frame based on the information.
+
+    Depending on the configuration, a KNXnet/IP router or device can receive
+    more datagrams than it can forward to the KNX subnetwork. This can lead
+    to an overflow of the datagram queue and subsequent loss of one or more
+    KNXnet/IP telegrams, because they could not be transferred from the
+    network buffer to the queue to the underlying KNX subnetwork.
+
+    A routing-lost message is multicast by a KNXnet/IP router to notify that
+    KNXnet/IP routing indication frames were lost. The message contains the
+    state of the router or device (\l QKnx::NetIp::DeviceState) and the number
+    of lost frames.
+
+    The following code sample illustrates how to read the routing-lost message
+    information sent by a KNXnet/IP router:
+
+    \code
+        auto netIpFrame = QKnxNetIpFrame::fromBytes(...);
+
+        QKnxNetIpRoutingLostMessageProxy routingProxy(netIpFrame);
+        if (!routingProxy.isValid())
+            return;
+
+        if (routingProxy.deviceState() == QKnx::NetIp::DeviceState::KnxFault) {
+            ....
+        }
+    \endcode
+
+    \sa builder(), QKnxNetIpRoutingIndicationProxy, QKnxNetIpRoutingBusyProxy
+*/
+
+/*!
+    \fn QKnxNetIpRoutingLostMessageProxy::QKnxNetIpRoutingLostMessageProxy()
+    \internal
+*/
+
+/*!
+    \fn QKnxNetIpRoutingLostMessageProxy::~QKnxNetIpRoutingLostMessageProxy()
+    \internal
+*/
+
+/*!
+    \fn QKnxNetIpRoutingLostMessageProxy::QKnxNetIpRoutingLostMessageProxy(const QKnxNetIpFrame &&)
+    \internal
+*/
+
+/*!
+    Constructs a proxy object to read the routing-lost message information
+    carried by the specified KNXnet/IP frame \a frame.
+*/
+QKnxNetIpRoutingLostMessageProxy::QKnxNetIpRoutingLostMessageProxy(const QKnxNetIpFrame &frame)
     : m_frame(frame)
 {}
 
-QKnxNetIp::DeviceState QKnxNetIpRoutingLostMessage::deviceState() const
+/*!
+    Returns the state of a KNXnet/IP router or device.
+*/
+QKnxNetIp::DeviceState QKnxNetIpRoutingLostMessageProxy::deviceState() const
 {
     return QKnxNetIp::DeviceState(m_frame.constData().value(1));
 }
 
-quint16 QKnxNetIpRoutingLostMessage::lostMessageCount() const
+/*!
+    Returns the number of frames that were lost.
+*/
+quint16 QKnxNetIpRoutingLostMessageProxy::lostMessageCount() const
 {
     return QKnxUtils::QUint16::fromBytes(m_frame.constData(), 2);
 }
 
-bool QKnxNetIpRoutingLostMessage::isValid() const
+/*!
+    Returns \c true if the frame contains initialized values and is in itself
+    valid, otherwise returns \c false. A valid KNXnet/IP frame consist of
+    at least a valid header and a size in bytes corresponding to the total size
+    of the KNXnet/IP frame header.
+
+    \sa QKnxNetIpFrameHeader::totalSize()
+*/
+bool QKnxNetIpRoutingLostMessageProxy::isValid() const
 {
     return m_frame.isValid() && m_frame.size() == 10
         && m_frame.serviceType() == QKnxNetIp::ServiceType::RoutingLostMessage;
 }
 
-QKnxNetIpRoutingLostMessage::Builder QKnxNetIpRoutingLostMessage::builder()
+/*!
+    Returns a builder object to create a KNXnet/IP routing-lost message frame.
+*/
+QKnxNetIpRoutingLostMessageProxy::Builder QKnxNetIpRoutingLostMessageProxy::builder()
 {
-    return QKnxNetIpRoutingLostMessage::Builder();
+    return QKnxNetIpRoutingLostMessageProxy::Builder();
 }
 
 
-// -- QKnxNetIpRoutingLostMessage::Builder
+/*!
+    \class QKnxNetIpRoutingLostMessageProxy::Builder
 
-QKnxNetIpRoutingLostMessage::Builder &
-    QKnxNetIpRoutingLostMessage::Builder::setDeviceState(QKnxNetIp::DeviceState state)
+    \inmodule QtKnx
+    \brief The QKnxNetIpRoutingLostMessageProxy::Builder class provides the
+    means to create a routing-lost message frame.
+
+    A routing-lost message is sent by a KNXnet/IP router to notify that
+    KNXnet/IP routing indication frames were lost. The message contains
+    the state of the router or device (\l QKnx::NetIp::DeviceState) and
+    the number of lost frames.
+
+    The following code sample illustrates how to create a routing-lost message
+    about three frames being lost because an error occurred in the IP network:
+
+    \code
+        auto frame = QKnxNetIpRoutingLostMessageProxy::builder()
+            .setDeviceState(QKnx::NetIp::DeviceState::IpFault)
+            .setLostMessageCount(3)
+            .create();
+    \endcode
+*/
+
+/*!
+    Sets the state of a KNXnet/IP router or device to \a state and returns a
+    reference to the builder.
+*/
+QKnxNetIpRoutingLostMessageProxy::Builder &
+    QKnxNetIpRoutingLostMessageProxy::Builder::setDeviceState(QKnxNetIp::DeviceState state)
 {
     m_state = state;
     return *this;
 }
 
-QKnxNetIpRoutingLostMessage::Builder &
-    QKnxNetIpRoutingLostMessage::Builder::setLostMessageCount(quint16 messageCount)
+/*!
+    Sets the the number of frames that were lost to \a messageCount and returns
+    a reference to the builder.
+*/
+QKnxNetIpRoutingLostMessageProxy::Builder &
+    QKnxNetIpRoutingLostMessageProxy::Builder::setLostMessageCount(quint16 messageCount)
 {
     m_lostMessageCount = messageCount;
     return *this;
 }
 
-QKnxNetIpFrame QKnxNetIpRoutingLostMessage::Builder::create() const
+/*!
+    Creates and returns a KNXnet/IP routing-lost message frame.
+
+    \note The returned frame may be invalid depending on the values used during
+    setup.
+
+    \sa isValid()
+*/
+QKnxNetIpFrame QKnxNetIpRoutingLostMessageProxy::Builder::create() const
 {
     return { QKnxNetIp::ServiceType::RoutingLostMessage, QKnxByteArray { 0x04, quint8(m_state) }
         + QKnxUtils::QUint16::bytes(m_lostMessageCount) };

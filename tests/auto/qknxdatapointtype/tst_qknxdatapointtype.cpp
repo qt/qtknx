@@ -2058,9 +2058,9 @@ void tst_QKnxDatapointType::dpt28_StringUtf8()
     QCOMPARE(string.setString(QString::fromUtf8({ (const char*) data.constData(), data.size() - 1 })), true);
     QCOMPARE(string.size(), 22);
     QCOMPARE(string.isValid(), true);
-    QCOMPARE(string.byte(0), data[0]);
-    QCOMPARE(string.byte(1), data[1]);
-    QCOMPARE(string.byte(2), data[2]);
+    QCOMPARE(string.byte(0), data.at(0));
+    QCOMPARE(string.byte(1), data.at(1));
+    QCOMPARE(string.byte(2), data.at(2));
     QCOMPARE(string.bytes(), data);
 
     QCOMPARE(string.setString(QString("KNX is OK")), true);
@@ -2073,9 +2073,9 @@ void tst_QKnxDatapointType::dpt28_StringUtf8()
     QCOMPARE(utf8.setString((const char*) data.constData(), data.size() - 1), true);
     QCOMPARE(utf8.size(), 22);
     QCOMPARE(utf8.isValid(), true);
-    QCOMPARE(utf8.byte(0), data[0]);
-    QCOMPARE(utf8.byte(1), data[1]);
-    QCOMPARE(utf8.byte(2), data[2]);
+    QCOMPARE(utf8.byte(0), data.at(0));
+    QCOMPARE(utf8.byte(1), data.at(1));
+    QCOMPARE(utf8.byte(2), data.at(2));
     QCOMPARE(utf8.bytes(), data);
 
     QCOMPARE(utf8.setString(QString("KNX is OK")), true);

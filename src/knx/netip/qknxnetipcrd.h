@@ -36,14 +36,14 @@
 
 QT_BEGIN_NAMESPACE
 
-class Q_KNX_EXPORT QKnxNetIpCrdView final
+class Q_KNX_EXPORT QKnxNetIpCrdProxy final
 {
 public:
-    QKnxNetIpCrdView() = delete;
-    ~QKnxNetIpCrdView() = default;
+    QKnxNetIpCrdProxy() = delete;
+    ~QKnxNetIpCrdProxy() = default;
 
-    QKnxNetIpCrdView(const QKnxNetIpCrd &&) = delete;
-    explicit QKnxNetIpCrdView(const QKnxNetIpCrd &crd);
+    QKnxNetIpCrdProxy(const QKnxNetIpCrd &&) = delete;
+    explicit QKnxNetIpCrdProxy(const QKnxNetIpCrd &crd);
 
     bool isValid() const;
 
@@ -64,7 +64,7 @@ public:
         QKnxNetIp::ConnectionType m_cType = QKnxNetIp::ConnectionType::Tunnel;
         QKnxByteArray m_additionalData;
     };
-    static QKnxNetIpCrdView::Builder builder();
+    static QKnxNetIpCrdProxy::Builder builder();
 
 private:
     const QKnxNetIpCrd &m_crd;

@@ -37,7 +37,7 @@ QT_BEGIN_NAMESPACE
 
 namespace QKnx
 {
-    //Q_NAMESPACE
+    Q_KNX_EXPORT Q_NAMESPACE
 
     enum class MediumType : quint8
     {
@@ -47,34 +47,7 @@ namespace QKnx
         RF = 0x10,
         NetIP = 0x20
     };
-    //Q_ENUM_NS(MediumType)
-
-    struct CemiServer final
-    {
-        enum class ReturnCode : quint8
-        {
-            NoError = 0x00,
-            Error = 0x01
-        };
-
-        enum class Error : quint8
-        {
-            Unspecified = 0x00,
-            OutOfRange = 0x01,
-            OutOfMaxRange = 0x02,
-            OutOfMinRange = 0x03,
-            Memory = 0x04,
-            ReadOnly = 0x05,
-            IllegalCommand = 0x06,
-            NonExistingProperty = 0x07,
-            TypeConflict = 0x08,
-            PropertyIndexRangeError = 0x09,
-            TemporaryNotWritable = 0x0a,
-            None = 0xff  // Qt extension
-        };
-        // See 03_06_03 EMI_IMI v01.03.03 AS.pdf Paragraph 4.1.7.3.7.2 (Table 12)
-    };
-
+    Q_ENUM_NS(MediumType)
 }
 
 QT_END_NAMESPACE

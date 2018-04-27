@@ -27,8 +27,8 @@
 ******************************************************************************/
 
 #include <QtKnx/qknxcharstring.h>
-#include <QtKnx/qknxtpdufactory.h>
 #include <QtKnx/qknxlinklayerframe.h>
+#include <QtKnx/private/qknxtpdufactory_p.h>
 #include <QtTest/qtest.h>
 
 class tst_QKnxTpduFactory : public QObject
@@ -36,6 +36,7 @@ class tst_QKnxTpduFactory : public QObject
     Q_OBJECT
 
 private Q_SLOTS:
+    void testTpduConstructor();
     void testTpdu();
     void testGroupValueRead();
     void testGroupValueWrite();
@@ -98,6 +99,67 @@ private Q_SLOTS:
     // TODO: KeyWrite
     // TODO: KeyResponse
 };
+
+void tst_QKnxTpduFactory::testTpduConstructor()
+{
+    QKnxTpdu tpdu1(QKnxTpdu::TransportControlField::DataGroup);
+    QCOMPARE(tpdu1.transportControlField(), QKnxTpdu::TransportControlField::DataGroup);
+
+    tpdu1.setApplicationControlField(QKnxTpdu::ApplicationControlField::GroupValueWrite);
+    QCOMPARE(tpdu1.applicationControlField(), QKnxTpdu::ApplicationControlField::GroupValueWrite);
+
+    tpdu1.setData({ 0x01 });
+    QCOMPARE(tpdu1.data(), QKnxByteArray(1, 0x01));
+    QCOMPARE(tpdu1.bytes(), QKnxByteArray::fromHex("0081"));
+
+    QKnxTpdu tpdu2(QKnxTpdu::TransportControlField::DataGroup,
+        QKnxTpdu::ApplicationControlField::GroupValueWrite);
+    QCOMPARE(tpdu2.transportControlField(), QKnxTpdu::TransportControlField::DataGroup);
+    QCOMPARE(tpdu2.applicationControlField(), QKnxTpdu::ApplicationControlField::GroupValueWrite);
+
+    tpdu2.setData({ 0x01 });
+    QCOMPARE(tpdu2.data(), QKnxByteArray(1, 0x01));
+    QCOMPARE(tpdu2.bytes(), QKnxByteArray::fromHex("0081"));
+
+    QKnxTpdu tpdu3(QKnxTpdu::TransportControlField::DataGroup,
+        QKnxTpdu::ApplicationControlField::GroupValueWrite, { 0x01 });
+    QCOMPARE(tpdu3.transportControlField(), QKnxTpdu::TransportControlField::DataGroup);
+    QCOMPARE(tpdu3.applicationControlField(), QKnxTpdu::ApplicationControlField::GroupValueWrite);
+    QCOMPARE(tpdu3.data(), QKnxByteArray(1, 0x01));
+    QCOMPARE(tpdu3.bytes(), QKnxByteArray::fromHex("0081"));
+
+    QKnxTpdu tpdu4(QKnxTpdu::TransportControlField::DataGroup, 0);
+    QCOMPARE(tpdu4.transportControlField(), QKnxTpdu::TransportControlField::DataGroup);
+
+    tpdu4.setApplicationControlField(QKnxTpdu::ApplicationControlField::GroupValueWrite);
+    QCOMPARE(tpdu4.applicationControlField(), QKnxTpdu::ApplicationControlField::GroupValueWrite);
+
+    tpdu4.setData({ 0x01 });
+    QCOMPARE(tpdu4.data(), QKnxByteArray(1, 0x01));
+    QCOMPARE(tpdu4.bytes(), QKnxByteArray::fromHex("0081"));
+
+    QKnxTpdu tpdu5(QKnxTpdu::TransportControlField::DataGroup, 0,
+        QKnxTpdu::ApplicationControlField::GroupValueWrite);
+    QCOMPARE(tpdu5.transportControlField(), QKnxTpdu::TransportControlField::DataGroup);
+    QCOMPARE(tpdu5.applicationControlField(), QKnxTpdu::ApplicationControlField::GroupValueWrite);
+
+    tpdu5.setData({ 0x01 });
+    QCOMPARE(tpdu5.data(), QKnxByteArray(1, 0x01));
+    QCOMPARE(tpdu5.bytes(), QKnxByteArray::fromHex("0081"));
+
+    QKnxTpdu tpdu6(QKnxTpdu::TransportControlField::DataGroup, 0,
+        QKnxTpdu::ApplicationControlField::GroupValueWrite, { 0x01 });
+    QCOMPARE(tpdu6.transportControlField(), QKnxTpdu::TransportControlField::DataGroup);
+    QCOMPARE(tpdu6.applicationControlField(), QKnxTpdu::ApplicationControlField::GroupValueWrite);
+    QCOMPARE(tpdu6.data(), QKnxByteArray(1, 0x01));
+    QCOMPARE(tpdu6.bytes(), QKnxByteArray::fromHex("0081"));
+
+    QKnxTpdu tpdu7 = QKnxTpdu::fromBytes(tpdu6.bytes(), 0, 2);
+    QCOMPARE(tpdu7.transportControlField(), QKnxTpdu::TransportControlField::DataGroup);
+    QCOMPARE(tpdu7.applicationControlField(), QKnxTpdu::ApplicationControlField::GroupValueWrite);
+    QCOMPARE(tpdu7.data(), QKnxByteArray(1, 0x01));
+    QCOMPARE(tpdu7.bytes(), QKnxByteArray::fromHex("0081"));
+}
 
 void tst_QKnxTpduFactory::testTpdu()
 {

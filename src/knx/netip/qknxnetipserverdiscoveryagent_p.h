@@ -34,9 +34,9 @@
 //  W A R N I N G
 //  -------------
 //
-// This file is not part of the Qt API.  It exists purely as an
-// implementation detail.  This header file may change from version to
-// version without notice, or even be removed.
+// This file is not part of the Qt KNX API.  It exists for the convenience
+// of the Qt KNX implementation.  This header file may change from version
+// to version without notice, or even be removed.
 //
 // We mean it.
 //
@@ -80,8 +80,8 @@ private:
     quint16 port { 0 }, usedPort;
     QHostAddress address { QHostAddress::AnyIPv4 }, usedAddress;
 
-    const quint16 multicastPort { QKnxNetIp::DefaultPort };
-    const QHostAddress multicastAddress { QLatin1String(QKnxNetIp::MulticastAddress) };
+    const quint16 multicastPort { QKnxNetIp::Constants::DefaultPort };
+    const QHostAddress multicastAddress { QLatin1String(QKnxNetIp::Constants::MulticastAddress) };
 
     quint8 ttl { 60 };
     bool nat { false };

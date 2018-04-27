@@ -52,7 +52,8 @@
 #include <QtCore/QCommandLineParser>
 #include <QtCore/QCoreApplication>
 #include <QtKnx/QKnxByteArray>
-#include <QtKnx/QKnxNetIpTunnelConnection>
+#include <QtKnx/QKnxLinkLayerFrameBuilder>
+#include <QtKnx/QKnxNetIpTunnel>
 #include <QtNetwork/QNetworkInterface>
 
 #ifdef Q_OS_WIN
@@ -84,13 +85,13 @@ int main(int argc, char *argv[])
     });
     parser.process(app);
 
-    QKnxNetIpTunnelConnection tunnel;
+    QKnxNetIpTunnel tunnel;
     tunnel.setNatAware(parser.isSet("nat"));
     tunnel.setLocalPort(parser.value("localPort").toUInt());
     tunnel.setHeartbeatTimeout(parser.value("timeout").toInt() * 1000);
     tunnel.setLocalAddress(QHostAddress(parser.value("localAddress")));
 
-    QObject::connect(&tunnel, &QKnxNetIpTunnelConnection::disconnected, &app, &QCoreApplication::quit);
+    QObject::connect(&tunnel, &QKnxNetIpTunnel::disconnected, &app, &QCoreApplication::quit);
 
     tunnel.connectToHost(QHostAddress(parser.value("remoteAddress")),
         parser.value("remotePort").toUInt());
@@ -106,13 +107,17 @@ int main(int argc, char *argv[])
         auto tmp = input.readLine().toLatin1();
         if (tmp != "quit") {
             const auto bytes = QKnxByteArray::fromHex(tmp);
-            tunnel.sendTunnelFrame(QKnxLinkLayerFrame::fromBytes(bytes, 0, bytes.size()));
+            auto frame = QKnxLinkLayerFrameBuilder()
+                .setData(bytes)
+                .setMedium(QKnx::MediumType::NetIP)
+                .createFrame();
+            tunnel.sendFrame(frame);
         } else {
             tunnel.disconnectFromHost();
         }
     });
 
-    if (tunnel.error() == QKnxNetIpTunnelConnection::Error::None) {
+    if (tunnel.error() == QKnxNetIpTunnel::Error::None) {
         qInfo().noquote() << "Type 'quit' to stop the application.";
         app.exec();
     }

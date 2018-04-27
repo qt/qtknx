@@ -31,8 +31,9 @@
 #define QKNXTPDU_H
 
 #include <QtCore/qshareddata.h>
-#include <QtKnx/qknxglobal.h>
 #include <QtKnx/qknxbytearray.h>
+#include <QtKnx/qknxglobal.h>
+#include <QtKnx/qknxnetip.h>
 
 QT_BEGIN_NAMESPACE
 
@@ -97,9 +98,6 @@ public:
     };
     Q_ENUM(TransportControlField)
 
-    TransportControlField transportControlField() const;
-    void setTransportControlField(TransportControlField tpci);
-
     enum class ApplicationControlField : quint16
     {
         GroupValueRead = 0x0000,
@@ -163,23 +161,30 @@ public:
     };
     Q_ENUM(ApplicationControlField)
 
-        ApplicationControlField applicationControlField() const;
-    void setApplicationControlField(ApplicationControlField apci);
-
      QKnxTpdu();
     ~QKnxTpdu();
 
     explicit QKnxTpdu(TransportControlField tpci);
-    QKnxTpdu(TransportControlField tpci, ApplicationControlField apci);
-    QKnxTpdu(TransportControlField tpci, ApplicationControlField apci, const QKnxByteArray &data);
-    QKnxTpdu(TransportControlField tpci, ApplicationControlField apci, quint8 seqNumber,
+    QKnxTpdu(TransportControlField tpci, ApplicationControlField apci,
         const QKnxByteArray &data = {});
 
-    QKnxTpdu(const QKnxTpdu &o);
-    QKnxTpdu &operator=(const QKnxTpdu &o);
+    QKnxTpdu(TransportControlField tpci, quint8 seqNumber);
+    QKnxTpdu(TransportControlField tpci, quint8 seqNumber, ApplicationControlField apci,
+        const QKnxByteArray &data = {});
 
     bool isValid() const;
-    quint8 dataSize() const;
+
+    QKnx::MediumType mediumType() const;
+    void setMediumType(QKnx::MediumType mediumType);
+
+    QKnxTpdu::TransportControlField transportControlField() const;
+    void setTransportControlField(QKnxTpdu::TransportControlField tpci);
+
+    QKnxTpdu::ApplicationControlField applicationControlField() const;
+    void setApplicationControlField(QKnxTpdu::ApplicationControlField apci);
+
+    quint16 size() const;
+    quint16 dataSize() const;
 
     quint8 sequenceNumber() const;
     void setSequenceNumber(quint8 seqNumber);
@@ -187,30 +192,30 @@ public:
     QKnxByteArray data() const;
     void setData(const QKnxByteArray &data);
 
-    static QKnxTpdu fromBytes(const QKnxByteArray &data, quint16 index, quint8 size)
-    {
-        auto tpdu = QKnxTpdu { TransportControlField::Invalid, ApplicationControlField::Invalid };
-
-        // data is not big enough according to the given size to be read
-        const qint32 availableSize = (data.size() - index) - size;
-        if (availableSize < 0)
-            return tpdu;
-
-        auto begin = std::next(std::begin(data), index);
-        tpdu.setBytes(begin, std::next(begin, size));
-        return tpdu;
-    }
-
-    quint16 size() const;
-    quint8 byte(quint16 index) const;
     QKnxByteArray bytes() const;
-    QKnxByteArray bytes(quint16 start, quint16 count) const;
-    void setBytes(QKnxByteArray::const_iterator begin, QKnxByteArray::const_iterator end);
+    static QKnxTpdu fromBytes(const QKnxByteArray &data, quint16 index, quint16 size,
+        QKnx::MediumType mediumType = QKnx::MediumType::NetIP);
+
+    static QKnxTpdu::TransportControlField tpci(const QKnxByteArray &data, quint8 index);
+    static QKnxTpdu::ApplicationControlField apci(const QKnxByteArray &data, quint8 index);
+    static quint8 sequenceNumber(const QKnxByteArray &data, quint8 index, bool *ok = nullptr);
+
+    QKnxTpdu(const QKnxTpdu &other);
+    QKnxTpdu &operator=(const QKnxTpdu &other);
+
+    void swap(QKnxTpdu &other) Q_DECL_NOTHROW;
+
+    QKnxTpdu(QKnxTpdu &&other) Q_DECL_NOTHROW;
+    QKnxTpdu &operator=(QKnxTpdu &&other) Q_DECL_NOTHROW;
+
+    bool operator==(const QKnxTpdu &other) const;
+    bool operator!=(const QKnxTpdu &other) const;
 
 private:
+    QKnxTpdu(const QKnxByteArray &data);
     QSharedDataPointer<QKnxTpduPrivate> d_ptr;
 };
-// TODO: add debug stream operator
+Q_KNX_EXPORT QDebug operator<<(QDebug debug, const QKnxTpdu &tpdu);
 
 Q_DECLARE_TYPEINFO(QKnxTpdu::ErrorCode, Q_PRIMITIVE_TYPE);
 Q_DECLARE_TYPEINFO(QKnxTpdu::ResetType, Q_PRIMITIVE_TYPE);

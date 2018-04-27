@@ -918,7 +918,7 @@ quint8 QKnxDatapointType::byte(quint16 index) const
 bool QKnxDatapointType::setByte(quint16 index, quint8 bytes)
 {
     if (index < d_ptr->m_bytes.size())
-        d_ptr->m_bytes[index] = bytes;
+        d_ptr->m_bytes.set(index, bytes);
     return (index < d_ptr->m_bytes.size());
 }
 
@@ -1100,6 +1100,17 @@ bool QKnxVariableSizeDatapointType::setBytes(const QKnxByteArray &bytesToSet, qu
 
     resize(count);
     return QKnxDatapointType::setBytes(bytesToSet, index, count);
+}
+
+/*!
+    \relates QKnxDatapointType
+
+    Writes the datapoint type \a dpt to the \a debug stream.
+*/
+QDebug operator<<(QDebug debug, const QKnxDatapointType &dpt)
+{
+    QDebugStateSaver _(debug);
+    return debug.nospace().noquote() << "0x" << dpt.bytes().toHex();
 }
 
 #include "moc_qknxdatapointtype.cpp"

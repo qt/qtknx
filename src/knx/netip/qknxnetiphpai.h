@@ -36,14 +36,14 @@
 
 QT_BEGIN_NAMESPACE
 
-class Q_KNX_EXPORT QKnxNetIpHpaiView final
+class Q_KNX_EXPORT QKnxNetIpHpaiProxy final
 {
 public:
-    QKnxNetIpHpaiView() = delete;
-    ~QKnxNetIpHpaiView() = default;
+    QKnxNetIpHpaiProxy() = delete;
+    ~QKnxNetIpHpaiProxy() = default;
 
-    QKnxNetIpHpaiView(const QKnxNetIpHpai &&) = delete;
-    explicit QKnxNetIpHpaiView(const QKnxNetIpHpai &hpai);
+    QKnxNetIpHpaiProxy(const QKnxNetIpHpai &&) = delete;
+    explicit QKnxNetIpHpaiProxy(const QKnxNetIpHpai &hpai);
 
     bool isValid() const;
 
@@ -65,7 +65,7 @@ public:
         QHostAddress m_address { QHostAddress::LocalHost };
         quint16 m_port { 0 };
     };
-    static QKnxNetIpHpaiView::Builder builder();
+    static QKnxNetIpHpaiProxy::Builder builder();
 
 private:
      const QKnxNetIpHpai &m_hpai;

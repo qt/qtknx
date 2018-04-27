@@ -37,14 +37,14 @@
 
 QT_BEGIN_NAMESPACE
 
-class Q_KNX_EXPORT QKnxNetIpConnectRequest final
+class Q_KNX_EXPORT QKnxNetIpConnectRequestProxy final
 {
 public:
-    QKnxNetIpConnectRequest() = delete;
-    ~QKnxNetIpConnectRequest() = default;
+    QKnxNetIpConnectRequestProxy() = delete;
+    ~QKnxNetIpConnectRequestProxy() = default;
 
-    QKnxNetIpConnectRequest(const QKnxNetIpFrame &&) = delete;
-    explicit QKnxNetIpConnectRequest(const QKnxNetIpFrame &frame);
+    QKnxNetIpConnectRequestProxy(const QKnxNetIpFrame &&) = delete;
+    explicit QKnxNetIpConnectRequestProxy(const QKnxNetIpFrame &frame);
 
     bool isValid() const;
 
@@ -66,7 +66,7 @@ public:
         QKnxNetIpHpai m_deHpai;
         QKnxNetIpCri m_cri;
     };
-    static QKnxNetIpConnectRequest::Builder builder();
+    static QKnxNetIpConnectRequestProxy::Builder builder();
 
 private:
     const QKnxNetIpFrame &m_frame;

@@ -36,14 +36,14 @@
 
 QT_BEGIN_NAMESPACE
 
-class Q_KNX_EXPORT QKnxNetIpConnectionStateResponse final
+class Q_KNX_EXPORT QKnxNetIpConnectionStateResponseProxy final
 {
 public:
-    QKnxNetIpConnectionStateResponse() = delete;
-    ~QKnxNetIpConnectionStateResponse() = default;
+    QKnxNetIpConnectionStateResponseProxy() = delete;
+    ~QKnxNetIpConnectionStateResponseProxy() = default;
 
-    QKnxNetIpConnectionStateResponse(const QKnxNetIpFrame &&) = delete;
-    explicit QKnxNetIpConnectionStateResponse(const QKnxNetIpFrame &frame);
+    QKnxNetIpConnectionStateResponseProxy(const QKnxNetIpFrame &&) = delete;
+    explicit QKnxNetIpConnectionStateResponseProxy(const QKnxNetIpFrame &frame);
 
     bool isValid() const;
 
@@ -62,7 +62,7 @@ public:
         quint8 m_channelId;
         QKnxNetIp::Error m_status { QKnxNetIp::Error::None };
     };
-    static QKnxNetIpConnectionStateResponse::Builder builder();
+    static QKnxNetIpConnectionStateResponseProxy::Builder builder();
 
 private:
     const QKnxNetIpFrame &m_frame;

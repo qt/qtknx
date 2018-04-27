@@ -27,6 +27,7 @@
 **
 ******************************************************************************/
 
+#include "qknxnetiphpai.h"
 #include "qknxnetipserverdiscoveryagent.h"
 #include "qknxnetipserverdiscoveryagent_p.h"
 
@@ -206,12 +207,12 @@ void QKnxNetIpServerDiscoveryAgentPrivate::setupSocket()
             if (q->state() == QKnxNetIpServerDiscoveryAgent::State::Running) {
                 servers.clear();
 
-                auto frame = QKnxNetIpSearchRequest::builder()
-                    .setDiscoveryEndpoint(QKnxNetIpHpaiView::builder()
+                auto frame = QKnxNetIpSearchRequestProxy::builder()
+                    .setDiscoveryEndpoint(QKnxNetIpHpaiProxy::builder()
                         .setHostAddress(nat ? QHostAddress::AnyIPv4 : usedAddress)
                         .setPort(nat ? quint16(0u) : usedPort).create()
                     ).create();
-                socket->writeDatagram(static_cast<QByteArray> (frame.bytes()), multicastAddress,
+                socket->writeDatagram(frame.bytes().toByteArray(), multicastAddress,
                     multicastPort);
 
                 setupAndStartReceiveTimer();
@@ -239,19 +240,24 @@ void QKnxNetIpServerDiscoveryAgentPrivate::setupSocket()
             if (q->state() != QKnxNetIpServerDiscoveryAgent::State::Running)
                 break;
 
-            auto ba = socket->receiveDatagram().data();
-            QKnxByteArray data(ba.constData(), ba.size());
+            auto datagram = socket->receiveDatagram();
+            auto data = QKnxByteArray::fromByteArray(datagram.data());
             const auto header = QKnxNetIpFrameHeader::fromBytes(data, 0);
             if (!header.isValid() || header.serviceType() != QKnxNetIp::ServiceType::SearchResponse)
                 continue;
 
             auto frame = QKnxNetIpFrame::fromBytes(data);
-            auto response = QKnxNetIpSearchResponse(frame);
+            auto response = QKnxNetIpSearchResponseProxy(frame);
             if (!response.isValid())
                 continue;
 
-            setAndEmitDeviceDiscovered({ response.controlEndpoint(), response.deviceHardware(),
-                response.supportedFamilies() });
+            setAndEmitDeviceDiscovered({
+                (nat ? QKnxNetIpHpaiProxy::builder()
+                            .setHostAddress(datagram.senderAddress())
+                            .setPort(datagram.senderPort()).create()
+                    : response.controlEndpoint()
+                ), response.deviceHardware(), response.supportedFamilies()
+            });
         }
     });
 }
@@ -297,13 +303,13 @@ void QKnxNetIpServerDiscoveryAgentPrivate::setupAndStartFrequencyTimer()
             if (q->state() == QKnxNetIpServerDiscoveryAgent::State::Running) {
                 servers.clear();
 
-                auto frame = QKnxNetIpSearchRequest::builder()
-                    .setDiscoveryEndpoint(QKnxNetIpHpaiView::builder()
+                auto frame = QKnxNetIpSearchRequestProxy::builder()
+                    .setDiscoveryEndpoint(QKnxNetIpHpaiProxy::builder()
                         .setHostAddress(nat ? QHostAddress::AnyIPv4 : address)
                         .setPort(nat ? quint16(0u) : port).create()
                     ).create();
 
-                socket->writeDatagram(static_cast<QByteArray> (frame.bytes()), multicastAddress,
+                socket->writeDatagram(frame.bytes().toByteArray(), multicastAddress,
                     multicastPort);
             }
         });

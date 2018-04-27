@@ -39,14 +39,14 @@
 
 QT_BEGIN_NAMESPACE
 
-class Q_KNX_EXPORT QKnxNetIpDeviceDibView final
+class Q_KNX_EXPORT QKnxNetIpDeviceDibProxy final
 {
 public:
-    QKnxNetIpDeviceDibView() = delete;
-    ~QKnxNetIpDeviceDibView() = default;
+    QKnxNetIpDeviceDibProxy() = delete;
+    ~QKnxNetIpDeviceDibProxy() = default;
 
-    QKnxNetIpDeviceDibView(const QKnxNetIpDib &&) = delete;
-    explicit QKnxNetIpDeviceDibView(const QKnxNetIpDib &dib);
+    QKnxNetIpDeviceDibProxy(const QKnxNetIpDib &&) = delete;
+    explicit QKnxNetIpDeviceDibProxy(const QKnxNetIpDib &dib);
 
     bool isValid() const;
     QKnxNetIp::DescriptionType descriptionType() const;
@@ -80,11 +80,11 @@ public:
         QKnxAddress m_address;
         quint16 m_projectId { 0 };
         QKnxByteArray m_serialNumber;
-        QHostAddress m_multicastAddress { QLatin1String(QKnxNetIp::MulticastAddress) };
+        QHostAddress m_multicastAddress { QLatin1String(QKnxNetIp::Constants::MulticastAddress) };
         QKnxByteArray m_macAddress;
         QByteArray m_deviceName;
     };
-    static QKnxNetIpDeviceDibView::Builder builder();
+    static QKnxNetIpDeviceDibProxy::Builder builder();
 
 private:
     const QKnxNetIpDib &m_dib;

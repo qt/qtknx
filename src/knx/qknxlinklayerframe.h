@@ -41,12 +41,14 @@
 
 QT_BEGIN_NAMESPACE
 
+class QKnxFrameSerialization;
+class QKnxLinkLayerFramePrivate;
+
 class Q_KNX_EXPORT QKnxLinkLayerFrame final
 {
     Q_GADGET
 
 public:
-    // Table 1 - Overview EMI message codes and default destination (v01.03.03 AS.pdf)
     enum class MessageCode : quint8
     {
         Unknown = 0x00,
@@ -73,12 +75,11 @@ public:
     };
     Q_ENUM(MessageCode)
 
-    QKnxLinkLayerFrame() = default;
-    ~QKnxLinkLayerFrame() = default;
+    QKnxLinkLayerFrame();
+    ~QKnxLinkLayerFrame();
 
-    explicit QKnxLinkLayerFrame(QKnx::MediumType mediumType);
-    QKnxLinkLayerFrame(QKnx::MediumType mediumType, QKnxLinkLayerFrame::MessageCode messageCode);
-    QKnxLinkLayerFrame(const QKnxLinkLayerFrame &other);
+    explicit QKnxLinkLayerFrame(QKnxLinkLayerFrame::MessageCode messageCode);
+    QKnxLinkLayerFrame(QKnxLinkLayerFrame::MessageCode messageCode, const QKnxByteArray &serviceInfo);
 
     quint16 size() const;
 
@@ -92,23 +93,11 @@ public:
     void setMediumType(QKnx::MediumType mediumType);
 
     QKnxByteArray serviceInformation() const;
+    void setServiceInformation(const QKnxByteArray &serviceInfo);
 
-    QKnxByteArray bytes() const
-    {
-        return QKnxByteArray { quint8(m_code) } + m_serviceInformation;
-    }
-
+    QKnxByteArray bytes() const;
     static QKnxLinkLayerFrame fromBytes(const QKnxByteArray &data, quint16 index, quint16 size,
-        QKnx::MediumType mediumType = QKnx::MediumType::Unknown)
-    {
-        if (data.size() < 1)
-            return {};
-
-        MessageCode code = MessageCode(data.at(index));
-        if (mediumType == QKnx::MediumType::Unknown)
-            mediumType = guessMediumType(code);
-        return QKnxLinkLayerFrame(mediumType, code, data.mid(index + 1, size - 1));
-    }
+        QKnx::MediumType mediumType = QKnx::MediumType::NetIP);
 
     // Parts of the LinkLayer frame alway there (regardless of the MessageCode/Frame Type)
     const QKnxAddress sourceAddress() const;
@@ -126,73 +115,30 @@ public:
     // Parts of the LinkLayer Frame that are present or not depending on the
     // MessageCode/ Frame Type or because they are optional
     QKnxExtendedControlField extendedControlField() const;
-    void setExtendedControlField(const QKnxExtendedControlField &field); // TODO: check if there is an extended control field!
+    void setExtendedControlField(const QKnxExtendedControlField &field);
 
     quint8 additionalInfosSize() const;
-
+    QVector<QKnxAdditionalInfo> additionalInfos() const;
     void addAdditionalInfo(const QKnxAdditionalInfo &info);
-
-    QVector<QKnxAdditionalInfo> additionalInfos() const
-    {
-        if (m_serviceInformation.size() < 1)
-            return {};
-
-        quint8 size = m_serviceInformation.value(0);
-        if (size < 0x02 || size == 0xff)
-            return {};
-
-        QVector<QKnxAdditionalInfo> infos;
-        quint8 index = 1;
-        while (index < size) {
-            infos.push_back(QKnxAdditionalInfo::fromBytes(m_serviceInformation, index));
-            index += m_serviceInformation.value(index + 1) + 2; // type + size => 2
-        }
-        return infos;
-    }
     void removeAdditionalInfo(QKnxAdditionalInfo::Type type);
     void removeAdditionalInfo(const QKnxAdditionalInfo &info);
     void clearAdditionalInfos();
 
-protected:
-    QKnxLinkLayerFrame(QKnx::MediumType mediumType, QKnxLinkLayerFrame::MessageCode messageCode,
-        const QKnxByteArray &serviceInfo);
-    void setServiceInformation(const QKnxByteArray &serviceInformation);
+    QKnxLinkLayerFrame(const QKnxLinkLayerFrame &other);
+    QKnxLinkLayerFrame &operator=(const QKnxLinkLayerFrame &other);
+
+    QKnxLinkLayerFrame(QKnxLinkLayerFrame &&other) Q_DECL_NOTHROW;
+    QKnxLinkLayerFrame &operator=(QKnxLinkLayerFrame &&other) Q_DECL_NOTHROW;
+
+    void swap(QKnxLinkLayerFrame &other) Q_DECL_NOTHROW;
+
+    bool operator==(const QKnxLinkLayerFrame &other) const;
+    bool operator!=(const QKnxLinkLayerFrame &other) const;
 
 private:
-    // TODO: introduce d pointer
-    MessageCode m_code = MessageCode::Unknown;
-    QKnx::MediumType m_mediumType = QKnx::MediumType::Unknown;
-    QKnxByteArray m_serviceInformation { 0x00 };
-
-    // TODO: Move into .cpp file once ::fromBytes is there as well.
-    static QKnx::MediumType guessMediumType(MessageCode messageCode)
-    {
-        switch (messageCode) {
-        case MessageCode::BusmonitorIndication:
-        case MessageCode::DataRequest:
-        case MessageCode::DataConfirmation:
-        case MessageCode::DataIndication:
-        case MessageCode::RawRequest:
-        case MessageCode::RawIndication:
-        case MessageCode::RawConfirmation:
-        case MessageCode::ResetRequest:
-            return QKnx::MediumType::NetIP;
-        // The following message code are not part of what netIp/Tunneling can send
-        // Not quite sure to which medium they can be associated
-        // TODO: associate those message code to a give MediumType
-        case MessageCode::PollDataRequest:
-        case MessageCode::PollDataConfirmation:
-        case MessageCode::DataConnectedRequest:
-        case MessageCode::DataConnectedIndication:
-        case MessageCode::DataIndividualRequest:
-        case MessageCode::DataIndividualIndication:
-        default:
-            break;
-        }
-        return QKnx::MediumType::Unknown;
-    }
+    QSharedDataPointer<QKnxLinkLayerFramePrivate> d_ptr;
 };
-// TODO: add debug stream operator
+Q_KNX_EXPORT QDebug operator<<(QDebug debug, const QKnxLinkLayerFrame &frame);
 
 QT_END_NAMESPACE
 

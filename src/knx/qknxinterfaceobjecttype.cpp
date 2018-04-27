@@ -1,6 +1,6 @@
 /******************************************************************************
 **
-** Copyright (C) 2017 The Qt Company Ltd.
+** Copyright (C) 2018 The Qt Company Ltd.
 ** Contact: https://www.qt.io/licensing/
 **
 ** This file is part of the QtKnx module.
@@ -35,74 +35,128 @@ QT_BEGIN_NAMESPACE
     \class QKnxInterfaceObjectType
 
     \inmodule QtKnx
-    \brief This class holds information about the type of the KNX interface object.
+    \brief The QKnxInterfaceObjectType class holds the type of a KNX interface
+    object.
 
-    KNX interface objects hold information about the device functionalities.
-    The interface object can be of different types, covering different
-    functionalities. The different interface object type are listed here.
-    For every interface object, this type is always stored in the
-    \l QKnxInterfaceObjectProperty::ObjectType. This is the first property of
-    the interface object.
+    A KNX interface object holds information about device functionality.
+    Each interface object type covers particular functionality. This class
+    represents the \l System, \l Application, and \l NonStandardized object
+    types.
+
+    The type of an interface object is stored as its first property in
+    \l QKnxInterfaceObjectProperty::ObjectType.
 */
 
 /*!
     \enum QKnxInterfaceObjectType::System
-    This enum describes the types of interface object dedicated to system.
+    This enum describes the types of interface objects dedicated to device
+    system functionality.
 
     \value Device
+           Device interface object
     \value GroupAddressTable
+           Group address table interface object
     \value AssociationTable
+           Association table interface object
     \value ApplicationProgram
+           Application program interface object
     \value InterfaceProgram
+           Interface program interface object
     \value KnxObjectAssociationTable
+           KNX object assiocation table interface object
     \value Router
+           Router interface object
     \value LteAddressRoutingTable
+           Logical Tag Extended (LTE) address routing table interface object
     \value CemiServer
+           Common External Message Interface (cEMI) server interface object
     \value GroupObjectTable
+           Group object table interface object
     \value PollingMaster
+           Polling master interface object
     \value KnxNetIpParameter
+           KNXnet/IP parameter interface object
     \value Reserved
+           Reserved
     \value FileServer
+           File server interface object
     \value Security
+           Security interface object
     \value RfMedium
+           Radio frequency (RF) medium interface object
 */
 
 /*!
     \enum QKnxInterfaceObjectType::Application
-    This enum describes the ranges of types of interface object dedicated to
-    application.
+    This enum describes the type ranges of interface objects dedicated to
+    an application area.
 
     \value Hvac
+           Heating, ventilation, and air conditioning (HVAC)
     \value Lightning
+           Lightning
     \value IndoorBrightnessSensor
+           Indoor brightness sensors
     \value IndoorLuminanceSensor
+           Indoor luminance sensors
     \value LightSwitchingActuatorBasic
+           Basic light switching actuators
     \value DimmingActuatorBasic
+           Basic dimming actuators
     \value DimmingSensorBasic
+           Basic dimming sensors
     \value SwitchingSensorBasic
+           Basic switching sensors
     \value SensorsAndActuators
+           Sensors and actuators
     \value ShuttersAndBlinds
+           Shutters and blinds
     \value FociS
+           Functions of common interest, such as date and time
     \value Metering
+           Metering the consumption of energy, water, gas, and so on
     \value OpenTherm
+           The OpenTherm gateway, which connects KNX to the OT Bus used for
+           heating systems, such as gas condensing boilers
     \value ApplicationReserved
+           Reserved
     \value WhiteGoods
+           White goods
     \value ApplicationReserved2
+           Reserved
     \value WhiteGoods2
+           White goods
 */
 
 /*!
     \enum QKnxInterfaceObjectType::NonStandardized
-    This enum describes the types range of non standard interface objects.
+    This enum describes the type ranges of non-standard interface objects.
 
     \value First
+           First object
     \value Last
+           Last object
+*/
+
+/*!
+    \fn QKnxInterfaceObjectType::QKnxInterfaceObjectType(int objectType)
+
+    Creates a KNX interface object type of the type \a objectType.
+*/
+
+/*!
+    \fn QKnxInterfaceObjectType::operator int() const
+
+    Returns the value stored in the KNX interface object type as an integer.
 */
 
 QKnxInterfaceObjectType::QKnxInterfaceObjectType(int objectType)
     : m_objectType(objectType)
 {}
 
+/*!
+    Assigns \a objectType to this KNX interface object type.
+*/
 QKnxInterfaceObjectType &QKnxInterfaceObjectType::operator=(int objectType)
 {
     m_objectType = objectType;
@@ -110,8 +164,8 @@ QKnxInterfaceObjectType &QKnxInterfaceObjectType::operator=(int objectType)
 }
 
 /*!
-    Returns true if the \a type is of type \l System, \l Application or
-    l\ NonStandardized; false otherwise.
+    Returns \c true if \a type is a value of \l System, \l Application, or
+    \l NonStandardized; \c false otherwise.
 
     \note Reserved values are considered invalid object types.
 */
@@ -130,15 +184,15 @@ bool QKnxInterfaceObjectType::isObjectType(QKnxInterfaceObjectType type)
 }
 
 /*!
-    Returns true if the given \a property can be used in conjunction with the
-    given \a type; false otherwise.
+    Returns \c true if the given \a property can be used in conjunction with the
+    given \a type; \c false otherwise.
 
-    \note The function performs a check on the object type first and if it is
-    not a valid object type, it will return false.
+    \note The function performs a check on the object type and returns \c false
+    if the object type is invalid.
 
-    \note Only system types are fully matched, for all other valid object
-    types the function returns true if the property can be interpreted as
-    a known or unknown property (depends on the property value).
+    \note Only system types are fully matched. For all other valid object
+    types the function returns \c true if the property can be interpreted as
+    a known or unknown property (depending on the property value).
 */
 bool QKnxInterfaceObjectType::isMatch(QKnxInterfaceObjectType type, QKnxInterfaceObjectProperty property)
 {

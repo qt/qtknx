@@ -34,10 +34,10 @@
 QT_BEGIN_NAMESPACE
 
 /*!
-    \class QKnxNetIpServiceFamiliesDibView
+    \class QKnxNetIpServiceFamiliesDibProxy
 
     \inmodule QtKnx
-    \brief The QKnxNetIpServiceFamiliesDibView class provides the means to read
+    \brief The QKnxNetIpServiceFamiliesDibProxy class provides the means to read
     the supported service families and versions from the generic \l QKnxNetIpDib
     class and to create a KNXnet/IP device information block (DIB) structure
     based on the information.
@@ -49,7 +49,7 @@ QT_BEGIN_NAMESPACE
     family version is an integer and it does not represent the manufacturer's
     implementation version.
 
-    \note When using QKnxNetIpServiceFamiliesDibView, care must be taken to
+    \note When using QKnxNetIpServiceFamiliesDibProxy, care must be taken to
     ensure that the referenced KNXnet/IP DIB structure outlives the view on all
     code paths, lest the view ends up referencing deleted data.
 
@@ -57,7 +57,7 @@ QT_BEGIN_NAMESPACE
     \code
         auto dib = QKnxNetIpDib::fromBytes(...);
 
-        QKnxNetIpServiceFamiliesDibView view(dib);
+        QKnxNetIpServiceFamiliesDibProxy view(dib);
         if (!view.isValid())
             return;
 
@@ -69,24 +69,24 @@ QT_BEGIN_NAMESPACE
 
 /*!
     \internal
-    \fn QKnxNetIpServiceFamiliesDibView::QKnxNetIpServiceFamiliesDibView()
+    \fn QKnxNetIpServiceFamiliesDibProxy::QKnxNetIpServiceFamiliesDibProxy()
 */
 
 /*!
     \internal
-    \fn QKnxNetIpServiceFamiliesDibView::~QKnxNetIpServiceFamiliesDibView()
+    \fn QKnxNetIpServiceFamiliesDibProxy::~QKnxNetIpServiceFamiliesDibProxy()
 */
 
 /*!
     \internal
-    \fn QKnxNetIpServiceFamiliesDibView::QKnxNetIpServiceFamiliesDibView(const QKnxNetIpDib &&)
+    \fn QKnxNetIpServiceFamiliesDibProxy::QKnxNetIpServiceFamiliesDibProxy(const QKnxNetIpDib &&)
 */
 
 /*!
-    Constructs a wrapper object with the specified a KNXnet/IP DIB structure
+    Constructs a proxy object with the specified a KNXnet/IP DIB structure
     \a dib to read the supported service families and versions.
 */
-QKnxNetIpServiceFamiliesDibView::QKnxNetIpServiceFamiliesDibView(const QKnxNetIpDib &dib)
+QKnxNetIpServiceFamiliesDibProxy::QKnxNetIpServiceFamiliesDibProxy(const QKnxNetIpDib &dib)
     : m_dib(dib)
 {}
 
@@ -94,7 +94,7 @@ QKnxNetIpServiceFamiliesDibView::QKnxNetIpServiceFamiliesDibView(const QKnxNetIp
     Returns \c true if the KNXnet/IP structure to create the object is a valid
     KNXnet/IP DIB structure; otherwise returns \c false.
 */
-bool QKnxNetIpServiceFamiliesDibView::isValid() const
+bool QKnxNetIpServiceFamiliesDibProxy::isValid() const
 {
     return m_dib.isValid() && (m_dib.size() % 2 == 0) // must be even sized
         && m_dib.code() == QKnxNetIp::DescriptionType::SupportedServiceFamilies;
@@ -103,9 +103,9 @@ bool QKnxNetIpServiceFamiliesDibView::isValid() const
 /*!
     Returns the description type of this KNXnet/IP structure if the object
     that was passed during construction was valid; otherwise returns
-    \l QKnxNetIp::Unknown.
+    \l QKnx::NetIp::Unknown.
 */
-QKnxNetIp::DescriptionType QKnxNetIpServiceFamiliesDibView::descriptionType() const
+QKnxNetIp::DescriptionType QKnxNetIpServiceFamiliesDibProxy::descriptionType() const
 {
     if (isValid())
         return m_dib.code();
@@ -117,7 +117,7 @@ QKnxNetIp::DescriptionType QKnxNetIpServiceFamiliesDibView::descriptionType() co
     structure if the object that was passed during construction was valid;
     otherwise returns an empty vector.
 */
-QVector<QKnxServiceInfo> QKnxNetIpServiceFamiliesDibView::serviceInfos() const
+QVector<QKnxServiceInfo> QKnxNetIpServiceFamiliesDibProxy::serviceInfos() const
 {
     QVector<QKnxServiceInfo> infos;
     if (!isValid())
@@ -133,17 +133,17 @@ QVector<QKnxServiceInfo> QKnxNetIpServiceFamiliesDibView::serviceInfos() const
     Returns a builder object to create a KNXnet/IP service families DIB
     structure.
 */
-QKnxNetIpServiceFamiliesDibView::Builder QKnxNetIpServiceFamiliesDibView::builder()
+QKnxNetIpServiceFamiliesDibProxy::Builder QKnxNetIpServiceFamiliesDibProxy::builder()
 {
-    return QKnxNetIpServiceFamiliesDibView::Builder();
+    return QKnxNetIpServiceFamiliesDibProxy::Builder();
 }
 
 
 /*!
-    \class QKnxNetIpServiceFamiliesDibView::Builder
+    \class QKnxNetIpServiceFamiliesDibProxy::Builder
 
     \inmodule QtKnx
-    \brief The QKnxNetIpServiceFamiliesDibView::Builder class creates a
+    \brief The QKnxNetIpServiceFamiliesDibProxy::Builder class creates a
     KNXnet/IP supported service families DIB structure.
 
     A KNXnet/IP supported service families DIB structure contains a set of
@@ -151,7 +151,7 @@ QKnxNetIpServiceFamiliesDibView::Builder QKnxNetIpServiceFamiliesDibView::builde
 
     The common way to create such a DIB structure is:
     \code
-        auto dib = QKnxNetIpServiceFamiliesDibView::builder()
+        auto dib = QKnxNetIpServiceFamiliesDibProxy::builder()
             .setServiceInfos({
                 { QKnxNetIp::ServiceFamily::Core, 0x01 },
                 { QKnxNetIp::ServiceFamily::DeviceManagement, 0x01 },
@@ -165,8 +165,8 @@ QKnxNetIpServiceFamiliesDibView::Builder QKnxNetIpServiceFamiliesDibView::builde
     Sets the supported service families and versions of the KNXnet/IP DIB
     structure to \a infos and returns a reference to the builder.
 */
-QKnxNetIpServiceFamiliesDibView::Builder &
-    QKnxNetIpServiceFamiliesDibView::Builder::setServiceInfos(const QVector<QKnxServiceInfo> &infos)
+QKnxNetIpServiceFamiliesDibProxy::Builder &
+    QKnxNetIpServiceFamiliesDibProxy::Builder::setServiceInfos(const QVector<QKnxServiceInfo> &infos)
 {
     m_infos = infos;
 
@@ -197,7 +197,7 @@ QKnxNetIpServiceFamiliesDibView::Builder &
 
     \sa isValid()
 */
-QKnxNetIpDib QKnxNetIpServiceFamiliesDibView::Builder::create() const
+QKnxNetIpDib QKnxNetIpServiceFamiliesDibProxy::Builder::create() const
 {
     QKnxByteArray bytes;
     for (const auto &info : qAsConst(m_infos))

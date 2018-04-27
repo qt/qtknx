@@ -34,9 +34,9 @@
 //  W A R N I N G
 //  -------------
 //
-// This file is not part of the Qt API.  It exists purely as an
-// implementation detail.  This header file may change from version to
-// version without notice, or even be removed.
+// This file is not part of the Qt KNX API.  It exists for the convenience
+// of the Qt KNX implementation.  This header file may change from version
+// to version without notice, or even be removed.
 //
 // We mean it.
 //
@@ -46,21 +46,21 @@
 #include <QtKnx/qknxglobal.h>
 #include <QtKnx/qknxnetipendpointconnection.h>
 #include <QtNetwork/qhostaddress.h>
-#include <QtKnx/qknxlocaldevicemanagementframe.h>
+#include <QtKnx/qknxdevicemanagementframe.h>
 #include <QtKnx/qknxlinklayerframe.h>
 
 #include <private/qobject_p.h>
 
 QT_BEGIN_NAMESPACE
 
-class QKnxNetIpConnectResponse;
-class QKnxNetIpConnectionStateResponse;
-class QKnxNetIpDeviceConfigurationAcknowledge;
-class QKnxNetIpDeviceConfigurationRequest;
-class QKnxNetIpDisconnectRequest;
-class QKnxNetIpDisconnectResponse;
-class QKnxNetIpTunnelingAcknowledge;
-class QKnxNetIpTunnelingRequest;
+class QKnxNetIpConnectResponseProxy;
+class QKnxNetIpConnectionStateResponseProxy;
+class QKnxNetIpDeviceConfigurationAcknowledgeProxy;
+class QKnxNetIpDeviceConfigurationRequestProxy;
+class QKnxNetIpDisconnectRequestProxy;
+class QKnxNetIpDisconnectResponseProxy;
+class QKnxNetIpTunnelingAcknowledgeProxy;
+class QKnxNetIpTunnelingRequestProxy;
 class QUdpSocket;
 
 struct UserProperties
@@ -78,7 +78,7 @@ struct Endpoint final
         : address(addr)
         , port(p)
     {}
-    explicit Endpoint(const QKnxNetIpHpaiView &hpai)
+    explicit Endpoint(const QKnxNetIpHpaiProxy &hpai)
         : address(hpai.hostAddress())
         , port(hpai.port())
     {}
@@ -88,13 +88,13 @@ struct Endpoint final
 
     Endpoint &operator=(const QKnxNetIpHpai &s)
     {
-        const QKnxNetIpHpaiView hpai(s);
+        const QKnxNetIpHpaiProxy hpai(s);
         address = hpai.hostAddress(); port = hpai.port();
         return *this;
     }
     operator QKnxNetIpHpai() const
     {
-        return QKnxNetIpHpaiView::builder().setHostAddress(address).setPort(port).create();
+        return QKnxNetIpHpaiProxy::builder().setHostAddress(address).setPort(port).create();
     }
 
     QHostAddress address { QHostAddress::LocalHost };
@@ -109,7 +109,7 @@ public:
     QKnxNetIpEndpointConnectionPrivate(const QHostAddress &address, quint16 port,
             const QKnxNetIpCri &cri, int sendAttempts, QKnxNetIp::Timeout ackTimeout)
         : m_cri(cri)
-        , m_localControlEndpoint { address, port }
+        , m_localEndpoint { address, port }
         , m_maxCemiRequest(sendAttempts)
         , m_acknowledgeTimeout(ackTimeout)
     {}
@@ -123,14 +123,14 @@ public:
     void sendStateRequest();
 
     virtual void process(const QKnxLinkLayerFrame &frame);
-    virtual void process(const QKnxLocalDeviceManagementFrame &frame);
+    virtual void process(const QKnxDeviceManagementFrame &frame);
 
     // datapoint related processing
     bool sendTunnelingRequest(const QKnxLinkLayerFrame &frame);
     virtual void processTunnelingRequest(const QKnxNetIpFrame &frame);
     virtual void processTunnelingAcknowledge(const QKnxNetIpFrame &frame);
 
-    bool sendDeviceConfigurationRequest(const QKnxLocalDeviceManagementFrame &frame);
+    bool sendDeviceConfigurationRequest(const QKnxDeviceManagementFrame &frame);
     virtual void processDeviceConfigurationRequest(const QKnxNetIpFrame &frame);
     virtual void processDeviceConfigurationAcknowledge(const QKnxNetIpFrame &frame);
 
@@ -140,7 +140,7 @@ public:
     virtual void processDisconnectRequest(const QKnxNetIpFrame &frame);
     virtual void processDisconnectResponse(const QKnxNetIpFrame &frame);
 
-    virtual void processDatagram(QKnxNetIpEndpointConnection::EndpointType, const QNetworkDatagram &);
+    virtual void processDatagram(const QNetworkDatagram &);
 
     void setAndEmitStateChanged(QKnxNetIpEndpointConnection::State newState);
     void setAndEmitErrorOccurred(QKnxNetIpEndpointConnection::Error newError, const QString &message);
@@ -151,9 +151,7 @@ private:
     Endpoint m_remoteControlEndpoint;
 
     Endpoint m_natEndpoint { QHostAddress::AnyIPv4 };
-
-    Endpoint m_localDataEndpoint { QHostAddress::LocalHost };
-    Endpoint m_localControlEndpoint { QHostAddress::LocalHost };
+    Endpoint m_localEndpoint { QHostAddress::LocalHost };
 
     int m_channelId { -1 };
     quint8 m_sendCount { 0 };
@@ -188,8 +186,7 @@ private:
     QTimer *m_acknowledgeTimer { nullptr };
     bool m_waitForAcknowledgement { false };
 
-    QUdpSocket *m_dataEndpoint { nullptr };
-    QUdpSocket *m_controlEndpoint { nullptr };
+    QUdpSocket *m_socket { nullptr };
 
     UserProperties m_user;
 };

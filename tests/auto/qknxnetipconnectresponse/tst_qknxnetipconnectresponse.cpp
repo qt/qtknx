@@ -56,7 +56,7 @@ private:
 
 void tst_QKnxNetIpConnectResponse::initTestCase()
 {
-    m_hpai = QKnxNetIpHpaiView::builder()
+    m_hpai = QKnxNetIpHpaiProxy::builder()
         .setHostAddress(QHostAddress::LocalHost)
         .setPort(3671)
         .create();
@@ -65,7 +65,7 @@ void tst_QKnxNetIpConnectResponse::initTestCase()
 void tst_QKnxNetIpConnectResponse::testDefaultConstructor()
 {
     QKnxNetIpFrame frame;
-    QKnxNetIpConnectResponse connectResponse(frame);
+    QKnxNetIpConnectResponseProxy connectResponse(frame);
 
     QCOMPARE(connectResponse.isValid(), false);
     QCOMPARE(connectResponse.channelId(), quint8(0));
@@ -76,11 +76,11 @@ void tst_QKnxNetIpConnectResponse::testDefaultConstructor()
 
 void tst_QKnxNetIpConnectResponse::testConstructorOneArgument()
 {
-    auto frame = QKnxNetIpConnectResponse::builder()
+    auto frame = QKnxNetIpConnectResponseProxy::builder()
         .setStatus(QKnxNetIp::Error::NoMoreConnections)
         .create();
 
-    QKnxNetIpConnectResponse connectResponse(frame);
+    QKnxNetIpConnectResponseProxy connectResponse(frame);
     QCOMPARE(connectResponse.isValid(), true);
     QCOMPARE(frame.size(), quint16(8));
     QCOMPARE(frame.bytes(), QKnxByteArray::fromHex("0610020600080024"));
@@ -95,11 +95,11 @@ void tst_QKnxNetIpConnectResponse::testConstructorOneArgument()
 
 void tst_QKnxNetIpConnectResponse::testConstructorOneArgumentNoError()
 {
-    auto frame = QKnxNetIpConnectResponse::builder()
+    auto frame = QKnxNetIpConnectResponseProxy::builder()
         .setStatus(QKnxNetIp::Error::None)
         .create();
 
-    QKnxNetIpConnectResponse connectResponse(frame);
+    QKnxNetIpConnectResponseProxy connectResponse(frame);
     QCOMPARE(connectResponse.isValid(), false);
     QCOMPARE(frame.size(), quint16(8));
     QCOMPARE(frame.bytes(), QKnxByteArray::fromHex("0610020600080000"));
@@ -114,13 +114,13 @@ void tst_QKnxNetIpConnectResponse::testConstructorOneArgumentNoError()
 
 void tst_QKnxNetIpConnectResponse::testConstructorFourArguments()
 {
-    auto frame = QKnxNetIpConnectResponse::builder()
+    auto frame = QKnxNetIpConnectResponseProxy::builder()
         .setChannelId(200)
         .setStatus(QKnxNetIp::Error::NoMoreConnections)
         .setDataEndpoint(m_hpai)
         .create();
 
-    QKnxNetIpConnectResponse connectResponse(frame);
+    QKnxNetIpConnectResponseProxy connectResponse(frame);
     QCOMPARE(connectResponse.isValid(), true);
     QCOMPARE(frame.size(), quint16(8));
     QCOMPARE(frame.bytes(), QKnxByteArray::fromHex("061002060008c824"));
@@ -135,16 +135,16 @@ void tst_QKnxNetIpConnectResponse::testConstructorFourArguments()
 
 void tst_QKnxNetIpConnectResponse::testConstructorFourArgumentsNoError()
 {
-    auto frame = QKnxNetIpConnectResponse::builder()
+    auto frame = QKnxNetIpConnectResponseProxy::builder()
         .setChannelId(200)
         .setStatus(QKnxNetIp::Error::None)
         .setDataEndpoint(m_hpai)
-        .setResponseData(QKnxNetIpCrdView::builder()
+        .setResponseData(QKnxNetIpCrdProxy::builder()
             .setIndividualAddress({ QKnxAddress::Type::Individual, QStringLiteral("1.1.10") })
             .create())
         .create();
 
-    QKnxNetIpConnectResponse connectResponse(frame);
+    QKnxNetIpConnectResponseProxy connectResponse(frame);
     QCOMPARE(connectResponse.isValid(), true);
     QCOMPARE(frame.size(), quint16(20));
     QCOMPARE(frame.bytes(),
@@ -159,8 +159,8 @@ void tst_QKnxNetIpConnectResponse::testConstructorFourArgumentsNoError()
         QKnxByteArray::fromHex("08017f0000010e57"));
 
     const auto &crd = connectResponse.responseData();
-    QCOMPARE(QKnxNetIpCrdView(crd).isValid(), true);
-    QCOMPARE(QKnxNetIpCrdView(crd).individualAddress().toString(), QStringLiteral("1.1.10"));
+    QCOMPARE(QKnxNetIpCrdProxy(crd).isValid(), true);
+    QCOMPARE(QKnxNetIpCrdProxy(crd).individualAddress().toString(), QStringLiteral("1.1.10"));
 }
 
 void tst_QKnxNetIpConnectResponse::testFromBytes()
@@ -174,21 +174,21 @@ void tst_QKnxNetIpConnectResponse::testFromBytes()
     QCOMPARE(header.serviceType(), QKnxNetIp::ServiceType::ConnectResponse);
     QCOMPARE(header.totalSize(), quint16(20));
 
-    QKnxNetIpConnectResponse response(frame);
+    QKnxNetIpConnectResponseProxy response(frame);
     QCOMPARE(response.channelId(), quint8(21));
     QCOMPARE(response.status(), QKnxNetIp::Error::None);
 
     auto hpai = response.dataEndpoint();
-    QKnxNetIpHpaiView view(hpai);
+    QKnxNetIpHpaiProxy view(hpai);
     QCOMPARE(view.hostProtocol(), QKnxNetIp::HostProtocol::UDP_IPv4);
     QCOMPARE(view.hostAddress(), QHostAddress("192.168.200.20"));
     QCOMPARE(view.port(), quint16(50100));
 
     auto crd = response.responseData().bytes();
-    QCOMPARE(quint8(crd[0]), quint8(0x04));
-    QCOMPARE(quint8(crd[1]), quint8(0x04));
-    QCOMPARE(quint8(crd[2]), quint8(0x02));
-    QCOMPARE(quint8(crd[3]), quint8(0x00));
+    QCOMPARE(crd.at(0), quint8(0x04));
+    QCOMPARE(crd.at(1), quint8(0x04));
+    QCOMPARE(crd.at(2), quint8(0x02));
+    QCOMPARE(crd.at(3), quint8(0x00));
 
     frame = QKnxNetIpFrame::fromBytes(
         QKnxByteArray::fromHex("061002060014010008010A094E1F0E5704041105"), 0);
@@ -208,10 +208,10 @@ void tst_QKnxNetIpConnectResponse::testFromBytes()
     QCOMPARE(view.port(), quint16(3671));
 
     crd = response.responseData().bytes();
-    QCOMPARE(quint8(crd[0]), quint8(0x04));
-    QCOMPARE(quint8(crd[1]), quint8(0x04));
-    QCOMPARE(quint8(crd[2]), quint8(0x11));
-    QCOMPARE(quint8(crd[3]), quint8(0x05));
+    QCOMPARE(crd.at(0), quint8(0x04));
+    QCOMPARE(crd.at(1), quint8(0x04));
+    QCOMPARE(crd.at(2), quint8(0x11));
+    QCOMPARE(crd.at(3), quint8(0x05));
 }
 
 void tst_QKnxNetIpConnectResponse::testDebugStream()
@@ -228,16 +228,16 @@ void tst_QKnxNetIpConnectResponse::testDebugStream()
         QtMessageHandler oldMessageHandler;
     } _(myMessageHandler);
 
-    qDebug() << QKnxNetIpConnectResponse::builder().create();
+    qDebug() << QKnxNetIpConnectResponseProxy::builder().create();
     QCOMPARE(s_msg, QString::fromLatin1("0x0610020600080000"));
 
-    qDebug() << QKnxNetIpConnectResponse::builder().setStatus(QKnxNetIp::Error::NoMoreConnections)
+    qDebug() << QKnxNetIpConnectResponseProxy::builder().setStatus(QKnxNetIp::Error::NoMoreConnections)
         .create();
     QCOMPARE(s_msg, QString::fromLatin1("0x0610020600080024"));
 
     {
         QKnxNetIpCrd responseData;
-        qDebug() << QKnxNetIpConnectResponse::builder().setChannelId(200)
+        qDebug() << QKnxNetIpConnectResponseProxy::builder().setChannelId(200)
             .setStatus(QKnxNetIp::Error::None)
             .setDataEndpoint(m_hpai)
             .setResponseData(responseData)
@@ -249,7 +249,7 @@ void tst_QKnxNetIpConnectResponse::testDebugStream()
     responseData.setData(QKnxAddress(QKnxAddress::Type::Individual, QStringLiteral("1.1.10"))
         .bytes());
 
-    qDebug() << QKnxNetIpConnectResponse::builder().setChannelId(200)
+    qDebug() << QKnxNetIpConnectResponseProxy::builder().setChannelId(200)
         .setStatus(QKnxNetIp::Error::None)
         .setDataEndpoint(m_hpai)
         .setResponseData(responseData)

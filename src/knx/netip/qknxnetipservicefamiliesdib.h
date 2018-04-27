@@ -41,14 +41,14 @@ struct Q_KNX_EXPORT QKnxServiceInfo
     quint8 ServiceFamilyVersion;
 };
 
-class Q_KNX_EXPORT QKnxNetIpServiceFamiliesDibView final
+class Q_KNX_EXPORT QKnxNetIpServiceFamiliesDibProxy final
 {
 public:
-    QKnxNetIpServiceFamiliesDibView() = delete;
-    ~QKnxNetIpServiceFamiliesDibView() = default;
+    QKnxNetIpServiceFamiliesDibProxy() = delete;
+    ~QKnxNetIpServiceFamiliesDibProxy() = default;
 
-    QKnxNetIpServiceFamiliesDibView(const QKnxNetIpDib &&) = delete;
-    explicit QKnxNetIpServiceFamiliesDibView(const QKnxNetIpDib &dib);
+    QKnxNetIpServiceFamiliesDibProxy(const QKnxNetIpDib &&) = delete;
+    explicit QKnxNetIpServiceFamiliesDibProxy(const QKnxNetIpDib &dib);
 
     bool isValid() const;
 
@@ -65,7 +65,7 @@ public:
     private:
         QVector<QKnxServiceInfo> m_infos;
     };
-    static QKnxNetIpServiceFamiliesDibView::Builder builder();
+    static QKnxNetIpServiceFamiliesDibProxy::Builder builder();
 
 private:
     const QKnxNetIpDib &m_dib;

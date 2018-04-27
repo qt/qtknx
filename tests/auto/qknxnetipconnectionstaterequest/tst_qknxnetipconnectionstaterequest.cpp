@@ -49,7 +49,7 @@ private slots:
 void tst_QKnxNetIpConnectionStateRequest::testDefaultConstructor()
 {
     QKnxNetIpFrame frame;
-    QKnxNetIpConnectionStateRequest connectionStateRequest(frame);
+    QKnxNetIpConnectionStateRequestProxy connectionStateRequest(frame);
     QCOMPARE(connectionStateRequest.isValid(), false);
     QCOMPARE(connectionStateRequest.channelId(), quint8(0));
     QCOMPARE(connectionStateRequest.controlEndpoint().isValid(), false);
@@ -57,16 +57,16 @@ void tst_QKnxNetIpConnectionStateRequest::testDefaultConstructor()
 
 void tst_QKnxNetIpConnectionStateRequest::testConstructor()
 {
-    const auto hpai = QKnxNetIpHpaiView::builder()
+    const auto hpai = QKnxNetIpHpaiProxy::builder()
         .setHostAddress(QHostAddress::LocalHost)
         .setPort(3671)
         .create();
 
-    auto frame = QKnxNetIpConnectionStateRequest::builder()
+    auto frame = QKnxNetIpConnectionStateRequestProxy::builder()
         .setChannelId(255)
         .setControlEndpoint(hpai)
         .create();
-    QKnxNetIpConnectionStateRequest connectionStateRequest(frame);
+    QKnxNetIpConnectionStateRequestProxy connectionStateRequest(frame);
 
     QCOMPARE(connectionStateRequest.isValid(), true);
     QCOMPARE(frame.size(), quint16(16));
@@ -92,12 +92,12 @@ void tst_QKnxNetIpConnectionStateRequest::testDebugStream()
         QtMessageHandler oldMessageHandler;
     } _(myMessageHandler);
 
-    qDebug() << QKnxNetIpConnectionStateRequest::builder().create();
+    qDebug() << QKnxNetIpConnectionStateRequestProxy::builder().create();
     QCOMPARE(s_msg, QString::fromLatin1("0x0610020700080000"));
 
-    qDebug() << QKnxNetIpConnectionStateRequest::builder()
+    qDebug() << QKnxNetIpConnectionStateRequestProxy::builder()
         .setChannelId(255)
-        .setControlEndpoint(QKnxNetIpHpaiView::builder()
+        .setControlEndpoint(QKnxNetIpHpaiProxy::builder()
             .setHostAddress(QHostAddress::LocalHost)
             .setPort(3671).create())
         .create();

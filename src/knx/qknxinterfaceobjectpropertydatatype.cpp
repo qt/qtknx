@@ -1,6 +1,6 @@
 /******************************************************************************
 **
-** Copyright (C) 2017 The Qt Company Ltd.
+** Copyright (C) 2018 The Qt Company Ltd.
 ** Contact: https://www.qt.io/licensing/
 **
 ** This file is part of the QtKnx module.
@@ -37,30 +37,32 @@ QT_BEGIN_NAMESPACE
     \class QKnxInterfaceObjectPropertyDataType
 
     \inmodule QtKnx
-    \brief This class holds information about the data type of the properties
-    of the KNX interface object.
+    \brief The QKnxInterfaceObjectPropertyDataType class holds information about
+    the data type of the properties of a KNX interface object.
 
-    KNX interface object holds information about the device functionalities.
-    Different properties are storing different functionalities. The data type
-    holds information about this property such as its
+    A KNX interface object holds information about device functionality.
+    This class represents the properties of interface objects, such as:
+
     \list
-        \li \l QKnxInterfaceObjectPropertyDataType::Id
-        \li \l QKnxInterfaceObjectPropertyDataType::Unit
+        \li \l Id
+        \li \l Unit
         \li \l QKnxDatapointType::Type
     \endlist
 */
 
 /*!
     \enum QKnxInterfaceObjectPropertyDataType::Unit
-    This enum describes the possible units of an interface object property.
+    This enum holds the unit of an interface object property.
 
     \value Array
+           An array of values.
     \value Single
+           A single value.
 */
 
 /*!
     \enum QKnxInterfaceObjectPropertyDataType::Id
-    This enum describes the possible Ids of an interface object property.
+    This enum holds the ID of an interface object property.
 
     \value Control
     \value Char
@@ -129,6 +131,12 @@ QT_BEGIN_NAMESPACE
     \value Invalid
 */
 
+/*!
+    \fn QKnxInterfaceObjectPropertyDataType &QKnxInterfaceObjectPropertyDataType::operator=(const QKnxInterfaceObjectPropertyDataType &o);
+
+    Assigns \a o to this object.
+*/
+
 struct QKnxInterfaceObjectPropertyDataTypePrivate final : public QSharedData
 {
     QKnxInterfaceObjectPropertyDataTypePrivate() = default;
@@ -139,13 +147,23 @@ struct QKnxInterfaceObjectPropertyDataTypePrivate final : public QSharedData
     QKnxInterfaceObjectPropertyDataType::Unit m_unit = QKnxInterfaceObjectPropertyDataType::Unit::Single;
 };
 
+/*!
+    Creates a KNX interface object property data type.
+*/
 QKnxInterfaceObjectPropertyDataType::QKnxInterfaceObjectPropertyDataType()
     : d_ptr(new QKnxInterfaceObjectPropertyDataTypePrivate)
 {}
 
+/*!
+    Destroys a KNX interface object property data type.
+*/
 QKnxInterfaceObjectPropertyDataType::~QKnxInterfaceObjectPropertyDataType()
 {}
 
+/*!
+    Creates a KNX interface object property data type with the ID \a id, type
+    \a type, and unit \a unit.
+*/
 QKnxInterfaceObjectPropertyDataType::QKnxInterfaceObjectPropertyDataType(Id id,
         QKnxDatapointType::Type type, QKnxInterfaceObjectPropertyDataType::Unit unit)
     : d_ptr(new QKnxInterfaceObjectPropertyDataTypePrivate)
@@ -155,31 +173,63 @@ QKnxInterfaceObjectPropertyDataType::QKnxInterfaceObjectPropertyDataType(Id id,
     d_ptr->m_type = type;
 }
 
+/*!
+    Returns \c true if this a valid KNX interface object property data type;
+    otherwise returns \c false.
+*/
 bool QKnxInterfaceObjectPropertyDataType::isValid() const
 {
     return d_ptr->m_id != Id::Invalid;
 }
 
+/*!
+    Returns the size of the KNX interface object property data type.
+
+    If \a read is \c false, the property is a write property. Only the object
+    property data type \c PDT_CONTROL, which is used as type indication for
+    properties controlling the standard load state machine, can be either a
+    read property or a write property.
+*/
 quint8 QKnxInterfaceObjectPropertyDataType::size(bool read) const
 {
     return QKnxInterfaceObjectPropertyDataType::size(d_ptr->m_id, read);
 }
 
+/*!
+    Returns the ID of the KNX interface object property data type.
+*/
 QKnxInterfaceObjectPropertyDataType::Id QKnxInterfaceObjectPropertyDataType::id() const
 {
     return d_ptr->m_id;
 }
 
+/*!
+    Returns the datapoint type of a KNX interface object property data type.
+
+    \sa QKnxDatapointType::Type
+*/
 QKnxDatapointType::Type QKnxInterfaceObjectPropertyDataType::datapointType() const
 {
     return d_ptr->m_type;
 }
 
+/*!
+    Returns the unit of a KNX interface object property data type.
+*/
 QKnxInterfaceObjectPropertyDataType::Unit QKnxInterfaceObjectPropertyDataType::unit() const
 {
     return d_ptr->m_unit;
 }
 
+/*!
+    Returns the size of the KNX interface object property data type with the ID
+    \a id.
+
+    If \a read is \c false, the property is a write property. Only the object
+    property data type \c PDT_CONTROL, which is used as type indication for
+    properties controlling the standard load state machine, can be either a
+    read property or a write property.
+*/
 quint8 QKnxInterfaceObjectPropertyDataType::size(Id id, bool read)
 {
     switch (id) {
@@ -277,6 +327,10 @@ quint8 QKnxInterfaceObjectPropertyDataType::size(Id id, bool read)
     return 0;
 }
 
+/*!
+    Creates a KNX interface object property data type from the property
+    \a property.
+*/
 QVector<QKnxInterfaceObjectPropertyDataType>
     QKnxInterfaceObjectPropertyDataType::fromProperty(QKnxInterfaceObjectProperty property)
 {
@@ -558,38 +612,38 @@ QVector<QKnxInterfaceObjectPropertyDataType>
                     { Id::UnsignedInt, QKnxDatapointType::Type::Dpt7_2ByteUnsigned }
                 }
             },
-            { QKnxInterfaceObjectProperty::Device::Channel01Paramter, { { Id::Generic01 } } },
-            { QKnxInterfaceObjectProperty::Device::Channel02Paramter, { { Id::Generic01 } } },
-            { QKnxInterfaceObjectProperty::Device::Channel03Paramter, { { Id::Generic01 } } },
-            { QKnxInterfaceObjectProperty::Device::Channel04Paramter, { { Id::Generic01 } } },
-            { QKnxInterfaceObjectProperty::Device::Channel05Paramter, { { Id::Generic01 } } },
-            { QKnxInterfaceObjectProperty::Device::Channel06Paramter, { { Id::Generic01 } } },
-            { QKnxInterfaceObjectProperty::Device::Channel07Paramter, { { Id::Generic01 } } },
-            { QKnxInterfaceObjectProperty::Device::Channel08Paramter, { { Id::Generic01 } } },
-            { QKnxInterfaceObjectProperty::Device::Channel09Paramter, { { Id::Generic01 } } },
-            { QKnxInterfaceObjectProperty::Device::Channel10Paramter, { { Id::Generic01 } } },
-            { QKnxInterfaceObjectProperty::Device::Channel11Paramter, { { Id::Generic01 } } },
-            { QKnxInterfaceObjectProperty::Device::Channel12Paramter, { { Id::Generic01 } } },
-            { QKnxInterfaceObjectProperty::Device::Channel13Paramter, { { Id::Generic01 } } },
-            { QKnxInterfaceObjectProperty::Device::Channel14Paramter, { { Id::Generic01 } } },
-            { QKnxInterfaceObjectProperty::Device::Channel15Paramter, { { Id::Generic01 } } },
-            { QKnxInterfaceObjectProperty::Device::Channel16Paramter, { { Id::Generic01 } } },
-            { QKnxInterfaceObjectProperty::Device::Channel17Paramter, { { Id::Generic01 } } },
-            { QKnxInterfaceObjectProperty::Device::Channel18Paramter, { { Id::Generic01 } } },
-            { QKnxInterfaceObjectProperty::Device::Channel19Paramter, { { Id::Generic01 } } },
-            { QKnxInterfaceObjectProperty::Device::Channel20Paramter, { { Id::Generic01 } } },
-            { QKnxInterfaceObjectProperty::Device::Channel21Paramter, { { Id::Generic01 } } },
-            { QKnxInterfaceObjectProperty::Device::Channel22Paramter, { { Id::Generic01 } } },
-            { QKnxInterfaceObjectProperty::Device::Channel23Paramter, { { Id::Generic01 } } },
-            { QKnxInterfaceObjectProperty::Device::Channel24Paramter, { { Id::Generic01 } } },
-            { QKnxInterfaceObjectProperty::Device::Channel25Paramter, { { Id::Generic01 } } },
-            { QKnxInterfaceObjectProperty::Device::Channel26Paramter, { { Id::Generic01 } } },
-            { QKnxInterfaceObjectProperty::Device::Channel27Paramter, { { Id::Generic01 } } },
-            { QKnxInterfaceObjectProperty::Device::Channel28Paramter, { { Id::Generic01 } } },
-            { QKnxInterfaceObjectProperty::Device::Channel29Paramter, { { Id::Generic01 } } },
-            { QKnxInterfaceObjectProperty::Device::Channel30Paramter, { { Id::Generic01 } } },
-            { QKnxInterfaceObjectProperty::Device::Channel31Paramter, { { Id::Generic01 } } },
-            { QKnxInterfaceObjectProperty::Device::Channel32Paramter, { { Id::Generic01 } } }
+            { QKnxInterfaceObjectProperty::Device::Channel01Parameter, { { Id::Generic01 } } },
+            { QKnxInterfaceObjectProperty::Device::Channel02Parameter, { { Id::Generic01 } } },
+            { QKnxInterfaceObjectProperty::Device::Channel03Parameter, { { Id::Generic01 } } },
+            { QKnxInterfaceObjectProperty::Device::Channel04Parameter, { { Id::Generic01 } } },
+            { QKnxInterfaceObjectProperty::Device::Channel05Parameter, { { Id::Generic01 } } },
+            { QKnxInterfaceObjectProperty::Device::Channel06Parameter, { { Id::Generic01 } } },
+            { QKnxInterfaceObjectProperty::Device::Channel07Parameter, { { Id::Generic01 } } },
+            { QKnxInterfaceObjectProperty::Device::Channel08Parameter, { { Id::Generic01 } } },
+            { QKnxInterfaceObjectProperty::Device::Channel09Parameter, { { Id::Generic01 } } },
+            { QKnxInterfaceObjectProperty::Device::Channel10Parameter, { { Id::Generic01 } } },
+            { QKnxInterfaceObjectProperty::Device::Channel11Parameter, { { Id::Generic01 } } },
+            { QKnxInterfaceObjectProperty::Device::Channel12Parameter, { { Id::Generic01 } } },
+            { QKnxInterfaceObjectProperty::Device::Channel13Parameter, { { Id::Generic01 } } },
+            { QKnxInterfaceObjectProperty::Device::Channel14Parameter, { { Id::Generic01 } } },
+            { QKnxInterfaceObjectProperty::Device::Channel15Parameter, { { Id::Generic01 } } },
+            { QKnxInterfaceObjectProperty::Device::Channel16Parameter, { { Id::Generic01 } } },
+            { QKnxInterfaceObjectProperty::Device::Channel17Parameter, { { Id::Generic01 } } },
+            { QKnxInterfaceObjectProperty::Device::Channel18Parameter, { { Id::Generic01 } } },
+            { QKnxInterfaceObjectProperty::Device::Channel19Parameter, { { Id::Generic01 } } },
+            { QKnxInterfaceObjectProperty::Device::Channel20Parameter, { { Id::Generic01 } } },
+            { QKnxInterfaceObjectProperty::Device::Channel21Parameter, { { Id::Generic01 } } },
+            { QKnxInterfaceObjectProperty::Device::Channel22Parameter, { { Id::Generic01 } } },
+            { QKnxInterfaceObjectProperty::Device::Channel23Parameter, { { Id::Generic01 } } },
+            { QKnxInterfaceObjectProperty::Device::Channel24Parameter, { { Id::Generic01 } } },
+            { QKnxInterfaceObjectProperty::Device::Channel25Parameter, { { Id::Generic01 } } },
+            { QKnxInterfaceObjectProperty::Device::Channel26Parameter, { { Id::Generic01 } } },
+            { QKnxInterfaceObjectProperty::Device::Channel27Parameter, { { Id::Generic01 } } },
+            { QKnxInterfaceObjectProperty::Device::Channel28Parameter, { { Id::Generic01 } } },
+            { QKnxInterfaceObjectProperty::Device::Channel29Parameter, { { Id::Generic01 } } },
+            { QKnxInterfaceObjectProperty::Device::Channel30Parameter, { { Id::Generic01 } } },
+            { QKnxInterfaceObjectProperty::Device::Channel31Parameter, { { Id::Generic01 } } },
+            { QKnxInterfaceObjectProperty::Device::Channel32Parameter, { { Id::Generic01 } } }
         };
     }();
     if (QKnxInterfaceObjectProperty::isDeviceProperty(property))
@@ -1027,6 +1081,9 @@ QVector<QKnxInterfaceObjectPropertyDataType>
     return {};
 }
 
+/*!
+    Creates the interface object property data type \a o.
+*/
 QKnxInterfaceObjectPropertyDataType::QKnxInterfaceObjectPropertyDataType(const QKnxInterfaceObjectPropertyDataType &o)
     : d_ptr(o.d_ptr)
 {}
@@ -1038,6 +1095,9 @@ QKnxInterfaceObjectPropertyDataType::operator=(const QKnxInterfaceObjectProperty
     return *this;
 }
 
+/*!
+    Swaps the interface object property data type \a other with this data type.
+*/
 void QKnxInterfaceObjectPropertyDataType::swap(QKnxInterfaceObjectPropertyDataType &other) Q_DECL_NOTHROW
 {
     d_ptr.swap(other.d_ptr);
@@ -1055,6 +1115,11 @@ QKnxInterfaceObjectPropertyDataType::QKnxInterfaceObjectPropertyDataType(
 }
 
 QKnxInterfaceObjectPropertyDataType &
+
+/*!
+    Move-constructs an object instance, making it point to the same object that
+    \a other was pointing to.
+*/
 QKnxInterfaceObjectPropertyDataType::operator=(QKnxInterfaceObjectPropertyDataType &&other) Q_DECL_NOTHROW
 {
     swap(other);

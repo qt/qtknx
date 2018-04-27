@@ -49,7 +49,7 @@ private slots:
 void tst_QKnxNetIpTunnelingAcknowledge::testDefaultConstructor()
 {
     QKnxNetIpFrame frame;
-    QKnxNetIpTunnelingAcknowledge tunneling(frame);
+    QKnxNetIpTunnelingAcknowledgeProxy tunneling(frame);
 
     QCOMPARE(tunneling.isValid(), false);
 }
@@ -71,7 +71,7 @@ void tst_QKnxNetIpTunnelingAcknowledge::testDebugStream()
         QtMessageHandler oldMessageHandler;
     } _(myMessageHandler);
 
-    qDebug() << QKnxNetIpTunnelingAcknowledge::builder().create();
+    qDebug() << QKnxNetIpTunnelingAcknowledgeProxy::builder().create();
     QCOMPARE(s_msg, QString::fromLatin1("0x06100421000a04000000"));
 }
 

@@ -36,14 +36,14 @@
 
 QT_BEGIN_NAMESPACE
 
-class Q_KNX_EXPORT QKnxNetIpDisconnectRequest final
+class Q_KNX_EXPORT QKnxNetIpDisconnectRequestProxy final
 {
 public:
-    QKnxNetIpDisconnectRequest() = delete;
-    ~QKnxNetIpDisconnectRequest() = default;
+    QKnxNetIpDisconnectRequestProxy() = delete;
+    ~QKnxNetIpDisconnectRequestProxy() = default;
 
-    QKnxNetIpDisconnectRequest(const QKnxNetIpFrame &&) = delete;
-    explicit QKnxNetIpDisconnectRequest(const QKnxNetIpFrame &frame);
+    QKnxNetIpDisconnectRequestProxy(const QKnxNetIpFrame &&) = delete;
+    explicit QKnxNetIpDisconnectRequestProxy(const QKnxNetIpFrame &frame);
 
     bool isValid() const;
 
@@ -62,7 +62,7 @@ public:
         quint8 m_channelId;
         QKnxNetIpHpai m_hpai;
     };
-    static QKnxNetIpDisconnectRequest::Builder builder();
+    static QKnxNetIpDisconnectRequestProxy::Builder builder();
 
 private:
     const QKnxNetIpFrame &m_frame;

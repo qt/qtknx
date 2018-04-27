@@ -1,6 +1,6 @@
 /******************************************************************************
 **
-** Copyright (C) 2017 The Qt Company Ltd.
+** Copyright (C) 2018 The Qt Company Ltd.
 ** Contact: https://www.qt.io/licensing/
 **
 ** This file is part of the QtKnx module.
@@ -33,27 +33,100 @@
 
 QT_BEGIN_NAMESPACE
 
-QKnxNetIpDescriptionResponse::QKnxNetIpDescriptionResponse(const QKnxNetIpFrame &frame)
+/*!
+    \class QKnxNetIpDescriptionResponseProxy
+
+    \inmodule QtKnx
+    \brief The QKnxNetIpDescriptionResponseProxy class provides the means to
+    read a description response from the generic \l QKnxNetIpFrame class and
+    to create a KNXnet/IP frame based on the information.
+
+    When a KNXnet/IP server receives a description request from a KNXnet/IP
+    client, it replies by sending a description response frame that contains
+    information about the supported protocol version range, its own
+    capabilities, state information, and optionally a friendly name for this
+    server's KNX connection.
+
+    In most programs, this class will not be used directly. Instead, the
+    \l QKnxNetIpTunnelConnection or \l QKnxNetIpDeviceManagementConnection
+    class is used to establish a functional connection to a KNXnet/IP server.
+
+    The following code sample illustrates how to read the description response
+    information sent by a KNXnet/IP server:
+
+    \code
+        auto netIpFrame = QKnxNetIpFrame::fromBytes(...);
+
+        const QKnxNetIpDescriptionResponseProxy response(netIpFrame);
+        if (!response.isValid())
+            return;
+
+        auto hardware = response.deviceHardware();
+        auto families = response.supportedFamilies();
+    \endcode
+
+    \sa builder(), QKnxNetIpDescriptionRequestProxy
+*/
+
+/*!
+    \fn QKnxNetIpDescriptionResponseProxy::QKnxNetIpDescriptionResponseProxy()
+    \internal
+*/
+
+/*!
+    \fn QKnxNetIpDescriptionResponseProxy::~QKnxNetIpDescriptionResponseProxy()
+    \internal
+*/
+
+/*!
+    \fn QKnxNetIpDescriptionResponseProxy::QKnxNetIpDescriptionResponseProxy(const QKnxNetIpFrame &&)
+    \internal
+*/
+
+/*!
+    Constructs a proxy object to read the description response information
+    carried by the specified KNXnet/IP frame \a frame.
+*/
+QKnxNetIpDescriptionResponseProxy::QKnxNetIpDescriptionResponseProxy(const QKnxNetIpFrame &frame)
     : m_frame(frame)
 {}
 
-bool QKnxNetIpDescriptionResponse::isValid() const
+/*!
+    Returns \c true if the frame contains initialized values and is in itself
+    valid, otherwise returns \c false. A valid KNXnet/IP frame consist of
+    at least a valid header and a size in bytes corresponding to the total size
+    of the KNXnet/IP frame header.
+
+    \sa QKnxNetIpFrameHeader::totalSize()
+*/
+bool QKnxNetIpDescriptionResponseProxy::isValid() const
 {
     return m_frame.isValid() && m_frame.size() >= 64
         && m_frame.serviceType() == QKnxNetIp::ServiceType::DescriptionResponse;
 }
 
-QKnxNetIpDib QKnxNetIpDescriptionResponse::deviceHardware() const
+/*!
+    Returns information about the KNXnet/IP server hardware.
+*/
+QKnxNetIpDib QKnxNetIpDescriptionResponseProxy::deviceHardware() const
 {
     return QKnxNetIpDib::fromBytes(m_frame.constData(), 0);
 }
 
-QKnxNetIpDib QKnxNetIpDescriptionResponse::supportedFamilies() const
+/*!
+    Returns information about the service families that the KNXnet/IP server
+    supports.
+*/
+QKnxNetIpDib QKnxNetIpDescriptionResponseProxy::supportedFamilies() const
 {
     return QKnxNetIpDib::fromBytes(m_frame.constData(), 54);
 }
 
-QVector<QKnxNetIpDib> QKnxNetIpDescriptionResponse::optionalDibs() const
+/*!
+    Returns the optional KNXnet/IP server device information block (DIB)
+    structure.
+*/
+QVector<QKnxNetIpDib> QKnxNetIpDescriptionResponseProxy::optionalDibs() const
 {
     const auto &data = m_frame.constData();
 
@@ -74,38 +147,88 @@ QVector<QKnxNetIpDib> QKnxNetIpDescriptionResponse::optionalDibs() const
     return dibs;
 }
 
-QKnxNetIpDescriptionResponse::Builder QKnxNetIpDescriptionResponse::builder()
+/*!
+    Returns a builder object to create a KNXnet/IP description response frame.
+*/
+QKnxNetIpDescriptionResponseProxy::Builder QKnxNetIpDescriptionResponseProxy::builder()
 {
-    return QKnxNetIpDescriptionResponse::Builder();
+    return QKnxNetIpDescriptionResponseProxy::Builder();
 }
 
 
-// -- QKnxNetIpSearchResponse::Builder
+/*!
+    \class QKnxNetIpDescriptionResponseProxy::Builder
 
-QKnxNetIpDescriptionResponse::Builder &
-QKnxNetIpDescriptionResponse::Builder::setDeviceHardware(const QKnxNetIpDib &ddib)
+    \inmodule QtKnx
+    \brief The QKnxNetIpDescriptionResponseProxy::Builder class provides the
+    means to create a KNXnet/IP description response frame.
+
+    A description response frame contains information about the supported
+    protocol version range, the KNXnet/IP server capabilities, state
+    information, and optionally a friendly name for this server's KNX
+    connection.
+
+    In most programs, this class will not be used directly. Instead, the
+    \l QKnxNetIpTunnelConnection or \l QKnxNetIpDeviceManagementConnection
+    class is used to establish a functional connection to a KNXnet/IP server.
+
+    The common way to create a a description response is:
+
+    \code
+        auto ddib = QKnxNetIpDeviceDibProxy::builder().create();
+        auto sdib = QKnxNetIpServiceFamiliesDibProxy::builder().create();
+
+        auto response = QKnxNetIpDescriptionResponseProxy::builder()
+            .setDeviceHardware(ddib)
+            .setSupportedFamilies(sdib)
+            .create();
+    \endcode
+*/
+
+/*!
+    Sets the KNXnet/IP server device information block (DIB) to \a ddib and
+    returns a reference to the builder.
+*/
+QKnxNetIpDescriptionResponseProxy::Builder &
+QKnxNetIpDescriptionResponseProxy::Builder::setDeviceHardware(const QKnxNetIpDib &ddib)
 {
-    if (QKnxNetIpDeviceDibView(ddib).isValid())
+    if (QKnxNetIpDeviceDibProxy(ddib).isValid())
         m_ddib = ddib;
     return *this;
 }
 
-QKnxNetIpDescriptionResponse::Builder &
-    QKnxNetIpDescriptionResponse::Builder::setSupportedFamilies(const QKnxNetIpDib &sdib)
+/*!
+    Sets the device families supported by the KNXnet/IP server to \a sdib and
+    returns a reference to the builder.
+*/
+QKnxNetIpDescriptionResponseProxy::Builder &
+    QKnxNetIpDescriptionResponseProxy::Builder::setSupportedFamilies(const QKnxNetIpDib &sdib)
 {
-    if (QKnxNetIpServiceFamiliesDibView(sdib).isValid())
+    if (QKnxNetIpServiceFamiliesDibProxy(sdib).isValid())
         m_sdib = sdib;
     return *this;
 }
 
-QKnxNetIpDescriptionResponse::Builder &
-    QKnxNetIpDescriptionResponse::Builder::setOptionalDibs(const QVector<QKnxNetIpDib> &dibs)
+/*!
+    Sets the optional KNXnet/IP server device information block (DIB) structure
+    to \a dibs and returns a reference to the builder.
+*/
+QKnxNetIpDescriptionResponseProxy::Builder &
+    QKnxNetIpDescriptionResponseProxy::Builder::setOptionalDibs(const QVector<QKnxNetIpDib> &dibs)
 {
     m_optionalDibs = dibs;
     return *this;
 }
 
-QKnxNetIpFrame QKnxNetIpDescriptionResponse::Builder::create() const
+/*!
+    Creates and returns a KNXnet/IP description response frame.
+
+    \note The returned frame may be invalid depending on the values used during
+    setup.
+
+    \sa isValid()
+*/
+QKnxNetIpFrame QKnxNetIpDescriptionResponseProxy::Builder::create() const
 {
     return { QKnxNetIp::ServiceType::DescriptionResponse, m_ddib.bytes() + m_sdib.bytes()
         + [&]() -> QKnxByteArray {

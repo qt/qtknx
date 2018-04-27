@@ -50,21 +50,21 @@ void tst_QKnxNetIpRoutingBusy::testDefaultConstructor()
 {
     QKnxNetIpFrame frame;
 
-    QKnxNetIpRoutingBusy routing(frame);
+    QKnxNetIpRoutingBusyProxy routing(frame);
     QCOMPARE(routing.isValid(), false);
 
-    frame = QKnxNetIpRoutingBusy::builder().create();
+    frame = QKnxNetIpRoutingBusyProxy::builder().create();
     QCOMPARE(routing.isValid(), true);
 }
 
 void tst_QKnxNetIpRoutingBusy::testConstructor()
 {
-    auto frame = QKnxNetIpRoutingBusy::builder()
+    auto frame = QKnxNetIpRoutingBusyProxy::builder()
         .setDeviceState(QKnxNetIp::DeviceState::IpFault)
         .setRoutingBusyWaitTime(99)
         .setRoutingBusyControl(0xffff)
         .create();
-    QKnxNetIpRoutingBusy routing(frame);
+    QKnxNetIpRoutingBusyProxy routing(frame);
 
     QCOMPARE(routing.isValid(), true);
     QCOMPARE(frame.size(), quint16(12));
@@ -91,10 +91,10 @@ void tst_QKnxNetIpRoutingBusy::testDebugStream()
         QtMessageHandler oldMessageHandler;
     } _(myMessageHandler);
 
-    qDebug() << QKnxNetIpRoutingBusy::builder().create();
+    qDebug() << QKnxNetIpRoutingBusyProxy::builder().create();
     QCOMPARE(s_msg, QStringLiteral("0x06100352000c060000640000"));
 
-    qDebug() << QKnxNetIpRoutingBusy::builder()
+    qDebug() << QKnxNetIpRoutingBusyProxy::builder()
         .setDeviceState(QKnxNetIp::DeviceState::IpFault)
         .setRoutingBusyWaitTime(99)
         .setRoutingBusyControl(0xffff)

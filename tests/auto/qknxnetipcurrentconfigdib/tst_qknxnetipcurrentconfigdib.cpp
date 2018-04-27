@@ -48,14 +48,14 @@ private slots:
 
 void tst_QKnxNetIpCurrentConfigDib::testDefaultConstructor()
 {
-    auto currentconfigDib = QKnxNetIpCurrentConfigDibView::builder().create();
+    auto currentconfigDib = QKnxNetIpCurrentConfigDibProxy::builder().create();
     QCOMPARE(currentconfigDib.isValid(), true);
     QCOMPARE(currentconfigDib.size(), quint16(2));
     QCOMPARE(currentconfigDib.bytes(), QKnxByteArray({ 0x02, 0x04 }));
     QCOMPARE(currentconfigDib.data().size(), quint16(0));
     QCOMPARE(currentconfigDib.data(), QKnxByteArray {});
 
-    const QKnxNetIpCurrentConfigDibView view(currentconfigDib);
+    const QKnxNetIpCurrentConfigDibProxy view(currentconfigDib);
     QCOMPARE(view.isValid(), false);
     QCOMPARE(view.descriptionType(), QKnxNetIp::DescriptionType::Unknown);
     QCOMPARE(view.ipAddress(), QHostAddress());
@@ -67,7 +67,7 @@ void tst_QKnxNetIpCurrentConfigDib::testDefaultConstructor()
 
 void tst_QKnxNetIpCurrentConfigDib::testConstructorWithFourArguments()
 {
-    auto currentconfigDib = QKnxNetIpCurrentConfigDibView::builder()
+    auto currentconfigDib = QKnxNetIpCurrentConfigDibProxy::builder()
         .setIpAddress(QHostAddress("192.168.2.12"))
         .setSubnetMask(QHostAddress("255.255.255.0"))
         .setDefaultGateway(QHostAddress("192.168.2.1"))
@@ -83,7 +83,7 @@ void tst_QKnxNetIpCurrentConfigDib::testConstructorWithFourArguments()
     QCOMPARE(currentconfigDib.data(),
         QKnxByteArray::fromHex("C0A8020CFFFFFF00C0A80201B48A03020100"));
 
-    const QKnxNetIpCurrentConfigDibView view(currentconfigDib);
+    const QKnxNetIpCurrentConfigDibProxy view(currentconfigDib);
     QCOMPARE(view.isValid(), true);
     QCOMPARE(view.descriptionType(), QKnxNetIp::DescriptionType::CurrentIpConfiguration);
     QCOMPARE(view.ipAddress(), QHostAddress("192.168.2.12"));
@@ -107,10 +107,10 @@ void tst_QKnxNetIpCurrentConfigDib::testDebugStream()
         QtMessageHandler oldMessageHandler;
     } _(myMessageHandler);
 
-    qDebug() << QKnxNetIpCurrentConfigDibView::builder().create();
+    qDebug() << QKnxNetIpCurrentConfigDibProxy::builder().create();
     QCOMPARE(s_msg, QString::fromLatin1("0x0204"));
 
-    qDebug() << QKnxNetIpCurrentConfigDibView::builder()
+    qDebug() << QKnxNetIpCurrentConfigDibProxy::builder()
         .setIpAddress(QHostAddress("192.168.2.12"))
         .setSubnetMask(QHostAddress("255.255.255.0"))
         .setDefaultGateway(QHostAddress("192.168.2.1"))

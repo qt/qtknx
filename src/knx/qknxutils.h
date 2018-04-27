@@ -49,7 +49,7 @@ struct QKnxUtils final
         {
             if (data.size() - index < 1)
                 return {};
-            return data[index];
+            return data.at(index);
         }
     };
 
@@ -64,7 +64,7 @@ struct QKnxUtils final
         {
             if (data.size() - index < 2)
                 return {};
-            return quint16(quint16(data[index]) << 8 | data[index + 1]);
+            return quint16(quint16(data.at(index)) << 8 | data.at(index + 1));
         }
     };
 
@@ -80,10 +80,10 @@ struct QKnxUtils final
         {
             if (data.size() - index < 4)
                 return {};
-            return quint32(quint32(data[index]) << 24
-                | quint32(data[index + 1]) << 16
-                | quint32(data[index + 2]) << 8
-                | data[index + 3]);
+            return quint32(quint32(data.at(index)) << 24
+                | quint32(data.at(index + 1)) << 16
+                | quint32(data.at(index + 2)) << 8
+                | data.at(index + 3));
         }
     };
 
@@ -100,14 +100,14 @@ struct QKnxUtils final
         {
             if (data.size() - index < 8)
                 return {};
-            return quint64(quint64(data[index]) << 56
-                | quint64(data[index + 1]) << 48
-                | quint64(data[index + 2]) << 40
-                | quint64(data[index + 3]) << 32
-                | quint64(data[index + 4]) << 24
-                | quint64(data[index + 5]) << 16
-                | quint64(data[index + 6]) << 8
-                | data[index + 7]);
+            return quint64(quint64(data.at(index)) << 56
+                | quint64(data.at(index + 1)) << 48
+                | quint64(data.at(index + 2)) << 40
+                | quint64(data.at(index + 3)) << 32
+                | quint64(data.at(index + 4)) << 24
+                | quint64(data.at(index + 5)) << 16
+                | quint64(data.at(index + 6)) << 8
+                | data.at(index + 7));
         }
     };
 

@@ -30,43 +30,43 @@
 #ifndef QKNXNETIPDEVICECONFIGURATIONREQUEST_H
 #define QKNXNETIPDEVICECONFIGURATIONREQUEST_H
 
-#include <QtKnx/qknxlocaldevicemanagementframe.h>
+#include <QtKnx/qknxdevicemanagementframe.h>
 #include <QtKnx/qknxnetip.h>
 #include <QtKnx/qknxnetipframe.h>
 #include <QtKnx/qknxglobal.h>
 
 QT_BEGIN_NAMESPACE
 
-class Q_KNX_EXPORT QKnxNetIpDeviceConfigurationRequest final
+class Q_KNX_EXPORT QKnxNetIpDeviceConfigurationRequestProxy final
 {
 public:
-    QKnxNetIpDeviceConfigurationRequest() = delete;
-    ~QKnxNetIpDeviceConfigurationRequest() = default;
+    QKnxNetIpDeviceConfigurationRequestProxy() = delete;
+    ~QKnxNetIpDeviceConfigurationRequestProxy() = default;
 
-    QKnxNetIpDeviceConfigurationRequest(const QKnxNetIpFrame &&) = delete;
-    explicit QKnxNetIpDeviceConfigurationRequest(const QKnxNetIpFrame &frame);
+    QKnxNetIpDeviceConfigurationRequestProxy(const QKnxNetIpFrame &&) = delete;
+    explicit QKnxNetIpDeviceConfigurationRequestProxy(const QKnxNetIpFrame &frame);
 
     bool isValid() const;
 
     quint8 channelId() const;
     quint8 sequenceNumber() const;
-    QKnxLocalDeviceManagementFrame cemi() const;
+    QKnxDeviceManagementFrame cemi() const;
 
     class Q_KNX_EXPORT Builder final
     {
     public:
         Builder &setChannelId(quint8 channelId);
         Builder &setSequenceNumber(quint8 sequenceNumber);
-        Builder &setCemi(const QKnxLocalDeviceManagementFrame &cemi);
+        Builder &setCemi(const QKnxDeviceManagementFrame &cemi);
 
         QKnxNetIpFrame create() const;
 
     private:
         quint8 m_channelId;
         quint8 m_sequenceNumber;
-        QKnxLocalDeviceManagementFrame m_cemi;
+        QKnxDeviceManagementFrame m_cemi;
     };
-    static QKnxNetIpDeviceConfigurationRequest::Builder builder();
+    static QKnxNetIpDeviceConfigurationRequestProxy::Builder builder();
 
 private:
     const QKnxNetIpFrame &m_frame;

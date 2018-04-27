@@ -50,20 +50,20 @@ void tst_QKnxNetIpRoutingLostMessage::testDefaultConstructor()
 {
     QKnxNetIpFrame frame;
 
-    QKnxNetIpRoutingLostMessage routing(frame);
+    QKnxNetIpRoutingLostMessageProxy routing(frame);
     QCOMPARE(routing.isValid(), false);
 
-    frame = QKnxNetIpRoutingLostMessage::builder().create();
+    frame = QKnxNetIpRoutingLostMessageProxy::builder().create();
     QCOMPARE(routing.isValid(), true);
 }
 
 void tst_QKnxNetIpRoutingLostMessage::testConstructor()
 {
-    auto frame = QKnxNetIpRoutingLostMessage::builder()
+    auto frame = QKnxNetIpRoutingLostMessageProxy::builder()
         .setDeviceState(QKnxNetIp::DeviceState::IpFault)
         .setLostMessageCount(0xffff)
         .create();
-    QKnxNetIpRoutingLostMessage routing(frame);
+    QKnxNetIpRoutingLostMessageProxy routing(frame);
 
     QCOMPARE(routing.isValid(), true);
     QCOMPARE(frame.size(), quint16(10));
@@ -87,7 +87,7 @@ void tst_QKnxNetIpRoutingLostMessage::testDebugStream()
         QtMessageHandler oldMessageHandler;
     } _(myMessageHandler);
 
-    qDebug() << QKnxNetIpRoutingLostMessage::builder().create();
+    qDebug() << QKnxNetIpRoutingLostMessageProxy::builder().create();
     QCOMPARE(s_msg, QString::fromLatin1("0x06100531000a04000000"));
 }
 

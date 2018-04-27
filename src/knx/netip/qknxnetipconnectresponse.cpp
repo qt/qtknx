@@ -1,6 +1,6 @@
 /******************************************************************************
 **
-** Copyright (C) 2017 The Qt Company Ltd.
+** Copyright (C) 2018 The Qt Company Ltd.
 ** Contact: https://www.qt.io/licensing/
 **
 ** This file is part of the QtKnx module.
@@ -31,77 +31,213 @@
 
 QT_BEGIN_NAMESPACE
 
-QKnxNetIpConnectResponse::QKnxNetIpConnectResponse(const QKnxNetIpFrame &frame)
+/*!
+    \class QKnxNetIpConnectResponseProxy
+
+    \inmodule QtKnx
+    \brief The QKnxNetIpConnectResponseProxy class provides the means to read
+    a connection response from the generic \l QKnxNetIpFrame class and to
+    create a KNXnet/IP frame based on the information.
+
+    A connection response frame is sent by a KNXnet/IP server in response to a
+    connection request received from a KNXnet/IP client. The connection response
+    provides the status of the request. If the server accepted the request, the
+    frame also contains the identifier and host address protocol information
+    (HPAI) of the data endpoint that the server prepared for the communication
+    channel.
+
+    In most programs, this class will not be used directly. Instead, the
+    \l QKnxNetIpTunnel or \l QKnxNetIpDeviceManagement
+    class is used to establish a functional connection to a KNXnet/IP server.
+
+    The following code sample illustrates how to read the connection response
+    information sent by a KNXnet/IP server:
+
+    \code
+        auto netIpFrame = QKnxNetIpFrame::fromBytes(...);
+        const QKnxNetIpConnectResponseProxy connectResponse(netIpFrame);
+        if (!connectResponse.isValid())
+            return;
+
+        auto chanId = connectResponse.channelId();
+        auto data = connectResponse.responseData();
+        auto endPoint = connectResponse.dataEndpoint();
+        auto netIpError = connectResponse.status();
+    \endcode
+
+    \sa builder()
+*/
+
+/*!
+    \fn QKnxNetIpConnectResponseProxy::QKnxNetIpConnectResponseProxy()
+    \internal
+*/
+
+/*!
+    \fn QKnxNetIpConnectResponseProxy::~QKnxNetIpConnectResponseProxy()
+    \internal
+*/
+
+/*!
+    \fn QKnxNetIpConnectResponseProxy::QKnxNetIpConnectResponseProxy(const QKnxNetIpFrame &&)
+    \internal
+*/
+
+/*!
+    Constructs a proxy object to read the connection response information
+    carried by the specified KNXnet/IP frame \a frame.
+*/
+QKnxNetIpConnectResponseProxy::QKnxNetIpConnectResponseProxy(const QKnxNetIpFrame &frame)
     : m_frame(frame)
 {}
 
-bool QKnxNetIpConnectResponse::isValid() const
+/*!
+    Returns \c true if the frame contains initialized values and is in itself
+    valid, otherwise returns \c false. A valid KNXnet/IP frame consist of
+    at least a valid header and a size in bytes corresponding to the total size
+    of the KNXnet/IP frame header.
+
+    \sa QKnxNetIpFrameHeader::totalSize()
+*/
+bool QKnxNetIpConnectResponseProxy::isValid() const
 {
     return m_frame.isValid() && m_frame.serviceType() == QKnxNetIp::ServiceType::ConnectResponse
         && (status() == QKnxNetIp::Error::None ? m_frame.size() >= 18 : true);
 }
 
-quint8 QKnxNetIpConnectResponse::channelId() const
+/*!
+    Returns the ID of the communication channel prepared by the KNXnet/IP
+    server.
+*/
+quint8 QKnxNetIpConnectResponseProxy::channelId() const
 {
     return m_frame.constData().value(0);
 }
 
-QKnxNetIp::Error QKnxNetIpConnectResponse::status() const
+/*!
+    Returns the status of the connection request received from a KNXnet/IP
+    client.
+
+    \sa QKnxNetIpConnectRequestProxy
+*/
+QKnxNetIp::Error QKnxNetIpConnectResponseProxy::status() const
 {
     return QKnxNetIp::Error(m_frame.constData().value(1));
 }
 
-QKnxNetIpHpai QKnxNetIpConnectResponse::dataEndpoint() const
+/*!
+    Returns the data endpoint of the KNXnet/IP server.
+*/
+QKnxNetIpHpai QKnxNetIpConnectResponseProxy::dataEndpoint() const
 {
     if (status() != QKnxNetIp::Error::None)
         return {};
     return QKnxNetIpHpai::fromBytes(m_frame.constData(), 2);
 }
 
-QKnxNetIpCrd QKnxNetIpConnectResponse::responseData() const
+/*!
+    Returns a connection response data (CRD) structure from the KNXnet/IP
+    connection request frame.
+*/
+QKnxNetIpCrd QKnxNetIpConnectResponseProxy::responseData() const
 {
     if (status() != QKnxNetIp::Error::None)
         return {};
     return QKnxNetIpCrd::fromBytes(m_frame.constData(), 10);
 }
 
-QKnxNetIpConnectResponse::Builder QKnxNetIpConnectResponse::builder()
+/*!
+    Returns a builder object to create a KNXnet/IP connection response frame.
+*/
+QKnxNetIpConnectResponseProxy::Builder QKnxNetIpConnectResponseProxy::builder()
 {
-    return QKnxNetIpConnectResponse::Builder();
+    return QKnxNetIpConnectResponseProxy::Builder();
 }
 
 
-// -- QKnxNetIpConnectResponse::Builder
+/*!
+    \class QKnxNetIpConnectResponseProxy::Builder
 
-QKnxNetIpConnectResponse::Builder &
-    QKnxNetIpConnectResponse::Builder::setChannelId(quint8 channelId)
+    \inmodule QtKnx
+    \brief The QKnxNetIpConnectResponseProxy::Builder class provides the means
+    to create a KNXnet/IP connection response frame.
+
+    A KNXnet/IP connection response contains the status of the corresponding
+    connection request. If the server accepted the request, the frame also
+    contains an identifier and the host address protocol information (HPAI) of
+    the data endpoint that the server prepared for the communication channel.
+
+    In most programs, this class will not be used directly. Instead, the
+    \l QKnxNetIpTunnel or \l QKnxNetIpDeviceManagement
+    class is used to establish a functional connection to a KNXnet/IP server.
+
+    The common way to create a connection response is:
+
+    \code
+        QKnxNetIpHpai hpai;
+        QKnxNetIpCrdProxy data;
+        auto netIpFrame = QKnxNetIpConnectResponseProxy::builder()
+            .setChannelId(200)
+            .setStatus(QKnx::NetIp::Error::None)
+            .setDataEndpoint(hpai)
+            .setResponseData(data)
+            .create();
+    \endcode
+*/
+
+/*!
+    Sets the ID of the communication channel prepared by the KNXnet/IP
+    server to \a channelId and returns a reference to the builder.
+*/
+QKnxNetIpConnectResponseProxy::Builder &
+    QKnxNetIpConnectResponseProxy::Builder::setChannelId(quint8 channelId)
 {
     m_channelId = channelId;
     return *this;
 }
 
-QKnxNetIpConnectResponse::Builder &
-    QKnxNetIpConnectResponse::Builder::setStatus(QKnxNetIp::Error status)
+/*!
+    Sets the status of the connection request received from a KNXnet/IP
+    client to \a status and returns a reference to the builder.
+*/
+QKnxNetIpConnectResponseProxy::Builder &
+    QKnxNetIpConnectResponseProxy::Builder::setStatus(QKnxNetIp::Error status)
 {
     m_status = status;
     return *this;
 }
 
-QKnxNetIpConnectResponse::Builder &
-    QKnxNetIpConnectResponse::Builder::setDataEndpoint(const QKnxNetIpHpai &hpai)
+/*!
+    Sets the data endpoint of the KNXnet/IP server to \a hpai and returns a
+    reference to the builder.
+*/
+QKnxNetIpConnectResponseProxy::Builder &
+    QKnxNetIpConnectResponseProxy::Builder::setDataEndpoint(const QKnxNetIpHpai &hpai)
 {
     m_hpai = hpai;
     return *this;
 }
 
-QKnxNetIpConnectResponse::Builder &
-    QKnxNetIpConnectResponse::Builder::setResponseData(const QKnxNetIpCrd &crd)
+/*!
+    Sets the connection response data (CRD) to \a crd and returns a reference to
+    the builder.
+*/
+QKnxNetIpConnectResponseProxy::Builder &
+    QKnxNetIpConnectResponseProxy::Builder::setResponseData(const QKnxNetIpCrd &crd)
 {
     m_crd = crd;
     return *this;
 }
 
-QKnxNetIpFrame QKnxNetIpConnectResponse::Builder::create() const
+/*!
+    Creates and returns a KNXnet/IP connection response frame.
+
+    \note The returned frame may be invalid depending on the values used during
+    setup.
+
+    \sa isValid()
+*/
+QKnxNetIpFrame QKnxNetIpConnectResponseProxy::Builder::create() const
 {
     QKnxByteArray data { m_channelId, quint8(m_status) };
     if (m_status == QKnxNetIp::Error::None)

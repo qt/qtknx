@@ -43,6 +43,8 @@ class tst_QKnxControlField : public QObject
 
 private slots:
     void testDefaultConstructor();
+    void testControlFieldBuilder();
+    void testExtendedControlFieldBuilder();
 };
 
 void tst_QKnxControlField::testDefaultConstructor()
@@ -56,6 +58,98 @@ void tst_QKnxControlField::testDefaultConstructor()
     QKnxExtendedControlField crf2(0xe0);
     QCOMPARE(crf2.hopCount(), quint8(6));
     QCOMPARE(crf2.destinationAddressType(), QKnxAddress::Type::Group);
+}
+
+void tst_QKnxControlField::testControlFieldBuilder()
+{
+    QKnxControlField crf(0xbc);
+    QCOMPARE(crf.frameFormat(), QKnxControlField::FrameFormat::Standard);
+    QCOMPARE(crf.repeat(), QKnxControlField::Repeat::DoNotRepeat);
+    QCOMPARE(crf.broadcast(), QKnxControlField::Broadcast::Domain);
+    QCOMPARE(crf.priority(), QKnxControlField::Priority::Low);
+    QCOMPARE(crf.acknowledge(), QKnxControlField::Acknowledge::NotRequested);
+    QCOMPARE(crf.confirm(), QKnxControlField::Confirm::NoError);
+    QCOMPARE(crf.byte() , 0xbc);
+
+    auto field = QKnxControlField::builder().create();
+    QCOMPARE(field.byte(), 0xbc);
+    QCOMPARE(field.byte(), crf.byte());
+
+    field = QKnxControlField::builder()
+        .setPriority(QKnxControlField::Priority::Normal)
+        .create();
+    QCOMPARE(field.byte(), 0xb4);
+    QCOMPARE(field.priority(), QKnxControlField::Priority::Normal);
+
+    auto builder = QKnxControlField::builder();
+    field = builder.setFrameFormat(QKnxControlField::FrameFormat::Extended).create();
+    QCOMPARE(field.frameFormat(), QKnxControlField::FrameFormat::Extended);
+
+    field = builder.setFrameFormat(QKnxControlField::FrameFormat::Standard).create();
+    QCOMPARE(field.frameFormat(), QKnxControlField::FrameFormat::Standard);
+
+    field = builder.setRepeat(QKnxControlField::Repeat::Repeat).create();
+    QCOMPARE(field.repeat(), QKnxControlField::Repeat::Repeat);
+
+    field = builder.setRepeat(QKnxControlField::Repeat::DoNotRepeat).create();
+    QCOMPARE(field.repeat(), QKnxControlField::Repeat::DoNotRepeat);
+
+    field = builder.setBroadcast(QKnxControlField::Broadcast::System).create();
+    QCOMPARE(field.broadcast(), QKnxControlField::Broadcast::System);
+
+    field = builder.setBroadcast(QKnxControlField::Broadcast::Domain).create();
+    QCOMPARE(field.broadcast(), QKnxControlField::Broadcast::Domain);
+
+    field = builder.setPriority(QKnxControlField::Priority::System).create();
+    QCOMPARE(field.priority(), QKnxControlField::Priority::System);
+
+    field = builder.setPriority(QKnxControlField::Priority::Low).create();
+    QCOMPARE(field.priority(), QKnxControlField::Priority::Low);
+
+    field = builder.setAcknowledge(QKnxControlField::Acknowledge::Requested).create();
+    QCOMPARE(field.acknowledge(), QKnxControlField::Acknowledge::Requested);
+
+    field = builder.setAcknowledge(QKnxControlField::Acknowledge::NotRequested).create();
+    QCOMPARE(field.acknowledge(), QKnxControlField::Acknowledge::NotRequested);
+
+    field = builder.setConfirm(QKnxControlField::Confirm::Error).create();
+    QCOMPARE(field.confirm(), QKnxControlField::Confirm::Error);
+
+    field = builder.setConfirm(QKnxControlField::Confirm::NoError).create();
+    QCOMPARE(field.confirm(), QKnxControlField::Confirm::NoError);
+}
+
+void tst_QKnxControlField::testExtendedControlFieldBuilder()
+{
+    QKnxExtendedControlField crf(0xe0);
+    QCOMPARE(crf.destinationAddressType(), QKnxAddress::Type::Group);
+    QCOMPARE(crf.hopCount(), quint8(6));
+    QCOMPARE(crf.format(), QKnxExtendedControlField::ExtendedFrameFormat::Standard);
+    QCOMPARE(crf.byte(), 0xe0);
+
+    auto field = QKnxExtendedControlField::builder().create();
+    QCOMPARE(field.byte(), 0xe0);
+    QCOMPARE(field.byte(), crf.byte());
+
+    auto builder = QKnxExtendedControlField::builder();
+
+    field = builder.setDestinationAddressType(QKnxAddress::Type::Individual).create();
+    QCOMPARE(field.destinationAddressType(), QKnxAddress::Type::Individual);
+
+    field = builder.setDestinationAddressType(QKnxAddress::Type::Group).create();
+    QCOMPARE(field.destinationAddressType(), QKnxAddress::Type::Group);
+
+    field = builder.setHopCount(4).create();
+    QCOMPARE(field.hopCount(), 4);
+
+    field = builder.setHopCount(6).create();
+    QCOMPARE(field.hopCount(), 6);
+
+    field = builder.setFormat(QKnxExtendedControlField::ExtendedFrameFormat::Lte).create();
+    QCOMPARE(field.format(), QKnxExtendedControlField::ExtendedFrameFormat::Lte);
+
+    field = builder.setFormat(QKnxExtendedControlField::ExtendedFrameFormat::Standard).create();
+    QCOMPARE(field.format(), QKnxExtendedControlField::ExtendedFrameFormat::Standard);
 }
 
 QTEST_APPLESS_MAIN(tst_QKnxControlField)

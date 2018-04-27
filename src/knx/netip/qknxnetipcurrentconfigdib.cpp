@@ -33,10 +33,10 @@
 QT_BEGIN_NAMESPACE
 
 /*!
-    \class QKnxNetIpCurrentConfigDibView
+    \class QKnxNetIpCurrentConfigDibProxy
 
     \inmodule QtKnx
-    \brief The QKnxNetIpCurrentConfigDibView class provides the means to read
+    \brief The QKnxNetIpCurrentConfigDibProxy class provides the means to read
     the current IP configuration from the generic \l QKnxNetIpDib class and to
     create a KNXnet/IP current IP configuration (DIB) structure based on the
     information.
@@ -44,7 +44,7 @@ QT_BEGIN_NAMESPACE
     A KNXnet/IP current IP configuration DIB structure contains a set of
     values currently used on the device for IP communication.
 
-    \note When using QKnxNetIpCurrentConfigDibView, care must be taken to
+    \note When using QKnxNetIpCurrentConfigDibProxy, care must be taken to
     ensure that the referenced KNXnet/IP DIB structure outlives the view on all
     code paths, lest the view ends up referencing deleted data.
 
@@ -52,7 +52,7 @@ QT_BEGIN_NAMESPACE
     \code
         auto dib = QKnxNetIpDib::fromBytes(...);
 
-        QKnxNetIpCurrentConfigDibView view(dib);
+        QKnxNetIpCurrentConfigDibProxy view(dib);
         if (!view.isValid())
             return;
 
@@ -68,24 +68,24 @@ QT_BEGIN_NAMESPACE
 
 /*!
     \internal
-    \fn QKnxNetIpCurrentConfigDibView::QKnxNetIpCurrentConfigDibView()
+    \fn QKnxNetIpCurrentConfigDibProxy::QKnxNetIpCurrentConfigDibProxy()
 */
 
 /*!
     \internal
-    \fn QKnxNetIpCurrentConfigDibView::~QKnxNetIpCurrentConfigDibView()
+    \fn QKnxNetIpCurrentConfigDibProxy::~QKnxNetIpCurrentConfigDibProxy()
 */
 
 /*!
     \internal
-    \fn QKnxNetIpCurrentConfigDibView::QKnxNetIpCurrentConfigDibView(const QKnxNetIpDib &&)
+    \fn QKnxNetIpCurrentConfigDibProxy::QKnxNetIpCurrentConfigDibProxy(const QKnxNetIpDib &&)
 */
 
 /*!
-    Constructs a wrapper object with the specified a KNXnet/IP DIB structure
+    Constructs a proxy object with the specified a KNXnet/IP DIB structure
     \a dib to read the current KNX device configuration.
 */
-QKnxNetIpCurrentConfigDibView::QKnxNetIpCurrentConfigDibView(const QKnxNetIpDib &dib)
+QKnxNetIpCurrentConfigDibProxy::QKnxNetIpCurrentConfigDibProxy(const QKnxNetIpDib &dib)
     : m_dib(dib)
 {}
 
@@ -93,7 +93,7 @@ QKnxNetIpCurrentConfigDibView::QKnxNetIpCurrentConfigDibView(const QKnxNetIpDib 
     Returns \c true if the KNXnet/IP structure to create the object is a valid
     KNXnet/IP DIB structure; otherwise returns \c false.
 */
-bool QKnxNetIpCurrentConfigDibView::isValid() const
+bool QKnxNetIpCurrentConfigDibProxy::isValid() const
 {
     return m_dib.isValid() && m_dib.size() == 20
         && m_dib.code() == QKnxNetIp::DescriptionType::CurrentIpConfiguration;
@@ -102,9 +102,9 @@ bool QKnxNetIpCurrentConfigDibView::isValid() const
 /*!
     Returns the description type of this KNXnet/IP structure if the
     object that was passed during construction was valid; otherwise
-    returns \l QKnxNetIp::Unknown.
+    returns \l QKnx::NetIp::Unknown.
 */
-QKnxNetIp::DescriptionType QKnxNetIpCurrentConfigDibView::descriptionType() const
+QKnxNetIp::DescriptionType QKnxNetIpCurrentConfigDibProxy::descriptionType() const
 {
     if (isValid())
         return m_dib.code();
@@ -116,7 +116,7 @@ QKnxNetIp::DescriptionType QKnxNetIpCurrentConfigDibView::descriptionType() cons
     object that was passed during construction was valid; otherwise returns
     a invalid \l QHostAddress.
 */
-QHostAddress QKnxNetIpCurrentConfigDibView::ipAddress() const
+QHostAddress QKnxNetIpCurrentConfigDibProxy::ipAddress() const
 {
     if (isValid())
         return QKnxUtils::HostAddress::fromBytes(m_dib.constData());
@@ -128,7 +128,7 @@ QHostAddress QKnxNetIpCurrentConfigDibView::ipAddress() const
     the object that was passed during construction was valid; otherwise returns
     a invalid \l QHostAddress.
 */
-QHostAddress QKnxNetIpCurrentConfigDibView::subnetMask() const
+QHostAddress QKnxNetIpCurrentConfigDibProxy::subnetMask() const
 {
     if (isValid())
         return QKnxUtils::HostAddress::fromBytes(m_dib.constData(), 4);
@@ -140,7 +140,7 @@ QHostAddress QKnxNetIpCurrentConfigDibView::subnetMask() const
     if the object that was passed during construction was valid; otherwise
     returns a invalid \l QHostAddress.
 */
-QHostAddress QKnxNetIpCurrentConfigDibView::defaultGateway() const
+QHostAddress QKnxNetIpCurrentConfigDibProxy::defaultGateway() const
 {
     if (isValid())
         return QKnxUtils::HostAddress::fromBytes(m_dib.constData(), 8);
@@ -153,7 +153,7 @@ QHostAddress QKnxNetIpCurrentConfigDibView::defaultGateway() const
     object that was passed during construction was valid; otherwise returns
     a invalid \l QHostAddress.
 */
-QHostAddress QKnxNetIpCurrentConfigDibView::dhcpOrBootP() const
+QHostAddress QKnxNetIpCurrentConfigDibProxy::dhcpOrBootP() const
 {
     if (isValid())
         return QKnxUtils::HostAddress::fromBytes(m_dib.constData(), 12);
@@ -163,9 +163,9 @@ QHostAddress QKnxNetIpCurrentConfigDibView::dhcpOrBootP() const
 /*!
     Returns the currently employed IP address assignment method of this
     KNXnet/IP structure if the object that was passed during construction
-    was valid; otherwise returns \l QKnxNetIp::Unknown.
+    was valid; otherwise returns \l QKnx::NetIp::Unknown.
 */
-QKnxNetIp::AssignmentMethod QKnxNetIpCurrentConfigDibView::assignmentMethod() const
+QKnxNetIp::AssignmentMethod QKnxNetIpCurrentConfigDibProxy::assignmentMethod() const
 {
     if (isValid())
         return QKnxNetIp::AssignmentMethod(m_dib.constData().value(16));
@@ -176,17 +176,17 @@ QKnxNetIp::AssignmentMethod QKnxNetIpCurrentConfigDibView::assignmentMethod() co
     Returns a builder object to create a KNXnet/IP current IP configuration DIB
     structure.
 */
-QKnxNetIpCurrentConfigDibView::Builder QKnxNetIpCurrentConfigDibView::builder()
+QKnxNetIpCurrentConfigDibProxy::Builder QKnxNetIpCurrentConfigDibProxy::builder()
 {
-    return QKnxNetIpCurrentConfigDibView::Builder();
+    return QKnxNetIpCurrentConfigDibProxy::Builder();
 }
 
 
 /*!
-    \class QKnxNetIpCurrentConfigDibView::Builder
+    \class QKnxNetIpCurrentConfigDibProxy::Builder
 
     \inmodule QtKnx
-    \brief The QKnxNetIpCurrentConfigDibView::Builder class creates a KNXnet/IP
+    \brief The QKnxNetIpCurrentConfigDibProxy::Builder class creates a KNXnet/IP
     current IP configuration DIB structure.
 
     A KNXnet/IP current IP configuration DIB structure contains a set of
@@ -196,7 +196,7 @@ QKnxNetIpCurrentConfigDibView::Builder QKnxNetIpCurrentConfigDibView::builder()
     \code
         // setup the IP configuration values
 
-        auto dib = QKnxNetIpCurrentConfigDibView::builder()
+        auto dib = QKnxNetIpCurrentConfigDibProxy::builder()
             .setIpAddress(address)
             .setSubnetMask(subnetMask)
             .setDefaultGateway(gateway)
@@ -210,8 +210,8 @@ QKnxNetIpCurrentConfigDibView::Builder QKnxNetIpCurrentConfigDibView::builder()
     Sets the currently used IP address to \a ipAddress if the passed argument
     is a valid \l QHostAddress and returns a reference to the builder.
 */
-QKnxNetIpCurrentConfigDibView::Builder &
-    QKnxNetIpCurrentConfigDibView::Builder::setIpAddress(const QHostAddress &ipAddress)
+QKnxNetIpCurrentConfigDibProxy::Builder &
+    QKnxNetIpCurrentConfigDibProxy::Builder::setIpAddress(const QHostAddress &ipAddress)
 {
     if (!ipAddress.isNull())
         m_ipAddress = ipAddress;
@@ -222,8 +222,8 @@ QKnxNetIpCurrentConfigDibView::Builder &
     Sets the currently used subnet mask to \a subnetMask if the passed argument
     is a valid \l QHostAddress and returns a reference to the builder.
 */
-QKnxNetIpCurrentConfigDibView::Builder &
-    QKnxNetIpCurrentConfigDibView::Builder::setSubnetMask(const QHostAddress &subnetMask)
+QKnxNetIpCurrentConfigDibProxy::Builder &
+    QKnxNetIpCurrentConfigDibProxy::Builder::setSubnetMask(const QHostAddress &subnetMask)
 {
     if (!subnetMask.isNull())
         m_subnetMask = subnetMask;
@@ -234,8 +234,8 @@ QKnxNetIpCurrentConfigDibView::Builder &
     Sets the currently used default gateway to \a gateway if the passed
     argument is a valid \l QHostAddress and returns a reference to the builder.
 */
-QKnxNetIpCurrentConfigDibView::Builder &
-    QKnxNetIpCurrentConfigDibView::Builder::setDefaultGateway(const QHostAddress &gateway)
+QKnxNetIpCurrentConfigDibProxy::Builder &
+    QKnxNetIpCurrentConfigDibProxy::Builder::setDefaultGateway(const QHostAddress &gateway)
 {
     if (!gateway.isNull())
         m_gateway = gateway;
@@ -247,8 +247,8 @@ QKnxNetIpCurrentConfigDibView::Builder &
     received its IP address from to \a dhcpBootP if the passed argument is
     a valid \l QHostAddress and returns a reference to the builder.
 */
-QKnxNetIpCurrentConfigDibView::Builder &
-    QKnxNetIpCurrentConfigDibView::Builder::setDhcpOrBootP(const QHostAddress &dhcpBootP)
+QKnxNetIpCurrentConfigDibProxy::Builder &
+    QKnxNetIpCurrentConfigDibProxy::Builder::setDhcpOrBootP(const QHostAddress &dhcpBootP)
 {
     if (!dhcpBootP.isNull())
         m_dhcpBootP = dhcpBootP;
@@ -261,8 +261,8 @@ QKnxNetIpCurrentConfigDibView::Builder &
 
     \note Only one method can be set at a time.
 */
-QKnxNetIpCurrentConfigDibView::Builder &
-    QKnxNetIpCurrentConfigDibView::Builder::setAssignmentMethod(QKnxNetIp::AssignmentMethod method)
+QKnxNetIpCurrentConfigDibProxy::Builder &
+    QKnxNetIpCurrentConfigDibProxy::Builder::setAssignmentMethod(QKnxNetIp::AssignmentMethod method)
 {
     if (QKnxNetIp::isAssignmentMethod(method))
         m_method = method;
@@ -277,7 +277,7 @@ QKnxNetIpCurrentConfigDibView::Builder &
 
     \sa isValid()
 */
-QKnxNetIpDib QKnxNetIpCurrentConfigDibView::Builder::create() const
+QKnxNetIpDib QKnxNetIpCurrentConfigDibProxy::Builder::create() const
 {
     if (m_ipAddress.isNull()
         || m_subnetMask.isNull()

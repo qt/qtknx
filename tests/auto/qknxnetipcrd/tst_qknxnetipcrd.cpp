@@ -55,7 +55,7 @@ void tst_QKnxNetIpCrd::testDefaultConstructor()
     QCOMPARE(crd.bytes(), QKnxByteArray {});
     QCOMPARE(crd.data().size(), quint16(0));
     QCOMPARE(crd.data(), QKnxByteArray {});
-    QCOMPARE(QKnxNetIpCrdView(crd).connectionType(), QKnxNetIp::ConnectionType::Unknown);
+    QCOMPARE(QKnxNetIpCrdProxy(crd).connectionType(), QKnxNetIp::ConnectionType::Unknown);
 }
 
 void tst_QKnxNetIpCrd::testConstructorKnxAddress()
@@ -68,7 +68,7 @@ void tst_QKnxNetIpCrd::testConstructorKnxAddress()
         QCOMPARE(crd.data().size(), quint16());
         QCOMPARE(crd.data(), QKnxByteArray {});
 
-        QKnxNetIpCrdView view(crd);
+        QKnxNetIpCrdProxy view(crd);
         QCOMPARE(view.isValid(), false);
         QCOMPARE(view.connectionType(), QKnxNetIp::ConnectionType::Unknown);
         QCOMPARE(view.individualAddress().toString(), QStringLiteral(""));
@@ -89,7 +89,7 @@ void tst_QKnxNetIpCrd::testConstructorKnxAddress()
     }
 
     {
-        auto crd = QKnxNetIpCrdView::builder()
+        auto crd = QKnxNetIpCrdProxy::builder()
             .setIndividualAddress({ QKnxAddress::Type::Individual, QKnxByteArray { 0x11, 0x01 } })
             .create();
         QCOMPARE(crd.isValid(), true);
@@ -98,7 +98,7 @@ void tst_QKnxNetIpCrd::testConstructorKnxAddress()
         QCOMPARE(crd.data().size(), quint16(2));
         QCOMPARE(crd.data(), QKnxByteArray({ 0x11, 0x01 }));
 
-        QKnxNetIpCrdView view(crd);
+        QKnxNetIpCrdProxy view(crd);
         QCOMPARE(view.isValid(), true);
         QCOMPARE(view.connectionType(), QKnxNetIp::ConnectionType::Tunnel);
         QCOMPARE(view.individualAddress().toString(), QStringLiteral("1.1.1"));
@@ -114,7 +114,7 @@ void tst_QKnxNetIpCrd::testConstructorConnectionType()
     QCOMPARE(crd.data().size(), quint16(0));
     QCOMPARE(crd.data(), QKnxByteArray {});
 
-    QKnxNetIpCrdView view(crd);
+    QKnxNetIpCrdProxy view(crd);
     QCOMPARE(view.isValid(), false);
     QCOMPARE(view.connectionType(), QKnxNetIp::ConnectionType::Unknown);
 
@@ -190,7 +190,7 @@ void tst_QKnxNetIpCrd::testDebugStream()
         QtMessageHandler oldMessageHandler;
     } _(myMessageHandler);
 
-    qDebug() << QKnxNetIpCrdView::builder().create();
+    qDebug() << QKnxNetIpCrdProxy::builder().create();
     QCOMPARE(s_msg, QString::fromLatin1("0x0204"));
 
     qDebug() << QKnxNetIpCrd::fromBytes(QKnxByteArray::fromHex("04041101"), 0);

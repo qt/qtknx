@@ -36,14 +36,14 @@
 
 QT_BEGIN_NAMESPACE
 
-class Q_KNX_EXPORT QKnxNetIpDescriptionRequest final
+class Q_KNX_EXPORT QKnxNetIpDescriptionRequestProxy final
 {
 public:
-    QKnxNetIpDescriptionRequest() = delete;
-    ~QKnxNetIpDescriptionRequest() = default;
+    QKnxNetIpDescriptionRequestProxy() = delete;
+    ~QKnxNetIpDescriptionRequestProxy() = default;
 
-    QKnxNetIpDescriptionRequest(const QKnxNetIpFrame &&) = delete;
-    explicit QKnxNetIpDescriptionRequest(const QKnxNetIpFrame &frame);
+    QKnxNetIpDescriptionRequestProxy(const QKnxNetIpFrame &&) = delete;
+    explicit QKnxNetIpDescriptionRequestProxy(const QKnxNetIpFrame &frame);
 
     bool isValid() const;
     QKnxNetIpHpai controlEndpoint() const;
@@ -57,7 +57,7 @@ public:
     private:
         QKnxNetIpHpai m_hpai;
     };
-    static QKnxNetIpDescriptionRequest::Builder builder();
+    static QKnxNetIpDescriptionRequestProxy::Builder builder();
 
 private:
     const QKnxNetIpFrame &m_frame;

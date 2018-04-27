@@ -52,7 +52,7 @@
 #define LOCALDEVICEMANAGEMENT_H
 
 #include <QWidget>
-#include <QKnxNetIpDeviceManagementConnection>
+#include <QKnxNetIpDeviceManagement>
 #include <QKnxNetIpServerInfo>
 
 QT_BEGIN_NAMESPACE
@@ -95,7 +95,7 @@ private slots:
 private:
     void setupMessageCodeComboBox();
     void updatePropertyTypeCombobox(const QString &type);
-    void handleIoListResponse(const QKnxLocalDeviceManagementFrame &frame);
+    void handleIoListResponse(const QKnxDeviceManagementFrame &frame);
     int keyToValue(const QMetaObject &object, const QString &key, bool *ok);
     void setupComboBox(QComboBox *comboBox, const QMetaObject &object, const QSet<int> &values = {});
     void selectFirstSubitem(QTreeWidget *treeView, QTreeWidgetItem *rootItem, QComboBox *comboBox);
@@ -107,7 +107,7 @@ private:
     bool m_awaitIoListResponse { true };
 
     QKnxNetIpServerInfo m_server;
-    QKnxNetIpDeviceManagementConnection m_management;
+    QKnxNetIpDeviceManagement m_management;
 };
 
 #endif
