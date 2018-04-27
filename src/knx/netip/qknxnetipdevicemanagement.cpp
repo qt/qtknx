@@ -38,18 +38,16 @@ QT_BEGIN_NAMESPACE
 
     \inmodule QtKnx
     \brief The QKnxNetIpDeviceManagement class enables the opening and
-    handling of a client connection to a KNXnet/IP server.
+    handling of a device management connection from a KNXnet/IP client
+    to a KNXnet/IP server.
 
-    The QKnxNetIpDeviceManagement is a data connection between a
-    client and a KNXnet/IP server endpoint. This is used by the client side to
-    access management functionalities on the KNXnet/IP server. The IP address
-    of the client must be set. It is then possible to connect to a chosen
+    A device management connection is established from a KNXnet/IP client to
+    a KNXnet/IP server endpoint to access management functionalities on the
+    server. The IP address of the client must be set. The client uses the
+    connection to send device configuration request frames to the server.
 
-    KNXnet/IP server and to send \l QKnxDeviceManagementFrame frames
-    to the KNXnet/IP server.
-
-    The class takes care of connecting to the server, asking for a data
-    connection, and monitoring the connection.
+    The following code sample illustrates how to connect to the server, request
+    a data connection, and use the connection:
 
     \code
         QKnxNetIpDeviceManagement connection;
@@ -63,6 +61,15 @@ QT_BEGIN_NAMESPACE
         QKnxDeviceManagementFrame frame = ...
         connection.sendFrame(frame);
     \endcode
+
+    \sa QKnxDeviceManagementFrame
+*/
+
+/*!
+    \fn void QKnxNetIpDeviceManagement::frameReceived(QKnxDeviceManagementFrame frame)
+
+    This signal is emitted when the KNXnet/IP client receives data (with the
+    link layer frame \a frame as payload) from the KNXnet/IP server.
 */
 
 class QKnxNetIpDeviceManagementPrivate : public QKnxNetIpEndpointConnectionPrivate
@@ -83,20 +90,40 @@ public:
     }
 };
 
+/*!
+    Creates a device management connection with the parent \a parent.
+*/
 QKnxNetIpDeviceManagement::QKnxNetIpDeviceManagement(QObject *parent)
     : QKnxNetIpDeviceManagement({ QHostAddress::LocalHost }, 0, parent)
 {}
 
-QKnxNetIpDeviceManagement::QKnxNetIpDeviceManagement(const QHostAddress &addr,
-        QObject *o)
-    : QKnxNetIpDeviceManagement(addr, 0, o)
+/*!
+    Creates a device management connection with the KNXnet/IP client address
+    \a localAddress and parent \a parent.
+*/
+QKnxNetIpDeviceManagement::QKnxNetIpDeviceManagement(const QHostAddress &localAddress,
+        QObject *parent)
+    : QKnxNetIpDeviceManagement(localAddress, 0, parent)
 {}
 
-QKnxNetIpDeviceManagement::QKnxNetIpDeviceManagement(const QHostAddress &addr,
-        quint16 port, QObject *obj)
-    : QKnxNetIpEndpointConnection(*new QKnxNetIpDeviceManagementPrivate(addr, port), obj)
+/*!
+    Creates a device management connection with the KNXnet/IP client address
+    \a localAddress, port number \a localPort, and parent \a parent.
+*/
+QKnxNetIpDeviceManagement::QKnxNetIpDeviceManagement(const QHostAddress &localAddress,
+        quint16 localPort, QObject *parent)
+    : QKnxNetIpEndpointConnection(*new QKnxNetIpDeviceManagementPrivate(localAddress, localPort), parent)
 {}
 
+/*!
+    Inserts the device management frame \a frame into a request that is sent to
+    a KNXnet/IP server.
+
+   If no connection is currently established, returns \c false and does not
+   send the frame.
+
+   \sa QKnxNetIpEndpointConnection::State
+*/
 bool QKnxNetIpDeviceManagement::sendFrame(const QKnxDeviceManagementFrame &frame)
 {
     if (state() != State::Connected)
