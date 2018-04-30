@@ -27,81 +27,75 @@
 **
 ******************************************************************************/
 
+#include <QtCore/QCommandLineParser>
 #include <QtCore/qdebug.h>
 #include <QtCore/qvector.h>
 #include <QtCore/qversionnumber.h>
 #include <QtCore/qxmlstream.h>
-#include <QtKnx/private/qknxinstallation_p.h>
-#include <QtKnx/private/qknxprojectroot_p.h>
-#include <QtKnx/private/qknxprojectinformation_p.h>
-
-#include <QtKnx/private/qzipreader_p.h>
-#include <QtKnx/private/qzipwriter_p.h>
+#include <QtKnx/qknxgroupaddressinfos.h>
 
 int main(int argc, char *argv[])
 {
-    if (argc < 2)
-        return EXIT_FAILURE;
+    QCoreApplication app(argc, argv);
+    QCoreApplication::setApplicationName("knxproj");
 
-    QZipReader zipReader(argv[1]);
-    if (!zipReader.isReadable() || zipReader.status() != QZipReader::NoError)
-        return EXIT_FAILURE;
+    QCommandLineParser cliParser;
+    cliParser.setApplicationDescription("KNX Project file parser");
+    cliParser.addHelpOption();
+    QCommandLineOption verboseOption({"v","verbose"},
+                                     QCoreApplication::translate(
+                                         "main", "Show more details of the project file."));
+    cliParser.addOption(verboseOption);
+    QCommandLineOption projFilePathOption(QStringList() << "p" << "project",
+              QCoreApplication::translate("main", "Path to the project file to parse."),
+              QCoreApplication::translate("main", "path"));
+    cliParser.addOption(projFilePathOption);
+    cliParser.process(app);
 
-    int projectId = -1, nullXmlId = -1;
-    auto fileInfos = zipReader.fileInfoList();
-    for (int i = 0; i < fileInfos.count(); ++i) {
-        if (fileInfos[i].filePath.endsWith(QStringLiteral("project.xml"))) {
-            projectId = i;
-            if (projectId >= 0 && nullXmlId >= 0)
-                break;
-        }
+    bool verbose = cliParser.isSet(verboseOption);
 
-        if (fileInfos[i].filePath.endsWith(QStringLiteral("0.xml"))) {
-            nullXmlId = i;
-            if (projectId >= 0 && nullXmlId >= 0)
-                break;
-        }
+    if (!cliParser.isSet(projFilePathOption)) {
+        qInfo() << "Error: Missing project file name" << endl;
+        cliParser.showHelp(EXIT_FAILURE);
     }
 
-    if (projectId < 0 || nullXmlId < 0)
-        return EXIT_FAILURE;
+    QKnxGroupAddressInfos infos(cliParser.value(projFilePathOption));
+    infos.parse();
 
-    QXmlStreamReader xmlReader(zipReader.fileData(fileInfos[projectId].filePath));
-    struct Trace {
-        Trace(QXmlStreamReader *xmlReader)
-            : reader(xmlReader)
-        {}
-        ~Trace()
-        {
-            if (reader->hasError())
-                qDebug() << reader->errorString();
+    qInfo().noquote() << QString::fromLatin1("Opening project file: %1")
+                         .arg(infos.projectFile());
+    QString status = infos.errorString().isEmpty() ? "No errors" : infos.errorString();
+    qInfo().noquote() << QString::fromLatin1("Status parsing project: %1")
+                         .arg(status);
+    qInfo().noquote() << QString::fromLatin1("Project ids found: %1")
+                         .arg(infos.projectIds().size());
+
+    if (infos.status() != QKnxGroupAddressInfos::Status::NoError) {
+        qInfo() << "ERROR:" <<  infos;
+        return EXIT_FAILURE;
+    }
+
+    for (const auto &projId: infos.projectIds()) {
+        auto installations = infos.installations(projId);
+        qInfo()<< " # project"<<infos.projectName(projId);
+        qInfo().noquote() << QString::fromLatin1("     found %1 installation(s)")
+                             .arg(installations.size());
+        for (const QString &installation: installations) {
+            auto groupAddresses = infos.addressInfos(projId, installation);
+            qInfo().noquote() << QString::fromLatin1("  - Installation \"%1\"")
+                                 .arg(installation);
+            qInfo().noquote() << QString::fromLatin1("     found %1 Group address(es)")
+                       .arg(groupAddresses.size());
+            for (const QKnxGroupAddressInfo &addInfo: groupAddresses) {
+                if (!addInfo.isValid())
+                    return EXIT_FAILURE;
+                if (verbose)
+                    qInfo().noquote() << QString::fromLatin1("      %1: %2")
+                                         .arg(addInfo.name()).arg(addInfo.address().toString());
+            }
+            qInfo() << endl;
         }
-
-    private:
-        QXmlStreamReader *reader;
-    } tracer(&xmlReader);
-
-    if (!xmlReader.readNextStartElement())
-        return EXIT_FAILURE;
-
-    QKnxProjectRoot projectXml;
-    if (!projectXml.parseElement(&xmlReader, true))
-        return EXIT_FAILURE;
-
-    xmlReader.clear();
-    xmlReader.addData(zipReader.fileData(fileInfos[nullXmlId].filePath));
-
-    if (!xmlReader.readNextStartElement())
-        return EXIT_FAILURE;
-
-    QKnxProjectRoot nullXml;
-    if (!nullXml.parseElement(&xmlReader, true))
-        return EXIT_FAILURE;
-
-    auto project = nullXml.Project.value(0);
-    auto installation = project.Installations.value(0);
-    auto groupAddresses = installation.GroupAddresses.value(0);
-    auto groupRanges = groupAddresses.GroupRanges.value(0);
+    }
 
     return EXIT_SUCCESS;
 };

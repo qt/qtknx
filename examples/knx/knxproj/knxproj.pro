@@ -2,7 +2,7 @@ TEMPLATE = app
 TARGET = knxproj
 CONFIG += c++11 console
 
-QT = core knx knx-private
+QT = core knx
 INCLUDEPATH += .
 
 SOURCES += main.cpp
