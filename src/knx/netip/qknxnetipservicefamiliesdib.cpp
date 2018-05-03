@@ -34,6 +34,37 @@
 QT_BEGIN_NAMESPACE
 
 /*!
+    \inmodule QtKnx
+    \class QKnxServiceInfo
+
+    \brief The QKnxServiceInfo class contains the supported service and the
+    corresponding service family version.
+
+    The service family is the high octet of the service type ID and the service
+    family version is an integer representing the service family version. It
+    refers to the version of the corresponding KNXnet/IP document, not to the
+    manufacturer's implemented version.
+
+    \sa QKnxNetIpServiceFamiliesDibProxy
+*/
+
+/*!
+    \variable QKnxServiceInfo::ServiceFamily
+
+    The service family is the high octet of the service type ID.
+
+    \sa QKnx::NetIp::ServiceType, QKnx::NetIp::ServiceFamily
+*/
+
+/*!
+    \variable QKnxServiceInfo::ServiceFamilyVersion
+
+    The service family version is an integer representing the service family
+    version. It refers to the version of the corresponding KNXnet/IP document,
+    not to the manufacturer's implemented version.
+*/
+
+/*!
     \class QKnxNetIpServiceFamiliesDibProxy
 
     \inmodule QtKnx
@@ -44,10 +75,10 @@ QT_BEGIN_NAMESPACE
 
     A KNXnet/IP supported service families DIB structure contains a set of
     supported services and their corresponding versions. The service family is
-    the high octet of the service type ID and the version of a service family
-    refers to the version of the corresponding KNXnet/IP document. The service
-    family version is an integer and it does not represent the manufacturer's
-    implementation version.
+    the high octet of the service type ID and the service family version is an
+    integer representing the service family version. It refers to the version
+    of the corresponding KNXnet/IP document, not to the manufacturer's
+    implemented version.
 
     \note When using QKnxNetIpServiceFamiliesDibProxy, care must be taken to
     ensure that the referenced KNXnet/IP DIB structure outlives the view on all
