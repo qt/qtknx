@@ -447,9 +447,13 @@ void QKnxDeviceManagementFrame::setError(QKnxNetIpCemiServer::Error error)
 /*!
     Returns the code set by the cEMI server after a cEMI function property
     service request if the frame is a \l FunctionPropertyCommandConfirmation
-    or \l FunctionPropertyStateReadConfirmation frame.
+    or \l FunctionPropertyStateReadConfirmation and is also not a negative
+    confirmation. Otherwise returns \c NoError.
 
-    In all other cases, the function returns the error code stored in the frame.
+    \note A return code larger than \c NoError indicates the negative result of
+    a function property command or function property state read execution.
+
+    \sa data(), isNegativeConfirmation()
 */
 QKnxNetIpCemiServer::ReturnCode QKnxDeviceManagementFrame::returnCode() const
 {
@@ -461,12 +465,13 @@ QKnxNetIpCemiServer::ReturnCode QKnxDeviceManagementFrame::returnCode() const
     default:
         break;
     }
-    return QKnxNetIpCemiServer::ReturnCode::Error;
+    return QKnxNetIpCemiServer::ReturnCode::NoError;
 }
 
 /*!
-    Returns the \a code set by the cEMI server after a cEMI function property
-    service request.
+    Sets the return code stored in the frame to \a code if the frame is a
+    \l FunctionPropertyCommandConfirmation or
+    \l FunctionPropertyStateReadConfirmation frame; does nothing otherwise.
 */
 void QKnxDeviceManagementFrame::setReturnCode(QKnxNetIpCemiServer::ReturnCode code)
 {

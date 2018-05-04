@@ -512,11 +512,11 @@ bool QKnxNetIp::isCapability(Capability capability)
     This enum describes the possible error codes returned by the remote cEMI
     server after cEMI function properties service requests.
 
+    A return code larger than \c NoError indicates the negative result of the
+    function.
+
     \value NoError The function was successfully executed. The return code
                    indicates the positive result of the function.
-    \value Error   The function was not successfully executed. The return code
-                   indicates the negative result of the function. Can be any
-                   number larger than \c NoError.
 */
 
 /*!
