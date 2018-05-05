@@ -37,56 +37,72 @@ QT_BEGIN_NAMESPACE
     \class QKnxLinkLayerFrame
 
     \inmodule QtKnx
-    \brief The QKnxLinkLayerFrame is a frame meant to be sent via a
-    \l QKnxLinkLayerConnection between a client and a KNXnet/IP server.
+    \brief The QKnxLinkLayerFrame class is a frame that is sent over a
+    communication channel established between a KNXnet/IP client and a
+    KNXnet/IP server.
 
-    Following the KNXnet/IP tunneling specifications, only the
-    \l QKnxLinkLayerFrame::MessageCode listed below are valid QKnxLinkLayerFrame
-    message code to be sent via KNXnet/IP tunnel connection:
+    Following the KNXnet/IP tunneling specifications, only the \l MessageCode
+    values listed below are valid link layer frame message codes to be sent via
+    a KNXnet/IP tunnel connection:
 
     \list
-        \li DataRequest (L_Data.req)
-        \li DataConfirmation (L_Data.con)
-        \li DataIndication (L_Data.ind)
-        \li BusmonitorIndication (L_Busmon.ind)
-        \li RawRequest (L_Raw.req)
-        \li RawIndication (L_Raw.ind)
-        \li RawConfirmation (L_Raw.con)
-        \li ResetRequest (M_Reset.req)
+        \li \c DataRequest (\c {L_Data.req})
+        \li \c DataConfirmation (\c {L_Data.con})
+        \li \c DataIndication (\c {L_Data.ind})
+        \li \c BusmonitorIndication (\c {L_Busmon.ind})
+        \li \c RawRequest (\c {L_Raw.req})
+        \li \c RawIndication (\c {L_Raw.ind})
+        \li \c RawConfirmation (\c {L_Raw.con})
+        \li \c ResetRequest (\c {M_Reset.req})
     \endlist
 
-    For the moment, the QtKnx module is only implementing KNXnet/IP tunnel
-    connection, so only the previously mentioned message code should be used.
+    The Qt KNX module implements only KNXnet/IP tunnel connections, and
+    therefore only the above message codes can be used.
 
     The message code is also to be chosen depending on the application service
-    (encoded with the \l QKnxTpdu::ApplicationControlField) hold in the \l QKnxTpdu.
-    In the \l QKnxTpduFactory, the application services are split into categories
-    depending on the addressing method.
-
-    The most basic functionalities are to be addressed with set of services built
-    in \l QKnxTpduFactory::Multicast. For those services one should use
-    DataRequest (L_Data.req), DataConfirmation (L_Data.con) or DataIndication
-    (L_Data.ind) as QKnxLinkLayerFrame message code.
+    (encoded with the \l QKnxTpdu::ApplicationControlField) held in \l QKnxTpdu.
+    The application services are split into categories according to the
+    addressing method.
 */
 
 /*!
     \enum QKnxLinkLayerFrame::MessageCode
-    This enum describes the different message codes of the LinkLayer frame.
+    This enum holds the message code of the link layer frame sent via a
+    KNXnet/IP tunnel connection.
 
     \value Unknown
-    \value BusmonitorIndication                       L_Busmon.ind
-    \value DataRequest                                L_Data.req
-    \value DataConfirmation                           L_Data.con
-    \value DataIndication                             L_Data.ind
-    \value RawRequest                                 L_Raw.req
-    \value RawIndication                              L_Raw.ind
-    \value RawConfirmation                            L_Raw.con
-    \value PollDataRequest                            L_Poll_Data.req
-    \value PollDataConfirmation                       L_Poll_Data.con
-    \value DataConnectedRequest                       T_Data_Connected.req
-    \value DataConnectedIndication                    T_Data_Connected.ind
-    \value DataIndividualRequest                      T_Data_Individual.req
-    \value DataIndividualIndication                   T_Data_Individual.ind
+           An unknown message code.
+    \value BusmonitorIndication
+           A \c {L_Busmon.ind} message code that is used in server-to-client
+           communication on KNX bus monitor.
+    \value DataRequest
+           A \c {L_Data.req} message code that is used in client-to-server
+           communication on KNX data link layer.
+    \value DataConfirmation
+           A \c l{L_Data.con} message code that is used in server-to-client
+           communication on KNX data link layer.
+    \value DataIndication
+           A \c {L_Data.ind} message code that is used in server-to-client
+           communication on KNX data link layer.
+    \value RawRequest
+           A \c {L_Raw.req} message code that is used in client-to-server
+           communication in common external message interface (cEMI) raw mode.
+    \value RawIndication
+           A \c {L_Raw.ind} message code that is used in server-to-client
+           communication in cEMI raw mode.
+    \value RawConfirmation
+           A \c {L_Raw.con} message code that is used in server-to-client
+           communication in cEMI raw mode.
+    \value ResetRequest
+           A \c {M_Reset.req} message code that is used in client-to-server
+           communication on KNX data link layer and in cEMI raw mode.
+
+    \omitvalue PollDataRequest
+    \omitvalue PollDataConfirmation
+    \omitvalue DataConnectedRequest
+    \omitvalue DataConnectedIndication
+    \omitvalue DataIndividualRequest
+    \omitvalue DataIndividualIndication
 */
 
 class QKnxLinkLayerFramePrivate : public QSharedData
@@ -108,8 +124,8 @@ public:
 };
 
 /*!
-    Constructs an empty link layer frame.
-    The MediumType is set to QKnx::MediumType::NetIp.
+    Constructs an empty link layer frame with the medium type set to
+    \l QKnx::MediumType \c NetIP.
 
     \sa setMediumType()
 */
@@ -124,11 +140,11 @@ QKnxLinkLayerFrame::~QKnxLinkLayerFrame()
 {}
 
 /*!
-    Constructs a link layer frame starting with \a messageCode. The medium is
-    set to QKnx::MediumType::NetIp.
+    Constructs a link layer frame starting with \a messageCode. The medium type
+    is set to \l QKnx::MediumType \c NetIP.
 
-    \note The LinkLayer frame will be empty otherwise and needs to be setup by
-    hand.
+    \note The link layer frame will be otherwise empty and needs to be set
+    manually.
 
     \sa setMediumType()
 */
@@ -141,7 +157,8 @@ QKnxLinkLayerFrame::QKnxLinkLayerFrame(QKnxLinkLayerFrame::MessageCode messageCo
 /*!
     Constructs a link layer frame starting with \a messageCode and sets the
     service information to \a serviceInfo.
-    The medium type is set to QKnx::MediumType::NetIp.
+
+    The medium type is set to \l QKnx::MediumType \c NetIP.
 
     \sa setMediumType()
 */
@@ -153,13 +170,16 @@ QKnxLinkLayerFrame::QKnxLinkLayerFrame(QKnxLinkLayerFrame::MessageCode messageCo
 }
 
 /*!
-  Returns true if the message code is valid.
+    Returns \c true if the link layer frame is valid, returns \c false otherwise.
 
-  \note This function needs to be extended.
+    \note Validation is only supported for \l QKnx::MediumType \c NetIP, for
+    other medium types the function always returns \c false.
+
 */
 bool QKnxLinkLayerFrame::isValid() const
 {
-    // TODO, adapt so that it's not only valid for the netIptunnel frame
+    // TODO: This function needs to be extended with support for other medium types.
+
     if (!isMessageCodeValid())
         return false;
 
@@ -216,10 +236,13 @@ bool QKnxLinkLayerFrame::isValid() const
 }
 
 /*!
-    Return \c true if the Message Code of the LinkLayer frame is valid; \c false otherwise.
+    \internal
 
-    \note It only checks that the given code is a correct LinkLayer frame code. It
-    does not check the validity of the payload.
+    Returns \c true if the \l MessageCode of the link layer frame is valid;
+    \c false otherwise.
+
+    \note This function checks only that the specified message code is a valid
+    link layer frame code. It does not check the validity of the payload.
 */
 bool QKnxLinkLayerFrame::isMessageCodeValid() const
 {
@@ -249,46 +272,75 @@ bool QKnxLinkLayerFrame::isMessageCodeValid() const
     return false;
 }
 
+/*!
+    Returns the control field of the frame.
+*/
 QKnxControlField QKnxLinkLayerFrame::controlField() const
 {
     return d_ptr->m_ctrl;
 }
 
+/*!
+    Sets the control field of the frame to \a controlField.
+*/
 void QKnxLinkLayerFrame::setControlField(const QKnxControlField &controlField)
 {
     d_ptr->m_ctrl = controlField;
 }
 
+/*!
+    Returns the extended control field of the frame.
+*/
 QKnxExtendedControlField QKnxLinkLayerFrame::extendedControlField() const
 {
     return d_ptr->m_extCtrl;
 }
 
+/*!
+    Sets the extended control field of the frame to \a controlFieldEx.
+*/
 void QKnxLinkLayerFrame::setExtendedControlField(const QKnxExtendedControlField &controlFieldEx)
 {
     d_ptr->m_extCtrl = controlFieldEx;
 }
 
+/*!
+    Returns the source address.
+*/
 const QKnxAddress QKnxLinkLayerFrame::sourceAddress() const
 {
     return d_ptr->m_srcAddress;
 }
 
+/*!
+    Sets the source address to \a source.
+*/
 void QKnxLinkLayerFrame::setSourceAddress(const QKnxAddress &source)
 {
     d_ptr->m_srcAddress = source;
 }
 
+/*!
+    Returns the destination address.
+*/
 const QKnxAddress QKnxLinkLayerFrame::destinationAddress() const
 {
     return d_ptr->m_dstAddress;
 }
 
+
+/*!
+    Sets the destination address to \a destination.
+*/
 void QKnxLinkLayerFrame::setDestinationAddress(const QKnxAddress &destination)
 {
     d_ptr->m_dstAddress = destination;
 }
 
+/*!
+    Returns the TPDU of the frame. The TPDU is read by the network, transport,
+    and application layer services.
+*/
 QKnxTpdu QKnxLinkLayerFrame::tpdu() const
 {
     // TODO: In RF-Frames the length field is set to 0x00, figure out how this fits in here.
@@ -299,13 +351,18 @@ QKnxTpdu QKnxLinkLayerFrame::tpdu() const
     return d_ptr->m_tpdu;
 }
 
+
+/*!
+    Sets the TPDU of the frame to \a tpdu. The TPDU is read by the network,
+    transport, and application layer services.
+*/
 void QKnxLinkLayerFrame::setTpdu(const QKnxTpdu &tpdu)
 {
     d_ptr->m_tpdu = tpdu;
 }
 
 /*!
-    Returns the message code of the LinkLayer frame.
+    Returns the message code of the link layer frame.
 */
 QKnxLinkLayerFrame::MessageCode QKnxLinkLayerFrame::messageCode() const
 {
@@ -313,7 +370,7 @@ QKnxLinkLayerFrame::MessageCode QKnxLinkLayerFrame::messageCode() const
 }
 
 /*!
-    Sets the message code of the LinkLayer frame with \a code.
+    Sets the message code of the link layer frame to \a code.
 */
 void QKnxLinkLayerFrame::setMessageCode(QKnxLinkLayerFrame::MessageCode code)
 {
@@ -321,7 +378,7 @@ void QKnxLinkLayerFrame::setMessageCode(QKnxLinkLayerFrame::MessageCode code)
 }
 
 /*!
-    Returns the medium type to be used to send the LinkLayer frame.
+    Returns the medium type to be used to send the link layer frame.
 */
 QKnx::MediumType QKnxLinkLayerFrame::mediumType() const
 {
@@ -329,7 +386,7 @@ QKnx::MediumType QKnxLinkLayerFrame::mediumType() const
 }
 
 /*!
-    Sets the medium type to be used to send the LinkLayer frame with \a type.
+    Sets the medium type to be used to send the LinkLayer frame to \a type.
 */
 void QKnxLinkLayerFrame::setMediumType(QKnx::MediumType type)
 {
@@ -337,7 +394,7 @@ void QKnxLinkLayerFrame::setMediumType(QKnx::MediumType type)
 }
 
 /*!
-    Returns the number of bytes of the LinkLayer frame.
+    Returns the number of bytes of the link layer frame.
 */
 quint16 QKnxLinkLayerFrame::size() const
 {
@@ -345,14 +402,18 @@ quint16 QKnxLinkLayerFrame::size() const
 }
 
 /*!
-      Returns the service information the frame carries. This is the frame
-      without the message code.
+    Returns the service information the frame carries. This is the frame
+    without the message code.
 */
 QKnxByteArray QKnxLinkLayerFrame::serviceInformation() const
 {
     return bytes().mid(1);
 }
 
+/*!
+    Sets the service information based on a byte array with all the fields
+    encoded into it to \a data.
+*/
 void QKnxLinkLayerFrame::setServiceInformation(const QKnxByteArray &data)
 {
     if (data.size() < 1)
@@ -401,8 +462,9 @@ QKnxByteArray QKnxLinkLayerFrame::bytes() const
 }
 
 /*!
-    Constructs the link layer frame from the byte array \a data starting at
-    position \a index inside the array with given medium type \a mediumType.
+    Constructs a link layer frame from the byte array \a data starting at the
+    position \a index inside the array using the number of bytes specified by
+    \a size. Sets the medium type of the frame to \a mediumType
 */
 QKnxLinkLayerFrame QKnxLinkLayerFrame::fromBytes(const QKnxByteArray &data, quint16 index,
     quint16 size, QKnx::MediumType mediumType)
@@ -418,11 +480,20 @@ QKnxLinkLayerFrame QKnxLinkLayerFrame::fromBytes(const QKnxByteArray &data, quin
     return frame;
 }
 
+/*!
+    Returns the size in bytes of the whole additional information field.
+*/
 quint8 QKnxLinkLayerFrame::additionalInfosSize() const
 {
     return d_ptr->m_additionalInfoSize;
 }
 
+/*!
+    Adds the KNX additional info parameter \a info to the additional information
+    field. The information is sorted in ascending order based on its type.
+
+    \sa QKnxAdditionalInfo, QKnxAdditionalInfo::type()
+*/
 void QKnxLinkLayerFrame::addAdditionalInfo(const QKnxAdditionalInfo &info)
 {
     d_ptr->m_additionalInfos.append(info);
@@ -430,6 +501,11 @@ void QKnxLinkLayerFrame::addAdditionalInfo(const QKnxAdditionalInfo &info)
     d_ptr->m_additionalInfoSize += info.size();
 }
 
+/*!
+    Returns a vector of additional information contained in the frame.
+
+    \sa QKnxAdditionalInfo
+*/
 QVector<QKnxAdditionalInfo> QKnxLinkLayerFrame::additionalInfos() const
 {
     if (!d_ptr->m_additionalInfosSorted) {
@@ -442,6 +518,11 @@ QVector<QKnxAdditionalInfo> QKnxLinkLayerFrame::additionalInfos() const
     return d_ptr->m_additionalInfos;
 }
 
+/*!
+    Removes all additional information of the type \a type.
+
+    \sa QKnxAdditionalInfo, QKnxAdditionalInfo::Type
+*/
 void QKnxLinkLayerFrame::removeAdditionalInfo(QKnxAdditionalInfo::Type type)
 {
     auto info = d_ptr->m_additionalInfos.begin();
@@ -455,12 +536,21 @@ void QKnxLinkLayerFrame::removeAdditionalInfo(QKnxAdditionalInfo::Type type)
     }
 }
 
+/*!
+    Removes the first occurrence of the additional information \a info from the
+    frame's additional information field.
+
+    \sa QKnxAdditionalInfo
+*/
 void QKnxLinkLayerFrame::removeAdditionalInfo(const QKnxAdditionalInfo &info)
 {
     if (d_ptr->m_additionalInfos.removeOne(info))
         d_ptr->m_additionalInfoSize -= info.size();
 }
 
+/*!
+    Removes all additional information from the frame.
+*/
 void QKnxLinkLayerFrame::clearAdditionalInfos()
 {
     d_ptr->m_additionalInfoSize = 0;

@@ -84,7 +84,6 @@ public:
     quint16 size() const;
 
     bool isValid() const;
-    bool isMessageCodeValid() const;
 
     MessageCode messageCode() const;
     void setMessageCode(MessageCode code);
@@ -136,6 +135,7 @@ public:
     bool operator!=(const QKnxLinkLayerFrame &other) const;
 
 private:
+    bool isMessageCodeValid() const;
     QSharedDataPointer<QKnxLinkLayerFramePrivate> d_ptr;
 };
 Q_KNX_EXPORT QDebug operator<<(QDebug debug, const QKnxLinkLayerFrame &frame);

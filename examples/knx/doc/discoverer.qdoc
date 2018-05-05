@@ -54,5 +54,6 @@
 
     \dots
     \skipto agent.discoveredServers
-    \printuntil /^\}
+    \printuntil ;
+    \dots
 */
