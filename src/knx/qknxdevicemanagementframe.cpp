@@ -222,9 +222,14 @@ bool QKnxDeviceManagementFrame::isValid() const
     Returns \c true if this local device management frame is a negative
     confirmation; otherwise returns \c false.
 
-    The data field of a negative confirmation contains the error information.
+    For property read or write confirmation frames, the data field of a
+    negative confirmation contains the error information.
 
-    \sa data(), error()
+    In case of function property command or function property state read
+    confirmation frames neither a return code nor data are transmitted with
+    the frame.
+
+    \sa data(), error(), returnCode()
 */
 bool QKnxDeviceManagementFrame::isNegativeConfirmation() const
 {
@@ -405,7 +410,7 @@ void QKnxDeviceManagementFrame::setData(const QKnxByteArray &newData)
     the frame is a \l PropertyReadConfirmation or \l PropertyWriteConfirmation
     frame and the number of elements is set to \c 0. Otherwise returns \c None.
 
-    \sa data()
+    \sa data(), isNegativeConfirmation()
 */
 QKnxNetIpCemiServer::Error QKnxDeviceManagementFrame::error() const
 {
