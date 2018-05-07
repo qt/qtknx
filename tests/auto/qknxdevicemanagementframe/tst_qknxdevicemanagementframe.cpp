@@ -95,14 +95,62 @@ private slots:
 
     void testFactory()
     {
-        auto cemi = QKnxDeviceManagementFrameFactory::PropertyRead
-            ::createRequest(QKnxInterfaceObjectType::KnxNetIpParameter, 1,
-                QKnxInterfaceObjectProperty::FriendlyName, 1, 0);
+        auto propRead = QKnxDeviceManagementFrame::propertyReadBuilder()
+            .setObjectType(QKnxInterfaceObjectType::KnxNetIpParameter)
+            .setObjectInstance(3)
+            .setProperty(QKnxInterfaceObjectProperty::FriendlyName)
+            .setNumberOfElements(1)
+            .setStartIndex(0).createRequest();
+        QCOMPARE(propRead.messageCode(), QKnxDeviceManagementFrame::MessageCode::PropertyReadRequest);
+        QCOMPARE(propRead.objectType(), QKnxInterfaceObjectType::KnxNetIpParameter);
+        QCOMPARE(propRead.objectInstance(), 3);
+        QCOMPARE(propRead.property(), QKnxInterfaceObjectProperty::FriendlyName);
+        QCOMPARE(propRead.numberOfElements(), 1);
+        QCOMPARE(propRead.startIndex(), 0);
+
+        auto propConf = QKnxDeviceManagementFrame::propertyReadBuilder()
+            .setObjectType(QKnxInterfaceObjectType::KnxNetIpParameter)
+            .setObjectInstance(12)
+            .setProperty(QKnxInterfaceObjectProperty::KnxNetIpParameter::DefaultGateway)
+            .setNumberOfElements(10)
+            .setStartIndex(100).createConfirmation(QKnxByteArray(10, 0xff));
+        QCOMPARE(propConf.messageCode(), QKnxDeviceManagementFrame::MessageCode::PropertyReadConfirmation);
+        QCOMPARE(propConf.objectType(), QKnxInterfaceObjectType::KnxNetIpParameter);
+        QCOMPARE(propConf.objectInstance(), 12);
+        QCOMPARE(propConf.property(), QKnxInterfaceObjectProperty::DefaultGateway);
+        QCOMPARE(propConf.numberOfElements(), 10);
+        QCOMPARE(propConf.startIndex(), 100);
+        QCOMPARE(propConf.data(), QKnxByteArray(10, 0xff));
+
+        propConf = QKnxDeviceManagementFrame::propertyReadBuilder()
+            .createConfirmation(QKnxByteArray(10, 0xff), propRead);
+        QCOMPARE(propConf.messageCode(), QKnxDeviceManagementFrame::MessageCode::PropertyReadConfirmation);
+        QCOMPARE(propConf.objectType(), QKnxInterfaceObjectType::KnxNetIpParameter);
+        QCOMPARE(propConf.objectInstance(), 3);
+        QCOMPARE(propConf.property(), QKnxInterfaceObjectProperty::FriendlyName);
+        QCOMPARE(propConf.numberOfElements(), 1);
+        QCOMPARE(propConf.startIndex(), 0);
+        QCOMPARE(propConf.data(), QKnxByteArray(10, 0xff));
+
+        propConf = QKnxDeviceManagementFrame::propertyReadBuilder()
+            .createNegativeConfirmation(QKnx::NetIp::CemiServer::Error::IllegalCommand, propRead);
+        QCOMPARE(propConf.messageCode(), QKnxDeviceManagementFrame::MessageCode::PropertyReadConfirmation);
+        QCOMPARE(propConf.objectType(), QKnxInterfaceObjectType::KnxNetIpParameter);
+        QCOMPARE(propConf.objectInstance(), 3);
+        QCOMPARE(propConf.property(), QKnxInterfaceObjectProperty::FriendlyName);
+        QCOMPARE(propConf.numberOfElements(), 0);
+        QCOMPARE(propConf.startIndex(), 0);
+        QCOMPARE(propConf.data(), QKnxByteArray(1, 0x06));
+        QCOMPARE(propConf.error(), QKnx::NetIp::CemiServer::Error::IllegalCommand);
+        QCOMPARE(propConf.isNegativeConfirmation(), true);
+
         // TODO: add some checks against above created cEMI
 
-        cemi = QKnxDeviceManagementFrameFactory::FunctionPropertyCommand
-            ::createRequest(QKnxInterfaceObjectType::KnxNetIpParameter, 1,
-                QKnxInterfaceObjectProperty::FriendlyName, {});
+        auto cemi = QKnxDeviceManagementFrame::functionPropertyCommandBuilder()
+            .setObjectType(QKnxInterfaceObjectType::KnxNetIpParameter)
+            .setObjectInstance(1)
+            .setProperty(QKnxInterfaceObjectProperty::FriendlyName)
+            .createRequest({ 0x00, 0x01, 0x02 });
         // TODO: add some checks against above created cEMI
     }
 

@@ -28,6 +28,7 @@
 ******************************************************************************/
 
 #include "qknxdevicemanagementframe.h"
+#include "qknxdevicemanagementframefactory.h"
 #include "qknxutils.h"
 
 QT_BEGIN_NAMESPACE
@@ -158,11 +159,13 @@ QKnxDeviceManagementFrame::QKnxDeviceManagementFrame(
 }
 
 /*!
-    Returns the number of bytes of the local device management frame.
+    Returns \c true if this is a default constructed device management frame,
+    otherwise returns \c false. A frame is considered null if it contains no
+    initialized values.
 */
-quint16 QKnxDeviceManagementFrame::size() const
+bool QKnxDeviceManagementFrame::isNull() const
 {
-    return d_ptr->m_serviceInformation.size() + 1 /* message code */;
+    return d_ptr->m_code == MessageCode::Unknown && d_ptr->m_serviceInformation.isNull();
 }
 
 /*!
@@ -216,6 +219,14 @@ bool QKnxDeviceManagementFrame::isValid() const
     if (!QKnxInterfaceObjectType::isMatch(type, property()))
         return false;
     return true; // TODO: Find other definitions of validity.
+}
+
+/*!
+    Returns the number of bytes of the local device management frame.
+*/
+quint16 QKnxDeviceManagementFrame::size() const
+{
+    return d_ptr->m_serviceInformation.size() + 1 /* message code */;
 }
 
 /*!
@@ -350,7 +361,8 @@ void QKnxDeviceManagementFrame::setNumberOfElements(quint8 numOfElements)
 {
     if (numOfElements > 0x0f)
         return;
-    d_ptr->m_serviceInformation.set(4, (d_ptr->m_serviceInformation.value(4) & 0x0f) | (numOfElements << 4));
+    d_ptr->m_serviceInformation.set(4,
+        (d_ptr->m_serviceInformation.value(4) & 0x0f) | (numOfElements << 4));
 }
 
 /*!
@@ -374,8 +386,8 @@ void QKnxDeviceManagementFrame::setStartIndex(quint16 index)
     if (index > 0x0fff)
         return;
 
-    auto startIndex = QKnxUtils::QUint16::fromBytes(d_ptr->m_serviceInformation, 4);
-    d_ptr->m_serviceInformation.replace(4, 2, QKnxUtils::QUint16::bytes(startIndex | index));
+    d_ptr->m_serviceInformation.replace(4, 2,
+        QKnxUtils::QUint16::bytes((quint16(numberOfElements()) << 12) | index));
 }
 
 /*!
@@ -598,19 +610,41 @@ bool QKnxDeviceManagementFrame::operator!=(const QKnxDeviceManagementFrame &othe
     return !operator==(other);
 }
 
-/*!
-    \internal
-*/
-QKnxDeviceManagementFrame::QKnxDeviceManagementFrame(MessageCode code,
-        QKnxInterfaceObjectType type, quint8 instance, QKnxInterfaceObjectProperty pid,
-        quint8 noe, quint16 index, const QKnxByteArray &payload)
-    : QKnxDeviceManagementFrame(code)
+QKnxDeviceManagementFrame::Builder QKnxDeviceManagementFrame::builder()
 {
-    d_ptr->m_serviceInformation = QKnxUtils::QUint16::bytes(quint16(type));
-    d_ptr->m_serviceInformation.append(instance);
-    d_ptr->m_serviceInformation.append(pid);
-    d_ptr->m_serviceInformation.append(QKnxUtils::QUint16::bytes((quint16(noe) << 12) | index));
-    d_ptr->m_serviceInformation + payload;
+    return QKnxDeviceManagementFrame::Builder();
+}
+
+QKnxDeviceManagementFrame::PropertyReadBuilder QKnxDeviceManagementFrame::propertyReadBuilder()
+{
+    return QKnxDeviceManagementFrame::PropertyReadBuilder();
+}
+
+QKnxDeviceManagementFrame::PropertyWriteBuilder QKnxDeviceManagementFrame::propertyWriteBuilder()
+{
+    return QKnxDeviceManagementFrame::PropertyWriteBuilder();
+}
+
+QKnxDeviceManagementFrame::PropertyInfoBuilder QKnxDeviceManagementFrame::propertyInfoBuilder()
+{
+    return QKnxDeviceManagementFrame::PropertyInfoBuilder();
+}
+
+QKnxDeviceManagementFrame::FunctionPropertyCommandBuilder
+    QKnxDeviceManagementFrame::functionPropertyCommandBuilder()
+{
+    return QKnxDeviceManagementFrame::FunctionPropertyCommandBuilder();
+}
+
+QKnxDeviceManagementFrame::FunctionPropertyStateReadBuilder
+    QKnxDeviceManagementFrame::functionPropertyStateReadBuilder()
+{
+    return QKnxDeviceManagementFrame::FunctionPropertyStateReadBuilder();
+}
+
+QKnxDeviceManagementFrame::ResetBuilder QKnxDeviceManagementFrame::resetBuilder()
+{
+    return QKnxDeviceManagementFrame::ResetBuilder();
 }
 
 /*!

@@ -1,6 +1,6 @@
 /******************************************************************************
 **
-** Copyright (C) 2017 The Qt Company Ltd.
+** Copyright (C) 2018 The Qt Company Ltd.
 ** Contact: https://www.qt.io/licensing/
 **
 ** This file is part of the QtKnx module.
@@ -74,191 +74,373 @@ QT_BEGIN_NAMESPACE
     \endlist
 */
 
-// -- PropertyRead
 
-QKnxDeviceManagementFrame QKnxDeviceManagementFrameFactory::PropertyRead::createRequest(
-    QKnxInterfaceObjectType type, quint8 instance, QKnxInterfaceObjectProperty pid,
-    quint8 numberOfElements, quint16 startIndex)
+// -- QKnxDeviceManagementFrame::Builder
+
+QKnxDeviceManagementFrame::Builder &
+    QKnxDeviceManagementFrame::Builder::setMessageCode(QKnxDeviceManagementFrame::MessageCode code)
 {
-    return { QKnxDeviceManagementFrame::MessageCode::PropertyReadRequest, type, instance, pid, numberOfElements,
-        startIndex };
+    m_code = code;
+    return *this;
 }
 
-QKnxDeviceManagementFrame QKnxDeviceManagementFrameFactory::PropertyRead::createConfirmation(
-    QKnxInterfaceObjectType type, quint8 instance, QKnxInterfaceObjectProperty pid,
-    quint8 numberOfElements, quint16 startIndex, const QKnxByteArray &data)
+QKnxDeviceManagementFrame::Builder &
+    QKnxDeviceManagementFrame::Builder::setObjectType(QKnxInterfaceObjectType type)
 {
-    return { QKnxDeviceManagementFrame::MessageCode::PropertyReadConfirmation, type, instance, pid,
-        numberOfElements, startIndex, data };
+    m_type = type;
+    return *this;
 }
 
-QKnxDeviceManagementFrame QKnxDeviceManagementFrameFactory::PropertyRead::createConfirmation(
-    QKnxInterfaceObjectType type, quint8 instance, QKnxInterfaceObjectProperty pid,
-    quint8 numberOfElements, quint16 startIndex, QKnxNetIpCemiServer::Error error)
+QKnxDeviceManagementFrame::Builder &
+    QKnxDeviceManagementFrame::Builder::setObjectInstance(quint8 instance)
 {
-    QKnxDeviceManagementFrame frame { QKnxDeviceManagementFrame::MessageCode::PropertyReadConfirmation, type,
-        instance, pid, numberOfElements, startIndex };
+    m_instance = instance;
+    return *this;
+}
+
+QKnxDeviceManagementFrame::Builder &
+    QKnxDeviceManagementFrame::Builder::setProperty(QKnxInterfaceObjectProperty pid)
+{
+    m_pid = pid;
+    return *this;
+}
+
+QKnxDeviceManagementFrame::Builder &
+    QKnxDeviceManagementFrame::Builder::setData(const QKnxByteArray &data)
+{
+    m_data = data;
+    return *this;
+}
+
+QKnxDeviceManagementFrame QKnxDeviceManagementFrame::Builder::createFrame() const
+{
+    return { m_code, m_type, m_instance, m_pid, m_data };
+}
+
+
+// -- QKnxDeviceManagementFrame::PropertyReadBuilder
+
+using PFRB = QKnxDeviceManagementFrame::PropertyReadBuilder;
+PFRB &QKnxDeviceManagementFrame::PropertyReadBuilder::setObjectType(QKnxInterfaceObjectType type)
+{
+    m_builder.setObjectType(type);
+    return *this;
+}
+
+PFRB &QKnxDeviceManagementFrame::PropertyReadBuilder::setObjectInstance(quint8 instance)
+{
+    m_builder.setObjectInstance(instance);
+    return *this;
+}
+
+PFRB &QKnxDeviceManagementFrame::PropertyReadBuilder::setProperty(QKnxInterfaceObjectProperty pid)
+{
+    m_builder.setProperty(pid);
+    return *this;
+}
+
+PFRB &QKnxDeviceManagementFrame::PropertyReadBuilder::setNumberOfElements(quint8 noe)
+{
+    m_numberOfElements = noe;
+    return *this;
+}
+
+PFRB &QKnxDeviceManagementFrame::PropertyReadBuilder::setStartIndex(quint16 startIndex)
+{
+    m_startIndex= startIndex;
+    return *this;
+}
+
+QKnxDeviceManagementFrame QKnxDeviceManagementFrame::PropertyReadBuilder::createRequest() const
+{
+    m_builder.setMessageCode(MessageCode::PropertyReadRequest);
+    auto frame = m_builder.createFrame();
+    frame.setNumberOfElements(m_numberOfElements);
+    frame.setStartIndex(m_startIndex);
+    return frame;
+}
+
+QKnxDeviceManagementFrame PFRB::createConfirmation(const QKnxByteArray &data,
+                                                   const QKnxDeviceManagementFrame &request) const
+{
+    m_builder.setMessageCode(MessageCode::PropertyReadConfirmation);
+    if (!request.isNull()) {
+        m_builder.setObjectType(request.objectType());
+        m_builder.setObjectInstance(request.objectInstance());
+        m_builder.setProperty(request.property());
+    }
+
+    auto frame = m_builder.createFrame();
+    frame.setNumberOfElements(request.isNull() ? m_numberOfElements : request.numberOfElements());
+    frame.setStartIndex(request.isNull() ? m_startIndex : request.startIndex());
+    frame.setData(data);
+    return frame;
+}
+
+QKnxDeviceManagementFrame PFRB::createNegativeConfirmation(QKnxNetIpCemiServer::Error error,
+                                                    const QKnxDeviceManagementFrame &request) const
+{
+    m_builder.setMessageCode(MessageCode::PropertyReadConfirmation);
+    if (!request.isNull()) {
+        m_builder.setObjectType(request.objectType());
+        m_builder.setObjectInstance(request.objectInstance());
+        m_builder.setProperty(request.property());
+    }
+
+    auto frame = m_builder.createFrame();
+    frame.setNumberOfElements(0);
+    frame.setStartIndex(request.isNull() ? m_startIndex : request.startIndex());
     frame.setError(error);
     return frame;
 }
 
-QKnxDeviceManagementFrame QKnxDeviceManagementFrameFactory::PropertyRead::createConfirmation(
-    const QKnxDeviceManagementFrame &request, const QKnxByteArray &data)
+
+// -- QKnxDeviceManagementFrame::PropertyWriteBuilder
+
+using PFWB = QKnxDeviceManagementFrame::PropertyWriteBuilder;
+PFWB &QKnxDeviceManagementFrame::PropertyWriteBuilder::setObjectType(QKnxInterfaceObjectType type)
 {
-    return { QKnxDeviceManagementFrame::MessageCode::PropertyReadConfirmation, request.objectType(), request
-        .objectInstance(), request.property(), request.numberOfElements(), request.startIndex(),
-        data };
+    m_builder.setObjectType(type);
+    return *this;
 }
 
-QKnxDeviceManagementFrame QKnxDeviceManagementFrameFactory::PropertyRead::createConfirmation(
-    const QKnxDeviceManagementFrame &request, QKnxNetIpCemiServer::Error error)
+PFWB &QKnxDeviceManagementFrame::PropertyWriteBuilder::setObjectInstance(quint8 instance)
 {
-    QKnxDeviceManagementFrame frame = { QKnxDeviceManagementFrame::MessageCode::PropertyReadConfirmation,
-        request.objectType(), request.objectInstance(), request.property(), 0, request.startIndex() };
+    m_builder.setObjectInstance(instance);
+    return *this;
+}
+
+PFWB &QKnxDeviceManagementFrame::PropertyWriteBuilder::setProperty(QKnxInterfaceObjectProperty pid)
+{
+    m_builder.setProperty(pid);
+    return *this;
+}
+
+PFWB &QKnxDeviceManagementFrame::PropertyWriteBuilder::setNumberOfElements(quint8 noe)
+{
+    m_numberOfElements = noe;
+    return *this;
+}
+
+PFWB &QKnxDeviceManagementFrame::PropertyWriteBuilder::setStartIndex(quint16 startIndex)
+{
+    m_startIndex= startIndex;
+    return *this;
+}
+
+QKnxDeviceManagementFrame PFWB::createRequest(const QKnxByteArray &data) const
+{
+    m_builder.setMessageCode(MessageCode::PropertyWriteRequest);
+    auto frame = m_builder.createFrame();
+    frame.setNumberOfElements(m_numberOfElements);
+    frame.setStartIndex(m_startIndex);
+    frame.setData(data);
+    return frame;
+}
+
+QKnxDeviceManagementFrame PFWB::createConfirmation(const QKnxDeviceManagementFrame &request) const
+{
+    m_builder.setMessageCode(MessageCode::PropertyWriteConfirmation);
+    if (!request.isNull()) {
+        m_builder.setObjectType(request.objectType());
+        m_builder.setObjectInstance(request.objectInstance());
+        m_builder.setProperty(request.property());
+    }
+
+    auto frame = m_builder.createFrame();
+    frame.setNumberOfElements(request.isNull() ? m_numberOfElements : request.numberOfElements());
+    frame.setStartIndex(request.isNull() ? m_startIndex : request.startIndex());
+    return frame;
+}
+
+QKnxDeviceManagementFrame PFWB::createNegativeConfirmation(QKnxNetIpCemiServer::Error error,
+                                                    const QKnxDeviceManagementFrame &request) const
+{
+    m_builder.setMessageCode(MessageCode::PropertyWriteConfirmation);
+    if (!request.isNull()) {
+        m_builder.setObjectType(request.objectType());
+        m_builder.setObjectInstance(request.objectInstance());
+        m_builder.setProperty(request.property());
+    }
+
+    auto frame = m_builder.createFrame();
+    frame.setNumberOfElements(0);
+    frame.setStartIndex(request.isNull() ? m_startIndex : request.startIndex());
     frame.setError(error);
     return frame;
 }
 
 
-// -- PropertyWrite
+// -- QKnxDeviceManagementFrame::PropertyInfoBuilder
 
-QKnxDeviceManagementFrame QKnxDeviceManagementFrameFactory::PropertyWrite::createRequest(
-    QKnxInterfaceObjectType type, quint8 instance, QKnxInterfaceObjectProperty pid,
-    quint8 numberOfElements, quint16 startIndex, const QKnxByteArray &data)
+using PFIB = QKnxDeviceManagementFrame::PropertyInfoBuilder;
+QKnxDeviceManagementFrame::PropertyInfoBuilder::PropertyInfoBuilder()
 {
-    return { QKnxDeviceManagementFrame::MessageCode::PropertyWriteRequest, type, instance, pid, numberOfElements,
-        startIndex, data };
+    m_builder.setMessageCode(MessageCode::PropertyInfoIndication);
 }
 
-QKnxDeviceManagementFrame QKnxDeviceManagementFrameFactory::PropertyWrite::createConfirmation(
-    QKnxInterfaceObjectType type, quint8 instance, QKnxInterfaceObjectProperty pid,
-    quint8 numberOfElements, quint16 startIndex, QKnxNetIpCemiServer::Error error)
+PFIB &QKnxDeviceManagementFrame::PropertyInfoBuilder::setObjectType(QKnxInterfaceObjectType type)
 {
-    QKnxDeviceManagementFrame frame = { QKnxDeviceManagementFrame::MessageCode::PropertyWriteConfirmation, type,
-        instance, pid, numberOfElements, startIndex };
-    if (error != QKnxNetIpCemiServer::Error::None)
-        frame.setError(error);
+    m_builder.setObjectType(type);
+    return *this;
+}
+
+PFIB &QKnxDeviceManagementFrame::PropertyInfoBuilder::setObjectInstance(quint8 instance)
+{
+    m_builder.setObjectInstance(instance);
+    return *this;
+}
+
+PFIB &QKnxDeviceManagementFrame::PropertyInfoBuilder::setProperty(QKnxInterfaceObjectProperty pid)
+{
+    m_builder.setProperty(pid);
+    return *this;
+}
+
+PFIB &QKnxDeviceManagementFrame::PropertyInfoBuilder::setNumberOfElements(quint8 noe)
+{
+    m_numberOfElements = noe;
+    return *this;
+}
+
+PFIB &QKnxDeviceManagementFrame::PropertyInfoBuilder::setStartIndex(quint16 startIndex)
+{
+    m_startIndex= startIndex;
+    return *this;
+}
+
+QKnxDeviceManagementFrame PFIB::createIndication(const QKnxByteArray &data) const
+{
+    auto frame = m_builder.createFrame();
+    frame.setNumberOfElements(m_numberOfElements);
+    frame.setStartIndex(m_startIndex);
+    frame.setData(data);
     return frame;
 }
 
-QKnxDeviceManagementFrame QKnxDeviceManagementFrameFactory::PropertyWrite::createConfirmation(
-    const QKnxDeviceManagementFrame &request, QKnxNetIpCemiServer::Error error)
+
+// -- QKnxDeviceManagementFrame::FunctionPropertyCommandBuilder
+
+using FPCB = QKnxDeviceManagementFrame::FunctionPropertyCommandBuilder;
+FPCB &FPCB::setObjectType(QKnxInterfaceObjectType type)
 {
-    QKnxDeviceManagementFrame frame = { QKnxDeviceManagementFrame::MessageCode::PropertyWriteConfirmation,
-        request.objectType(), request.objectInstance(), request.property(), 0, request.startIndex() };
-    if (error != QKnxNetIpCemiServer::Error::None)
-        frame.setError(error);
+    m_builder.setObjectType(type);
+    return *this;
+}
+
+FPCB &FPCB::setObjectInstance(quint8 instance)
+{
+    m_builder.setObjectInstance(instance);
+    return *this;
+}
+
+FPCB &FPCB::setProperty(QKnxInterfaceObjectProperty pid)
+{
+    m_builder.setProperty(pid);
+    return *this;
+}
+
+QKnxDeviceManagementFrame FPCB::createRequest(const QKnxByteArray &data) const
+{
+    m_builder.setMessageCode(MessageCode::FunctionPropertyCommandRequest);
+    m_builder.setData(data);
+    return m_builder.createFrame();
+}
+
+QKnxDeviceManagementFrame FPCB::createConfirmation(QKnxNetIpCemiServer::ReturnCode code,
+        const QKnxByteArray &data, const QKnxDeviceManagementFrame &request) const
+{
+    m_builder.setMessageCode(MessageCode::FunctionPropertyCommandConfirmation);
+    if (!request.isNull()) {
+        m_builder.setObjectType(request.objectType());
+        m_builder.setObjectInstance(request.objectInstance());
+        m_builder.setProperty(request.property());
+    }
+
+    auto frame = m_builder.createFrame();
+    frame.setReturnCode(code);
+    frame.setData(data);
     return frame;
 }
 
-
-// -- PropertyInfo
-
-QKnxDeviceManagementFrame QKnxDeviceManagementFrameFactory::PropertyInfo::createIndication(
-    QKnxInterfaceObjectType type, quint8 instance, QKnxInterfaceObjectProperty pid,
-    quint8 numberOfElements, quint16 startIndex, const QKnxByteArray &data)
+QKnxDeviceManagementFrame
+    FPCB::createNegativeConfirmation(const QKnxDeviceManagementFrame &request) const
 {
-    return { QKnxDeviceManagementFrame::MessageCode::PropertyInfoIndication, type, instance, pid,
-        numberOfElements, startIndex, data };
+    m_builder.setMessageCode(MessageCode::FunctionPropertyCommandConfirmation);
+    if (!request.isNull()) {
+        m_builder.setObjectType(request.objectType());
+        m_builder.setObjectInstance(request.objectInstance());
+        m_builder.setProperty(request.property());
+    }
+    return m_builder.createFrame();
 }
 
 
-// -- FunctionPropertyCommand
+// -- QKnxDeviceManagementFrame::FunctionPropertyStateReadBuilder
 
-QKnxDeviceManagementFrame QKnxDeviceManagementFrameFactory::FunctionPropertyCommand::createRequest(
-    QKnxInterfaceObjectType type, quint8 instance, QKnxInterfaceObjectProperty pid,
-    const QKnxByteArray &data)
+using FPSRB = QKnxDeviceManagementFrame::FunctionPropertyStateReadBuilder;
+FPSRB &FPSRB::setObjectType(QKnxInterfaceObjectType type)
 {
-    return { QKnxDeviceManagementFrame::MessageCode::FunctionPropertyCommandRequest, type,
-        instance, pid, data };
+    m_builder.setObjectType(type);
+    return *this;
 }
 
-QKnxDeviceManagementFrame QKnxDeviceManagementFrameFactory::FunctionPropertyCommand::createConfirmation(
-    QKnxInterfaceObjectType type, quint8 instance, QKnxInterfaceObjectProperty pid)
+FPSRB &FPSRB::setObjectInstance(quint8 instance)
 {
-    return { QKnxDeviceManagementFrame::MessageCode::FunctionPropertyCommandConfirmation,
-        type, instance, pid };
+    m_builder.setObjectInstance(instance);
+    return *this;
 }
 
-QKnxDeviceManagementFrame QKnxDeviceManagementFrameFactory::FunctionPropertyCommand::createConfirmation(
-    QKnxInterfaceObjectType type, quint8 instance, QKnxInterfaceObjectProperty pid,
-    QKnxNetIpCemiServer::ReturnCode code, const QKnxByteArray &data)
+FPSRB &FPSRB::setProperty(QKnxInterfaceObjectProperty pid)
 {
-    return { QKnxDeviceManagementFrame::MessageCode::FunctionPropertyCommandConfirmation,
-        type, instance, pid, QKnxByteArray { quint8(code) } +data };
+    m_builder.setProperty(pid);
+    return *this;
 }
 
-QKnxDeviceManagementFrame QKnxDeviceManagementFrameFactory::FunctionPropertyCommand::createConfirmation(
-    const QKnxDeviceManagementFrame &request)
+QKnxDeviceManagementFrame FPSRB::createRequest(const QKnxByteArray &data) const
 {
-    return { QKnxDeviceManagementFrame::MessageCode::FunctionPropertyCommandConfirmation, request.objectType(),
-        request.objectInstance(), request.property() };
+    m_builder.setMessageCode(MessageCode::FunctionPropertyStateReadRequest);
+    m_builder.setData(data);
+    return m_builder.createFrame();
 }
 
-QKnxDeviceManagementFrame QKnxDeviceManagementFrameFactory::FunctionPropertyCommand::createConfirmation(
-    const QKnxDeviceManagementFrame &request, QKnxNetIpCemiServer::ReturnCode code,
-    const QKnxByteArray &data)
+QKnxDeviceManagementFrame FPSRB::createConfirmation(QKnxNetIpCemiServer::ReturnCode code,
+        const QKnxByteArray &data, const QKnxDeviceManagementFrame &request) const
 {
-    return { QKnxDeviceManagementFrame::MessageCode::FunctionPropertyCommandConfirmation, request.objectType(),
-        request.objectInstance(), request.property(), QKnxByteArray { quint8(code) } + data };
+    m_builder.setMessageCode(MessageCode::FunctionPropertyStateReadConfirmation);
+    if (!request.isNull()) {
+        m_builder.setObjectType(request.objectType());
+        m_builder.setObjectInstance(request.objectInstance());
+        m_builder.setProperty(request.property());
+    }
+
+    auto frame = m_builder.createFrame();
+    frame.setReturnCode(code);
+    frame.setData(data);
+    return frame;
 }
 
-
-// -- FunctionPropertyStateRead
-
-QKnxDeviceManagementFrame QKnxDeviceManagementFrameFactory::FunctionPropertyStateRead
-    ::createRequest(QKnxInterfaceObjectType type, quint8 instance, QKnxInterfaceObjectProperty pid,
-        const QKnxByteArray &data)
+QKnxDeviceManagementFrame
+    FPSRB::createNegativeConfirmation(const QKnxDeviceManagementFrame &request) const
 {
-    return { QKnxDeviceManagementFrame::MessageCode::FunctionPropertyStateReadRequest, type,
-        instance, pid, data };
-}
-
-
-// -- FunctionPropertyStateResponse
-
-QKnxDeviceManagementFrame QKnxDeviceManagementFrameFactory::FunctionPropertyStateResponse
-    ::createConfirmation(QKnxInterfaceObjectType type, quint8 instance,
-        QKnxInterfaceObjectProperty pid)
-{
-    return { QKnxDeviceManagementFrame::MessageCode::FunctionPropertyStateReadConfirmation,
-        type, instance, pid };
-}
-
-QKnxDeviceManagementFrame QKnxDeviceManagementFrameFactory::FunctionPropertyStateResponse
-    ::createConfirmation(QKnxInterfaceObjectType type, quint8 instance,
-        QKnxInterfaceObjectProperty pid, QKnxNetIpCemiServer::ReturnCode code,
-        const QKnxByteArray &data)
-{
-    return { QKnxDeviceManagementFrame::MessageCode::FunctionPropertyStateReadConfirmation,
-        type, instance, pid, QKnxByteArray { quint8(code) } + data };
-}
-
-QKnxDeviceManagementFrame QKnxDeviceManagementFrameFactory::FunctionPropertyStateResponse
-    ::createConfirmation(const QKnxDeviceManagementFrame &request)
-{
-    return { QKnxDeviceManagementFrame::MessageCode::FunctionPropertyStateReadConfirmation,
-        request.objectType(), request.objectInstance(), request.property() };
-}
-
-QKnxDeviceManagementFrame QKnxDeviceManagementFrameFactory::FunctionPropertyStateResponse
-    ::createConfirmation(const QKnxDeviceManagementFrame &request,
-        QKnxNetIpCemiServer::ReturnCode code, const QKnxByteArray &data)
-{
-    return { QKnxDeviceManagementFrame::MessageCode::FunctionPropertyStateReadConfirmation,
-        request.objectType(), request.objectInstance(), request.property(),
-        QKnxByteArray { quint8(code) } + data };
+    m_builder.setMessageCode(MessageCode::FunctionPropertyStateReadConfirmation);
+    if (!request.isNull()) {
+        m_builder.setObjectType(request.objectType());
+        m_builder.setObjectInstance(request.objectInstance());
+        m_builder.setProperty(request.property());
+    }
+    return m_builder.createFrame();
 }
 
 
-// -- Reset
+// -- QKnxDeviceManagementFrame::ResetBuilder
 
-QKnxDeviceManagementFrame QKnxDeviceManagementFrameFactory::Reset::createRequest()
+QKnxDeviceManagementFrame QKnxDeviceManagementFrame::ResetBuilder::createRequest()
 {
     return QKnxDeviceManagementFrame { QKnxDeviceManagementFrame::MessageCode::ResetRequest };
 }
 
-QKnxDeviceManagementFrame QKnxDeviceManagementFrameFactory::Reset::createIndication()
+QKnxDeviceManagementFrame QKnxDeviceManagementFrame::ResetBuilder::createIndication()
 {
     return QKnxDeviceManagementFrame { QKnxDeviceManagementFrame::MessageCode::ResetIndication };
 }

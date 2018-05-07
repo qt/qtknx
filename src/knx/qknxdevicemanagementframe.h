@@ -44,7 +44,6 @@ class QKnxDeviceManagementFramePrivate;
 class Q_KNX_EXPORT QKnxDeviceManagementFrame final
 {
     Q_GADGET
-    friend class QKnxDeviceManagementFrameFactory;
 
 public:
     enum class MessageCode : quint8
@@ -76,9 +75,10 @@ public:
     QKnxDeviceManagementFrame(QKnxDeviceManagementFrame::MessageCode messageCode,
         const QKnxByteArray &serviceInfo);
 
-    quint16 size() const;
-
+    bool isNull() const;
     bool isValid() const;
+
+    quint16 size() const;
     bool isNegativeConfirmation() const;
 
     MessageCode messageCode() const;
@@ -126,11 +126,28 @@ public:
     bool operator==(const QKnxDeviceManagementFrame &other) const;
     bool operator!=(const QKnxDeviceManagementFrame &other) const;
 
-private:
-    QKnxDeviceManagementFrame(MessageCode code, QKnxInterfaceObjectType type,
-        quint8 instance, QKnxInterfaceObjectProperty pid, quint8 noe, quint16 index,
-        const QKnxByteArray &payload = {});
+    class Q_KNX_EXPORT Builder;
+    static QKnxDeviceManagementFrame::Builder builder();
 
+    class Q_KNX_EXPORT PropertyReadBuilder;
+    static PropertyReadBuilder propertyReadBuilder();
+
+    class Q_KNX_EXPORT PropertyWriteBuilder;
+    static PropertyWriteBuilder propertyWriteBuilder();
+
+    class Q_KNX_EXPORT PropertyInfoBuilder;
+    static PropertyInfoBuilder propertyInfoBuilder();
+
+    class Q_KNX_EXPORT FunctionPropertyCommandBuilder;
+    static FunctionPropertyCommandBuilder functionPropertyCommandBuilder();
+
+    class Q_KNX_EXPORT FunctionPropertyStateReadBuilder;
+    static FunctionPropertyStateReadBuilder functionPropertyStateReadBuilder();
+
+    class Q_KNX_EXPORT ResetBuilder;
+    static ResetBuilder resetBuilder();
+
+private:
     QKnxDeviceManagementFrame(MessageCode code, QKnxInterfaceObjectType type,
         quint8 instance, QKnxInterfaceObjectProperty pid, const QKnxByteArray &payload = {});
 

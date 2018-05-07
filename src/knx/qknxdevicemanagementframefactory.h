@@ -1,6 +1,6 @@
 /******************************************************************************
 **
-** Copyright (C) 2017 The Qt Company Ltd.
+** Copyright (C) 2018 The Qt Company Ltd.
 ** Contact: https://www.qt.io/licensing/
 **
 ** This file is part of the QtKnx module.
@@ -30,153 +30,136 @@
 #ifndef QKNXDEVICEMANAGEMENTFRAMEFACTORY_H
 #define QKNXDEVICEMANAGEMENTFRAMEFACTORY_H
 
+#include <QtKnx/qknxbytearray.h>
+#include <QtKnx/qknxinterfaceobjecttype.h>
 #include <QtKnx/qknxdevicemanagementframe.h>
 #include <QtKnx/qknxglobal.h>
 #include <QtKnx/qknxnetip.h>
 
 QT_BEGIN_NAMESPACE
 
-class Q_KNX_EXPORT QKnxDeviceManagementFrameFactory final
+class Q_KNX_EXPORT QKnxDeviceManagementFrame::Builder final
 {
 public:
-    QKnxDeviceManagementFrameFactory() = delete;
+    Builder() = default;
+    ~Builder() = default;
 
-    struct Q_KNX_EXPORT PropertyRead final
-    {
-        PropertyRead() = delete;
+    Builder &setMessageCode(QKnxDeviceManagementFrame::MessageCode code);
+    Builder &setObjectType(QKnxInterfaceObjectType type);
+    Builder &setObjectInstance(quint8 instance);
+    Builder &setProperty(QKnxInterfaceObjectProperty pid);
+    Builder &setData(const QKnxByteArray &data);
 
-        static QKnxDeviceManagementFrame createRequest(QKnxInterfaceObjectType type,
-            quint8 instance,
-            QKnxInterfaceObjectProperty pid,
-            quint8 numberOfElements,
-            quint16 startIndex);
+    QKnxDeviceManagementFrame createFrame() const;
 
-        static QKnxDeviceManagementFrame createConfirmation(QKnxInterfaceObjectType type,
-            quint8 instance,
-            QKnxInterfaceObjectProperty pid,
-            quint8 numberOfElements,
-            quint16 startIndex,
-            const QKnxByteArray &data);
+private:
+    QKnxDeviceManagementFrame::MessageCode m_code;
+    QKnxInterfaceObjectType m_type { QKnxInterfaceObjectType::Invalid };
+    quint8 m_instance;
+    QKnxInterfaceObjectProperty m_pid { QKnxInterfaceObjectProperty::Invalid };
+    QKnxByteArray m_data;
+};
 
-        static QKnxDeviceManagementFrame createConfirmation(QKnxInterfaceObjectType type,
-            quint8 instance,
-            QKnxInterfaceObjectProperty pid,
-            quint8 numberOfElements,
-            quint16 startIndex,
-            QKnxNetIpCemiServer::Error error = QKnxNetIpCemiServer::Error::None);
+class Q_KNX_EXPORT QKnxDeviceManagementFrame::PropertyReadBuilder final
+{
+public:
+    PropertyReadBuilder &setObjectType(QKnxInterfaceObjectType type);
+    PropertyReadBuilder &setObjectInstance(quint8 instance);
+    PropertyReadBuilder &setProperty(QKnxInterfaceObjectProperty pid);
+    PropertyReadBuilder &setNumberOfElements(quint8 noe);
+    PropertyReadBuilder &setStartIndex(quint16 startIndex);
 
-        static QKnxDeviceManagementFrame createConfirmation(
-            const QKnxDeviceManagementFrame &request,
-            const QKnxByteArray &data);
+    QKnxDeviceManagementFrame createRequest() const;
+    QKnxDeviceManagementFrame createConfirmation(const QKnxByteArray &data,
+        const QKnxDeviceManagementFrame &request = {}) const;
+    QKnxDeviceManagementFrame createNegativeConfirmation(QKnxNetIpCemiServer::Error error,
+        const QKnxDeviceManagementFrame &request = {}) const;
 
-        static QKnxDeviceManagementFrame createConfirmation(
-            const QKnxDeviceManagementFrame &request,
-            QKnxNetIpCemiServer::Error error);
-    };
+private:
+    int m_numberOfElements;
+    int m_startIndex;
+    mutable QKnxDeviceManagementFrame::Builder m_builder;
+};
 
-    struct Q_KNX_EXPORT PropertyWrite final
-    {
-        PropertyWrite() = delete;
+class Q_KNX_EXPORT QKnxDeviceManagementFrame::PropertyWriteBuilder final
+{
+public:
+    PropertyWriteBuilder &setObjectType(QKnxInterfaceObjectType type);
+    PropertyWriteBuilder &setObjectInstance(quint8 instance);
+    PropertyWriteBuilder &setProperty(QKnxInterfaceObjectProperty pid);
+    PropertyWriteBuilder &setNumberOfElements(quint8 noe);
+    PropertyWriteBuilder &setStartIndex(quint16 startIndex);
 
-        static QKnxDeviceManagementFrame createRequest(QKnxInterfaceObjectType type,
-            quint8 instance,
-            QKnxInterfaceObjectProperty pid,
-            quint8 numberOfElements,
-            quint16 startIndex,
-            const QKnxByteArray &data);
+    QKnxDeviceManagementFrame createRequest(const QKnxByteArray &data) const;
+    QKnxDeviceManagementFrame createConfirmation(
+        const QKnxDeviceManagementFrame &request = {}) const;
+    QKnxDeviceManagementFrame createNegativeConfirmation(QKnxNetIpCemiServer::Error error,
+        const QKnxDeviceManagementFrame &request = {}) const;
 
-        static QKnxDeviceManagementFrame createConfirmation(QKnxInterfaceObjectType type,
-            quint8 instance,
-            QKnxInterfaceObjectProperty pid,
-            quint8 numberOfElements,
-            quint16 startIndex,
-            QKnxNetIpCemiServer::Error error = QKnxNetIpCemiServer::Error::None);
+private:
+    int m_numberOfElements;
+    int m_startIndex;
+    mutable QKnxDeviceManagementFrame::Builder m_builder;
+};
 
-        static QKnxDeviceManagementFrame createConfirmation(
-            const QKnxDeviceManagementFrame &request,
-            QKnxNetIpCemiServer::Error error = QKnxNetIpCemiServer::Error::None);
-    };
+class Q_KNX_EXPORT QKnxDeviceManagementFrame::PropertyInfoBuilder final
+{
+public:
+    PropertyInfoBuilder();
 
-    struct Q_KNX_EXPORT PropertyInfo final
-    {
-        PropertyInfo() = delete;
+    PropertyInfoBuilder &setObjectType(QKnxInterfaceObjectType type);
+    PropertyInfoBuilder &setObjectInstance(quint8 instance);
+    PropertyInfoBuilder &setProperty(QKnxInterfaceObjectProperty pid);
+    PropertyInfoBuilder &setNumberOfElements(quint8 noe);
+    PropertyInfoBuilder &setStartIndex(quint16 startIndex);
 
-        static QKnxDeviceManagementFrame createIndication(QKnxInterfaceObjectType type,
-            quint8 instance,
-            QKnxInterfaceObjectProperty pid,
-            quint8 numberOfElements,
-            quint16 startIndex,
-            const QKnxByteArray &data);
-    };
+    QKnxDeviceManagementFrame createIndication(const QKnxByteArray &data) const;
 
-    struct Q_KNX_EXPORT FunctionPropertyCommand final
-    {
-        FunctionPropertyCommand() = delete;
+private:
+    int m_numberOfElements;
+    int m_startIndex;
+    mutable QKnxDeviceManagementFrame::Builder m_builder;
+};
 
-        static QKnxDeviceManagementFrame createRequest(QKnxInterfaceObjectType type,
-            quint8 instance,
-            QKnxInterfaceObjectProperty pid,
-            const QKnxByteArray &data);
+class Q_KNX_EXPORT QKnxDeviceManagementFrame::FunctionPropertyCommandBuilder final
+{
+public:
+    FunctionPropertyCommandBuilder &setObjectType(QKnxInterfaceObjectType type);
+    FunctionPropertyCommandBuilder &setObjectInstance(quint8 instance);
+    FunctionPropertyCommandBuilder &setProperty(QKnxInterfaceObjectProperty pid);
 
-        static QKnxDeviceManagementFrame createConfirmation(QKnxInterfaceObjectType type,
-            quint8 instance,
-            QKnxInterfaceObjectProperty pid);
+    QKnxDeviceManagementFrame createRequest(const QKnxByteArray &data) const;
+    QKnxDeviceManagementFrame createConfirmation(QKnxNetIpCemiServer::ReturnCode code,
+        const QKnxByteArray &data, const QKnxDeviceManagementFrame &request = {}) const;
+    QKnxDeviceManagementFrame createNegativeConfirmation(
+        const QKnxDeviceManagementFrame &request = {}) const;
 
-        static QKnxDeviceManagementFrame createConfirmation(QKnxInterfaceObjectType type,
-            quint8 instance,
-            QKnxInterfaceObjectProperty pid,
-            QKnxNetIpCemiServer::ReturnCode code,
-            const QKnxByteArray &data);
+private:
+    mutable QKnxDeviceManagementFrame::Builder m_builder;
+};
 
-        static QKnxDeviceManagementFrame createConfirmation(
-            const QKnxDeviceManagementFrame &request);
+class Q_KNX_EXPORT QKnxDeviceManagementFrame::FunctionPropertyStateReadBuilder final
+{
+public:
+    FunctionPropertyStateReadBuilder &setObjectType(QKnxInterfaceObjectType type);
+    FunctionPropertyStateReadBuilder &setObjectInstance(quint8 instance);
+    FunctionPropertyStateReadBuilder &setProperty(QKnxInterfaceObjectProperty pid);
 
-        static QKnxDeviceManagementFrame createConfirmation(
-            const QKnxDeviceManagementFrame &request,
-            QKnxNetIpCemiServer::ReturnCode code,
-            const QKnxByteArray &data);
-    };
+    QKnxDeviceManagementFrame createRequest(const QKnxByteArray &data) const;
+    QKnxDeviceManagementFrame createConfirmation(QKnxNetIpCemiServer::ReturnCode code,
+        const QKnxByteArray &data, const QKnxDeviceManagementFrame &request = {}) const;
+    QKnxDeviceManagementFrame createNegativeConfirmation(
+        const QKnxDeviceManagementFrame &request = {}) const;
 
-    struct Q_KNX_EXPORT FunctionPropertyStateRead final
-    {
-        FunctionPropertyStateRead() = delete;
+private:
+    mutable QKnxDeviceManagementFrame::Builder m_builder;
+};
 
-        static QKnxDeviceManagementFrame createRequest(QKnxInterfaceObjectType type,
-            quint8 instance,
-            QKnxInterfaceObjectProperty pid,
-            const QKnxByteArray &data);
-    };
-
-    struct Q_KNX_EXPORT FunctionPropertyStateResponse final
-    {
-        FunctionPropertyStateResponse() = delete;
-
-        static QKnxDeviceManagementFrame createConfirmation(QKnxInterfaceObjectType type,
-            quint8 instance,
-            QKnxInterfaceObjectProperty pid);
-
-        static QKnxDeviceManagementFrame createConfirmation(QKnxInterfaceObjectType type,
-            quint8 instance,
-            QKnxInterfaceObjectProperty pid,
-            QKnxNetIpCemiServer::ReturnCode code,
-            const QKnxByteArray &data);
-
-        static QKnxDeviceManagementFrame createConfirmation(
-            const QKnxDeviceManagementFrame &request);
-
-        static QKnxDeviceManagementFrame createConfirmation(
-            const QKnxDeviceManagementFrame &request,
-            QKnxNetIpCemiServer::ReturnCode code,
-            const QKnxByteArray &data);
-    };
-
-    struct Q_KNX_EXPORT Reset
-    {
-        Reset() = delete;
-
-        static QKnxDeviceManagementFrame createRequest();
-        static QKnxDeviceManagementFrame createIndication();
-    };
+class Q_KNX_EXPORT QKnxDeviceManagementFrame::ResetBuilder final
+{
+public:
+    QKnxDeviceManagementFrame createRequest();
+    QKnxDeviceManagementFrame createIndication();
 };
 
 QT_END_NAMESPACE
