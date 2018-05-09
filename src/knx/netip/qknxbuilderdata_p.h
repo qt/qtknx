@@ -40,9 +40,11 @@
 //
 // We mean it.
 //
+#include "qknxnetipsrp.h"
 
 #include <QtCore/qshareddata.h>
 #include <QtKnx/qknxnamespace.h>
+#include <QtKnx/qknxnetipservicefamiliesdib.h>
 
 QT_BEGIN_NAMESPACE
 
@@ -57,6 +59,33 @@ public:
     QKnx::InterfaceFeature m_if { QKnx::InterfaceFeature::Unknown };
     QKnx::ReturnCode m_result { QKnx::ReturnCode::Success };
     QKnxByteArray m_featureValue;
+};
+
+class SrpBuilders::ProgrammingMode::ProgrammingModePrivate : public QSharedData
+{
+public:
+    bool m_mandatory { false };
+};
+
+class SrpBuilders::MacAddress::MacAddressPrivate : public QSharedData
+{
+public:
+    QKnxByteArray m_macAddress;
+    bool m_mandatory { false };
+};
+
+class SrpBuilders::SupportedFamily::SupportedFamilyPrivate : public QSharedData
+{
+public:
+    QKnxServiceInfo m_info;
+    bool m_mandatory { false };
+};
+
+class SrpBuilders::RequestDibs::RequestDibsPrivate : public QSharedData
+{
+public:
+    QVector<QKnxServiceInfo> m_infos;
+    bool m_mandatory { false };
 };
 
 QT_END_NAMESPACE
