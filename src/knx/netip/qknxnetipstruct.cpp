@@ -303,4 +303,16 @@ QDebug operator<<(QDebug debug, const QKnxNetIpStruct<QKnxNetIp::DescriptionType
     return debug.nospace().noquote() << "0x" << dib.bytes().toHex();
 }
 
+/*!
+    \relates QKnxNetIpStruct
+
+    Writes the KNXnet/IP extended search parameter request \a srp to the
+    \a debug stream.
+*/
+QDebug operator<<(QDebug debug, const QKnxNetIpStruct<QKnxNetIp::SearchParameterType> &srp)
+{
+    QDebugStateSaver _(debug);
+    return debug.nospace().noquote() << "0x" << srp.bytes().toHex();
+}
+
 QT_END_NAMESPACE
