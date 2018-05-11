@@ -37,6 +37,7 @@ QT_BEGIN_NAMESPACE
     \class QKnx1BitControlled
     \inherits QKnxFixedSizeDatapointType
     \inmodule QtKnx
+    \ingroup qtknx-datapoint-types
 
     \brief The QKnx1BitControlled class is a boolean datapoint type with a
     control part.
@@ -65,7 +66,7 @@ QT_BEGIN_NAMESPACE
         \li \c QKnxSwitchControl
     \endlist
 
-    \sa QKnxDatapointType, QKnx1Bit
+    \sa QKnxDatapointType, QKnx1Bit, {Qt KNX Datapoint Type Classes}
 */
 
 // -- QKnx1BitControlled

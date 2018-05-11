@@ -1,6 +1,6 @@
 /******************************************************************************
 **
-** Copyright (C) 2017 The Qt Company Ltd.
+** Copyright (C) 2018 The Qt Company Ltd.
 ** Contact: https://www.qt.io/licensing/
 **
 ** This file is part of the QtKnx module.
@@ -36,6 +36,8 @@ QT_BEGIN_NAMESPACE
     \class QKnx8BitSignedValue
 
     \inmodule QtKnx
+    \ingroup qtknx-datapoint-types
+
     \brief The QKnx8BitSignedValue class is a datapoint type with an 8-bit
     signed value.
 
@@ -50,7 +52,7 @@ QT_BEGIN_NAMESPACE
         \li \c QKnxValue1Count - Counter pulses.
     \endlist
 
-    \sa QKnxDatapointType
+    \sa QKnxDatapointType, {Qt KNX Datapoint Type Classes}
 */
 
 // -- QKnx8BitSignedValue

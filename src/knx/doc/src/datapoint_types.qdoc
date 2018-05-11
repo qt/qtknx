@@ -1,0 +1,78 @@
+/****************************************************************************
+**
+** Copyright (C) 2018 The Qt Company Ltd.
+** Contact: https://www.qt.io/licensing/
+**
+** This file is part of the documentation of the Qt Toolkit.
+**
+** $QT_BEGIN_LICENSE:FDL$
+** Commercial License Usage
+** Licensees holding valid commercial Qt licenses may use this file in
+** accordance with the commercial license agreement provided with the
+** Software or, alternatively, in accordance with the terms contained in
+** a written agreement between you and The Qt Company. For licensing terms
+** and conditions see https://www.qt.io/terms-conditions. For further
+** information use the contact form at https://www.qt.io/contact-us.
+**
+** GNU Free Documentation License Usage
+** Alternatively, this file may be used under the terms of the GNU Free
+** Documentation License version 1.3 as published by the Free Software
+** Foundation and appearing in the file included in the packaging of
+** this file. Please review the following information to ensure
+** the GNU Free Documentation License version 1.3 requirements
+** will be met: https://www.gnu.org/licenses/fdl-1.3.html.
+** $QT_END_LICENSE$
+**
+****************************************************************************/
+
+/*!
+    \page qtknx-datapoint-types.html
+    \title Qt KNX Datapoint Type Classes
+    \brief C++ classes for datapoint types.
+
+    A datapoint type represents the data corresponding to a KNX device
+    functionality. It describes the data, setting the rules about the format
+    and values to be allowed, and it holds the bytes containing the data.
+
+    A datapoint type is identified by its main number and a sub number. Each
+    main number corresponds to a datapoint type with a particular structure.
+    The sub numbers correspond to different interpretations or naming of this
+    structure.
+
+    The Qt KNX module provides a class for each datapoint type with the main
+    number less than 30 and sub number less than 100. All datapoint types with
+    the same main number inherit from a datapoint type class representing the
+    main number datapoint type characteristics.
+
+    Datapoint types are used in the \e data part of the \l QKnxTpdu class, which
+    is a part of a link layer frame (\l QKnxLinkLayerFrame) that is transmitted
+    over a tunneling connection (\l QKnxNetIpTunnel).
+
+    \section1 Creating Datapoint Types
+
+    \l QKnxDatapointType is the base class for all datapoint types. It is
+    inherited by two main datapoint type classes: \l QKnxFixedSizeDatapointType
+    for fixed length datapoint types and \l QKnxVariableSizeDatapointType for
+    variable length datapoint types.
+
+    \l QKnxDatapointType::Type lists the datapoint types that have been
+    implemented in the Qt KNX module with short descriptions and their main and
+    sub numbers. Datapoint types described in the KNX documentation can be added
+    by creating a class that inherits from \l QKnxFixedSizeDatapointType or
+    \l QKnxVariableSizeDatapointType and registering this new class using an
+    instance of \l QKnxDatapointTypeFactory.
+
+    The \l QKnxDatapointTypeFactory class is used to create datapoint types
+    based on their main number and sub number. One or more datapoints can be
+    registered with the factory and then queried based on the main number and
+    sub number.
+
+    The following diagram shows the base Qt KNX module datapoint type classes
+    and the classes derived from them for the main datapoint types:
+
+    \image qtknx-datapoint-type-classes.png
+
+    \section1 List of Datapoint Type Classes
+
+    \annotatedlist qtknx-datapoint-types
+*/

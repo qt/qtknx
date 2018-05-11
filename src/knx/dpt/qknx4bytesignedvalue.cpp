@@ -62,7 +62,7 @@ QT_BEGIN_NAMESPACE
         \li \c QKnxValue4Count - Counter pulses (signed).
     \endlist
 
-    \sa QKnxDatapointType
+    \sa QKnxDatapointType, {Qt KNX Datapoint Type Classes}
 */
 
 /*!

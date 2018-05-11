@@ -1,6 +1,6 @@
 /******************************************************************************
 **
-** Copyright (C) 2017 The Qt Company Ltd.
+** Copyright (C) 2018 The Qt Company Ltd.
 ** Contact: https://www.qt.io/licensing/
 **
 ** This file is part of the QtKnx module.
@@ -37,12 +37,15 @@ QT_BEGIN_NAMESPACE
     \class QKnx2BitSet
     \inherits QKnxFixedSizeDatapointType
     \inmodule QtKnx
+    \ingroup qtknx-datapoint-types
+
     \brief The QKnx2BitSet class is a fixed size datapoint type with the length
     of 2 bits.
 
     The range for the value is from \c 0x00 to \c 0x03.
 
-    \sa QKnxDatapointType, QKnxAlarmReaction, QKnxOnOffAction, QKnxUpDownAction
+    \sa QKnxDatapointType, QKnxAlarmReaction, QKnxOnOffAction, QKnxUpDownAction,
+        {Qt KNX Datapoint Type Classes}
 */
 
 // -- QKnx2BitSet
@@ -109,6 +112,8 @@ bool QKnx2BitSet::isValid() const
     \class QKnxOnOffAction
     \inherits QKnx2BitSet
     \inmodule QtKnx
+    \ingroup qtknx-datapoint-types
+
     \brief The QKnxOnOffAction class is a fixed size datapoint type for storing
     the on/off action.
 
@@ -117,7 +122,8 @@ bool QKnx2BitSet::isValid() const
 
     This is a fixed size datapoint type with the length of 2 bits.
 
-    \sa QKnxDatapointType, QKnxAlarmReaction, QKnxUpDownAction
+    \sa QKnxDatapointType, QKnxAlarmReaction, QKnxUpDownAction,
+        {Qt KNX Datapoint Type Classes}
 */
 
 /*!
@@ -173,6 +179,8 @@ QKnxOnOffAction::Action QKnxOnOffAction::action() const
     \class QKnxAlarmReaction
     \inherits QKnx2BitSet
     \inmodule QtKnx
+    \ingroup qtknx-datapoint-types
+
     \brief The QKnxAlarmReaction class is a fixed size datapoint type for
     storing the alarm reaction.
 
@@ -181,7 +189,8 @@ QKnxOnOffAction::Action QKnxOnOffAction::action() const
 
     This is a fixed size datapoint type with the length of 2 bits.
 
-    \sa QKnxDatapointType, QKnxOnOffAction, QKnxUpDownAction
+    \sa QKnxDatapointType, QKnxOnOffAction, QKnxUpDownAction,
+        {Qt KNX Datapoint Type Classes}
 */
 
 /*!
@@ -244,6 +253,8 @@ QKnxAlarmReaction::Alarm QKnxAlarmReaction::alarm() const
     \class QKnxUpDownAction
     \inherits QKnx2BitSet
     \inmodule QtKnx
+    \ingroup qtknx-datapoint-types
+
     \brief The QKnxOnOffAction class is a fixed size datapoint type for storing
     the up/down action.
 
@@ -252,7 +263,8 @@ QKnxAlarmReaction::Alarm QKnxAlarmReaction::alarm() const
 
     This is a fixed size datapoint type with the length of 2 bits.
 
-    \sa QKnxDatapointType, QKnxAlarmReaction, QKnxOnOffAction
+    \sa QKnxDatapointType, QKnxAlarmReaction, QKnxOnOffAction,
+        {Qt KNX Datapoint Type Classes}
 */
 
 /*!

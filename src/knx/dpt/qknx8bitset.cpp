@@ -36,6 +36,8 @@ QT_BEGIN_NAMESPACE
     \class QKnx8BitSet
 
     \inmodule QtKnx
+    \ingroup qtknx-datapoint-types
+
     \brief The QKnx8BitSet class is a datapoint type with binary-coded values in
     all fields.
 
@@ -45,7 +47,7 @@ QT_BEGIN_NAMESPACE
     The possible values are: \c{No bits set} (\c 0x00) and \c{All bits set}
     (\c 0xff).
 
-    \sa QKnxDatapointType
+    \sa QKnxDatapointType, {Qt KNX Datapoint Type Classes}
 */
 
 // -- QKnx8BitSet
@@ -129,6 +131,8 @@ bool QKnx8BitSet::isValid() const
     \class QKnxGeneralStatus
     \inherits QKnx8BitSet
     \inmodule QtKnx
+    \ingroup qtknx-datapoint-types
+
     \brief The QKnxGeneralStatus class is a datapoint type for general status.
 
     This is a fixed size datapoint type with the length of 1 byte.
@@ -136,7 +140,7 @@ bool QKnx8BitSet::isValid() const
     The possible values are combinations of the attributes specified by
     QKnxGeneralStatus::Attribute.
 
-    \sa QKnx8BitSet, QKnxDatapointType
+    \sa QKnx8BitSet, QKnxDatapointType, {Qt KNX Datapoint Type Classes}
 */
 
 /*!
@@ -235,6 +239,8 @@ bool QKnxGeneralStatus::removeAttribute(Attribute attribute)
     \class QKnxDeviceControl
     \inherits QKnx8BitSet
     \inmodule QtKnx
+    \ingroup qtknx-datapoint-types
+
     \brief The QKnxDeviceControl class is a datapoint type for device control.
 
     This is a fixed size datapoint type with the length of 1 byte.
@@ -242,7 +248,7 @@ bool QKnxGeneralStatus::removeAttribute(Attribute attribute)
     The possible values are combinations of the attributes specified by
     QKnxGeneralStatus::Attribute.
 
-    \sa QKnx8BitSet, QKnxDatapointType
+    \sa QKnx8BitSet, QKnxDatapointType, {Qt KNX Datapoint Type Classes}
 */
 
 /*!

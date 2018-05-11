@@ -37,6 +37,7 @@ QT_BEGIN_NAMESPACE
     \class QKnxUtf8String
     \inherits QKnxVariableSizeDatapointType
     \inmodule QtKnx
+    \ingroup qtknx-datapoint-types
     \since 5.11
 
     \brief The QKnxUtf8String class is a datapoint type for a UTF-8 string.
@@ -47,7 +48,7 @@ QT_BEGIN_NAMESPACE
 
     This is a variable sized datapoint type.
 
-    \sa QKnxDatapointType, QKnxUtf8
+    \sa QKnxDatapointType, QKnxUtf8, {Qt KNX Datapoint Type Classes}
 */
 
 // -- QKnxUtf8String
@@ -159,6 +160,7 @@ bool QKnxUtf8String::isValid() const
     \class QKnxUtf8
     \inherits QKnxUtf8String
     \inmodule QtKnx
+    \ingroup qtknx-datapoint-types
     \since 5.11
 
     \brief The QKnxUtf8 class is a datapoint type for a UTF-8 string.
@@ -169,7 +171,7 @@ bool QKnxUtf8String::isValid() const
 
     This is a variable sized datapoint type.
 
-    \sa QKnxDatapointType, QKnxUtf8String
+    \sa QKnxDatapointType, QKnxUtf8String, {Qt KNX Datapoint Type Classes}
 */
 
 /*!

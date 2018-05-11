@@ -1,6 +1,6 @@
 /******************************************************************************
 **
-** Copyright (C) 2017 The Qt Company Ltd.
+** Copyright (C) 2018 The Qt Company Ltd.
 ** Contact: https://www.qt.io/licensing/
 **
 ** This file is part of the QtKnx module.
@@ -38,6 +38,7 @@ QT_BEGIN_NAMESPACE
     \class QKnxElectricalEnergy
     \inherits QKnxFixedSizeDatapointType
     \inmodule QtKnx
+    \ingroup qtknx-datapoint-types
 
     \brief The QKnxElectricalEnergy class is a datapoint type for electrical
     energy.
@@ -55,7 +56,7 @@ QT_BEGIN_NAMESPACE
     The range for the value is from \c {-9 223 372 036 854 775 808} to
     \c {9 223 372 036 854 775 807}.
 
-    \sa QKnxDatapointType
+    \sa QKnxDatapointType, {Qt KNX Datapoint Type Classes}
 */
 
 /*!

@@ -1,6 +1,6 @@
 /******************************************************************************
 **
-** Copyright (C) 2017 The Qt Company Ltd.
+** Copyright (C) 2018 The Qt Company Ltd.
 ** Contact: https://www.qt.io/licensing/
 **
 ** This file is part of the QtKnx module.
@@ -36,6 +36,8 @@ QT_BEGIN_NAMESPACE
     \class QKnxDatapointType
 
     \inmodule QtKnx
+    \ingroup qtknx-datapoint-types
+
     \brief The QKnxDatapointType class is a base class for datapoint types
     with specific properties.
 
@@ -80,6 +82,8 @@ QT_BEGIN_NAMESPACE
             factory.registerType<MyNewDataPointType>(mainType, subType, typeSize);
         }
     \endcode
+
+    \sa {Qt KNX Datapoint Type Classes}
 */
 
 /*!
@@ -638,6 +642,7 @@ QT_BEGIN_NAMESPACE
     \class QKnxFixedSizeDatapointType
     \inherits QKnxDatapointType
     \inmodule QtKnx
+    \ingroup qtknx-datapoint-types
 
     \brief The QKnxFixedSizeDatapointType class is a base class for datapoint
     types with a fixed size.
@@ -649,6 +654,7 @@ QT_BEGIN_NAMESPACE
     \class QKnxVariableSizeDatapointType
     \inherits QKnxDatapointType
     \inmodule QtKnx
+    \ingroup qtknx-datapoint-types
 
     \brief The QKnxVariableSizeDatapointType is a base class for datapoint
     types with a variable size.

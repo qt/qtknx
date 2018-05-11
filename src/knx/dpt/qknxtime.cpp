@@ -35,11 +35,13 @@ QT_BEGIN_NAMESPACE
     \class QKnxTimeBase
 
     \inmodule QtKnx
+    \ingroup qtknx-datapoint-types
+
     \inherits QAbstractKnxTime
     \brief The QKnxTimeBase class is a base class for datapoint types that
     contain time information.
 
-    \sa QKnxTime, QKnxTime24
+    \sa QKnxTime, QKnxTime24, {Qt KNX Datapoint Type Classes}
 */
 
 /*!
@@ -59,11 +61,12 @@ QT_BEGIN_NAMESPACE
     \class QAbstractKnxTime
 
     \inmodule QtKnx
+    \ingroup qtknx-datapoint-types
 
     \brief The QAbstractKnxTime class is an abstract base class for datapoint
     types that contain time information.
 
-    \sa QKnxTimeBase
+    \sa QKnxTimeBase, {Qt KNX Datapoint Type Classes}
 */
 
 /*!
@@ -214,23 +217,27 @@ QT_BEGIN_NAMESPACE
     \class QKnxTime
 
     \inmodule QtKnx
+    \ingroup qtknx-datapoint-types
+
     \brief The QKnxTime class holds time information.
 
     Hour values must be less than \c 24. Minute and second values must be less
     than \c 59.
 
-    \sa QKnxTimeBase, QKnxTime24
+    \sa QKnxTimeBase, QKnxTime24, {Qt KNX Datapoint Type Classes}
 */
 
 /*!
     \class QKnxTime24
 
     \inmodule QtKnx
+    \ingroup qtknx-datapoint-types
+
     \brief The QKnxTime24 class holds time information.
 
     Hour values can be up to \c 24. Minute and second values can be up to \c 59.
 
-    \sa QKnxTimeBase, QKnxTime
+    \sa QKnxTimeBase, QKnxTime, {Qt KNX Datapoint Type Classes}
 */
 
 QAbstractKnxTime::~QAbstractKnxTime()

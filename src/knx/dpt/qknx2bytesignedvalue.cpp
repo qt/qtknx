@@ -1,6 +1,6 @@
 /******************************************************************************
 **
-** Copyright (C) 2017 The Qt Company Ltd.
+** Copyright (C) 2018 The Qt Company Ltd.
 ** Contact: https://www.qt.io/licensing/
 **
 ** This file is part of the QtKnx module.
@@ -38,6 +38,7 @@ QT_BEGIN_NAMESPACE
     \class QKnx2ByteSignedValue
     \inherits QKnxFixedSizeDatapointType
     \inmodule QtKnx
+    \ingroup qtknx-datapoint-types
 
     \brief The QKnx2ByteSignedValue class is a datapoint type with a 2-byte
     signed value.
@@ -65,7 +66,7 @@ QT_BEGIN_NAMESPACE
 
     Integer values from -32 768 to 32 767 can be encoded in this datapoint type.
 
-    \sa QKnxDatapointType
+    \sa QKnxDatapointType, {Qt KNX Datapoint Type Classes}
 */
 
 /*!

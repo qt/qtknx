@@ -36,6 +36,7 @@ QT_BEGIN_NAMESPACE
     \class QKnxVarString
     \inherits QKnxVariableSizeDatapointType
     \inmodule QtKnx
+    \ingroup qtknx-datapoint-types
     \since 5.11
 
     \brief The QKnxVarString class is a datapoint type that encodes a variable
@@ -47,7 +48,8 @@ QT_BEGIN_NAMESPACE
     This is a variable sized datapoint type.
 
     \sa QKnxDatapointType, QKnxVarString88591, QKnxCharString,
-        QKnxCharStringASCII, QKnxCharString88591
+        QKnxCharStringASCII, QKnxCharString88591,
+        {Qt KNX Datapoint Type Classes}
 */
 
 // -- QKnxVarString
@@ -142,6 +144,7 @@ bool QKnxVarString::isValid() const
     \class QKnxVarString88591
     \inherits QKnxVarString
     \inmodule QtKnx
+    \ingroup qtknx-datapoint-types
     \since 5.11
 
     \brief The QKnxVarString88591 class is a datapoint type that encodes a
@@ -149,7 +152,7 @@ bool QKnxVarString::isValid() const
 
     This is a variable sized datapoint type.
 
-    \sa QKnxDatapointType
+    \sa QKnxDatapointType, {Qt KNX Datapoint Type Classes}
 */
 
 /*!

@@ -36,13 +36,14 @@ QT_BEGIN_NAMESPACE
     \class QKnx1Byte
     \inherits QKnxFixedSizeDatapointType
     \inmodule QtKnx
+    \ingroup qtknx-datapoint-types
 
     \brief The QKnx1Byte class is a fixed size datapoint type with the length of
     1 byte.
 
     This datapoint type encodes an absolute value between \c 0 and \c 255.
 
-    \sa QKnxDatapointType
+    \sa QKnxDatapointType, {Qt KNX Datapoint Type Classes}
 */
 // -- QKnx1Byte
 
@@ -107,6 +108,7 @@ bool QKnx1Byte::isValid() const
     \class QKnxScloMode
     \inherits QKnx1Byte
     \inmodule QtKnx
+    \ingroup qtknx-datapoint-types
 
     \brief The QKnxScloMode class is a datapoint type for storing the system
     clock (SCLO) mode.
@@ -142,7 +144,7 @@ bool QKnx1Byte::isValid() const
 
     This is a fixed size datapoint type with the length of 1 byte.
 
-    \sa QKnxDatapointType, QKnx1Byte
+    \sa QKnxDatapointType, QKnx1Byte, {Qt KNX Datapoint Type Classes}
 */
 
 /*!
@@ -208,6 +210,7 @@ QKnxScloMode::Mode QKnxScloMode::mode() const
     \class QKnxBuildingMode
     \inherits QKnx1Byte
     \inmodule QtKnx
+    \ingroup qtknx-datapoint-types
 
     \brief The QKnxBuildingMode class is a datapoint type for storing the
     building mode.
@@ -220,7 +223,7 @@ QKnxScloMode::Mode QKnxScloMode::mode() const
 
     This is a fixed size datapoint type with the length of 1 byte.
 
-    \sa QKnxDatapointType, QKnx1Byte
+    \sa QKnxDatapointType, QKnx1Byte, {Qt KNX Datapoint Type Classes}
 */
 
 /*!
@@ -287,6 +290,7 @@ QKnxBuildingMode::Mode QKnxBuildingMode::mode() const
     \class QKnxOccupyMode
     \inherits QKnx1Byte
     \inmodule QtKnx
+    \ingroup qtknx-datapoint-types
 
     \brief The QKnxOccupyMode class is a datapoint type for storing the occupy
     mode.
@@ -297,7 +301,7 @@ QKnxBuildingMode::Mode QKnxBuildingMode::mode() const
 
     This is a fixed size datapoint type with the length of 1 byte.
 
-    \sa QKnxDatapointType, QKnx1Byte
+    \sa QKnxDatapointType, QKnx1Byte, {Qt KNX Datapoint Type Classes}
 */
 
 /*!
@@ -362,6 +366,7 @@ QKnxOccupyMode::Mode QKnxOccupyMode::mode() const
     \class QKnxPriority
     \inherits QKnx1Byte
     \inmodule QtKnx
+    \ingroup qtknx-datapoint-types
 
     \brief The QKnxPriority class is a datapoint type for storing priority.
 
@@ -373,7 +378,7 @@ QKnxOccupyMode::Mode QKnxOccupyMode::mode() const
 
     This is a fixed size datapoint type with the length of 1 byte.
 
-    \sa QKnxDatapointType, QKnx1Byte
+    \sa QKnxDatapointType, QKnx1Byte, {Qt KNX Datapoint Type Classes}
 */
 
 /*!
@@ -440,6 +445,7 @@ QKnxPriority::Priority QKnxPriority::priority() const
     \class QKnxLightApplicationMode
     \inherits QKnx1Byte
     \inmodule QtKnx
+    \ingroup qtknx-datapoint-types
 
     \brief The QKnxLightApplicationMode class is a datapoint type for storing
     the light application mode.
@@ -449,7 +455,7 @@ QKnxPriority::Priority QKnxPriority::priority() const
 
     This is a fixed size datapoint type with the length of 1 byte.
 
-    \sa QKnxDatapointType, QKnx1Byte
+    \sa QKnxDatapointType, QKnx1Byte, {Qt KNX Datapoint Type Classes}
 */
 
 /*!
@@ -514,6 +520,7 @@ QKnxLightApplicationMode::Mode QKnxLightApplicationMode::mode() const
     \class QKnxApplicationArea
     \inherits QKnx1Byte
     \inmodule QtKnx
+    \ingroup qtknx-datapoint-types
 
     \brief The QKnxApplicationArea class is a datapoint type for storing the
     application area.
@@ -533,7 +540,7 @@ QKnxLightApplicationMode::Mode QKnxLightApplicationMode::mode() const
     This is a fixed size datapoint type with the length of 1 byte.
 
     \sa QKnxDatapointType, QKnx1Byte, QKnxErrorClassSystem::Error,
-        QKnxErrorClassHvac, QKnxScloMode::Mode
+        QKnxErrorClassHvac, QKnxScloMode::Mode, {Qt KNX Datapoint Type Classes}
 */
 
 /*!
@@ -657,6 +664,7 @@ bool QKnxApplicationArea::isValid() const
     \class QKnxAlarmClassType
     \inherits QKnx1Byte
     \inmodule QtKnx
+    \ingroup qtknx-datapoint-types
 
     \brief The QKnxAlarmClassType class is a datapoint type for storing the
     alarm class type.
@@ -665,7 +673,7 @@ bool QKnxApplicationArea::isValid() const
 
     This is a fixed size datapoint type with the length of 1 byte.
 
-    \sa QKnxDatapointType, QKnx1Byte
+    \sa QKnxDatapointType, QKnx1Byte, {Qt KNX Datapoint Type Classes}
 */
 
 /*!
@@ -734,6 +742,7 @@ QKnxAlarmClassType::Type QKnxAlarmClassType::type() const
     \class QKnxPsuMode
     \inherits QKnx1Byte
     \inmodule QtKnx
+    \ingroup qtknx-datapoint-types
 
     \brief The QKnxPsuMode class is a datapoint type for storing the bus power
     supply unit mode.
@@ -751,7 +760,7 @@ QKnxAlarmClassType::Type QKnxAlarmClassType::type() const
 
     This is a fixed size datapoint type with the length of 1 byte.
 
-    \sa QKnxDatapointType, QKnx1Byte
+    \sa QKnxDatapointType, QKnx1Byte, {Qt KNX Datapoint Type Classes}
 */
 
 /*!
@@ -818,6 +827,7 @@ QKnxPsuMode::Mode QKnxPsuMode::mode() const
     \class QKnxErrorClassSystem
     \inherits QKnx1Byte
     \inmodule QtKnx
+    \ingroup qtknx-datapoint-types
 
     \brief The QKnxErrorClassSystem class is a datapoint type for storing system
     errors.
@@ -830,7 +840,8 @@ QKnxPsuMode::Mode QKnxPsuMode::mode() const
 
     This is a fixed size datapoint type with the length of 1 byte.
 
-    \sa QKnxDatapointType, QKnx1Byte, QKnxApplicationArea
+    \sa QKnxDatapointType, QKnx1Byte, QKnxApplicationArea,
+    {Qt KNX Datapoint Type Classes}
 */
 
 /*!
@@ -931,6 +942,7 @@ QKnxErrorClassSystem::Error QKnxErrorClassSystem::error() const
     \class QKnxErrorClassHvac
     \inherits QKnx1Byte
     \inmodule QtKnx
+    \ingroup qtknx-datapoint-types
 
     \brief The QKnxErrorClassHvac class is a datapoint type for storing errors
     in heating, ventilation, and air conditioning (HVAC).
@@ -940,7 +952,8 @@ QKnxErrorClassSystem::Error QKnxErrorClassSystem::error() const
 
     This is a fixed size datapoint type with the length of 1 byte.
 
-    \sa QKnxDatapointType, QKnx1Byte, QKnxApplicationArea
+    \sa QKnxDatapointType, QKnx1Byte, QKnxApplicationArea,
+        {Qt KNX Datapoint Type Classes}
 */
 
 /*!
@@ -1010,6 +1023,7 @@ QKnxErrorClassHvac::Error QKnxErrorClassHvac::error() const
     \class QKnxTimeDelay
     \inherits QKnx1Byte
     \inmodule QtKnx
+    \ingroup qtknx-datapoint-types
 
     \brief The QKnxTimeDelay class is a datapoint type for storing a time delay.
 
@@ -1018,7 +1032,7 @@ QKnxErrorClassHvac::Error QKnxErrorClassHvac::error() const
 
     This is a fixed size datapoint type with the length of 1 byte.
 
-    \sa QKnxDatapointType, QKnx1Byte
+    \sa QKnxDatapointType, QKnx1Byte, {Qt KNX Datapoint Type Classes}
 */
 
 /*!
@@ -1104,6 +1118,7 @@ QKnxTimeDelay::Delay QKnxTimeDelay::delay() const
     \class QKnxBeaufortWindForceScale
     \inherits QKnx1Byte
     \inmodule QtKnx
+    \ingroup qtknx-datapoint-types
 
     \brief The QKnxBeaufortWindForceScale class is a datapoint type for storing
     the Beaufort wind force scale.
@@ -1113,7 +1128,7 @@ QKnxTimeDelay::Delay QKnxTimeDelay::delay() const
 
     This is a fixed size datapoint type with the length of 1 byte.
 
-    \sa QKnxDatapointType, QKnx1Byte
+    \sa QKnxDatapointType, QKnx1Byte, {Qt KNX Datapoint Type Classes}
 */
 
 /*!
@@ -1187,6 +1202,7 @@ QKnxBeaufortWindForceScale::Force QKnxBeaufortWindForceScale::force() const
     \class QKnxSensorSelect
     \inherits QKnx1Byte
     \inmodule QtKnx
+    \ingroup qtknx-datapoint-types
 
     \brief The QKnxSensorSelect class is a datapoint type for storing the sensor
     mode.
@@ -1196,7 +1212,7 @@ QKnxBeaufortWindForceScale::Force QKnxBeaufortWindForceScale::force() const
 
     This is a fixed size datapoint type with the length of 1 byte.
 
-    \sa QKnxDatapointType, QKnx1Byte
+    \sa QKnxDatapointType, QKnx1Byte, {Qt KNX Datapoint Type Classes}
 */
 
 /*!
@@ -1265,6 +1281,7 @@ QKnxSensorSelect::Mode QKnxSensorSelect::mode() const
     \class QKnxActuatorConnectType
     \inherits QKnx1Byte
     \inmodule QtKnx
+    \ingroup qtknx-datapoint-types
 
     \brief The QKnxActuatorConnectType class is a datapoint type for storing the
     actuator connection type.
@@ -1273,7 +1290,7 @@ QKnxSensorSelect::Mode QKnxSensorSelect::mode() const
 
     This is a fixed size datapoint type with the length of 1 byte.
 
-    \sa QKnxDatapointType, QKnx1Byte
+    \sa QKnxDatapointType, QKnx1Byte, {Qt KNX Datapoint Type Classes}
 */
 
 /*!

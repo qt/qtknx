@@ -1,6 +1,6 @@
 /******************************************************************************
 **
-** Copyright (C) 2017 The Qt Company Ltd.
+** Copyright (C) 2018 The Qt Company Ltd.
 ** Contact: https://www.qt.io/licensing/
 **
 ** This file is part of the QtKnx module.
@@ -37,6 +37,7 @@ QT_BEGIN_NAMESPACE
     \class QKnx32BitSet
     \inherits QKnxFixedSizeDatapointType
     \inmodule QtKnx
+    \ingroup qtknx-datapoint-types
 
     \brief The QKnx32BitSet class is a datapoint type with the 32-bit set.
 
@@ -47,7 +48,7 @@ QT_BEGIN_NAMESPACE
 
     There is only one class inheriting QKnx32BitSet: \l QKnxCombinedInfoOnOff.
 
-    \sa QKnxDatapointType
+    \sa QKnxDatapointType, {Qt KNX Datapoint Type Classes}
 */
 
 // -- QKnx32BitSet
@@ -103,6 +104,7 @@ bool QKnx32BitSet::setValue(quint32 value)
     \class QKnxCombinedInfoOnOff
     \inherits QKnx32BitSet
     \inmodule QtKnx
+    \ingroup qtknx-datapoint-types
 
     \brief The QKnxCombinedInfoOnOff class is a datapoint type for storing
     combined information about the on and off states of a multiple-channel
@@ -118,7 +120,7 @@ bool QKnx32BitSet::setValue(quint32 value)
 
     This is a fixed size datapoint type with the length of 4 bytes.
 
-    \sa QKnx32BitSet, QKnxDatapointType
+    \sa QKnx32BitSet, QKnxDatapointType, {Qt KNX Datapoint Type Classes}
 */
 
 /*!
