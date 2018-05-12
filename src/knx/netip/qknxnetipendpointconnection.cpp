@@ -43,7 +43,101 @@
 #include "qudpsocket.h"
 
 QT_BEGIN_NAMESPACE
+/*!
+    \class QKnxNetIpEndpointConnection
 
+    \inmodule QtKnx
+    \brief The QKnxNetIpEndpointConnection class serves as base class for derived classes to enable
+    the opening and handling of a client connection to a KNXnet/IP server.
+
+    The QKnxNetIpEndpointConnection establishes a communication channel between a
+    client and a KNXnet/IP server endpoint. This is used by the client side
+    to monitor the state of the communication channel. The IP address of the client must be set
+    together with a local port. It is then possible to connect to a chosen KNXnet/IP server on a
+    given port. To detect the failure of the channel, the class provides a heartbeat monitor timeout
+    that can be modified according to the client needs. If the KNXnet/IP communication
+    has to traverse across a network using network address translation (NAT), the client can also make
+    the class aware of this.
+*/
+
+/*!
+    \enum QKnxNetIpEndpointConnection::State
+
+    This enum holds the state of the KNXnet/IP connection.
+
+    \value Disconnected
+            Error found establishing the connection, or disconnect response received.
+    \value Starting
+            Preparing internal parameters for establishing the connection.
+    \value Bound
+            Internal UDP socket is ready for receiving packets, but the connection is not yet established.
+    \value Connecting
+            Connection request sent but no answer from the server.
+    \value Connected
+            Connection response received and connection is established.
+    \value Disconnecting
+            Disconnect request sent.
+*/
+
+/*!
+    \enum QKnxNetIpEndpointConnection::Error
+
+    This enum holds the errors that can occur establishing a KNXnet/IP connection.
+
+    \value None
+            No errors so far.
+    \value State
+    \value Network
+            Detected errors in the internal UDP socket connection.
+    \value NotIPv4
+            Host or remote IPs not version 4.
+    \value Acknowledge
+            No response to connect/disconnect request.
+    \value Heartbeat
+            State request timeout.
+    \value Cemi
+            No cEMI frame acknowledge in time.
+    \value Unknown
+*/
+/*!
+    \enum QKnxNetIpEndpointConnection::SequenceType
+
+    This enum holds the sequence type.
+
+    \value Send
+    \value Receive
+*/
+/*!
+    \enum QKnxNetIpEndpointConnection::EndpointType
+
+    This enum holds the endpoint type.
+
+    \value Data
+    \value Control
+*/
+/*!
+   \fn void QKnxNetIpEndpointConnection::connected()
+
+    This signal is emitted after the client connects to a host and the KNXnet/IP connection
+    is established.
+*/
+/*!
+   \fn void QKnxNetIpEndpointConnection::disconnected()
+
+    This signal is emitted when the KNXnet/IP connection is lost or client closes
+    the connection.
+*/
+/*!
+   \fn void QKnxNetIpEndpointConnection::stateChanged(QKnxNetIpEndpointConnection::State state)
+
+    This signal is emitted when the KNXnet/IP connection state \a state changed.
+*/
+/*!
+   \fn void QKnxNetIpEndpointConnection::errorOccurred(QKnxNetIpEndpointConnection::Error error, QString errorString)
+
+    This signal is emitted when there is an \a error in the KNXnet/IP connection. The
+    \a errorString describes the error that occurred.
+*/
 namespace QKnxPrivate
 {
     static void clearTimer(QTimer **timer)
@@ -528,54 +622,80 @@ void QKnxNetIpEndpointConnectionPrivate::setAndEmitErrorOccurred(
 
 
 // -- QKnxNetIpClient
-
+/*!
+    Destroys a connection and disconnects from the server.
+*/
 QKnxNetIpEndpointConnection::~QKnxNetIpEndpointConnection()
 {
     disconnectFromHost();
 }
 
+/*!
+    Returns the state of the connection.
+*/
 QKnxNetIpEndpointConnection::State QKnxNetIpEndpointConnection::state() const
 {
     Q_D(const QKnxNetIpEndpointConnection);
     return d->m_state;
 }
 
+/*!
+    Returns an error string describing the last error detected in the connection.
+*/
 QString QKnxNetIpEndpointConnection::errorString() const
 {
     Q_D(const QKnxNetIpEndpointConnection);
     return d->m_errorString;
 }
 
+/*!
+    Returns the last error code detected in the connection.
+*/
 QKnxNetIpEndpointConnection::Error QKnxNetIpEndpointConnection::error() const
 {
     Q_D(const QKnxNetIpEndpointConnection);
     return d->m_error;
 }
 
+/*!
+    Returns the received or sent sequence count based on \a type.
+*/
 int QKnxNetIpEndpointConnection::sequenceCount(SequenceType type) const
 {
     Q_D(const QKnxNetIpEndpointConnection);
     return (type == SequenceType::Send ?  d->m_sendCount : d->m_receiveCount);
 }
 
+/*!
+    Returns the KNXnet/IP header version of the data or control connection depending on \a endpoint.
+*/
 quint8 QKnxNetIpEndpointConnection::netIpHeaderVersion(EndpointType endpoint) const
 {
     Q_D(const QKnxNetIpEndpointConnection);
     return (endpoint == EndpointType::Data ? d->m_dataEndpointVersion : d->m_controlEndpointVersion);
 }
 
+/*!
+    Returns the local port associated with the connection.
+*/
 quint16 QKnxNetIpEndpointConnection::localPort() const
 {
     Q_D(const QKnxNetIpEndpointConnection);
     return d->m_localEndpoint.port;
 }
 
+/*!
+    Sets the local port \a port associated with the connection.
+*/
 void QKnxNetIpEndpointConnection::setLocalPort(quint16 port)
 {
     Q_D(QKnxNetIpEndpointConnection);
     d->m_user.port = port;
 }
 
+/*!
+    Returns the local address associated with the connection.
+*/
 QHostAddress QKnxNetIpEndpointConnection::localAddress() const
 {
     Q_D(const QKnxNetIpEndpointConnection);
@@ -584,12 +704,18 @@ QHostAddress QKnxNetIpEndpointConnection::localAddress() const
     return d->m_localEndpoint.address;
 }
 
+/*!
+    Sets the local address \a address associated with the connection.
+*/
 void QKnxNetIpEndpointConnection::setLocalAddress(const QHostAddress &address)
 {
     Q_D(QKnxNetIpEndpointConnection);
     d->m_user.address = address;
 }
 
+/*!
+    Returns \c true if the connection uses NAT; \c false otherwise.
+*/
 bool QKnxNetIpEndpointConnection::natAware() const
 {
     Q_D(const QKnxNetIpEndpointConnection);
@@ -598,18 +724,28 @@ bool QKnxNetIpEndpointConnection::natAware() const
     return d->m_nat;
 }
 
+/*!
+    Sets the connection to use NAT based on the \a isAware parameter.
+*/
 void QKnxNetIpEndpointConnection::setNatAware(bool isAware)
 {
     Q_D(QKnxNetIpEndpointConnection);
     d->m_user.natAware = isAware;
 }
 
+/*!
+    Returns the value of the heartbeat timeout.
+*/
 quint32 QKnxNetIpEndpointConnection::heartbeatTimeout() const
 {
     Q_D(const QKnxNetIpEndpointConnection);
     return d->m_heartbeatTimeout;
 }
 
+/*!
+    Sets the value of the heartbeat timeout. Every \a msec a state request is sent over the
+    connection to keep it alive.
+*/
 void QKnxNetIpEndpointConnection::setHeartbeatTimeout(quint32 msec)
 {
     if (msec > QKnxNetIp::ConnectionAliveTimeout)
@@ -621,6 +757,9 @@ void QKnxNetIpEndpointConnection::setHeartbeatTimeout(quint32 msec)
         d->m_heartbeatTimer->setInterval(msec);
 }
 
+/*!
+    Returns a byte array with the supported KNXnet/IP versions.
+*/
 QKnxByteArray QKnxNetIpEndpointConnection::supportedProtocolVersions() const
 {
     Q_D(const QKnxNetIpEndpointConnection);
@@ -629,18 +768,27 @@ QKnxByteArray QKnxNetIpEndpointConnection::supportedProtocolVersions() const
     return d->m_supportedVersions;
 }
 
+/*!
+    Sets the connection supported KNXnet/IP versions indicated in \a versions.
+*/
 void QKnxNetIpEndpointConnection::setSupportedProtocolVersions(const QKnxByteArray &versions)
 {
     Q_D(QKnxNetIpEndpointConnection);
     d->m_user.supportedVersions = versions;
 }
 
+/*!
+    Establishes a connection to the KNXnet/IP control endpoint \a controlEndpoint.
+*/
 void QKnxNetIpEndpointConnection::connectToHost(const QKnxNetIpHpai &controlEndpoint)
 {
     const QKnxNetIpHpaiProxy view(controlEndpoint);
     connectToHost(view.hostAddress(), view.port());
 }
 
+/*!
+    Establishes a connection to the host with \a address and \a port.
+*/
 void QKnxNetIpEndpointConnection::connectToHost(const QHostAddress &address, quint16 port)
 {
     Q_D(QKnxNetIpEndpointConnection);
@@ -701,6 +849,9 @@ void QKnxNetIpEndpointConnection::connectToHost(const QHostAddress &address, qui
         d->m_remoteControlEndpoint.address, d->m_remoteControlEndpoint.port);
 }
 
+/*!
+    Closes an established connection.
+*/
 void QKnxNetIpEndpointConnection::disconnectFromHost()
 {
     Q_D(QKnxNetIpEndpointConnection);

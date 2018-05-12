@@ -221,8 +221,7 @@ namespace QKnx
 
             enum class ReturnCode : quint8
             {
-                NoError = 0x00,
-                Error = 0x01
+                NoError = 0x00
             };
             Q_ENUM_NS(ReturnCode)
 
