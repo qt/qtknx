@@ -138,7 +138,7 @@ quint8 QKnxNetIpTunnelingRequestProxy::sequenceNumber() const
 */
 QKnxLinkLayerFrame QKnxNetIpTunnelingRequestProxy::cemi() const
 {
-    return QKnxLinkLayerFrameBuilder()
+    return QKnxLinkLayerFrame::builder()
         .setMedium(QKnx::MediumType::NetIP)
         .setData(m_frame.constData())
         .createFrame();

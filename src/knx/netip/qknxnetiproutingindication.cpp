@@ -86,7 +86,7 @@ QKnxNetIpRoutingIndicationProxy::QKnxNetIpRoutingIndicationProxy(const QKnxNetIp
 */
 QKnxLinkLayerFrame QKnxNetIpRoutingIndicationProxy::linkLayerFrame() const
 {
-    return QKnxLinkLayerFrameBuilder()
+    return QKnxLinkLayerFrame::builder()
         .setMedium(QKnx::MediumType::NetIP)
         .setData(m_frame.constData())
         .createFrame();

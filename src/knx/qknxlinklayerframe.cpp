@@ -28,6 +28,7 @@
 ******************************************************************************/
 
 #include "qknxlinklayerframe.h"
+#include "qknxlinklayerframebuilder.h"
 
 QT_BEGIN_NAMESPACE
 
@@ -624,6 +625,14 @@ bool QKnxLinkLayerFrame::operator==(const QKnxLinkLayerFrame &other) const
 bool QKnxLinkLayerFrame::operator!=(const QKnxLinkLayerFrame &other) const
 {
     return !operator==(other);
+}
+
+/*!
+    Returns an instance of a generic link layer frame builder.
+*/
+QKnxLinkLayerFrame::Builder QKnxLinkLayerFrame::builder()
+{
+    return QKnxLinkLayerFrame::Builder();
 }
 
 /*!

@@ -72,7 +72,7 @@
     To help build the frames, the following classes are provided:
 
      \list
-        \li \l QKnxLinkLayerFrameBuilder
+        \li \l QKnxLinkLayerFrame::Builder
         \li \l QKnxDeviceManagementFrame::Builder
         \li \l QKnxDeviceManagementFrame::PropertyReadBuilder
         \li \l QKnxDeviceManagementFrame::PropertyWriteBuilder
@@ -146,7 +146,7 @@
         QKnxNetIpTunnel connection;
         connection.connectToHost(QHostAddress(...), port);
 
-        QKnxLinkLayerFrame frame = QKnxLinkLayerFrameBuilder()
+        QKnxLinkLayerFrame frame = QKnxLinkLayerFrame::builder()
             .setDestinationAddress({ QKnxAddress::Type::Group, QLatin1String("2/6/4") })
             .setTpdu({
                 QKnxTpdu::TransportControlField::DataGroup,

@@ -38,11 +38,14 @@
 QT_BEGIN_NAMESPACE
 
 /*!
-    \class QKnxLinkLayerFrameBuilder
+    \class QKnxLinkLayerFrame::Builder
 
     \inmodule QtKnx
-    \brief The QKnxLinkLayerFrameBuilder class provides the means to create a
+    \brief The QKnxLinkLayerFrame::Builder class provides the means to create a
     KNX link layer frame.
+
+    \note To make use of the class please use the
+    \b {#include <QKnxLinkLayerFrameBuilder>} statement.
 
     A KNX link layer frame contains several fields: message code, additional
     information, control field, maybe an extended control field, a TPDU, as
@@ -61,13 +64,13 @@ QT_BEGIN_NAMESPACE
         QKnxNetIpTunnel tunnel(...);
         tunnel.connectToHost(...);
 
-        auto frame = QKnxLinkLayerFrameBuilder()
+        auto frame = QKnxLinkLayerFrame::builder()
             .setDestinationAddress({ QKnxAddress::Type::Group, QLatin1String("2/1/4") })
             .create();
 
         tunnel.sendFrame(frame);
 
-        frame = QKnxLinkLayerFrameBuilder()
+        frame = QKnxLinkLayerFrame::builder()
             .setDestinationAddress({ QKnxAddress::Type::Group, QLatin1String("2/1/4") })
             .setTpdu({
                 QKnxTpdu::TransportControlField::DataGroup,
@@ -87,7 +90,8 @@ QT_BEGIN_NAMESPACE
 
     \sa QKnxAddress
 */
-QKnxLinkLayerFrameBuilder &QKnxLinkLayerFrameBuilder::setSourceAddress(const QKnxAddress &source)
+QKnxLinkLayerFrame::Builder &
+    QKnxLinkLayerFrame::Builder::setSourceAddress(const QKnxAddress &source)
 {
     m_src = source;
     return *this;
@@ -99,7 +103,8 @@ QKnxLinkLayerFrameBuilder &QKnxLinkLayerFrameBuilder::setSourceAddress(const QKn
 
     \sa QKnxAddress
 */
-QKnxLinkLayerFrameBuilder &QKnxLinkLayerFrameBuilder::setDestinationAddress(const QKnxAddress &dest)
+QKnxLinkLayerFrame::Builder &
+    QKnxLinkLayerFrame::Builder::setDestinationAddress(const QKnxAddress &dest)
 {
     m_dest = dest;
     return *this;
@@ -111,7 +116,8 @@ QKnxLinkLayerFrameBuilder &QKnxLinkLayerFrameBuilder::setDestinationAddress(cons
 
     \sa QKnxControlField
 */
-QKnxLinkLayerFrameBuilder &QKnxLinkLayerFrameBuilder::setControlField(const QKnxControlField &ctrl)
+QKnxLinkLayerFrame::Builder &
+    QKnxLinkLayerFrame::Builder::setControlField(const QKnxControlField &ctrl)
 {
     m_ctrl = ctrl;
     return *this;
@@ -123,8 +129,8 @@ QKnxLinkLayerFrameBuilder &QKnxLinkLayerFrameBuilder::setControlField(const QKnx
 
     \sa QKnxExtendedControlField
 */
-QKnxLinkLayerFrameBuilder &
-    QKnxLinkLayerFrameBuilder::setExtendedControlField(const QKnxExtendedControlField &extCtrl)
+QKnxLinkLayerFrame::Builder &
+    QKnxLinkLayerFrame::Builder::setExtendedControlField(const QKnxExtendedControlField &extCtrl)
 {
     m_extCtrl = extCtrl;
     return *this;
@@ -136,7 +142,7 @@ QKnxLinkLayerFrameBuilder &
 
     \sa QKnxTpdu
 */
-QKnxLinkLayerFrameBuilder &QKnxLinkLayerFrameBuilder::setTpdu(const QKnxTpdu &tpdu)
+QKnxLinkLayerFrame::Builder &QKnxLinkLayerFrame::Builder::setTpdu(const QKnxTpdu &tpdu)
 {
     m_tpdu = tpdu;
     return *this;
@@ -148,7 +154,7 @@ QKnxLinkLayerFrameBuilder &QKnxLinkLayerFrameBuilder::setTpdu(const QKnxTpdu &tp
 
     \sa QKnx::MediumType
 */
-QKnxLinkLayerFrameBuilder &QKnxLinkLayerFrameBuilder::setMedium(QKnx::MediumType type)
+QKnxLinkLayerFrame::Builder &QKnxLinkLayerFrame::Builder::setMedium(QKnx::MediumType type)
 {
     m_mediumType = type;
     return *this;
@@ -161,7 +167,8 @@ QKnxLinkLayerFrameBuilder &QKnxLinkLayerFrameBuilder::setMedium(QKnx::MediumType
 
     \sa createFrame(), QKnxByteArray
 */
-QKnxLinkLayerFrameBuilder &QKnxLinkLayerFrameBuilder::setData(const QKnxByteArray &data, quint16 offset)
+QKnxLinkLayerFrame::Builder &
+    QKnxLinkLayerFrame::Builder::setData(const QKnxByteArray &data, quint16 offset)
 {
     m_data = data;
     m_dataOffset = offset;
@@ -174,7 +181,8 @@ QKnxLinkLayerFrameBuilder &QKnxLinkLayerFrameBuilder::setData(const QKnxByteArra
 
     \sa QKnxLinkLayerFrame::MessageCode
 */
-QKnxLinkLayerFrameBuilder &QKnxLinkLayerFrameBuilder::setMsgCode(QKnxLinkLayerFrame::MessageCode code)
+QKnxLinkLayerFrame::Builder &
+    QKnxLinkLayerFrame::Builder::setMessageCode(QKnxLinkLayerFrame::MessageCode code)
 {
     m_code = code;
     return *this;
@@ -186,7 +194,8 @@ QKnxLinkLayerFrameBuilder &QKnxLinkLayerFrameBuilder::setMsgCode(QKnxLinkLayerFr
 
     \sa QKnxAdditionalInfo
 */
-QKnxLinkLayerFrameBuilder &QKnxLinkLayerFrameBuilder::setAdditionalInfos(const QVector<QKnxAdditionalInfo> &infos)
+QKnxLinkLayerFrame::Builder &
+    QKnxLinkLayerFrame::Builder::setAdditionalInfos(const QVector<QKnxAdditionalInfo> &infos)
 {
     m_additionalInfos = infos;
     return *this;
@@ -202,7 +211,7 @@ QKnxLinkLayerFrameBuilder &QKnxLinkLayerFrameBuilder::setAdditionalInfos(const Q
     QKnxControlField, QKnxExtendedControlField, QKnxTpdu, QKnxAddress,
     QKnxByteArray
 */
-QKnxLinkLayerFrame QKnxLinkLayerFrameBuilder::createFrame() const
+QKnxLinkLayerFrame QKnxLinkLayerFrame::Builder::createFrame() const
 {
     if (m_mediumType == QKnx::MediumType::Unknown)
         return {};
