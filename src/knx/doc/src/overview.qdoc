@@ -73,7 +73,13 @@
 
      \list
         \li \l QKnxLinkLayerFrameBuilder
-        \li \l QKnxDeviceManagementFrameFactory
+        \li \l QKnxDeviceManagementFrame::Builder
+        \li \l QKnxDeviceManagementFrame::PropertyReadBuilder
+        \li \l QKnxDeviceManagementFrame::PropertyWriteBuilder
+        \li \l QKnxDeviceManagementFrame::PropertyInfoBuilder
+        \li \l QKnxDeviceManagementFrame::FunctionPropertyCommandBuilder
+        \li \l QKnxDeviceManagementFrame::FunctionPropertyStateReadBuilder
+        \li \l QKnxDeviceManagementFrame::ResetBuilder
     \endlist
 
     \l QKnxDeviceManagementFrame objects are dedicated to the KNXnet/IP
