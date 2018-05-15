@@ -35,6 +35,8 @@ QT_BEGIN_NAMESPACE
     \class QKnxNetIpDeviceConfigurationRequestProxy
 
     \inmodule QtKnx
+    \ingroup qtknx-device-management
+
     \brief The QKnxNetIpDeviceConfigurationRequestProxy class provides the means
     to read a device configuration request from the generic \l QKnxNetIpFrame
     class and to create a KNXnet/IP frame based on the information.
@@ -89,7 +91,9 @@ QT_BEGIN_NAMESPACE
         auto knxLinkFrame = configRequest.cemi();
     \endcode
 
-    \sa builder(), QKnxNetIpServerDiscoveryAgent, QKnxNetIpDeviceConfigurationAcknowledgeProxy
+    \sa builder(), QKnxNetIpServerDiscoveryAgent,
+    QKnxNetIpDeviceConfigurationAcknowledgeProxy,
+    {Qt KNX Device Management Classes}
 */
 
 /*!
@@ -209,6 +213,8 @@ QKnxNetIpDeviceConfigurationRequestProxy::Builder QKnxNetIpDeviceConfigurationRe
     the request three times and then terminates the connection by sending a
     disconnection request, \l QKnxNetIpDisconnectRequestProxy, to the server’s
     control endpoint.
+
+    \sa {Qt KNX Device Management Classes}
 */
 
 /*!

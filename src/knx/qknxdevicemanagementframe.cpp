@@ -45,6 +45,8 @@ public:
     \class QKnxDeviceManagementFrame
 
     \inmodule QtKnx
+    \ingroup qtknx-device-management
+
     \brief The QKnxDeviceManagementFrame class represents a cEMI frame dedicated
     to KNXnet/IP device management.
 
@@ -101,6 +103,8 @@ public:
         \li \l QKnxDeviceManagementFrame::FunctionPropertyStateReadBuilder
         \li \l QKnxDeviceManagementFrame::ResetBuilder
     \endlist
+
+    \sa {Qt KNX Device Management Classes}
 */
 
 /*!

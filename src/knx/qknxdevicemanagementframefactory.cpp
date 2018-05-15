@@ -36,6 +36,7 @@ QT_BEGIN_NAMESPACE
 
     \inmodule QtKnx
     \inheaderfile QKnxDeviceManagementFrameBuilder
+    \ingroup qtknx-device-management
 
     \brief The QKnxDeviceManagementFrame::Builder class provides the means to
     create valid device management service frames.
@@ -68,7 +69,8 @@ QT_BEGIN_NAMESPACE
         \li \l QKnxDeviceManagementFrame::ResetBuilder
     \endlist
 
-    \sa QKnxDeviceManagementFrame::MessageCode, QKnxDeviceManagementFrame
+    \sa QKnxDeviceManagementFrame::MessageCode, QKnxDeviceManagementFrame,
+        {Qt KNX Device Management Classes}
 */
 
 /*!
@@ -165,6 +167,7 @@ QKnxDeviceManagementFrame QKnxDeviceManagementFrame::Builder::createFrame() cons
 
     \inmodule QtKnx
     \inheaderfile QKnxDeviceManagementFrameBuilder
+    \ingroup qtknx-device-management
 
     \brief The QKnxDeviceManagementFrame::PropertyReadBuilder class provides
     the means to create valid device management property read service frames.
@@ -175,7 +178,8 @@ QKnxDeviceManagementFrame QKnxDeviceManagementFrame::Builder::createFrame() cons
     \c {M_PropRead.con}, sent by a cEMI server. The confirmation indicates
     whether the request was successful.
 
-    \sa QKnxDeviceManagementFrame::MessageCode, QKnxDeviceManagementFrame
+    \sa QKnxDeviceManagementFrame::MessageCode, QKnxDeviceManagementFrame,
+        {Qt KNX Device Management Classes}
 */
 using PFRB = QKnxDeviceManagementFrame::PropertyReadBuilder;
 
@@ -356,6 +360,7 @@ QKnxDeviceManagementFrame PFRB::createNegativeConfirmation(QKnxNetIpCemiServer::
 
     \inmodule QtKnx
     \inheaderfile QKnxDeviceManagementFrameBuilder
+    \ingroup qtknx-device-management
 
     \brief The QKnxDeviceManagementFrame::PropertyWriteBuilder class provides
     the means to create valid device management property write service frames.
@@ -366,7 +371,8 @@ QKnxDeviceManagementFrame PFRB::createNegativeConfirmation(QKnxNetIpCemiServer::
     \c {M_PropWrite.con}. The confirmation indicates whether the request was
     successful.
 
-    \sa QKnxDeviceManagementFrame::MessageCode, QKnxDeviceManagementFrame
+    \sa QKnxDeviceManagementFrame::MessageCode, QKnxDeviceManagementFrame,
+        {Qt KNX Device Management Classes}
 */
 using PFWB = QKnxDeviceManagementFrame::PropertyWriteBuilder;
 
@@ -550,6 +556,7 @@ QKnxDeviceManagementFrame PFWB::createNegativeConfirmation(QKnxNetIpCemiServer::
 
     \inmodule QtKnx
     \inheaderfile QKnxDeviceManagementFrameBuilder
+    \ingroup qtknx-device-management
 
     \brief The QKnxDeviceManagementFrame::PropertyInfoBuilder class provides
     the means to create a valid device management property info indication frame.
@@ -558,7 +565,8 @@ QKnxDeviceManagementFrame PFWB::createNegativeConfirmation(QKnxNetIpCemiServer::
     \e unconfirmed service, that is used by a common external message interface
     (cEMI) cEMI server to send notifications upon events, for example.
 
-    \sa QKnxDeviceManagementFrame::MessageCode, QKnxDeviceManagementFrame
+    \sa QKnxDeviceManagementFrame::MessageCode, QKnxDeviceManagementFrame,
+        {Qt KNX Device Management Classes}
 */
 using PFIB = QKnxDeviceManagementFrame::PropertyInfoBuilder;
 
@@ -656,6 +664,7 @@ QKnxDeviceManagementFrame PFIB::createIndication(const QKnxByteArray &data) cons
 
     \inmodule QtKnx
     \inheaderfile QKnxDeviceManagementFrameBuilder
+    \ingroup qtknx-device-management
 
     \brief The QKnxDeviceManagementFrame::FunctionPropertyCommandBuilder class
     provides the means to create valid device management function property
@@ -667,7 +676,8 @@ QKnxDeviceManagementFrame PFIB::createIndication(const QKnxByteArray &data) cons
     command confirmation frame, \c {M_FuncPropCommand.con}, sent by a cEMI
     server. The confirmation indicates whether the request was successful.
 
-    \sa QKnxDeviceManagementFrame::MessageCode, QKnxDeviceManagementFrame
+    \sa QKnxDeviceManagementFrame::MessageCode, QKnxDeviceManagementFrame,
+        {Qt KNX Device Management Classes}
 */
 using FPCB = QKnxDeviceManagementFrame::FunctionPropertyCommandBuilder;
 
@@ -813,6 +823,7 @@ QKnxDeviceManagementFrame
 
     \inmodule QtKnx
     \inheaderfile QKnxDeviceManagementFrameBuilder
+    \ingroup qtknx-device-management
 
     \brief The QKnxDeviceManagementFrame::FunctionPropertyStateReadBuilder
     class provides the means to create valid device management function
@@ -826,7 +837,8 @@ QKnxDeviceManagementFrame
     \c {M_FuncPropStateRead.con}, sent by a cEMI server. The confirmation
     indicates whether the request was successful.
 
-    \sa QKnxDeviceManagementFrame::MessageCode, QKnxDeviceManagementFrame
+    \sa QKnxDeviceManagementFrame::MessageCode, QKnxDeviceManagementFrame,
+        {Qt KNX Device Management Classes}
 */
 using FPSRB = QKnxDeviceManagementFrame::FunctionPropertyStateReadBuilder;
 
@@ -971,6 +983,7 @@ QKnxDeviceManagementFrame
 
     \inmodule QtKnx
     \inheaderfile QKnxDeviceManagementFrameBuilder
+    \ingroup qtknx-device-management
 
     \brief The QKnxDeviceManagementFrame::ResetBuilder class provides the means
     to build valid device management reset service frames.
@@ -979,7 +992,8 @@ QKnxDeviceManagementFrame
     client to send a reset request frame, \c {M_Reset.req}. It may be followed
     by a reset indication frame, \c {M_Reset.ind}.
 
-    \sa QKnxDeviceManagementFrame::MessageCode, QKnxDeviceManagementFrame
+    \sa QKnxDeviceManagementFrame::MessageCode, QKnxDeviceManagementFrame,
+        {Qt KNX Device Management Classes}
 */
 
 /*!

@@ -63,6 +63,9 @@
     functionalities of a KNX device on the bus behind the KNXnet/IP server, the
     class \l QKnxNetIpTunnel takes care of the connection.
 
+    For more information, see \l {Qt KNX Device Management Classes} and
+    \l {Qt KNX Tunneling Classes}.
+
     \section2 Sending Frames
 
     Frames can be sent to the KNXnet/IP server by using \l QKnxNetIpTunnel or

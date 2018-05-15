@@ -35,6 +35,8 @@ QT_BEGIN_NAMESPACE
     \class QKnxNetIpDeviceConfigurationAcknowledgeProxy
 
     \inmodule QtKnx
+    \ingroup qtknx-device-management
+
     \brief The QKnxNetIpDeviceConfigurationAcknowledgeProxy class provides the
     means to read a device configuration acknowledgment from the generic
     \l QKnxNetIpFrame class and to create a KNXnet/IP frame based on the
@@ -74,7 +76,8 @@ QT_BEGIN_NAMESPACE
         QKnx::NetIp::Error error = configAck.status();
     \endcode
 
-    \sa builder(), QKnxNetIpDeviceConfigurationRequestProxy
+    \sa builder(), QKnxNetIpDeviceConfigurationRequestProxy,
+    {Qt KNX Device Management Classes}
 */
 
 /*!
@@ -198,6 +201,8 @@ QKnxNetIpDeviceConfigurationAcknowledgeProxy::Builder
     the device configuration request three times and then terminates the
     connection by sending a disconnection request frame,
     \l QKnxNetIpDisconnectRequestProxy, to the server’s control endpoint.
+
+    \sa {Qt KNX Device Management Classes}
 */
 
 /*!
