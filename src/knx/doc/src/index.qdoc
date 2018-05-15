@@ -70,6 +70,7 @@
     \section1 Reference
     \list
     \li \l{Qt KNX Device Management Classes}{Device Management Classes}
+    \li \l{Qt KNX Tunneling Classes}{Tunneling Classes}
     \li \l{Qt KNX C++ Classes}{All C++ Classes}
     \endlist
 

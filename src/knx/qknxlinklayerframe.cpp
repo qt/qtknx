@@ -38,6 +38,8 @@ QT_BEGIN_NAMESPACE
     \class QKnxLinkLayerFrame
 
     \inmodule QtKnx
+    \ingroup qtknx-tunneling
+
     \brief The QKnxLinkLayerFrame class is a frame that is sent over a
     communication channel established between a KNXnet/IP client and a
     KNXnet/IP server.
@@ -64,6 +66,8 @@ QT_BEGIN_NAMESPACE
     (encoded with the \l QKnxTpdu::ApplicationControlField) held in \l QKnxTpdu.
     The application services are split into categories according to the
     addressing method.
+
+    \sa {Qt KNX Tunneling Classes}
 */
 
 /*!

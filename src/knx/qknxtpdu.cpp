@@ -198,6 +198,8 @@ public:
     \class QKnxTpdu
 
     \inmodule QtKnx
+    \ingroup qtknx-tunneling
+
     \brief The QKnxTpdu class represents a TPDU, which is the part of a link
     layer frame to be read by the network, transport, and application layers.
 
@@ -217,7 +219,7 @@ public:
     KNXNet/IP clients and servers to make sure the all packages are received
     and that they arrive in the correct order.
 
-    \sa QKnxLinkLayerFrame
+    \sa QKnxLinkLayerFrame, {Qt KNX Tunneling Classes}
 */
 
 /*!

@@ -42,6 +42,7 @@ QT_BEGIN_NAMESPACE
 
     \inmodule QtKnx
     \inheaderfile QKnxLinkLayerFrameBuilder
+    \ingroup qtknx-tunneling
 
     \brief The QKnxLinkLayerFrame::Builder class provides the means to create a
     KNX link layer frame.
@@ -80,7 +81,7 @@ QT_BEGIN_NAMESPACE
         tunnel.sendFrame(frame);
     \endcode
 
-    \sa QKnxLinkLayerFrame
+    \sa QKnxLinkLayerFrame, {Qt KNX Tunneling Classes}
 */
 
 /*!
