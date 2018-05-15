@@ -41,11 +41,10 @@ QT_BEGIN_NAMESPACE
     \class QKnxLinkLayerFrame::Builder
 
     \inmodule QtKnx
+    \inheaderfile QKnxLinkLayerFrameBuilder
+
     \brief The QKnxLinkLayerFrame::Builder class provides the means to create a
     KNX link layer frame.
-
-    \note To make use of the class please use the
-    \b {#include <QKnxLinkLayerFrameBuilder>} statement.
 
     A KNX link layer frame contains several fields: message code, additional
     information, control field, maybe an extended control field, a TPDU, as

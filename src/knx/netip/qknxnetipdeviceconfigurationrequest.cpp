@@ -168,6 +168,8 @@ QKnxNetIpDeviceConfigurationRequestProxy::Builder QKnxNetIpDeviceConfigurationRe
     \class QKnxNetIpDeviceConfigurationRequestProxy::Builder
 
     \inmodule QtKnx
+    \inheaderfile QKnxNetIpDeviceConfigurationRequestProxy
+
     \brief The QKnxNetIpDeviceConfigurationRequestProxy::Builder class provides
     the means to create a KNXnet/IP device configuration request frame.
 

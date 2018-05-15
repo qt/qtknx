@@ -153,6 +153,8 @@ QKnxNetIpRoutingBusyProxy::Builder QKnxNetIpRoutingBusyProxy::builder()
     \class QKnxNetIpRoutingBusyProxy::Builder
 
     \inmodule QtKnx
+    \inheaderfile QKnxNetIpRoutingBusyProxy
+
     \brief The QKnxNetIpRoutingBusyProxy::Builder class provides the means to
     create a router busy message frame.
 

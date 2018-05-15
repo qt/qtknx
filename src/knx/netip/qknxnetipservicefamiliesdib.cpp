@@ -174,6 +174,8 @@ QKnxNetIpServiceFamiliesDibProxy::Builder QKnxNetIpServiceFamiliesDibProxy::buil
     \class QKnxNetIpServiceFamiliesDibProxy::Builder
 
     \inmodule QtKnx
+    \inheaderfile QKnxNetIpServiceFamiliesDibProxy
+
     \brief The QKnxNetIpServiceFamiliesDibProxy::Builder class creates a
     KNXnet/IP supported service families DIB structure.
 

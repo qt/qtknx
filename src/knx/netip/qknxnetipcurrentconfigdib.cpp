@@ -186,6 +186,8 @@ QKnxNetIpCurrentConfigDibProxy::Builder QKnxNetIpCurrentConfigDibProxy::builder(
     \class QKnxNetIpCurrentConfigDibProxy::Builder
 
     \inmodule QtKnx
+    \inheaderfile QKnxNetIpCurrentConfigDibProxy
+
     \brief The QKnxNetIpCurrentConfigDibProxy::Builder class creates a KNXnet/IP
     current IP configuration DIB structure.
 

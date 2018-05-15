@@ -151,6 +151,8 @@ QKnxNetIpSearchResponseProxy::Builder QKnxNetIpSearchResponseProxy::builder()
     \class QKnxNetIpSearchResponseProxy::Builder
 
     \inmodule QtKnx
+    \inheaderfile QKnxNetIpSearchResponseProxy
+
     \brief The QKnxNetIpSearchResponseProxy::Builder class provides the means to
     create a KNXnet/IP search response frame.
 

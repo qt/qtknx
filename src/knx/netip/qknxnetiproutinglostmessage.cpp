@@ -135,6 +135,8 @@ QKnxNetIpRoutingLostMessageProxy::Builder QKnxNetIpRoutingLostMessageProxy::buil
     \class QKnxNetIpRoutingLostMessageProxy::Builder
 
     \inmodule QtKnx
+    \inheaderfile QKnxNetIpRoutingLostMessageProxy
+
     \brief The QKnxNetIpRoutingLostMessageProxy::Builder class provides the
     means to create a routing-lost message frame.
 

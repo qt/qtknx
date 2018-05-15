@@ -131,6 +131,8 @@ QKnxNetIpSearchRequestProxy::Builder QKnxNetIpSearchRequestProxy::builder()
     \class QKnxNetIpSearchRequestProxy::Builder
 
     \inmodule QtKnx
+    \inheaderfile QKnxNetIpSearchRequestProxy
+
     \brief The QKnxNetIpSearchRequestProxy::Builder class provides the means to
     create a KNXnet/IP search request.
 

@@ -135,6 +135,8 @@ QKnxNetIpConnectionStateResponseProxy::Builder QKnxNetIpConnectionStateResponseP
     \class QKnxNetIpConnectionStateResponseProxy::Builder
 
     \inmodule QtKnx
+    \inheaderfile QKnxNetIpConnectionStateResponseProxy
+
     \brief The QKnxNetIpConnectionStateResponseProxy::Builder class provides the
     means to create a KNXnet/IP connection state response frame.
 

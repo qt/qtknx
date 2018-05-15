@@ -120,6 +120,8 @@ QKnxNetIpRoutingIndicationProxy::Builder QKnxNetIpRoutingIndicationProxy::builde
     \class QKnxNetIpRoutingIndicationProxy::Builder
 
     \inmodule QtKnx
+    \inheaderfile QKnxNetIpRoutingIndicationProxy
+
     \brief The QKnxNetIpRoutingIndicationProxy::Builder class provides the means
     to create a routing indication frame.
 

@@ -9,6 +9,6 @@
 %classnames = (
     "qknxnamespace.h" => "QKnx",
     "qknxnetip.h" => "NetIp,CemiServer",
-    "qknxdevicemanagementframefactory.h" => "QKnxDeviceManagementFrameBuilder,FunctionPropertyCommandBuilder,FunctionPropertyStateReadBuilder,PropertyInfoBuilder,PropertyReadBuilder,PropertyWriteBuilder,ResetBuilder",
+    "qknxdevicemanagementframefactory.h" => "QKnxDeviceManagementFrameBuilder",
     "qknxlinklayerframebuilder.h" => "QKnxLinkLayerFrameBuilder",
 );

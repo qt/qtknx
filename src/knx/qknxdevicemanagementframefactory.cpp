@@ -35,11 +35,10 @@ QT_BEGIN_NAMESPACE
     \class QKnxDeviceManagementFrame::Builder
 
     \inmodule QtKnx
+    \inheaderfile QKnxDeviceManagementFrameBuilder
+
     \brief The QKnxDeviceManagementFrame::Builder class provides the means to
     create valid device management service frames.
-
-    \note To make use of the class please use the
-    \b {#include <QKnxDeviceManagementFrameBuilder>} statement.
 
     The typical arguments needed to build a \l QKnxDeviceManagementFrame are:
     \list
@@ -165,11 +164,10 @@ QKnxDeviceManagementFrame QKnxDeviceManagementFrame::Builder::createFrame() cons
     \class QKnxDeviceManagementFrame::PropertyReadBuilder
 
     \inmodule QtKnx
+    \inheaderfile QKnxDeviceManagementFrameBuilder
+
     \brief The QKnxDeviceManagementFrame::PropertyReadBuilder class provides
     the means to create valid device management property read service frames.
-
-    \note To make use of the class please use the
-    \b {#include <QKnxDeviceManagementFrameBuilder>} statement.
 
     The property read service is used by a common external message interface
     (cEMI) client to send a property read request frame, \c {M_PropRead.req}.
@@ -357,11 +355,10 @@ QKnxDeviceManagementFrame PFRB::createNegativeConfirmation(QKnxNetIpCemiServer::
     \class QKnxDeviceManagementFrame::PropertyWriteBuilder
 
     \inmodule QtKnx
+    \inheaderfile QKnxDeviceManagementFrameBuilder
+
     \brief The QKnxDeviceManagementFrame::PropertyWriteBuilder class provides
     the means to create valid device management property write service frames.
-
-    \note To make use of the class please use the
-    \b {#include <QKnxDeviceManagementFrameBuilder>} statement.
 
     The property write service is used by a common external message interface
     (cEMI) client to send a property write request frame, \c {M_PropWrite.req}.
@@ -552,11 +549,10 @@ QKnxDeviceManagementFrame PFWB::createNegativeConfirmation(QKnxNetIpCemiServer::
     \class QKnxDeviceManagementFrame::PropertyInfoBuilder
 
     \inmodule QtKnx
+    \inheaderfile QKnxDeviceManagementFrameBuilder
+
     \brief The QKnxDeviceManagementFrame::PropertyInfoBuilder class provides
     the means to create a valid device management property info indication frame.
-
-    \note To make use of the class please use the
-    \b {#include <QKnxDeviceManagementFrameBuilder>} statement.
 
     The property info service is used for local device management. It is an
     \e unconfirmed service, that is used by a common external message interface
@@ -659,12 +655,11 @@ QKnxDeviceManagementFrame PFIB::createIndication(const QKnxByteArray &data) cons
     \class QKnxDeviceManagementFrame::FunctionPropertyCommandBuilder
 
     \inmodule QtKnx
+    \inheaderfile QKnxDeviceManagementFrameBuilder
+
     \brief The QKnxDeviceManagementFrame::FunctionPropertyCommandBuilder class
     provides the means to create valid device management function property
     command service frames.
-
-    \note To make use of the class please use the
-    \b {#include <QKnxDeviceManagementFrameBuilder>} statement.
 
     The function property command service is used by a common external message
     interface (cEMI) client to send a function property command request frame,
@@ -817,12 +812,11 @@ QKnxDeviceManagementFrame
     \class QKnxDeviceManagementFrame::FunctionPropertyStateReadBuilder
 
     \inmodule QtKnx
+    \inheaderfile QKnxDeviceManagementFrameBuilder
+
     \brief The QKnxDeviceManagementFrame::FunctionPropertyStateReadBuilder
     class provides the means to create valid device management function
     property state read service.
-
-    \note To make use of the class please use the
-    \b {#include <QKnxDeviceManagementFrameBuilder>} statement.
 
     The function property state read service is used by a common external
     message interface (cEMI) client to send a function property state read
@@ -976,11 +970,10 @@ QKnxDeviceManagementFrame
     \class QKnxDeviceManagementFrame::ResetBuilder
 
     \inmodule QtKnx
+    \inheaderfile QKnxDeviceManagementFrameBuilder
+
     \brief The QKnxDeviceManagementFrame::ResetBuilder class provides the means
     to build valid device management reset service frames.
-
-    \note To make use of the class please use the
-    \b {#include <QKnxDeviceManagementFrameBuilder>} statement.
 
     The reset service is used by a common external message interface (cEMI)
     client to send a reset request frame, \c {M_Reset.req}. It may be followed

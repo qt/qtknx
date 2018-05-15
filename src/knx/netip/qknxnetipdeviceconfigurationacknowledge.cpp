@@ -156,6 +156,8 @@ QKnxNetIpDeviceConfigurationAcknowledgeProxy::Builder
     \class QKnxNetIpDeviceConfigurationAcknowledgeProxy::Builder
 
     \inmodule QtKnx
+    \inheaderfile QKnxNetIpDeviceConfigurationAcknowledgeProxy
+
     \brief The QKnxNetIpDeviceConfigurationAcknowledgeProxy::Builder class
     provides the means to create a KNXnet/IP device configuration
     acknowledgment frame.

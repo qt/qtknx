@@ -157,6 +157,8 @@ QKnxNetIpTunnelingRequestProxy::Builder QKnxNetIpTunnelingRequestProxy::builder(
     \class QKnxNetIpTunnelingRequestProxy::Builder
 
     \inmodule QtKnx
+    \inheaderfile QKnxNetIpTunnelingRequestProxy
+
     \brief The QKnxNetIpTunnelingRequestProxy::Builder class provides the means
     to create a KNXnet/IP tunneling request frame.
 

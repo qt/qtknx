@@ -156,6 +156,8 @@ QKnxNetIpTunnelingAcknowledgeProxy::Builder QKnxNetIpTunnelingAcknowledgeProxy::
     \class QKnxNetIpTunnelingAcknowledgeProxy::Builder
 
     \inmodule QtKnx
+    \inheaderfile QKnxNetIpTunnelingAcknowledgeProxy
+
     \brief The QKnxNetIpTunnelingAcknowledgeProxy::Builder class provides the
     means to create a KNXnet/IP tunneling acknowledgment frame.
 

@@ -159,6 +159,8 @@ QKnxNetIpConnectResponseProxy::Builder QKnxNetIpConnectResponseProxy::builder()
     \class QKnxNetIpConnectResponseProxy::Builder
 
     \inmodule QtKnx
+    \inheaderfile QKnxNetIpConnectResponseProxy
+
     \brief The QKnxNetIpConnectResponseProxy::Builder class provides the means
     to create a KNXnet/IP connection response frame.
 
