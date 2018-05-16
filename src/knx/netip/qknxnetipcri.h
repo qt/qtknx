@@ -30,6 +30,7 @@
 #ifndef QKNXNETIPCRI_H
 #define QKNXNETIPCRI_H
 
+#include <QtKnx/qknxaddress.h>
 #include <QtKnx/qknxglobal.h>
 #include <QtKnx/qknxnetipstruct.h>
 
@@ -45,9 +46,11 @@ public:
     explicit QKnxNetIpCriProxy(const QKnxNetIpCri &cri);
 
     bool isValid() const;
+    bool isExtended() const;
 
     QKnxNetIp::ConnectionType connectionType() const;
     QKnxNetIp::TunnelLayer tunnelLayer() const;
+    QKnxAddress individualAddress() const;
     QKnxByteArray additionalData() const;
 
     class Q_KNX_EXPORT Builder final
@@ -55,6 +58,7 @@ public:
     public:
         Builder &setConnectionType(QKnxNetIp::ConnectionType type);
         Builder &setTunnelLayer(QKnxNetIp::TunnelLayer layer);
+        Builder &setIndividualAddress(const QKnxAddress &address);
         Builder &setAdditionalData(const QKnxByteArray &additionalData);
 
         QKnxNetIpCri create() const;

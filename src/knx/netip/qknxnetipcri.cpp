@@ -98,8 +98,8 @@ bool QKnxNetIpCriProxy::isValid() const
     switch (m_cri.code()) {
         case QKnxNetIp::ConnectionType::Tunnel: {
             auto tmp = m_cri.constData().value(0);
-            return m_cri.isValid() && m_cri.size() == 4
-                && QKnxNetIp::isTunnelLayer(QKnxNetIp::TunnelLayer(tmp));
+            return m_cri.isValid() && QKnxNetIp::isTunnelLayer(QKnxNetIp::TunnelLayer(tmp))
+                && (m_cri.size() == 4 || m_cri.size() == 6);
         }
         case QKnxNetIp::ConnectionType::DeviceManagement:
         case QKnxNetIp::ConnectionType::RemoteLogging:
@@ -110,6 +110,20 @@ bool QKnxNetIpCriProxy::isValid() const
             break;
     }
     return false;
+}
+
+/*!
+    Returns \c true if this is an extended connection request information (CRI)
+    frame; otherwise returns \c false.
+
+    \note No validation checks are performed on the given KNXnet/IP frame
+    that was passed during construction.
+
+    \sa isValid()
+*/
+bool QKnxNetIpCriProxy::isExtended() const
+{
+    return (m_cri.code() == QKnxNetIp::ConnectionType::Tunnel) && (m_cri.size() == 6);
 }
 
 /*!
@@ -129,7 +143,7 @@ QKnxNetIp::ConnectionType QKnxNetIpCriProxy::connectionType() const
     was passed during construction was valid and the connection type
     is \l QKnx::NetIp::Tunnel, otherwise returns \l QKnx::NetIp::Unknown.
 
-    \sa additionalData()
+    \sa additionalData(), individualAddress()
 */
 QKnxNetIp::TunnelLayer QKnxNetIpCriProxy::tunnelLayer() const
 {
@@ -139,12 +153,26 @@ QKnxNetIp::TunnelLayer QKnxNetIpCriProxy::tunnelLayer() const
 }
 
 /*!
+    Returns the individual address of the extended connection request information
+    structure if the object that was passed during construction was valid and an
+    extended structure; otherwise returns \l QKnx::NetIp::Unknown.
+
+    \sa isExtended(), tunnelLayer(), additionalData()
+*/
+QKnxAddress QKnxNetIpCriProxy::individualAddress() const
+{
+    if (isExtended() && isValid())
+        return { QKnxAddress::Type::Individual, m_cri.constData().mid(2, 2) };
+    return {};
+}
+
+/*!
     Returns the additional data of this KNXnet/IP structure.
 
     The current KNX specification foresees additional data only in the case of
     tunneling.
 
-    \sa tunnelLayer()
+    \sa tunnelLayer(), individualAddress()
 */
 QKnxByteArray QKnxNetIpCriProxy::additionalData() const
 {
@@ -202,13 +230,35 @@ QKnxNetIpCriProxy::Builder &
 
     Does nothing if \a layer is not a \l QKnx::NetIp::TunnelLayer value.
 
-    \sa setAdditionalData()
+    \sa setAdditionalData(), setIndividualAddress()
 */
 QKnxNetIpCriProxy::Builder &
     QKnxNetIpCriProxy::Builder::setTunnelLayer(QKnxNetIp::TunnelLayer layer)
 {
     if (QKnxNetIp::isTunnelLayer(layer))
-        setAdditionalData({ quint8(layer), 0x00 /* reserved byte */ });
+        m_additionalData.replace(0, 2, { quint8(layer), 0x00 /* reserved byte */ });
+    return *this;
+}
+
+/*!
+    Sets the individual address of the extended connection request information
+    to \a address and returns a reference to the builder.
+
+    Does nothing if \a address is not of type
+    \l {QKnxAddress::Type}{QKnxAddress::Type::Individual}.
+
+    \note The current KNX specification foresees setting an individual address
+    only in the case of extended tunneling connection requests.
+
+    \sa setTunnelLayer(), setAdditionalData()
+*/
+QKnxNetIpCriProxy::Builder &
+    QKnxNetIpCriProxy::Builder::setIndividualAddress(const QKnxAddress &address)
+{
+    if (address.type() == QKnxAddress::Type::Individual) {
+        m_additionalData.resize(2);
+        m_additionalData.append(address.bytes());
+    }
     return *this;
 }
 
@@ -219,7 +269,28 @@ QKnxNetIpCriProxy::Builder &
     The current KNX specification foresees additional data only in the case of
     tunneling.
 
-    \sa setTunnelLayer()
+    The common way to use the function is:
+    \code
+        QKnxAddress ia { QKnxAddress::Type::Individual, 2013 };
+        auto cri = QKnxNetIpCriProxy::builder()
+            .setConnectionType(QKnxNetIp::ConnectionType::Tunnel)
+            .setAdditionalData(QKnxByteArray {
+                   quint8(QKnxNetIp::TunnelLayer::Link), // tunnel layer
+                   0x00                                  // reserved byte
+                } + ia.bytes() // address for extended connection request
+            ).create();
+    \endcode
+
+    The above code is equivalent to the more expressive one shown here:
+    \code
+        auto cri = QKnxNetIpCriProxy::builder()
+            .setConnectionType(QKnxNetIp::ConnectionType::Tunnel)
+            .setTunnelLayer(QKnxNetIp::TunnelLayer::Link)
+            .setIndividualAddress({ QKnxAddress::Type::Individual, 2013 })
+            .create();
+    \endcode
+
+    \sa setTunnelLayer(), setIndividualAddress()
 */
 QKnxNetIpCriProxy::Builder &
     QKnxNetIpCriProxy::Builder::setAdditionalData(const QKnxByteArray &additionalData)

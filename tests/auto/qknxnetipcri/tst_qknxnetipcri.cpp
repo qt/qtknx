@@ -44,6 +44,7 @@ private slots:
     void testDefaultConstructor();
     void testConstructorTunnelingLayer();
     void testConstructorConnectionType();
+    void testAdditionalData();
     void testDebugStream();
 };
 
@@ -172,6 +173,41 @@ void tst_QKnxNetIpCri::testConstructorConnectionType()
     QCOMPARE(cri.data(), QKnxByteArray {});
     QCOMPARE(view.isValid(), true);
     QCOMPARE(view.connectionType(), QKnxNetIp::ConnectionType::ObjectServer);
+}
+
+void tst_QKnxNetIpCri::testAdditionalData()
+{
+    auto frame = QKnxNetIpCriProxy::builder()
+        .setConnectionType(QKnxNetIp::ConnectionType::Tunnel)
+        .setTunnelLayer(QKnxNetIp::TunnelLayer::Link)
+        .create();
+    auto frame2 = QKnxNetIpCriProxy::builder()
+        .setConnectionType(QKnxNetIp::ConnectionType::Tunnel)
+        .setAdditionalData({ quint8(QKnxNetIp::TunnelLayer::Link), 0x00 })
+        .create();
+    QCOMPARE(frame, frame2);
+
+    QKnxNetIpCriProxy cri(frame);
+    QCOMPARE(cri.isValid(), true);
+    QCOMPARE(cri.isExtended(), false);
+    QCOMPARE(cri.individualAddress(), {});
+
+    QKnxAddress address { QKnxAddress::Type::Individual, 2013 };
+    frame = QKnxNetIpCriProxy::builder()
+        .setConnectionType(QKnxNetIp::ConnectionType::Tunnel)
+        .setTunnelLayer(QKnxNetIp::TunnelLayer::Link)
+        .setIndividualAddress(address)
+        .create();
+    frame2 = QKnxNetIpCriProxy::builder()
+        .setConnectionType(QKnxNetIp::ConnectionType::Tunnel)
+        .setAdditionalData(QKnxByteArray{ quint8(QKnxNetIp::TunnelLayer::Link), 0x00 }
+            + address.bytes())
+        .create();
+    QCOMPARE(frame, frame2);
+
+    QCOMPARE(cri.isValid(), true);
+    QCOMPARE(cri.isExtended(), true);
+    QCOMPARE(cri.individualAddress(), address);
 }
 
 void tst_QKnxNetIpCri::testDebugStream()
