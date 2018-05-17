@@ -38,4 +38,5 @@ SUBDIRS += cmake \
     qknxdatapointtype \
     qknxproject \
     qknxgroupaddressinfo \
-    qknxbytearray
+    qknxbytearray \
+    qknxnetiptunnelingfeature

@@ -125,6 +125,10 @@ bool QKnxNetIpFrame::isValid() const
     switch (serviceType()) {
         case QKnxNetIp::ServiceType::TunnelingRequest:
         case QKnxNetIp::ServiceType::TunnelingAcknowledge:
+        case QKnxNetIp::ServiceType::TunnelingFeatureGet:
+        case QKnxNetIp::ServiceType::TunnelingFeatureSet:
+        case QKnxNetIp::ServiceType::TunnelingFeatureInfo:
+        case QKnxNetIp::ServiceType::TunnelingFeatureResponse:
         case QKnxNetIp::ServiceType::DeviceConfigurationRequest:
         case QKnxNetIp::ServiceType::DeviceConfigurationAcknowledge:
             connHeaderValid = d_ptr->m_connectionHeader.isValid();

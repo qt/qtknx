@@ -37,9 +37,15 @@ PUBLIC_HEADERS += $$PWD/qknxnetip.h \
     $$PWD/qknxnetipstructheader.h \
     $$PWD/qknxnetiptunnel.h \
     $$PWD/qknxnetiptunnelingacknowledge.h \
+    $$PWD/qknxnetiptunnelingfeatureget.h \
+    $$PWD/qknxnetiptunnelingfeatureinfo.h \
+    $$PWD/qknxnetiptunnelingfeatureresponse.h \
+    $$PWD/qknxnetiptunnelingfeatureset.h \
     $$PWD/qknxnetiptunnelingrequest.h
 
-PRIVATE_HEADERS += $$PWD/qknxnetipendpointconnection_p.h \
+PRIVATE_HEADERS += \
+    $$PWD/qknxbuilderdata_p.h \
+    $$PWD/qknxnetipendpointconnection_p.h \
     $$PWD/qknxnetipserverdescriptionagent_p.h \
     $$PWD/qknxnetipserverdiscoveryagent_p.h \
     $$PWD/qknxnetipserverinfo_p.h
@@ -81,4 +87,8 @@ SOURCES += $$PWD/qknxnetip.cpp \
     $$PWD/qknxnetipstructheader.cpp \
     $$PWD/qknxnetiptunnel.cpp \
     $$PWD/qknxnetiptunnelingacknowledge.cpp \
+    $$PWD/qknxnetiptunnelingfeatureget.cpp \
+    $$PWD/qknxnetiptunnelingfeatureinfo.cpp \
+    $$PWD/qknxnetiptunnelingfeatureresponse.cpp \
+    $$PWD/qknxnetiptunnelingfeatureset.cpp \
     $$PWD/qknxnetiptunnelingrequest.cpp
