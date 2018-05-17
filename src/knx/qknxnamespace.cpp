@@ -50,4 +50,57 @@ QT_BEGIN_NAMESPACE
     \value NetIP        The supported medium type is KNXnet/IP.
 */
 
+/*!
+    \enum QKnx::InterfaceFeature
+
+    This enumeration contains the values to identify an interface feature
+    service (also known as device feature).
+
+    \value Unknown      The used feature service is unknown.
+    \value SupportedEmiType
+           Getting the supported EMI type(s).
+    \value HostDeviceDescriptorType0
+           Getting the local device descriptor type 0 for possible local device
+           management.
+    \value BusConnectionStatus
+           Getting and informing on the bus connection status.
+    \value KnxManufacturerCode
+           Getting the manufacturer code of the bus access server.
+    \value ActiveEmiType
+           Getting and setting the EMI type to use.
+    \value IndividualAddress
+           Getting the individual address used by the bus interface.
+    \value MaximumApduLength
+           Getting the maximal APDU-length that can be transported over a
+           KNXnet/IP tunneling connection.
+    \value InterfaceFeatureInfoServiceEnable
+           Controlling the use of the
+           \l{QKnx::NetIp::TunnelingFeatureInfo}{info feature} service by the
+           interface.
+*/
+
+/*!
+    \fn QKnx::isInterfaceFeature(QKnx::InterfaceFeature feature)
+
+    Returns \c true if the specified \a feature is a part of the
+    \l InterfaceFeature enumeration; otherwise returns \c false.
+*/
+bool QKnx::isInterfaceFeature(QKnx::InterfaceFeature feature)
+{
+    switch (feature) {
+    case QKnx::InterfaceFeature::SupportedEmiType:
+    case QKnx::InterfaceFeature::HostDeviceDescriptorType0:
+    case QKnx::InterfaceFeature::BusConnectionStatus:
+    case QKnx::InterfaceFeature::KnxManufacturerCode:
+    case QKnx::InterfaceFeature::ActiveEmiType:
+    case QKnx::InterfaceFeature::IndividualAddress:
+    case QKnx::InterfaceFeature::MaximumApduLength:
+    case QKnx::InterfaceFeature::InterfaceFeatureInfoServiceEnable:
+        return true;
+    case QKnx::InterfaceFeature::Unknown:
+        break;
+    }
+    return false;
+}
+
 QT_END_NAMESPACE

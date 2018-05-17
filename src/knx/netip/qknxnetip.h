@@ -119,6 +119,10 @@ namespace QKnx
             // KNXnet/IP Tunneling service type identifiers
             TunnelingRequest = 0x0420,
             TunnelingAcknowledge = 0x0421,
+            TunnelingFeatureGet = 0x0422,
+            TunnelingFeatureResponse = 0x0423,
+            TunnelingFeatureSet = 0x0424,
+            TunnelingFeatureInfo = 0x0425,
 
             // KNXnet/IP Routing service type identifier
             RoutingIndication = 0x0530,

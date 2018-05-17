@@ -48,6 +48,21 @@ namespace QKnx
         NetIP = 0x20
     };
     Q_ENUM_NS(MediumType)
+
+    enum class InterfaceFeature : quint8
+    {
+        Unknown = 0x00,
+        SupportedEmiType = 0x01,
+        HostDeviceDescriptorType0 = 0x02,
+        BusConnectionStatus = 0x03,
+        KnxManufacturerCode = 0x04,
+        ActiveEmiType = 0x05,
+        IndividualAddress = 0x06,
+        MaximumApduLength = 0x07,
+        InterfaceFeatureInfoServiceEnable = 0x08
+    };
+    Q_ENUM_NS(InterfaceFeature)
+    Q_KNX_EXPORT bool isInterfaceFeature(QKnx::InterfaceFeature feature);
 }
 
 QT_END_NAMESPACE

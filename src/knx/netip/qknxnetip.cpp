@@ -245,7 +245,7 @@ bool QKnxNetIp::isServiceFamily(QKnxNetIp::ServiceFamily family)
            The service type sent by a KNXnet/IP device in response to a
            disconnect request.
     \value DeviceConfigurationRequest
-           The service type sent to read or write KNXnet/IP device configuratio
+           The service type sent to read or write KNXnet/IP device configuration
            data.
     \value DeviceConfigurationAcknowledge
            The service type sent by a KNXnet/IP device to confirm the reception
@@ -256,6 +256,19 @@ bool QKnxNetIp::isServiceFamily(QKnxNetIp::ServiceFamily family)
     \value TunnelingAcknowledge
            The service type sent by a KNXnet/IP client or server to confirm the
            reception of the tunneling request.
+    \value TunnelingFeatureGet
+           The service feature type used by the KNXnet/IP tunneling client to
+           read the value of a feature from the KNXnet/IP tunneling server.
+    \value TunnelingFeatureResponse
+           The service feature type used by the KNXnet/IP tunneling server to
+           respond to a feature get or set request by the KNXnet/IP tunneling
+           client.
+    \value TunnelingFeatureSet
+           The service feature type used by the KNXnet/IP tunneling client to
+           set the value of a feature of the KNXnet/IP tunneling server.
+    \value TunnelingFeatureInfo
+           The service feature type used by the KNXnet/IP tunneling server to
+           inform the KNXnet/IP tunneling client on a value of an interface feature.
     \value RoutingIndication
            The service type used for sending KNX frames over IP networks.
     \value RoutingLostMessage
@@ -289,6 +302,10 @@ bool QKnxNetIp::isServiceType(QKnxNetIp::ServiceType type)
     case QKnxNetIp::ServiceType::DeviceConfigurationAcknowledge:
     case QKnxNetIp::ServiceType::TunnelingRequest:
     case QKnxNetIp::ServiceType::TunnelingAcknowledge:
+    case QKnxNetIp::ServiceType::TunnelingFeatureGet:
+    case QKnxNetIp::ServiceType::TunnelingFeatureResponse:
+    case QKnxNetIp::ServiceType::TunnelingFeatureSet:
+    case QKnxNetIp::ServiceType::TunnelingFeatureInfo:
     case QKnxNetIp::ServiceType::RoutingIndication:
     case QKnxNetIp::ServiceType::RoutingLostMessage:
     case QKnxNetIp::ServiceType::RoutingBusy:
