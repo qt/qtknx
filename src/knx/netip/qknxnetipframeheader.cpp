@@ -39,6 +39,7 @@ constexpr const quint8 QKnxNetIpFrameHeader::KnxNetIpVersion10;
     \class QKnxNetIpFrameHeader
 
     \inmodule QtKnx
+    \ingroup qtknx-netip
 
     \brief The QKnxNetIpFrameHeader class is a KNXnet/IP frame header.
 
@@ -47,6 +48,8 @@ constexpr const quint8 QKnxNetIpFrameHeader::KnxNetIpVersion10;
     KNXnet/IP header. The common KNXnet/IP header contains information about
     the protocol version, the header and total packet size, and a KNXnet/IP
     service type identifier.
+
+    \sa {Qt KNXnet/IP Connection Classes}
 */
 
 /*!

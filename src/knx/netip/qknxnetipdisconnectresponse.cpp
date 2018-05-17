@@ -35,6 +35,8 @@ QT_BEGIN_NAMESPACE
     \class QKnxNetIpDisconnectResponseProxy
 
     \inmodule QtKnx
+    \ingroup qtknx-netip
+
     \brief The QKnxNetIpDisconnectResponseProxy class provides the means to read
     a KNXnet/IP disconnection response from the generic \l QKnxNetIpFrame
     class and to create a disconnection response frame based on the information.
@@ -63,7 +65,8 @@ QT_BEGIN_NAMESPACE
         QKnx::NetIp::Error state = disconnectRequest.status();
     \endcode
 
-    \sa builder(), QKnxNetIpDisconnectRequestProxy
+    \sa builder(), QKnxNetIpDisconnectRequestProxy,
+        {Qt KNXnet/IP Connection Classes}
 */
 
 /*!

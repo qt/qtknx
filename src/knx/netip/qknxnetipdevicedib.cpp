@@ -36,6 +36,8 @@ QT_BEGIN_NAMESPACE
     \class QKnxNetIpDeviceDibProxy
 
     \inmodule QtKnx
+    \ingroup qtknx-netip
+
     \brief The QKnxNetIpDeviceDibProxy class provides the means to read the
     device information of a KNXnet/IP device from the generic \l QKnxNetIpDib
     class and to create a KNXnet/IP device information block (DIB) structure.
@@ -58,7 +60,7 @@ QT_BEGIN_NAMESPACE
         auto deviceName = view.deviceName();
     \endcode
 
-    \sa builder()
+    \sa builder(), {Qt KNXnet/IP Connection Classes}
 */
 
 /*!

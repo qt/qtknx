@@ -38,6 +38,8 @@ QT_BEGIN_NAMESPACE
     \class QKnxNetIpServerInfo
 
     \inmodule QtKnx
+    \ingroup qtknx-netip
+
     \brief The QKnxNetIpServerInfo class stores information about a KNXnet/IP
     server.
 
@@ -60,6 +62,8 @@ QT_BEGIN_NAMESPACE
 
     \sa QKnxAddress, QKnxNetIpHpai, QKnxNetIpHpaiProxy, QKnxNetIpDib,
     QKnxNetIpDeviceDibProxy, QKnxNetIpServiceFamiliesDibProxy
+
+    \sa {Qt KNXnet/IP Connection Classes}
 */
 
 /*!

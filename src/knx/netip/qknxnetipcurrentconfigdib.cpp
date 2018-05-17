@@ -36,6 +36,8 @@ QT_BEGIN_NAMESPACE
     \class QKnxNetIpCurrentConfigDibProxy
 
     \inmodule QtKnx
+    \ingroup qtknx-netip
+
     \brief The QKnxNetIpCurrentConfigDibProxy class provides the means to read
     the current IP configuration from the generic \l QKnxNetIpDib class and to
     create a KNXnet/IP current IP configuration (DIB) structure based on the
@@ -63,7 +65,7 @@ QT_BEGIN_NAMESPACE
         auto assignmentMethod = view.assignmentMethod();
     \endcode
 
-    \sa builder()
+    \sa builder(), {Qt KNXnet/IP Connection Classes}
 */
 
 /*!

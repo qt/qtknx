@@ -1,0 +1,203 @@
+/****************************************************************************
+**
+** Copyright (C) 2018 The Qt Company Ltd.
+** Contact: https://www.qt.io/licensing/
+**
+** This file is part of the documentation of the Qt Toolkit.
+**
+** $QT_BEGIN_LICENSE:FDL$
+** Commercial License Usage
+** Licensees holding valid commercial Qt licenses may use this file in
+** accordance with the commercial license agreement provided with the
+** Software or, alternatively, in accordance with the terms contained in
+** a written agreement between you and The Qt Company. For licensing terms
+** and conditions see https://www.qt.io/terms-conditions. For further
+** information use the contact form at https://www.qt.io/contact-us.
+**
+** GNU Free Documentation License Usage
+** Alternatively, this file may be used under the terms of the GNU Free
+** Documentation License version 1.3 as published by the Free Software
+** Foundation and appearing in the file included in the packaging of
+** this file. Please review the following information to ensure
+** the GNU Free Documentation License version 1.3 requirements
+** will be met: https://www.gnu.org/licenses/fdl-1.3.html.
+** $QT_END_LICENSE$
+**
+****************************************************************************/
+
+/*!
+    \page qtknx-netip.html
+    \title Qt KNXnet/IP Connection Classes
+    \brief C++ classes that enable KNXnet/IP connections.
+
+    The integration of KNX protocol implementations on top of internet protocol
+    (IP) networks is called \e KNXnet/IP. The Qt KNX module implements the
+    client side of a connection between KNX devices connected to an IP network,
+    called \e KNXnet/IP devices. The IP network provides a fast backbone for KNX
+    installations.
+
+    To communicate with a KNXnet/IP server, the KNXnet/IP client must first
+    discover the server by using the \l QKnxNetIpServerDiscoveryAgent class.
+    If necessary, the \l QKnxNetIpServerDescriptionAgent and
+    \l QKnxNetIpServerInfo classes can be used to obtain additional
+    information about a particular server.
+
+    Once the KNXnet/IP server is discovered, the KNXnet/IP client uses the
+    server endpoints to establish a communication channel to the server for
+    transferring KNXnet/IP frames.
+
+    The Qt KNX module contains a set of proxy classes that provide the
+    means to read a request, response, or acknowledgment from the generic
+    \l QKnxNetIpFrame class and to create a KNXnet/IP frame based on the
+    information.
+
+    \image qtknx-netip-frame-proxy-classes.png
+
+    \note In most programs, these classes will not be used directly.
+    Instead, the \l QKnxNetIpTunnel or \l QKnxNetIpDeviceManagement
+    class is used to establish a functional connection to a KNXnet/IP server.
+
+    The following sections describe the process of establishing a communication
+    channel between a KNXnet/IP client and a KNXnet/IP server using the proxy
+    classes.
+
+    \section1 Discovering KNXnet/IP Servers
+
+    To discover KNXnet/IP servers, a KNXnet/IP client sends a search request
+    frame (\l QKnxNetIpSearchRequestProxy) via multicast using its
+    \e {discovery endpoint}. All servers that receive the request immediately
+    send a search response (\l QKnxNetIpSearchResponseProxy) using the host
+    address protocol information (HPAI) of the client's discovery endpoint.
+    The search response frame contains the HPAI of the server's control endpoint
+    (\l QKnxNetIpHpai) for all further communication.
+
+    Before communicating with a KNXnet/IP server, the KNXnet/IP client sends a
+    description request (\l QKnxNetIpDescriptionRequestProxy) through a unicast
+    or point-to-point connection to all \e {control endpoints} of the server to
+    check that the server supports the requested connection type and options.
+    The server replies by sending a description response frame
+    (\l QKnxNetIpDescriptionResponseProxy) that contains the requested
+    information.
+
+    Search and description response frames contain information about the
+    KNXnet/IP server as a KNXnet/IP device information block (DIB) structure.
+    A DIB structure is constructed by using the QKnxNetIpDeviceDibProxy class
+    to read the device information from the generic \l QKnxNetIpDib class.
+    The following proxy classes can be used to read other types of device
+    information from the class:
+
+    \list
+        \li \l QKnxNetIpConfigDibProxy for reading the IP configuration of a
+            KNXnet/IP device
+        \li \l QKnxNetIpCurrentConfigDibProxy for reading the current IP
+            configuration of a KNXnet/IP device
+        \li \l QKnxNetIpKnxAddressesDibProxy for reading all assigned individual
+            addresses of a KNXnet/IP device
+        \li \l QKnxNetIpManufacturerDibProxy for reading manufacturer specific
+            device information
+        \li \l QKnxNetIpServiceFamiliesDibProxy for reading the service families
+            and versions supported by a KNXnet/IP device
+    \endlist
+
+    \section1 Creating and Maintaining Communication Channels
+
+    To establish a communication channel to a KNXnet/IP server, a KNXnet/IP
+    client sends a connection request (\l QKnxNetIpConnectRequestProxy). The
+    connection request provides information needed for different types of
+    communication channels to fulfill a connection request as a KNXnet/IP
+    connection request information (CRI) structure. A CRI structure is
+    constructed from the generic \l QKnxNetIpCri class by using the
+    \l QKnxNetIpCriProxy class.
+
+    In response, the KNXnet/IP server sends a connection response frame
+    (\l QKnxNetIpConnectResponseProxy) that returns the group address or
+    individual address (\l QKnxAddress) that is assigned to the connection
+    by the server.
+
+    The address is returned in a connection response data (CRD) structure with
+    the connect response \l QKnxNetIpFrame. The CRD structure is constructed
+    from the generic \l QKnxNetIpCrd class by using the \l QKnxNetIpCrdProxy
+    class.
+
+    If the server accepted the request, the frame also contains the identifier
+    and HPAI of the \e {data endpoint} that the server prepared for the
+    communication channel.
+
+    A KNXnet/IP client reqularly sends a connection state request frame
+    (\l QKnxNetIpConnectionStateRequestProxy) to the KNXnet/IP server's control
+    endpoint to check the state of a connection established to the server.
+    The server responds immediately with a connection state response frame
+    (\l QKnxNetIpConnectionStateResponseProxy).
+
+    \section1 Sending Service Requests
+
+    Once the communication channel is established, the KNXnet/IP client can
+    send tunneling requests (\l QKnxNetIpTunnelingRequestProxy) and device
+    configuration requests (\l QKnxNetIpDeviceConfigurationRequestProxy) to
+    the KNXnet/IP server. The server responds with a tunneling acknowledgment
+    (\l QKnxNetIpTunnelingAcknowledgeProxy) or a device configuration
+    acknowledgment (\l QKnxNetIpDeviceConfigurationRequestProxy), respectively.
+
+    If the KNXnet/IP client does not receive an acknowledgment within a
+    specified timeout, or the status of a received acknowledgment frame
+    indicates that errors occurred, the client repeats the request frame
+    the specified number of times and then terminates the connection by
+    sending a disconnection request (\l QKnxNetIpDisconnectRequestProxy)
+    to the server's control endpoint.
+
+    For more information about device management and tunneling, see
+    \l {Qt KNX Device Management Classes} and \l {Qt KNX Tunneling Classes}.
+
+    \section1 KNXnet/IP Endpoints
+
+    The HPAI structure (created by using the \l QKnxNetIpHpaiProxy) contains
+    the IP address and port number needed to send a KNXnet/IP frame to another
+    device. Different types of \e endpoints provide logical views of a HPAI to
+    access devices for a particular purpose.
+
+    Each KNXnet/IP device supports one device-related, bi-directional, and
+    connectionless discovery endpoint for device discovery and another one
+    for control. In addition, each device supports one connection-oriented
+    endpoint for service type related data transmission.
+
+    The control endpoint uniquely identifies a KNXnet/IP server that provides
+    at least one type of KNXnet/IP service.
+
+    \section1 KNXnet/IP Frames
+
+    The body of every KNXnet/IP frame (\l QKnxNetIpFrame) sent over an
+    established communication channel starts with a data field that contains
+    additional general information about the data connection
+    (\l QKnxNetIpConnectionHeader). The amount of this data and what
+    type of information is included there in particular is determined by
+    several options during the connection phase of a communication channel.
+
+    \section1 Routing
+
+    A routing indication is sent by a KNXnet/IP router or device to transmit KNX
+    link layer frames over IP networks. The \l QKnxNetIpRoutingIndicationProxy
+    class provides the means to read a routing indication from the generic
+    \l QKnxNetIpFrame class and to create a KNXnet/IP frame based on the
+    information.
+
+    Depending on the configuration, a KNXnet/IP router or device can receive
+    more datagrams than it can forward to the KNX subnetwork. This can lead
+    to an overflow of the datagram queue and subsequent loss of one or more
+    KNXnet/IP telegrams, because they could not be transferred from the
+    network buffer to the queue to the underlying KNX subnetwork.
+
+    Flow control is implemented by means of sending router busy messages
+    to avoid the loss of datagrams due to overflowing queues in routers and
+    devices. Router busy messages are created by using the
+    \l QKnxNetIpRoutingBusyProxy class.
+
+    A routing-lost message is multicast by a KNXnet/IP router to notify that
+    KNXnet/IP routing indication frames were lost. The message contains the
+    state of the router or device (\l QKnx::NetIp::DeviceState) and the number
+    of lost frames. The messages are created by using the
+    \l QKnxNetIpRoutingLostMessageProxy class.
+
+    \section1 List of KNXnet/IP Classes
+
+    \annotatedlist qtknx-netip
+*/

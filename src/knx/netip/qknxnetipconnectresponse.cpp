@@ -35,6 +35,8 @@ QT_BEGIN_NAMESPACE
     \class QKnxNetIpConnectResponseProxy
 
     \inmodule QtKnx
+    \ingroup qtknx-netip
+
     \brief The QKnxNetIpConnectResponseProxy class provides the means to read
     a connection response from the generic \l QKnxNetIpFrame class and to
     create a KNXnet/IP frame based on the information.
@@ -65,7 +67,7 @@ QT_BEGIN_NAMESPACE
         auto netIpError = connectResponse.status();
     \endcode
 
-    \sa builder()
+    \sa builder(), {Qt KNXnet/IP Connection Classes}
 */
 
 /*!

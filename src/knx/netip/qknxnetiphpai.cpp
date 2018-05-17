@@ -36,6 +36,8 @@ QT_BEGIN_NAMESPACE
     \class QKnxNetIpHpaiProxy
 
     \inmodule QtKnx
+    \ingroup qtknx-netip
+
     \brief The QKnxNetIpHpaiProxy class provides the means to read the
     KNXnet/IP host address protocol information (HPAI) from the generic
     QKnxNetIpHpai class and to create such a structure.
@@ -67,7 +69,7 @@ QT_BEGIN_NAMESPACE
         auto port = view.port();
     \endcode
 
-    \sa builder()
+    \sa builder(), {Qt KNXnet/IP Connection Classes}
 */
 
 /*!

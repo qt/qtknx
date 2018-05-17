@@ -35,6 +35,7 @@ QT_BEGIN_NAMESPACE
     \class QKnxNetIpStructHeader
 
     \inmodule QtKnx
+    \ingroup qtknx-netip
 
     \brief The QKnxNetIpStructHeader class is a KNXnet/IP structure header.
 
@@ -44,6 +45,8 @@ QT_BEGIN_NAMESPACE
     If the structure's amount of data exceeds 252 octets, the first octet is
     \c 0xff and the next two octets contain the length as a 16 bit value. The
     fourth octet is then the identifier specifying the type of the structure.
+
+    \sa {Qt KNXnet/IP Connection Classes}
 */
 
 /*!

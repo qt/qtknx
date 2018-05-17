@@ -37,6 +37,8 @@ QT_BEGIN_NAMESPACE
     \inmodule QtKnx
     \class QKnxServiceInfo
 
+    \ingroup qtknx-netip
+
     \brief The QKnxServiceInfo class contains the supported service and the
     corresponding service family version.
 
@@ -45,7 +47,7 @@ QT_BEGIN_NAMESPACE
     refers to the version of the corresponding KNXnet/IP document, not to the
     manufacturer's implemented version.
 
-    \sa QKnxNetIpServiceFamiliesDibProxy
+    \sa QKnxNetIpServiceFamiliesDibProxy, {Qt KNXnet/IP Connection Classes}
 */
 
 /*!
@@ -68,6 +70,8 @@ QT_BEGIN_NAMESPACE
     \class QKnxNetIpServiceFamiliesDibProxy
 
     \inmodule QtKnx
+    \ingroup qtknx-netip
+
     \brief The QKnxNetIpServiceFamiliesDibProxy class provides the means to read
     the supported service families and versions from the generic \l QKnxNetIpDib
     class and to create a KNXnet/IP device information block (DIB) structure
@@ -95,7 +99,7 @@ QT_BEGIN_NAMESPACE
         auto infos = view.serviceInfos();
     \endcode
 
-    \sa builder()
+    \sa builder(), {Qt KNXnet/IP Connection Classes}
 */
 
 /*!

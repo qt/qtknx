@@ -35,6 +35,8 @@ QT_BEGIN_NAMESPACE
     \class QKnxNetIpConnectionStateResponseProxy
 
     \inmodule QtKnx
+    \ingroup qtknx-netip
+
     \brief The QKnxNetIpConnectionStateResponseProxy class provides the means to
     read a KNXnet/IP connection state response from the generic
     \l QKnxNetIpFrame class and to create a connection state response frame
@@ -63,7 +65,7 @@ QT_BEGIN_NAMESPACE
         auto status = connectionStateResponse.status();
     \endcode
 
-    \sa builder(), QKnxNetIpConnectionStateRequestProxy
+    \sa builder(), QKnxNetIpConnectionStateRequestProxy, {Qt KNXnet/IP Connection Classes}
 */
 
 /*!

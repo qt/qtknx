@@ -34,6 +34,7 @@ QT_BEGIN_NAMESPACE
 /*!
     \class QKnxNetIpHpai
     \inmodule QtKnx
+    \ingroup qtknx-netip
 
     \brief The QKnxNetIpHpai class stores the address information required to
     uniquely identify a communication channel on the host protocol.
@@ -41,12 +42,14 @@ QT_BEGIN_NAMESPACE
     The size of a KNXnet/IP host protocol address information (HPAI) structure
     varies depending on the host protocol.
 
-    \sa QKnxNetIpConnectResponseProxy, QKnxNetIpHpaiProxy
+    \sa QKnxNetIpConnectResponseProxy, QKnxNetIpHpaiProxy,
+        {Qt KNXnet/IP Connection Classes}
 */
 
 /*!
     \class QKnxNetIpCri
     \inmodule QtKnx
+    \ingroup qtknx-netip
 
     \brief The QKnxNetIpCri class stores the additional information needed by
     communication channels to fulfill a connection request.
@@ -55,12 +58,14 @@ QT_BEGIN_NAMESPACE
     substructures that contain both host protocol independent data and host
     protocol dependent data.
 
-    \sa QKnxNetIpConnectResponseProxy, QKnxNetIpCriProxy
+    \sa QKnxNetIpConnectResponseProxy, QKnxNetIpCriProxy,
+        {Qt KNXnet/IP Connection Classes}
 */
 
 /*!
     \class QKnxNetIpCrd
     \inmodule QtKnx
+    \ingroup qtknx-netip
 
     \brief The QKnxNetIpCrd class stores the data block returned with a
     KNXnet/IP connection request frame.
@@ -69,12 +74,14 @@ QT_BEGIN_NAMESPACE
     substructures that contain both host protocol independent data and host
     protocol dependent data.
 
-    \sa QKnxNetIpConnectResponseProxy, QKnxNetIpCrdProxy
+    \sa QKnxNetIpConnectResponseProxy, QKnxNetIpCrdProxy,
+        {Qt KNXnet/IP Connection Classes}
 */
 
 /*!
     \class QKnxNetIpDib
     \inmodule QtKnx
+    \ingroup qtknx-netip
 
     \brief The QKnxNetIpDib class stores a specific block of device information
     that is used when responding to a KNXnet/IP description request.
@@ -91,13 +98,16 @@ QT_BEGIN_NAMESPACE
 
     \sa QKnxNetIpConfigDibProxy, QKnxNetIpCurrentConfigDibProxy,
         QKnxNetIpDeviceDibProxy, QKnxNetIpKnxAddressesDibProxy,
-        QKnxNetIpManufacturerDibProxy, QKnxNetIpServiceFamiliesDibProxy
+        QKnxNetIpManufacturerDibProxy, QKnxNetIpServiceFamiliesDibProxy,
+        {Qt KNXnet/IP Connection Classes}
 */
 
 /*!
     \class QKnxNetIpStruct
 
     \inmodule QtKnx
+    \ingroup qtknx-netip
+
     \brief The QKnxNetIpStruct class represents a generic data structure
     encapsulated in a KNXnet/IP frame.
 
@@ -106,6 +116,8 @@ QT_BEGIN_NAMESPACE
     (HPAI), \l QKnxNetIpCri for connection request information (CRI),
     \l QKnxNetIpCrd for connection response data (CRD) and \l QKnxNetIpDib for
     a description information block (DIB).
+
+    \sa {Qt KNXnet/IP Connection Classes}
 */
 
 /*!
