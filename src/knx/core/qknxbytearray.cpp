@@ -47,6 +47,8 @@ QT_BEGIN_NAMESPACE
 /*!
     \class QKnxByteArray
     \inmodule QtKnx
+    \ingroup qtknx-general-classes
+
     \brief The QKnxByteArray class provides an array of unsigned bytes.
 
     A KNX byte array can be used to store both raw bytes (including the string

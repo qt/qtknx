@@ -170,6 +170,8 @@ QVector<QKnxGroupAddressInfo>
     \class QKnxGroupAddressInfos
 
     \inmodule QtKnx
+    \ingroup qtknx-general-classes
+
     \brief The QKnxGroupAddressInfos class provides access to information about
     group addresses used inside a KNX project.
 

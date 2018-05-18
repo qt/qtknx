@@ -38,6 +38,8 @@ QT_BEGIN_NAMESPACE
     \class QKnxAdditionalInfo
 
     \inmodule QtKnx
+    \ingroup qtknx-general-classes
+
     \brief The QKnxAdditionalInfo class represents the additional information
     that can be placed inside a KNX cEMI frame.
 
