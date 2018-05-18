@@ -37,6 +37,8 @@ QT_BEGIN_NAMESPACE
     \class QKnxInterfaceObjectPropertyDataType
 
     \inmodule QtKnx
+    \ingroup qtknx-device-management
+
     \brief The QKnxInterfaceObjectPropertyDataType class holds information about
     the data type of the properties of a KNX interface object.
 
@@ -48,6 +50,8 @@ QT_BEGIN_NAMESPACE
         \li \l Unit
         \li \l QKnxDatapointType::Type
     \endlist
+
+    \sa {Qt KNX Device Management Classes}
 */
 
 /*!
