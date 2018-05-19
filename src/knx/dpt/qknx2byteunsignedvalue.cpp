@@ -37,6 +37,7 @@ QT_BEGIN_NAMESPACE
     \class QKnx2ByteUnsignedValue
     \inherits QKnxFixedSizeDatapointType
     \inmodule QtKnx
+    \ingroup qtknx-datapoint-types
 
     \brief The QKnx2ByteUnsignedValue class is a datapoint type with a 2-byte
     unsigned value.
@@ -69,7 +70,7 @@ QT_BEGIN_NAMESPACE
 
     Integer values from 0 to 65 535 can be encoded in this datapoint type.
 
-    \sa QKnxDatapointType
+    \sa QKnxDatapointType, {Qt KNX Datapoint Type Classes}
 */
 
 

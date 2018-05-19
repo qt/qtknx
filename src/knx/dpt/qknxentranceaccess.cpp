@@ -37,6 +37,8 @@ QT_BEGIN_NAMESPACE
     \class QKnxEntranceAccess
     \inherits QKnxFixedSizeDatapointType
     \inmodule QtKnx
+    \ingroup qtknx-datapoint-types
+
     \brief The QKnxEntranceAccess is a datapoint type for controlling entrance
     access.
 
@@ -53,7 +55,7 @@ QT_BEGIN_NAMESPACE
     The range of the value is from \c {Low Code, 0 0 0 0 0 0} to
     \c {High Code, 9 9 9 9 9 9}.
 
-    \sa QKnxDatapointType
+    \sa QKnxDatapointType, {Qt KNX Datapoint Type Classes}
 */
 
 /*!

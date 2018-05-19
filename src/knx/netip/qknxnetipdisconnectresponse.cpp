@@ -134,6 +134,8 @@ QKnxNetIpDisconnectResponseProxy::Builder QKnxNetIpDisconnectResponseProxy::buil
     \class QKnxNetIpDisconnectResponseProxy::Builder
 
     \inmodule QtKnx
+    \inheaderfile QKnxNetIpDisconnectResponseProxy
+
     \brief The QKnxNetIpDisconnectResponseProxy::Builder class provides
     the means to read a KNXnet/IP disconnection response from the generic
     \l QKnxNetIpFrame class and to create a disconnection response frame

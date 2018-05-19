@@ -141,6 +141,8 @@ QKnxNetIpDisconnectRequestProxy::Builder QKnxNetIpDisconnectRequestProxy::builde
     \class QKnxNetIpDisconnectRequestProxy::Builder
 
     \inmodule QtKnx
+    \inheaderfile QKnxNetIpDisconnectRequestProxy
+
     \brief The QKnxNetIpDisconnectRequestProxy::Builder class provides the means
     to read a KNXnet/IP disconnection request from the generic \l QKnxNetIpFrame
     class and to create a disconnection request frame based on the information.

@@ -227,6 +227,8 @@ QDebug operator<<(QDebug debug, const QKnxExtendedControlField &field)
     \class QKnxExtendedControlField::Builder
 
     \inmodule QtKnx
+    \inheaderfile QKnxExtendedControlField
+
     \brief The QKnxExtendedControlField::Builder class creates a KNX extended
     control field with some default values set.
 

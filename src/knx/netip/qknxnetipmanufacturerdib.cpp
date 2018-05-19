@@ -141,6 +141,8 @@ QKnxNetIpManufacturerDibProxy::Builder QKnxNetIpManufacturerDibProxy::builder()
     \class QKnxNetIpManufacturerDibProxy::Builder
 
     \inmodule QtKnx
+    \inheaderfile QKnxNetIpManufacturerDibProxy
+
     \brief The QKnxNetIpManufacturerDibProxy::Builder class creates a
     KNXnet/IP manufacturer DIB structure.
 

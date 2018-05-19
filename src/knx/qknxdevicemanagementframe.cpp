@@ -28,6 +28,7 @@
 ******************************************************************************/
 
 #include "qknxdevicemanagementframe.h"
+#include "qknxdevicemanagementframefactory.h"
 #include "qknxutils.h"
 
 QT_BEGIN_NAMESPACE
@@ -44,11 +45,14 @@ public:
     \class QKnxDeviceManagementFrame
 
     \inmodule QtKnx
+    \ingroup qtknx-device-management
+
     \brief The QKnxDeviceManagementFrame class represents a cEMI frame dedicated
-    to device management.
+    to KNXnet/IP device management.
 
     A device management connection is established between a common external
-    message interface (cEMI) client and a cEMI server to transmit cEMI frames.
+    message interface (cEMI) client and a cEMI server to transmit cEMI device
+    management frames.
     A cEMI frame specifies the service to use and the \l MessageCode that
     determines whether the frame carries a request, confirmation, or indication
     related to the selected service.
@@ -56,18 +60,27 @@ public:
     The following services are available:
 
     \list
-        \li \c PropertyRead
-        \li \c PropertyWrite
-        \li \c FunctionPropertyCommand (client-only)
-        \li \c FunctionPropertyStateRead (client-only)
-        \li \c Reset (client-only)
-        \li \c PropertyInfo (server-only)
-        \li \c FunctionPropertyStateResponse (server-only)
+        \li Property read (\c {M_PropRead.req} and \c {M_PropRead.con})
+        \li Property write (\c {M_PropWrite.req} and \c {M_PropWrite.con})
+        \li Property info indication service (\c {M_PropInfo.ind})
+        \li Function property command (\c {M_FuncPropCommand.req} and
+            \c {M_FuncPropCommand.con})
+        \li Function property state read (\c {M_FuncPropStateRead.req} and
+            \c {M_FuncPropStateRead.con})
+        \li Reset and restart service (\c {M_Reset.req})
     \endlist
 
-    Typically, a device management frame contains the following arguments:
+    Application layer services are invoked by the transport layer frames
+    \e {request (.req)}, \e {indication (.ind)}, and \e {confirmation (.con)}.
+    The same frames are used by the remote device to respond to a remote
+    confirmed service.
+
+    Typically, a device management frame contains at least the following
+    arguments:
 
     \list
+        \li The code describing the service to use,
+            \l QKnxDeviceManagementFrame::MessageCode.
         \li The type of the interface object holding the property to access,
             \l QKnxInterfaceObjectType.
         \li The instance of this interface object, because it is possible to
@@ -75,11 +88,23 @@ public:
             device.
         \li The property of the interface object to access,
            \l QKnxInterfaceObjectProperty.
-        \li The number of elements to read in this property.
     \endlist
 
-    The \l QKnxDeviceManagementFrameFactory class can be used to construct local
-    device management cEMI frames.
+    The \l QKnxDeviceManagementFrame::Builder class can be used to construct
+    local device management cEMI frames. The following more specialized versions
+    of the builder are also provided, and it is recommended to prefer them over
+    the generic version:
+
+    \list
+        \li \l QKnxDeviceManagementFrame::PropertyReadBuilder
+        \li \l QKnxDeviceManagementFrame::PropertyWriteBuilder
+        \li \l QKnxDeviceManagementFrame::PropertyInfoBuilder
+        \li \l QKnxDeviceManagementFrame::FunctionPropertyCommandBuilder
+        \li \l QKnxDeviceManagementFrame::FunctionPropertyStateReadBuilder
+        \li \l QKnxDeviceManagementFrame::ResetBuilder
+    \endlist
+
+    \sa {Qt KNX Device Management Classes}
 */
 
 /*!
@@ -158,11 +183,13 @@ QKnxDeviceManagementFrame::QKnxDeviceManagementFrame(
 }
 
 /*!
-    Returns the number of bytes of the local device management frame.
+    Returns \c true if this is a default constructed device management frame,
+    otherwise returns \c false. A frame is considered null if it contains no
+    initialized values.
 */
-quint16 QKnxDeviceManagementFrame::size() const
+bool QKnxDeviceManagementFrame::isNull() const
 {
-    return d_ptr->m_serviceInformation.size() + 1 /* message code */;
+    return d_ptr->m_code == MessageCode::Unknown && d_ptr->m_serviceInformation.isNull();
 }
 
 /*!
@@ -219,15 +246,22 @@ bool QKnxDeviceManagementFrame::isValid() const
 }
 
 /*!
+    Returns the number of bytes of the local device management frame.
+*/
+quint16 QKnxDeviceManagementFrame::size() const
+{
+    return d_ptr->m_serviceInformation.size() + 1 /* message code */;
+}
+
+/*!
     Returns \c true if this local device management frame is a negative
     confirmation; otherwise returns \c false.
 
     For property read or write confirmation frames, the data field of a
     negative confirmation contains the error information.
 
-    In case of function property command or function property state read
-    confirmation frames neither a return code nor data are transmitted with
-    the frame.
+    For function property command or function property state read confirmation
+    frames, neither a return code nor data are transmitted with the frame.
 
     \sa data(), error(), returnCode()
 */
@@ -350,7 +384,8 @@ void QKnxDeviceManagementFrame::setNumberOfElements(quint8 numOfElements)
 {
     if (numOfElements > 0x0f)
         return;
-    d_ptr->m_serviceInformation.set(4, (d_ptr->m_serviceInformation.value(4) & 0x0f) | (numOfElements << 4));
+    d_ptr->m_serviceInformation.set(4,
+        (d_ptr->m_serviceInformation.value(4) & 0x0f) | (numOfElements << 4));
 }
 
 /*!
@@ -374,8 +409,8 @@ void QKnxDeviceManagementFrame::setStartIndex(quint16 index)
     if (index > 0x0fff)
         return;
 
-    auto startIndex = QKnxUtils::QUint16::fromBytes(d_ptr->m_serviceInformation, 4);
-    d_ptr->m_serviceInformation.replace(4, 2, QKnxUtils::QUint16::bytes(startIndex | index));
+    d_ptr->m_serviceInformation.replace(4, 2,
+        QKnxUtils::QUint16::bytes((quint16(numberOfElements()) << 12) | index));
 }
 
 /*!
@@ -599,18 +634,63 @@ bool QKnxDeviceManagementFrame::operator!=(const QKnxDeviceManagementFrame &othe
 }
 
 /*!
-    \internal
+    Returns an instance of a generic device management frame builder.
 */
-QKnxDeviceManagementFrame::QKnxDeviceManagementFrame(MessageCode code,
-        QKnxInterfaceObjectType type, quint8 instance, QKnxInterfaceObjectProperty pid,
-        quint8 noe, quint16 index, const QKnxByteArray &payload)
-    : QKnxDeviceManagementFrame(code)
+QKnxDeviceManagementFrame::Builder QKnxDeviceManagementFrame::builder()
 {
-    d_ptr->m_serviceInformation = QKnxUtils::QUint16::bytes(quint16(type));
-    d_ptr->m_serviceInformation.append(instance);
-    d_ptr->m_serviceInformation.append(pid);
-    d_ptr->m_serviceInformation.append(QKnxUtils::QUint16::bytes((quint16(noe) << 12) | index));
-    d_ptr->m_serviceInformation + payload;
+    return QKnxDeviceManagementFrame::Builder();
+}
+
+/*!
+    Returns an instance of a device management property read frame builder.
+*/
+QKnxDeviceManagementFrame::PropertyReadBuilder QKnxDeviceManagementFrame::propertyReadBuilder()
+{
+    return QKnxDeviceManagementFrame::PropertyReadBuilder();
+}
+
+/*!
+    Returns an instance of a device management property write frame builder.
+*/
+QKnxDeviceManagementFrame::PropertyWriteBuilder QKnxDeviceManagementFrame::propertyWriteBuilder()
+{
+    return QKnxDeviceManagementFrame::PropertyWriteBuilder();
+}
+
+/*!
+    Returns an instance of a device management property info frame builder.
+*/
+QKnxDeviceManagementFrame::PropertyInfoBuilder QKnxDeviceManagementFrame::propertyInfoBuilder()
+{
+    return QKnxDeviceManagementFrame::PropertyInfoBuilder();
+}
+
+/*!
+    Returns an instance of a device management function property command frame
+    builder.
+*/
+QKnxDeviceManagementFrame::FunctionPropertyCommandBuilder
+    QKnxDeviceManagementFrame::functionPropertyCommandBuilder()
+{
+    return QKnxDeviceManagementFrame::FunctionPropertyCommandBuilder();
+}
+
+/*!
+    Returns an instance of a device management function property state read
+    frame builder.
+*/
+QKnxDeviceManagementFrame::FunctionPropertyStateReadBuilder
+    QKnxDeviceManagementFrame::functionPropertyStateReadBuilder()
+{
+    return QKnxDeviceManagementFrame::FunctionPropertyStateReadBuilder();
+}
+
+/*!
+    Returns an instance of a device management reset frame builder.
+*/
+QKnxDeviceManagementFrame::ResetBuilder QKnxDeviceManagementFrame::resetBuilder()
+{
+    return QKnxDeviceManagementFrame::ResetBuilder();
 }
 
 /*!

@@ -36,19 +36,24 @@ QT_BEGIN_NAMESPACE
     \class QKnxSceneNumber
 
     \inmodule QtKnx
+    \ingroup qtknx-datapoint-types
+
     \brief The QKnxSceneNumber class is a datapoint type for a scene number.
 
     This is a fixed size datapoint type with the length of 1 byte.
 
     The minimum scene number is \c 0 and the maximum scene number is \c 63.
 
-    \sa QKnxDatapointType, QKnxSceneControl, QKnxSceneInfo
+    \sa QKnxDatapointType, QKnxSceneControl, QKnxSceneInfo,
+        {Qt KNX Datapoint Type Classes}
 */
 
 /*!
     \class QKnxSceneControl
 
     \inmodule QtKnx
+    \ingroup qtknx-datapoint-types
+
     \brief The QKnxSceneControl class is a datapoint type for a scene control.
 
     This is a fixed size datapoint type with the length of 1 byte.
@@ -56,7 +61,8 @@ QT_BEGIN_NAMESPACE
     A scene control can be used to activate or learn the corresponding scene
     number. The range for scene numbers is from \c 0 to \c 63.
 
-    \sa Control, QKnxDatapointType, QKnxSceneNumber, QKnxSceneInfo
+    \sa Control, QKnxDatapointType, QKnxSceneNumber, QKnxSceneInfo,
+        {Qt KNX Datapoint Type Classes}
 */
 
 /*!
@@ -74,6 +80,8 @@ QT_BEGIN_NAMESPACE
     \class QKnxSceneInfo
 
     \inmodule QtKnx
+    \ingroup qtknx-datapoint-types
+
     \brief The QKnxSceneInfo class is a datapoint type for scene information.
 
     This is a fixed size datapoint type with the length of 1 byte.
@@ -81,7 +89,8 @@ QT_BEGIN_NAMESPACE
     The scene information holds the activity state of the corresponding scene
     number. The range for scene numbers is from \c 0 to \c 63.
 
-    \sa Info, QKnxDatapointType, QKnxSceneNumber, QKnxSceneControl
+    \sa Info, QKnxDatapointType, QKnxSceneNumber, QKnxSceneControl,
+        {Qt KNX Datapoint Type Classes}
 */
 
 /*!

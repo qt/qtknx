@@ -181,6 +181,8 @@ QKnxNetIpConfigDibProxy::Builder QKnxNetIpConfigDibProxy::builder()
     \class QKnxNetIpConfigDibProxy::Builder
 
     \inmodule QtKnx
+    \inheaderfile QKnxNetIpConfigDibProxy
+
     \brief The QKnxNetIpConfigDibProxy::Builder class creates a KNXnet/IP
     IP configuration DIB structure.
 

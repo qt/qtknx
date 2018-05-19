@@ -61,6 +61,8 @@ QT_BEGIN_NAMESPACE
     \class QKnxDatapointTypeFactory
 
     \inmodule QtKnx
+    \ingroup qtknx-datapoint-types
+
     \brief The QKnxDatapointTypeFactory class is used to create
     \l QKnxDatapointType objects based on their main number and sub number.
 
@@ -73,6 +75,8 @@ QT_BEGIN_NAMESPACE
 
     The KNX datapoint types are identified by a 16-bit main number and a 16-bit
     sub number.
+
+    \sa {Qt KNX Datapoint Type Classes}
 */
 
 /*!

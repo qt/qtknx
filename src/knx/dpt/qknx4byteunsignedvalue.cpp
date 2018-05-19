@@ -1,6 +1,6 @@
 /******************************************************************************
 **
-** Copyright (C) 2017 The Qt Company Ltd.
+** Copyright (C) 2018 The Qt Company Ltd.
 ** Contact: https://www.qt.io/licensing/
 **
 ** This file is part of the QtKnx module.
@@ -38,6 +38,7 @@ QT_BEGIN_NAMESPACE
     \class QKnx4ByteUnsignedValue
     \inherits QKnxFixedSizeDatapointType
     \inmodule QtKnx
+    \ingroup qtknx-datapoint-types
 
     \brief The QKnx4ByteUnsignedValue class is a datapoint type with a 4-byte
     unsigned value.
@@ -47,7 +48,7 @@ QT_BEGIN_NAMESPACE
     Integer values from 0 to 4 294 967 295 can be encoded in this datapoint
     type.
 
-    \sa QKnxDatapointType
+    \sa QKnxDatapointType, {Qt KNX Datapoint Type Classes}
 */
 
 /*!
@@ -81,13 +82,15 @@ QKnx4ByteUnsignedValue::QKnx4ByteUnsignedValue(int subType, quint32 value)
     \class QKnxValue4UCount
     \inherits QKnx4ByteUnsignedValue
     \inmodule QtKnx
+    \ingroup qtknx-datapoint-types
 
     \brief The QKnxValue4UCount class is a datapoint type with a 4-byte
     unsigned value.
 
     This is a fixed size datapoint type with the length of 4 bytes.
 
-    \sa QKnx4ByteUnsignedValue, QKnxDatapointType
+    \sa QKnx4ByteUnsignedValue, QKnxDatapointType,
+        {Qt KNX Datapoint Type Classes}
 */
 
 /*!

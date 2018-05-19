@@ -37,6 +37,7 @@ QT_BEGIN_NAMESPACE
     \class QKnx3BitControlled
     \inherits QKnxFixedSizeDatapointType
     \inmodule QtKnx
+    \ingroup qtknx-datapoint-types
 
     \brief The QKnx3BitControlled class is a datapoint type with a control part.
 
@@ -50,7 +51,7 @@ QT_BEGIN_NAMESPACE
     To set this datapoint type, the control and the NumberOfIntervals have to
     be set.
 
-    \sa QKnxDatapointType
+    \sa QKnxDatapointType, {Qt KNX Datapoint Type Classes}
 */
 
 /*!
@@ -159,6 +160,7 @@ bool QKnx3BitControlled::isValid() const
     \class QKnxControlDimming
     \inherits QKnx3BitControlled
     \inmodule QtKnx
+    \ingroup qtknx-datapoint-types
 
     \brief The QKnxControlDimming class is a datapoint type for controlling
     dimming.
@@ -166,7 +168,7 @@ bool QKnx3BitControlled::isValid() const
     To set this datapoint type, \l{QKnxControlDimming::}{Control} and
     \l{QKnx3BitControlled::}{NumberOfIntervals} have to be set.
 
-    \sa QKnx3BitControlled
+    \sa QKnx3BitControlled, {Qt KNX Datapoint Type Classes}
 */
 
 /*!
@@ -220,6 +222,7 @@ QKnxControlDimming::Control QKnxControlDimming::control() const
     \class QKnxControlBlinds
     \inherits QKnx3BitControlled
     \inmodule QtKnx
+    \ingroup qtknx-datapoint-types
 
     \brief The QKnxControlBlinds class is a datapoint type for controlling
     blinds.
@@ -227,7 +230,7 @@ QKnxControlDimming::Control QKnxControlDimming::control() const
     To set this datapoint type, \l{QKnxControlBlinds::}{Control} and
     \l{QKnx3BitControlled::}{NumberOfIntervals} have to be set.
 
-    \sa QKnx3BitControlled
+    \sa QKnx3BitControlled, {Qt KNX Datapoint Type Classes}
 */
 
 /*!

@@ -41,9 +41,7 @@
 
 QT_BEGIN_NAMESPACE
 
-class QKnxFrameSerialization;
 class QKnxLinkLayerFramePrivate;
-
 class Q_KNX_EXPORT QKnxLinkLayerFrame final
 {
     Q_GADGET
@@ -133,6 +131,9 @@ public:
 
     bool operator==(const QKnxLinkLayerFrame &other) const;
     bool operator!=(const QKnxLinkLayerFrame &other) const;
+
+    class Q_KNX_EXPORT Builder;
+    static QKnxLinkLayerFrame::Builder builder();
 
 private:
     bool isMessageCodeValid() const;

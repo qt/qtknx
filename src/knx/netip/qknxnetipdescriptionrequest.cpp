@@ -126,6 +126,8 @@ QKnxNetIpDescriptionRequestProxy::Builder QKnxNetIpDescriptionRequestProxy::buil
     \class QKnxNetIpDescriptionRequestProxy::Builder
 
     \inmodule QtKnx
+    \inheaderfile QKnxNetIpDescriptionRequestProxy
+
     \brief The QKnxNetIpDescriptionRequestProxy::Builder class provides the
     means to create a KNXnet/IP description request frame.
 

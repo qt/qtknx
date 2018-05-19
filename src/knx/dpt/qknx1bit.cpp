@@ -36,6 +36,7 @@ QT_BEGIN_NAMESPACE
     \class QKnx1Bit
     \inherits QKnxFixedSizeDatapointType
     \inmodule QtKnx
+    \ingroup qtknx-datapoint-types
 
     \brief The QKnx1Bit class is a boolean datapoint type, such as switch on or
     off.
@@ -83,7 +84,7 @@ QT_BEGIN_NAMESPACE
 
     The possible values for this datapoint type are \c true and \c false.
 
-    \sa QKnxDatapointType
+    \sa QKnxDatapointType, {Qt KNX Datapoint Type Classes}
 */
 
 // -- QKnx1Bit

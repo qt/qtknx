@@ -1,0 +1,172 @@
+/****************************************************************************
+**
+** Copyright (C) 2018 The Qt Company Ltd.
+** Contact: https://www.qt.io/licensing/
+**
+** This file is part of the documentation of the Qt Toolkit.
+**
+** $QT_BEGIN_LICENSE:FDL$
+** Commercial License Usage
+** Licensees holding valid commercial Qt licenses may use this file in
+** accordance with the commercial license agreement provided with the
+** Software or, alternatively, in accordance with the terms contained in
+** a written agreement between you and The Qt Company. For licensing terms
+** and conditions see https://www.qt.io/terms-conditions. For further
+** information use the contact form at https://www.qt.io/contact-us.
+**
+** GNU Free Documentation License Usage
+** Alternatively, this file may be used under the terms of the GNU Free
+** Documentation License version 1.3 as published by the Free Software
+** Foundation and appearing in the file included in the packaging of
+** this file. Please review the following information to ensure
+** the GNU Free Documentation License version 1.3 requirements
+** will be met: https://www.gnu.org/licenses/fdl-1.3.html.
+** $QT_END_LICENSE$
+**
+****************************************************************************/
+
+/*!
+    \page qtknx-device-management.html
+    \title Qt KNX Device Management Classes
+    \brief C++ classes that enable device management.
+
+    A device management connection is established between a common external
+    message interface (cEMI) client and a cEMI server to transmit cEMI frames.
+    A cEMI frame specifies the service to use and determines whether the frame
+    contains a request, confirmation, or indication related to the selected
+    service.
+
+    The application layer provides several application services that the
+    application processes in devices can use to interoperate over different
+    communication modes. The services that are available depend on the
+    communication mode.
+
+    The following diagram shows the main Qt KNX module classes that enable
+    device management:
+
+    \image qtknx-device-management-classes.png
+
+    \section1 Creating Device Management Connections
+
+    The QKnxNetIpDeviceManagement class enables the opening and handling of a
+    device management connection from a KNXnet/IP client to a KNXnet/IP server
+    to access management functionalities on the server. The client uses the
+    connection to send device configuration request frames to the server.
+
+    As an alternative, the QKnxNetIpDeviceConfigurationRequestProxy class
+    can be used to read a device configuration request from the generic
+    \l QKnxNetIpFrame class and to create a device configuration request.
+    Similarly, the \l QKnxNetIpDeviceConfigurationAcknowledgeProxy class
+    can be used to create a device configuration acknowledgment to confirm
+    the reception of the request.
+
+    \section1 Accessing Device Management Services
+
+    The QKnxDeviceManagementFrame class represents a cEMI frame that can
+    be transferred over an established device management connection. The
+    \l QKnxDeviceManagementFrame::MessageCode within the frame determines
+    the service to use and whether the frame carries a \e {request (.req)},
+    \e {indication (.ind)}, or \e {confirmation (.con)} related to the
+    selected service.
+
+    The following services are available for local device management:
+
+    \list
+        \li Property read (\c {M_PropRead.req} and \c {M_PropRead.con})
+        \li Property write (\c {M_PropWrite.req} and \c {M_PropWrite.con})
+        \li Property info indication service (\c {M_PropInfo.ind})
+        \li Function property command (\c {M_FuncPropCommand.req} and
+            \c {M_FuncPropCommand.con})
+        \li Function property state read (\c {M_FuncPropStateRead.req} and
+            \c {M_FuncPropStateRead.con})
+        \li Reset and restart service (\c {M_Reset.req})
+    \endlist
+
+    Local device management services are \e {confirmed services}, which means
+    that a read or write request frame sent by a cEMI client must be followed
+    by a read or write confirmation frame sent by a cEMI server. The
+    confirmation indicates whether the request was successful.
+
+    Application layer services are invoked by the transport layer frames.
+    The same frames are used by the remote device to respond to a remote
+    confirmed service.
+
+    The \l QKnxDeviceManagementFrame::Builder class can be used to construct
+    local device management cEMI frames. The following more specialized versions
+    of the builder are also provided, and it is recommended to prefer them over
+    the generic version:
+
+    \list
+        \li \l QKnxDeviceManagementFrame::PropertyReadBuilder
+        \li \l QKnxDeviceManagementFrame::PropertyWriteBuilder
+        \li \l QKnxDeviceManagementFrame::PropertyInfoBuilder
+        \li \l QKnxDeviceManagementFrame::FunctionPropertyCommandBuilder
+        \li \l QKnxDeviceManagementFrame::FunctionPropertyStateReadBuilder
+        \li \l QKnxDeviceManagementFrame::ResetBuilder
+    \endlist
+
+    \section2 Property Read and Write Services
+
+    A property read or write request is used by the management client to
+    read or write the value of a property of an \e {interface object} in
+    the management server. The interface object is identified by an object
+    type (\l QKnxInterfaceObjectType) and object instance number.
+
+    An interface object property (\l QKnxInterfaceObjectProperty) can be
+    structured as an array of elements. It is addressed by a property ID, the
+    number of elements in the array to read, and a start index, which indicates
+    the position of the first element that the management client wants to read.
+
+    A property read or write confirmation contains the requested number of
+    elements starting from the specified position within the property of the
+    interface object.
+
+    If the interface object or property does not exist, or some other error
+    occurs, the number of elements to read is set to zero and the start index
+    of the response is set to the value received with the request.
+
+    The data field of a negative response contains information about the error
+    as a \l QKnx::NetIp::CemiServer::Error value.
+
+    \section2 Function Property Services
+
+    A function property command request is used by the management client to call
+    a property function of an interface object in the management server. The
+    management server confirms the request with a confirmation message that
+    contains a return code as a \l QKnx::NetIp::CemiServer::ReturnCode value
+    and additional data.
+
+    A function property state read request is used by the management client to
+    read the status of a property function. The management server confirms the
+    request with a confirmation message that contains a return code and
+    additional data.
+
+    If the interface object property accessed by a function property
+    command request or state read request is not of the property datatype
+    \c PDT_Function, the confirmation message contains neither a return
+    code field nor data.
+
+    \section2 Property Information Services
+
+    A property information indication is used by the management server to notify
+    the client about an event, such as a changed management property value.
+    If the data that the indication contains is relevant to the management
+    procedures supported by the client, the client calls those procedures with
+    the received data. If the data is not relevant, the client ignores the
+    message.
+
+    \section2 Reset Services
+
+    A reset request is used by the management client to reset the management
+    server device. The server device executes the same actions as when it is
+    started up. When the server receives a reset request, the server software
+    is reinitialized. Therefore, the communication on bus and cEMI side is
+    aborted and both communication stacks are reset.
+
+    The management server sends a reset indication to the management client
+    when the server device is reset or started up.
+
+    \section1 List of Device Management Classes
+
+    \annotatedlist qtknx-device-management
+*/

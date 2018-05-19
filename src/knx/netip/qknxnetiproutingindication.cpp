@@ -86,7 +86,7 @@ QKnxNetIpRoutingIndicationProxy::QKnxNetIpRoutingIndicationProxy(const QKnxNetIp
 */
 QKnxLinkLayerFrame QKnxNetIpRoutingIndicationProxy::linkLayerFrame() const
 {
-    return QKnxLinkLayerFrameBuilder()
+    return QKnxLinkLayerFrame::builder()
         .setMedium(QKnx::MediumType::NetIP)
         .setData(m_frame.constData())
         .createFrame();
@@ -120,6 +120,8 @@ QKnxNetIpRoutingIndicationProxy::Builder QKnxNetIpRoutingIndicationProxy::builde
     \class QKnxNetIpRoutingIndicationProxy::Builder
 
     \inmodule QtKnx
+    \inheaderfile QKnxNetIpRoutingIndicationProxy
+
     \brief The QKnxNetIpRoutingIndicationProxy::Builder class provides the means
     to create a routing indication frame.
 

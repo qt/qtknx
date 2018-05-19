@@ -36,6 +36,8 @@ QT_BEGIN_NAMESPACE
     \class QKnxNetIpTunnelingRequestProxy
 
     \inmodule QtKnx
+    \ingroup qtknx-tunneling
+
     \brief The QKnxNetIpTunnelingRequestProxy class provides the means to read
     a tunneling request from the generic \l QKnxNetIpFrame class and to create
     a KNXnet/IP frame based on the information.
@@ -77,7 +79,8 @@ QT_BEGIN_NAMESPACE
         auto knxLinkFrame = tunnelRequest.cemi();
     \endcode
 
-    \sa builder(), QKnxNetIpTunnelingAcknowledgeProxy
+    \sa builder(), QKnxNetIpTunnelingAcknowledgeProxy,
+    {Qt KNX Tunneling Classes}
 */
 /*!
     \fn QKnxNetIpTunnelingRequestProxy::QKnxNetIpTunnelingRequestProxy()
@@ -138,7 +141,7 @@ quint8 QKnxNetIpTunnelingRequestProxy::sequenceNumber() const
 */
 QKnxLinkLayerFrame QKnxNetIpTunnelingRequestProxy::cemi() const
 {
-    return QKnxLinkLayerFrameBuilder()
+    return QKnxLinkLayerFrame::builder()
         .setMedium(QKnx::MediumType::NetIP)
         .setData(m_frame.constData())
         .createFrame();
@@ -157,6 +160,8 @@ QKnxNetIpTunnelingRequestProxy::Builder QKnxNetIpTunnelingRequestProxy::builder(
     \class QKnxNetIpTunnelingRequestProxy::Builder
 
     \inmodule QtKnx
+    \inheaderfile QKnxNetIpTunnelingRequestProxy
+
     \brief The QKnxNetIpTunnelingRequestProxy::Builder class provides the means
     to create a KNXnet/IP tunneling request frame.
 

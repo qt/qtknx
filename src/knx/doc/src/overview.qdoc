@@ -63,6 +63,9 @@
     functionalities of a KNX device on the bus behind the KNXnet/IP server, the
     class \l QKnxNetIpTunnel takes care of the connection.
 
+    For more information, see \l {Qt KNX Device Management Classes} and
+    \l {Qt KNX Tunneling Classes}.
+
     \section2 Sending Frames
 
     Frames can be sent to the KNXnet/IP server by using \l QKnxNetIpTunnel or
@@ -72,8 +75,14 @@
     To help build the frames, the following classes are provided:
 
      \list
-        \li \l QKnxLinkLayerFrameBuilder
-        \li \l QKnxDeviceManagementFrameFactory
+        \li \l QKnxLinkLayerFrame::Builder
+        \li \l QKnxDeviceManagementFrame::Builder
+        \li \l QKnxDeviceManagementFrame::PropertyReadBuilder
+        \li \l QKnxDeviceManagementFrame::PropertyWriteBuilder
+        \li \l QKnxDeviceManagementFrame::PropertyInfoBuilder
+        \li \l QKnxDeviceManagementFrame::FunctionPropertyCommandBuilder
+        \li \l QKnxDeviceManagementFrame::FunctionPropertyStateReadBuilder
+        \li \l QKnxDeviceManagementFrame::ResetBuilder
     \endlist
 
     \l QKnxDeviceManagementFrame objects are dedicated to the KNXnet/IP
@@ -140,7 +149,7 @@
         QKnxNetIpTunnel connection;
         connection.connectToHost(QHostAddress(...), port);
 
-        QKnxLinkLayerFrame frame = QKnxLinkLayerFrameBuilder()
+        QKnxLinkLayerFrame frame = QKnxLinkLayerFrame::builder()
             .setDestinationAddress({ QKnxAddress::Type::Group, QLatin1String("2/6/4") })
             .setTpdu({
                 QKnxTpdu::TransportControlField::DataGroup,

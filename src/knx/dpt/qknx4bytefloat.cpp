@@ -38,6 +38,7 @@ QT_BEGIN_NAMESPACE
     \class QKnx4ByteFloat
     \inherits QKnxFixedSizeDatapointType
     \inmodule QtKnx
+    \ingroup qtknx-datapoint-types
 
     \brief The QKnx4ByteFloat class is datapoint type for a 4-byte float value.
 
@@ -133,7 +134,7 @@ QT_BEGIN_NAMESPACE
         \li \c QKnxValueWork - Work in J.
     \endlist
 
-    \sa QKnxDatapointType
+    \sa QKnxDatapointType, {Qt KNX Datapoint Type Classes}
 */
 
 /*!

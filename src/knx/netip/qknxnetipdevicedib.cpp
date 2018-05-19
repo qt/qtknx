@@ -235,6 +235,8 @@ namespace QKnxPrivate
     \class QKnxNetIpDeviceDibProxy::Builder
 
     \inmodule QtKnx
+    \inheaderfile QKnxNetIpDeviceDibProxy
+
     \brief The QKnxNetIpDeviceDibProxy::Builder class creates a KNXnet/IP device
     information DIB structure.
 

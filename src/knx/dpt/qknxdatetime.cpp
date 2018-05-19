@@ -1,6 +1,6 @@
 /******************************************************************************
 **
-** Copyright (C) 2017 The Qt Company Ltd.
+** Copyright (C) 2018 The Qt Company Ltd.
 ** Contact: https://www.qt.io/licensing/
 **
 ** This file is part of the QtKnx module.
@@ -36,6 +36,7 @@ QT_BEGIN_NAMESPACE
     \class QKnxTimeOfDay
     \inherits QKnxFixedSizeDatapointType
     \inmodule QtKnx
+    \ingroup qtknx-datapoint-types
 
     \brief The QKnxTimeOfDay class is a datapoint type for the time of day.
 
@@ -47,7 +48,7 @@ QT_BEGIN_NAMESPACE
 
     Valid times of day are from \c {No day, 00:00:00} to \c {Sunday, 23:59:59}.
 
-    \sa QKnxDatapointType
+    \sa QKnxDatapointType, {Qt KNX Datapoint Type Classes}
 */
 
 // -- QKnxTimeOfDay
@@ -202,6 +203,7 @@ bool QKnxTimeOfDay::isValid() const
     \class QKnxDate
     \inherits QKnxFixedSizeDatapointType
     \inmodule QtKnx
+    \ingroup qtknx-datapoint-types
 
     \brief The QKnxDate class is a datapoint type for a date.
 
@@ -212,7 +214,7 @@ bool QKnxTimeOfDay::isValid() const
 
     Valid dates are from \c {Monday, 1990-01-01} to \c {Saturday, 2089-12-31}.
 
-    \sa QKnxDatapointType
+    \sa QKnxDatapointType, {Qt KNX Datapoint Type Classes}
 */
 
 // -- QKnxDate
@@ -349,6 +351,7 @@ bool QKnxDate::isValid() const
     \class QKnxDateTime
     \inherits QKnxFixedSizeDatapointType
     \inmodule QtKnx
+    \ingroup qtknx-datapoint-types
 
     \brief The QKnxDateTime class is a datapoint type for the date and time.
 
@@ -357,7 +360,7 @@ bool QKnxDate::isValid() const
     Valid dates are from \c {Monday, 1900-01-01} to \c {Wednesday, 2155-12-31},
     and valid times are from \c {Any day, 00:00:00} to \c {Sunday, 24:00:00}.
 
-    \sa QKnxDatapointType
+    \sa QKnxDatapointType, {Qt KNX Datapoint Type Classes}
 */
 
 /*!

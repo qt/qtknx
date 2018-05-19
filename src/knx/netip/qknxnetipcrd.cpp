@@ -166,6 +166,8 @@ QKnxNetIpCrdProxy::Builder QKnxNetIpCrdProxy::builder()
     \class QKnxNetIpCrdProxy::Builder
 
     \inmodule QtKnx
+    \inheaderfile QKnxNetIpCrdProxy
+
     \brief The QKnxNetIpCrdProxy::Builder class creates a KNXnet/IP connection
     response data (CDR) structure.
 

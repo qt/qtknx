@@ -134,6 +134,8 @@ QKnxNetIpKnxAddressesDibProxy::Builder QKnxNetIpKnxAddressesDibProxy::builder()
     \class QKnxNetIpKnxAddressesDibProxy::Builder
 
     \inmodule QtKnx
+    \inheaderfile QKnxNetIpKnxAddressesDibProxy
+
     \brief The QKnxNetIpKnxAddressesDibProxy::Builder class creates a
     KNXnet/IP addresses DIB structure.
 

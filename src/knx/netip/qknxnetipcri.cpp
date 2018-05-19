@@ -165,6 +165,8 @@ QKnxNetIpCriProxy::Builder QKnxNetIpCriProxy::builder()
     \class QKnxNetIpCriProxy::Builder
 
     \inmodule QtKnx
+    \inheaderfile QKnxNetIpCriProxy
+
     \brief The QKnxNetIpCriProxy::Builder class creates a KNXnet/IP connection
     request information structure (CRI).
 

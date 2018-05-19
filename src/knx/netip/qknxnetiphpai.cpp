@@ -150,6 +150,8 @@ QKnxNetIpHpaiProxy::Builder QKnxNetIpHpaiProxy::builder()
     \class QKnxNetIpHpaiProxy::Builder
 
     \inmodule QtKnx
+    \inheaderfile QKnxNetIpHpaiProxy
+
     \brief The QKnxNetIpHpaiProxy::Builder class provides the means to create a
     KNXnet/IP host address protocol information.
 

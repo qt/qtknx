@@ -35,6 +35,8 @@ QT_BEGIN_NAMESPACE
     \class QKnxNetIpTunnelingAcknowledgeProxy
 
     \inmodule QtKnx
+    \ingroup qtknx-tunneling
+
     \brief The QKnxNetIpTunnelingAcknowledgeProxy class provides the means to
     read a tunneling acknowledgment from the generic \l QKnxNetIpFrame class
     and to create a KNXnet/IP frame based on the information.
@@ -76,7 +78,7 @@ QT_BEGIN_NAMESPACE
         auto tunnelStatus = tunnelAck.status();
     \endcode
 
-    \sa builder(), QKnxNetIpTunnelingRequestProxy
+    \sa builder(), QKnxNetIpTunnelingRequestProxy, {Qt KNX Tunneling Classes}
 */
 
 /*!
@@ -156,6 +158,8 @@ QKnxNetIpTunnelingAcknowledgeProxy::Builder QKnxNetIpTunnelingAcknowledgeProxy::
     \class QKnxNetIpTunnelingAcknowledgeProxy::Builder
 
     \inmodule QtKnx
+    \inheaderfile QKnxNetIpTunnelingAcknowledgeProxy
+
     \brief The QKnxNetIpTunnelingAcknowledgeProxy::Builder class provides the
     means to create a KNXnet/IP tunneling acknowledgment frame.
 

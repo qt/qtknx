@@ -5,3 +5,10 @@
 %dependencies = (
         "qtbase" => ""
 );
+
+%classnames = (
+    "qknxnamespace.h" => "QKnx",
+    "qknxnetip.h" => "NetIp,CemiServer",
+    "qknxdevicemanagementframefactory.h" => "QKnxDeviceManagementFrameBuilder",
+    "qknxlinklayerframebuilder.h" => "QKnxLinkLayerFrameBuilder",
+);

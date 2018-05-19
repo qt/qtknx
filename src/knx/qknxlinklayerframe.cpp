@@ -28,6 +28,7 @@
 ******************************************************************************/
 
 #include "qknxlinklayerframe.h"
+#include "qknxlinklayerframebuilder.h"
 
 QT_BEGIN_NAMESPACE
 
@@ -37,6 +38,8 @@ QT_BEGIN_NAMESPACE
     \class QKnxLinkLayerFrame
 
     \inmodule QtKnx
+    \ingroup qtknx-tunneling
+
     \brief The QKnxLinkLayerFrame class is a frame that is sent over a
     communication channel established between a KNXnet/IP client and a
     KNXnet/IP server.
@@ -63,6 +66,8 @@ QT_BEGIN_NAMESPACE
     (encoded with the \l QKnxTpdu::ApplicationControlField) held in \l QKnxTpdu.
     The application services are split into categories according to the
     addressing method.
+
+    \sa {Qt KNX Tunneling Classes}
 */
 
 /*!
@@ -624,6 +629,14 @@ bool QKnxLinkLayerFrame::operator==(const QKnxLinkLayerFrame &other) const
 bool QKnxLinkLayerFrame::operator!=(const QKnxLinkLayerFrame &other) const
 {
     return !operator==(other);
+}
+
+/*!
+    Returns an instance of a generic link layer frame builder.
+*/
+QKnxLinkLayerFrame::Builder QKnxLinkLayerFrame::builder()
+{
+    return QKnxLinkLayerFrame::Builder();
 }
 
 /*!

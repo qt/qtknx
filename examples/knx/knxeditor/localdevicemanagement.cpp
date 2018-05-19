@@ -52,7 +52,7 @@
 #include "ui_localdevicemanagement.h"
 
 #include <QKnxByteArray>
-#include <QKnxDeviceManagementFrameFactory>
+#include <QtKnx/QKnxDeviceManagementFrameBuilder>
 #include <QKnxInterfaceObjectPropertyDataType>
 #include <QMetaEnum>
 #include <QMetaType>
@@ -92,9 +92,12 @@ LocalDeviceManagement::LocalDeviceManagement(QWidget* parent)
         ui->textOuputDeviceManagement->append(tr("Successfully connected to: %1 on port: %2")
             .arg(m_server.controlEndpointAddress().toString()).arg(m_server.controlEndpointPort()));
 
-        m_management.sendFrame(QKnxDeviceManagementFrameFactory::PropertyRead
-            ::createRequest(QKnxInterfaceObjectType::System::Device, 1,
-                QKnxInterfaceObjectProperty::Device::IoList, 1, 0));
+        m_management.sendFrame(QKnxDeviceManagementFrame::propertyReadBuilder()
+            .setObjectType(QKnxInterfaceObjectType::System::Device)
+            .setObjectInstance(1)
+            .setProperty(QKnxInterfaceObjectProperty::Device::IoList)
+            .setNumberOfElements(1)
+            .setStartIndex(0).createRequest());
     });
 
     connect(ui->disconnectRequestDeviceManagement, &QPushButton::clicked, this, [&]() {
@@ -319,9 +322,14 @@ void LocalDeviceManagement::handleIoListResponse(const QKnxDeviceManagementFrame
     quint8 expectedDataSize = dataTypes[0].size();
     if (frame.startIndex() == 0) {
         if (data.size() == expectedDataSize) {
-            m_management.sendFrame(QKnxDeviceManagementFrameFactory::PropertyRead
-                ::createRequest(QKnxInterfaceObjectType::System::Device, 1,
-                    QKnxInterfaceObjectProperty::Device::IoList, data.toUShort(nullptr, 16), 1));
+            m_management.sendFrame(QKnxDeviceManagementFrame::propertyReadBuilder()
+                .setObjectType(QKnxInterfaceObjectType::System::Device)
+                .setObjectInstance(1)
+                .setProperty(QKnxInterfaceObjectProperty::Device::IoList)
+                .setNumberOfElements(data.toUShort(nullptr, 16))
+                .setNumberOfElements(1)
+                .createRequest()
+            );
         }
     } else {
         if ((data.size() % expectedDataSize) == 0) {

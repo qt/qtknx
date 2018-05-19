@@ -36,6 +36,8 @@ QT_BEGIN_NAMESPACE
     \class QKnxStatusMode3
     \inherits QKnxFixedSizeDatapointType
     \inmodule QtKnx
+    \ingroup qtknx-datapoint-types
+
     \brief The QKnxStatusMode3 class is a datapoint type for a status mode 3.
 
     This datapoint type holds information about which \l{Status}{status} flags
@@ -45,7 +47,7 @@ QT_BEGIN_NAMESPACE
 
     This is a fixed size datapoint type with the length of 1 byte.
 
-    \sa QKnxDatapointType
+    \sa QKnxDatapointType, {Qt KNX Datapoint Type Classes}
 */
 
 /*!

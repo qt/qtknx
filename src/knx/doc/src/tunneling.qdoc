@@ -1,0 +1,109 @@
+/****************************************************************************
+**
+** Copyright (C) 2018 The Qt Company Ltd.
+** Contact: https://www.qt.io/licensing/
+**
+** This file is part of the documentation of the Qt Toolkit.
+**
+** $QT_BEGIN_LICENSE:FDL$
+** Commercial License Usage
+** Licensees holding valid commercial Qt licenses may use this file in
+** accordance with the commercial license agreement provided with the
+** Software or, alternatively, in accordance with the terms contained in
+** a written agreement between you and The Qt Company. For licensing terms
+** and conditions see https://www.qt.io/terms-conditions. For further
+** information use the contact form at https://www.qt.io/contact-us.
+**
+** GNU Free Documentation License Usage
+** Alternatively, this file may be used under the terms of the GNU Free
+** Documentation License version 1.3 as published by the Free Software
+** Foundation and appearing in the file included in the packaging of
+** this file. Please review the following information to ensure
+** the GNU Free Documentation License version 1.3 requirements
+** will be met: https://www.gnu.org/licenses/fdl-1.3.html.
+** $QT_END_LICENSE$
+**
+****************************************************************************/
+
+/*!
+    \page qtknx-tunneling.html
+    \title Qt KNX Tunneling Classes
+    \brief C++ classes that enable tunneling connections.
+
+    \e Tunneling refers to point-to-point exchange of KNX telegrams over an IP
+    network between a KNXnet/IP server and a KNXnet/IP client for configuration
+    and diagnostics. KNX frames are encapsulated inside IP datagrams. A tunnel
+    is created when Engineering Tool Software (ETS) sends a single KNX frame in
+    a KNXnet/IP frame and waits until the response arrives or a time-out is
+    reached.
+
+    Tunneling is implemented at the KNX data link layer by transferring link
+    layer frames. The KNX application service and data are encapsulated in
+    the transport protocol data unit (TPDU) included in the frame.
+
+    The following diagram shows the main Qt KNX module classes that enable
+    tunneling:
+
+    \image qtknx-tunneling-classes.png
+
+    \section1 Creating Tunneling Connections
+
+    The \l QKnxNetIpTunnel class is used to establish a functional connection
+    from a KNXnet/IP client to the endpoint of a KNXnet/IP server for sending
+    a KNX frame. For more information, see \l{Tunnel Client Example}.
+
+    As an alternative, the QKnxNetIpTunnelingRequestProxy class can be
+    used to read a tunneling request from the generic \l QKnxNetIpFrame
+    class and to create a KNXnet/IP tunneling request frame. Similarly,
+    the \l QKnxNetIpTunnelingAcknowledgeProxy class can be used to create
+    a KNXnet/IP tunneling acknowledgment frame to confirm the reception
+    of the request.
+
+    \section1 Sending Frames Through Tunnels
+
+    \l QKnxLinkLayerFrame objects are sent to the KNX devices on the bus,
+    behind the KNXnet/IP server. In accordance with the KNXnet/IP tunneling
+    specifications, only the \l QKnxLinkLayerFrame::MessageCode values listed
+    below are valid link layer frame message codes to be sent via a KNXnet/IP
+    tunnel connection:
+
+    \list
+        \li \c DataRequest (\c {L_Data.req})
+        \li \c DataConfirmation (\c {L_Data.con})
+        \li \c DataIndication (\c {L_Data.ind})
+        \li \c BusmonitorIndication (\c {L_Busmon.ind})
+        \li \c RawRequest (\c {L_Raw.req})
+        \li \c RawIndication (\c {L_Raw.ind})
+        \li \c RawConfirmation (\c {L_Raw.con})
+        \li \c ResetRequest (\c {M_Reset.req})
+    \endlist
+
+    Each KNXnet/IP tunneling connection corresponds to a KNX individual address
+    (\l QKnxAddress) that is assigned to the connection by the server. The
+    individual address must be unique within the open tunneling connections of
+    the device. A server cannot open two or more tunneling connections with the
+    same individual address.
+
+    The individual address is returned in a connection response data (CRD)
+    structure with the connect response \l QKnxNetIpFrame. The CRD structure
+    is constructed from the generic \l QKnxNetIpCrd class by using the
+    \l QKnxNetIpCrdProxy class. The contents of the KNXnet/IP frame can be
+    read by using the \l QKnxNetIpConnectResponseProxy view class.
+
+    If the KNXnet/IP server has no free addresses available, the connection
+    response contains the error code \l QKnx::NetIp::NoMoreUniqueConnections.
+
+    In addition to the individual address, link layer frames
+    contain the KNX application service the client wants to
+    use (\l QKnxTpdu::ApplicationControlField) and the data
+    (\l QKnxDatapointType, for write services).
+
+    The \l QKnxLinkLayerFrame::Builder class can be used to create valid link
+    layer frames. It is set up with default values to create a common external
+    message interface (cEMI) group value read frame, except for the destination
+    address, which needs to be specified during the creation of the frame.
+
+    \section1 List of Tunneling Classes
+
+    \annotatedlist qtknx-tunneling
+*/

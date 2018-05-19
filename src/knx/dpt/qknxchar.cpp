@@ -36,6 +36,7 @@ QT_BEGIN_NAMESPACE
     \class QKnxChar
     \inherits QKnxFixedSizeDatapointType
     \inmodule QtKnx
+    \ingroup qtknx-datapoint-types
 
     \brief The QKnxChar class is a datapoint type that encodes a character.
 
@@ -46,7 +47,7 @@ QT_BEGIN_NAMESPACE
 
     The range for the value is from \c 0 to \c 255.
 
-    \sa QKnxDatapointType
+    \sa QKnxDatapointType, {Qt KNX Datapoint Type Classes}
 */
 
 // -- QKnxChar
@@ -114,13 +115,14 @@ bool QKnxChar::isValid() const
     \class QKnxCharASCII
     \inherits QKnxChar
     \inmodule QtKnx
+    \ingroup qtknx-datapoint-types
 
     \brief The QKnxCharASCII class is a datapoint type that encodes an ASCII
     character.
 
     This is a fixed size datapoint type with the length of 1 byte.
 
-    \sa QKnxChar, QKnxDatapointType
+    \sa QKnxChar, QKnxDatapointType, {Qt KNX Datapoint Type Classes}
 */
 
 /*!
@@ -167,13 +169,14 @@ bool QKnxCharASCII::setCharacter(char value)
     \class QKnxChar88591
     \inherits QKnxChar
     \inmodule QtKnx
+    \ingroup qtknx-datapoint-types
 
     \brief The QKnxChar88591 class is a datapoint type that encodes an
     ISO 8859-1 character.
 
     This is a fixed size datapoint type with the length of 1 byte.
 
-    \sa QKnxChar, QKnxDatapointType
+    \sa QKnxChar, QKnxDatapointType, {Qt KNX Datapoint Type Classes}
 */
 
 /*!

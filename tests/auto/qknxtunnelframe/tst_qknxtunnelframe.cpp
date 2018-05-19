@@ -136,13 +136,13 @@ private slots:
             .create();
 
         auto tpdu = QKnxTpduFactory::Multicast::createGroupValueReadTpdu();
-        auto frame = QKnxLinkLayerFrameBuilder()
+        auto frame = QKnxLinkLayerFrame::builder()
             .setControlField(ctrl)
             .setExtendedControlField(extCtrl)
             .setTpdu(tpdu)
             .setDestinationAddress({ QKnxAddress::Type::Group, QString("0/0/2") })
             .setSourceAddress({ QKnxAddress::Type::Individual, 0 })
-            .setMsgCode(QKnxLinkLayerFrame::MessageCode::DataRequest)
+            .setMessageCode(QKnxLinkLayerFrame::MessageCode::DataRequest)
             .setMedium(QKnx::MediumType::NetIP)
             .setAdditionalInfos({ info })
             .createFrame();

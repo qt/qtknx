@@ -1,6 +1,6 @@
 /******************************************************************************
 **
-** Copyright (C) 2017 The Qt Company Ltd.
+** Copyright (C) 2018 The Qt Company Ltd.
 ** Contact: https://www.qt.io/licensing/
 **
 ** This file is part of the QtKnx module.
@@ -39,6 +39,7 @@ QT_BEGIN_NAMESPACE
     \class QKnx2ByteFloat
     \inherits QKnxFixedSizeDatapointType
     \inmodule QtKnx
+    \ingroup qtknx-datapoint-types
 
     \brief The QKnx2ByteFloat class is a datapoint type for a 2-byte float
     value.
@@ -147,7 +148,7 @@ QT_BEGIN_NAMESPACE
         \li 0 - 670760.96
     \endtable
 
-    \sa QKnxDatapointType
+    \sa QKnxDatapointType, {Qt KNX Datapoint Type Classes}
 */
 
 /*!

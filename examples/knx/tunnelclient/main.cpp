@@ -107,7 +107,7 @@ int main(int argc, char *argv[])
         auto tmp = input.readLine().toLatin1();
         if (tmp != "quit") {
             const auto bytes = QKnxByteArray::fromHex(tmp);
-            auto frame = QKnxLinkLayerFrameBuilder()
+            auto frame = QKnxLinkLayerFrame::builder()
                 .setData(bytes)
                 .setMedium(QKnx::MediumType::NetIP)
                 .createFrame();

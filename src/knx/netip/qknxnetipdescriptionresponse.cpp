@@ -160,6 +160,8 @@ QKnxNetIpDescriptionResponseProxy::Builder QKnxNetIpDescriptionResponseProxy::bu
     \class QKnxNetIpDescriptionResponseProxy::Builder
 
     \inmodule QtKnx
+    \inheaderfile QKnxNetIpDescriptionResponseProxy
+
     \brief The QKnxNetIpDescriptionResponseProxy::Builder class provides the
     means to create a KNXnet/IP description response frame.
 
