@@ -135,6 +135,10 @@ namespace QKnx
         enum class Error : quint8
         {
             None = 0x00,
+            HostProtocolType = 0x01,
+            VersionNotSupported = 0x02,
+            SequenceNumber = 0x04,
+            Error = 0x0f,
             ConnectionId = 0x21,
             ConnectionType = 0x22,
             ConnectionOption = 0x23,
@@ -142,7 +146,10 @@ namespace QKnx
             NoMoreUniqueConnections = 0x25,
             DataConnection = 0x26,
             KnxConnection = 0x27,
-            TunnelingLayer = 0x29
+            AuthorizationError = 0x28,
+            TunnelingLayer = 0x29,
+            NoTunnelingAddress = 0x2d,
+            ConnectionInUse = 0x2e
         };
         Q_ENUM_NS(Error)
 

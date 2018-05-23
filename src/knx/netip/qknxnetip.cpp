@@ -322,6 +322,14 @@ bool QKnxNetIp::isServiceType(QKnxNetIp::ServiceType type)
     This enum describes the KNXnet/IP communication errors that can occur.
 
     \value None                 No error occurred.
+    \value HostProtocolType
+    The requested host protocol is not supported by the KNXnet/IP device.
+    \value VersionNotSupported
+    The requested protocol version is not supported by the KNXnet/IP device.
+    \value SequenceNumber
+    The received sequence number is out of sync.
+    \value Error
+    An undefined, possibly implementation specific error occurred.
     \value ConnectionId
     The KNXnet/IP server device cannot find an active data connection with the
     specified ID.
@@ -343,8 +351,16 @@ bool QKnxNetIp::isServiceType(QKnxNetIp::ServiceType type)
     \value KnxConnection
     The KNXnet/IP server device detects an error concerning the KNX connection
     with the specified ID.
+    \value AuthorizationError
+    The KNXnet/IP client is not authorized to use the requested individual
+    address in the extended connection request information (CRI) structure.
     \value TunnelingLayer
     The requested tunneling layer is not supported by the KNXnet/IP server device.
+    \value NoTunnelingAddress
+    The address requested in the extended CRI structure is not a tunneling
+    individual address.
+    \value ConnectionInUse
+    The individual address requested for this connection is already in use.
 */
 
 /*!
