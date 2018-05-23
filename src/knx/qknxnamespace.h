@@ -63,9 +63,32 @@ namespace QKnx
     };
     Q_ENUM_NS(InterfaceFeature)
     Q_KNX_EXPORT bool isInterfaceFeature(QKnx::InterfaceFeature feature);
+
+    enum class ReturnCode : quint8
+    {
+        Success = 0x00,
+        SuccessWithCrc = 0x01,
+        MemoryError = 0xf1,
+        CommandInvalid = 0xf2,
+        CommandImpossible = 0xf3,
+        LengthExceedsMaxApduLength = 0xf4,
+        DataOverflow = 0xf5,
+        DataMin = 0xf6,
+        DataMax = 0xf7,
+        DataVoid = 0xf8,
+        TemporarilyNotAvailable = 0xf9,
+        AccessWriteOnly = 0xfa,
+        AccessReadOnly = 0xfb,
+        AccessDenied = 0xfc,
+        AddressVoid = 0xfd,
+        DataTypeConflict = 0xfe,
+        Error = 0xff
+    };
+    Q_ENUM_NS(ReturnCode)
 }
 Q_DECLARE_TYPEINFO(QKnx::MediumType, Q_PRIMITIVE_TYPE);
 Q_DECLARE_TYPEINFO(QKnx::InterfaceFeature, Q_PRIMITIVE_TYPE);
+Q_DECLARE_TYPEINFO(QKnx::ReturnCode, Q_PRIMITIVE_TYPE);
 
 QT_END_NAMESPACE
 

@@ -103,4 +103,71 @@ bool QKnx::isInterfaceFeature(QKnx::InterfaceFeature feature)
     return false;
 }
 
+/*!
+    \enum QKnx::ReturnCode
+
+    This enumeration contains the generic return codes used in the KNX
+    specification.
+
+    \value Success
+            The service, function, or command was executed successfully, without
+            additional information.
+    \value SuccessWithCrc
+            Positive confirmation of a message with CRC16-CCITT (beginning
+            after the APCI octet, over received data including address and
+            number of data octets).
+    \value MemoryError
+            Memory cannot be accessed at all or only with faults.
+    \value CommandInvalid
+            The command is not supported by this server.
+    \value CommandImpossible
+            The command is supported and well formatted, but it cannot be
+            executed, because a dependency is not fulfilled.
+    \value LengthExceedsMaxApduLength
+            The requested data will not fit into a frame supported by this
+            server. This return code indicates device limitations of the maximum
+            supported frame length while accessing the resources of the device,
+            such as properties, function properties, and memory.
+    \value DataOverflow
+            An attempt was made to write data beyond what is reserved for
+            the addressed resource.
+    \value DataMin
+            The write value was too low. If the value is lower than the lowest
+            supported value, then preferably this value shall be given instead
+            of \e {Value not supported}.
+    \value DataMax
+            The write value was too high. If the value is higher than the highest
+            supported value, then preferably this value shall be given instead of
+            \e {Value not supported}.
+    \value DataVoid
+            The service or the function (property) is supported, but the requested
+            data is not valid for this receiver. This value shall also be given
+            if the requested data contains an enumeration value that is not
+            supported, within the supported ranges.
+    \value TemporarilyNotAvailable
+            The data could be written, but it is not possible at the time,
+            because another management client (MaC) is accessing the data or
+            the data is currently processed by a management server (MaS)
+            (for example, being flashed or being renewed).
+    \value AccessWriteOnly
+            Read access was attempted to a \e {write only} service or resource.
+            This means resources such as properties, function properties, or
+            memory that can be written, but that cannot be read.
+    \value AccessReadOnly
+            Write access was attempted to a \e {read only} service or resource.
+            This means resources such as properties, function properties, or
+            memory that can be read, but that cannot be written.
+    \value AccessDenied
+            The access to the data or function was denied because of
+            authorization reasons, authorize request, or KNX security.
+    \value AddressVoid
+            The interface object or the property is not present, or the index
+            is out of range.
+    \value DataTypeConflict
+            Write access with a wrong data type (datapoint length).
+    \value Error
+            The service, function, or command has failed without additional
+            information about the problem.
+*/
+
 QT_END_NAMESPACE
