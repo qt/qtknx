@@ -64,6 +64,8 @@ namespace QKnx
     Q_ENUM_NS(InterfaceFeature)
     Q_KNX_EXPORT bool isInterfaceFeature(QKnx::InterfaceFeature feature);
 }
+Q_DECLARE_TYPEINFO(QKnx::MediumType, Q_PRIMITIVE_TYPE);
+Q_DECLARE_TYPEINFO(QKnx::InterfaceFeature, Q_PRIMITIVE_TYPE);
 
 QT_END_NAMESPACE
 
