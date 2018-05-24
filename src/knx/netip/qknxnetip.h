@@ -111,6 +111,7 @@ namespace QKnx
             ConnectionStateResponse = 0x0208,
             DisconnectRequest = 0x0209,
             DisconnectResponse = 0x020a,
+            SearchRequestExtended = 0x020b,
 
             // KNXnet/IP Device Management service type identifiers
             DeviceConfigurationRequest = 0x0310,
@@ -253,6 +254,22 @@ namespace QKnx
             };
             Q_ENUM_NS(Error)
         }
+
+        enum class SearchParameterType : quint8
+        {
+            Unknown = 0x00,
+            Invalid = 0x00,
+            SelectByProgrammingMode = 0x01,
+            SelectByMACAddress = 0x02,
+            SelectByServiceSRP = 0x03,
+            RequestDIBs = 0x04,
+            Reserved01 = 0x05,
+            Reserved02 = 0x06,
+            Reserved03 = 0x07,
+        };
+        Q_ENUM_NS(SearchParameterType)
+        Q_KNX_EXPORT bool isStructType(SearchParameterType type);
+
     }
 }
 namespace QKnxNetIp = QKnx::NetIp;
@@ -273,6 +290,7 @@ Q_DECLARE_TYPEINFO(QKnxNetIp::ProgrammingMode, Q_PRIMITIVE_TYPE);
 Q_DECLARE_TYPEINFO(QKnxNetIp::AssignmentMethod, Q_PRIMITIVE_TYPE);
 Q_DECLARE_TYPEINFO(QKnxNetIp::Capability, Q_PRIMITIVE_TYPE);
 Q_DECLARE_TYPEINFO(QKnxNetIp::Timeout, Q_PRIMITIVE_TYPE);
+Q_DECLARE_TYPEINFO(QKnxNetIp::SearchParameterType, Q_PRIMITIVE_TYPE);
 
 Q_DECLARE_TYPEINFO(QKnxNetIpCemiServer::ReturnCode, Q_PRIMITIVE_TYPE);
 Q_DECLARE_TYPEINFO(QKnxNetIpCemiServer::Error, Q_PRIMITIVE_TYPE);

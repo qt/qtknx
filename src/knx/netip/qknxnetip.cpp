@@ -244,6 +244,9 @@ bool QKnxNetIp::isServiceFamily(QKnxNetIp::ServiceFamily family)
     \value DisconnectResponse
            The service type sent by a KNXnet/IP device in response to a
            disconnect request.
+    \value SearchRequestExtended
+           The service type sent by a KNXnet/IP device during the discovery phase
+           looking for any listening KNXnet/IP servers or for a specific one.
     \value DeviceConfigurationRequest
            The service type sent to read or write KNXnet/IP device configuration
            data.
@@ -298,6 +301,7 @@ bool QKnxNetIp::isServiceType(QKnxNetIp::ServiceType type)
     case QKnxNetIp::ServiceType::ConnectionStateResponse:
     case QKnxNetIp::ServiceType::DisconnectRequest:
     case QKnxNetIp::ServiceType::DisconnectResponse:
+    case QKnxNetIp::ServiceType::SearchRequestExtended:
     case QKnxNetIp::ServiceType::DeviceConfigurationRequest:
     case QKnxNetIp::ServiceType::DeviceConfigurationAcknowledge:
     case QKnxNetIp::ServiceType::TunnelingRequest:
@@ -591,5 +595,55 @@ bool QKnxNetIp::isCapability(Capability capability)
            Can occur in negative write confirmation frames.
     \value None     No error occurred. Please do not use.
 */
+
+/*!
+    \enum QKnx::NetIp::SearchParameterType
+
+    This enum is used in an extended search request to filter out devices in the
+    KNXnet/IP server discovery phase.
+
+    \omitvalue Unknown
+    \value Invalid
+           The extended search request parameter contains an invalid value.
+    \value SelectByProgrammingMode
+            Client is interested only in the response from KNXnet/IP servers
+            in programming mode currently enabled.
+    \value SelectByMACAddress
+            Client is interested only in the response from KNXnet/IP servers
+            with the given MAC address.
+    \value SelectByServiceSRP
+            Client is interested only in the response from KNXnet/IP servers
+            supporting the given KNXnet/IP service family in at least the given
+            version.
+    \value RequestDIBs
+            Client includes this search request parameter (SRP) to indicate
+            that it is interested in the listed DIBs. This SRP shall not
+            influence the decision of the KNXnet/IP server whether or not
+            to respond to the search request.
+    \omitvalue Reserved01
+    \omitvalue Reserved02
+    \omitvalue Reserved03
+*/
+
+/*!
+    Returns \c true if the specified \a type is a part of the \l
+    SearchParameterType enumeration; otherwise returns \c false.
+*/
+bool QKnx::NetIp::isStructType(QKnx::NetIp::SearchParameterType type)
+{
+    switch (type) {
+    case QKnx::NetIp::SearchParameterType::SelectByProgrammingMode:
+    case QKnx::NetIp::SearchParameterType::SelectByMACAddress:
+    case QKnx::NetIp::SearchParameterType::SelectByServiceSRP:
+    case QKnx::NetIp::SearchParameterType::RequestDIBs:
+        return true;
+    case QKnx::NetIp::SearchParameterType::Reserved01:
+    case QKnx::NetIp::SearchParameterType::Reserved02:
+    case QKnx::NetIp::SearchParameterType::Reserved03:
+    case QKnx::NetIp::SearchParameterType::Unknown:
+        break;
+    }
+    return false;
+}
 
 QT_END_NAMESPACE
