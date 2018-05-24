@@ -152,7 +152,7 @@ QKnxNetIpConnectionStateResponseProxy::Builder QKnxNetIpConnectionStateResponseP
     The common way to create a connection state response is:
 
     \code
-        auto netIpFrame = QKnxNetIpConnectionStateResponseProxy.builder()
+        auto netIpFrame = QKnxNetIpConnectionStateResponseProxy::builder()
             .setChannelId(25)
             .setStatus(QKnx::NetIp::Error::None)
             .create();
