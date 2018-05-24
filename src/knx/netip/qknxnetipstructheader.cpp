@@ -186,6 +186,18 @@ QT_BEGIN_NAMESPACE
 */
 
 /*!
+    \fn template <typename CodeType> bool QKnxNetIpStructHeader<CodeType>::isMandatory() const
+
+    Returns \c true if the mandatory bit is set; otherwise returns \c false.
+*/
+
+/*!
+    \fn template <typename CodeType> void QKnxNetIpStructHeader<CodeType>::setMandatory(bool value)
+
+    Sets the KNXnet/IP structure's mandatory bit to \a value.
+*/
+
+/*!
     \relates QKnxNetIpStructHeader
     \fn template<typename CodeType> QDebug operator<<(QDebug debug, const QKnxNetIpStructHeader<CodeType> &header)
 

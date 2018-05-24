@@ -631,7 +631,7 @@ bool QKnxNetIp::isCapability(Capability capability)
 */
 bool QKnx::NetIp::isStructType(QKnx::NetIp::SearchParameterType type)
 {
-    switch (type) {
+    switch (QKnx::NetIp::SearchParameterType(quint8(type) & ~(0x80))) {
     case QKnx::NetIp::SearchParameterType::SelectByProgrammingMode:
     case QKnx::NetIp::SearchParameterType::SelectByMACAddress:
     case QKnx::NetIp::SearchParameterType::SelectByServiceSRP:

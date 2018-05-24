@@ -40,7 +40,7 @@ QT_BEGIN_NAMESPACE
 template <typename CodeType> class QKnxNetIpStruct final
 {
     static_assert(is_type<CodeType, QKnxNetIp::HostProtocol, QKnxNetIp::ConnectionType,
-        QKnxNetIp::DescriptionType>::value, "Type not supported.");
+        QKnxNetIp::DescriptionType, QKnxNetIp::SearchParameterType>::value, "Type not supported.");
 
 public:
     QKnxNetIpStruct() = default;
@@ -141,11 +141,13 @@ private:
     using QKnxNetIpCri = QKnxNetIpStruct<QKnxNetIp::ConnectionType>;
     using QKnxNetIpCrd = QKnxNetIpStruct<QKnxNetIp::ConnectionType>;
     using QKnxNetIpDib = QKnxNetIpStruct<QKnxNetIp::DescriptionType>;
+    using QKnxNetIpSrp = QKnxNetIpStruct<QKnxNetIp::SearchParameterType>;
 #else
     class QKnxNetIpHpai final {public:};
     class QKnxNetIpCri final {public:};
     class QKnxNetIpCrd final {public:};
     class QKnxNetIpDib final {public:};
+    class QKnxNetIpSrp final {public:};
 #endif
 
 Q_KNX_EXPORT QDebug operator<<(QDebug debug, const QKnxNetIpStruct<QKnxNetIp::HostProtocol> &hpai);

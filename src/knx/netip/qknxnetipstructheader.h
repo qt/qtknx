@@ -40,7 +40,7 @@ QT_BEGIN_NAMESPACE
 template <typename CodeType> class QKnxNetIpStructHeader final
 {
     static_assert(is_type<CodeType, QKnxNetIp::HostProtocol, QKnxNetIp::ConnectionType,
-        QKnxNetIp::DescriptionType>::value, "Type not supported.");
+        QKnxNetIp::DescriptionType, QKnxNetIp::SearchParameterType>::value, "Type not supported.");
 
 public:
     QKnxNetIpStructHeader() = default;
@@ -109,18 +109,12 @@ public:
 
     CodeType code() const
     {
-        if (size() == 0)
-            return CodeType::Unknown;
-        return CodeType(byte(size() - 1));
+        return codeType();
     }
 
     void setCode(CodeType code)
     {
-        if (isNull()) {
-            setSize(2);
-            setByte(0, 2);
-        }
-        setByte(size() - 1, quint8(code));
+        setCodeType(code);
     }
 
     quint8 byte(quint8 index) const
@@ -158,7 +152,10 @@ public:
         auto code = CodeType(QKnxUtils::QUint8::fromBytes(bytes, index + headerSize - 1));
         if (!QKnxNetIp::isStructType(code))
             return {};
-        return { code, quint16(totalSize - headerSize) };
+
+        QKnxNetIpStructHeader<CodeType> result { code, quint16(totalSize - headerSize) };
+        result.setMandatoryFromBytes((quint8(code) & 0x80));
+        return result;
     }
 
     bool operator==(const QKnxNetIpStructHeader &other) const
@@ -173,6 +170,26 @@ public:
         return !operator==(other);
     }
 
+    template<class T = CodeType>
+    typename std::enable_if<is_type<T, QKnxNetIp::SearchParameterType>::value, bool>::type
+        /* bool */ isMandatory() const
+    {
+        if (isNull())
+            return false;
+        return (byte(size() - 1) & 0x80);
+    }
+
+    template<class T = CodeType>
+    typename std::enable_if<is_type<T, QKnxNetIp::SearchParameterType>::value, void>::type
+        /* void */ setMandatory(bool value)
+    {
+        if (isNull()) {
+            setSize(2);
+            setByte(0, 2);
+        }
+        setByte(size() - 1, ((byte(size() - 1)) & ~(1 << 7)) | (quint8(value) << 7));
+    }
+
 private:
     void setSize(quint8 size)
     {
@@ -182,6 +199,60 @@ private:
     void setByte(quint8 index, quint8 value)
     {
         m_bytes[index + 1] = value;
+    }
+
+    template<class T = CodeType>
+    typename std::enable_if<is_type<T, QKnxNetIp::SearchParameterType>::value, CodeType>::type
+        /* CodeType */ codeType() const
+    {
+        if (isNull())
+            return CodeType::Unknown;
+        return CodeType(byte(size() - 1) &~ 0x80);
+    }
+
+    template<class T = CodeType>
+    typename std::enable_if<!is_type<T, QKnxNetIp::SearchParameterType>::value, CodeType>::type
+        /* CodeType */ codeType() const
+    {
+        if (isNull())
+            return CodeType::Unknown;
+        return CodeType(byte(size() - 1));
+    }
+
+    template<class T = CodeType>
+    typename std::enable_if<is_type<T, QKnxNetIp::SearchParameterType>::value, void>::type
+        /* void */ setCodeType(CodeType code)
+    {
+        if (isNull()) {
+            setSize(2);
+            setByte(0, 2);
+        }
+        setByte(size() - 1, (quint8(code) & ~(1 << 7)) | (quint8(isMandatory()) << 7));
+    }
+
+    template<class T = CodeType>
+    typename std::enable_if<!is_type<T, QKnxNetIp::SearchParameterType>::value, void>::type
+        /* void */ setCodeType(CodeType code)
+    {
+        if (isNull()) {
+            setSize(2);
+            setByte(0, 2);
+        }
+        setByte(size() - 1, quint8(code));
+    }
+
+    template<class T = CodeType>
+    typename std::enable_if<is_type<T, QKnxNetIp::SearchParameterType>::value, void>::type
+        /* void */ setMandatoryFromBytes(bool value)
+    {
+        setMandatory(value);
+    }
+
+    template<class T = CodeType>
+    typename std::enable_if<!is_type<T, QKnxNetIp::SearchParameterType>::value, void>::type
+        /* void */ setMandatoryFromBytes(bool value)
+    {
+        Q_UNUSED(value);
     }
 
 private:

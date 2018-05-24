@@ -103,6 +103,32 @@ QT_BEGIN_NAMESPACE
 */
 
 /*!
+    \class QKnxNetIpSrp
+    \inmodule QtKnx
+
+    \brief The QKnxNetIpSrp class stores an extended search request parameter
+    (SRP).
+
+    A KNXnet/IP client may include zero or more search request parameter
+    blocks (SRP) to transfer additional information regarding the search.
+
+    A KNXnet/IP server interprets SRPs using these rules: if a KNXnet/IP server
+    supports the SRP, it applies the selection criteria as specified for the
+    specific SRP type. Otherwise, if it is not supported and the M (Mandatory)
+    bit is set, the server shall not respond to the search request. Moreover,
+    if it is not supported and the M bit is not set, the server
+    ignores this SRP and react as if this SRP were not present. If the
+    evaluation of any of the SRPs leads to the decision to not respond to the
+    search request, then the following SRPs are skipped.
+
+    A KNXnet/IP client cannot use an invalid SRP type code \c 00h. The KNXnet/IP
+    server handles an SRP with the invalid code \c 00h as any other unknown SRP
+    code.
+
+    \sa QKnxNetIpSearchRequestProxy
+*/
+
+/*!
     \class QKnxNetIpStruct
 
     \inmodule QtKnx

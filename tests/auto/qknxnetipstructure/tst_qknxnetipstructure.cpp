@@ -147,8 +147,25 @@ private slots:
     {
         QKnxByteArray payload(0xfc, 0x05);
 
-        auto header = QKnxNetIpStructHeader<QKnxNetIp::HostProtocol>(QKnxNetIp::HostProtocol::UDP_IPv4);
+        auto header = QKnxNetIpStructHeader<QKnxNetIp::HostProtocol>(QKnxNetIp::HostProtocol::TCP_IPv4);
+        QCOMPARE(header.isNull(), false);
+        QCOMPARE(header.isValid(), true);
+        QCOMPARE(header.size(), 0x02);
+        QCOMPARE(header.totalSize(), 0x02);
+        QCOMPARE(header.dataSize(), 0x00);
+        QCOMPARE(header.code(), QKnxNetIp::HostProtocol::TCP_IPv4);
+        QCOMPARE(header.byte(0), 0x02);
+        QCOMPARE(header.bytes(), QKnxByteArray({ 0x02, 0x02 }));
+
+        header.setCode(QKnxNetIp::HostProtocol::UDP_IPv4);
+        QCOMPARE(header.code(), QKnxNetIp::HostProtocol::UDP_IPv4);
+
         header.setDataSize(payload.size());
+        QCOMPARE(header.dataSize(), 0xfc);
+
+        auto other = QKnxNetIpStructHeader<QKnxNetIp::HostProtocol>(QKnxNetIp::HostProtocol::TCP_IPv4);
+        QCOMPARE(header != other, true);
+        QCOMPARE(header == other, false);
 
         QKnxNetIpHpai test(header, payload);
         QCOMPARE(test.size(), quint16(0xfe));
@@ -171,6 +188,65 @@ private slots:
 
         QCOMPARE(test.data().size(), quint16(0x0105));
         QCOMPARE(test.data(), payload);
+    }
+
+    void testSearchParameterTypeHeader()
+    {
+        auto header = QKnxNetIpStructHeader<QKnxNetIp::SearchParameterType>();
+        QCOMPARE(header.isNull(), true);
+        QCOMPARE(header.isValid(), false);
+        QCOMPARE(header.size(), 0x00);
+        QCOMPARE(header.totalSize(), 0x00);
+        QCOMPARE(header.dataSize(), 0x00);
+        QCOMPARE(header.code(), QKnxNetIp::SearchParameterType::Unknown);
+        QCOMPARE(header.isMandatory(), false);
+        QCOMPARE(header.bytes(), QKnxByteArray());
+
+        auto other = QKnxNetIpStructHeader<QKnxNetIp::SearchParameterType>
+                                                     (QKnxNetIp::SearchParameterType::RequestDIBs);
+        QCOMPARE(header != other, true);
+        QCOMPARE(header == other, false);
+
+        header.setCode(QKnxNetIp::SearchParameterType::RequestDIBs);
+        QCOMPARE(header.isMandatory(), false);
+        QCOMPARE(header.code(), QKnxNetIp::SearchParameterType::RequestDIBs);
+
+        header.setMandatory(true);
+        QCOMPARE(header.isMandatory(), true);
+        QCOMPARE(header.code(), QKnxNetIp::SearchParameterType::RequestDIBs);
+
+        header.setCode(QKnxNetIp::SearchParameterType::SelectByMACAddress);
+        QCOMPARE(header.isMandatory(), true);
+        QCOMPARE(header.code(), QKnxNetIp::SearchParameterType::SelectByMACAddress);
+
+        header = QKnxNetIpStructHeader<QKnxNetIp::SearchParameterType>();
+        QCOMPARE(header.size(), 0x00);
+        QCOMPARE(header.totalSize(), 0x00);
+        QCOMPARE(header.isMandatory(), false);
+
+        header.setMandatory(true);
+        QCOMPARE(header.size(), 0x02);
+        QCOMPARE(header.totalSize(), 0x02);
+        QCOMPARE(header.isMandatory(), true);
+
+        header.setCode(QKnxNetIp::SearchParameterType::SelectByMACAddress);
+        QCOMPARE(header.isMandatory(), true);
+        QCOMPARE(header.code(), QKnxNetIp::SearchParameterType::SelectByMACAddress);
+    }
+
+    void structHeaderWithMandatoryFlag()
+    {
+        auto initBytes = QKnxByteArray::fromHex("0882");
+        auto srp1 = QKnxNetIpStructHeader<QKnxNetIp::SearchParameterType>::fromBytes(
+                        initBytes, 0);
+        QVERIFY(srp1.isValid());
+        QCOMPARE(srp1.bytes(), initBytes);
+
+        initBytes = QKnxByteArray::fromHex("0802");
+        srp1 = QKnxNetIpStructHeader<QKnxNetIp::SearchParameterType>::fromBytes(
+                        initBytes, 0);
+        QVERIFY(srp1.isValid());
+        QCOMPARE(srp1.bytes(), initBytes);
     }
 
     void testDebugStream()
