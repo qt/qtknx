@@ -28,6 +28,7 @@
 ******************************************************************************/
 
 #include "qknxnetipsearchrequest.h"
+#include "qknxbuilderdata_p.h"
 
 QT_BEGIN_NAMESPACE
 
@@ -100,16 +101,41 @@ QKnxNetIpSearchRequestProxy::QKnxNetIpSearchRequestProxy(const QKnxNetIpFrame &f
 
 /*!
     Returns \c true if the frame contains initialized values and is in itself
-    valid, otherwise returns \c false. A valid KNXnet/IP frame consist of
-    at least a valid header and a size in bytes corresponding to the total size
-    of the KNXnet/IP frame header.
+    valid, otherwise returns \c false. A valid KNXnet/IP frame consist of a
+    search request with at least a valid header and a size in bytes
+    corresponding to the total size of the KNXnet/IP frame header or a search
+    extended request containing a valid header and a valid extended search
+    parameter.
 
     \sa QKnxNetIpFrameHeader::totalSize()
 */
 bool QKnxNetIpSearchRequestProxy::isValid() const
 {
-    return m_frame.isValid() && m_frame.serviceType() == QKnxNetIp::ServiceType::SearchRequest
-        && m_frame.size() == 14;
+    auto serviceType = m_frame.serviceType();
+    if (serviceType == QKnxNetIp::ServiceType::SearchRequest) {
+        return m_frame.isValid() && m_frame.size() == 14;
+    } else if (serviceType == QKnxNetIp::ServiceType::SearchRequestExtended) {
+
+        auto srps = extendedSearchParameters();
+        bool srpsValid = true;
+        for (const auto &srp: srps)
+            srpsValid = srpsValid && srp.isValid();
+
+        return m_frame.isValid()
+               && m_frame.size() >= 14
+               && (m_frame.size() % 2 == 0)
+               && srpsValid;
+    }
+    return false;
+}
+
+/*!
+    Returns \c true if the frame service type is search request extended,
+    otherwise returns \c false.
+*/
+bool QKnxNetIpSearchRequestProxy::isExtended() const
+{
+    return (m_frame.serviceType() == QKnxNetIp::ServiceType::SearchRequestExtended);
 }
 
 /*!
@@ -121,13 +147,35 @@ QKnxNetIpHpai QKnxNetIpSearchRequestProxy::discoveryEndpoint() const
 }
 
 /*!
+    Returns the extended search parameter structure.
+*/
+QVector<QKnxNetIpSrp> QKnxNetIpSearchRequestProxy::extendedSearchParameters() const
+{
+    quint16 index = discoveryEndpoint().size();
+
+    const auto &data = m_frame.constData();
+    auto srp = QKnxNetIpSrp::fromBytes(data, index);
+
+    QVector<QKnxNetIpSrp> srps;
+    while (srp.isValid()) {
+        srps.append(srp);
+        index += srp.size();
+        srp = QKnxNetIpSrp::fromBytes(data, index);
+    }
+
+    if (index < data.size())
+        return {};
+
+    return srps;
+}
+
+/*!
     Returns a builder object to create a KNXnet/IP search request frame.
 */
 QKnxNetIpSearchRequestProxy::Builder QKnxNetIpSearchRequestProxy::builder()
 {
     return QKnxNetIpSearchRequestProxy::Builder();
 }
-
 
 /*!
     \class QKnxNetIpSearchRequestProxy::Builder
@@ -192,6 +240,120 @@ QKnxNetIpSearchRequestProxy::Builder &
 QKnxNetIpFrame QKnxNetIpSearchRequestProxy::Builder::create() const
 {
     return { QKnxNetIp::ServiceType::SearchRequest, m_hpai.bytes() };
+}
+
+/*!
+    \class QKnxNetIpSearchRequestProxy::ExtendedBuilder
+
+    \inmodule QtKnx
+    \brief The QKnxNetIpSearchRequestProxy::ExtendedBuilder class provides
+    the means to create a KNXnet/IP extended search request.
+
+    To discover KNXnet/IP servers, a KNXnet/IP client sends a extended search
+    request data packet via multicast using its discovery endpoint. The request
+    contains the host address protocol information (HPAI) of the discovery
+    endpoint. The HPAI may also contain a unicast IP address to receive the
+    answers from the different servers directly in a point-to-point manner.
+    Typically, it should contain the KNXnet/IP system setup multicast address
+    to ensure reception from KNXnet/IP servers that are on a different
+    subnetwork. Additionally, the client may include 0 or more search request
+    parameter blocks.
+
+    The common way to create a search request is:
+
+    \code
+        auto hpai = QKnxNetIpHpaiProxy::builder().create();
+        auto macAddress = QKnxByteArray::fromHex("4CCC6AE40000");
+        QKnxNetIpSrp macSrp = SrpBuilders::MacAddress()
+                               .setMandatory()
+                               .setMac(macAddress)
+                               .create();
+        auto modeSrp = SrpBuilders::ProgrammingMode()
+                       .setMandatory()
+                       .create();
+        auto srps = { macSrp, modeSrp };
+        auto netIpFrame = QKnxNetIpSearchRequestProxy::ExtendedBuilder()
+            .setDiscoveryEndpoint(hpai)
+            .setExtendedParameter(srps)
+            .create();
+    \endcode
+
+    After sending the search request, the KNXnet/IP client waits until timeout
+    for the response frame from the KNXnet/IP server,
+    \l QKnxNetIpSearchResponseProxy. After the timeout, received response
+    frames are ignored by the client until it sends another search request.
+    Search requests received from other clients are always ignored.
+
+    \sa QKnxNetIpHpaiProxy::Builder
+*/
+
+/*!
+    Creates an extended search request builder.
+*/
+QKnxNetIpSearchRequestProxy::ExtendedBuilder::ExtendedBuilder()
+    : d_ptr(new ExtendedBuilderPrivate)
+{}
+
+/*!
+    Destroys an extended search request builder.
+*/
+QKnxNetIpSearchRequestProxy::ExtendedBuilder::~ExtendedBuilder()
+{}
+
+/*!
+    Sets the discovery endpoint of the KNXnet/IP client to \a hpai and returns a
+    reference to the builder.
+*/
+QKnxNetIpSearchRequestProxy::ExtendedBuilder &
+QKnxNetIpSearchRequestProxy::ExtendedBuilder::setDiscoveryEndpoint(const QKnxNetIpHpai &hpai)
+{
+    d_ptr->m_hpai = hpai;
+    return *this;
+}
+
+/*!
+    Adds the QVector of extended parameters \a srps to the KNXnet/IP extended
+    search request.
+*/
+QKnxNetIpSearchRequestProxy::ExtendedBuilder &
+QKnxNetIpSearchRequestProxy::ExtendedBuilder::setExtendedParameters(const QVector<QKnxNetIpSrp> &srps)
+{
+    d_ptr->m_srps = srps;
+    return *this;
+}
+
+/*!
+    Creates and returns a KNXnet/IP extended search request frame.
+
+    \note The returned frame may be invalid depending on the values used during
+    setup.
+
+    \sa isValid()
+*/
+QKnxNetIpFrame QKnxNetIpSearchRequestProxy::ExtendedBuilder::create() const
+{
+    QKnxByteArray srpBytes;
+    for (auto &srp : d_ptr->m_srps)
+        srpBytes += srp.bytes();
+
+    return { QKnxNetIp::ServiceType::SearchRequestExtended, d_ptr->m_hpai.bytes() + srpBytes };
+}
+
+
+/*!
+    Constructs a copy of \a other.
+*/
+QKnxNetIpSearchRequestProxy::ExtendedBuilder::ExtendedBuilder(const QKnxNetIpSearchRequestProxy::ExtendedBuilder &other)
+    : d_ptr(other.d_ptr)
+{}
+
+/*!
+    Assigns \a other to this builder.
+*/
+QKnxNetIpSearchRequestProxy::ExtendedBuilder &QKnxNetIpSearchRequestProxy::ExtendedBuilder::operator=(const QKnxNetIpSearchRequestProxy::ExtendedBuilder &other)
+{
+    d_ptr = other.d_ptr;
+    return *this;
 }
 
 QT_END_NAMESPACE

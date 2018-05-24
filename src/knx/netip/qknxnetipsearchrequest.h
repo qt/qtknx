@@ -34,6 +34,9 @@
 #include <QtKnx/qknxnetiphpai.h>
 #include <QtKnx/qknxglobal.h>
 
+#include <QtCore/qshareddata.h>
+#include <QtCore/qvector.h>
+
 QT_BEGIN_NAMESPACE
 
 class Q_KNX_EXPORT QKnxNetIpSearchRequestProxy final
@@ -46,7 +49,10 @@ public:
     explicit QKnxNetIpSearchRequestProxy(const QKnxNetIpFrame &frame);
 
     bool isValid() const;
+    bool isExtended() const;
+
     QKnxNetIpHpai discoveryEndpoint() const;
+    QVector<QKnxNetIpSrp> extendedSearchParameters() const;
 
     class Q_KNX_EXPORT Builder final
     {
@@ -57,6 +63,24 @@ public:
     private:
         QKnxNetIpHpai m_hpai;
     };
+
+    class Q_KNX_EXPORT ExtendedBuilder final
+    {
+    public:
+        ExtendedBuilder();
+        ~ExtendedBuilder();
+        ExtendedBuilder &setDiscoveryEndpoint(const QKnxNetIpHpai &hpai);
+        ExtendedBuilder &setExtendedParameters(const QVector<QKnxNetIpSrp> &srps);
+
+        QKnxNetIpFrame create() const;
+
+        ExtendedBuilder(const ExtendedBuilder &other);
+        ExtendedBuilder &operator=(const ExtendedBuilder &other);
+    private:
+        class ExtendedBuilderPrivate;
+        QSharedDataPointer<ExtendedBuilderPrivate> d_ptr;
+    };
+
     static QKnxNetIpSearchRequestProxy::Builder builder();
 
 private:

@@ -40,11 +40,12 @@
 //
 // We mean it.
 //
-#include "qknxnetipsrp.h"
 
 #include <QtCore/qshareddata.h>
 #include <QtKnx/qknxnamespace.h>
+#include <QtKnx/qknxnetipsearchrequest.h>
 #include <QtKnx/qknxnetipservicefamiliesdib.h>
+#include <QtKnx/qknxnetipsrp.h>
 
 QT_BEGIN_NAMESPACE
 
@@ -86,6 +87,15 @@ class SrpBuilders::RequestDibs::RequestDibsPrivate : public QSharedData
 public:
     QVector<QKnxServiceInfo> m_infos;
     bool m_mandatory { false };
+};
+
+class Q_KNX_EXPORT QKnxNetIpSearchRequestProxy::ExtendedBuilder::ExtendedBuilderPrivate
+        : public QSharedData {
+public:
+    ExtendedBuilderPrivate() = default;
+    ~ExtendedBuilderPrivate() = default;
+    QKnxNetIpHpai m_hpai = { QKnxNetIp::HostProtocol::Unknown};
+    QVector<QKnxNetIpSrp> m_srps;
 };
 
 QT_END_NAMESPACE

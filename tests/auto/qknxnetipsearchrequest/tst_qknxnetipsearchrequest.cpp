@@ -46,6 +46,7 @@ private slots:
     void testDefaultConstructor();
     void testConstructor();
     void testDebugStream();
+    void testExtendSearchRequest();
     void tst_createSrpFromBytes();
     void tst_srpBuilders();
 };
@@ -171,6 +172,68 @@ void tst_QKnxNetIpSearchRequest::tst_createSrpFromBytes()
                     initBytes, 0);
     QVERIFY(srp1.isValid());
     QCOMPARE(srp1.bytes(), initBytes);
+}
+
+void tst_QKnxNetIpSearchRequest::testExtendSearchRequest()
+{
+    auto macAddress1 = QKnxByteArray::fromHex("4CCC6AE40001");
+    auto macAddress2 = QKnxByteArray::fromHex("4CCC6AE40002");
+    QKnxNetIpSrp macSrp1 = SrpBuilders::MacAddress()
+                                    .setMandatory()
+                                    .setMac(macAddress1)
+                                    .create();
+    QKnxNetIpSrp macSrp2 = SrpBuilders::MacAddress()
+                                    .setMandatory()
+                                    .setMac(macAddress2)
+                                    .create();
+    QVector<QKnxNetIpSrp> srps = { macSrp1, macSrp2 };
+    QCOMPARE(srps.constFirst().isValid(), true);
+    QVERIFY(srps.constFirst().header().isMandatory());
+    QCOMPARE(srps.constFirst().bytes(),
+             QKnxByteArray::fromHex("0882") + macAddress1);
+    QCOMPARE(srps.constLast().isValid(), true);
+    QVERIFY(srps.constLast().header().isMandatory());
+    QCOMPARE(srps.constLast().bytes(),
+             QKnxByteArray::fromHex("0882") + macAddress2);
+
+    auto frame = QKnxNetIpSearchRequestProxy::ExtendedBuilder()
+        .setDiscoveryEndpoint(QKnxNetIpHpaiProxy::builder()
+            .setHostAddress(QHostAddress::LocalHost)
+            .setPort(3671).create())
+        .setExtendedParameters(srps)
+        .create();
+
+    // header checks
+    QVERIFY(frame.header().HeaderSize10 == frame.header().byte(0));
+    QCOMPARE(frame.header().serviceType(),
+             QKnxNetIp::ServiceType::SearchRequestExtended);
+    const quint16 srpSize = 8*2;
+    const quint16 knxNetIPheaderSize = 14;
+    QVERIFY(frame.header().totalSize() == (knxNetIPheaderSize + srpSize));
+
+    // frame checks
+    QCOMPARE(frame.size(), quint16(knxNetIPheaderSize + srpSize));
+
+    QCOMPARE(frame.bytes(),
+        QKnxByteArray::fromHex("0610020b001e08017f0000010e5708824ccc6ae4000108824ccc6ae40002"));
+    const quint16 hpaiSize = 8;
+    QCOMPARE(frame.data().size(), hpaiSize + srpSize);
+    QCOMPARE(frame.data(),
+             QKnxByteArray::fromHex("08017f0000010e5708824ccc6ae4000108824ccc6ae40002"));
+
+    // extended search proxy checks
+    QKnxNetIpSearchRequestProxy extendedSearch(frame);
+    QVERIFY(extendedSearch.isExtended());
+    QCOMPARE(extendedSearch.isValid(), true);
+    QCOMPARE(extendedSearch.discoveryEndpoint().isValid(), true);
+    QCOMPARE(extendedSearch.discoveryEndpoint().bytes(),
+             QKnxByteArray::fromHex("08017f0000010e57"));
+
+    QKnxByteArray bytes;
+    for (const auto &srp: extendedSearch.extendedSearchParameters())
+        bytes += srp.bytes();
+    QCOMPARE(bytes, QKnxByteArray::fromHex("0882") + macAddress1
+             + QKnxByteArray::fromHex("0882") + macAddress2);
 }
 
 QTEST_APPLESS_MAIN(tst_QKnxNetIpSearchRequest)

@@ -59,7 +59,7 @@ using namespace SrpBuilders;
             the given service family in at least the given version.
         \li \l {SrpBuilders::RequestDibs}{Request DIBs} indicates that the
             client is interested in the listed description information blocks
-            (DIBs)
+            (DIBs).
     \endlist
 */
 
