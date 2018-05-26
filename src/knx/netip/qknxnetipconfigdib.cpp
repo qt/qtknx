@@ -36,6 +36,8 @@ QT_BEGIN_NAMESPACE
     \class QKnxNetIpConfigDibProxy
 
     \inmodule QtKnx
+    \ingroup qtknx-netip
+
     \brief The QKnxNetIpConfigDibProxy class provides the means to read the IP
     configuration from the generic \l QKnxNetIpDib class and to create a
     KNXnet/IP current IP configuration (DIB) structure based on the information.
@@ -59,7 +61,7 @@ QT_BEGIN_NAMESPACE
         auto assignmentMethods = view.assignmentMethods();
     \endcode
 
-    \sa builder()
+    \sa builder(), {Qt KNXnet/IP Connection Classes}
 */
 
 /*!

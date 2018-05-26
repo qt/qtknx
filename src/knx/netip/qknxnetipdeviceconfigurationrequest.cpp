@@ -36,6 +36,7 @@ QT_BEGIN_NAMESPACE
 
     \inmodule QtKnx
     \ingroup qtknx-device-management
+    \ingroup qtknx-netip
 
     \brief The QKnxNetIpDeviceConfigurationRequestProxy class provides the means
     to read a device configuration request from the generic \l QKnxNetIpFrame
@@ -93,7 +94,7 @@ QT_BEGIN_NAMESPACE
 
     \sa builder(), QKnxNetIpServerDiscoveryAgent,
     QKnxNetIpDeviceConfigurationAcknowledgeProxy,
-    {Qt KNX Device Management Classes}
+    {Qt KNX Device Management Classes}, {Qt KNXnet/IP Connection Classes}
 */
 
 /*!

@@ -47,6 +47,8 @@ QT_BEGIN_NAMESPACE
     \class QKnxNetIpEndpointConnection
 
     \inmodule QtKnx
+    \ingroup qtknx-netip
+
     \brief The QKnxNetIpEndpointConnection class serves as base class for derived classes to enable
     the opening and handling of a client connection to a KNXnet/IP server.
 
@@ -58,6 +60,8 @@ QT_BEGIN_NAMESPACE
     that can be modified according to the client needs. If the KNXnet/IP communication
     has to traverse across a network using network address translation (NAT), the client can also make
     the class aware of this.
+
+    \sa {Qt KNXnet/IP Connection Classes}
 */
 
 /*!

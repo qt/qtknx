@@ -35,6 +35,8 @@ QT_BEGIN_NAMESPACE
     \class QKnxAddress
 
     \inmodule QtKnx
+    \ingroup qtknx-general-classes
+
     \brief The QKnxAddress class represents a 16-bit KNX address value.
 
     KNX is a fully distributed network, which accommodates up to 65,536 devices

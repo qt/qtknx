@@ -37,6 +37,8 @@ const std::bitset<8> gHopCountMask = 0x70;
     \class QKnxExtendedControlField
 
     \inmodule QtKnx
+    \ingroup qtknx-general-classes
+
     \brief The QKnxExtendedControlField class represents an 8-bit extended KNX
     control field.
 

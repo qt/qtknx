@@ -35,6 +35,8 @@ QT_BEGIN_NAMESPACE
     \class QKnxInterfaceObjectProperty
 
     \inmodule QtKnx
+    \ingroup qtknx-device-management
+
     \brief The QKnxInterfaceObjectProperty class holds the properties of a KNX
     interface object.
 
@@ -43,6 +45,8 @@ QT_BEGIN_NAMESPACE
     \l QKnxInterfaceObjectType::System. Each property stores a particular
     functionality. \l General properties are common to all KNX interface
     objects.
+
+    \sa {Qt KNX Device Management Classes}
 */
 
 /*!

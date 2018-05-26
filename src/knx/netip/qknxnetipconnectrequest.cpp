@@ -35,6 +35,8 @@ QT_BEGIN_NAMESPACE
     \class QKnxNetIpConnectRequestProxy
 
     \inmodule QtKnx
+    \ingroup qtknx-netip
+
     \brief The QKnxNetIpConnectRequestProxy class provides the means to read
     a connection request from the generic \l QKnxNetIpFrame class and to
     create a KNXnet/IP frame based on the information.
@@ -71,7 +73,7 @@ QT_BEGIN_NAMESPACE
         auto cri = request. requestInformation();
     \endcode
 
-    \sa builder()
+    \sa builder(), {Qt KNXnet/IP Connection Classes}
 */
 
 /*!

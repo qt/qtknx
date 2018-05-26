@@ -37,6 +37,8 @@ const std::bitset<8> gPriorityMask = 0x0c;
     \class QKnxControlField
 
     \inmodule QtKnx
+    \ingroup qtknx-general-classes
+
     \brief The QKnxControlField class represents an 8-bit KNX control field.
 
     A KNX frame contains several fields, one of which might be the control

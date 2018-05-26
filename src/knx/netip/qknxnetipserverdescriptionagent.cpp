@@ -36,6 +36,8 @@ QT_BEGIN_NAMESPACE
     \class QKnxNetIpServerDescriptionAgent
 
     \inmodule QtKnx
+    \ingroup qtknx-netip
+
     \brief The QKnxNetIpServerDescriptionAgent class establishes a point-to-point
     connection with a KNXnet/IP server and requests its description.
 
@@ -54,6 +56,8 @@ QT_BEGIN_NAMESPACE
     \l descriptionReceived() signal is emitted. The description received through
     this point-to-point connection may be more complete than the one sent during
     discovery.
+
+    \sa {Qt KNXnet/IP Connection Classes}
 */
 
 /*!

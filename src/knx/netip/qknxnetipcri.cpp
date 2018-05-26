@@ -35,6 +35,8 @@ QT_BEGIN_NAMESPACE
     \class QKnxNetIpCriProxy
 
     \inmodule QtKnx
+    \ingroup qtknx-netip
+
     \brief The QKnxNetIpCriProxy class provides the means to read the connection
     request information (CRI) from the generic \l QKnxNetIpCri class and to
     create a KNXnet/IP CRI structure based on the information.
@@ -63,7 +65,7 @@ QT_BEGIN_NAMESPACE
         auto layer = view.tunnelLayer(); // read the requested tunneling layer
     \endcode
 
-    \sa builder()
+    \sa builder(), {Qt KNXnet/IP Connection Classes}
 */
 
 /*!

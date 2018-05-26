@@ -38,6 +38,7 @@ QT_BEGIN_NAMESPACE
 
     \inmodule QtKnx
     \ingroup qtknx-device-management
+    \ingroup qtknx-netip
 
     \brief The QKnxNetIpDeviceManagement class enables the opening and
     handling of a device management connection from a KNXnet/IP client
@@ -64,7 +65,8 @@ QT_BEGIN_NAMESPACE
         connection.sendFrame(frame);
     \endcode
 
-    \sa QKnxDeviceManagementFrame, {Qt KNX Device Management Classes}
+    \sa QKnxDeviceManagementFrame, {Qt KNX Device Management Classes},
+        {Qt KNXnet/IP Connection Classes}
 */
 
 /*!

@@ -35,6 +35,8 @@ QT_BEGIN_NAMESPACE
     \class QKnxNetIpKnxAddressesDibProxy
 
     \inmodule QtKnx
+    \ingroup qtknx-netip
+
     \brief The QKnxNetIpKnxAddressesDibProxy class provides the means to read
     all assigned individual addresses of a KNXnet/IP device from the generic
     \l QKnxNetIpDib class and to create a KNXnet/IP addresses device information
@@ -55,7 +57,7 @@ QT_BEGIN_NAMESPACE
         auto addresses = view.individualAddresses();
     \endcode
 
-    \sa builder()
+    \sa builder(), {Qt KNXnet/IP Connection Classes}
 */
 
 /*!

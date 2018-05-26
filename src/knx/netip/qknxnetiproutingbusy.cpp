@@ -36,6 +36,8 @@ QT_BEGIN_NAMESPACE
     \class QKnxNetIpRoutingBusyProxy
 
     \inmodule QtKnx
+    \ingroup qtknx-netip
+
     \brief The QKnxNetIpRoutingBusyProxy class provides the means to read
     a router busy message from the generic \l QKnxNetIpFrame class and to
     create a KNXnet/IP frame based on the information.
@@ -72,7 +74,7 @@ QT_BEGIN_NAMESPACE
     The sending device will wait for \c busyTime before sending the next frame.
 
     \sa builder(), QKnxNetIpRoutingIndicationProxy,
-    QKnxNetIpRoutingLostMessageProxy
+    QKnxNetIpRoutingLostMessageProxy, {Qt KNXnet/IP Connection Classes}
 */
 
 /*!

@@ -35,6 +35,8 @@ QT_BEGIN_NAMESPACE
     \class QKnxNetIpRoutingIndicationProxy
 
     \inmodule QtKnx
+    \ingroup qtknx-netip
+
     \brief The QKnxNetIpRoutingIndicationProxy class provides the means to read
     a routing indication from the generic \l QKnxNetIpFrame class and to
     create a KNXnet/IP frame based on the information.
@@ -55,7 +57,8 @@ QT_BEGIN_NAMESPACE
         auto linkFrame = routingIndication.linkLayerFrame();
     \endcode
 
-    \sa builder(), QKnxNetIpRoutingLostMessageProxy, QKnxNetIpRoutingBusyProxy
+    \sa builder(), QKnxNetIpRoutingLostMessageProxy, QKnxNetIpRoutingBusyProxy,
+        {Qt KNXnet/IP Connection Classes}
 */
 
 /*!

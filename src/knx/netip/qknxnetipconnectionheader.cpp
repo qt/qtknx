@@ -35,6 +35,7 @@ QT_BEGIN_NAMESPACE
     \class QKnxNetIpConnectionHeader
 
     \inmodule QtKnx
+    \ingroup qtknx-netip
 
     \brief The QKnxNetIpConnectionHeader class is a KNXnet/IP frame connection
     header.
@@ -48,6 +49,8 @@ QT_BEGIN_NAMESPACE
     appearance varies greatly depending on the already mentioned connection
     options. Only the order in which the different data fields are stored in
     the connection header is fixed.
+
+    \sa {Qt KNXnet/IP Connection Classes}
 */
 
 /*!

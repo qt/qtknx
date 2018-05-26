@@ -37,6 +37,8 @@ QT_BEGIN_NAMESPACE
     \class QKnxNetIpDescriptionResponseProxy
 
     \inmodule QtKnx
+    \ingroup qtknx-netip
+
     \brief The QKnxNetIpDescriptionResponseProxy class provides the means to
     read a description response from the generic \l QKnxNetIpFrame class and
     to create a KNXnet/IP frame based on the information.
@@ -65,7 +67,7 @@ QT_BEGIN_NAMESPACE
         auto families = response.supportedFamilies();
     \endcode
 
-    \sa builder(), QKnxNetIpDescriptionRequestProxy
+    \sa builder(), QKnxNetIpDescriptionRequestProxy, {Qt KNXnet/IP Connection Classes}
 */
 
 /*!

@@ -39,6 +39,7 @@ QT_BEGIN_NAMESPACE
 
     \inmodule QtKnx
     \ingroup qtknx-tunneling
+    \ingroup qtknx-netip
 
     \brief The QKnxNetIpTunnel class enables the opening and handling
     of a KNXnet/IP client connection to a KNXnet/IP server.
@@ -64,7 +65,8 @@ QT_BEGIN_NAMESPACE
         tunnel.sendFrame(frame);
     \endcode
 
-    \sa QKnxLinkLayerFrame, {Qt KNX Tunneling Classes}
+    \sa QKnxLinkLayerFrame, {Qt KNX Tunneling Classes},
+        {Qt KNXnet/IP Connection Classes}
 */
 
 /*!

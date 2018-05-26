@@ -36,6 +36,8 @@ QT_BEGIN_NAMESPACE
     \class QKnxNetIpManufacturerDibProxy
 
     \inmodule QtKnx
+    \ingroup qtknx-netip
+
     \brief The QKnxNetIpManufacturerDibProxy class provides the means to read
     the manufacturer specific device information from the generic \l QKnxNetIpDib
     class and to create a KNXnet/IP manufacturer specific device information
@@ -58,7 +60,7 @@ QT_BEGIN_NAMESPACE
         auto data = view.manufacturerData();
     \endcode
 
-    \sa builder()
+    \sa builder(), {Qt KNXnet/IP Connection Classes}
 */
 
 /*!

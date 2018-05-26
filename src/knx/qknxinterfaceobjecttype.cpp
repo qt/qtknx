@@ -35,6 +35,8 @@ QT_BEGIN_NAMESPACE
     \class QKnxInterfaceObjectType
 
     \inmodule QtKnx
+    \ingroup qtknx-device-management
+
     \brief The QKnxInterfaceObjectType class holds the type of a KNX interface
     object.
 
@@ -45,6 +47,8 @@ QT_BEGIN_NAMESPACE
 
     The type of an interface object is stored as its first property in
     \l QKnxInterfaceObjectProperty::ObjectType.
+
+    \sa {Qt KNX Device Management Classes}
 */
 
 /*!

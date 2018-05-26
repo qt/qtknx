@@ -39,6 +39,8 @@ QT_BEGIN_NAMESPACE
     \class QKnxNetIpServerDiscoveryAgent
 
     \inmodule QtKnx
+    \ingroup qtknx-netip
+
     \brief The QKnxNetIpServerDiscoveryAgent class discovers KNXnet/IP servers
     by multicasting a search request in the network that the client is connected
     to.
@@ -61,6 +63,8 @@ QT_BEGIN_NAMESPACE
     \code
         auto servers = agent.discoveredServers();
     \endcode
+
+    \sa {Qt KNXnet/IP Connection Classes}
 */
 
 /*!

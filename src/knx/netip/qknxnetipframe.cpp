@@ -44,6 +44,8 @@ public:
     \class QKnxNetIpFrame
 
     \inmodule QtKnx
+    \ingroup qtknx-netip
+
     \brief The QKnxNetIpFrame class represents the base for all KNXnet/IP
     related communication.
 
@@ -53,6 +55,8 @@ public:
     protocol data packet, and optional data of variable length. The type of the
     KNXnet/IP frame is described by a KNXnet/IP service type identifier in the
     header.
+
+    \sa {Qt KNXnet/IP Connection Classes}
 */
 
 /*!

@@ -35,6 +35,8 @@ QT_BEGIN_NAMESPACE
     \class QKnxNetIpCrdProxy
 
     \inmodule QtKnx
+    \ingroup qtknx-netip
+
     \brief The QKnxNetIpCrdProxy class provides the means to read the KNXnet/IP
     connection response data (CRD) from the generic \l QKnxNetIpCrd class and to
     create a KNXnet/IP CRD structure based on the information.
@@ -65,7 +67,7 @@ QT_BEGIN_NAMESPACE
         auto address = view.individualAddress(); // read the individual address
     \endcode
 
-    \sa builder()
+    \sa builder(), {Qt KNXnet/IP Connection Classes}
 */
 
 /*!

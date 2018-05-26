@@ -50,6 +50,8 @@ public:
     \class QKnxGroupAddressInfo
 
     \inmodule QtKnx
+    \ingroup qtknx-general-classes
+
     \brief The QKnxGroupAddressInfo class contains information about a single
     KNX group address object used inside a KNX installation.
 
