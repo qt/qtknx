@@ -55,8 +55,8 @@ QT_BEGIN_NAMESPACE
     KNXnet/IP servers that are on a different subnetwork.
 
     In most programs, this class will not be used directly. Instead, the
-    \l QKnxNetIpTunnel or \l QKnxNetIpDeviceManagement
-    class is used to establish a functional connection to a KNXnet/IP server.
+    \l QKnxNetIpDiscoveryAgent and \l QKnxNetIpServerInfo are provided to
+    discover KNXnet/IP servers on the network.
 
     The following code sample illustrates how to read the search request
     information sent by a KNXnet/IP client:
@@ -148,8 +148,8 @@ QKnxNetIpSearchRequestProxy::Builder QKnxNetIpSearchRequestProxy::builder()
     subnetwork.
 
     In most programs, this class will not be used directly. Instead, the
-    \l QKnxNetIpTunnel or \l QKnxNetIpDeviceManagement
-    class is used to establish a functional connection to a KNXnet/IP server.
+    \l QKnxNetIpDiscoveryAgent and \l QKnxNetIpServerInfo are provided to
+    discover KNXnet/IP servers on the network.
 
     The common way to create a search request is:
 

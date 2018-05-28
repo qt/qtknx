@@ -50,8 +50,8 @@ QT_BEGIN_NAMESPACE
     server's KNX connection.
 
     In most programs, this class will not be used directly. Instead, the
-    \l QKnxNetIpTunnel or \l QKnxNetIpDeviceManagement class is used to
-    establish a functional connection to a KNXnet/IP server.
+    \l QKnxNetIpDescriptionAgent and \l QKnxNetIpServerInfo are provided to
+    check that the server supports the requested connection type and options.
 
     The following code sample illustrates how to read the description response
     information sent by a KNXnet/IP server:
@@ -173,8 +173,8 @@ QKnxNetIpDescriptionResponseProxy::Builder QKnxNetIpDescriptionResponseProxy::bu
     connection.
 
     In most programs, this class will not be used directly. Instead, the
-    \l QKnxNetIpTunnel or \l QKnxNetIpDeviceManagement class is used to
-    establish a functional connection to a KNXnet/IP server.
+    \l QKnxNetIpDescriptionAgent and \l QKnxNetIpServerInfo are provided to
+    check that the server supports the requested connection type and options.
 
     The common way to create a a description response is:
 

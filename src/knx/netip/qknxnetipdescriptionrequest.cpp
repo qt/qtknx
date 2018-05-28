@@ -46,11 +46,7 @@ QT_BEGIN_NAMESPACE
     control endpoints of the server.
 
     In most programs, this class will not be used directly. Instead, the
-    \l QKnxNetIpTunnel or \l QKnxNetIpDeviceManagement
-    class is used to establish a functional connection to a KNXnet/IP server.
-
-    Before communicating with the server, the client should use the
-    \l QKnxNetIpServerDescriptionAgent and \l QKnxNetIpServerInfo classes to
+    \l QKnxNetIpDescriptionAgent and \l QKnxNetIpServerInfo are provided to
     check that the server supports the requested connection type and options.
 
     The following code sample illustrates how to read the description request
@@ -138,8 +134,8 @@ QKnxNetIpDescriptionRequestProxy::Builder QKnxNetIpDescriptionRequestProxy::buil
     control endpoints of the server.
 
     In most programs, this class will not be used directly. Instead, the
-    \l QKnxNetIpTunnel or \l QKnxNetIpDeviceManagement
-    class is used to establish a functional connection to a KNXnet/IP server.
+    \l QKnxNetIpDescriptionAgent and \l QKnxNetIpServerInfo are provided to
+    check that the server supports the requested connection type and options.
 
     The common way to create a a search response is:
 
