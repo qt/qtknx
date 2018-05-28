@@ -46,15 +46,16 @@ public:
     QKnxNetIpStruct() = default;
     ~QKnxNetIpStruct() = default;
 
-    QKnxNetIpStruct(CodeType code, const QKnxByteArray &data = {})
-        : m_header(code)
+    QKnxNetIpStruct(CodeType codeType, const QKnxByteArray &dataField = {})
+        : m_header(codeType)
     {
-         setData(data);
+         setData(dataField);
     }
 
-    QKnxNetIpStruct(const QKnxNetIpStructHeader<CodeType> &header, const QKnxByteArray &data = {})
-        : m_header(header)
-        , m_data(data)
+    QKnxNetIpStruct(const QKnxNetIpStructHeader<CodeType> &headerField,
+            const QKnxByteArray &dataField = {})
+        : m_header(headerField)
+        , m_data(dataField)
     {}
 
     bool isNull() const
@@ -82,9 +83,9 @@ public:
         return m_header;
     }
 
-    void setHeader(const QKnxNetIpStructHeader<CodeType> &header)
+    void setHeader(const QKnxNetIpStructHeader<CodeType> &headerField)
     {
-        m_header = header;
+        m_header = headerField;
     }
 
     CodeType code() const
@@ -102,10 +103,10 @@ public:
         return m_data;
     }
 
-    void setData(const QKnxByteArray &data)
+    void setData(const QKnxByteArray &dataField)
     {
-        m_data = data;
-        m_header.setDataSize(data.size());
+        m_data = dataField;
+        m_header.setDataSize(dataField.size());
     }
 
     QKnxByteArray bytes() const
