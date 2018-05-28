@@ -70,7 +70,7 @@ QT_BEGIN_NAMESPACE
         auto id = proxy.featureIdentifier();
     \endcode
 
-    \sa builder(), QKnxNetIpTunnelingFeatureInfo,
+    \sa builder(), QKnxNetIpTunnelingFeatureInfoProxy,
     QKnxNetIpTunnelingFeatureResponseProxy,
     {Qt KNX Tunneling Classes}, {Qt KNXnet/IP Connection Classes}
 */
