@@ -219,7 +219,9 @@ public:
         RfModeSelect = 0x3c,
         RfModeSupport = 0x3d,
         RfFilteringModeSelectCemiServer = 0x3e,
-        RfFilteringModeSupport = 0x3f
+        RfFilteringModeSupport = 0x3f,
+        MaxInterfaceApduLength = 0x44,
+        MaxLocalApduLength = 0x45
     };
     Q_ENUM(CemiServer)
     static bool isCemiServerProperty(QKnxInterfaceObjectProperty property);
@@ -270,6 +272,7 @@ public:
         MsgTransmitToKnx = 0x4b,
         FriendlyName = 0x4c,
         RoutingBusyWaitTime = 0x4e,
+        TunnelingAddresses =0x4f,
         BackboneKey = 0x5b,
         DeviceAuthenticationCode = 0x5c,
         PasswordHashes = 0x5d,

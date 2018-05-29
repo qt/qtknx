@@ -286,6 +286,16 @@ QT_BEGIN_NAMESPACE
            RF mode support.
     \value RfFilteringModeSelectCemiServer
     \value RfFilteringModeSupport
+    \value MaxInterfaceApduLength
+            The management server (MaS) property holds the maximum length of
+            the APDU that it supports for conveying a cEMI message from a cEMI
+            client over the KNXnet/IP tunneling interface to the field level
+            medium (e.g. KNX TP, KNX PL, KNX RF).
+    \value MaxLocalApduLength
+            The management server property holds the maximum length of the
+            APDU that it supports for conveying a cEMI message from a cEMI
+            client over the KNXnet/IP tunneling interface to its own cEMI
+            device management interface.
 */
 
 /*!
@@ -361,6 +371,10 @@ QT_BEGIN_NAMESPACE
     \value MsgTransmitToKnx
     \value FriendlyName
     \value RoutingBusyWaitTime
+    \value TunnelingAddresses
+            Indicates which individual addresses the management server (MaS)
+            will use for tunneling connections from the set of the additional
+            individual addresses and its own individual address.
     \value BackboneKey
     \value DeviceAuthenticationCode
     \value PasswordHashes
@@ -664,6 +678,8 @@ bool QKnxInterfaceObjectProperty::isCemiServerProperty(QKnxInterfaceObjectProper
     case QKnxInterfaceObjectProperty::CemiServer::RfModeSupport:
     case QKnxInterfaceObjectProperty::CemiServer::RfFilteringModeSelectCemiServer:
     case QKnxInterfaceObjectProperty::CemiServer::RfFilteringModeSupport:
+    case QKnxInterfaceObjectProperty::CemiServer::MaxInterfaceApduLength:
+    case QKnxInterfaceObjectProperty::CemiServer::MaxLocalApduLength:
         return true;
     };
     return QKnxInterfaceObjectProperty::isGeneralProperty(property);
@@ -732,6 +748,7 @@ bool QKnxInterfaceObjectProperty::isKnxNetIpParameterProperty(QKnxInterfaceObjec
     case QKnxInterfaceObjectProperty::KnxNetIpParameter::MsgTransmitToKnx:
     case QKnxInterfaceObjectProperty::KnxNetIpParameter::FriendlyName:
     case QKnxInterfaceObjectProperty::KnxNetIpParameter::RoutingBusyWaitTime:
+    case QKnxInterfaceObjectProperty::KnxNetIpParameter::TunnelingAddresses:
     case QKnxInterfaceObjectProperty::KnxNetIpParameter::BackboneKey:
     case QKnxInterfaceObjectProperty::KnxNetIpParameter::DeviceAuthenticationCode:
     case QKnxInterfaceObjectProperty::KnxNetIpParameter::PasswordHashes:

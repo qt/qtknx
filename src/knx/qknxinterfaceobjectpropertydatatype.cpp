@@ -842,6 +842,11 @@ QVector<QKnxInterfaceObjectPropertyDataType>
                     { Id::UnsignedInt, QKnxDatapointType::Type::Dpt7_2ByteUnsigned }
                 }
             },
+            { QKnxInterfaceObjectProperty::KnxNetIpParameter::TunnelingAddresses,
+                {
+                    { Id::UnsignedChar, QKnxDatapointType::Type::Unknown, Unit::Array }
+                }
+            },
             { QKnxInterfaceObjectProperty::KnxNetIpParameter::BackboneKey, { { Id::Generic16 } } },
             { QKnxInterfaceObjectProperty::KnxNetIpParameter::DeviceAuthenticationCode,
                 {
@@ -935,6 +940,16 @@ QVector<QKnxInterfaceObjectPropertyDataType>
             { QKnxInterfaceObjectProperty::CemiServer::RfFilteringModeSupport,
                 {
                     { Id::Bitset8 }, { Id::Generic01 }
+                }
+            },
+            { QKnxInterfaceObjectProperty::CemiServer::MaxInterfaceApduLength,
+                {
+                    { Id::UnsignedInt }
+                }
+            },
+            { QKnxInterfaceObjectProperty::CemiServer::MaxLocalApduLength,
+                {
+                    { Id::UnsignedInt }
                 }
             }
         };
