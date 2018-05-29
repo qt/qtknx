@@ -427,7 +427,7 @@ void QKnxNetIpEndpointConnectionPrivate::processDeviceConfigurationRequest(const
 {
     qDebug() << "Received device configuration request:" << frame;
 
-    if (frame.channelId() == m_channelId) {
+    if (frame.channelId() != m_channelId) {
         qDebug() << "Request was ignored due to wrong channel ID. Expected:" << m_channelId
             << "Current:" << frame.channelId();
         return;
