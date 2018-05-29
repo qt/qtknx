@@ -64,8 +64,12 @@
     \section1 Discovering KNXnet/IP Servers
 
     To discover KNXnet/IP servers, a KNXnet/IP client sends a search request
-    frame (\l QKnxNetIpSearchRequestProxy) via multicast using its
-    \e {discovery endpoint}. All servers that receive the request immediately
+    frame (\l QKnxNetIpSearchRequestProxy or
+    \l QKnxNetIpSearchRequestProxy::Builder) or an extended search request frame
+    (\l QKnxNetIpSearchRequestProxy::ExtendedBuilder) via multicast using its
+    \e {discovery endpoint}.
+
+    All servers that receive the search request immediately
     send a search response (\l QKnxNetIpSearchResponseProxy) using the host
     address protocol information (HPAI) of the client's discovery endpoint.
     The search response frame contains the HPAI of the server's control endpoint
@@ -97,6 +101,31 @@
             device information
         \li \l QKnxNetIpServiceFamiliesDibProxy for reading the service families
             and versions supported by a KNXnet/IP device
+    \endlist
+
+    \section2 Creating Extended Search Requests
+
+    An extended search request (\l QKnxNetIpSearchRequestProxy::ExtendedBuilder)
+    contains a search request parameter (SRP) block that indicates whether a
+    particular server should respond to the request. Specialized builder classes
+    can be used to create SRP blocks of each SRP type:
+
+    \list
+        \li The \l SrpBuilders::MacAddress class provides the means to create
+            a \e {Select By MAC Address} SRP. It indicates that the KNXnet/IP
+            client is interested only in responses from the KNXnet/IP server
+            with the given MAC address.
+        \li The \l SrpBuilders::ProgrammingMode class provides the means to
+            create a \e {Select By Programming Mode} SRP. It indicates that the
+            client is interested only in responses from servers in which
+            Programming Mode is currently enabled.
+        \li The \l SrpBuilders::SupportedFamily class provides the means to
+            create a \e {Select By Service} SRP. It indicates that the client
+            is interested only in responses from servers supporting the given
+            service family in at least the given version.
+        \li The \l SrpBuilders::RequestDibs class provides the means to create
+            a \e {Request DIBs} SRP. It indicates that the client is interested
+            in the listed description information blocks (DIBs).
     \endlist
 
     \section1 Creating and Maintaining Communication Channels
