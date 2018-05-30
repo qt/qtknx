@@ -183,7 +183,8 @@ public:
 
     enum Router : quint8
     {
-        LineStatus = 0x33,
+        LineStatus = 0x33, // ### Qt6: remove
+        MediumStatus = 0x33,
         MainLcConfig = 0x34,
         SubLcConfig = 0x35,
         MainLcGroupConfig = 0x36,

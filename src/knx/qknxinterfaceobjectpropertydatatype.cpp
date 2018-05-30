@@ -666,7 +666,8 @@ QVector<QKnxInterfaceObjectPropertyDataType>
 
     static const PropertyDataTypeHash router = []() -> PropertyDataTypeHash {
         return {
-            { QKnxInterfaceObjectProperty::Router::LineStatus, { { Id::Generic01 } } },
+            // { QKnxInterfaceObjectProperty::Router::LineStatus, { { Id::Generic01 } } }, ### Qt6: remove
+            { QKnxInterfaceObjectProperty::Router::MediumStatus, { { Id::Generic01 } } },
             { QKnxInterfaceObjectProperty::Router::MainLcConfig, { { Id::Generic01 } } },
             { QKnxInterfaceObjectProperty::Router::SubLcConfig, { { Id::Generic01 } } },
             { QKnxInterfaceObjectProperty::Router::MainLcGroupConfig, { { Id::Generic01 } } },

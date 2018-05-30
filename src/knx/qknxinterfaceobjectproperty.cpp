@@ -242,6 +242,11 @@ QT_BEGIN_NAMESPACE
     This enum describes the properties specific to router interface objects.
 
     \value LineStatus
+            This enum value has been deprecated. Use \l MediumStatus instead.
+    \value MediumStatus
+            The connection state of the TP1 connection for an IP/TP1 KNXnet/IP
+            router at the secondary side. For a KNXnet/IP tunneling server on
+            TP1, this is the connection state of the TP1 connection.
     \value MainLcConfig
     \value SubLcConfig
     \value MainLcGroupConfig
@@ -629,7 +634,8 @@ bool QKnxInterfaceObjectProperty::isKnxObjectAssociationTableProperty(QKnxInterf
 bool QKnxInterfaceObjectProperty::isRouterProperty(QKnxInterfaceObjectProperty property)
 {
     switch (property) {
-    case QKnxInterfaceObjectProperty::Router::LineStatus:
+    // case QKnxInterfaceObjectProperty::Router::LineStatus: ### Qt6: remove
+    case QKnxInterfaceObjectProperty::Router::MediumStatus:
     case QKnxInterfaceObjectProperty::Router::MainLcConfig:
     case QKnxInterfaceObjectProperty::Router::SubLcConfig:
     case QKnxInterfaceObjectProperty::Router::MainLcGroupConfig:
