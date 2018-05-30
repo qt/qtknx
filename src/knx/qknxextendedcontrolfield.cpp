@@ -33,6 +33,17 @@ QT_BEGIN_NAMESPACE
 
 const std::bitset<8> gHopCountMask = 0x70;
 
+static constexpr bool testBit(quint8 byteToTest, quint8 bit) noexcept
+{
+    return (byteToTest & (quint8(1) << bit)) != 0;
+}
+
+// ### Qt6: pass byteToSet as reference
+static constexpr quint8 setBit(quint8 byteToSet, bool value, quint8 bit) noexcept
+{
+    return (value ? byteToSet | (quint8(1) << bit) : byteToSet & ~(quint8(1) << bit));
+}
+
 /*!
     \class QKnxExtendedControlField
 
@@ -150,7 +161,8 @@ bool QKnxExtendedControlField::operator!=(const QKnxExtendedControlField &other)
 */
 QKnxAddress::Type QKnxExtendedControlField::destinationAddressType() const
 {
-    return static_cast<QKnxAddress::Type> (quint8(m_ctrl2[7]));
+    // ### Qt6: Replace byte() with m_ctrl2
+    return static_cast<QKnxAddress::Type> (quint8(testBit(byte(), 7)));
 }
 
 /*!
@@ -158,7 +170,8 @@ QKnxAddress::Type QKnxExtendedControlField::destinationAddressType() const
 */
 void QKnxExtendedControlField::setDestinationAddressType(QKnxAddress::Type address)
 {
-    m_ctrl2[7] = static_cast<int> (address);
+    // ### Qt6: Replace byte() with m_ctrl2
+    m_ctrl2 = setBit(byte(), bool(static_cast<int> (address)), 7);
 }
 
 /*!
@@ -186,7 +199,8 @@ void QKnxExtendedControlField::setHopCount(quint8 hopCount)
 */
 QKnxExtendedControlField::ExtendedFrameFormat QKnxExtendedControlField::format() const
 {
-    return static_cast<ExtendedFrameFormat> (m_ctrl2.test(3));
+    // ### Qt6: Replace byte() with m_ctrl2
+    return static_cast<ExtendedFrameFormat> (quint8(testBit(byte(), 3)));
 }
 
 /*!
@@ -194,7 +208,8 @@ QKnxExtendedControlField::ExtendedFrameFormat QKnxExtendedControlField::format()
 */
 void QKnxExtendedControlField::setFormat(QKnxExtendedControlField::ExtendedFrameFormat format)
 {
-    m_ctrl2.set(3, format == QKnxExtendedControlField::ExtendedFrameFormat::Lte);
+    // ### Qt6: Replace byte() with m_ctrl2
+    m_ctrl2 = setBit(byte(), format == QKnxExtendedControlField::ExtendedFrameFormat::Lte, 3);
 }
 
 /*!

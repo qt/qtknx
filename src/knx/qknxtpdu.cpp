@@ -30,8 +30,6 @@
 #include "qknxtpdu.h"
 #include "qknxutils.h"
 
-#include <bitset>
-
 QT_BEGIN_NAMESPACE
 
 /*!
@@ -727,31 +725,31 @@ QKnxTpdu::ApplicationControlField QKnxTpdu::apci(const QKnxByteArray &data, quin
     if (data.size() - index < 2)
         return QKnxTpdu::ApplicationControlField::Invalid;
 
-    std::bitset<8> apciHigh = data.at(index) & 0x03; // mask out all bits except the first two
-    std::bitset<8> apciLow = data.at(index + 1) & 0xc0;  // mask out all bits except the last two
+    quint8 apciHigh = data.at(index) & 0x03; // mask out all bits except the first two
+    quint8 apciLow = data.at(index + 1) & 0xc0;  // mask out all bits except the last two
 
-    const auto fourBitsApci = [&apciHigh, &apciLow]() {
-        return (QKnxUtils::QUint16::fromBytes({ quint8(apciHigh.to_ulong()),
-            quint8(apciLow.to_ulong()) }));
+    const auto fourBitsApci = [apciHigh, apciLow]() {
+        return QKnxUtils::QUint16::fromBytes({ apciHigh, apciLow });
     };
     const auto tenBitsApci = [apciHigh](quint8 octet7) {
-        return (QKnxUtils::QUint16::fromBytes({ quint8(apciHigh.to_ulong()), octet7 }));
+        return QKnxUtils::QUint16::fromBytes({ apciHigh, octet7 });
     };
 
-    if ((apciHigh[0] == 0 && apciHigh[1] == 0) || (apciHigh[0] == 1 && apciHigh[1] == 1)) {
-        std::bitset<8> octet7 = data.at(index + 1);
-        if (octet7[7] == 1 && octet7[6] == 1)
-            return QKnxTpdu::ApplicationControlField(tenBitsApci(data.at(index + 1)));
+    if ((!QKnxTpduPrivate::isBitSet(apciHigh, 0) && !QKnxTpduPrivate::isBitSet(apciHigh, 1))
+        || (QKnxTpduPrivate::isBitSet(apciHigh, 0) && QKnxTpduPrivate::isBitSet(apciHigh,1))) {
+        quint8 octet7 = data.at(index + 1);
+        if (QKnxTpduPrivate::isBitSet(octet7, 7) && QKnxTpduPrivate::isBitSet(octet7, 6))
+            return QKnxTpdu::ApplicationControlField(tenBitsApci(octet7));
         return QKnxTpdu::ApplicationControlField(fourBitsApci());
     }
-    if (apciHigh[1] == 0 && apciHigh[0] == 1) {
+    if (!QKnxTpduPrivate::isBitSet(apciHigh,1) && QKnxTpduPrivate::isBitSet(apciHigh, 0)) {
         // connection oriented, it's one of the A_ADC service
         if (QKnxTpdu::tpci(data, index) >= QKnxTpdu::TransportControlField::DataTagGroup)
             return QKnxTpdu::ApplicationControlField(fourBitsApci());
         return QKnxTpdu::ApplicationControlField(tenBitsApci(data.at(index + 1)));
     }
     // it's one of the A_Memory Service (only the 2 last bits of octet 6 are needed for the APCI)
-    if (apciLow[7] == 0 || apciLow[6] == 0)
+    if (!QKnxTpduPrivate::isBitSet(apciLow,7) || !QKnxTpduPrivate::isBitSet(apciLow, 6))
         return QKnxTpdu::ApplicationControlField(fourBitsApci());
     return QKnxTpdu::ApplicationControlField(data.at(index + 1));
 }
