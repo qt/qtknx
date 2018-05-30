@@ -55,7 +55,7 @@ QT_BEGIN_NAMESPACE
     KNXnet/IP servers that are on a different subnetwork.
 
     In most programs, this class will not be used directly. Instead, the
-    \l QKnxNetIpDiscoveryAgent and \l QKnxNetIpServerInfo are provided to
+    \l QKnxNetIpServerDiscoveryAgent and \l QKnxNetIpServerInfo are provided to
     discover KNXnet/IP servers on the network.
 
     The following code sample illustrates how to read the search request
@@ -148,7 +148,7 @@ QKnxNetIpSearchRequestProxy::Builder QKnxNetIpSearchRequestProxy::builder()
     subnetwork.
 
     In most programs, this class will not be used directly. Instead, the
-    \l QKnxNetIpDiscoveryAgent and \l QKnxNetIpServerInfo are provided to
+    \l QKnxNetIpServerDiscoveryAgent and \l QKnxNetIpServerInfo are provided to
     discover KNXnet/IP servers on the network.
 
     The common way to create a search request is:

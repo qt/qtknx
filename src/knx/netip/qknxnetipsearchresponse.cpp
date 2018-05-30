@@ -56,7 +56,7 @@ QT_BEGIN_NAMESPACE
     hardware and the supported service families.
 
     In most programs, this class will not be used directly. Instead, the
-    \l QKnxNetIpDiscoveryAgent and \l QKnxNetIpServerInfo are provided to
+    \l QKnxNetIpServerDiscoveryAgent and \l QKnxNetIpServerInfo are provided to
     discover KNXnet/IP servers on the network.
 
     The following code sample illustrates how to read the search response
@@ -166,7 +166,7 @@ QKnxNetIpSearchResponseProxy::Builder QKnxNetIpSearchResponseProxy::builder()
     hardware and the supported service families.
 
     In most programs, this class will not be used directly. Instead, the
-    \l QKnxNetIpDiscoveryAgent and \l QKnxNetIpServerInfo are provided to
+    \l QKnxNetIpServerDiscoveryAgent and \l QKnxNetIpServerInfo are provided to
     discover KNXnet/IP servers on the network.
 
     The common way to create a a search response is:

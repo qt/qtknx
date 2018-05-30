@@ -46,7 +46,7 @@ QT_BEGIN_NAMESPACE
     control endpoints of the server.
 
     In most programs, this class will not be used directly. Instead, the
-    \l QKnxNetIpDescriptionAgent and \l QKnxNetIpServerInfo are provided to
+    \l QKnxNetIpServerDescriptionAgent and \l QKnxNetIpServerInfo are provided to
     check that the server supports the requested connection type and options.
 
     The following code sample illustrates how to read the description request
@@ -134,7 +134,7 @@ QKnxNetIpDescriptionRequestProxy::Builder QKnxNetIpDescriptionRequestProxy::buil
     control endpoints of the server.
 
     In most programs, this class will not be used directly. Instead, the
-    \l QKnxNetIpDescriptionAgent and \l QKnxNetIpServerInfo are provided to
+    \l QKnxNetIpServerDescriptionAgent and \l QKnxNetIpServerInfo are provided to
     check that the server supports the requested connection type and options.
 
     The common way to create a a search response is:

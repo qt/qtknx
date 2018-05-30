@@ -50,7 +50,7 @@ QT_BEGIN_NAMESPACE
     server's KNX connection.
 
     In most programs, this class will not be used directly. Instead, the
-    \l QKnxNetIpDescriptionAgent and \l QKnxNetIpServerInfo are provided to
+    \l QKnxNetIpServerDescriptionAgent and \l QKnxNetIpServerInfo are provided to
     check that the server supports the requested connection type and options.
 
     The following code sample illustrates how to read the description response
@@ -173,7 +173,7 @@ QKnxNetIpDescriptionResponseProxy::Builder QKnxNetIpDescriptionResponseProxy::bu
     connection.
 
     In most programs, this class will not be used directly. Instead, the
-    \l QKnxNetIpDescriptionAgent and \l QKnxNetIpServerInfo are provided to
+    \l QKnxNetIpServerDescriptionAgent and \l QKnxNetIpServerInfo are provided to
     check that the server supports the requested connection type and options.
 
     The common way to create a a description response is:
