@@ -39,4 +39,5 @@ SUBDIRS += cmake \
     qknxproject \
     qknxgroupaddressinfo \
     qknxbytearray \
-    qknxnetiptunnelingfeature
+    qknxnetiptunnelingfeature \
+    qknxnetiptunnelinginfodib

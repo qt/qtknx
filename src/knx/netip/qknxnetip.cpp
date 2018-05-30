@@ -132,6 +132,11 @@ bool QKnxNetIp::isStructType(QKnxNetIp::ConnectionType type)
     \value CurrentIpConfiguration   Current IP configuration of the device.
     \value KnxAddresses
            All individual addresses assigned to the device.
+    \value TunnelingInfo
+            Tunneling information, such as the
+            \l {QKnxInterfaceObjectProperty::MaxInterfaceApduLength}{maximum
+            interface application protocol data unit (APDU)} length and
+            tunneling slot information (individual address and connection status).
     \value ManufacturerData
            A structure for further data defined by a device manufacturer.
     \value NotUsed                  This value may not be used.
@@ -151,6 +156,7 @@ bool QKnxNetIp::isStructType(QKnxNetIp::DescriptionType type)
     case QKnxNetIp::DescriptionType::IpConfiguration:
     case QKnxNetIp::DescriptionType::CurrentIpConfiguration:
     case QKnxNetIp::DescriptionType::KnxAddresses:
+    case QKnxNetIp::DescriptionType::TunnelingInfo:
     case QKnxNetIp::DescriptionType::ManufacturerData:
         return true;
     case QKnxNetIp::DescriptionType::NotUsed:

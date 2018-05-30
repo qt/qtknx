@@ -11,4 +11,5 @@
     "qknxnetip.h" => "NetIp,CemiServer",
     "qknxdevicemanagementframefactory.h" => "QKnxDeviceManagementFrameBuilder",
     "qknxlinklayerframebuilder.h" => "QKnxLinkLayerFrameBuilder",
+    "qknxnetiptunnelinginfodib.h" => "QKnxNetIpTunnelingSlotInfo"
 );

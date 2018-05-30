@@ -76,6 +76,7 @@ namespace QKnx
             IpConfiguration = 0x03,
             CurrentIpConfiguration = 0x04,
             KnxAddresses = 0x05,
+            TunnelingInfo = 0x07,
             ManufacturerData = 0xfe,
             NotUsed = 0xff
         };
