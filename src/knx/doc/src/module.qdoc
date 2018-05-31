@@ -49,3 +49,15 @@
     QT += knx
     \endcode
 */
+
+/*!
+    \page qtknx-general-classes.html
+    \title Qt KNX General Classes
+    \brief C++ classes that are used throughout the Qt KNX module.
+
+    This topic lists C++ classes that are used throughout the Qt KNX module.
+
+    \section1 List of General Classes
+
+    \annotatedlist qtknx-general-classes
+*/

@@ -90,7 +90,7 @@ public:
     static QKnxExtendedControlField::Builder builder();
 
 private:
-    std::bitset<8> m_ctrl2 = 0;
+    std::bitset<8> m_ctrl2; // ### Qt6: Replace with quint8
 };
 Q_KNX_EXPORT QDebug operator<<(QDebug debug, const QKnxExtendedControlField &ctrl);
 

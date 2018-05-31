@@ -311,14 +311,12 @@ void LocalDeviceManagement::handleIoListResponse(const QKnxDeviceManagementFrame
         || frame.property() != QKnxInterfaceObjectProperty::Device::IoList)
         return;
 
-    m_awaitIoListResponse = true;
-
     auto dataTypes = QKnxInterfaceObjectPropertyDataType::fromProperty(QKnxInterfaceObjectProperty
         ::Device::IoList);
     if (!dataTypes.value(0).isValid())
         return;
 
-    auto data = frame.data().toHex().toByteArray();
+    auto data = frame.data().toByteArray();
     quint8 expectedDataSize = dataTypes[0].size();
     if (frame.startIndex() == 0) {
         if (data.size() == expectedDataSize) {
@@ -326,8 +324,8 @@ void LocalDeviceManagement::handleIoListResponse(const QKnxDeviceManagementFrame
                 .setObjectType(QKnxInterfaceObjectType::System::Device)
                 .setObjectInstance(1)
                 .setProperty(QKnxInterfaceObjectProperty::Device::IoList)
-                .setNumberOfElements(data.toUShort(nullptr, 16))
-                .setNumberOfElements(1)
+                .setNumberOfElements(data.toHex().toUShort(nullptr, 16))
+                .setStartIndex(1)
                 .createRequest()
             );
         }
@@ -335,7 +333,9 @@ void LocalDeviceManagement::handleIoListResponse(const QKnxDeviceManagementFrame
         if ((data.size() % expectedDataSize) == 0) {
             QSet<int> values;
             for (int i = 0; i < data.size(); i += expectedDataSize)
-                values.insert(data.mid(i, expectedDataSize).toUShort(nullptr, 16));
+                values.insert(data.mid(i, expectedDataSize).toHex().toUShort(nullptr, 16));
+
+            m_awaitIoListResponse = false;
             setupComboBox(ui->objectType, QKnxInterfaceObjectType::staticMetaObject, values);
         }
     }

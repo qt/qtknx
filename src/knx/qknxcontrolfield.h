@@ -42,6 +42,17 @@ class Q_KNX_EXPORT QKnxControlField final
 {
     Q_GADGET
 
+    static constexpr bool testBit(quint8 byteToTest, quint8 bit) noexcept
+    {
+        return (byteToTest & (quint8(1) << bit)) != 0;
+    }
+
+    // ### Qt6: pass byteToSet as reference
+    static constexpr quint8 setBit(quint8 byteToSet, bool value, quint8 bit) noexcept
+    {
+        return (value ? byteToSet | (quint8(1) << bit) : byteToSet & ~(quint8(1) << bit));
+    }
+
 public:
     QKnxControlField() = default;
     explicit QKnxControlField(quint8 data);
@@ -53,8 +64,10 @@ public:
         Standard = 0x01
     };
     Q_ENUM(FrameFormat)
-    QKnxControlField::FrameFormat frameFormat() const { return static_cast<FrameFormat> (quint8(m_ctrl1[7])); }
-    void setFrameFormat(QKnxControlField::FrameFormat type) { m_ctrl1[7] = static_cast<int> (type); }
+    QKnxControlField::FrameFormat frameFormat() const // ### Qt6: Replace byte() with m_ctrl1
+        { return static_cast<FrameFormat> (quint8(testBit(byte(), 7))); }
+    void setFrameFormat(QKnxControlField::FrameFormat type) // ### Qt6: Replace byte() with m_ctrl1
+        { m_ctrl1 = setBit(byte(), bool(static_cast<int> (type)), 7); }
 
     enum class Repeat : quint8
     {
@@ -62,8 +75,10 @@ public:
         DoNotRepeat = 0x01
     };
     Q_ENUM(Repeat)
-    QKnxControlField::Repeat repeat() const { return static_cast<Repeat> (quint8(m_ctrl1[5])); }
-    void setRepeat(QKnxControlField::Repeat repeat) { m_ctrl1[5] = static_cast<int> (repeat); }
+    QKnxControlField::Repeat repeat() const // ### Qt6: Replace byte() with m_ctrl1
+        { return static_cast<Repeat> (quint8(testBit(byte(), 5))); }
+    void setRepeat(QKnxControlField::Repeat repeat) // ### Qt6: Replace byte() with m_ctrl1
+        { m_ctrl1 = setBit(byte(), bool(static_cast<int> (repeat)), 5); }
 
     enum class Broadcast : quint8
     {
@@ -71,8 +86,10 @@ public:
         Domain = 0x01
     };
     Q_ENUM(Broadcast)
-    QKnxControlField::Broadcast broadcast() const { return static_cast<Broadcast> (quint8(m_ctrl1[4])); }
-    void setBroadcast(QKnxControlField::Broadcast bcst) { m_ctrl1[4] = static_cast<int> (bcst); }
+    QKnxControlField::Broadcast broadcast() const // ### Qt6: Replace byte() with m_ctrl1
+        { return static_cast<Broadcast> (quint8(testBit(byte(), 4))); }
+    void setBroadcast(QKnxControlField::Broadcast bcst) // ### Qt6: Replace byte() with m_ctrl1
+        { m_ctrl1 = setBit(byte(), bool(static_cast<int> (bcst)), 4); }
 
     enum class Priority : quint8
     {
@@ -91,8 +108,10 @@ public:
         Requested = 0x01
     };
     Q_ENUM(Acknowledge)
-    QKnxControlField::Acknowledge acknowledge() const { return Acknowledge(quint8(m_ctrl1[1])); }
-    void setAcknowledge(QKnxControlField::Acknowledge ack) { m_ctrl1[1] = static_cast<int> (ack); }
+    QKnxControlField::Acknowledge acknowledge() const // ### Qt6: Replace byte() with m_ctrl1
+        { return Acknowledge(quint8(testBit(byte(), 1))); }
+    void setAcknowledge(QKnxControlField::Acknowledge ack) // ### Qt6: Replace byte() with m_ctrl1
+        { m_ctrl1 = setBit(byte(), bool(static_cast<int> (ack)), 1); }
 
     enum class Confirm : quint8
     {
@@ -100,8 +119,10 @@ public:
         Error = 0x01
     };
     Q_ENUM(Confirm)
-    QKnxControlField::Confirm confirm() const { return static_cast<Confirm> (quint8(m_ctrl1[0])); }
-    void setConfirm(QKnxControlField::Confirm confirm) { m_ctrl1[0] = static_cast<int> (confirm); }
+    QKnxControlField::Confirm confirm() const // ### Qt6: Replace byte() with m_ctrl1
+        { return static_cast<Confirm> (quint8(testBit(byte(), 0))); }
+    void setConfirm(QKnxControlField::Confirm confirm) // ### Qt6: Replace byte() with m_ctrl1
+        { m_ctrl1 = setBit(byte(), bool(static_cast<int> (confirm)), 0); }
 
     quint8 byte() const { return quint8(m_ctrl1.to_ulong()); }
     QKnxByteArray bytes() const { return { byte() }; }
@@ -134,7 +155,7 @@ public:
     static QKnxControlField::Builder builder();
 
 private:
-    std::bitset<8> m_ctrl1 = 0;
+    std::bitset<8> m_ctrl1; // ### Qt6: Replace with quint8
 };
 Q_KNX_EXPORT QDebug operator<<(QDebug debug, const QKnxControlField &ctrl);
 
