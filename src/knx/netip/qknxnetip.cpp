@@ -176,6 +176,7 @@ bool QKnxNetIp::isStructType(QKnxNetIp::DescriptionType type)
     \value RemoteConfigAndDiagnosis
            Remote configuration and diagnosis service family.
     \value ObjectServer                 Object server service family.
+    \value Security                     Security service family.
 */
 
 /*!
@@ -194,6 +195,7 @@ bool QKnxNetIp::isServiceFamily(QKnxNetIp::ServiceFamily family)
     case QKnxNetIp::ServiceFamily::RemoteLogging:
     case QKnxNetIp::ServiceFamily::RemoteConfigAndDiagnosis:
     case QKnxNetIp::ServiceFamily::ObjectServer:
+    case QKnxNetIp::ServiceFamily::Security:
         return true;
     case QKnxNetIp::ServiceFamily::Unknown:
         break;

@@ -74,6 +74,8 @@ static QString familieToString(QKnxNetIp::ServiceFamily id)
         return MainWindow::tr("Remote Configuration");
     case QKnxNetIp::ServiceFamily::ObjectServer:
         return MainWindow::tr("Object Server");
+    case QKnxNetIp::ServiceFamily::Security:
+        return MainWindow::tr("Security");
     default:
         break;
     }

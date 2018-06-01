@@ -91,7 +91,8 @@ namespace QKnx
             IpRouting = 0x05,
             RemoteLogging = 0x06,
             RemoteConfigAndDiagnosis = 0x07,
-            ObjectServer = 0x08
+            ObjectServer = 0x08,
+            Security = 0x09
         };
         Q_ENUM_NS(ServiceFamily)
         Q_KNX_EXPORT bool isServiceFamily(ServiceFamily family);
