@@ -120,6 +120,11 @@ QKnxNetIpDib QKnxNetIpSearchResponseProxy::deviceHardware() const
 /*!
     Returns information about the service families that the KNXnet/IP server
     supports.
+
+    \note The returned service families must be allowed in a search response. A
+    service family higher than or equal to the security family is not allowed
+    in the case of a search response. In an extended search response there is
+    no such restriction.
 */
 QKnxNetIpDib QKnxNetIpSearchResponseProxy::supportedFamilies() const
 {
@@ -215,12 +220,24 @@ QKnxNetIpSearchResponseProxy::Builder &
 /*!
     Sets the device families supported by the KNXnet/IP server to \a sdib and
     returns a reference to the builder.
+
+    \note A service family higher than or equal to the security is not allowed
+    in a search response and it shall not be set in the builder if it is passed
+    in via this method.
 */
 QKnxNetIpSearchResponseProxy::Builder &
     QKnxNetIpSearchResponseProxy::Builder::setSupportedFamilies(const QKnxNetIpDib &sdib)
 {
-    if (QKnxNetIpServiceFamiliesDibProxy(sdib).isValid())
-        m_sdib = sdib;
+    QKnxNetIpServiceFamiliesDibProxy supFamily(sdib);
+    if (!supFamily.isValid())
+            return *this;
+
+    for (const auto &serviceInfo : supFamily.serviceInfos()) {
+        if (serviceInfo.ServiceFamily >= QKnxNetIp::ServiceFamily::Security)
+            return *this;
+    }
+
+    m_sdib = sdib;
     return *this;
 }
 

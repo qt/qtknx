@@ -54,6 +54,7 @@ private slots:
     void testConstructorWithArguments();
     void testDeviceHardwareAccessor();
     void testSupportedFamiliesAccessor();
+    void testSupportedFamiliesVersions();
     void testOptionalDibs();
     void testDebugStream();
 
@@ -163,6 +164,60 @@ void tst_QKnxNetIpDescriptionResponse::testSupportedFamiliesAccessor()
     QCOMPARE(familie.bytes(), m_sf.bytes());
     QCOMPARE(familie.data().size(), m_sf.data().size());
     QCOMPARE(familie.data(), m_sf.data());
+}
+
+void tst_QKnxNetIpDescriptionResponse::testSupportedFamiliesVersions()
+{
+    QVector<QKnxServiceInfo> fam = {
+        { QKnxNetIp::ServiceFamily::IpTunneling, 0x04 },
+        { QKnxNetIp::ServiceFamily::Core, 9 },
+        { QKnxNetIp::ServiceFamily::DeviceManagement, 2 },
+        { QKnxNetIp::ServiceFamily::DeviceManagement, 1 },
+        { QKnxNetIp::ServiceFamily::IpTunneling, 11 },
+        { QKnxNetIp::ServiceFamily::IpRouting, 12 },
+        { QKnxNetIp::ServiceFamily::RemoteLogging, 13 },
+        { QKnxNetIp::ServiceFamily::Security, 1 }
+    };
+    {   // test that a supported service families dib with security service
+        // family is not valid in a description response
+        auto securtyFamDib = QKnxNetIpServiceFamiliesDibProxy::builder()
+                             .setServiceInfos(fam)
+                             .create();
+        auto frame = QKnxNetIpDescriptionResponseProxy::builder()
+                                          .setDeviceHardware(m_deviceHardware)
+                                          .setSupportedFamilies(securtyFamDib)
+                                          .create();
+        QKnxNetIpDescriptionResponseProxy descriptionResponse(frame);
+
+        auto extractedFamilies = descriptionResponse.supportedFamilies();
+        QVERIFY(!extractedFamilies.isValid());
+        QCOMPARE(extractedFamilies.size(), 0);
+    }
+    {   // test that a supported service families dib without service family is
+        // valid in a description response
+        QCOMPARE(8, fam.size());
+        fam.erase(std::remove_if(fam.begin(), fam.end(),
+            [](const QKnxServiceInfo &info) {
+                return info.ServiceFamily == QKnxNetIp::ServiceFamily::Security;
+        }), fam.end());
+        auto noSecurityFamDib = QKnxNetIpServiceFamiliesDibProxy::builder()
+                                .setServiceInfos(fam)
+                                .create();
+        auto frame = QKnxNetIpDescriptionResponseProxy::builder()
+                                        .setDeviceHardware(m_deviceHardware)
+                                        .setSupportedFamilies(noSecurityFamDib)
+                                        .create();
+
+        QKnxNetIpDescriptionResponseProxy descriptionResponse(frame);
+        auto dibFamilies = descriptionResponse.supportedFamilies();
+        QVERIFY(dibFamilies.isValid());
+
+        const QKnxNetIpServiceFamiliesDibProxy view(dibFamilies);
+        QVERIFY(view.isValid());
+
+        auto extractedFamilies = view.serviceInfos();
+        QCOMPARE(extractedFamilies.size(), fam.size());
+    }
 }
 
 void tst_QKnxNetIpDescriptionResponse::testOptionalDibs()

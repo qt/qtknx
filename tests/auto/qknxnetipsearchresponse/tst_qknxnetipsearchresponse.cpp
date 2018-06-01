@@ -29,6 +29,7 @@
 #include <QtCore/qdebug.h>
 #include <QtTest/qtest.h>
 #include <QtKnx/qknxnetipsearchresponse.h>
+#include <QtKnx/qknxnetipconfigdib.h>
 
 static QString s_msg;
 static void myMessageHandler(QtMsgType, const QMessageLogContext &, const QString &msg)
@@ -45,6 +46,7 @@ private slots:
     void testConstructor();
     void testSearchResponseEndpoint();
     void testDebugStream();
+    void testSupportedFamiliesVersions();
 };
 
 void tst_QKnxNetIpSearchResponse::testDefaultConstructor()
@@ -176,6 +178,74 @@ void tst_QKnxNetIpSearchResponse::testDebugStream()
             "402020a"));
 }
 
+void tst_QKnxNetIpSearchResponse::testSupportedFamiliesVersions()
+{
+    auto endpoint = QKnxNetIpHpaiProxy::builder()
+                    .setHostAddress(QHostAddress::LocalHost)
+                    .setPort(3671)
+                    .create();
+    auto hardware = QKnxNetIpDeviceDibProxy::builder()
+                    .setMediumType(QKnx::MediumType::NetIP)
+                    .setDeviceStatus(QKnxNetIp::ProgrammingMode::Active)
+                    .setIndividualAddress(QKnxAddress::Individual::Unregistered)
+                    .setProjectInstallationId(0x1111)
+                    .setSerialNumber(QKnxByteArray::fromHex("123456123456"))
+                    .setMulticastAddress(QHostAddress::AnyIPv4)
+                    .setMacAddress(QKnxByteArray::fromHex("bcaec56690f9"))
+                    .setDeviceName(QByteArray("qt.io KNX device"))
+                    .create();
+    QVector<QKnxServiceInfo> fam = {
+        { QKnxNetIp::ServiceFamily::IpTunneling, 0x04 },
+        { QKnxNetIp::ServiceFamily::Core, 9 },
+        { QKnxNetIp::ServiceFamily::DeviceManagement, 2 },
+        { QKnxNetIp::ServiceFamily::DeviceManagement, 1 },
+        { QKnxNetIp::ServiceFamily::IpTunneling, 11 },
+        { QKnxNetIp::ServiceFamily::IpRouting, 12 },
+        { QKnxNetIp::ServiceFamily::RemoteLogging, 13 },
+        { QKnxNetIp::ServiceFamily::Security, 1 }
+    };
+
+
+    {   // test that a supported service families dib with security service
+        // family is not valid in a search response
+        auto families = QKnxNetIpServiceFamiliesDibProxy::builder()
+                        .setServiceInfos(fam).create();
+        auto frame = QKnxNetIpSearchResponseProxy::builder()
+            .setControlEndpoint(endpoint)
+            .setDeviceHardware(hardware)
+            .setSupportedFamilies(families)
+            .create();
+        QKnxNetIpSearchResponseProxy searchResponse(frame);
+
+        auto extractedFamilies = searchResponse.supportedFamilies();
+        QVERIFY(!extractedFamilies.isValid());
+        QCOMPARE(extractedFamilies.size(), 0);
+    }
+    {   // test that a supported service families dib without service family is
+        // valid in a search response
+        QCOMPARE(8, fam.size());
+        fam.erase(std::remove_if(fam.begin(), fam.end(),
+            [] (const QKnxServiceInfo &info) {
+                return info.ServiceFamily == QKnxNetIp::ServiceFamily::Security;
+        }), fam.end());
+        auto families = QKnxNetIpServiceFamiliesDibProxy::builder()
+                        .setServiceInfos(fam).create();
+        auto frame = QKnxNetIpSearchResponseProxy::builder()
+                     .setControlEndpoint(endpoint)
+                     .setDeviceHardware(hardware)
+                     .setSupportedFamilies(families)
+                     .create();
+        QKnxNetIpSearchResponseProxy searchResponse(frame);
+        auto dibFamilies = searchResponse.supportedFamilies();
+        QVERIFY(dibFamilies.isValid());
+
+        const QKnxNetIpServiceFamiliesDibProxy view(dibFamilies);
+        QVERIFY(view.isValid());
+
+        auto extractedFamilies = view.serviceInfos();
+        QCOMPARE(extractedFamilies.size(), fam.size());
+    }
+}
 QTEST_APPLESS_MAIN(tst_QKnxNetIpSearchResponse)
 
 #include "tst_qknxnetipsearchresponse.moc"
