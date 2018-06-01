@@ -103,9 +103,12 @@ QKnxNetIpSearchRequestProxy::QKnxNetIpSearchRequestProxy(const QKnxNetIpFrame &f
     Returns \c true if the frame contains initialized values and is in itself
     valid, otherwise returns \c false. A valid KNXnet/IP frame consist of a
     search request with at least a valid header and a size in bytes
-    corresponding to the total size of the KNXnet/IP frame header or a search
-    extended request containing a valid header and a valid extended search
-    parameter.
+    corresponding to the total size of the KNXnet/IP frame header or a extended
+    search request containing a valid header.
+
+    \note The extended search parameter's validity check is not done by this
+    function. It is up to the programmer to do the appropriate validity checks on
+    that field.
 
     \sa QKnxNetIpFrameHeader::totalSize()
 */
@@ -115,16 +118,9 @@ bool QKnxNetIpSearchRequestProxy::isValid() const
     if (serviceType == QKnxNetIp::ServiceType::SearchRequest) {
         return m_frame.isValid() && m_frame.size() == 14;
     } else if (serviceType == QKnxNetIp::ServiceType::SearchRequestExtended) {
-
-        auto srps = extendedSearchParameters();
-        bool srpsValid = true;
-        for (const auto &srp: srps)
-            srpsValid = srpsValid && srp.isValid();
-
         return m_frame.isValid()
                && m_frame.size() >= 14
-               && (m_frame.size() % 2 == 0)
-               && srpsValid;
+               && (m_frame.size() % 2 == 0);
     }
     return false;
 }
@@ -151,21 +147,17 @@ QKnxNetIpHpai QKnxNetIpSearchRequestProxy::discoveryEndpoint() const
 */
 QVector<QKnxNetIpSrp> QKnxNetIpSearchRequestProxy::extendedSearchParameters() const
 {
-    quint16 index = discoveryEndpoint().size();
+    QVector<QKnxNetIpSrp> srps;
+    if (!isValid())
+        return srps;
 
     const auto &data = m_frame.constData();
-    auto srp = QKnxNetIpSrp::fromBytes(data, index);
-
-    QVector<QKnxNetIpSrp> srps;
-    while (srp.isValid()) {
+    quint16 index = discoveryEndpoint().size();
+    while (index < data.size()) {
+        auto srp = QKnxNetIpSrp::fromBytes(data, index);
         srps.append(srp);
         index += srp.size();
-        srp = QKnxNetIpSrp::fromBytes(data, index);
     }
-
-    if (index < data.size())
-        return {};
-
     return srps;
 }
 
