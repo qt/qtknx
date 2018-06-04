@@ -52,7 +52,8 @@ PUBLIC_HEADERS += $$PWD/qknxnetip.h \
     $$PWD/qknxnetipsessionauthenticate.h \
     $$PWD/qknxnetipsessionstatus.h \
     $$PWD/qknxnetiptimernotify.h \
-    $$PWD/qknxnetipsecurewrapper.h
+    $$PWD/qknxnetipsecurewrapper.h \
+    $$PWD/qknxnetiproutinginterface.h
 
 PRIVATE_HEADERS += \
     $$PWD/qknxbuilderdata_p.h \
@@ -60,7 +61,8 @@ PRIVATE_HEADERS += \
     $$PWD/qknxnetipserverdescriptionagent_p.h \
     $$PWD/qknxnetipserverdiscoveryagent_p.h \
     $$PWD/qknxnetipserverinfo_p.h \
-    $$PWD/qknxbuilderdata_p.h
+    $$PWD/qknxnetiproutinginterface_p.h \
+    $$PWD/qknxtestingrouter_p.h
 
 SOURCES += $$PWD/qknxnetip.cpp \
     $$PWD/qknxnetipconfigdib.cpp \
@@ -114,4 +116,7 @@ SOURCES += $$PWD/qknxnetip.cpp \
     $$PWD/qknxnetipsessionauthenticate.cpp \
     $$PWD/qknxnetipsessionstatus.cpp \
     $$PWD/qknxnetiptimernotify.cpp \
-    $$PWD/qknxnetipsecurewrapper.cpp
+    $$PWD/qknxnetipsecurewrapper.cpp \
+    $$PWD/qknxnetiproutinginterface_p.cpp \
+    $$PWD/qknxnetiproutinginterface.cpp \
+    $$PWD/qknxtestingrouter_p.cpp

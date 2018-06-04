@@ -45,4 +45,5 @@ SUBDIRS += cmake \
     qknxnetiproutingsystembroadcast \
     qknxnetipsecuredservicefamiliesdib \
     qknxnetipsessionrequest \
-    qknxnetipsessionresponse
+    qknxnetipsessionresponse \
+    qknxnetiproutinginterface
