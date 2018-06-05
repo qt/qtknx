@@ -116,11 +116,13 @@ bool QKnxNetIpSearchRequestProxy::isValid() const
 {
     auto serviceType = m_frame.serviceType();
     if (serviceType == QKnxNetIp::ServiceType::SearchRequest) {
-        return m_frame.isValid() && m_frame.size() == 14;
-    } else if (serviceType == QKnxNetIp::ServiceType::SearchRequestExtended) {
-        return m_frame.isValid()
-               && m_frame.size() >= 14
-               && (m_frame.size() % 2 == 0);
+        return m_frame.isValid() && m_frame.size() == 14
+            && discoveryEndpoint().code() == QKnxNetIp::HostProtocol::UDP_IPv4;
+    }
+
+    if (serviceType == QKnxNetIp::ServiceType::SearchRequestExtended) {
+        return m_frame.isValid() && m_frame.size() >= 14 && (m_frame.size() % 2 == 0)
+            && discoveryEndpoint().code() == QKnxNetIp::HostProtocol::UDP_IPv4;
     }
     return false;
 }

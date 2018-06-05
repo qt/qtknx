@@ -44,6 +44,7 @@ class tst_QKnxNetIpSearchRequest: public QObject
 
 private slots:
     void testDefaultConstructor();
+    void testSearchRequestEndpoint();
     void testConstructor();
     void testDebugStream();
     void testExtendSearchRequest();
@@ -75,6 +76,19 @@ void tst_QKnxNetIpSearchRequest::testConstructor()
     QCOMPARE(frame.data(), QKnxByteArray::fromHex("08017f0000010e57"));
     QCOMPARE(search.discoveryEndpoint().isValid(), true);
     QCOMPARE(search.discoveryEndpoint().bytes(), QKnxByteArray::fromHex("08017f0000010e57"));
+}
+
+void tst_QKnxNetIpSearchRequest::testSearchRequestEndpoint()
+{
+    auto frame = QKnxNetIpSearchRequestProxy::builder()
+        .setDiscoveryEndpoint(QKnxNetIpHpaiProxy::builder()
+            .setHostProtocol(QKnxNetIp::HostProtocol::TCP_IPv4)
+            .setHostAddress(QHostAddress::LocalHost)
+            .setPort(3671).create()
+        ).create();
+
+    QKnxNetIpSearchRequestProxy search(frame);
+    QCOMPARE(search.isValid(), false);
 }
 
 void tst_QKnxNetIpSearchRequest::testDebugStream()
@@ -235,6 +249,7 @@ void tst_QKnxNetIpSearchRequest::testExtendSearchRequest()
     QCOMPARE(bytes, QKnxByteArray::fromHex("0882") + macAddress1
              + QKnxByteArray::fromHex("0882") + macAddress2);
 }
+
 
 QTEST_APPLESS_MAIN(tst_QKnxNetIpSearchRequest)
 

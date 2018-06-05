@@ -137,7 +137,7 @@ QKnxNetIpDib QKnxNetIpSearchResponseProxy::supportedFamilies() const
 bool QKnxNetIpSearchResponseProxy::isValid() const
 {
     return m_frame.isValid() && m_frame.serviceType() == QKnxNetIp::ServiceType::SearchResponse
-        && m_frame.size() >= 70;
+        && m_frame.size() >= 70 && controlEndpoint().code() == QKnxNetIp::HostProtocol::UDP_IPv4;
 }
 
 /*!

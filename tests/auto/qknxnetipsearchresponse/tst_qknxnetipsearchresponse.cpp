@@ -43,6 +43,7 @@ class tst_QKnxNetIpSearchResponse: public QObject
 private slots:
     void testDefaultConstructor();
     void testConstructor();
+    void testSearchResponseEndpoint();
     void testDebugStream();
 };
 
@@ -108,6 +109,34 @@ void tst_QKnxNetIpSearchResponse::testConstructor()
     QCOMPARE(QKnxNetIpFrame::fromBytes(frame.bytes(), 0).isValid(), true);
     QCOMPARE(QKnxNetIpFrame::fromBytes(frame.bytes(), 56).isValid(), false);
     QCOMPARE(QKnxNetIpFrame::fromBytes(frame.bytes(), 2).isValid(), false);
+}
+
+void tst_QKnxNetIpSearchResponse::testSearchResponseEndpoint()
+{
+    auto hardware = QKnxNetIpDeviceDibProxy::builder()
+        .setMediumType(QKnx::MediumType::NetIP)
+        .setDeviceStatus(QKnxNetIp::ProgrammingMode::Active)
+        .setIndividualAddress(QKnxAddress::Individual::Unregistered)
+        .setProjectInstallationId(0x1111)
+        .setSerialNumber(QKnxByteArray::fromHex("123456123456"))
+        .setMulticastAddress(QHostAddress::AnyIPv4)
+        .setMacAddress(QKnxByteArray::fromHex("bcaec56690f9"))
+        .setDeviceName(QByteArray("qt.io KNX device"))
+        .create();
+    auto families = QKnxNetIpServiceFamiliesDibProxy::builder()
+        .setServiceInfos({ { QKnxNetIp::ServiceFamily::Core, 10 } }).create();
+
+    auto frame = QKnxNetIpSearchResponseProxy::builder()
+        .setControlEndpoint(QKnxNetIpHpaiProxy::builder()
+            .setHostProtocol(QKnxNetIp::HostProtocol::TCP_IPv4)
+            .setHostAddress(QHostAddress::LocalHost)
+            .setPort(3671).create())
+         .setDeviceHardware(hardware)
+         .setSupportedFamilies(families)
+         .create();
+
+    QKnxNetIpSearchResponseProxy search(frame);
+    QCOMPARE(search.isValid(), false);
 }
 
 void tst_QKnxNetIpSearchResponse::testDebugStream()
