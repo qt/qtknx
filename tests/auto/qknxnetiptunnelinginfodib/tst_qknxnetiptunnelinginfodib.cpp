@@ -57,14 +57,16 @@ private slots:
         QCOMPARE(proxy.isValid(), false);
         QCOMPARE(proxy.descriptionType(), QKnxNetIp::DescriptionType::Unknown);
         QCOMPARE(proxy.maximumInterfaceApduLength(), 0x0000);
-        QCOMPARE(proxy.tunnelingSlotInfos(), QVector<QKnxNetIpTunnelingSlotInfo>());
+        QCOMPARE(proxy.tunnelingSlotInfo(), QKnxNetIpTunnelingSlotInfo());
+        QCOMPARE(proxy.optionalSlotInfos(), QVector<QKnxNetIpTunnelingSlotInfo>());
 
         dib = QKnxNetIpTunnelingInfoDibProxy::builder().create();
         QCOMPARE(proxy.isValid(), false);
         QCOMPARE(proxy.isValid(), false);
         QCOMPARE(proxy.descriptionType(), QKnxNetIp::DescriptionType::Unknown);
         QCOMPARE(proxy.maximumInterfaceApduLength(), 0x0000);
-        QCOMPARE(proxy.tunnelingSlotInfos(), QVector<QKnxNetIpTunnelingSlotInfo>());
+        QCOMPARE(proxy.tunnelingSlotInfo(), QKnxNetIpTunnelingSlotInfo());
+        QCOMPARE(proxy.optionalSlotInfos(), QVector<QKnxNetIpTunnelingSlotInfo>());
     }
 
     void testValidDib()
@@ -74,17 +76,19 @@ private slots:
         QKnxNetIpTunnelingSlotInfo slotInfo { address, status };
         auto infoDib = QKnxNetIpTunnelingInfoDibProxy::builder()
             .setMaximumInterfaceApduLength(4096)
-            .setTunnelingSlotInfos({ slotInfo })
+            .setTunnelingSlotInfo(slotInfo)
+            .setOptionalSlotInfos({ slotInfo })
             .create();
-        auto bytes = QKnxByteArray::fromHex("080710001101ffff");
+        auto bytes = QKnxByteArray::fromHex("0c0710001101ffff1101ffff");
 
         QKnxNetIpTunnelingInfoDibProxy proxy(infoDib);
         QCOMPARE(proxy.isValid(), true);
         QCOMPARE(proxy.descriptionType(), QKnxNetIp::DescriptionType::TunnelingInfo);
         QCOMPARE(proxy.maximumInterfaceApduLength(), 0x1000);
-        QCOMPARE(proxy.tunnelingSlotInfos().count(), 1);
+        QCOMPARE(proxy.tunnelingSlotInfo(), slotInfo);
+        QCOMPARE(proxy.optionalSlotInfos().count(), 1);
 
-        auto slot = proxy.tunnelingSlotInfos().first();
+        auto slot = proxy.optionalSlotInfos().first();
         QCOMPARE(slot.isValid(), true);
         QCOMPARE(slot.individualAddress(), address);
         QCOMPARE(slot.status(), status);
@@ -97,9 +101,10 @@ private slots:
         QCOMPARE(proxy2.isValid(), true);
         QCOMPARE(proxy2.descriptionType(), QKnxNetIp::DescriptionType::TunnelingInfo);
         QCOMPARE(proxy2.maximumInterfaceApduLength(), 0x1000);
-        QCOMPARE(proxy2.tunnelingSlotInfos().count(), 1);
+        QCOMPARE(proxy.tunnelingSlotInfo(), slotInfo);
+        QCOMPARE(proxy2.optionalSlotInfos().count(), 1);
 
-        auto slot2 = proxy2.tunnelingSlotInfos().first();
+        auto slot2 = proxy2.optionalSlotInfos().first();
         QCOMPARE(slot2.isValid(), true);
         QCOMPARE(slot2.individualAddress(), address);
         QCOMPARE(slot2.status(), status);
@@ -156,14 +161,16 @@ private slots:
         } _(myMessageHandler);
 
         qDebug() << QKnxNetIpTunnelingInfoDibProxy::builder().create();
-        QCOMPARE(s_msg, QString::fromLatin1("0x04070000"));
+        QCOMPARE(s_msg, QString::fromLatin1("0x0207"));
 
         qDebug() << QKnxNetIpTunnelingInfoDibProxy::builder()
             .setMaximumInterfaceApduLength(4096)
-            .setTunnelingSlotInfos({ { { QKnxAddress::Type::Individual, 4353 },
+            .setTunnelingSlotInfo(
+                QKnxNetIpTunnelingSlotInfo::fromBytes(QKnxByteArray::fromHex("1101ffff"), 0)
+            ).setOptionalSlotInfos({ { { QKnxAddress::Type::Individual, 4353 },
                 QKnxNetIpTunnelingSlotInfo::State::Available } })
             .create();
-        QCOMPARE(s_msg, QString::fromLatin1("0x080710001101ffff"));
+        QCOMPARE(s_msg, QString::fromLatin1("0x0c0710001101ffff1101ffff"));
     }
 };
 

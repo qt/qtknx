@@ -347,8 +347,8 @@ void tst_QKnxNetIpDescriptionResponse::testOptionalDibs()
 
     auto tunnelInfoDib = QKnxNetIpTunnelingInfoDibProxy::builder()
         .setMaximumInterfaceApduLength(0x1000)
-        .setTunnelingSlotInfos({ { { QKnxAddress::Type::Individual, 1976 },
-            QKnxNetIpTunnelingSlotInfo::Available } })
+        .setTunnelingSlotInfo({ { QKnxAddress::Type::Individual, 1976 },
+            QKnxNetIpTunnelingSlotInfo::Available })
         .create();
 
     builder.setOptionalDibs({ configDib, currentConfigDib, knxAddressDib, tunnelInfoDib,

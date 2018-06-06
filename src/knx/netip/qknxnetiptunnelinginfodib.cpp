@@ -289,7 +289,7 @@ bool QKnxNetIpTunnelingSlotInfo::operator!=(const QKnxNetIpTunnelingSlotInfo &ot
             return;
 
         quint16 apduLength = proxy.maximumInterfaceApduLength();
-        auto tunnelingSlotInfo = proxy.tunnelingSlotInfos().value(0);
+        auto tunnelingSlotInfo = proxy.tunnelingSlotInfo(); // mandatory
     \endcode
 
     \sa builder(), QKnxNetIpTunnelingSlotInfo, {Qt KNX Tunneling Classes},
@@ -323,8 +323,9 @@ QKnxNetIpTunnelingInfoDibProxy::QKnxNetIpTunnelingInfoDibProxy(const QKnxNetIpDi
     Returns \c true if the KNXnet/IP structure to create the object is a valid
     KNXnet/IP DIB structure; otherwise returns \c false.
 
-    A KNXnet/IP tunneling information structure is considered valid it contains
-    the maximum APDU length and at least one tunneling slot information object.
+    A KNXnet/IP tunneling information DIB structure is considered valid if it
+    contains the maximum APDU length and at least one tunneling slot information
+    object.
 */
 bool QKnxNetIpTunnelingInfoDibProxy::isValid() const
 {
@@ -359,19 +360,33 @@ quint16 QKnxNetIpTunnelingInfoDibProxy::maximumInterfaceApduLength() const
 }
 
 /*!
-    Returns a vector of the QKnxNetIpTunnelingSlotInfo carried by this KNXnet/IP
-    DIB structure if the object that was passed during construction was valid;
-    otherwise returns an empty vector.
+    Returns the mandatory tunneling slot information carried by this KNXnet/IP
+    DIB structure or a \l {default-constructed value} in case of an error.
 */
-QVector<QKnxNetIpTunnelingSlotInfo> QKnxNetIpTunnelingInfoDibProxy::tunnelingSlotInfos() const
+QKnxNetIpTunnelingSlotInfo QKnxNetIpTunnelingInfoDibProxy::tunnelingSlotInfo() const
+{
+    return QKnxNetIpTunnelingSlotInfo::fromBytes(m_dib.constData(), 2);
+}
+
+/*!
+    Returns a vector of \l QKnxNetIpTunnelingSlotInfo objects carried by this
+    KNXnet/IP DIB structure if the object that was passed during construction
+    was valid; otherwise returns an empty vector.
+*/
+QVector<QKnxNetIpTunnelingSlotInfo> QKnxNetIpTunnelingInfoDibProxy::optionalSlotInfos() const
 {
     QVector<QKnxNetIpTunnelingSlotInfo> infos;
     if (!isValid())
         return infos;
 
     const auto &data = m_dib.constData();
-    for (quint16 i = 2 /* two data for max APDU */; i < data.size(); i += 4) // 4 -> info size
-        infos.append(QKnxNetIpTunnelingSlotInfo::fromBytes(data, i));
+    // 6 bytes max APDU + mandatory slot info, advance by 4 -> expected info size
+    for (quint16 i = 6 ; i < data.size(); i += 4) {
+        auto info = QKnxNetIpTunnelingSlotInfo::fromBytes(data, i);
+        if (!info.isValid())
+            return {};
+        infos.append(info);
+    }
     return infos;
 }
 
@@ -401,9 +416,10 @@ QKnxNetIpTunnelingInfoDibProxy::Builder QKnxNetIpTunnelingInfoDibProxy::builder(
     The common way to create such a DIB structure is:
     \code
         auto dib = QKnxNetIpTunnelingInfoDibProxy::builder()
-            .setMaximumInterfaceApduLength(0xffff)
-            .setTunnelingSlotInfos({
-                { { QKnxAddress::Type::Individual, 1976 }, QKnxNetIpTunnelingSlotInfo::Available },
+            .setMaximumInterfaceApduLength(0x1000)
+            .setTunnelingSlotInfo({ { QKnxAddress::Type::Individual, 1976 },
+                QKnxNetIpTunnelingSlotInfo::Available
+            }).setOptionalSlotInfos({
                 { { QKnxAddress::Type::Individual, 2013 },
                     QKnxNetIpTunnelingSlotInfo::Usable
                         | QKnxNetIpTunnelingSlotInfo::Authorized
@@ -421,6 +437,7 @@ public:
     ~QKnxNetIpTunnelingInfoDibPrivate() = default;
 
     quint16 maxApduLength { 0 };
+    QKnxNetIpTunnelingSlotInfo m_info; // mandatory
     QVector<QKnxNetIpTunnelingSlotInfo> m_infos;
 };
 
@@ -448,11 +465,22 @@ QKnxNetIpTunnelingInfoDibProxy::Builder &
 }
 
 /*!
-    Sets the tunneling slot information of the KNXnet/IP DIB structure to
-    \a infos and returns a reference to the builder.
+    Sets the mandatory tunneling slot information of the KNXnet/IP DIB structure
+    to \a info and returns a reference to the builder.
 */
 QKnxNetIpTunnelingInfoDibProxy::Builder &QKnxNetIpTunnelingInfoDibProxy::Builder
-    ::setTunnelingSlotInfos(const QVector<QKnxNetIpTunnelingSlotInfo> &infos)
+    ::setTunnelingSlotInfo(const QKnxNetIpTunnelingSlotInfo &info)
+{
+    d_ptr->m_info = info;
+    return *this;
+}
+
+/*!
+    Sets the optional tunneling slot information of the KNXnet/IP DIB structure
+    to \a infos and returns a reference to the builder.
+*/
+QKnxNetIpTunnelingInfoDibProxy::Builder &QKnxNetIpTunnelingInfoDibProxy::Builder
+    ::setOptionalSlotInfos(const QVector<QKnxNetIpTunnelingSlotInfo> &infos)
 {
     d_ptr->m_infos = infos;
     return *this;
@@ -465,12 +493,20 @@ QKnxNetIpTunnelingInfoDibProxy::Builder &QKnxNetIpTunnelingInfoDibProxy::Builder
     during setup.
 
     \sa isValid()
+
+    \note Invalid tunneling slot information objects are not taken into account
+    when creating the tunneling information QKnxNetIpDib.
 */
 QKnxNetIpDib QKnxNetIpTunnelingInfoDibProxy::Builder::create() const
 {
-    auto bytes = QKnxUtils::QUint16::bytes(d_ptr->maxApduLength);
-    for (const auto &info : qAsConst(d_ptr->m_infos))
-        bytes += info.bytes();
+    if (!d_ptr->m_info.isValid())
+        return { QKnxNetIp::DescriptionType::TunnelingInfo };
+
+    auto bytes = QKnxUtils::QUint16::bytes(d_ptr->maxApduLength) + d_ptr->m_info.bytes();
+    for (const auto &info : qAsConst(d_ptr->m_infos)) {
+        if (info.isValid())
+            bytes += info.bytes();
+    }
     return { QKnxNetIp::DescriptionType::TunnelingInfo, bytes };
 }
 
