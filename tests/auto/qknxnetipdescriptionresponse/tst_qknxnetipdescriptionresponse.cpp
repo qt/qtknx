@@ -56,6 +56,7 @@ private slots:
     void testSupportedFamiliesAccessor();
     void testSupportedFamiliesVersions();
     void testOptionalDibs();
+    void testValidFromByteArray();
     void testDebugStream();
 
 private:
@@ -360,6 +361,35 @@ void tst_QKnxNetIpDescriptionResponse::testOptionalDibs()
 
     for (const auto &dib : qAsConst(optionalDibs))
         QVERIFY2(dib.code() != QKnxNetIp::DescriptionType::TunnelingInfo, "tunneling info illegal");
+}
+
+void tst_QKnxNetIpDescriptionResponse::testValidFromByteArray()
+{
+    auto frame = QKnxNetIpFrame::fromBytes(QKnxByteArray::fromHex("06100204004036012001ffff111112"
+        "345612345600000000bcaec56690f971742e696f204b4e582064657669636500000000000000000000000000"
+        "0004020404"));
+
+    QKnxNetIpDescriptionResponseProxy descriptionResponse(frame);
+    QCOMPARE(descriptionResponse.isValid(), true);
+    QCOMPARE(descriptionResponse.supportedFamilies(), m_sf);
+    QCOMPARE(descriptionResponse.deviceHardware(), m_deviceHardware);
+    QCOMPARE(descriptionResponse.optionalDibs().count(), 0);
+
+    auto tunnelInfoDib = QKnxNetIpTunnelingInfoDibProxy::builder()
+        .setMaximumInterfaceApduLength(0x1000)
+        .setTunnelingSlotInfo({ { QKnxAddress::Type::Individual, 1976 },
+            QKnxNetIpTunnelingSlotInfo::Available })
+        .create();
+
+    // illegally contains a tunneling information DIB
+    frame = QKnxNetIpFrame::fromBytes(QKnxByteArray::fromHex("06100204004836012001ffff11111234561"
+        "2345600000000bcaec56690f971742e696f204b4e58206465766963650000000000000000000000000000040"
+        "20404") + tunnelInfoDib.bytes());
+    QCOMPARE(descriptionResponse.isValid(), false);
+    QCOMPARE(descriptionResponse.supportedFamilies(), m_sf);
+    QCOMPARE(descriptionResponse.deviceHardware(), m_deviceHardware);
+    QCOMPARE(descriptionResponse.optionalDibs().count(), 1);
+    QCOMPARE(descriptionResponse.optionalDibs().value(0), tunnelInfoDib);
 }
 
 void tst_QKnxNetIpDescriptionResponse::testDebugStream()

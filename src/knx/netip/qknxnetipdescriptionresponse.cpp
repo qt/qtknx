@@ -99,12 +99,25 @@ QKnxNetIpDescriptionResponseProxy::QKnxNetIpDescriptionResponseProxy(const QKnxN
     at least a valid header and a size in bytes corresponding to the total size
     of the KNXnet/IP frame header.
 
+    \note If the \l QKnxNetIpFrame used to create the response proxy contains
+    tunneling information description objects, it is also considered invalid.
+
     \sa QKnxNetIpFrameHeader::totalSize()
 */
 bool QKnxNetIpDescriptionResponseProxy::isValid() const
 {
-    return m_frame.isValid() && m_frame.size() >= 64
+    bool valid = m_frame.isValid() && m_frame.size() >= 64
         && m_frame.serviceType() == QKnxNetIp::ServiceType::DescriptionResponse;
+
+    if (valid) {
+        const auto opt = optionalDibs();
+        valid &= std::all_of(opt.constBegin(), opt.constEnd(), [] (const QKnxNetIpDib &dib) {
+            // tunneling info DIBs are only allow in extended description response frames
+            return dib.code() != QKnxNetIp::DescriptionType::TunnelingInfo;
+        });
+    }
+
+    return valid;
 }
 
 /*!
@@ -236,27 +249,21 @@ QKnxNetIpDescriptionResponseProxy::Builder &
 /*!
     Sets the optional KNXnet/IP server device information block (DIB) structure
     to \a dibs and returns a reference to the builder.
-
-    \note \l {QKnxNetIpTunnelingInfoDibProxy}{KNXnet/IP tunneling information
-    DIB} structures are only allowed in extended description response frames.
-    The function therefore removes these structures from the vector of \a dibs
-    before adding them to default description response frame.
 */
 QKnxNetIpDescriptionResponseProxy::Builder &
     QKnxNetIpDescriptionResponseProxy::Builder::setOptionalDibs(const QVector<QKnxNetIpDib> &dibs)
 {
     m_optionalDibs = dibs;
-
-    m_optionalDibs.erase(std::remove_if(m_optionalDibs.begin(), m_optionalDibs.end(),
-        [](const QKnxNetIpDib &dib) {
-            return dib.code() == QKnxNetIp::DescriptionType::TunnelingInfo;
-    }), m_optionalDibs.end());
-
     return *this;
 }
 
 /*!
     Creates and returns a KNXnet/IP description response frame.
+
+    \note \l {QKnxNetIpTunnelingInfoDibProxy}{KNXnet/IP tunneling information
+    DIB} structures are only allowed in extended description response frames.
+    The function therefore removes these structures from the vector of \a dibs
+    before creating the description response frame.
 
     \note The returned frame may be invalid depending on the values used during
     setup.
@@ -269,7 +276,7 @@ QKnxNetIpFrame QKnxNetIpDescriptionResponseProxy::Builder::create() const
         + [&]() -> QKnxByteArray {
             QKnxByteArray bytes;
             for (const auto &dib : m_optionalDibs) {
-                if (dib.isValid())
+                if (dib.isValid() && dib.code() != QKnxNetIp::DescriptionType::TunnelingInfo)
                     bytes += dib.bytes();
             }
             return bytes;
