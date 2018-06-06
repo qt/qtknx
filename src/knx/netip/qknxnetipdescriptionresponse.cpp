@@ -129,8 +129,12 @@ QKnxNetIpDib QKnxNetIpDescriptionResponseProxy::supportedFamilies() const
 }
 
 /*!
-    Returns the optional KNXnet/IP server device information block (DIB)
-    structure.
+    Returns a vector of optional KNXnet/IP server device information
+    block (DIB) structures. The vector can be empty if no such structures
+    are present or in case of an error while extracting the optional DIBs.
+
+    \note The function does not perform validity checks on the
+    \l QKnxNetIpFrame used to create the description response proxy object.
 */
 QVector<QKnxNetIpDib> QKnxNetIpDescriptionResponseProxy::optionalDibs() const
 {
@@ -144,11 +148,11 @@ QVector<QKnxNetIpDib> QKnxNetIpDescriptionResponseProxy::optionalDibs() const
 
     QVector<QKnxNetIpDib> dibs;
     while (index < data.size()) {
-        header = QKnxNetIpStructHeader<QKnxNetIp::DescriptionType>::fromBytes(data, index);
-        if (!header.isValid())
+        auto dib = QKnxNetIpDib::fromBytes(data, index);
+        if (!dib.isValid())
             return {};
         dibs.append(QKnxNetIpDib::fromBytes(data, index));
-        index += header.totalSize(); // advance of total size of last read DIB
+        index += dib.size(); // advance of total size of last read DIB
     }
     return dibs;
 }

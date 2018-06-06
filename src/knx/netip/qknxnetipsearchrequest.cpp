@@ -145,20 +145,27 @@ QKnxNetIpHpai QKnxNetIpSearchRequestProxy::discoveryEndpoint() const
 }
 
 /*!
-    Returns the extended search parameter structure.
+    Returns a vector of extended search request parameter (SRP) structures.
+    The vector can be empty if no such structures are present or in case of
+    an error while extracting the SRPs.
+
+    \note The function does not perform validity checks on the
+    \l QKnxNetIpFrame used to create the search request proxy object.
 */
 QVector<QKnxNetIpSrp> QKnxNetIpSearchRequestProxy::extendedSearchParameters() const
 {
-    QVector<QKnxNetIpSrp> srps;
-    if (!isValid())
-        return srps;
-
     const auto &data = m_frame.constData();
-    quint16 index = discoveryEndpoint().size();
+
+    auto hpai = QKnxNetIpStructHeader<QKnxNetIp::HostProtocol>::fromBytes(data, 0);
+    quint16 index = hpai.totalSize(); // total size of discovery endpoint HPAI
+
+    QVector<QKnxNetIpSrp> srps;
     while (index < data.size()) {
         auto srp = QKnxNetIpSrp::fromBytes(data, index);
-        srps.append(srp);
-        index += srp.size();
+        if (!srp.isValid())
+            return {};
+        srps.append(QKnxNetIpSrp::fromBytes(data, index));
+        index += srp.size(); // advance of total size of last read SRP
     }
     return srps;
 }
