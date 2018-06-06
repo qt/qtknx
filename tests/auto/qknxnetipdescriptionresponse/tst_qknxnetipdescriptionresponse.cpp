@@ -35,6 +35,7 @@
 #include <QtKnx/qknxnetipknxaddressesdib.h>
 #include <QtKnx/qknxnetipmanufacturerdib.h>
 #include <QtKnx/qknxnetipservicefamiliesdib.h>
+#include <QtKnx/qknxnetiptunnelinginfodib.h>
 #include <QtTest/qtest.h>
 
 static QString s_msg;
@@ -288,6 +289,22 @@ void tst_QKnxNetIpDescriptionResponse::testOptionalDibs()
 
     QCOMPARE(tmpSfDib.descriptionType(), QKnxNetIp::DescriptionType::SupportedServiceFamilies);
     QCOMPARE(tmpSfDib.serviceInfos().size(), 1);
+
+    auto tunnelInfoDib = QKnxNetIpTunnelingInfoDibProxy::builder()
+        .setMaximumInterfaceApduLength(0x1000)
+        .setTunnelingSlotInfos({ { { QKnxAddress::Type::Individual, 1976 },
+            QKnxNetIpTunnelingSlotInfo::Available } })
+        .create();
+
+    builder.setOptionalDibs({ configDib, currentConfigDib, knxAddressDib, tunnelInfoDib,
+        manufacturerDib, sfDib });
+    frame = builder.create();
+
+    optionalDibs = descriptionResponse.optionalDibs();
+    QCOMPARE(descriptionResponse.optionalDibs().count(), 5);
+
+    for (const auto &dib : qAsConst(optionalDibs))
+        QVERIFY2(dib.code() != QKnxNetIp::DescriptionType::TunnelingInfo, "tunneling info illegal");
 }
 
 void tst_QKnxNetIpDescriptionResponse::testDebugStream()

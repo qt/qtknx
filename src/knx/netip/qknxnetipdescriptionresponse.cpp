@@ -216,11 +216,22 @@ QKnxNetIpDescriptionResponseProxy::Builder &
 /*!
     Sets the optional KNXnet/IP server device information block (DIB) structure
     to \a dibs and returns a reference to the builder.
+
+    \note \l {QKnxNetIpTunnelingInfoDibProxy}{KNXnet/IP tunneling information
+    DIB} structures are only allowed in extended description response frames.
+    The function therefore removes these structures from the vector of \a dibs
+    before adding them to default description response frame.
 */
 QKnxNetIpDescriptionResponseProxy::Builder &
     QKnxNetIpDescriptionResponseProxy::Builder::setOptionalDibs(const QVector<QKnxNetIpDib> &dibs)
 {
     m_optionalDibs = dibs;
+
+    m_optionalDibs.erase(std::remove_if(m_optionalDibs.begin(), m_optionalDibs.end(),
+        [](const QKnxNetIpDib &dib) {
+            return dib.code() == QKnxNetIp::DescriptionType::TunnelingInfo;
+    }), m_optionalDibs.end());
+
     return *this;
 }
 
