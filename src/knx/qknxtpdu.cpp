@@ -546,7 +546,7 @@ QKnxByteArray QKnxTpdu::data() const
     case ApplicationControlField::GroupValueWrite:
         if (size() > 2)
             break;
-
+        Q_FALLTHROUGH();
     case ApplicationControlField::AdcRead:
     case ApplicationControlField::AdcResponse:
     case ApplicationControlField::MemoryRead:
@@ -556,6 +556,7 @@ QKnxByteArray QKnxTpdu::data() const
     case ApplicationControlField::DeviceDescriptorResponse:
     case ApplicationControlField::Restart: // 6 bits from an optimized TPDU
         dataApci = QKnxUtils::QUint8::bytes(quint8(d_ptr->byte(1) & 0x3f));
+        Q_FALLTHROUGH();
     default:
         break;
     }
@@ -599,7 +600,7 @@ void QKnxTpdu::setData(const QKnxByteArray &data)
     case ApplicationControlField::GroupValueWrite:
         if (data.size() > 1 || quint8(data.at(0)) > 0x3f)
             break;
-
+        Q_FALLTHROUGH();
     case ApplicationControlField::AdcRead:
     case ApplicationControlField::AdcResponse:
     case ApplicationControlField::MemoryRead:
@@ -609,8 +610,8 @@ void QKnxTpdu::setData(const QKnxByteArray &data)
     case ApplicationControlField::DeviceDescriptorResponse:
     case ApplicationControlField::Restart:
         d_ptr->setByte(1, apciBytes.at(1) | quint8(data.at(0)));
-        remainingData = data.mid(1); Q_FALLTHROUGH();
-
+        remainingData = data.mid(1);
+        Q_FALLTHROUGH();
     default:
         break;
     }
