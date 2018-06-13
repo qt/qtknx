@@ -137,6 +137,10 @@ bool QKnxNetIp::isStructType(QKnxNetIp::ConnectionType type)
             \l {QKnxInterfaceObjectProperty::MaxInterfaceApduLength}{maximum
             interface application protocol data unit (APDU)} length and
             tunneling slot information (individual address and connection status).
+    \value ExtendedDeviceInfo
+            Extended device information, such as the KNX medium status,
+            \l {QKnxInterfaceObjectProperty::MaxLocalApduLength}{maximum local
+            APDU} length and the device descriptor type (mask version).
     \value ManufacturerData
            A structure for further data defined by a device manufacturer.
     \value NotUsed                  This value may not be used.
@@ -157,6 +161,7 @@ bool QKnxNetIp::isStructType(QKnxNetIp::DescriptionType type)
     case QKnxNetIp::DescriptionType::CurrentIpConfiguration:
     case QKnxNetIp::DescriptionType::KnxAddresses:
     case QKnxNetIp::DescriptionType::TunnelingInfo:
+    case QKnxNetIp::DescriptionType::ExtendedDeviceInfo:
     case QKnxNetIp::DescriptionType::ManufacturerData:
         return true;
     case QKnxNetIp::DescriptionType::NotUsed:
