@@ -39,7 +39,6 @@
 QT_BEGIN_NAMESPACE
 
 class QKnxNetIpEndpointConnectionPrivate;
-
 class Q_KNX_EXPORT QKnxNetIpEndpointConnection : public QObject
 {
     Q_OBJECT

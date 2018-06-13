@@ -37,7 +37,7 @@ static void myMessageHandler(QtMsgType, const QMessageLogContext &, const QStrin
     s_msg = msg;
 }
 
-class tst_QKnxNetIpSearchResponse: public QObject
+class tst_QKnxNetIpSearchResponse : public QObject
 {
     Q_OBJECT
 
@@ -133,9 +133,9 @@ void tst_QKnxNetIpSearchResponse::testSearchResponseEndpoint()
             .setHostProtocol(QKnxNetIp::HostProtocol::TCP_IPv4)
             .setHostAddress(QHostAddress::LocalHost)
             .setPort(3671).create())
-         .setDeviceHardware(hardware)
-         .setSupportedFamilies(families)
-         .create();
+        .setDeviceHardware(hardware)
+        .setSupportedFamilies(families)
+        .create();
 
     QKnxNetIpSearchResponseProxy search(frame);
     QCOMPARE(search.isValid(), false);
@@ -174,26 +174,26 @@ void tst_QKnxNetIpSearchResponse::testDebugStream()
             .create()
         ).create();
     QCOMPARE(s_msg, QString::fromLatin1("0x06100202004808017f0000010e5736012001ffff1111123456123456"
-            "00000000bcaec56690f971742e696f204b4e582064657669636500000000000000000000000000000"
-            "402020a"));
+        "00000000bcaec56690f971742e696f204b4e582064657669636500000000000000000000000000000"
+        "402020a"));
 }
 
 void tst_QKnxNetIpSearchResponse::testSupportedFamiliesVersions()
 {
     auto endpoint = QKnxNetIpHpaiProxy::builder()
-                    .setHostAddress(QHostAddress::LocalHost)
-                    .setPort(3671)
-                    .create();
+        .setHostAddress(QHostAddress::LocalHost)
+        .setPort(3671)
+        .create();
     auto hardware = QKnxNetIpDeviceDibProxy::builder()
-                    .setMediumType(QKnx::MediumType::NetIP)
-                    .setDeviceStatus(QKnxNetIp::ProgrammingMode::Active)
-                    .setIndividualAddress(QKnxAddress::Individual::Unregistered)
-                    .setProjectInstallationId(0x1111)
-                    .setSerialNumber(QKnxByteArray::fromHex("123456123456"))
-                    .setMulticastAddress(QHostAddress::AnyIPv4)
-                    .setMacAddress(QKnxByteArray::fromHex("bcaec56690f9"))
-                    .setDeviceName(QByteArray("qt.io KNX device"))
-                    .create();
+        .setMediumType(QKnx::MediumType::NetIP)
+        .setDeviceStatus(QKnxNetIp::ProgrammingMode::Active)
+        .setIndividualAddress(QKnxAddress::Individual::Unregistered)
+        .setProjectInstallationId(0x1111)
+        .setSerialNumber(QKnxByteArray::fromHex("123456123456"))
+        .setMulticastAddress(QHostAddress::AnyIPv4)
+        .setMacAddress(QKnxByteArray::fromHex("bcaec56690f9"))
+        .setDeviceName(QByteArray("qt.io KNX device"))
+        .create();
     QVector<QKnxServiceInfo> fam = {
         { QKnxNetIp::ServiceFamily::IpTunneling, 0x04 },
         { QKnxNetIp::ServiceFamily::Core, 9 },
@@ -205,11 +205,10 @@ void tst_QKnxNetIpSearchResponse::testSupportedFamiliesVersions()
         { QKnxNetIp::ServiceFamily::Security, 1 }
     };
 
-
     {   // test that a supported service families dib with security service
         // family is not valid in a search response
         auto families = QKnxNetIpServiceFamiliesDibProxy::builder()
-                        .setServiceInfos(fam).create();
+            .setServiceInfos(fam).create();
         auto frame = QKnxNetIpSearchResponseProxy::builder()
             .setControlEndpoint(endpoint)
             .setDeviceHardware(hardware)
@@ -221,20 +220,20 @@ void tst_QKnxNetIpSearchResponse::testSupportedFamiliesVersions()
         QVERIFY(!extractedFamilies.isValid());
         QCOMPARE(extractedFamilies.size(), 0);
     }
+
     {   // test that a supported service families dib without service family is
         // valid in a search response
         QCOMPARE(8, fam.size());
-        fam.erase(std::remove_if(fam.begin(), fam.end(),
-            [] (const QKnxServiceInfo &info) {
-                return info.ServiceFamily == QKnxNetIp::ServiceFamily::Security;
+        fam.erase(std::remove_if(fam.begin(), fam.end(), [](const QKnxServiceInfo &info) {
+            return info.ServiceFamily == QKnxNetIp::ServiceFamily::Security;
         }), fam.end());
         auto families = QKnxNetIpServiceFamiliesDibProxy::builder()
-                        .setServiceInfos(fam).create();
+            .setServiceInfos(fam).create();
         auto frame = QKnxNetIpSearchResponseProxy::builder()
-                     .setControlEndpoint(endpoint)
-                     .setDeviceHardware(hardware)
-                     .setSupportedFamilies(families)
-                     .create();
+            .setControlEndpoint(endpoint)
+            .setDeviceHardware(hardware)
+            .setSupportedFamilies(families)
+            .create();
         QKnxNetIpSearchResponseProxy searchResponse(frame);
         auto dibFamilies = searchResponse.supportedFamilies();
         QVERIFY(dibFamilies.isValid());

@@ -607,7 +607,6 @@ void QZipReaderPrivate::scanFiles()
         qWarning("QZip: failed to parse zip file.");
     comment = device->read(qMin(comment_length, i));
 
-
     device->seek(start_of_directory);
     for (i = 0; i < num_dir_entries; ++i) {
         FileHeader header;
@@ -746,7 +745,6 @@ void QZipWriterPrivate::addEntry(EntryType type, const QString &fileName, const 
     }
     writeUInt(header.h.external_file_attributes, mode << 16);
     writeUInt(header.h.offset_local_header, start_of_directory);
-
 
     fileHeaders.append(header);
 

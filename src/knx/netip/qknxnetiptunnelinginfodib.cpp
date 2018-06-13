@@ -530,5 +530,4 @@ QKnxNetIpTunnelingInfoDibProxy::Builder &
     return *this;
 }
 
-
 QT_END_NAMESPACE

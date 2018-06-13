@@ -395,7 +395,6 @@ void tst_QKnxDatapointType::dpt6_StatusMode3()
     QCOMPARE(dpt.isSet(QKnxStatusMode3::Status::D), false);
     QCOMPARE(dpt.isSet(QKnxStatusMode3::Status::E), false);
 
-
     QCOMPARE(dpt.setMode(QKnxStatusMode3::Mode::Unknown), false);
     QCOMPARE(dpt.mode(), QKnxStatusMode3::Mode::Unknown);
     QCOMPARE(dpt.setMode(QKnxStatusMode3::Mode::One), true);

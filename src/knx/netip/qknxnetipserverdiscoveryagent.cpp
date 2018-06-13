@@ -140,8 +140,6 @@ QT_BEGIN_NAMESPACE
     \a state.
 */
 
-// -- QKnxNetIpServerDiscoveryAgentPrivate
-
 QKnxNetIpServerDiscoveryAgentPrivate::QKnxNetIpServerDiscoveryAgentPrivate(const QHostAddress &addr,
         quint16 prt)
     : port(prt)
@@ -302,7 +300,7 @@ void QKnxNetIpServerDiscoveryAgentPrivate::setupAndStartFrequencyTimer()
         frequencyTimer->setSingleShot(false);
         frequencyTimer->start(60000 / frequency);
 
-        QObject::connect(receiveTimer, &QTimer::timeout, [&] () {
+        QObject::connect(receiveTimer, &QTimer::timeout, [&]() {
             Q_Q(QKnxNetIpServerDiscoveryAgent);
             if (q->state() == QKnxNetIpServerDiscoveryAgent::State::Running) {
                 servers.clear();

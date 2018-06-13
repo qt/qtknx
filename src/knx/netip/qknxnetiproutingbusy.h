@@ -68,7 +68,8 @@ public:
     static QKnxNetIpRoutingBusyProxy::Builder builder();
 
 private:
-    const QKnxNetIpFrame &m_frame;};
+    const QKnxNetIpFrame &m_frame;
+};
 
 QT_END_NAMESPACE
 

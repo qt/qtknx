@@ -58,8 +58,6 @@
 QT_BEGIN_NAMESPACE
 
 class QZipWriterPrivate;
-
-
 class Q_KNX_EXPORT QZipWriter
 {
 public:

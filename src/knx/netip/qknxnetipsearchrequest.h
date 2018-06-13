@@ -63,12 +63,14 @@ public:
     private:
         QKnxNetIpHpai m_hpai;
     };
+    static QKnxNetIpSearchRequestProxy::Builder builder();
 
     class Q_KNX_EXPORT ExtendedBuilder final
     {
     public:
         ExtendedBuilder();
         ~ExtendedBuilder();
+
         ExtendedBuilder &setDiscoveryEndpoint(const QKnxNetIpHpai &hpai);
         ExtendedBuilder &setExtendedParameters(const QVector<QKnxNetIpSrp> &srps);
 
@@ -76,12 +78,11 @@ public:
 
         ExtendedBuilder(const ExtendedBuilder &other);
         ExtendedBuilder &operator=(const ExtendedBuilder &other);
+
     private:
         class ExtendedBuilderPrivate;
         QSharedDataPointer<ExtendedBuilderPrivate> d_ptr;
     };
-
-    static QKnxNetIpSearchRequestProxy::Builder builder();
 
 private:
     const QKnxNetIpFrame &m_frame;

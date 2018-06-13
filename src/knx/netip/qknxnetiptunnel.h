@@ -38,7 +38,6 @@
 QT_BEGIN_NAMESPACE
 
 class QKnxNetIpTunnelPrivate;
-
 class Q_KNX_EXPORT QKnxNetIpTunnel final : public QKnxNetIpEndpointConnection
 {
     Q_OBJECT

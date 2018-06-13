@@ -39,7 +39,6 @@
 QT_BEGIN_NAMESPACE
 
 class QKnxNetIpServerDescriptionAgentPrivate;
-
 class Q_KNX_EXPORT QKnxNetIpServerDescriptionAgent final : public QObject
 {
     Q_OBJECT

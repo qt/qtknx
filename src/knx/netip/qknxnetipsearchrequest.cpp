@@ -344,14 +344,15 @@ QKnxNetIpFrame QKnxNetIpSearchRequestProxy::ExtendedBuilder::create() const
 /*!
     Constructs a copy of \a other.
 */
-QKnxNetIpSearchRequestProxy::ExtendedBuilder::ExtendedBuilder(const QKnxNetIpSearchRequestProxy::ExtendedBuilder &other)
+QKnxNetIpSearchRequestProxy::ExtendedBuilder::ExtendedBuilder(const ExtendedBuilder &other)
     : d_ptr(other.d_ptr)
 {}
 
 /*!
     Assigns \a other to this builder.
 */
-QKnxNetIpSearchRequestProxy::ExtendedBuilder &QKnxNetIpSearchRequestProxy::ExtendedBuilder::operator=(const QKnxNetIpSearchRequestProxy::ExtendedBuilder &other)
+QKnxNetIpSearchRequestProxy::ExtendedBuilder &
+    QKnxNetIpSearchRequestProxy::ExtendedBuilder::operator=(const ExtendedBuilder &other)
 {
     d_ptr = other.d_ptr;
     return *this;
