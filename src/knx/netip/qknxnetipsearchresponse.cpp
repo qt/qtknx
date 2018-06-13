@@ -27,6 +27,7 @@
 **
 ******************************************************************************/
 
+#include "qknxbuilderdata_p.h"
 #include "qknxnetipsearchresponse.h"
 
 QT_BEGIN_NAMESPACE
@@ -114,7 +115,15 @@ QKnxNetIpHpai QKnxNetIpSearchResponseProxy::controlEndpoint() const
 */
 QKnxNetIpDib QKnxNetIpSearchResponseProxy::deviceHardware() const
 {
-    return QKnxNetIpDib::fromBytes(m_frame.constData(), 8);
+    if (!isExtended())
+        return QKnxNetIpDib::fromBytes(m_frame.constData(), 8);
+
+    const auto variable = variableDibs();
+    for (const auto &dib : variable) {
+        if (dib.code() == QKnxNetIp::DescriptionType::DeviceInfo)
+            return dib;
+    }
+    return {};
 }
 
 /*!
@@ -128,7 +137,64 @@ QKnxNetIpDib QKnxNetIpSearchResponseProxy::deviceHardware() const
 */
 QKnxNetIpDib QKnxNetIpSearchResponseProxy::supportedFamilies() const
 {
-    return QKnxNetIpDib::fromBytes(m_frame.constData(), 62);
+    if (!isExtended())
+        return QKnxNetIpDib::fromBytes(m_frame.constData(), 62);
+
+    const auto variable = variableDibs();
+    for (const auto &dib : variable) {
+        if (dib.code() == QKnxNetIp::DescriptionType::SupportedServiceFamilies)
+            return dib;
+    }
+    return {};
+}
+
+/*!
+    Returns the vector of optional KNXnet/IP server device information block
+    (DIB) structures of the extended search response frame. The function
+    therefor will remove the mandatory device hardware and service family DIB.
+
+    The vector can be empty if no optional structures are present or in
+    case of an error while extracting the optional DIBs.
+
+    \note The function does not perform validity checks on the
+    \l QKnxNetIpFrame used to create the description response proxy object.
+*/
+QVector<QKnxNetIpDib> QKnxNetIpSearchResponseProxy::optionalDibs() const
+{
+    auto variable = variableDibs();
+    variable.erase(std::remove_if(variable.begin(), variable.end(), [](const QKnxNetIpDib &dib) {
+        return (dib.code() == QKnxNetIp::DescriptionType::DeviceInfo)
+            || (dib.code() == QKnxNetIp::DescriptionType::SupportedServiceFamilies);
+    }), variable.end());
+    return variable;
+}
+
+/*!
+    Returns the vector of KNXnet/IP server device information blocks (DIBs)
+    structure of the extended search response frame. The vector can be empty
+    if no such structures are present or in case of an error while extracting
+    the optional DIBs.
+
+    \note The function does not perform validity checks on the
+    \l QKnxNetIpFrame used to create the description response proxy object.
+*/
+QVector<QKnxNetIpDib> QKnxNetIpSearchResponseProxy::variableDibs() const
+{
+    if (!isExtended())
+         return {};
+
+    const auto &data = m_frame.constData();
+    quint16 index = 8;
+
+    QVector<QKnxNetIpDib> dibs;
+    while (index < data.size()) {
+        auto dib = QKnxNetIpDib::fromBytes(data, index);
+        if (!dib.isValid())
+            return {};
+        dibs.append(dib);
+        index += dib.size(); // advance of total size of last read DIB
+    }
+    return dibs;
 }
 
 /*!
@@ -141,8 +207,20 @@ QKnxNetIpDib QKnxNetIpSearchResponseProxy::supportedFamilies() const
 */
 bool QKnxNetIpSearchResponseProxy::isValid() const
 {
-    return m_frame.isValid() && m_frame.serviceType() == QKnxNetIp::ServiceType::SearchResponse
-        && m_frame.size() >= 70 && controlEndpoint().code() == QKnxNetIp::HostProtocol::UDP_IPv4;
+    const auto serviceType = m_frame.serviceType();
+    return m_frame.isValid() && m_frame.size() >= 70 && (m_frame.size() % 2 == 0)
+        && (serviceType == QKnxNetIp::ServiceType::SearchResponse
+            || serviceType == QKnxNetIp::ServiceType::ExtendedSearchResponse)
+        && controlEndpoint().code() == QKnxNetIp::HostProtocol::UDP_IPv4;
+}
+
+/*!
+    Returns \c true if the frame service type is an extended search response,
+    otherwise returns \c false.
+*/
+bool QKnxNetIpSearchResponseProxy::isExtended() const
+{
+    return (m_frame.serviceType() == QKnxNetIp::ServiceType::ExtendedSearchResponse);
 }
 
 /*!
@@ -151,6 +229,15 @@ bool QKnxNetIpSearchResponseProxy::isValid() const
 QKnxNetIpSearchResponseProxy::Builder QKnxNetIpSearchResponseProxy::builder()
 {
     return QKnxNetIpSearchResponseProxy::Builder();
+}
+
+/*!
+    Returns a builder object to create a KNXnet/IP extended search response
+    frame.
+*/
+QKnxNetIpSearchResponseProxy::ExtendedBuilder QKnxNetIpSearchResponseProxy::extendedBuilder()
+{
+    return QKnxNetIpSearchResponseProxy::ExtendedBuilder();
 }
 
 
@@ -186,7 +273,8 @@ QKnxNetIpSearchResponseProxy::Builder QKnxNetIpSearchResponseProxy::builder()
             .create();
     \endcode
 
-    \sa QKnxNetIpHpaiProxy::builder(), QKnxNetIpServiceFamiliesDibProxy::builder(), QKnxNetIpDeviceDibProxy::builder()
+    \sa QKnxNetIpHpaiProxy::builder(), QKnxNetIpServiceFamiliesDibProxy::builder(),
+    QKnxNetIpDeviceDibProxy::builder()
 
     Typically, after discovering a KNXnet/IP server, the KNXnet/IP client sends
     a description request, \l QKnxNetIpDescriptionRequestProxy, through a
@@ -253,6 +341,161 @@ QKnxNetIpFrame QKnxNetIpSearchResponseProxy::Builder::create() const
 {
     return { QKnxNetIp::ServiceType::SearchResponse, m_hpai.bytes() + m_ddib.bytes() + m_sdib
         .bytes() };
+}
+/*!
+    \class QKnxNetIpSearchResponseProxy::ExtendedBuilder
+
+    \inmodule QtKnx
+    \ingroup qtknx-netip
+    \inheaderfile QKnxNetIpSearchResponseProxy
+
+    \brief The QKnxNetIpSearchResponseProxy::ExtendedBuilder class provides
+    the means to create a KNXnet/IP extended search response.
+
+    The KNXnet/IP server sends the extended search response frame as an
+    answer to a received extended search request frame. It is addressed
+    to the KNXnet/IP client’s discovery endpoint using the host address
+    protocol information (HPAI) included in the received extended search
+    request frame. The HPAI of the KNXnet/IP server’s own control endpoint
+    is carried in the KNXnet/IP body of the extended search response frame
+    along with the description of the device hardware and the supported service
+    families. If the KNXnet/IP server supports more than one KNX connection,
+    the KNXnet/IP server announces each of its own control endpoints in
+    a single extended search response frame. KNXnet/IP servers supporting
+    TCP only report the UDP address of their control endpoint in the
+    extended search response frame. The KNXnet/IP server reports the
+    data information blocks (DIBs) in the response in any order. Each DIB
+    is present only once in the response.
+
+    The common way to create an extended search response is:
+
+    \code
+        QKnxNetIpHpai controlEndpoint;
+        QKnxNetIpDib deviceHardware, supportedFamillies;
+
+        QSet<QKnxNetIpDib> optDibs = ...;
+
+        auto netIpFrame = QKnxNetIpSearchResponseProxy::extendedBuilder()
+            .setControlEndpoint(controlEndpoint)
+            .setSupportedFamilies(deviceHardware)
+            .setDeviceHardware(supportedFamillies)
+            .setOptionalDibs(optDibs)
+            .create();
+    \endcode
+
+
+    \sa QKnxNetIpSearchResponseProxy::Builder, QKnxNetIpHpaiProxy::Builder,
+    QKnxNetIpDeviceDibProxy::Builder, QKnxNetIpServiceFamiliesDibProxy::Builder
+*/
+
+/*!
+    Creates an extended search response builder.
+*/
+QKnxNetIpSearchResponseProxy::ExtendedBuilder::ExtendedBuilder()
+    : d_ptr(new QKnxNetIpSearchResponseExtendedBuilderPrivate)
+{}
+
+/*!
+    Destroys an extended search response builder.
+*/
+QKnxNetIpSearchResponseProxy::ExtendedBuilder::~ExtendedBuilder() = default;
+
+/*!
+    Sets the control endpoint of the KNXnet/IP client to \a hpai and returns a
+    reference to the builder.
+*/
+QKnxNetIpSearchResponseProxy::ExtendedBuilder &
+    QKnxNetIpSearchResponseProxy::ExtendedBuilder::setControlEndpoint(const QKnxNetIpHpai &hpai)
+{
+    d_ptr->m_hpai = hpai;
+    return *this;
+}
+
+/*!
+    Sets the device hardware device information block (DIB) and returns a
+    reference to the builder.
+*/
+QKnxNetIpSearchResponseProxy::ExtendedBuilder &
+    QKnxNetIpSearchResponseProxy::ExtendedBuilder::setDeviceHardware(const QKnxNetIpDib &ddib)
+{
+    if (QKnxNetIpDeviceDibProxy(ddib).isValid())
+        d_ptr->m_hardware = ddib;
+    return *this;
+}
+
+/*!
+    Sets the supported families information block (DIB) and returns a
+    reference to the builder.
+*/
+QKnxNetIpSearchResponseProxy::ExtendedBuilder &
+    QKnxNetIpSearchResponseProxy::ExtendedBuilder::setSupportedFamilies(const QKnxNetIpDib &sdib)
+{
+    if (QKnxNetIpServiceFamiliesDibProxy(sdib).isValid())
+        d_ptr->m_supFamilies = sdib;
+    return *this;
+}
+
+/*!
+    Sets the optional KNXnet/IP server device information block (DIB) structure
+    to \a dibs and returns a reference to the builder.
+
+    \note The device information blocks \a dibs argument may not contain the
+    mandatory device hardware DIB and supported families DIB.
+    To set the mandatory DIBs use the dedicated setter functions instead.
+
+    \sa setDeviceHardware(), setSupportedFamilies()
+*/
+QKnxNetIpSearchResponseProxy::ExtendedBuilder &
+    QKnxNetIpSearchResponseProxy::ExtendedBuilder::setOptionalDibs(const QSet<QKnxNetIpDib> &dibs)
+{
+    d_ptr->m_optionalDibs = dibs;
+    return *this;
+}
+
+/*!
+    Creates and returns a KNXnet/IP extended search response frame.
+
+    \note The returned frame may be invalid depending on the values used
+    during setup. For the frame to be valid, at least a device hardware
+    information block (DIB) and a supported families DIB must be set in the
+    builder.
+
+    \sa isValid()
+*/
+QKnxNetIpFrame QKnxNetIpSearchResponseProxy::ExtendedBuilder::create() const
+{
+    if (!(QKnxNetIpDeviceDibProxy(d_ptr->m_hardware).isValid()
+        && QKnxNetIpServiceFamiliesDibProxy(d_ptr->m_supFamilies).isValid())) {
+            return { QKnxNetIp::ServiceType::ExtendedSearchResponse };
+    }
+    auto dibsBytes = d_ptr->m_hpai.bytes();
+    dibsBytes += d_ptr->m_hardware.bytes();
+    dibsBytes += d_ptr->m_supFamilies.bytes();
+
+    for (auto &dib : d_ptr->m_optionalDibs) {
+        if (dib.code() != QKnxNetIp::DescriptionType::DeviceInfo
+            && dib.code() != QKnxNetIp::DescriptionType::SupportedServiceFamilies) {
+                dibsBytes += dib.bytes();
+        }
+    }
+    return { QKnxNetIp::ServiceType::ExtendedSearchResponse, dibsBytes };
+}
+
+/*!
+    Constructs a copy of \a other.
+*/
+QKnxNetIpSearchResponseProxy::ExtendedBuilder::ExtendedBuilder(const ExtendedBuilder &other)
+    : d_ptr(other.d_ptr)
+{}
+
+/*!
+    Assigns \a other to this builder.
+*/
+QKnxNetIpSearchResponseProxy::ExtendedBuilder &
+    QKnxNetIpSearchResponseProxy::ExtendedBuilder::operator=(const ExtendedBuilder &other)
+{
+    d_ptr = other.d_ptr;
+    return *this;
 }
 
 QT_END_NAMESPACE

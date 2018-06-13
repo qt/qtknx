@@ -255,6 +255,9 @@ bool QKnxNetIp::isServiceFamily(QKnxNetIp::ServiceFamily family)
     \value SearchRequestExtended
            The service type sent by a KNXnet/IP device during the discovery phase
            looking for any listening KNXnet/IP servers or for a specific one.
+    \value ExtendedSearchResponse
+           The service type sent by a KNXnet/IP device in response to an extended
+           search request.
     \value DeviceConfigurationRequest
            The service type sent to read or write KNXnet/IP device configuration
            data.
@@ -310,6 +313,7 @@ bool QKnxNetIp::isServiceType(QKnxNetIp::ServiceType type)
     case QKnxNetIp::ServiceType::DisconnectRequest:
     case QKnxNetIp::ServiceType::DisconnectResponse:
     case QKnxNetIp::ServiceType::SearchRequestExtended:
+    case QKnxNetIp::ServiceType::ExtendedSearchResponse:
     case QKnxNetIp::ServiceType::DeviceConfigurationRequest:
     case QKnxNetIp::ServiceType::DeviceConfigurationAcknowledge:
     case QKnxNetIp::ServiceType::TunnelingRequest:

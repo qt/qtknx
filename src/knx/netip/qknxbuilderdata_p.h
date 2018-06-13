@@ -98,6 +98,18 @@ public:
     QVector<QKnxNetIpSrp> m_srps;
 };
 
+class QKnxNetIpSearchResponseExtendedBuilderPrivate : public QSharedData
+{
+public:
+    QKnxNetIpSearchResponseExtendedBuilderPrivate() = default;
+    ~QKnxNetIpSearchResponseExtendedBuilderPrivate() = default;
+
+    QKnxNetIpHpai m_hpai = { QKnxNetIp::HostProtocol::Unknown};
+    QSet<QKnxNetIpDib> m_optionalDibs;
+    QKnxNetIpDib m_hardware;
+    QKnxNetIpDib m_supFamilies;
+};
+
 QT_END_NAMESPACE
 
 #endif
