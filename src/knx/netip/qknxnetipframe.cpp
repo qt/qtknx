@@ -125,7 +125,8 @@ bool QKnxNetIpFrame::isValid() const
     if (isNull())
         return false;
 
-    auto connHeaderValid = d_ptr->m_connectionHeader.isNull();
+    const auto &connectionHeader = d_ptr->m_connectionHeader;
+    auto connHeaderValid = connectionHeader.isNull();
     switch (serviceType()) {
         case QKnxNetIp::ServiceType::TunnelingRequest:
         case QKnxNetIp::ServiceType::TunnelingAcknowledge:
@@ -135,15 +136,17 @@ bool QKnxNetIpFrame::isValid() const
         case QKnxNetIp::ServiceType::TunnelingFeatureResponse:
         case QKnxNetIp::ServiceType::DeviceConfigurationRequest:
         case QKnxNetIp::ServiceType::DeviceConfigurationAcknowledge:
-            connHeaderValid = d_ptr->m_connectionHeader.isValid();
+            connHeaderValid = connectionHeader.isValid();
             break;
         default:
             break;
     }
-    auto size = d_ptr->m_header.size() + d_ptr->m_connectionHeader.size() + d_ptr->m_data.size();
 
-    return d_ptr->m_header.isValid() && connHeaderValid && d_ptr->m_header.totalSize() == size
-        && d_ptr->m_header.dataSize() == (d_ptr->m_data.size() + d_ptr->m_connectionHeader.size());
+    const auto &header = d_ptr->m_header;
+    auto size = header.size() + connectionHeader.size() + d_ptr->m_data.size();
+
+    return header.isValid() && connHeaderValid && header.totalSize() == size
+        && header.dataSize() == (d_ptr->m_data.size() + connectionHeader.size());
 }
 
 /*!

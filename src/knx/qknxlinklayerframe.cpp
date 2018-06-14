@@ -188,7 +188,8 @@ bool QKnxLinkLayerFrame::isValid() const
     if (!isMessageCodeValid())
         return false;
 
-    if (!d_ptr->m_tpdu.isValid())
+    const auto &tpdu = d_ptr->m_tpdu;
+    if (!tpdu.isValid())
         return false;
 
     // For the moment we only check for netIp Tunnel
@@ -213,8 +214,8 @@ bool QKnxLinkLayerFrame::isValid() const
             break;
         }
 
-        if (d_ptr->m_tpdu.dataSize() > 15) {
-            if (d_ptr->m_tpdu.dataSize() > 255)
+        if (tpdu.dataSize() > 15) {
+            if (tpdu.dataSize() > 255)
                 return false;
             // Low Priority is mandatory for long frame 3.3.2 paragraph 2.2.3
             if (d_ptr->m_ctrl.priority() != QKnxControlField::Priority::Low)
@@ -530,10 +531,11 @@ QVector<QKnxAdditionalInfo> QKnxLinkLayerFrame::additionalInfos() const
 */
 void QKnxLinkLayerFrame::removeAdditionalInfo(QKnxAdditionalInfo::Type type)
 {
-    auto info = d_ptr->m_additionalInfos.begin();
-    while (info != d_ptr->m_additionalInfos.end()) {
+    auto &infos = d_ptr->m_additionalInfos;
+    auto info = infos.begin();
+    while (info != infos.end()) {
         if (info->type() == type) {
-            d_ptr->m_additionalInfos.erase(info);
+            infos.erase(info);
             d_ptr->m_additionalInfoSize -= info->size();
             break;
         }
