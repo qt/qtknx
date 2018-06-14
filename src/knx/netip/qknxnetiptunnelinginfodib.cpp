@@ -275,6 +275,9 @@ bool QKnxNetIpTunnelingSlotInfo::operator!=(const QKnxNetIpTunnelingSlotInfo &ot
     the individual addresses used for the connection once it has been
     established and whether the connection slot is available at all.
 
+    In most programs, this class will not be used directly. Instead, the
+    \l QKnxNetIpServerDiscoveryAgent and \l QKnxNetIpServerInfo are provided.
+
     \note When using QKnxNetIpTunnelingInfoDibProxy, care must be taken to
     ensure that the referenced KNXnet/IP DIB structure outlives the view on all
     code paths, lest the view ends up referencing deleted data.
