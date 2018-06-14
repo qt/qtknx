@@ -47,12 +47,20 @@ public:
     explicit QKnxNetIpRoutingIndicationProxy(const QKnxNetIpFrame &frame);
 
     bool isValid() const;
-    QKnxLinkLayerFrame linkLayerFrame() const;
+
+    QKnxLinkLayerFrame cemi() const;
+#if QT_DEPRECATED_SINCE(5, 12)
+    QT_DEPRECATED QKnxLinkLayerFrame linkLayerFrame() const;
+#endif
 
     class Q_KNX_EXPORT Builder final
     {
     public:
-        Builder &setLinkLayerFrame(const QKnxLinkLayerFrame &llf);
+        Builder &setCemi(const QKnxLinkLayerFrame &cemi);
+#if QT_DEPRECATED_SINCE(5, 12)
+        QT_DEPRECATED Builder &setLinkLayerFrame(const QKnxLinkLayerFrame &llf);
+#endif
+
         QKnxNetIpFrame create() const;
 
     private:

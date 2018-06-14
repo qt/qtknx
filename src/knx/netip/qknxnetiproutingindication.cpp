@@ -85,15 +85,27 @@ QKnxNetIpRoutingIndicationProxy::QKnxNetIpRoutingIndicationProxy(const QKnxNetIp
 {}
 
 /*!
-    Returns the link layer frame within the routing indication frame.
+    \since 5.12
+
+    Returns the cEMI frame within the routing indication frame.
 */
-QKnxLinkLayerFrame QKnxNetIpRoutingIndicationProxy::linkLayerFrame() const
+QKnxLinkLayerFrame QKnxNetIpRoutingIndicationProxy::cemi() const
 {
     return QKnxLinkLayerFrame::builder()
         .setMedium(QKnx::MediumType::NetIP)
         .setData(m_frame.constData())
         .createFrame();
 }
+
+#if QT_DEPRECATED_SINCE(5, 12)
+/*!
+    \deprecated
+*/
+QKnxLinkLayerFrame QKnxNetIpRoutingIndicationProxy::linkLayerFrame() const
+{
+    return cemi();
+}
+#endif
 
 /*!
     Returns \c true if the frame contains initialized values and is in itself
@@ -147,15 +159,28 @@ QKnxNetIpRoutingIndicationProxy::Builder QKnxNetIpRoutingIndicationProxy::builde
 */
 
 /*!
-    Sets the link layer frame within the routing indication frame to \a llf and
+    \since 5.12
+
+    Sets the cEMI frame within the routing indication frame to \a cemi and
     returns a reference to the builder.
+*/
+QKnxNetIpRoutingIndicationProxy::Builder &
+    QKnxNetIpRoutingIndicationProxy::Builder::setCemi(const QKnxLinkLayerFrame &cemi)
+{
+    m_llf = cemi;
+    return *this;
+}
+
+#if QT_DEPRECATED_SINCE(5, 12)
+/*!
+    \deprecated
 */
 QKnxNetIpRoutingIndicationProxy::Builder &
     QKnxNetIpRoutingIndicationProxy::Builder::setLinkLayerFrame(const QKnxLinkLayerFrame &llf)
 {
-    m_llf = llf;
-    return *this;
+    return setCemi(llf);
 }
+#endif
 
 /*!
     Creates and returns a KNXnet/IP routing indication frame.
