@@ -315,7 +315,7 @@ bool QKnxNetIpTunnelingSlotInfo::operator!=(const QKnxNetIpTunnelingSlotInfo &ot
 */
 
 /*!
-    Constructs a proxy object with the specified a KNXnet/IP DIB structure
+    Constructs a proxy object with the specified KNXnet/IP DIB structure
     \a dib to read the maximum APDU length and tunneling slot information.
 */
 QKnxNetIpTunnelingInfoDibProxy::QKnxNetIpTunnelingInfoDibProxy(const QKnxNetIpDib &dib)

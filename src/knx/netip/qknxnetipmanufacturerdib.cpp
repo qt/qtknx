@@ -79,7 +79,7 @@ QT_BEGIN_NAMESPACE
 */
 
 /*!
-    Constructs a proxy object with the specified a KNXnet/IP DIB structure
+    Constructs a proxy object with the specified KNXnet/IP DIB structure
     \a dib to read a manufacturer specific device information block.
 */
 QKnxNetIpManufacturerDibProxy::QKnxNetIpManufacturerDibProxy(const QKnxNetIpDib &dib)
