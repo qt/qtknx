@@ -69,11 +69,12 @@ struct Q_KNX_EXPORT QKnxDatapointTypePrivate : public QSharedData
     static bool toType(quint16 main, quint16 sub, quint32 *type) {
         return toType(QString::number(main), QString::number(sub), type);
     }
-    static bool toType(const QString &main, const QString &sub, quint32 *type) {
-        bool ok = true;
+    static bool toType(const QString &main, const QString &sub, quint32 *type)
+    {
         if (main.isEmpty() || sub.isEmpty())
-            return !ok;
+            return false;
 
+        bool ok = true;
         *type = QString(main.rightJustified(5, QLatin1Char('0')) + sub
             .rightJustified(5, QLatin1Char('0'))).toUInt(&ok);
         return ok;
