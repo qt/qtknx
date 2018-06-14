@@ -594,7 +594,7 @@ void tst_QKnxTpduFactory::testFunctionPropertyCommand()
 
     //connection oriented
     quint8 sequenceNumber = 2;
-    tpdu = tpdu = QKnxTpduFactory::PointToPoint::createFunctionPropertyCommandTpdu(
+    tpdu = QKnxTpduFactory::PointToPoint::createFunctionPropertyCommandTpdu(
         QKnxTpduFactory::PointToPoint::Mode::ConnectionOriented, 0,
         QKnxInterfaceObjectProperty::Device::ErrorFlags, data, sequenceNumber);
 
@@ -618,7 +618,7 @@ void tst_QKnxTpduFactory::testFunctionPropertyStateRead()
 
     //connection oriented
     quint8 sequenceNumber = 2;
-    tpdu = tpdu = QKnxTpduFactory::PointToPoint::createFunctionPropertyStateReadTpdu(
+    tpdu = QKnxTpduFactory::PointToPoint::createFunctionPropertyStateReadTpdu(
         QKnxTpduFactory::PointToPoint::Mode::ConnectionOriented, 0,
         QKnxInterfaceObjectProperty::Device::ErrorFlags, data, sequenceNumber);
 
@@ -639,7 +639,7 @@ void tst_QKnxTpduFactory::testLinkRead()
 
     //connection oriented
     quint8 sequenceNumber = 2;
-    tpdu = tpdu = QKnxTpduFactory::PointToPoint::createLinkReadTpdu(
+    tpdu = QKnxTpduFactory::PointToPoint::createLinkReadTpdu(
         QKnxTpduFactory::PointToPoint::Mode::ConnectionOriented, 0, 1, sequenceNumber);
 
     QCOMPARE(tpdu.size(), quint16(4));
@@ -671,7 +671,7 @@ void tst_QKnxTpduFactory::testLinkWrite()
 
     //connection oriented
     quint8 sequenceNumber = 2;
-    tpdu = tpdu = QKnxTpduFactory::PointToPoint::createLinkWriteTpdu(
+    tpdu = QKnxTpduFactory::PointToPoint::createLinkWriteTpdu(
         QKnxTpduFactory::PointToPoint::Mode::ConnectionOriented, 0,
         QKnxTpdu::LinkWriteFlags::AddGroupAddress, groupAddress, sequenceNumber);
 
@@ -704,7 +704,7 @@ void tst_QKnxTpduFactory::testDeviceDescriptorRead()
 
     //connection oriented
     quint8 sequenceNumber = 2;
-    tpdu = tpdu = QKnxTpduFactory::PointToPoint::createDeviceDescriptorReadTpdu(QKnxTpduFactory
+    tpdu = QKnxTpduFactory::PointToPoint::createDeviceDescriptorReadTpdu(QKnxTpduFactory
         ::PointToPoint::Mode::ConnectionOriented, 0, sequenceNumber);
 
     QCOMPARE(tpdu.size(), quint16(2));
