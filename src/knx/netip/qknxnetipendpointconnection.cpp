@@ -364,8 +364,8 @@ void QKnxNetIpEndpointConnectionPrivate::processTunnelingRequest(const QKnxNetIp
     qDebug() << "Received tunneling request:" << frame;
 
     if (frame.channelId() == m_channelId) {
-        if (bool counterEquals = (frame.sequenceNumber() == m_receiveCount)
-            || (frame.sequenceNumber() + 1 == m_receiveCount)) {
+        const bool counterEquals = (frame.sequenceNumber() == m_receiveCount);
+        if (counterEquals || (frame.sequenceNumber() + 1 == m_receiveCount)) {
                 // sequence equals -> acknowledge -> process frame
                 // sequence -1 -> acknowledge -> drop frame
                 auto ack = QKnxNetIpTunnelingAcknowledgeProxy::builder()
