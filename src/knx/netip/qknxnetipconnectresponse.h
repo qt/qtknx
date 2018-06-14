@@ -65,7 +65,7 @@ public:
         QKnxNetIpFrame create() const;
 
     private:
-        quint8 m_channelId;
+        quint8 m_channelId { 0 };
         QKnxNetIp::Error m_status { QKnxNetIp::Error::None };
         QKnxNetIpHpai m_hpai;
         QKnxNetIpCrd m_crd;

@@ -100,12 +100,12 @@ struct Q_KNX_EXPORT QKnxGroupRange
 public:
     QString Id; // non-colonized name, pattern [\i-[:]][\c-[:]]*
     QString Name; // 255 character max.
-    quint16 RangeStart;
-    quint16 RangeEnd;
+    quint16 RangeStart { 0 };
+    quint16 RangeEnd { 0 };
     bool Unfiltered { false }; // optional
     QString Description; // optional
     QString Comment; // optional
-    qint32 Puid;
+    qint32 Puid { 0 };
     QString Security { QLatin1String("Auto") }; // optional, Auto, On, Off
 
     QVector<QKnxGroupRange> GroupRange; // 0..65535

@@ -119,7 +119,7 @@ public:
     QDateTime LastModified; // optional
     QDateTime ProjectStart; // optional
     QDateTime ProjectEnd; // optional
-    quint16 ProjectId; // optional, value max. 4095
+    quint16 ProjectId { 0 }; // optional, value max. 4095
     QString ProjectPassword; // optional, 20 character max
     QString Comment; // optional
 
@@ -134,8 +134,8 @@ public:
     QString CodePage; // optional, US-ASCII, UTF8, ISO-8859-1 -> ISO-8859-15
     bool BusAccessLegacyMode { false }; // optional
     QString Guid;
-    quint32 LastUsedPuid;
-    quint32 DeviceCount; // (optional) not declared inside the knx_project.xsd
+    quint32 LastUsedPuid { 0 };
+    quint32 DeviceCount { 0 }; // (optional) not declared inside the knx_project.xsd
 
     QVector<QKnxHistoryEntry> HistoryEntries; // 0..n
     QVector<QKnxToDoItem> ToDoItems; // 0..n

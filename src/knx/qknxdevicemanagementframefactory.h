@@ -53,9 +53,10 @@ public:
     QKnxDeviceManagementFrame createFrame() const;
 
 private:
-    QKnxDeviceManagementFrame::MessageCode m_code;
+    QKnxDeviceManagementFrame::MessageCode m_code
+        { QKnxDeviceManagementFrame::MessageCode::Unknown };
     QKnxInterfaceObjectType m_type { QKnxInterfaceObjectType::Invalid };
-    quint8 m_instance;
+    quint8 m_instance { 0 };
     QKnxInterfaceObjectProperty m_pid { QKnxInterfaceObjectProperty::Invalid };
     QKnxByteArray m_data;
 };
@@ -116,8 +117,8 @@ public:
     QKnxDeviceManagementFrame createIndication(const QKnxByteArray &data) const;
 
 private:
-    int m_numberOfElements;
-    int m_startIndex;
+    int m_numberOfElements { 0 };
+    int m_startIndex { 0 };
     mutable QKnxDeviceManagementFrame::Builder m_builder;
 };
 

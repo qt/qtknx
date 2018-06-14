@@ -121,7 +121,7 @@ struct Q_KNX_EXPORT QKnxAdditionalAddress
     Q_DECLARE_TR_FUNCTIONS(QKnxAdditionalAddress)
 
 public:
-    quint8 Address; // min. value 1, 255 value max.
+    quint8 Address { 0 }; // min. value 1, 255 value max.
     QString Name; // optional, 255 character max.
     QString Description; // optional
     QString Comment; // optional
@@ -168,7 +168,7 @@ public:
     QString LoadedDeviceManagementPassword; // optional, 20 character max.
     QString ToolKey; // optional, 40 character max.
     QString LoadedToolKey; // optional, 40 character max.
-    quint32 SequenceNumber; // optional
+    quint32 SequenceNumber { 0 }; // optional
     QDateTime SequenceNumberTimestamp; // optional
 
     bool parseElement(QXmlStreamReader *reader, bool pedantic);
@@ -198,13 +198,13 @@ public:
     QString Id; // non-colonized name, pattern [\i-[:]][\c-[:]]*
     QString ProductRefId; // non-colonized name, pattern [\i-[:]][\c-[:]]*
     QString Hardware2ProgramRefId; // optional, non-colonized name, pattern [\i-[:]][\c-[:]]*
-    qint32 Address; // optional, min. value 0, 255 value max.
+    qint32 Address { 0 }; // optional, min. value 0, 255 value max.
     QString Comment; // optional
     QDateTime LastModified; // optional
     QDateTime LastDownload; // optional
-    quint16 LastUsedAPDULength; // optional
-    quint16 ReadMaxAPDULength; // optional
-    quint16 ReadMaxRoutingAPDULength; // optional
+    quint16 LastUsedAPDULength { 0 }; // optional
+    quint16 ReadMaxAPDULength { 0 }; // optional
+    quint16 ReadMaxRoutingAPDULength { 0 }; // optional
     QString InstallationHints; // optional
 
     // Undefined, Editing, FinishedDesign, FinishedCommissioning, Tested, Accepted, Locked
@@ -218,12 +218,12 @@ public:
     QByteArray LoadedImage; // optional, Base64 encoded
     QString Description; // optional
     QByteArray CheckSums; // optional, Base64 encoded
-    bool IsCommunicationObjectVisibilityCalculated; // optional
+    bool IsCommunicationObjectVisibilityCalculated { false }; // optional
     bool Broken { false }; // optional
     QByteArray SerialNumber; // optional, Base64 encoded
     QString UniqueId; // optional, pattern \{[0-9A-F]{8}-[0-9A-F]{4}-[0-9A-F]{4}-[0-9A-F]{4}-[0-9A-F]{12}\}
     bool IsRFRetransmitter { false }; // optional
-    qint32 Puid;
+    qint32 Puid { 0 };
 
     QVector<QKnxParameterInstanceRef> ParameterInstanceRefs; // 0..n
     QVector<QKnxComObjectInstanceRef> ComObjectInstanceRefs; // 0..n

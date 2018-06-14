@@ -56,7 +56,7 @@ public:
     QString Name; // 255 character max.
     QString RefId; // non-colonized name, pattern [\i-[:]][\c-[:]]*
     QString Role; // optional, 255 character max.
-    qint32 Puid;
+    qint32 Puid { 0 };
 
     bool parseElement(QXmlStreamReader *reader, bool pedantic);
 };
@@ -77,7 +77,7 @@ public:
     QString CompletionStatus { QLatin1String("Undefined") }; // optional
 
     QString DefaultGroupRange; // optional, non-colonized name, pattern [\i-[:]][\c-[:]]*
-    qint32 Puid;
+    qint32 Puid { 0 };
 
     QVector<QKnxGroupAddressRef> GroupAddressRef; // 0..n
 
@@ -100,7 +100,7 @@ public:
     QString CompletionStatus { QLatin1String("Undefined") }; // optional
 
     QString DefaultLine; // optional
-    qint32 Puid;
+    qint32 Puid { 0 };
 
     QVector<QKnxBuildingPart> BuildingPart; // 0..n
     QVector<QString> DeviceInstanceRef; // 0..n, non-colonized name, pattern [\i-[:]][\c-[:]]*

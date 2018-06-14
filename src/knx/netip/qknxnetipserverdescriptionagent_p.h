@@ -76,7 +76,7 @@ private:
     QUdpSocket *socket { nullptr };
     QTimer *receiveTimer { nullptr };
 
-    quint16 port { 0 }, usedPort;
+    quint16 port { 0 }, usedPort { 0 };
     QHostAddress address { QHostAddress::AnyIPv4 };
 
     quint8 ttl { 60 };

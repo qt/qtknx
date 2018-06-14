@@ -78,16 +78,16 @@ struct Q_KNX_EXPORT QKnxLine
 public:
     QString Id; // non-colonized name, pattern [\i-[:]][\c-[:]]*
     QString Name; // 255 character max.
-    qint32 Address; // optional, min. value 0, 15 value max.
+    qint32 Address { 0 }; // optional, min. value 0, 15 value max.
     QString MediumTypeRefId; // non-colonized name, pattern [\i-[:]][\c-[:]]*
     QString Comment; // optional
-    qint32 DomainAddress; // optional
+    qint32 DomainAddress { 0 }; // optional
 
     // Undefined, Editing, FinishedDesign, FinishedCommissioning, Tested, Accepted, Locked
     QString CompletionStatus { QLatin1String("Undefined") }; // optional
 
     QString Description; // optional
-    qint32 Puid;
+    qint32 Puid { 0 };
 
     QVector<QKnxDeviceInstance> DeviceInstance; // 0..n
     QVector<QKnxBusAccess> BusAccess; // 0..1
@@ -103,14 +103,14 @@ struct Q_KNX_EXPORT QKnxArea
 public:
     QString Id; // optional, non-colonized name, pattern [\i-[:]][\c-[:]]*
     QString Name; // 255 character max.
-    qint32 Address; // optional, min. value 0, 15 value max.
+    qint32 Address { 0 }; // optional, min. value 0, 15 value max.
     QString Comment; // optional
 
     // Undefined, Editing, FinishedDesign, FinishedCommissioning, Tested, Accepted, Locked
     QString CompletionStatus { QLatin1String("Undefined") }; // optional
 
     QString Description; // optional
-    qint32 Puid;
+    qint32 Puid { 0 };
 
     QVector<QKnxLine> Line; // 0..16
 

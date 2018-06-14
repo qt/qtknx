@@ -60,7 +60,7 @@ public:
 
     private:
         QKnxNetIp::DeviceState m_state { QKnxNetIp::DeviceState::KnxFault };
-        quint16 m_lostMessageCount;
+        quint16 m_lostMessageCount { 0 };
 
     };
     static QKnxNetIpRoutingLostMessageProxy::Builder builder();

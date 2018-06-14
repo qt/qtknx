@@ -65,7 +65,7 @@ public:
     QString CompletionStatus { QLatin1String("Undefined") }; // optional
 
     QString Description; // optional
-    qint32 Puid;
+    qint32 Puid { 0 };
 
     QVector<QKnxTrade> Trade; // 0..n
     QVector<QString> DeviceInstanceRef; // 0..n, non-colonized name, pattern [\i-[:]][\c-[:]]*
@@ -90,7 +90,7 @@ struct Q_KNX_EXPORT QKnxInstallation
 
 public:
     QString Name; // 50 character max.
-    quint16 InstallationId; // optional, value max. 15
+    quint16 InstallationId { 0 }; // optional, value max. 15
     quint32 BCUKey { 4294967295 }; //optional
 
     // pattern ((25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9][0-9]|[0-9])\.){3}(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9][0-9]|[0-9])
@@ -98,7 +98,7 @@ public:
 
     quint8 MulticastTTL { 16 }; // optional
     QString IPRoutingBackboneKey; // optional, 40 character max.
-    quint16 IPRoutingLatencyTolerance; // optional
+    quint16 IPRoutingLatencyTolerance { 0 }; // optional
     float IPSyncLatencyFraction { 0.1f }; // optional
     QString DefaultLine; // optional
 
