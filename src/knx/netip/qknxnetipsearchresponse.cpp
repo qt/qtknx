@@ -412,8 +412,8 @@ QKnxNetIpSearchResponseProxy::ExtendedBuilder &
 }
 
 /*!
-    Sets the device hardware device information block (DIB) and returns a
-    reference to the builder.
+    Sets the device hardware device information block (DIB) to \a ddib and
+    returns a reference to the builder.
 */
 QKnxNetIpSearchResponseProxy::ExtendedBuilder &
     QKnxNetIpSearchResponseProxy::ExtendedBuilder::setDeviceHardware(const QKnxNetIpDib &ddib)
@@ -424,8 +424,8 @@ QKnxNetIpSearchResponseProxy::ExtendedBuilder &
 }
 
 /*!
-    Sets the supported families information block (DIB) and returns a
-    reference to the builder.
+    Sets the supported families information block (DIB) to \a sdib and returns
+    a reference to the builder.
 */
 QKnxNetIpSearchResponseProxy::ExtendedBuilder &
     QKnxNetIpSearchResponseProxy::ExtendedBuilder::setSupportedFamilies(const QKnxNetIpDib &sdib)

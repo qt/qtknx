@@ -262,8 +262,8 @@ QKnxNetIpDescriptionResponseProxy::Builder &
 
     \note \l {QKnxNetIpTunnelingInfoDibProxy}{KNXnet/IP tunneling information
     DIB} structures are only allowed in extended description response frames.
-    The function therefore removes these structures from the vector of \a dibs
-    before creating the description response frame.
+    The function therefore removes these structures before creating the
+    description response frame.
 
     \note The returned frame may be invalid depending on the values used during
     setup.
