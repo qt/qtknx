@@ -37,7 +37,6 @@
 
 QT_BEGIN_NAMESPACE
 
-class QKnxTpduFactory;
 class QKnxTpduPrivate;
 class Q_KNX_EXPORT QKnxTpdu final
 {
