@@ -47,7 +47,7 @@ public:
     ~ProgrammingMode();
 
     ProgrammingMode(const ProgrammingMode &other);
-    ProgrammingMode &operator=(ProgrammingMode &other);
+    ProgrammingMode &operator=(const ProgrammingMode &other);
 
     ProgrammingMode &setMandatory(bool value = true);
 
@@ -65,7 +65,7 @@ public:
     ~MacAddress();
 
     MacAddress(const MacAddress &other);
-    MacAddress &operator=(MacAddress &other);
+    MacAddress &operator=(const MacAddress &other);
 
     MacAddress &setMac(const QKnxByteArray &macAdd);
     MacAddress &setMandatory(bool value = true);
@@ -84,7 +84,7 @@ public:
     ~SupportedFamily();
 
     SupportedFamily(const SupportedFamily &other);
-    SupportedFamily &operator=(SupportedFamily &other);
+    SupportedFamily &operator=(const SupportedFamily &other);
 
     SupportedFamily &setServiceFamilyId(const QKnxNetIp::ServiceFamily &serviceFamily);
     SupportedFamily &setMinimumVersion(quint8 minVersion);
@@ -104,7 +104,7 @@ public:
     ~RequestDibs();
 
     RequestDibs(const RequestDibs &other);
-    RequestDibs &operator=(RequestDibs &other);
+    RequestDibs &operator=(const RequestDibs &other);
 
     RequestDibs &setServiceInfos(const QVector<QKnxServiceInfo> &infos);
     RequestDibs &setMandatory(bool value = true);

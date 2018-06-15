@@ -111,7 +111,7 @@ ProgrammingMode::ProgrammingMode(const ProgrammingMode &other)
 /*!
     Assigns \a other to this Programming Mode builder and returns a reference.
 */
-ProgrammingMode &ProgrammingMode::operator=(ProgrammingMode &other)
+ProgrammingMode &ProgrammingMode::operator=(const ProgrammingMode &other)
 {
     d_ptr = other.d_ptr;
     return *this;
@@ -189,7 +189,7 @@ MacAddress::MacAddress(const MacAddress &other)
 /*!
     Assigns \a other to this Mac Address builder and returns a reference.
 */
-MacAddress &MacAddress::operator=(MacAddress &other)
+MacAddress &MacAddress::operator=(const MacAddress &other)
 {
     d_ptr = other.d_ptr;
     return *this;
@@ -279,7 +279,7 @@ SupportedFamily::SupportedFamily(const SupportedFamily &other)
 /*!
     Assigns \a other to this Select By Service builder and returns a reference.
 */
-SupportedFamily &SupportedFamily::operator=(SupportedFamily &other)
+SupportedFamily &SupportedFamily::operator=(const SupportedFamily &other)
 {
     d_ptr = other.d_ptr;
     return *this;
@@ -379,7 +379,7 @@ RequestDibs::RequestDibs(const RequestDibs &other)
     : d_ptr(other.d_ptr)
 {}
 
-RequestDibs &RequestDibs::operator=(RequestDibs &other)
+RequestDibs &RequestDibs::operator=(const RequestDibs &other)
 {
     d_ptr = other.d_ptr;
     return *this;
