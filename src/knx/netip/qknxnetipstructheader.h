@@ -152,10 +152,7 @@ public:
         auto code = CodeType(QKnxUtils::QUint8::fromBytes(bytes, index + headerSize - 1));
         if (!QKnxNetIp::isStructType(code))
             return {};
-
-        QKnxNetIpStructHeader<CodeType> result { code, quint16(totalSize - headerSize) };
-        result.setMandatoryFromBytes((quint8(code) & 0x80));
-        return result;
+        return createHeader(code, quint16(totalSize - headerSize));
     }
 
     bool operator==(const QKnxNetIpStructHeader &other) const
@@ -242,17 +239,19 @@ private:
     }
 
     template<class T = CodeType>
-    typename std::enable_if<is_type<T, QKnxNetIp::SearchParameterType>::value, void>::type
-        /* void */ setMandatoryFromBytes(bool value)
+    static typename std::enable_if<is_type<T, QKnxNetIp::SearchParameterType>::value,
+        QKnxNetIpStructHeader<CodeType>>::type createHeader(CodeType code, quint16 dataSize)
     {
-        setMandatory(value);
+        QKnxNetIpStructHeader<CodeType> result { code, dataSize };
+        result.setMandatory((quint8(code) & 0x80) != 0);
+        return result;
     }
 
     template<class T = CodeType>
-    typename std::enable_if<!is_type<T, QKnxNetIp::SearchParameterType>::value, void>::type
-        /* void */ setMandatoryFromBytes(bool value)
+    static typename std::enable_if<!is_type<T, QKnxNetIp::SearchParameterType>::value,
+        QKnxNetIpStructHeader<CodeType>>::type createHeader(CodeType code, quint16 dataSize)
     {
-        Q_UNUSED(value);
+        return { code, dataSize };
     }
 
 private:
