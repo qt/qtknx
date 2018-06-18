@@ -95,6 +95,10 @@ private:
     QKnxNetIpServerDiscoveryAgent::State state { QKnxNetIpServerDiscoveryAgent::State::NotRunning };
     QKnxNetIpServerDiscoveryAgent::ResponseType
         type { QKnxNetIpServerDiscoveryAgent::ResponseType::Multicast };
+
+    QKnxNetIpServerDiscoveryAgent::DiscoveryModes discoveryMode
+        { QKnxNetIpServerDiscoveryAgent::DiscoveryMode::CoreV1 };
+    QVector<QKnxNetIpSrp> srps;
 };
 
 QT_END_NAMESPACE

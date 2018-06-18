@@ -36,6 +36,7 @@
 #include <QtKnx/qknxaddress.h>
 #include <QtKnx/qknxglobal.h>
 #include <QtKnx/qknxnetipservicefamiliesdib.h>
+#include <QtKnx/qknxnetiptunnelinginfodib.h>
 
 #include <QtNetwork/qhostaddress.h>
 
@@ -49,6 +50,13 @@ class Q_KNX_EXPORT QKnxNetIpServerInfo final
     friend class QKnxNetIpServerDescriptionAgentPrivate;
 
 public:
+    enum class MediumStatus : quint8
+    {
+        Unknown = 0xff,
+        CommunicationPossible = 0x01,
+        CommunicationImpossible = 0x00
+    };
+
     QKnxNetIpServerInfo();
     ~QKnxNetIpServerInfo();
 
@@ -59,10 +67,17 @@ public:
     QHostAddress controlEndpointAddress() const;
 
     QVector<QKnxServiceInfo> supportedServices() const;
+    QVector<QKnxNetIpTunnelingSlotInfo> tunnelingSlotInfos() const;
+
+    MediumStatus mediumStatus() const;
+    quint16 maximumLocalApduLength() const;
+    quint16 maskVersion() const;
 
     QKnxNetIpHpai endpoint() const;
     QKnxNetIpDib hardware() const;
     QKnxNetIpDib services() const;
+    QKnxNetIpDib tunnelingInfo() const;
+    QKnxNetIpDib extendedHardware() const;
 
     QKnxNetIpServerInfo(const QKnxNetIpServerInfo &other);
     QKnxNetIpServerInfo &operator=(const QKnxNetIpServerInfo &other);
@@ -77,7 +92,10 @@ public:
 
 private:
     QKnxNetIpServerInfo(const QKnxNetIpHpai &hpai, const QKnxNetIpDib &hardware,
-        QKnxNetIpDib services);
+        QKnxNetIpDib services); // ### Qt6: pass services as const reference
+    QKnxNetIpServerInfo(const QKnxNetIpHpai &hpai, const QKnxNetIpDib &hardware,
+        const QKnxNetIpDib &services, const QKnxNetIpDib &tunnelingInfo,
+        const QKnxNetIpDib &extendedHardware);
     explicit QKnxNetIpServerInfo(QKnxNetIpServerInfoPrivate &dd);
 
 private:

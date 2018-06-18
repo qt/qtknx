@@ -71,6 +71,14 @@ public:
     };
     Q_ENUM(ResponseType)
 
+    enum DiscoveryMode : quint8
+    {
+        CoreV1 = 0x01,
+        CoreV2 = 0x02
+    };
+    Q_ENUM(DiscoveryMode)
+    Q_DECLARE_FLAGS(DiscoveryModes, DiscoveryMode)
+
     QKnxNetIpServerDiscoveryAgent(QObject *parent = nullptr);
     ~QKnxNetIpServerDiscoveryAgent();
 
@@ -106,6 +114,12 @@ public:
     QKnxNetIpServerDiscoveryAgent::ResponseType responseType() const;
     void setResponseType(QKnxNetIpServerDiscoveryAgent::ResponseType type);
 
+    QKnxNetIpServerDiscoveryAgent::DiscoveryModes discoveryMode() const;
+    void setDiscoveryMode(QKnxNetIpServerDiscoveryAgent::DiscoveryModes mode);
+
+    QVector<QKnxNetIpSrp> extendedSearchParameters() const;
+    void setExtendedSearchParameters(const QVector<QKnxNetIpSrp> &srps);
+
 public Q_SLOTS:
     void start();
     void start(int timeout);
@@ -122,6 +136,7 @@ Q_SIGNALS:
 private:
     QKnxNetIpServerDiscoveryAgent(QKnxNetIpServerDiscoveryAgentPrivate &dd, QObject *parent);
 };
+Q_DECLARE_OPERATORS_FOR_FLAGS(QKnxNetIpServerDiscoveryAgent::DiscoveryModes)
 
 QT_END_NAMESPACE
 

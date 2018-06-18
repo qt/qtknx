@@ -28,6 +28,7 @@
 ******************************************************************************/
 
 #include "qknxnetipdevicedib.h"
+#include "qknxnetipextendeddevicedib.h"
 #include "qknxnetipserverinfo.h"
 #include "qknxnetipserverinfo_p.h"
 #include "qknxnetiphpai.h"
@@ -60,10 +61,53 @@ QT_BEGIN_NAMESPACE
     as a vector of \l QKnxServiceInfo objects or by \l services() as a
     \l QKnxNetIpDib object which can be accessed via \l QKnxNetIpServiceFamiliesDibProxy.
 
+    Furthermore, as specified by the KNX application note AN185, the
+    server info may contain additional tunneling and extend device hardware
+    information. If the information is present, it is made accessible through
+    the \l mediumStatus(), \l {maximumLocalApduLength()}, \l maskVersion(),
+    and \l tunnelingSlotInfos() functions. It is also possible to introspect
+    the raw structures via their corresponding proxy objects.
+
+    Here is an example on how to use the extended device information proxy
+    in a search that is started using the \l QKnxNetIpServerDiscoveryAgent:
+
+    \code
+        const auto servers = agent.discoveredServers();
+        for (auto server : servers) {
+            const auto dib = server.extendedHardware();
+            QKnxNetIpExtendedDeviceDibProxy proxy(dib);
+
+            if (!proxy.isValid())
+                continue;
+
+            qDebug() << "Medium status:" << proxy.mediumStatus()
+                << "Maximum local APDU length:" << proxy.maximumLocalApduLength()
+                << "Device mask:" << proxy.deviceDescriptorType0();
+        }
+
+    \endcode
+
     \sa QKnxAddress, QKnxNetIpHpai, QKnxNetIpHpaiProxy, QKnxNetIpDib,
     QKnxNetIpDeviceDibProxy, QKnxNetIpServiceFamiliesDibProxy
 
     \sa {Qt KNXnet/IP Connection Classes}
+*/
+
+/*!
+    \enum QKnxNetIpServerInfo::MediumStatus
+
+    This enum type holds the medium status if the KNXnet/IP router or server
+    supports extended device information.
+
+    \value Unknown
+            The medium status is unknown. Most likely the discovered KNXnet/IP
+            router or server does not support extended device information.
+    \value CommunicationPossible
+            Communication to a KNX twisted pair 1 (TP1) network via the
+            discovered KNXnet/IP router or server is possible.
+    \value CommunicationImpossible
+            Communication to a KNX TP1 network via the discovered KNXnet/IP
+            router or server is not possible.
 */
 
 /*!
@@ -121,6 +165,50 @@ QVector<QKnxServiceInfo> QKnxNetIpServerInfo::supportedServices() const
 }
 
 /*!
+    Returns the available tunneling slots of the discovered KNXnet/IP server
+    if it supports providing this kind of information; otherwise returns an
+    empty vector.
+*/
+QVector<QKnxNetIpTunnelingSlotInfo> QKnxNetIpServerInfo::tunnelingSlotInfos() const
+{
+    QKnxNetIpTunnelingInfoDibProxy proxy(d_ptr->tunnelingInfo);
+    return QVector<QKnxNetIpTunnelingSlotInfo> { proxy.tunnelingSlotInfo() }
+        + proxy.optionalSlotInfos();
+}
+
+/*!
+    Returns the medium status of the discovered KNXnet/IP server if it supports
+    extended device information; otherwise returns \l QKnxNetIpServerInfo::Unknown.
+*/
+QKnxNetIpServerInfo::MediumStatus QKnxNetIpServerInfo::mediumStatus() const
+{
+    QKnxNetIpExtendedDeviceDibProxy proxy(d_ptr->extendedHardware);
+    if (!proxy.isValid())
+        return QKnxNetIpServerInfo::MediumStatus::Unknown;
+    return QKnxNetIpServerInfo::MediumStatus(proxy.mediumStatus());
+}
+
+/*!
+    Returns the maximum local application protocol data unit (APDU) length of
+    the discovered KNXnet/IP server if it supports extended device information;
+    otherwise returns a \l {default-constructed value} which can be \c 0.
+*/
+quint16 QKnxNetIpServerInfo::maximumLocalApduLength() const
+{
+    return QKnxNetIpExtendedDeviceDibProxy(d_ptr->extendedHardware).maximumLocalApduLength();
+}
+
+/*!
+    Returns the mask version (device descriptor 0) of the discovered
+    KNXnet/IP server if it supports extended device information; otherwise
+    returns a \l {default-constructed value} which can be \c 0.
+*/
+quint16 QKnxNetIpServerInfo::maskVersion() const
+{
+    return QKnxNetIpExtendedDeviceDibProxy(d_ptr->extendedHardware).deviceDescriptorType0();
+}
+
+/*!
     Returns a KNXnet/IP transport connection endpoint.
 
     \sa QKnxNetIpHpaiProxy
@@ -148,6 +236,26 @@ QKnxNetIpDib QKnxNetIpServerInfo::hardware() const
 QKnxNetIpDib QKnxNetIpServerInfo::services() const
 {
     return d_ptr->services;
+}
+
+/*!
+    Returns tunneling information if available on a KNXnet/IP server.
+
+    \sa QKnxNetIpTunnelingInfoDibProxy
+*/
+QKnxNetIpDib QKnxNetIpServerInfo::tunnelingInfo() const
+{
+    return QKnxNetIpDib();
+}
+
+/*!
+    Returns extended hardware information about the KNXnet/IP server hardware.
+
+    \sa QKnxNetIpExtendedDeviceDibProxy
+*/
+QKnxNetIpDib QKnxNetIpServerInfo::extendedHardware() const
+{
+    return QKnxNetIpDib();
 }
 
 /*!
@@ -222,12 +330,26 @@ void QKnxNetIpServerInfo::swap(QKnxNetIpServerInfo &other) Q_DECL_NOTHROW
     \internal
 */
 QKnxNetIpServerInfo::QKnxNetIpServerInfo(const QKnxNetIpHpai &hpai, const QKnxNetIpDib &hardware,
-        QKnxNetIpDib services)
+        QKnxNetIpDib services) // ### Qt6: pass services as const reference
     : QKnxNetIpServerInfo()
 {
     d_ptr->hpai = hpai;
     d_ptr->hardware = hardware;
     d_ptr->services = services;
+}
+
+/*!
+    \internal
+*/
+QKnxNetIpServerInfo::QKnxNetIpServerInfo(const QKnxNetIpHpai &hpai, const QKnxNetIpDib &hardware,
+        const QKnxNetIpDib &services, const QKnxNetIpDib &tunneling, const QKnxNetIpDib &extHardware)
+    : QKnxNetIpServerInfo()
+{
+    d_ptr->hpai = hpai;
+    d_ptr->hardware = hardware;
+    d_ptr->services = services;
+    d_ptr->tunnelingInfo = tunneling;
+    d_ptr->extendedHardware = extHardware;
 }
 
 /*!

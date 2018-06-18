@@ -42,8 +42,7 @@ QT_BEGIN_NAMESPACE
     \ingroup qtknx-netip
 
     \brief The QKnxNetIpServerDiscoveryAgent class discovers KNXnet/IP servers
-    by multicasting a search request in the network that the client is connected
-    to.
+    by sending a search request in the network that the client is connected to.
 
     The agent may be set up with the \l Unicast response type to receive the
     answers from the different KNXnet/IP servers directly in a point-to-point
@@ -54,8 +53,35 @@ QT_BEGIN_NAMESPACE
 
     \code
         QKnxNetIpServerDiscoveryAgent agent;
-        QKnxAddress clientLocalAddress = ...
+        QHostAddress clientLocalAddress = ...
         agent.setLocalAddress(clientLocalAddress);
+        agent.start();
+    \endcode
+
+    The discovery agent further provides the option to send extended search
+    requests as specified by the KNX application note AN184. This allows the
+    discovery client to include zero or more search request parameter (SRP)
+    blocks to transfer additional information regarding the search. This can
+    be used for example to restrict the set of devices that are expected to
+    respond or to influence the type of device information blocks (DIBs) which
+    the client is interested in.
+
+    \note A combination of both \l{DiscoveryMode}{discovery modes} is permitted.
+
+    Here is an example on how to use this discovery agent with extended search
+    features to indicate that the KNXnet/IP client is interested only in the
+    response from the KNXnet/IP server with the given MAC address:
+
+    \code
+        QHostAddress clientLocalAddress = ...
+        auto builder = SrpBuilders::MacAddress();
+
+        QKnxNetIpServerDiscoveryAgent agent(clientLocalAddress);
+        agent.setDiscoveryMode(QKnxNetIpServerDiscoveryAgent::DiscoveryMode::CoreV2);
+        agent.setExtendedSearchParameters({
+            builder.setMac(QKnxByteArray::fromHex("bcaec56690f9")).create(),
+            builder.setMac(QKnxByteArray::fromHex("4ccc6ae40000")).create()
+        });
         agent.start();
     \endcode
 
@@ -105,6 +131,20 @@ QT_BEGIN_NAMESPACE
 
     \value Unicast      Receive responses in a point-to-point manner.
     \value Multicast    Collect responses from multicast messages.
+*/
+
+/*!
+    \enum QKnxNetIpServerDiscoveryAgent::DiscoveryMode
+
+    This enum type holds the mode that the agent is set up with to send
+    search request messages. A combination of both values is permitted.
+
+    \value CoreV1
+            The server uses search request frames as specified in KNXnet/IP
+            Core Version 1 to discover KNXnet/IP devices.
+    \value CoreV2
+            The server uses extended search request frames as specified in
+            KNXnet/IP Core Version 2 to discover KNXnet/IP devices.
 */
 
 /*!
@@ -209,13 +249,27 @@ void QKnxNetIpServerDiscoveryAgentPrivate::setupSocket()
             if (q->state() == QKnxNetIpServerDiscoveryAgent::State::Running) {
                 servers.clear();
 
-                auto frame = QKnxNetIpSearchRequestProxy::builder()
-                    .setDiscoveryEndpoint(QKnxNetIpHpaiProxy::builder()
-                        .setHostAddress(nat ? QHostAddress::AnyIPv4 : usedAddress)
-                        .setPort(nat ? quint16(0u) : usedPort).create()
-                    ).create();
-                socket->writeDatagram(frame.bytes().toByteArray(), multicastAddress,
-                    multicastPort);
+                const QFlags<QKnxNetIpServerDiscoveryAgent::DiscoveryMode> flags(discoveryMode);
+                if (flags.testFlag(QKnxNetIpServerDiscoveryAgent::DiscoveryMode::CoreV1)) {
+                    auto frame = QKnxNetIpSearchRequestProxy::builder()
+                        .setDiscoveryEndpoint(QKnxNetIpHpaiProxy::builder()
+                            .setHostAddress(nat ? QHostAddress::AnyIPv4 : usedAddress)
+                            .setPort(nat ? quint16(0u) : usedPort).create()
+                        ).create();
+                    socket->writeDatagram(frame.bytes().toByteArray(), multicastAddress,
+                        multicastPort);
+                }
+
+                if (flags.testFlag(QKnxNetIpServerDiscoveryAgent::DiscoveryMode::CoreV2)) {
+                    auto frame = QKnxNetIpSearchRequestProxy::extendedBuilder()
+                        .setDiscoveryEndpoint(QKnxNetIpHpaiProxy::builder()
+                            .setHostAddress(nat ? QHostAddress::AnyIPv4 : usedAddress)
+                            .setPort(nat ? quint16(0u) : usedPort).create()
+                        )
+                        .setExtendedParameters(srps).create();
+                    socket->writeDatagram(frame.bytes().toByteArray(), multicastAddress,
+                        multicastPort);
+                }
 
                 setupAndStartReceiveTimer();
                 setupAndStartFrequencyTimer();
@@ -245,21 +299,56 @@ void QKnxNetIpServerDiscoveryAgentPrivate::setupSocket()
             auto datagram = socket->receiveDatagram();
             auto data = QKnxByteArray::fromByteArray(datagram.data());
             const auto header = QKnxNetIpFrameHeader::fromBytes(data, 0);
-            if (!header.isValid() || header.serviceType() != QKnxNetIp::ServiceType::SearchResponse)
+            if (!header.isValid())
                 continue;
+
+             if (header.serviceType() != QKnxNetIp::ServiceType::SearchResponse &&
+                 header.serviceType() != QKnxNetIp::ServiceType::ExtendedSearchResponse) {
+                    continue;
+             }
 
             auto frame = QKnxNetIpFrame::fromBytes(data);
             auto response = QKnxNetIpSearchResponseProxy(frame);
             if (!response.isValid())
                 continue;
 
-            setAndEmitDeviceDiscovered({
-                (nat ? QKnxNetIpHpaiProxy::builder()
-                            .setHostAddress(datagram.senderAddress())
-                            .setPort(datagram.senderPort()).create()
-                    : response.controlEndpoint()
-                ), response.deviceHardware(), response.supportedFamilies()
-            });
+            const QFlags<QKnxNetIpServerDiscoveryAgent::DiscoveryMode> flags(discoveryMode);
+            if (flags.testFlag(QKnxNetIpServerDiscoveryAgent::DiscoveryMode::CoreV1)
+                && !response.isExtended()) {
+                    setAndEmitDeviceDiscovered({
+                        (nat ? QKnxNetIpHpaiProxy::builder()
+                                    .setHostAddress(datagram.senderAddress())
+                                    .setPort(datagram.senderPort()).create()
+                            : response.controlEndpoint()
+                        ), response.deviceHardware(), response.supportedFamilies()
+                    });
+            }
+
+            if (flags.testFlag(QKnxNetIpServerDiscoveryAgent::DiscoveryMode::CoreV2)
+                && response.isExtended()) {
+                    const auto optionalDibs = response.optionalDibs();
+                    setAndEmitDeviceDiscovered({
+                        (nat ? QKnxNetIpHpaiProxy::builder()
+                                    .setHostAddress(datagram.senderAddress())
+                                    .setPort(datagram.senderPort()).create()
+                            : response.controlEndpoint()
+                        ), response.deviceHardware(), response.supportedFamilies(),
+                           [&optionalDibs]() -> QKnxNetIpDib {
+                                for (const auto &dib : qAsConst(optionalDibs)) {
+                                    if (dib.code() == QKnxNetIp::DescriptionType::TunnelingInfo)
+                                        return dib;
+                                }
+                                return {};
+                            }(),
+                            [&optionalDibs]() -> QKnxNetIpDib {
+                                for (const auto &dib : qAsConst(optionalDibs)) {
+                                    if (dib.code() == QKnxNetIp::DescriptionType::ExtendedDeviceInfo)
+                                        return dib;
+                                }
+                                return {};
+                            }()
+                    });
+            }
         }
     });
 }
@@ -305,14 +394,27 @@ void QKnxNetIpServerDiscoveryAgentPrivate::setupAndStartFrequencyTimer()
             if (q->state() == QKnxNetIpServerDiscoveryAgent::State::Running) {
                 servers.clear();
 
-                auto frame = QKnxNetIpSearchRequestProxy::builder()
-                    .setDiscoveryEndpoint(QKnxNetIpHpaiProxy::builder()
-                        .setHostAddress(nat ? QHostAddress::AnyIPv4 : address)
-                        .setPort(nat ? quint16(0u) : port).create()
-                    ).create();
+                const QFlags<QKnxNetIpServerDiscoveryAgent::DiscoveryMode> flags(discoveryMode);
+                if (flags.testFlag(QKnxNetIpServerDiscoveryAgent::DiscoveryMode::CoreV1)) {
+                    auto frame = QKnxNetIpSearchRequestProxy::builder()
+                        .setDiscoveryEndpoint(QKnxNetIpHpaiProxy::builder()
+                            .setHostAddress(nat ? QHostAddress::AnyIPv4 : usedAddress)
+                            .setPort(nat ? quint16(0u) : usedPort).create()
+                        ).create();
+                    socket->writeDatagram(frame.bytes().toByteArray(), multicastAddress,
+                        multicastPort);
+                }
 
-                socket->writeDatagram(frame.bytes().toByteArray(), multicastAddress,
-                    multicastPort);
+                if (flags.testFlag(QKnxNetIpServerDiscoveryAgent::DiscoveryMode::CoreV2)) {
+                    auto frame = QKnxNetIpSearchRequestProxy::extendedBuilder()
+                        .setDiscoveryEndpoint(QKnxNetIpHpaiProxy::builder()
+                            .setHostAddress(nat ? QHostAddress::AnyIPv4 : usedAddress)
+                            .setPort(nat ? quint16(0u) : usedPort).create()
+                        )
+                        .setExtendedParameters(srps).create();
+                    socket->writeDatagram(frame.bytes().toByteArray(), multicastAddress,
+                        multicastPort);
+                }
             }
         });
     }
@@ -596,6 +698,54 @@ void QKnxNetIpServerDiscoveryAgent::setResponseType(QKnxNetIpServerDiscoveryAgen
     Q_D(QKnxNetIpServerDiscoveryAgent);
     if (d->state == QKnxNetIpServerDiscoveryAgent::State::NotRunning)
         d->type = type;
+}
+
+/*!
+    Returns the search mode used to discover a KNXnet/IP server on the network
+    and by default returns \l {QKnxNetIpServerDiscoveryAgent::CoreV1}.
+*/
+QKnxNetIpServerDiscoveryAgent::DiscoveryModes QKnxNetIpServerDiscoveryAgent::discoveryMode() const
+{
+    Q_D(const QKnxNetIpServerDiscoveryAgent);
+    return d->discoveryMode;
+}
+
+/*!
+    Sets the search mode used to discover a KNXnet/IP server on the network to
+    \a mode. The function supports \l {QKnxNetIpServerDiscoveryAgent::CoreV1},
+    \l {QKnxNetIpServerDiscoveryAgent::CoreV2}, or a combination of both.
+*/
+void QKnxNetIpServerDiscoveryAgent::setDiscoveryMode(QKnxNetIpServerDiscoveryAgent::DiscoveryModes mode)
+{
+    Q_D(QKnxNetIpServerDiscoveryAgent);
+    if (d->state == QKnxNetIpServerDiscoveryAgent::State::NotRunning)
+        d->discoveryMode = mode;
+}
+
+/*!
+    Returns the search request parameter (SRP) objects used in an
+    \l {QKnxNetIpServerDiscoveryAgent::CoreV2} {extended search request}.
+*/
+QVector<QKnxNetIpSrp> QKnxNetIpServerDiscoveryAgent::extendedSearchParameters() const
+{
+    Q_D(const QKnxNetIpServerDiscoveryAgent);
+    return d->srps;
+}
+
+/*!
+    Sets the extended search request parameter (SRP) objects to \a srps.
+
+    The discovery agent may include zero or more SRP objects to transfer
+    additional information regarding the search (for example to restrict the
+    set of KNXnet/IP servers that are expected to respond).
+
+    \sa SrpBuilders::MacAddress, SrpBuilders::ProgrammingMode,
+    SrpBuilders::SupportedFamily, SrpBuilders::RequestDibs
+*/
+void QKnxNetIpServerDiscoveryAgent::setExtendedSearchParameters(const QVector<QKnxNetIpSrp> &srps)
+{
+    Q_D(QKnxNetIpServerDiscoveryAgent);
+    d->srps = srps;
 }
 
 /*!
