@@ -257,7 +257,7 @@ bool QKnxNetIp::isServiceFamily(QKnxNetIp::ServiceFamily family)
     \value DisconnectResponse
            The service type sent by a KNXnet/IP device in response to a
            disconnect request.
-    \value SearchRequestExtended
+    \value ExtendedSearchRequest
            The service type sent by a KNXnet/IP device during the discovery phase
            looking for any listening KNXnet/IP servers or for a specific one.
     \value ExtendedSearchResponse
@@ -317,7 +317,7 @@ bool QKnxNetIp::isServiceType(QKnxNetIp::ServiceType type)
     case QKnxNetIp::ServiceType::ConnectionStateResponse:
     case QKnxNetIp::ServiceType::DisconnectRequest:
     case QKnxNetIp::ServiceType::DisconnectResponse:
-    case QKnxNetIp::ServiceType::SearchRequestExtended:
+    case QKnxNetIp::ServiceType::ExtendedSearchRequest:
     case QKnxNetIp::ServiceType::ExtendedSearchResponse:
     case QKnxNetIp::ServiceType::DeviceConfigurationRequest:
     case QKnxNetIp::ServiceType::DeviceConfigurationAcknowledge:

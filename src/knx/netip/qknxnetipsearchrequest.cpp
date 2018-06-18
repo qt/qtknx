@@ -120,7 +120,7 @@ bool QKnxNetIpSearchRequestProxy::isValid() const
             && discoveryEndpoint().code() == QKnxNetIp::HostProtocol::UDP_IPv4;
     }
 
-    if (serviceType == QKnxNetIp::ServiceType::SearchRequestExtended) {
+    if (serviceType == QKnxNetIp::ServiceType::ExtendedSearchRequest) {
         return m_frame.isValid() && m_frame.size() >= 14 && (m_frame.size() % 2 == 0)
             && discoveryEndpoint().code() == QKnxNetIp::HostProtocol::UDP_IPv4;
     }
@@ -133,7 +133,7 @@ bool QKnxNetIpSearchRequestProxy::isValid() const
 */
 bool QKnxNetIpSearchRequestProxy::isExtended() const
 {
-    return (m_frame.serviceType() == QKnxNetIp::ServiceType::SearchRequestExtended);
+    return (m_frame.serviceType() == QKnxNetIp::ServiceType::ExtendedSearchRequest);
 }
 
 /*!
@@ -176,6 +176,14 @@ QVector<QKnxNetIpSrp> QKnxNetIpSearchRequestProxy::extendedSearchParameters() co
 QKnxNetIpSearchRequestProxy::Builder QKnxNetIpSearchRequestProxy::builder()
 {
     return QKnxNetIpSearchRequestProxy::Builder();
+}
+
+/*!
+    Returns a builder object to create a KNXnet/IP extended search request frame.
+*/
+QKnxNetIpSearchRequestProxy::ExtendedBuilder QKnxNetIpSearchRequestProxy::extendedBuilder()
+{
+    return QKnxNetIpSearchRequestProxy::ExtendedBuilder();
 }
 
 /*!
@@ -273,7 +281,7 @@ QKnxNetIpFrame QKnxNetIpSearchRequestProxy::Builder::create() const
                        .setMandatory()
                        .create();
         auto srps = { macSrp, modeSrp };
-        auto netIpFrame = QKnxNetIpSearchRequestProxy::ExtendedBuilder()
+        auto netIpFrame = QKnxNetIpSearchRequestProxy::extendedBuilder()
             .setDiscoveryEndpoint(hpai)
             .setExtendedParameter(srps)
             .create();
@@ -292,7 +300,7 @@ QKnxNetIpFrame QKnxNetIpSearchRequestProxy::Builder::create() const
     Creates an extended search request builder.
 */
 QKnxNetIpSearchRequestProxy::ExtendedBuilder::ExtendedBuilder()
-    : d_ptr(new ExtendedBuilderPrivate)
+    : d_ptr(new QKnxNetIpSearchRequestExtendedBuilderPrivate)
 {}
 
 /*!
@@ -337,7 +345,7 @@ QKnxNetIpFrame QKnxNetIpSearchRequestProxy::ExtendedBuilder::create() const
     for (auto &srp : d_ptr->m_srps)
         srpBytes += srp.bytes();
 
-    return { QKnxNetIp::ServiceType::SearchRequestExtended, d_ptr->m_hpai.bytes() + srpBytes };
+    return { QKnxNetIp::ServiceType::ExtendedSearchRequest, d_ptr->m_hpai.bytes() + srpBytes };
 }
 
 

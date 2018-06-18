@@ -114,7 +114,7 @@ namespace QKnx
             ConnectionStateResponse = 0x0208,
             DisconnectRequest = 0x0209,
             DisconnectResponse = 0x020a,
-            SearchRequestExtended = 0x020b,
+            ExtendedSearchRequest = 0x020b,
             ExtendedSearchResponse = 0x020c,
 
             // KNXnet/IP Device Management service type identifiers

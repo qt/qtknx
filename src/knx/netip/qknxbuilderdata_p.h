@@ -43,7 +43,6 @@
 
 #include <QtCore/qshareddata.h>
 #include <QtKnx/qknxnamespace.h>
-#include <QtKnx/qknxnetipsearchrequest.h>
 #include <QtKnx/qknxnetipservicefamiliesdib.h>
 #include <QtKnx/qknxnetipsrp.h>
 
@@ -89,11 +88,12 @@ public:
     bool m_mandatory { false };
 };
 
-class Q_KNX_EXPORT QKnxNetIpSearchRequestProxy::ExtendedBuilder::ExtendedBuilderPrivate
-        : public QSharedData {
+class QKnxNetIpSearchRequestExtendedBuilderPrivate : public QSharedData
+{
 public:
-    ExtendedBuilderPrivate() = default;
-    ~ExtendedBuilderPrivate() = default;
+    QKnxNetIpSearchRequestExtendedBuilderPrivate() = default;
+    ~QKnxNetIpSearchRequestExtendedBuilderPrivate() = default;
+
     QKnxNetIpHpai m_hpai = { QKnxNetIp::HostProtocol::Unknown};
     QVector<QKnxNetIpSrp> m_srps;
 };

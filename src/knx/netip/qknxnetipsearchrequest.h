@@ -39,6 +39,7 @@
 
 QT_BEGIN_NAMESPACE
 
+class QKnxNetIpSearchRequestExtendedBuilderPrivate;
 class Q_KNX_EXPORT QKnxNetIpSearchRequestProxy final
 {
 public:
@@ -80,9 +81,9 @@ public:
         ExtendedBuilder &operator=(const ExtendedBuilder &other);
 
     private:
-        class ExtendedBuilderPrivate;
-        QSharedDataPointer<ExtendedBuilderPrivate> d_ptr;
+        QSharedDataPointer<QKnxNetIpSearchRequestExtendedBuilderPrivate> d_ptr;
     };
+    static QKnxNetIpSearchRequestProxy::ExtendedBuilder extendedBuilder();
 
 private:
     const QKnxNetIpFrame &m_frame;

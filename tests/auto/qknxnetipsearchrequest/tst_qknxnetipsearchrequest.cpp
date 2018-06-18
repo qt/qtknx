@@ -210,7 +210,7 @@ void tst_QKnxNetIpSearchRequest::testExtendSearchRequest()
     QCOMPARE(srps.constLast().bytes(),
              QKnxByteArray::fromHex("0882") + macAddress2);
 
-    auto frame = QKnxNetIpSearchRequestProxy::ExtendedBuilder()
+    auto frame = QKnxNetIpSearchRequestProxy::extendedBuilder()
         .setDiscoveryEndpoint(QKnxNetIpHpaiProxy::builder()
             .setHostAddress(QHostAddress::LocalHost)
             .setPort(3671).create())
@@ -220,7 +220,7 @@ void tst_QKnxNetIpSearchRequest::testExtendSearchRequest()
     // header checks
     QVERIFY(frame.header().HeaderSize10 == frame.header().byte(0));
     QCOMPARE(frame.header().serviceType(),
-             QKnxNetIp::ServiceType::SearchRequestExtended);
+             QKnxNetIp::ServiceType::ExtendedSearchRequest);
     const quint16 srpSize = 8*2;
     const quint16 knxNetIPheaderSize = 14;
     QVERIFY(frame.header().totalSize() == (knxNetIPheaderSize + srpSize));
