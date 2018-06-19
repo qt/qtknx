@@ -786,8 +786,8 @@ void QKnxNetIpEndpointConnection::setSupportedProtocolVersions(const QKnxByteArr
 */
 void QKnxNetIpEndpointConnection::connectToHost(const QKnxNetIpHpai &controlEndpoint)
 {
-    const QKnxNetIpHpaiProxy view(controlEndpoint);
-    connectToHost(view.hostAddress(), view.port());
+    const QKnxNetIpHpaiProxy proxy(controlEndpoint);
+    connectToHost(proxy.hostAddress(), proxy.port());
 }
 
 /*!

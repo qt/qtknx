@@ -43,18 +43,18 @@ QT_BEGIN_NAMESPACE
     block (DIB) structure.
 
     \note When using QKnxNetIpKnxAddressesDibProxy, care must be taken to
-    ensure that the referenced KNXnet/IP DIB structure outlives the view on all
-    code paths, lest the view ends up referencing deleted data.
+    ensure that the referenced KNXnet/IP DIB structure outlives the proxy on
+    all code paths, lest the proxy ends up referencing deleted data.
 
     Reading the assigned addresses can be achieved like this:
     \code
         auto dib = QKnxNetIpDib::fromBytes(...);
 
-        QKnxNetIpKnxAddressesDibProxy view(dib);
-        if (!view.isValid())
+        QKnxNetIpKnxAddressesDibProxy proxy(dib);
+        if (!proxy.isValid())
             return;
 
-        auto addresses = view.individualAddresses();
+        auto addresses = proxy.individualAddresses();
     \endcode
 
     \sa builder(), {Qt KNXnet/IP Connection Classes}

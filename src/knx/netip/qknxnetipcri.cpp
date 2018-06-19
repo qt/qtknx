@@ -49,20 +49,20 @@ QT_BEGIN_NAMESPACE
     case of tunneling.
 
     \note When using QKnxNetIpCriProxy, care must be taken to ensure that the
-    referenced KNXnet/IP CRI structure outlives the view on all code paths, lest
-    the view ends up referencing deleted data.
+    referenced KNXnet/IP CRI structure outlives the proxy on all code paths, lest
+    the proxy ends up referencing deleted data.
 
     Reading the connection type and tunneling layer can be achieved like this:
     \code
         auto cri = QKnxNetIpCri::fromBytes(...);
 
-        QKnxNetIpCriProxy view(cri);
-        if (!view.isValid())
+        QKnxNetIpCriProxy proxy(cri);
+        if (!proxy.isValid())
             return;
 
-        if (view.connectionType() != QKnxNetIp::ConnectionType::Tunnel)
+        if (proxy.connectionType() != QKnxNetIp::ConnectionType::Tunnel)
             return;
-        auto layer = view.tunnelLayer(); // read the requested tunneling layer
+        auto layer = proxy.tunnelLayer(); // read the requested tunneling layer
     \endcode
 
     \sa builder(), {Qt KNXnet/IP Connection Classes}

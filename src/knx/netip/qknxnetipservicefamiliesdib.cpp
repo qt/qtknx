@@ -85,18 +85,18 @@ QT_BEGIN_NAMESPACE
     implemented version.
 
     \note When using QKnxNetIpServiceFamiliesDibProxy, care must be taken to
-    ensure that the referenced KNXnet/IP DIB structure outlives the view on all
-    code paths, lest the view ends up referencing deleted data.
+    ensure that the referenced KNXnet/IP DIB structure outlives the proxy on
+    all code paths, lest the proxy ends up referencing deleted data.
 
     Reading the supported service families can be achieved like this:
     \code
         auto dib = QKnxNetIpDib::fromBytes(...);
 
-        QKnxNetIpServiceFamiliesDibProxy view(dib);
-        if (!view.isValid())
+        QKnxNetIpServiceFamiliesDibProxy proxy(dib);
+        if (!proxy.isValid())
             return;
 
-        auto infos = view.serviceInfos();
+        auto infos = proxy.serviceInfos();
     \endcode
 
     \sa builder(), {Qt KNXnet/IP Connection Classes}

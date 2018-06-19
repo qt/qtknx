@@ -43,28 +43,28 @@ QT_BEGIN_NAMESPACE
 
     A KNXnet/IP CRD structure contains the data block returned with the connect
     response \l QKnxNetIpFrame. The content of such a frame can be viewed
-    by using the \l QKnxNetIpConnectResponseProxy view class.
+    by using the \l QKnxNetIpConnectResponseProxy proxy class.
 
     The structure may contain host protocol dependent and independent data,
     but the current KNX specification foresees additional data only in the
     case of tunneling.
 
     \note When using QKnxNetIpCrdProxy, care must be taken to ensure that the
-    referenced KNXnet/IP CRD structure outlives the view on all
-    code paths, lest the view ends up referencing deleted data.
+    referenced KNXnet/IP CRD structure outlives the proxy on all
+    code paths, lest the proxy ends up referencing deleted data.
 
     Reading the connection type and assigned individual address can be achieved
     like this:
     \code
         auto crd = QKnxNetIpCrd::fromBytes(...);
 
-        QKnxNetIpCrdProxy view(crd);
-        if (!view.isValid())
+        QKnxNetIpCrdProxy proxy(crd);
+        if (!proxy.isValid())
             return;
 
-        if (view.connectionType() != QKnxNetIp::ConnectionType::Tunnel)
+        if (proxy.connectionType() != QKnxNetIp::ConnectionType::Tunnel)
             return;
-        auto address = view.individualAddress(); // read the individual address
+        auto address = proxy.individualAddress(); // read the individual address
     \endcode
 
     \sa builder(), {Qt KNXnet/IP Connection Classes}

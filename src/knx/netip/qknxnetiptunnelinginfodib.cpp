@@ -279,8 +279,8 @@ bool QKnxNetIpTunnelingSlotInfo::operator!=(const QKnxNetIpTunnelingSlotInfo &ot
     \l QKnxNetIpServerDiscoveryAgent and \l QKnxNetIpServerInfo are provided.
 
     \note When using QKnxNetIpTunnelingInfoDibProxy, care must be taken to
-    ensure that the referenced KNXnet/IP DIB structure outlives the view on all
-    code paths, lest the view ends up referencing deleted data.
+    ensure that the referenced KNXnet/IP DIB structure outlives the proxy on
+    all code paths, lest the proxy ends up referencing deleted data.
 
     Reading the application layer protocol data unit (APDU) length and default
     tunneling slot information can be achieved like this:

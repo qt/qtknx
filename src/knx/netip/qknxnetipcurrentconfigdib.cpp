@@ -47,22 +47,22 @@ QT_BEGIN_NAMESPACE
     values currently used on the device for IP communication.
 
     \note When using QKnxNetIpCurrentConfigDibProxy, care must be taken to
-    ensure that the referenced KNXnet/IP DIB structure outlives the view on all
-    code paths, lest the view ends up referencing deleted data.
+    ensure that the referenced KNXnet/IP DIB structure outlives the proxy on
+    all code paths, lest the proxy ends up referencing deleted data.
 
     Reading the current IP configuration can be achieved like this:
     \code
         auto dib = QKnxNetIpDib::fromBytes(...);
 
-        QKnxNetIpCurrentConfigDibProxy view(dib);
-        if (!view.isValid())
+        QKnxNetIpCurrentConfigDibProxy proxy(dib);
+        if (!proxy.isValid())
             return;
 
-        auto infos = view.ipAddress();
-        auto subnetMask = view.subnetMask();
-        auto gateway = view.defaultGateway();
-        auto dhcp = view.dhcpOrBootP();
-        auto assignmentMethod = view.assignmentMethod();
+        auto infos = proxy.ipAddress();
+        auto subnetMask = proxy.subnetMask();
+        auto gateway = proxy.defaultGateway();
+        auto dhcp = proxy.dhcpOrBootP();
+        auto assignmentMethod = proxy.assignmentMethod();
     \endcode
 
     \sa builder(), {Qt KNXnet/IP Connection Classes}

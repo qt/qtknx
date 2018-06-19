@@ -51,22 +51,22 @@ QT_BEGIN_NAMESPACE
 
     \note When using QKnxNetIpHpaiProxy care must be taken to ensure that the
     referenced KNXnet/IP HPAI structure outlives the QKnxNetIpHpaiProxy on all
-    code paths, lest the view ends up referencing deleted data.
+    code paths, lest the proxy ends up referencing deleted data.
 
     Reading the host address and port number can be achieved like this:
     \code
         auto hpai = QKnxNetIpHpai::fromBytes(...);
 
-        QKnxNetIpHpaiProxy view(hpai);
-        if (!view.isValid())
+        QKnxNetIpHpaiProxy proxy(hpai);
+        if (!proxy.isValid())
             return;
 
-        if (view.hostProtocol() == QKnxNetIp::HostProtocol::TCP_IPv4)
+        if (proxy.hostProtocol() == QKnxNetIp::HostProtocol::TCP_IPv4)
             return; // TCP support not implemented yet
 
         // read the host protocol address information
-        auto address = view.hostAddress();
-        auto port = view.port();
+        auto address = proxy.hostAddress();
+        auto port = proxy.port();
     \endcode
 
     \sa builder(), {Qt KNXnet/IP Connection Classes}

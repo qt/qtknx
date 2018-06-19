@@ -44,20 +44,20 @@ QT_BEGIN_NAMESPACE
     block (DIB) structure.
 
     \note When using QKnxNetIpManufacturerDibProxy, care must be taken to
-    ensure that the referenced KNXnet/IP DIB structure outlives the view on all
-    code paths, lest the view ends up referencing deleted data.
+    ensure that the referenced KNXnet/IP DIB structure outlives the proxy on
+    all code paths, lest the proxy ends up referencing deleted data.
 
     Reading the manufacturer specific device information can be achieved like
     this:
     \code
         auto dib = QKnxNetIpDib::fromBytes(...);
 
-        QKnxNetIpManufacturerDibProxy view(dib);
-        if (!view.isValid())
+        QKnxNetIpManufacturerDibProxy proxy(dib);
+        if (!proxy.isValid())
             return;
 
-        auto id = view.manufacturerId();
-        auto data = view.manufacturerData();
+        auto id = proxy.manufacturerId();
+        auto data = proxy.manufacturerData();
     \endcode
 
     \sa builder(), {Qt KNXnet/IP Connection Classes}

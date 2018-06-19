@@ -43,21 +43,21 @@ QT_BEGIN_NAMESPACE
     class and to create a KNXnet/IP device information block (DIB) structure.
 
     \note When using QKnxNetIpDeviceDibProxy, care must be taken to ensure that
-    the referenced KNXnet/IP DIB structure outlives the view on all code paths,
-    lest the view ends up referencing deleted data.
+    the referenced KNXnet/IP DIB structure outlives the proxy on all code paths,
+    lest the proxy ends up referencing deleted data.
 
     Reading the device information can be achieved like this:
     \code
         auto dib = QKnxNetIpDib::fromBytes(...);
 
-        QKnxNetIpDeviceDibProxy view(dib);
-        if (!view.isValid())
+        QKnxNetIpDeviceDibProxy proxy(dib);
+        if (!proxy.isValid())
             return;
 
-        auto mediumType = view.mediumType();
-        auto programmingMode = view.deviceStatus();
+        auto mediumType = proxy.mediumType();
+        auto programmingMode = proxy.deviceStatus();
         ...
-        auto deviceName = view.deviceName();
+        auto deviceName = proxy.deviceName();
     \endcode
 
     \sa builder(), {Qt KNXnet/IP Connection Classes}

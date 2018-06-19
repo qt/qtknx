@@ -53,15 +53,15 @@ QT_BEGIN_NAMESPACE
     \l QKnxNetIpServerDiscoveryAgent and \l QKnxNetIpServerInfo are provided.
 
     \note When using QKnxNetIpExtendedDeviceDibProxy, care must be taken to
-    ensure that the referenced KNXnet/IP DIB structure outlives the view on
-    all code paths, lest the view ends up referencing deleted data.
+    ensure that the referenced KNXnet/IP DIB structure outlives the proxy on
+    all code paths, lest the proxy ends up referencing deleted data.
 
     Reading the extended device information can be achieved like this:
     \code
         auto dib = QKnxNetIpDib::fromBytes(...);
 
         QKnxNetIpExtendedDeviceDibProxy proxy(dib);
-        if (!view.isValid())
+        if (!proxy.isValid())
             return;
 
         auto mediumStatus = proxy.mediumStatus();
