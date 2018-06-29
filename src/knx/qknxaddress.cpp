@@ -221,6 +221,47 @@ QKnxAddress QKnxAddress::createIndividual(quint8 area, quint16 line, quint8 sequ
 }
 
 /*!
+    Depending on the type of the address, this function returns either the area
+    component or the main component of the address.
+*/
+quint8 QKnxAddress::main() const
+{
+    if (m_type == QKnxAddress::Type::Individual)
+        return (m_address >> 12);
+    return ((m_address >> 11) & 0x1f); // two and three level notation
+}
+
+/*!
+    Depending on the type of the address, this function returns either the line
+    component or the middle component of the address.
+*/
+quint8 QKnxAddress::middle() const
+{
+    if (m_type == QKnxAddress::Type::Group)
+        return ((m_address >> 8) & 0x07);
+
+    // individual address
+    return ((m_address & 0x0F00) >> 8);
+}
+
+/*!
+    Depending on the type and the given \a notation, this function returns
+    either the device component or the sub component of the address.
+
+    \note Individual addresses support only 3-level notation, whereas group
+    addresses support 2-level or 3-level notation.
+*/
+quint16 QKnxAddress::sub(Notation notation) const
+{
+    // group address with two level notation
+    if (m_type == QKnxAddress::Type::Group && notation == Notation::TwoLevel)
+        return (m_address & 0x07ff);
+
+    // individual address and group address with three level
+    return (m_address & 0xff);
+}
+
+/*!
     Returns \c true if this is a valid \l {Type}{group address} object and the
     address is set to \c 0x0000; \c false otherwise.
 */

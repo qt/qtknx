@@ -63,6 +63,10 @@ public:
 
     static QKnxAddress createIndividual(quint8 area, quint16 line, quint8 sequentialNumber);
 
+    quint8 main() const;
+    quint8 middle() const;
+    quint16 sub(Notation notation = Notation::ThreeLevel) const;
+
     bool isValid() const;
     bool isBroadcast() const;
 

@@ -613,6 +613,61 @@ private slots:
         qDebug() << QKnxAddress(QKnxAddress::Type::Individual, 4353);
         QCOMPARE(s_msg, QString::fromLatin1("0x1101"));
     }
+
+    void testAddressComponents_data()
+    {
+        QTest::addColumn<QKnxAddress>("address");
+        QTest::addColumn<QKnxAddress::Type>("type");
+        QTest::addColumn<QKnxAddress::Notation>("notation");
+        QTest::addColumn<bool>("isValid");
+        QTest::addColumn<quint8>("main");
+        QTest::addColumn<quint8>("middle");
+        QTest::addColumn<quint16>("sub");
+
+        // valid individual
+        QTest::newRow("QKnxAddress(QKnxAddress::Type::Individual, QStringLiteral(\"1.2.3\"))")
+            << QKnxAddress(QKnxAddress::Type::Individual, QStringLiteral("1.2.3"))
+            << QKnxAddress::Type::Individual
+            << QKnxAddress::Notation::ThreeLevel
+            << true
+            << (quint8)1
+            << (quint8)2
+            << (quint16)3;
+
+        // valid 3-level group addresses
+        QTest::newRow("QKnxAddress(QKnxAddress::Type::Group, QStringLiteral(\"4/5/6\"))")
+            << QKnxAddress(QKnxAddress::Type::Group, QStringLiteral("4/5/6"))
+            << QKnxAddress::Type::Group
+            << QKnxAddress::Notation::ThreeLevel
+            << true
+            << (quint8)4
+            << (quint8)5
+            << (quint16)6;
+
+        // valid 2-level group addresses
+        QTest::newRow("QKnxAddress(QKnxAddress::Type::Group, QStringLiteral(\"13/2045\"))")
+            << QKnxAddress(QKnxAddress::Type::Group, QStringLiteral("13/2045"))
+            << QKnxAddress::Type::Group
+            << QKnxAddress::Notation::TwoLevel
+            << true
+            << (quint8)13
+            << (quint8)7
+            << (quint16)2045;
+    }
+
+    void testAddressComponents()
+    {
+        QFETCH(QKnxAddress, address);
+
+        auto notation = *static_cast<const QKnxAddress::Notation *>(QTest::qElementData("notation",
+            qMetaTypeId<QKnxAddress::Notation>()));
+
+        QTEST(address.type(), "type");
+        QTEST(address.isValid(), "isValid");
+        QTEST(address.main(), "main");
+        QTEST(address.middle(), "middle");
+        QTEST(address.sub(notation), "sub");
+    }
 };
 
 QTEST_APPLESS_MAIN(tst_QKnxAddress)
