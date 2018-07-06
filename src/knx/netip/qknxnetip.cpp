@@ -296,6 +296,10 @@ bool QKnxNetIp::isServiceFamily(QKnxNetIp::ServiceFamily family)
     \value RoutingBusy
            The service type used to indicate that a KNXnet/IP router or KNX IP
            device received more datagrams than it can process.
+    \value RoutingSystemBroadcast
+           The service type used for adding a new KNXnet/IP device into an
+           already configured domain when the device is not in the same network
+           as the management client (MaC).
 */
 
 /*!
@@ -330,6 +334,7 @@ bool QKnxNetIp::isServiceType(QKnxNetIp::ServiceType type)
     case QKnxNetIp::ServiceType::RoutingIndication:
     case QKnxNetIp::ServiceType::RoutingLostMessage:
     case QKnxNetIp::ServiceType::RoutingBusy:
+    case QKnxNetIp::ServiceType::RoutingSystemBroadcast:
         return true;
     case QKnxNetIp::ServiceType::Unknown:
         break;
