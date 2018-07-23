@@ -44,7 +44,8 @@ PUBLIC_HEADERS += $$PWD/qknxnetip.h \
     $$PWD/qknxnetiptunnelingrequest.h \
     $$PWD/qknxnetipsrp.h \
     $$PWD/qknxnetiptunnelinginfodib.h \
-    $$PWD/qknxnetipextendeddevicedib.h
+    $$PWD/qknxnetipextendeddevicedib.h \
+    $$PWD/qknxnetiproutingsystembroadcast.h
 
 PRIVATE_HEADERS += \
     $$PWD/qknxbuilderdata_p.h \
@@ -98,4 +99,5 @@ SOURCES += $$PWD/qknxnetip.cpp \
     $$PWD/qknxnetiptunnelingrequest.cpp \
     $$PWD/qknxnetipsrp.cpp \
     $$PWD/qknxnetiptunnelinginfodib.cpp \
-    $$PWD/qknxnetipextendeddevicedib.cpp
+    $$PWD/qknxnetipextendeddevicedib.cpp \
+    $$PWD/qknxnetiproutingsystembroadcast.cpp
