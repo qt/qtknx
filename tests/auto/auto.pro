@@ -42,4 +42,5 @@ SUBDIRS += cmake \
     qknxnetiptunnelingfeature \
     qknxnetiptunnelinginfodib \
     qknxnetipextendeddevicedib \
-    qknxnetiproutingsystembroadcast
+    qknxnetiproutingsystembroadcast \
+    qknxnetipsecuredservicefamiliesdib
