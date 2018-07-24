@@ -76,6 +76,7 @@ namespace QKnx
             IpConfiguration = 0x03,
             CurrentIpConfiguration = 0x04,
             KnxAddresses = 0x05,
+            SecuredServices = 0x06,
             TunnelingInfo = 0x07,
             ExtendedDeviceInfo = 0x08,
             ManufacturerData = 0xfe,
@@ -133,7 +134,16 @@ namespace QKnx
             RoutingIndication = 0x0530,
             RoutingLostMessage = 0x0531,
             RoutingBusy = 0x0352,
-            RoutingSystemBroadcast = 0x0533
+            RoutingSystemBroadcast = 0x0533,
+
+            // KNXnet/IP Security service type identifier
+            SecureWrapper = 0x0950,
+            SessionRequest = 0x0951,
+            SessionResponse = 0x0952,
+            SessionAuthenticate = 0x0953,
+            SessionStatus = 0x0954,
+            TimerNotify = 0x0955
+
         };
         Q_ENUM_NS(ServiceType)
         Q_KNX_EXPORT bool isServiceType(ServiceType type);
@@ -275,6 +285,16 @@ namespace QKnx
         Q_ENUM_NS(SearchParameterType)
         Q_KNX_EXPORT bool isStructType(SearchParameterType type);
 
+        enum class SecureSessionStatus : quint8
+        {
+            AuthenticationSuccess = 0x00,
+            AuthenticationFailed = 0x01,
+            Unauthenticated = 0x02,
+            Timeout = 0x03,
+            Close = 0x04,
+            KeepAlive = 0x05
+        };
+        Q_ENUM_NS(SecureSessionStatus)
     }
 }
 namespace QKnxNetIp = QKnx::NetIp;
@@ -296,6 +316,7 @@ Q_DECLARE_TYPEINFO(QKnxNetIp::AssignmentMethod, Q_PRIMITIVE_TYPE);
 Q_DECLARE_TYPEINFO(QKnxNetIp::Capability, Q_PRIMITIVE_TYPE);
 Q_DECLARE_TYPEINFO(QKnxNetIp::Timeout, Q_PRIMITIVE_TYPE);
 Q_DECLARE_TYPEINFO(QKnxNetIp::SearchParameterType, Q_PRIMITIVE_TYPE);
+Q_DECLARE_TYPEINFO(QKnxNetIp::SecureSessionStatus, Q_PRIMITIVE_TYPE);
 
 Q_DECLARE_TYPEINFO(QKnxNetIpCemiServer::ReturnCode, Q_PRIMITIVE_TYPE);
 Q_DECLARE_TYPEINFO(QKnxNetIpCemiServer::Error, Q_PRIMITIVE_TYPE);

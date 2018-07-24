@@ -132,6 +132,9 @@ bool QKnxNetIp::isStructType(QKnxNetIp::ConnectionType type)
     \value CurrentIpConfiguration   Current IP configuration of the device.
     \value KnxAddresses
            All individual addresses assigned to the device.
+    \value SecuredServices
+           KNXnet/IP servers supporting the KNXnet/IP secure services as
+           specified by the KNX application note AN159.
     \value TunnelingInfo
             Tunneling information, such as the
             \l {QKnxInterfaceObjectProperty::MaxInterfaceApduLength}{maximum
@@ -160,6 +163,7 @@ bool QKnxNetIp::isStructType(QKnxNetIp::DescriptionType type)
     case QKnxNetIp::DescriptionType::IpConfiguration:
     case QKnxNetIp::DescriptionType::CurrentIpConfiguration:
     case QKnxNetIp::DescriptionType::KnxAddresses:
+    case QKnxNetIp::DescriptionType::SecuredServices:
     case QKnxNetIp::DescriptionType::TunnelingInfo:
     case QKnxNetIp::DescriptionType::ExtendedDeviceInfo:
     case QKnxNetIp::DescriptionType::ManufacturerData:
@@ -300,6 +304,24 @@ bool QKnxNetIp::isServiceFamily(QKnxNetIp::ServiceFamily family)
            The service type used for adding a new KNXnet/IP device into an
            already configured domain when the device is not in the same network
            as the management client (MaC).
+    \value SecureWrapper
+           The service type used for sending an encrypted frame including data to
+           ensure integrity and freshness.
+    \value SessionRequest
+           The service type used to initiate the secure connection setup handshake
+           for a new secure communication session.
+    \value SessionResponse
+           The service type used to respond to a received secure session
+           request frame.
+    \value SessionAuthenticate
+           The service type used after the Diffie-Hellman handshake to
+           authenticate the user against the server.
+    \value SessionStatus
+           The service type used to send a frame at any stage of the secure
+           session handshake to indicate an error condition or status information.
+    \value TimerNotify
+           The service type used to ensure synchronization of the multicast
+           group member's timer values.
 */
 
 /*!
@@ -335,6 +357,12 @@ bool QKnxNetIp::isServiceType(QKnxNetIp::ServiceType type)
     case QKnxNetIp::ServiceType::RoutingLostMessage:
     case QKnxNetIp::ServiceType::RoutingBusy:
     case QKnxNetIp::ServiceType::RoutingSystemBroadcast:
+    case QKnxNetIp::ServiceType::SecureWrapper:
+    case QKnxNetIp::ServiceType::SessionRequest:
+    case QKnxNetIp::ServiceType::SessionResponse:
+    case QKnxNetIp::ServiceType::SessionAuthenticate:
+    case QKnxNetIp::ServiceType::SessionStatus:
+    case QKnxNetIp::ServiceType::TimerNotify:
         return true;
     case QKnxNetIp::ServiceType::Unknown:
         break;
@@ -667,5 +695,27 @@ bool QKnx::NetIp::isStructType(QKnx::NetIp::SearchParameterType type)
     }
     return false;
 }
+
+/*!
+    \enum QKnx::NetIp::SecureSessionStatus
+
+    This enum is used in a frame sent at any stage of the secure session
+    handshake to indicate an error condition or status information.
+
+    \value AuthenticationSuccess
+            The user was successfully authenticated.
+    \value AuthenticationFailed
+            An error occurred during secure session handshake.
+    \value Unauthenticated
+            The session is not yet authenticated.
+    \value Timeout
+            A timeout occurred during secure session handshake.
+    \value Close
+            The secure session must be closed.
+    \value KeepAlive
+            Prevent inactivity on the secure session. Without the keep-alive
+            signal, the KNXnet/IP device can drop the connection with a timeout
+            error.
+*/
 
 QT_END_NAMESPACE
