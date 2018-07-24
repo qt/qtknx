@@ -123,7 +123,7 @@ namespace QKnx
             // KNXnet/IP Routing service type identifier
             RoutingIndication = 0x0530,
             RoutingLostMessage = 0x0531,
-            RoutingBusy = 0x0352
+            RoutingBusy = 0x0532
         };
         Q_ENUM_NS(ServiceType)
         Q_KNX_EXPORT bool isServiceType(ServiceType type);

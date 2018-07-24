@@ -68,7 +68,7 @@ void tst_QKnxNetIpRoutingBusy::testConstructor()
 
     QCOMPARE(routing.isValid(), true);
     QCOMPARE(frame.size(), quint16(12));
-    QCOMPARE(frame.bytes(), QKnxByteArray::fromHex("06100352000c06010063ffff"));
+    QCOMPARE(frame.bytes(), QKnxByteArray::fromHex("06100532000c06010063ffff"));
     QCOMPARE(frame.data().size(), quint16(6));
     QCOMPARE(frame.data(), QKnxByteArray::fromHex("06010063ffff"));
 
@@ -92,14 +92,14 @@ void tst_QKnxNetIpRoutingBusy::testDebugStream()
     } _(myMessageHandler);
 
     qDebug() << QKnxNetIpRoutingBusyProxy::builder().create();
-    QCOMPARE(s_msg, QStringLiteral("0x06100352000c060000640000"));
+    QCOMPARE(s_msg, QStringLiteral("0x06100532000c060000640000"));
 
     qDebug() << QKnxNetIpRoutingBusyProxy::builder()
         .setDeviceState(QKnxNetIp::DeviceState::IpFault)
         .setRoutingBusyWaitTime(99)
         .setRoutingBusyControl(0xffff)
         .create();
-    QCOMPARE(s_msg, QStringLiteral("0x06100352000c06010063ffff"));
+    QCOMPARE(s_msg, QStringLiteral("0x06100532000c06010063ffff"));
 }
 
 QTEST_APPLESS_MAIN(tst_QKnxNetIpRoutingBusy)
