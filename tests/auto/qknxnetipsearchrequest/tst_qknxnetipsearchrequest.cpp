@@ -138,12 +138,11 @@ void tst_QKnxNetIpSearchRequest::tst_srpBuilders()
     QVERIFY(srpMac.isValid());
 
     auto serviceFamilyId = QKnxNetIp::ServiceFamily::ObjectServer;
-    auto minVersion = 4;
+    quint8 minVersion = 4;
     auto srpSupportedFamily = SupportedFamily()
-                              .setMandatory()
-                              .setServiceFamilyId(serviceFamilyId)
-                              .setMinimumVersion(minVersion)
-                              .create();
+        .setMandatory()
+        .setServiceInfos({ { serviceFamilyId, minVersion } })
+        .create();
     QCOMPARE(srpSupportedFamily.code(),
              QKnxNetIp::SearchParameterType::SelectByServiceSRP);
     QVERIFY(srpSupportedFamily.header().isMandatory());
@@ -151,26 +150,24 @@ void tst_QKnxNetIpSearchRequest::tst_srpBuilders()
     QCOMPARE(srpSupportedFamily.constData().at(1), minVersion);
     QVERIFY(srpSupportedFamily.isValid());
 
-    QVector<QKnxServiceInfo> families;
-    families.append({ QKnxNetIp::ServiceFamily::Core, 9 });
-    families.append({ QKnxNetIp::ServiceFamily::DeviceManagement, 10 });
-    families.append({ QKnxNetIp::ServiceFamily::IpTunneling, 11 });
+    QVector<QKnxNetIp::DescriptionType> types;
+    types.append(QKnxNetIp::DescriptionType::DeviceInfo);
+    types.append(QKnxNetIp::DescriptionType::SupportedServiceFamilies);
+    types.append(QKnxNetIp::DescriptionType::ExtendedDeviceInfo);
     QKnxNetIpSrp srpDibs = RequestDibs()
                    .setMandatory()
-                   .setServiceInfos(families)
+                   .setDescriptionTypes(types)
                    .create();
-    QCOMPARE(srpDibs.code(),
-             QKnxNetIp::SearchParameterType::RequestDIBs);
+    QCOMPARE(srpDibs.code(), QKnxNetIp::SearchParameterType::RequestDIBs);
     QVERIFY(srpDibs.header().isMandatory());
     QVERIFY(srpDibs.isValid());
 
-    QKnxNetIpDib dib(QKnxNetIp::DescriptionType::SupportedServiceFamilies,srpDibs.data());
-    QKnxNetIpServiceFamiliesDibProxy dibView(dib);
-    auto serviceInfos = dibView.serviceInfos();
-    for (int i = 0; i < serviceInfos.size(); ++i) {
-        QCOMPARE(serviceInfos[i].ServiceFamily, families[i].ServiceFamily);
-        QCOMPARE(serviceInfos[i].ServiceFamilyVersion, families[i].ServiceFamilyVersion);
-    }
+    auto data = srpDibs.constData();
+    QCOMPARE(data.size(), 4);
+
+    types.append(QKnxNetIp::DescriptionType::Unknown);
+    for (int i = 0; i < data.size(); ++i)
+        QCOMPARE(QKnxNetIp::DescriptionType(data.at(i)), types[i]);
 }
 
 void tst_QKnxNetIpSearchRequest::tst_createSrpFromBytes()

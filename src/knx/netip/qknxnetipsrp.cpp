@@ -27,12 +27,13 @@
 **
 ******************************************************************************/
 
-#include <private/qknxbuilderdata_p.h>
+#include "qknxbuilderdata_p.h"
+#include "qknxnetipservicefamiliesdib.h"
 #include "qknxnetipsrp.h"
+#include "qknxnetipstruct.h"
+#include "qknxnetipstructheader.h"
+
 #include <QtCore/qshareddata.h>
-#include <QtKnx/qknxnetipservicefamiliesdib.h>
-#include <QtKnx/qknxnetipstruct.h>
-#include <QtKnx/qknxnetipstructheader.h>
 
 QT_BEGIN_NAMESPACE
 
@@ -246,13 +247,15 @@ QKnxNetIpSrp MacAddress::create() const
     The common way to create this SRP is:
 
     \code
-        auto serviceFamilyId = QKnxNetIp::ServiceFamily::ObjectServer;
-        auto minVersion = 4;
-        auto srpSupportedFamily = SupportedFamily()
-                                  .setMandatory()
-                                  .setServiceFamilyId(serviceFamilyId)
-                                  .setMinimumVersion(minVersion)
-                                  .create();
+        QVector<QKnxServiceInfo> families;
+        families.append({ QKnxNetIp::ServiceFamily::Core, 9 });
+        families.append({ QKnxNetIp::ServiceFamily::DeviceManagement, 10 });
+        families.append({ QKnxNetIp::ServiceFamily::IpTunneling, 11 });
+
+        auto srpDibs = SupportedFamily()
+            .setMandatory()
+            .setServiceInfos(families)
+            .create();
     \endcode
 
     \sa QKnxNetIpSearchRequestProxy
@@ -286,23 +289,12 @@ SupportedFamily &SupportedFamily::operator=(const SupportedFamily &other)
 }
 
 /*!
-    Sets the service family to \a serviceFamily.
+    Sets the supported service families and versions of the KNXnet/IP SRP
+    structure to \a infos and returns a reference to the SRP builder.
 */
-SupportedFamily &
-SupportedFamily::setServiceFamilyId(const QKnx::NetIp::ServiceFamily &serviceFamily)
+SupportedFamily &SupportedFamily::setServiceInfos(const QVector<QKnxServiceInfo> &infos)
 {
-    d_ptr->m_info.ServiceFamily = serviceFamily;
-    return *this;
-}
-
-/*!
-    Sets the minimum version \a minVersion of the KNXnet/IP service family
-    that the client supports.
-*/
-SupportedFamily &
-SupportedFamily::setMinimumVersion(quint8 minVersion)
-{
-    d_ptr->m_info.ServiceFamilyVersion = minVersion;
+    d_ptr->m_infos = infos;
     return *this;
 }
 
@@ -323,9 +315,12 @@ QKnxNetIpSrp SupportedFamily::create() const
     auto header = QKnxNetIpStructHeader<QKnxNetIp::SearchParameterType>
                   (QKnxNetIp::SearchParameterType::SelectByServiceSRP, 2);
     header.setMandatory(d_ptr->m_mandatory);
-    QKnxByteArray data = { quint8(d_ptr->m_info.ServiceFamily),
-                           d_ptr->m_info.ServiceFamilyVersion };
-    return QKnxNetIpSrp(header, data);
+
+    QKnxByteArray bytes;
+    for (const auto &info : qAsConst(d_ptr->m_infos))
+        bytes += { quint8(info.ServiceFamily), info.ServiceFamilyVersion };
+
+    return QKnxNetIpSrp(header, bytes);
 }
 
 /*!
@@ -337,26 +332,26 @@ QKnxNetIpSrp SupportedFamily::create() const
     create the \e {Request DIBs} SRP for the extended search request.
 
     The client includes this SRP to indicate that it is interested in the
-    listed description information blocks (DIBs). This SRP does not influence
-    the decision of the KNXnet/IP server whether or not to respond to the
-    search request.
+    listed description type information blocks (DIBs). This SRP does not
+    influence the decision of the KNXnet/IP server whether or not to respond
+    to the search request.
 
     This SRP has variable length. If the client is interested in an odd number
-    of DIBs, it adds an additional Description Type \c 0 to make the structure
-    length even.
+    of DIBs, it adds an additional description type
+    \l {QKnx::NetIp::DescriptionType} {QKnxNetIp::DescriptionType::Unknown}
+    to make the structure length even.
 
     The common way to create this SRP is:
 
     \code
-        QVector<QKnxServiceInfo> families;
-        families.append({ QKnxNetIp::ServiceFamily::Core, 9 });
-        families.append({ QKnxNetIp::ServiceFamily::DeviceManagement, 10 });
-        families.append({ QKnxNetIp::ServiceFamily::IpTunneling, 11 });
-        // ...
-        QKnxNetIpSrp srpDibs = RequestDibs()
-                       .setMandatory()
-                       .setServiceInfos(families)
-                       .create();
+        auto srpDibs = RequestDibs()
+            .setMandatory()
+            .setDescriptionTypes({
+                QKnxNetIp::DescriptionType::DeviceInfo,
+                QKnxNetIp::DescriptionType::SupportedServiceFamilies,
+                QKnxNetIp::DescriptionType::ExtendedDeviceInfo,
+                QKnxNetIp::DescriptionType::Unknown
+            }).create();
     \endcode
 
     \sa QKnxNetIpSearchRequestProxy
@@ -386,11 +381,12 @@ RequestDibs &RequestDibs::operator=(const RequestDibs &other)
 }
 
 /*!
-    Sets the service information vector \a infos in the builder.
+    Sets the requested description types of the KNXnet/IP SRP structure to
+    \a types and returns a reference to the SRP builder.
 */
-RequestDibs &RequestDibs::setServiceInfos(const QVector<QKnxServiceInfo> &infos)
+RequestDibs &RequestDibs::setDescriptionTypes(const QVector<QKnxNetIp::DescriptionType> &types)
 {
-    d_ptr->m_infos = infos;
+    d_ptr->m_types = types;
     return *this;
 }
 
@@ -408,9 +404,10 @@ RequestDibs &RequestDibs::setMandatory(bool value)
 */
 QKnxNetIpSrp RequestDibs::create() const
 {
-    QKnxByteArray bytes;
-    for (const auto &info : qAsConst(d_ptr->m_infos))
-        bytes += { quint8(info.ServiceFamily), info.ServiceFamilyVersion };
+    const auto &types = d_ptr->m_types;
+    QKnxByteArray bytes((types.size() % 2) == 0 ? types.size() : types.size() + 1, 0x00);
+    for (int i = 0; i < types.size(); ++i)
+        bytes.set(i, quint8(types[i]));
 
     auto header = QKnxNetIpStructHeader<QKnxNetIp::SearchParameterType>
                   (QKnxNetIp::SearchParameterType::RequestDIBs, bytes.size());

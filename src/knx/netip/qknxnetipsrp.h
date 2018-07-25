@@ -86,8 +86,7 @@ public:
     SupportedFamily(const SupportedFamily &other);
     SupportedFamily &operator=(const SupportedFamily &other);
 
-    SupportedFamily &setServiceFamilyId(const QKnxNetIp::ServiceFamily &serviceFamily);
-    SupportedFamily &setMinimumVersion(quint8 minVersion);
+    SupportedFamily &setServiceInfos(const QVector<QKnxServiceInfo> &infos);
     SupportedFamily &setMandatory(bool value = true);
 
     QKnxNetIpSrp create() const;
@@ -106,7 +105,7 @@ public:
     RequestDibs(const RequestDibs &other);
     RequestDibs &operator=(const RequestDibs &other);
 
-    RequestDibs &setServiceInfos(const QVector<QKnxServiceInfo> &infos);
+    RequestDibs &setDescriptionTypes(const QVector<QKnxNetIp::DescriptionType> &types);
     RequestDibs &setMandatory(bool value = true);
 
     QKnxNetIpSrp create() const;
@@ -116,7 +115,7 @@ private:
     QSharedDataPointer<RequestDibsPrivate> d_ptr;
 };
 
-} // end namespace SrpBuilders
+}
 
 QT_END_NAMESPACE
 

@@ -77,14 +77,14 @@ public:
 class SrpBuilders::SupportedFamily::SupportedFamilyPrivate : public QSharedData
 {
 public:
-    QKnxServiceInfo m_info;
+    QVector<QKnxServiceInfo> m_infos;
     bool m_mandatory { false };
 };
 
 class SrpBuilders::RequestDibs::RequestDibsPrivate : public QSharedData
 {
 public:
-    QVector<QKnxServiceInfo> m_infos;
+    QVector<QKnxNetIp::DescriptionType> m_types;
     bool m_mandatory { false };
 };
 
