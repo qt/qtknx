@@ -62,7 +62,7 @@ public:
 
     private:
         QKnxNetIp::HostProtocol m_code { QKnxNetIp::HostProtocol::UDP_IPv4 };
-        QHostAddress m_address { QHostAddress::LocalHost };
+        QHostAddress m_address { QHostAddress::Null };
         quint16 m_port { 0 };
     };
     static QKnxNetIpHpaiProxy::Builder builder();
