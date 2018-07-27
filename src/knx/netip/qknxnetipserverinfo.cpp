@@ -284,13 +284,11 @@ QKnxNetIpServerInfo::QKnxNetIpServerInfo(QKnxNetIpServerInfo &&other) Q_DECL_NOT
     other.d_ptr = nullptr;
 }
 
-QKnxNetIpServerInfo &
-
 /*!
     Move-constructs an object instance, making it point to the same object that
     \a other was pointing to.
 */
-QKnxNetIpServerInfo::operator=(QKnxNetIpServerInfo &&other) Q_DECL_NOTHROW
+QKnxNetIpServerInfo &QKnxNetIpServerInfo::operator=(QKnxNetIpServerInfo &&other) Q_DECL_NOTHROW
 {
     swap(other);
     return *this;

@@ -27,7 +27,7 @@
 **
 ******************************************************************************/
 
-#include "private/qknxtpdufactory_p.h"
+#include "qknxtpdufactory_p.h"
 
 QT_BEGIN_NAMESPACE
 
