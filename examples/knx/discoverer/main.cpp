@@ -51,7 +51,11 @@
 #include <QtCore/QDebug>
 #include <QtCore/QCommandLineParser>
 #include <QtCore/QCoreApplication>
+
+#include <QtKnx/QKnxNetIpExtendedDeviceDibProxy>
 #include <QtKnx/QKnxNetIpServerDiscoveryAgent>
+#include <QtKnx/QKnxNetIpSrpBuilder>
+
 #include <QtNetwork/QNetworkInterface>
 
 static QString familieToString(QKnxNetIp::ServiceFamily id)
@@ -103,9 +107,21 @@ int main(int argc, char *argv[])
         { { "n", "nat" }, "Use Network Address Translation to traverse across network routers." },
         { { "u", "unicast" }, "Force unicast response. (defaults to multicast response)" },
         { { "a", "localAddress" }, "The local IP address a response shall be sent to. "
-             "Implies <unicast>", "localAddress", "127.0.0.1" },
+                "Implies <unicast>", "localAddress", "127.0.0.1" },
         { { "p", "localPort" }, "The local UDP port a response shall be sent to (defaults to "
-            "system assigned). Implies <unicast>", "localPort", "0"}
+                "system assigned). Implies <unicast>.", "localPort", "0" },
+        { { "m", "searchMode" }, "Specifies the mode used to send search request. Possible "
+                "values: (default, extended, both).", "searchMode", "default" },
+        { "filterProg", "Limit search responses to devices in programming mode. Implies "
+                "search mode extended or both." },
+        { "filterMAC", "Limit search responses to the given MAC address. Implies search "
+                "mode extended or both.", "MAC" },
+        { "filterService", "Limit search responses to devices supporting the given "
+                "KNXnet/IP service family in at least the given version (e.g. 0202). Implies "
+                "search mode extended or both.", "Service" },
+        { "descriptionType", "Force returning DIBs inside the search responses to "
+                "to at least of the given set of IDs. (e.g. 010208). Implies search mode "
+                "extended or both.", "Type" }
     });
     parser.process(discoverer);
 
@@ -117,6 +133,55 @@ int main(int argc, char *argv[])
 
     if (parser.isSet("unicast"))
         agent.setResponseType(QKnxNetIpServerDiscoveryAgent::ResponseType::Unicast);
+
+    auto value = parser.value("searchMode");
+    if (parser.isSet("searchMode") && value != "default") {
+        if (value == "extended") {
+            agent.setDiscoveryMode(QKnxNetIpServerDiscoveryAgent::DiscoveryMode::CoreV2);
+        } else if (value == "both") {
+            agent.setDiscoveryMode(QKnxNetIpServerDiscoveryAgent::DiscoveryMode::CoreV1
+                | QKnxNetIpServerDiscoveryAgent::DiscoveryMode::CoreV2);
+        } else {
+            qInfo().noquote() << "Wrong argument for option <searchMode>:" << value;
+            return EXIT_FAILURE;
+        }
+    }
+
+    if (parser.isSet("filterProg")) {
+        agent.setDiscoveryMode(agent.discoveryMode()
+            | QKnxNetIpServerDiscoveryAgent::DiscoveryMode::CoreV2);
+        agent.setExtendedSearchParameters({ SrpBuilders::ProgrammingMode().create() });
+    }
+
+    if (parser.isSet("filterMAC")) {
+        agent.setDiscoveryMode(agent.discoveryMode()
+            | QKnxNetIpServerDiscoveryAgent::DiscoveryMode::CoreV2);
+        agent.setExtendedSearchParameters(QVector<QKnxNetIpSrp>({
+            SrpBuilders::MacAddress()
+                .setMac(QKnxByteArray::fromHex(parser.value("filterMAC").toLatin1()))
+                .create()
+        }) + agent.extendedSearchParameters());
+    }
+
+    if (parser.isSet("filterService")) {
+        auto value = parser.value("filterService");
+        if (value.size() == 4) {
+            bool okLeft = false, okRight = false;
+            quint8 left = value.left(2).toUShort(&okLeft, 16);
+            quint8 right = value.mid(2).toUShort(&okRight, 16);
+            if (!okLeft || !okRight) return EXIT_FAILURE;
+
+            agent.setDiscoveryMode(agent.discoveryMode()
+                | QKnxNetIpServerDiscoveryAgent::DiscoveryMode::CoreV2);
+
+            agent.setExtendedSearchParameters(QVector<QKnxNetIpSrp>({
+                SrpBuilders::SupportedFamily()
+                    .setMandatory()
+                    .setServiceInfos({ { QKnxNetIp::ServiceFamily(left), right } })
+                    .create()
+            }) + agent.extendedSearchParameters());
+        }
+    }
 
     QObject::connect(&agent, &QKnxNetIpServerDiscoveryAgent::finished, &discoverer,
         &QCoreApplication::quit);
@@ -147,6 +212,24 @@ int main(int argc, char *argv[])
             for (const auto service : services) {
                 qInfo().noquote() << QString::fromLatin1("      KNXnet/IP %1, Version: %2")
                     .arg(familieToString(service.ServiceFamily)).arg(service.ServiceFamilyVersion);
+            }
+
+            const auto dib = server.extendedHardware();
+            QKnxNetIpExtendedDeviceDibProxy hardware(dib);
+            if (hardware.isValid()) {
+                qInfo() << "    Extended hardware information:";
+                qInfo().noquote() << QString::fromLatin1("      Mask version: %1").arg(hardware
+                    .deviceDescriptorType0(), 4, 16, QLatin1Char('0'));
+                qInfo().noquote() << QString::fromLatin1("      Max. local APDU length: %1")
+                    .arg(hardware.maximumLocalApduLength());
+
+                auto status = server.mediumStatus();
+                if (status == QKnx::MediumStatus::CommunicationPossible)
+                    qInfo() << "      Medium status: Communication possible";
+                else if (status == QKnx::MediumStatus::CommunicationImpossible)
+                    qInfo() << "      Medium status: Communication impossible";
+                else
+                    qInfo() << "      Medium status: Unknown";
             }
             qInfo() << "";
         }
