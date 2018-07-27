@@ -94,23 +94,6 @@ QT_BEGIN_NAMESPACE
 */
 
 /*!
-    \enum QKnxNetIpServerInfo::MediumStatus
-
-    This enum type holds the medium status if the KNXnet/IP router or server
-    supports extended device information.
-
-    \value Unknown
-            The medium status is unknown. Most likely the discovered KNXnet/IP
-            router or server does not support extended device information.
-    \value CommunicationPossible
-            Communication to a KNX twisted pair 1 (TP1) network via the
-            discovered KNXnet/IP router or server is possible.
-    \value CommunicationImpossible
-            Communication to a KNX TP1 network via the discovered KNXnet/IP
-            router or server is not possible.
-*/
-
-/*!
     Creates a KNXnet/IP server information object.
 */
 QKnxNetIpServerInfo::QKnxNetIpServerInfo()
@@ -178,14 +161,14 @@ QVector<QKnxNetIpTunnelingSlotInfo> QKnxNetIpServerInfo::tunnelingSlotInfos() co
 
 /*!
     Returns the medium status of the discovered KNXnet/IP server if it supports
-    extended device information; otherwise returns \l QKnxNetIpServerInfo::Unknown.
+    extended device information; otherwise returns \l QKnx::Unknown.
 */
-QKnxNetIpServerInfo::MediumStatus QKnxNetIpServerInfo::mediumStatus() const
+QKnx::MediumStatus QKnxNetIpServerInfo::mediumStatus() const
 {
     QKnxNetIpExtendedDeviceDibProxy proxy(d_ptr->extendedHardware);
     if (!proxy.isValid())
-        return QKnxNetIpServerInfo::MediumStatus::Unknown;
-    return QKnxNetIpServerInfo::MediumStatus(proxy.mediumStatus());
+        return QKnx::MediumStatus::Unknown;
+    return proxy.mediumStatus();
 }
 
 /*!

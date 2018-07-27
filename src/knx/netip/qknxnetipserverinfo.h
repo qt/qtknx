@@ -50,13 +50,6 @@ class Q_KNX_EXPORT QKnxNetIpServerInfo final
     friend class QKnxNetIpServerDescriptionAgentPrivate;
 
 public:
-    enum class MediumStatus : quint8
-    {
-        Unknown = 0xff,
-        CommunicationPossible = 0x01,
-        CommunicationImpossible = 0x00
-    };
-
     QKnxNetIpServerInfo();
     ~QKnxNetIpServerInfo();
 
@@ -69,7 +62,7 @@ public:
     QVector<QKnxServiceInfo> supportedServices() const;
     QVector<QKnxNetIpTunnelingSlotInfo> tunnelingSlotInfos() const;
 
-    MediumStatus mediumStatus() const;
+    QKnx::MediumStatus mediumStatus() const;
     quint16 maximumLocalApduLength() const;
     quint16 maskVersion() const;
 

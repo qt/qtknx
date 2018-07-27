@@ -49,6 +49,14 @@ namespace QKnx
     };
     Q_ENUM_NS(MediumType)
 
+    enum class MediumStatus : quint8
+    {
+        Unknown = 0xff,
+        CommunicationPossible = 0x00,
+        CommunicationImpossible = 0x01
+    };
+    Q_ENUM_NS(MediumStatus)
+
     enum class InterfaceFeature : quint8
     {
         Unknown = 0x00,

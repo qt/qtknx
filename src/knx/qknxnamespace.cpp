@@ -51,6 +51,23 @@ QT_BEGIN_NAMESPACE
 */
 
 /*!
+    \enum QKnx::MediumStatus
+
+    This enum type holds the medium status if the KNXnet/IP router or server
+    supports extended device information.
+
+    \value Unknown
+            The medium status is unknown. Most likely the discovered KNXnet/IP
+            router or server does not support extended device information.
+    \value CommunicationPossible
+            Communication to a KNX twisted pair 1 (TP1) network via the
+            discovered KNXnet/IP router or server is possible.
+    \value CommunicationImpossible
+            Communication to a KNX TP1 network via the discovered KNXnet/IP
+            router or server is not possible.
+*/
+
+/*!
     \enum QKnx::InterfaceFeature
 
     This enumeration contains the values to identify an interface feature

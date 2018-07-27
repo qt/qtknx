@@ -120,13 +120,13 @@ QKnxNetIp::DescriptionType QKnxNetIpExtendedDeviceDibProxy::descriptionType() co
 /*!
     Returns the medium status contained inside the KNXnet/IP DIB structure
     if the object that was passed during construction was valid; otherwise
-    returns a \l {default-constructed value} which can be \c 0.
+    returns \l QKnx::Unknown.
 */
-quint8 QKnxNetIpExtendedDeviceDibProxy::mediumStatus() const
+QKnx::MediumStatus QKnxNetIpExtendedDeviceDibProxy::mediumStatus() const
 {
     if (isValid())
-        return m_dib.constData().value(0);
-    return 0u;
+        return QKnx::MediumStatus(m_dib.constData().value(0));
+    return QKnx::MediumStatus::Unknown;
 }
 
 /*!
@@ -219,9 +219,9 @@ QKnxNetIpExtendedDeviceDibProxy::Builder::~Builder() = default;
     Sets the medium status to \a status and returns a reference to the builder.
 */
 QKnxNetIpExtendedDeviceDibProxy::Builder &
-    QKnxNetIpExtendedDeviceDibProxy::Builder::setMediumStatus(quint8 status)
+    QKnxNetIpExtendedDeviceDibProxy::Builder::setMediumStatus(QKnx::MediumStatus status)
 {
-    d_ptr->m_mediumStatus = status;
+    d_ptr->m_mediumStatus = quint16(status);
     return *this;
 }
 

@@ -48,7 +48,7 @@ public:
     bool isValid() const;
     QKnxNetIp::DescriptionType descriptionType() const;
 
-    quint8 mediumStatus() const;
+    QKnx::MediumStatus mediumStatus() const;
     quint16 maximumLocalApduLength() const;
     quint16 deviceDescriptorType0() const;
 
@@ -58,7 +58,7 @@ public:
         Builder();
         ~Builder();
 
-        Builder &setMediumStatus(quint8 status);
+        Builder &setMediumStatus(QKnx::MediumStatus status);
         Builder &setMaximumLocalApduLength(quint16 length);
         Builder &setDeviceDescriptorType0(quint16 type);
 

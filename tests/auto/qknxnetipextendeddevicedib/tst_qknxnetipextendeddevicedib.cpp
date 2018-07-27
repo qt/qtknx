@@ -56,14 +56,14 @@ private slots:
         QKnxNetIpExtendedDeviceDibProxy proxy(dib);
         QCOMPARE(proxy.isValid(), false);
         QCOMPARE(proxy.descriptionType(), QKnxNetIp::DescriptionType::Unknown);
-        QCOMPARE(proxy.mediumStatus(), 0x00u);
+        QCOMPARE(proxy.mediumStatus(), QKnx::MediumStatus::Unknown);
         QCOMPARE(proxy.maximumLocalApduLength(), 0x0000);
         QCOMPARE(proxy.deviceDescriptorType0(), 0x0000u);
 
         dib = QKnxNetIpExtendedDeviceDibProxy::builder().create();
         QCOMPARE(proxy.isValid(), false);
         QCOMPARE(proxy.descriptionType(), QKnxNetIp::DescriptionType::Unknown);
-        QCOMPARE(proxy.mediumStatus(), 0x00u);
+        QCOMPARE(proxy.mediumStatus(), QKnx::MediumStatus::Unknown);
         QCOMPARE(proxy.maximumLocalApduLength(), 0x0000);
         QCOMPARE(proxy.deviceDescriptorType0(), 0x0000u);
     }
@@ -71,7 +71,7 @@ private slots:
     void testValidDib()
     {
         auto infoDib = QKnxNetIpExtendedDeviceDibProxy::builder()
-            .setMediumStatus(0x01)
+            .setMediumStatus(QKnx::MediumStatus::CommunicationImpossible)
             .setMaximumLocalApduLength(4096)
             .setDeviceDescriptorType0(0x5705)
             .create();
@@ -80,7 +80,7 @@ private slots:
         QKnxNetIpExtendedDeviceDibProxy proxy(infoDib);
         QCOMPARE(proxy.isValid(), true);
         QCOMPARE(proxy.descriptionType(), QKnxNetIp::DescriptionType::ExtendedDeviceInfo);
-        QCOMPARE(proxy.mediumStatus(), 0x01);
+        QCOMPARE(proxy.mediumStatus(), QKnx::MediumStatus::CommunicationImpossible);
         QCOMPARE(proxy.maximumLocalApduLength(), 0x1000);
         QCOMPARE(proxy.deviceDescriptorType0(), 0x5705);
         QCOMPARE(infoDib.bytes(), bytes);
@@ -89,7 +89,7 @@ private slots:
         infoDib = QKnxNetIpDib::fromBytes(bytes, 0);
         QCOMPARE(proxy.isValid(), true);
         QCOMPARE(proxy.descriptionType(), QKnxNetIp::DescriptionType::ExtendedDeviceInfo);
-        QCOMPARE(proxy.mediumStatus(), 0x00);
+        QCOMPARE(proxy.mediumStatus(), QKnx::MediumStatus::CommunicationPossible);
         QCOMPARE(proxy.maximumLocalApduLength(), 0x0400);
         QCOMPARE(proxy.deviceDescriptorType0(), 0x091a);
     }
@@ -103,28 +103,28 @@ private slots:
         QKnxNetIpExtendedDeviceDibProxy proxy(infoDib);
         QCOMPARE(proxy.isValid(), false);
         QCOMPARE(proxy.descriptionType(), QKnxNetIp::DescriptionType::Unknown);
-        QCOMPARE(proxy.mediumStatus(), 0x00u);
+        QCOMPARE(proxy.mediumStatus(), QKnx::MediumStatus::Unknown);
         QCOMPARE(proxy.maximumLocalApduLength(), 0x0000);
         QCOMPARE(proxy.deviceDescriptorType0(), 0x0000u);
 
-        infoDib = builder.setMediumStatus(0x01).create();
+        infoDib = builder.setMediumStatus(QKnx::MediumStatus::CommunicationImpossible).create();
         QCOMPARE(proxy.isValid(), false);
         QCOMPARE(proxy.descriptionType(), QKnxNetIp::DescriptionType::Unknown);
-        QCOMPARE(proxy.mediumStatus(), 0x00u);
+        QCOMPARE(proxy.mediumStatus(), QKnx::MediumStatus::Unknown);
         QCOMPARE(proxy.maximumLocalApduLength(), 0x0000);
         QCOMPARE(proxy.deviceDescriptorType0(), 0x0000u);
 
         infoDib = builder.setMaximumLocalApduLength(4096).create();
         QCOMPARE(proxy.isValid(), false);
         QCOMPARE(proxy.descriptionType(), QKnxNetIp::DescriptionType::Unknown);
-        QCOMPARE(proxy.mediumStatus(), 0x00u);
+        QCOMPARE(proxy.mediumStatus(), QKnx::MediumStatus::Unknown);
         QCOMPARE(proxy.maximumLocalApduLength(), 0x0000);
         QCOMPARE(proxy.deviceDescriptorType0(), 0x0000u);
 
         infoDib = builder.setDeviceDescriptorType0(0x5705).create();
         QCOMPARE(proxy.isValid(), true);
         QCOMPARE(proxy.descriptionType(), QKnxNetIp::DescriptionType::ExtendedDeviceInfo);
-        QCOMPARE(proxy.mediumStatus(), 0x01);
+        QCOMPARE(proxy.mediumStatus(), QKnx::MediumStatus::CommunicationImpossible);
         QCOMPARE(proxy.maximumLocalApduLength(), 0x1000);
         QCOMPARE(proxy.deviceDescriptorType0(), 0x5705);
         QCOMPARE(infoDib.bytes(), QKnxByteArray::fromHex("0808010010005705"));
@@ -132,14 +132,14 @@ private slots:
         infoDib = QKnxNetIpDib::fromBytes(QKnxByteArray::fromHex("06080100100057"));
         QCOMPARE(proxy.isValid(), false);
         QCOMPARE(proxy.descriptionType(), QKnxNetIp::DescriptionType::Unknown);
-        QCOMPARE(proxy.mediumStatus(), 0x00u);
+        QCOMPARE(proxy.mediumStatus(), QKnx::MediumStatus::Unknown);
         QCOMPARE(proxy.maximumLocalApduLength(), 0x0000);
         QCOMPARE(proxy.deviceDescriptorType0(), 0x0000u);
 
         infoDib = QKnxNetIpDib::fromBytes(QKnxByteArray::fromHex("08080100100057"));
         QCOMPARE(proxy.isValid(), false);
         QCOMPARE(proxy.descriptionType(), QKnxNetIp::DescriptionType::Unknown);
-        QCOMPARE(proxy.mediumStatus(), 0x00u);
+        QCOMPARE(proxy.mediumStatus(), QKnx::MediumStatus::Unknown);
         QCOMPARE(proxy.maximumLocalApduLength(), 0x0000);
         QCOMPARE(proxy.deviceDescriptorType0(), 0x0000u);
     }
@@ -160,7 +160,7 @@ private slots:
         QCOMPARE(s_msg, QString::fromLatin1("0x0208"));
 
         qDebug() << QKnxNetIpExtendedDeviceDibProxy::builder()
-            .setMediumStatus(0x01)
+            .setMediumStatus(QKnx::MediumStatus::CommunicationImpossible)
             .setMaximumLocalApduLength(4096)
             .setDeviceDescriptorType0(0x5705)
             .create();
