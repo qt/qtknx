@@ -245,7 +245,7 @@ QKnxNetIpDib QKnxNetIpServerInfo::services() const
 */
 QKnxNetIpDib QKnxNetIpServerInfo::tunnelingInfo() const
 {
-    return QKnxNetIpDib();
+    return d_ptr->tunnelingInfo;
 }
 
 /*!
@@ -255,7 +255,7 @@ QKnxNetIpDib QKnxNetIpServerInfo::tunnelingInfo() const
 */
 QKnxNetIpDib QKnxNetIpServerInfo::extendedHardware() const
 {
-    return QKnxNetIpDib();
+    return d_ptr->extendedHardware;
 }
 
 /*!
@@ -303,7 +303,9 @@ bool QKnxNetIpServerInfo::operator==(const QKnxNetIpServerInfo &other) const
     return d_ptr == other.d_ptr || [&]() -> bool {
         return d_ptr->hpai == other.d_ptr->hpai
             && d_ptr->hardware == other.d_ptr->hardware
-            && d_ptr->services == other.d_ptr->services;
+            && d_ptr->services == other.d_ptr->services
+            && d_ptr->tunnelingInfo == other.d_ptr->tunnelingInfo
+            && d_ptr->extendedHardware == other.d_ptr->extendedHardware;
     }();
 }
 
