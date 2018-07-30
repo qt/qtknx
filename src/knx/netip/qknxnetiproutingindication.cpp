@@ -117,9 +117,12 @@ QKnxLinkLayerFrame QKnxNetIpRoutingIndicationProxy::linkLayerFrame() const
 */
 bool QKnxNetIpRoutingIndicationProxy::isValid() const
 {
+    const auto code = QKnxLinkLayerFrame::MessageCode(m_frame.constData().value(0));
+
     // TODO: fix size check once the minimum CEMI frame size is known
     return m_frame.isValid() && m_frame.size() >= 8
-        && m_frame.serviceType() == QKnxNetIp::ServiceType::RoutingIndication;
+        && m_frame.serviceType() == QKnxNetIp::ServiceType::RoutingIndication
+        && code == QKnxLinkLayerFrame::MessageCode::DataIndication;
 }
 
 /*!

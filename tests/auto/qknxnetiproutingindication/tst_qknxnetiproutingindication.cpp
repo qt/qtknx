@@ -28,7 +28,9 @@
 
 #include <QtCore/qdebug.h>
 #include <QtTest/qtest.h>
+#include <QtKnx/qknxlinklayerframebuilder.h>
 #include <QtKnx/qknxnetiproutingindication.h>
+#include <QtKnx/private/qknxtpdufactory_p.h>
 
 static QString s_msg;
 static void myMessageHandler(QtMsgType, const QMessageLogContext &, const QString &msg)
@@ -59,7 +61,29 @@ void tst_QKnxNetIpRoutingIndication::testDefaultConstructor()
 
 void tst_QKnxNetIpRoutingIndication::testConstructor()
 {
-    // TODO: implement
+    //Only L_data.ind allowed in ROUTING_INDICATION
+    auto bytes  = QKnxByteArray::fromHex("2900b4e011010002010081"); //L_data.ind
+    auto cemi = QKnxLinkLayerFrame::builder()
+                .setData(bytes)
+                .setMedium(QKnx::MediumType::NetIP)
+                .createFrame();
+    auto netIpFrame = QKnxNetIpRoutingIndicationProxy::builder()
+                      .setCemi(cemi)
+                      .create();
+    QKnxNetIpRoutingIndicationProxy routing(netIpFrame);
+    QCOMPARE(routing.isValid(), true);
+
+    // L_data.req not allowed inside ROUTING_INDICATION
+    bytes = QKnxByteArray::fromHex("1100b4e000000002010000"); // L_data.req
+    cemi = QKnxLinkLayerFrame::builder()
+           .setData(bytes)
+           .setMedium(QKnx::MediumType::NetIP)
+           .createFrame();
+    netIpFrame = QKnxNetIpRoutingIndicationProxy::builder()
+                 .setCemi(cemi)
+                 .create();
+    QKnxNetIpRoutingIndicationProxy routing2(netIpFrame);
+    QCOMPARE(routing2.isValid(), false);
 }
 
 void tst_QKnxNetIpRoutingIndication::testDebugStream()
