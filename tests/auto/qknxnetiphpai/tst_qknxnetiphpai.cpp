@@ -150,7 +150,7 @@ void tst_QKnxNetIpHpai::testSetFunctions()
         // Setting code only
         hpai = builder.setHostProtocol(QKnxNetIp::HostProtocol::TCP_IPv4).create();
         QCOMPARE(view.hostProtocol(), QKnxNetIp::HostProtocol::TCP_IPv4);
-        QCOMPARE(view.hostAddress(), QHostAddress(QHostAddress::LocalHost));
+        QCOMPARE(view.hostAddress(), QHostAddress("0.0.0.0"));
         QCOMPARE(view.port(), quint16(0));
         QCOMPARE(view.isValid(), true);
 
@@ -220,7 +220,7 @@ void tst_QKnxNetIpHpai::testDebugStream()
     } _(myMessageHandler);
 
     qDebug() << QKnxNetIpHpaiProxy::builder().create();
-    QCOMPARE(s_msg, QString::fromLatin1("0x08017f0000010000"));
+    QCOMPARE(s_msg, QString::fromLatin1("0x0801000000000000"));
 
     qDebug() << QKnxNetIpHpaiProxy::builder()
         .setHostProtocol(QKnxNetIp::HostProtocol::UDP_IPv4)

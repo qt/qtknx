@@ -133,7 +133,7 @@ namespace QKnx
             // KNXnet/IP Routing service type identifier
             RoutingIndication = 0x0530,
             RoutingLostMessage = 0x0531,
-            RoutingBusy = 0x0352,
+            RoutingBusy = 0x0532,
             RoutingSystemBroadcast = 0x0533,
 
             // KNXnet/IP Security service type identifier

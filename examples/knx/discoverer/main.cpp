@@ -129,7 +129,11 @@ int main(int argc, char *argv[])
     agent.setNatAware(parser.isSet("nat"));
     agent.setLocalPort(parser.value("localPort").toUInt());
     agent.setTimeout(parser.value("timeout").toInt() * 1000);
-    agent.setLocalAddress(QHostAddress(parser.value("localAddress")));
+
+    if (parser.isSet("localAddress")) {
+        agent.setLocalAddress(QHostAddress(parser.value("localAddress")));
+        agent.setResponseType(QKnxNetIpServerDiscoveryAgent::ResponseType::Unicast);
+    }
 
     if (parser.isSet("unicast"))
         agent.setResponseType(QKnxNetIpServerDiscoveryAgent::ResponseType::Unicast);
