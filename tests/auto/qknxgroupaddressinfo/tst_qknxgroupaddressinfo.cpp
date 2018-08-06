@@ -27,16 +27,9 @@
 **
 ******************************************************************************/
 
-#include <QtCore/qdebug.h>
 #include <QtKnx/qknxgroupaddressinfos.h>
 #include <QtKnx/qknxgroupaddressinfo.h>
 #include <QtTest/qtest.h>
-
-static QString s_msg;
-static void myMessageHandler(QtMsgType, const QMessageLogContext &, const QString &msg)
-{
-    s_msg = msg;
-}
 
 class tst_QKnxGroupAddressInfos : public QObject
 {
@@ -201,22 +194,6 @@ void tst_QKnxGroupAddressInfos::groupAddressInfo()
     info2 = { QString("Installation"), QString("Name"), QKnxAddress::Group::Broadcast,
         QString("DPST-1-1"), QString("Description") };
     QCOMPARE(info2, info);
-
-    struct DebugHandler
-    {
-        explicit DebugHandler(QtMessageHandler newMessageHandler)
-            : oldMessageHandler(qInstallMessageHandler(newMessageHandler))
-        {}
-        ~DebugHandler()
-        {
-            qInstallMessageHandler(oldMessageHandler);
-        }
-        QtMessageHandler oldMessageHandler;
-    } _(myMessageHandler);
-
-    qDebug() << info;
-    QCOMPARE(s_msg, QString("QKnxGroupAddressInfo (installation=Installation, name=Name, "
-        "address=0x0000, type=QKnxDatapointType::Type(DptSwitch), description=Description)"));
 }
 
 void tst_QKnxGroupAddressInfos::groupAddressInfosFromXml()
