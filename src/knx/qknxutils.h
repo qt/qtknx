@@ -87,6 +87,27 @@ struct QKnxUtils final
         }
     };
 
+    struct QUint48 final
+    {
+        static QKnxByteArray bytes(quint48 integer)
+        {
+            return { quint8(integer >> 40), quint8(integer >> 32), quint8(integer >> 24),
+                quint8(integer >> 16), quint8(integer >> 8), quint8(integer) };
+        }
+
+        static quint48 fromBytes(const QKnxByteArray &data, quint16 index = 0)
+        {
+            if (data.size() - index < 6)
+                return {};
+            return quint48(quint48(data.at(index + 0)) << 40
+                | quint48(data.at(index + 1)) << 32
+                | quint48(data.at(index + 2)) << 24
+                | quint48(data.at(index + 3)) << 16
+                | quint48(data.at(index + 4)) << 8
+                | data.at(index + 5));
+        }
+    };
+
     struct QUint64 final
     {
         static QKnxByteArray bytes(quint64 integer)

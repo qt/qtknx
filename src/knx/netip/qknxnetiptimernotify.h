@@ -1,6 +1,6 @@
 /******************************************************************************
 **
-** Copyright (C) 2017 The Qt Company Ltd.
+** Copyright (C) 2018 The Qt Company Ltd.
 ** Contact: https://www.qt.io/licensing/
 **
 ** This file is part of the QtKnx module.
@@ -27,25 +27,51 @@
 **
 ******************************************************************************/
 
-#ifndef QKNXGLOBAL_H
-#define QKNXGLOBAL_H
+#ifndef QKNXNETIPTIMERNOTIFY_H
+#define QKNXNETIPTIMERNOTIFY_H
 
-#include <QtCore/qglobal.h>
+#include <QtKnx/qknxnetipframe.h>
+#include <QtKnx/qknxglobal.h>
 
 QT_BEGIN_NAMESPACE
 
-#ifndef QT_STATIC
-#  if defined(QT_BUILD_KNX_LIB)
-#    define Q_KNX_EXPORT Q_DECL_EXPORT
-#  else
-#    define Q_KNX_EXPORT Q_DECL_IMPORT
-#  endif
-#else
-#  define Q_KNX_EXPORT
-#endif
+class Q_KNX_EXPORT QKnxNetIpTimerNotifyProxy final
+{
+public:
+    QKnxNetIpTimerNotifyProxy() = delete;
+    ~QKnxNetIpTimerNotifyProxy() = default;
 
-using quint48 = quint64;
-#define Q_UINT48_MAX Q_UINT64_C(281474976710655)
+    QKnxNetIpTimerNotifyProxy(const QKnxNetIpFrame &&) = delete;
+    explicit QKnxNetIpTimerNotifyProxy(const QKnxNetIpFrame &frame);
+
+    bool isValid() const;
+
+    quint48 timerValue() const;
+    QKnxByteArray serialNumber() const;
+    quint16 messageTag() const;
+    QKnxByteArray messageAuthenticationCode() const;
+
+    class Q_KNX_EXPORT Builder final
+    {
+    public:
+        Builder &setTimerValue(quint48 timerValue);
+        Builder &setSerialNumber(const QKnxByteArray &serialNumber);
+        Builder &setMessageTag(quint16 tag);
+        Builder &setMessageAuthenticationCode(const QKnxByteArray &data);
+
+        QKnxNetIpFrame create() const;
+
+    private:
+        quint64 m_timer { Q_UINT48_MAX + 1 };
+        QKnxByteArray m_serial;
+        qint32 m_tag { -1 };
+        QKnxByteArray m_authCode;
+    };
+    static QKnxNetIpTimerNotifyProxy::Builder builder();
+
+private:
+    const QKnxNetIpFrame &m_frame;
+};
 
 QT_END_NAMESPACE
 
