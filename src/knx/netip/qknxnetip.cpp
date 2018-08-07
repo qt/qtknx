@@ -710,12 +710,13 @@ bool QKnx::NetIp::isStructType(QKnx::NetIp::SearchParameterType type)
             The session is not yet authenticated.
     \value Timeout
             A timeout occurred during secure session handshake.
-    \value Close
-            The secure session must be closed.
     \value KeepAlive
             Prevent inactivity on the secure session. Without the keep-alive
             signal, the KNXnet/IP device can drop the connection with a timeout
             error.
+    \value Close
+            The secure session must be closed.
+    \omitvalue Unknown
 */
 
 QT_END_NAMESPACE

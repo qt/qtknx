@@ -291,8 +291,9 @@ namespace QKnx
             AuthenticationFailed = 0x01,
             Unauthenticated = 0x02,
             Timeout = 0x03,
-            Close = 0x04,
-            KeepAlive = 0x05
+            KeepAlive = 0x04,
+            Close = 0x05,
+            Unknown = 0xff
         };
         Q_ENUM_NS(SecureSessionStatus)
     }
