@@ -48,7 +48,8 @@ PUBLIC_HEADERS += $$PWD/qknxnetip.h \
     $$PWD/qknxnetiproutingsystembroadcast.h \
     $$PWD/qknxnetipsecuredservicefamiliesdib.h \
     $$PWD/qknxnetipsessionrequest.h \
-    $$PWD/qknxnetipsessionresponse.h
+    $$PWD/qknxnetipsessionresponse.h \
+    $$PWD/qknxnetipsessionauthenticate.h
 
 PRIVATE_HEADERS += \
     $$PWD/qknxbuilderdata_p.h \
@@ -106,4 +107,5 @@ SOURCES += $$PWD/qknxnetip.cpp \
     $$PWD/qknxnetiproutingsystembroadcast.cpp \
     $$PWD/qknxnetipsecuredservicefamiliesdib.cpp \
     $$PWD/qknxnetipsessionrequest.cpp \
-    $$PWD/qknxnetipsessionresponse.cpp
+    $$PWD/qknxnetipsessionresponse.cpp \
+    $$PWD/qknxnetipsessionauthenticate.cpp
