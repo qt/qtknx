@@ -62,6 +62,7 @@ class QKnxNetIpDisconnectResponseProxy;
 class QKnxNetIpTunnelingAcknowledgeProxy;
 class QKnxNetIpTunnelingRequestProxy;
 class QUdpSocket;
+class QTcpSocket;
 
 struct UserProperties
 {
@@ -94,11 +95,16 @@ struct Endpoint final
     }
     operator QKnxNetIpHpai() const
     {
-        return QKnxNetIpHpaiProxy::builder().setHostAddress(address).setPort(port).create();
+        return QKnxNetIpHpaiProxy::builder()
+                .setHostAddress(address)
+                .setPort(port)
+                .setHostProtocol(code)
+                .create();
     }
 
     QHostAddress address { QHostAddress::LocalHost };
     quint16 port { 0 };
+    QKnxNetIp::HostProtocol code { QKnxNetIp::HostProtocol::UDP_IPv4 };
 };
 
 class Q_KNX_EXPORT QKnxNetIpEndpointConnectionPrivate : public QObjectPrivate
@@ -122,6 +128,7 @@ public:
     bool sendCemiRequest();
     void sendStateRequest();
 
+    void processReceivedFrame(const QHostAddress &address, int port);
     virtual void process(const QKnxLinkLayerFrame &frame);
     virtual void process(const QKnxDeviceManagementFrame &frame);
 
@@ -135,12 +142,10 @@ public:
     virtual void processDeviceConfigurationAcknowledge(const QKnxNetIpFrame &frame);
 
     // endpoint related processing
-    virtual void processConnectResponse(const QKnxNetIpFrame &frame, const QNetworkDatagram &dg);
+    virtual void processConnectResponse(const QKnxNetIpFrame &frame);
     virtual void processConnectionStateResponse(const QKnxNetIpFrame &frame);
     virtual void processDisconnectRequest(const QKnxNetIpFrame &frame);
     virtual void processDisconnectResponse(const QKnxNetIpFrame &frame);
-
-    virtual void processDatagram(const QNetworkDatagram &);
 
     void setAndEmitStateChanged(QKnxNetIpEndpointConnection::State newState);
     void setAndEmitErrorOccurred(QKnxNetIpEndpointConnection::Error newError, const QString &message);
@@ -186,7 +191,9 @@ private:
     QTimer *m_acknowledgeTimer { nullptr };
     bool m_waitForAcknowledgement { false };
 
-    QUdpSocket *m_socket { nullptr };
+    QUdpSocket *m_udpSocket { nullptr };
+    QTcpSocket *m_tcpSocket { nullptr };
+    QKnxByteArray m_rxBuffer;
 
     UserProperties m_user;
 };

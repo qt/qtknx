@@ -99,6 +99,26 @@
               </spacer>
              </item>
              <item>
+              <widget class="QRadioButton" name="radioButtonUDP">
+               <property name="text">
+                <string>Use UDP as transport layer protocol</string>
+               </property>
+               <property name="checked">
+                <bool>true</bool>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QRadioButton" name="radioButtonTCP">
+               <property name="enabled">
+                <bool>false</bool>
+               </property>
+               <property name="text">
+                <string>Use TCP as transport layer protocol</string>
+               </property>
+              </widget>
+             </item>
+             <item>
               <widget class="QCheckBox" name="checkboxNat">
                <property name="text">
                 <string>Use NAT for KNXnet/IP communication</string>

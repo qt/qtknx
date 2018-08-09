@@ -94,7 +94,9 @@ Tunneling::Tunneling(QWidget* parent)
 
     connect(ui->connectTunneling, &QPushButton::clicked, this, [&]() {
         m_tunnel.setLocalPort(0);
-        m_tunnel.connectToHost(m_server.controlEndpointAddress(), m_server.controlEndpointPort());
+        m_tunnel.connectToHost(m_server.controlEndpointAddress(),
+            m_server.controlEndpointPort(),
+            m_proto);
     });
 
     connect(&m_tunnel, &QKnxNetIpTunnel::connected, this, [&] {
@@ -257,6 +259,11 @@ void Tunneling::setKnxNetIpServer(const QKnxNetIpServerInfo &server)
         ui->disconnectTunneling->setEnabled(false);
     }
     ui->tunnelingSendRequest->setEnabled(false);
+}
+
+void Tunneling::setTcpEnable(bool value)
+{
+    m_proto = (value ? QKnxNetIp::HostProtocol::TCP_IPv4 : QKnxNetIp::HostProtocol::UDP_IPv4);
 }
 
 void Tunneling::clearLogging()

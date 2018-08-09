@@ -73,6 +73,7 @@ private slots:
     void newServerSelected(int serverBoxIndex);
     void newIPAddressSelected(int localIpBoxIndex);
     void showServerAndServices(const QKnxNetIpServerInfo &info);
+    void on_radioButtonTCP_toggled(bool checked);
 
 private:
     void fillLocalIpBox();

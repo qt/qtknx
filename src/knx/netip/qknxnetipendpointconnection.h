@@ -109,6 +109,7 @@ public:
 
     void connectToHost(const QKnxNetIpHpai &controlEndpoint);
     void connectToHost(const QHostAddress &address, quint16 port);
+    void connectToHost(const QHostAddress &address, quint16 port, QKnxNetIp::HostProtocol proto);
 
     void disconnectFromHost();
 

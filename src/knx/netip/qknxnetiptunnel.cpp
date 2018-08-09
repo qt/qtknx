@@ -93,7 +93,7 @@ public:
         emit q->frameReceived(frame);
     }
 
-    void processConnectResponse(const QKnxNetIpFrame &frame, const QNetworkDatagram &dg) override
+    void processConnectResponse(const QKnxNetIpFrame &frame) override
     {
         QKnxNetIpConnectResponseProxy response(frame);
         if (response.status() == QKnxNetIp::Error::NoMoreUniqueConnections) {
@@ -107,7 +107,7 @@ public:
             const auto &crd = response.responseData();
             m_address = QKnxNetIpCrdProxy(crd).individualAddress();
         }
-        QKnxNetIpEndpointConnectionPrivate::processConnectResponse(frame, dg);
+        QKnxNetIpEndpointConnectionPrivate::processConnectResponse(frame);
     }
 
 private:

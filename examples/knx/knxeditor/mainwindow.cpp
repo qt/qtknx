@@ -176,7 +176,7 @@ void MainWindow::newServerSelected(int serverBoxIndex)
         return;
 
     auto info = ui->serverBox->itemData(serverBoxIndex).value<QKnxNetIpServerInfo>();
-
+    bool version2Supported = false;
     ui->serverDescription->setText(tr("<html><head><style> th { text-align: left; } td.padding { "
         "padding-left: 10px; } </style></head> <body>"
         "   <table style=\"width:100%\">"
@@ -191,13 +191,15 @@ void MainWindow::newServerSelected(int serverBoxIndex)
         "</body></html>")
         .arg(info.individualAddress().toString())
         .arg(info.controlEndpointAddress().toString()).arg(info.controlEndpointPort())
-        .arg([&info]() -> QString {
+        .arg([&info, &version2Supported]() -> QString {
             QString value;
             const auto services = info.supportedServices();
             for (const auto &service : services) {
                 value.append(tr("<tr><td class=\"padding\">%1</td></th>")
                     .arg(tr("KNXnet/IP %1, Version: %2").arg(familieToString(service.ServiceFamily))
                         .arg(service.ServiceFamilyVersion)));
+                if (service.ServiceFamilyVersion >= 2)
+                     version2Supported = true;
             }
             return value;
         }())
@@ -205,9 +207,6 @@ void MainWindow::newServerSelected(int serverBoxIndex)
 
     const auto &hpai = info.endpoint();
     const QKnxNetIpHpaiProxy endpoint(hpai);
-    if (endpoint.hostProtocol() != QKnxNetIp::HostProtocol::UDP_IPv4)
-        return;
-
     if (endpoint.isValid() && m_server != info) {
         m_server = info;
 
@@ -217,6 +216,7 @@ void MainWindow::newServerSelected(int serverBoxIndex)
         ui->deviceManagement->setEnabled(true);
         ui->deviceManagement->setKnxNetIpServer(m_server);
     }
+    ui->radioButtonTCP->setEnabled(version2Supported);
 }
 
 void MainWindow::newIPAddressSelected(int localIpBoxIndex)
@@ -259,6 +259,12 @@ void MainWindow::showServerAndServices(const QKnxNetIpServerInfo &info)
 
     ui->serverBox->addItem(tr("%1 (%2:%3)").arg(info.deviceName(), info.controlEndpointAddress()
         .toString()).arg(info.controlEndpointPort()), QVariant::fromValue(info));
+}
+
+void MainWindow::on_radioButtonTCP_toggled(bool checked)
+{
+    ui->tunneling->setTcpEnable(checked);
+    ui->deviceManagement->setTcpEnable(checked);
 }
 
 void MainWindow::fillLocalIpBox()

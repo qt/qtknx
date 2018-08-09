@@ -82,7 +82,9 @@ LocalDeviceManagement::LocalDeviceManagement(QWidget* parent)
 
     connect(ui->connectRequestDeviceManagement, &QPushButton::clicked, this, [&]() {
         m_management.setLocalPort(0);
-        m_management.connectToHost(m_server.controlEndpointAddress(), m_server.controlEndpointPort());
+        m_management.connectToHost(m_server.controlEndpointAddress(),
+            m_server.controlEndpointPort(),
+            m_proto);
     });
 
     connect(&m_management, &QKnxNetIpDeviceManagement::connected, this, [&] {
@@ -163,6 +165,11 @@ void LocalDeviceManagement::setKnxNetIpServer(const QKnxNetIpServerInfo &server)
         ui->disconnectRequestDeviceManagement->setEnabled(false);
     }
     ui->deviceManagementSendRequest->setEnabled(false);
+}
+
+void LocalDeviceManagement::setTcpEnable(bool value)
+{
+    m_proto = (value ? QKnxNetIp::HostProtocol::TCP_IPv4 : QKnxNetIp::HostProtocol::UDP_IPv4);
 }
 
 void LocalDeviceManagement::clearLogging()
@@ -308,8 +315,17 @@ void LocalDeviceManagement::updatePropertyTypeCombobox(const QString &type)
 void LocalDeviceManagement::handleIoListResponse(const QKnxDeviceManagementFrame &frame)
 {
     if (frame.objectType() != QKnxInterfaceObjectType::System::Device
-        || frame.property() != QKnxInterfaceObjectProperty::Device::IoList)
+        || frame.property() != QKnxInterfaceObjectProperty::Device::IoList) {
+            return;
+    }
+
+    if (frame.isNegativeConfirmation()) {
+        auto metaEnum = QMetaEnum::fromType<QKnxNetIp::CemiServer::Error>();
+        ui->textOuputDeviceManagement->append(tr("Received negative confirmation. Error code: %1")
+            .arg(QString::fromLatin1(metaEnum.valueToKey(int(frame.error())))));
+        m_awaitIoListResponse = false;
         return;
+    }
 
     auto dataTypes = QKnxInterfaceObjectPropertyDataType::fromProperty(QKnxInterfaceObjectProperty
         ::Device::IoList);

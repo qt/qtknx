@@ -40,6 +40,7 @@
 #include "qknxnetiptunnelingacknowledge.h"
 #include "qknxnetiptunnelingrequest.h"
 #include "qnetworkdatagram.h"
+#include "qtcpsocket.h"
 #include "qudpsocket.h"
 
 QT_BEGIN_NAMESPACE
@@ -154,7 +155,8 @@ namespace QKnxPrivate
         }
     }
 
-    static void clearSocket(QUdpSocket **socket)
+    template <typename T>
+    static void clearSocket(T **socket)
     {
         if (*socket) {
             (*socket)->disconnect();
@@ -231,6 +233,71 @@ void QKnxNetIpEndpointConnectionPrivate::setupTimer()
     });
 }
 
+namespace QKnxPrivate
+{
+    static bool isNullOrLocal(const QHostAddress &address)
+    {
+        return address.isNull() || address == QHostAddress::Any || address.isLoopback();
+    }
+}
+
+void QKnxNetIpEndpointConnectionPrivate::processReceivedFrame(const QHostAddress &address, int port)
+{
+    const auto frame = QKnxNetIpFrame::fromBytes(m_rxBuffer);
+    if (!frame.isValid())
+        return;
+
+    // remove already processed KNX frame from buffer
+    m_rxBuffer.remove(0, frame.size());
+
+    // TODO: fix the version and validity checks
+    // if (!m_supportedVersions.contains(header.protocolVersion())) {
+    //     send E_VERSION_NOT_SUPPORTED confirmation frame
+    //     send disconnect request
+    // } else if (header.protocolVersion() != m_controlEndpointVersion) {
+    //     send disconnect request
+    // } else {
+    // TODO: set the m_dataEndpointVersion once we receive or send the first frame
+
+    switch (frame.serviceType()) {
+    case QKnxNetIp::ServiceType::ConnectResponse:
+        if (m_nat) { // TODO: Review this for TCP connections
+            if (QKnxPrivate::isNullOrLocal(m_remoteDataEndpoint.address)
+                || m_remoteDataEndpoint.port == 0) {
+                    m_remoteDataEndpoint.port = port;
+                    m_remoteDataEndpoint.address = address;
+            }
+        }
+        processConnectResponse(frame);
+        break;
+    case QKnxNetIp::ServiceType::ConnectionStateResponse:
+        processConnectionStateResponse(frame);
+        break;
+    case QKnxNetIp::ServiceType::DisconnectRequest:
+        processDisconnectRequest(frame);
+        break;
+    case QKnxNetIp::ServiceType::DisconnectResponse:
+        processDisconnectResponse(frame);
+        break;
+
+    case QKnxNetIp::ServiceType::TunnelingRequest:
+        processTunnelingRequest(frame);
+        break;
+    case QKnxNetIp::ServiceType::TunnelingAcknowledge:
+        processTunnelingAcknowledge(frame);
+        break;
+    case QKnxNetIp::ServiceType::DeviceConfigurationRequest:
+        processDeviceConfigurationRequest(frame);
+        break;
+    case QKnxNetIp::ServiceType::DeviceConfigurationAcknowledge:
+        processDeviceConfigurationAcknowledge(frame);
+        break;
+
+    default:
+        break;
+    }
+}
+
 void QKnxNetIpEndpointConnectionPrivate::setup()
 {
     setupTimer();
@@ -251,68 +318,49 @@ void QKnxNetIpEndpointConnectionPrivate::setup()
     m_errorString = QString();
     m_error = QKnxNetIpEndpointConnection::Error::None;
 
-    QObject::connect(m_socket, &QUdpSocket::readyRead, [&]() {
-        while (m_socket && m_socket->state() == QUdpSocket::BoundState
-            && m_socket->hasPendingDatagrams()) {
-                auto datagram = m_socket->receiveDatagram();
-                auto data = QKnxByteArray::fromByteArray(datagram.data());
+    if (m_tcpSocket) {
+        QObject::connect(m_tcpSocket, &QIODevice::readyRead, [&]() {
+            m_rxBuffer += QKnxByteArray::fromByteArray(m_tcpSocket->readAll());
+            int bufferSize = m_rxBuffer.size();
+            bool continueProcessingRxBuffer = false;
+            do {
+                // TODO: AN184 v03 KNXnet-IP Core v2 AS, 2.2.3.2.3.2
+                processReceivedFrame(m_remoteControlEndpoint.address,
+                                m_remoteControlEndpoint.port);
+                continueProcessingRxBuffer = (m_rxBuffer.size() < bufferSize);
+                bufferSize = m_rxBuffer.size();
+            } while (continueProcessingRxBuffer);
+        });
 
-                const auto header = QKnxNetIpFrameHeader::fromBytes(data, 0);
-                if (!header.isValid() || header.totalSize() != data.size())
-                    continue;
+        using overload = void (QTcpSocket::*)(QTcpSocket::SocketError);
+        QObject::connect(m_tcpSocket,
+            static_cast<overload>(&QTcpSocket::error), [&](QTcpSocket::SocketError) {
+                setAndEmitErrorOccurred(QKnxNetIpEndpointConnection::Error::Network,
+                    m_tcpSocket->errorString());
 
-                // TODO: fix the version and validity checks
-                // if (!m_supportedVersions.contains(header.protocolVersion())) {
-                //     send E_VERSION_NOT_SUPPORTED confirmation frame
-                //     send disconnect request
-                // } else if (header.protocolVersion() != m_controlEndpointVersion) {
-                //     send disconnect request
-                // } else {
-                // TODO: set the m_dataEndpointVersion once we receive or send the first frame
-                switch (header.serviceType()) {
-                case QKnxNetIp::ServiceType::ConnectResponse:
-                    processConnectResponse(QKnxNetIpFrame::fromBytes(data, 0), datagram);
-                    break;
-                case QKnxNetIp::ServiceType::ConnectionStateResponse:
-                    processConnectionStateResponse(QKnxNetIpFrame::fromBytes(data, 0));
-                    break;
-                case QKnxNetIp::ServiceType::DisconnectRequest:
-                    processDisconnectRequest(QKnxNetIpFrame::fromBytes(data, 0));
-                    break;
-                case QKnxNetIp::ServiceType::DisconnectResponse:
-                    processDisconnectResponse(QKnxNetIpFrame::fromBytes(data, 0));
-                    break;
+                Q_Q(QKnxNetIpEndpointConnection);
+                q->disconnectFromHost();
+        });
+    } else if (m_udpSocket) {
+        QObject::connect(m_udpSocket, &QUdpSocket::readyRead, [&]() {
+            while (m_udpSocket && m_udpSocket->state() == QUdpSocket::BoundState
+                && m_udpSocket->hasPendingDatagrams()) {
+                auto datagram = m_udpSocket->receiveDatagram();
+                m_rxBuffer += QKnxByteArray::fromByteArray(datagram.data());
+                processReceivedFrame(datagram.senderAddress(), datagram.senderPort());
+            }
+        });
 
-                case QKnxNetIp::ServiceType::TunnelingRequest:
-                    processTunnelingRequest(QKnxNetIpFrame::fromBytes(data, 0));
-                    break;
-                case QKnxNetIp::ServiceType::TunnelingAcknowledge:
-                    processTunnelingAcknowledge(QKnxNetIpFrame::fromBytes(data, 0));
-                    break;
-                case QKnxNetIp::ServiceType::DeviceConfigurationRequest:
-                    processDeviceConfigurationRequest(QKnxNetIpFrame::fromBytes(data, 0));
-                    break;
-                case QKnxNetIp::ServiceType::DeviceConfigurationAcknowledge:
-                    processDeviceConfigurationAcknowledge(QKnxNetIpFrame::fromBytes(data, 0));
-                    break;
-
-                default:
-                    processDatagram(datagram);
-                    break;
-                }
-                // }
-        }
-    });
-
-    using overload = void (QUdpSocket::*)(QUdpSocket::SocketError);
-    QObject::connect(m_socket,
-        static_cast<overload>(&QUdpSocket::error), [&](QUdpSocket::SocketError) {
+        using overload = void (QUdpSocket::*)(QUdpSocket::SocketError);
+        QObject::connect(m_udpSocket,
+            static_cast<overload>(&QUdpSocket::error), [&](QUdpSocket::SocketError) {
             setAndEmitErrorOccurred(QKnxNetIpEndpointConnection::Error::Network,
-                m_socket->errorString());
+                m_udpSocket->errorString());
 
             Q_Q(QKnxNetIpEndpointConnection);
             q->disconnectFromHost();
-    });
+        });
+    }
 }
 
 void QKnxNetIpEndpointConnectionPrivate::cleanup()
@@ -323,20 +371,30 @@ void QKnxNetIpEndpointConnectionPrivate::cleanup()
     QKnxPrivate::clearTimer(&m_disconnectRequestTimer);
     QKnxPrivate::clearTimer(&m_acknowledgeTimer);
 
-    if (m_socket) m_socket->close();
-    QKnxPrivate::clearSocket(&m_socket);
+    if (m_udpSocket) {
+        m_udpSocket->close();
+        QKnxPrivate::clearSocket(&m_udpSocket);
+    } else {
+        m_tcpSocket->close();
+        QKnxPrivate::clearSocket(&m_tcpSocket);
+    }
 
     setAndEmitStateChanged(QKnxNetIpEndpointConnection::State::Disconnected);
 }
 
 bool QKnxNetIpEndpointConnectionPrivate::sendCemiRequest()
 {
-    if (!m_waitForAcknowledgement) {
+    if (!m_waitForAcknowledgement && !m_tcpSocket) {
         m_waitForAcknowledgement = true;
-        m_socket->writeDatagram(m_lastSendCemiRequest.bytes().toByteArray(),
-            m_remoteDataEndpoint.address, m_remoteDataEndpoint.port);
+        m_udpSocket->writeDatagram(m_lastSendCemiRequest.bytes().toByteArray(),
+                                m_remoteDataEndpoint.address,
+                                m_remoteDataEndpoint.port);
+
         m_cemiRequests++;
         m_acknowledgeTimer->start(m_acknowledgeTimeout);
+    } else if (m_tcpSocket) {
+        m_tcpSocket->write(m_lastSendCemiRequest.bytes().toByteArray());
+        m_waitForAcknowledgement = false;
     }
     return !m_waitForAcknowledgement;
 }
@@ -346,8 +404,12 @@ void QKnxNetIpEndpointConnectionPrivate::sendStateRequest()
     qDebug().noquote().nospace() << "Sending connection state request: 0x" << m_lastStateRequest
         .bytes().toHex();
 
-    m_socket->writeDatagram(m_lastStateRequest.bytes().toByteArray(),
-        m_remoteControlEndpoint.address, m_remoteControlEndpoint.port);
+    if (m_tcpSocket) {
+        m_tcpSocket->write(m_lastStateRequest.bytes().toByteArray());
+    } else {
+        m_udpSocket->writeDatagram(m_lastStateRequest.bytes().toByteArray(),
+            m_remoteControlEndpoint.address, m_remoteControlEndpoint.port);
+    }
 
     m_stateRequests++;
     m_connectionStateTimer->start(QKnxNetIp::ConnectionStateRequestTimeout);
@@ -363,6 +425,12 @@ void QKnxNetIpEndpointConnectionPrivate::processTunnelingRequest(const QKnxNetIp
 {
     qDebug() << "Received tunneling request:" << frame;
 
+    QKnxNetIpTunnelingRequestProxy request(frame);
+    if (m_tcpSocket) {
+        process(request.cemi());
+        return; // no need to send ACK in TCP connection
+    }
+
     if (frame.channelId() == m_channelId) {
         const bool counterEquals = (frame.sequenceNumber() == m_receiveCount);
         if (counterEquals || (frame.sequenceNumber() + 1 == m_receiveCount)) {
@@ -375,13 +443,13 @@ void QKnxNetIpEndpointConnectionPrivate::processTunnelingRequest(const QKnxNetIp
                     .create();
 
                 qDebug() << "Sending tunneling acknowledge:" << ack;
-                m_socket->writeDatagram(ack.bytes().toByteArray(),
+                m_udpSocket->writeDatagram(ack.bytes().toByteArray(),
                     m_remoteDataEndpoint.address, m_remoteDataEndpoint.port);
 
                 if (!counterEquals)
                     return;
                 m_receiveCount++;
-                process(QKnxNetIpTunnelingRequestProxy(frame).cemi());
+                process(request.cemi());
         }
     } else {
         qDebug() << "Request was ignored due to wrong channel ID. Expected:" << m_channelId
@@ -427,13 +495,18 @@ void QKnxNetIpEndpointConnectionPrivate::processDeviceConfigurationRequest(const
 {
     qDebug() << "Received device configuration request:" << frame;
 
+    QKnxNetIpDeviceConfigurationRequestProxy request(frame);
+    if (m_tcpSocket && request.isValid()) {
+        process(request.cemi());
+        return; // no need to send ACK in TCP connection
+    }
+
     if (frame.channelId() != m_channelId) {
         qDebug() << "Request was ignored due to wrong channel ID. Expected:" << m_channelId
             << "Current:" << frame.channelId();
         return;
     }
 
-    QKnxNetIpDeviceConfigurationRequestProxy request(frame);
     if (request.sequenceNumber() != m_receiveCount) {
         qDebug() << "Request was ignored due to wrong sequence number. Expected:" << m_receiveCount
             << "Current:" << request.sequenceNumber();
@@ -447,7 +520,7 @@ void QKnxNetIpEndpointConnectionPrivate::processDeviceConfigurationRequest(const
         .create();
 
     qDebug() << "Sending device configuration acknowledge:" << ack;
-    m_socket->writeDatagram(ack.bytes().toByteArray(),
+    m_udpSocket->writeDatagram(ack.bytes().toByteArray(),
         m_remoteDataEndpoint.address, m_remoteDataEndpoint.port);
 
     m_receiveCount++;
@@ -493,16 +566,7 @@ bool QKnxNetIpEndpointConnectionPrivate::sendDeviceConfigurationRequest(const QK
     return sendCemiRequest();
 }
 
-namespace QKnxPrivate
-{
-    static bool isNullOrLocal(const QHostAddress &address)
-    {
-        return address.isNull() || address == QHostAddress::Any || address.isLoopback();
-    }
-}
-
-void QKnxNetIpEndpointConnectionPrivate::processConnectResponse(const QKnxNetIpFrame &frame,
-    const QNetworkDatagram &datagram)
+void QKnxNetIpEndpointConnectionPrivate::processConnectResponse(const QKnxNetIpFrame &frame)
 {
     qDebug() << "Received connect response:" << frame;
 
@@ -513,14 +577,6 @@ void QKnxNetIpEndpointConnectionPrivate::processConnectResponse(const QKnxNetIpF
 
             m_channelId = response.channelId();
             m_remoteDataEndpoint = response.dataEndpoint();
-            if (m_nat) {
-                if (QKnxPrivate::isNullOrLocal(m_remoteDataEndpoint.address)
-                    || m_remoteDataEndpoint.port == 0) {
-                        m_remoteDataEndpoint.port = datagram.senderPort();
-                        m_remoteDataEndpoint.address = datagram.senderAddress();
-                }
-            }
-
             m_lastStateRequest = QKnxNetIpConnectionStateRequestProxy::builder()
                 .setChannelId(m_channelId)
                 .setControlEndpoint(m_nat ? m_natEndpoint : m_localEndpoint)
@@ -572,9 +628,12 @@ void QKnxNetIpEndpointConnectionPrivate::processDisconnectRequest(const QKnxNetI
             .setStatus(QKnxNetIp::Error::None)
             .create();
         qDebug() << "Sending disconnect response:" << frame;
-
-        m_socket->writeDatagram(frame.bytes().toByteArray(),
-            m_remoteControlEndpoint.address, m_remoteControlEndpoint.port);
+        if (m_tcpSocket) {
+            m_tcpSocket->write(frame.bytes().toByteArray());
+        } else {
+            m_udpSocket->writeDatagram(frame.bytes().toByteArray(),
+                                    m_remoteControlEndpoint.address, m_remoteControlEndpoint.port);
+        }
 
         Q_Q(QKnxNetIpEndpointConnection);
         q->disconnectFromHost();
@@ -596,9 +655,6 @@ void QKnxNetIpEndpointConnectionPrivate::processDisconnectResponse(const QKnxNet
             << "Current:" << response.channelId();
     }
 }
-
-void QKnxNetIpEndpointConnectionPrivate::processDatagram(const QNetworkDatagram &)
-{}
 
 void QKnxNetIpEndpointConnectionPrivate::setAndEmitStateChanged(
     QKnxNetIpEndpointConnection::State newState)
@@ -787,7 +843,7 @@ void QKnxNetIpEndpointConnection::setSupportedProtocolVersions(const QKnxByteArr
 void QKnxNetIpEndpointConnection::connectToHost(const QKnxNetIpHpai &controlEndpoint)
 {
     const QKnxNetIpHpaiProxy proxy(controlEndpoint);
-    connectToHost(proxy.hostAddress(), proxy.port());
+    connectToHost(proxy.hostAddress(), proxy.port(), proxy.hostProtocol());
 }
 
 /*!
@@ -819,18 +875,18 @@ void QKnxNetIpEndpointConnection::connectToHost(const QHostAddress &address, qui
 
     d->setAndEmitStateChanged(QKnxNetIpEndpointConnection::State::Starting);
 
-    QKnxPrivate::clearSocket(&(d->m_socket));
+    QKnxPrivate::clearSocket(&(d->m_udpSocket));
 
-    d->m_socket = new QUdpSocket(this);
-    if (!d->m_socket->bind(d->m_user.address, d->m_user.port)) {
+    d->m_udpSocket = new QUdpSocket(this);
+    if (!d->m_udpSocket->bind(d->m_user.address, d->m_user.port)) {
         d->setAndEmitErrorOccurred(QKnxNetIpEndpointConnection::Error::Network,
             QKnxNetIpEndpointConnection::tr("Could not bind endpoint: %1")
-                .arg(d->m_socket->errorString()));
-        QKnxPrivate::clearSocket(&d->m_socket);
+                .arg(d->m_udpSocket->errorString()));
+        QKnxPrivate::clearSocket(&d->m_udpSocket);
         d->setAndEmitStateChanged(QKnxNetIpEndpointConnection::State::Disconnected);
         return;
     }
-    d->m_localEndpoint = Endpoint(d->m_socket->localAddress(), d->m_socket->localPort());
+    d->m_localEndpoint = Endpoint(d->m_udpSocket->localAddress(), d->m_udpSocket->localPort());
 
     d->setAndEmitStateChanged(QKnxNetIpEndpointConnection::State::Bound);
 
@@ -849,8 +905,79 @@ void QKnxNetIpEndpointConnection::connectToHost(const QHostAddress &address, qui
 
     d->m_connectRequestTimer->start(QKnxNetIp::ConnectRequestTimeout);
 
-    d->m_socket->writeDatagram(request.bytes().toByteArray(),
+    d->m_udpSocket->writeDatagram(request.bytes().toByteArray(),
         d->m_remoteControlEndpoint.address, d->m_remoteControlEndpoint.port);
+}
+
+/*!
+    Establishes a connection to the host with \a address, \a port and \a proto.
+*/
+void QKnxNetIpEndpointConnection::connectToHost(const QHostAddress &address, quint16 port,
+    QKnxNetIp::HostProtocol proto)
+{
+    if (proto == QKnxNetIp::HostProtocol::Unknown)
+        return;
+
+    if (proto == QKnxNetIp::HostProtocol::UDP_IPv4) {
+        connectToHost(address, port);
+        return;
+    }
+
+    // establishing TCP connection
+    Q_D(QKnxNetIpEndpointConnection);
+    if (d->m_state != State::Disconnected)
+        return;
+
+    auto isIPv4 = false;
+    address.toIPv4Address(&isIPv4);
+    if (!isIPv4) {
+        d->setAndEmitErrorOccurred(Error::NotIPv4, tr("Only IPv4 addresses as remote control "
+            "endpoint supported."));
+        return;
+    }
+    d->m_remoteControlEndpoint = Endpoint(address, port);
+    d->m_remoteControlEndpoint.code = QKnxNetIp::HostProtocol::TCP_IPv4;
+
+    isIPv4 = false;
+    d->m_user.address.toIPv4Address(&isIPv4);
+    if (!isIPv4) {
+        d->setAndEmitErrorOccurred(Error::NotIPv4, tr("Only IPv4 addresses as local control "
+            "endpoint supported."));
+        return;
+    }
+
+    d->setAndEmitStateChanged(QKnxNetIpEndpointConnection::State::Starting);
+
+    QKnxPrivate::clearSocket(&(d->m_tcpSocket));
+
+    d->m_tcpSocket = new QTcpSocket(this);
+    d->setup();
+
+    d->setAndEmitStateChanged(QKnxNetIpEndpointConnection::State::Connecting);
+
+    d->m_tcpSocket->abort();
+    d->m_tcpSocket->connectToHost(address, port);
+
+    d->m_localEndpoint = Endpoint(d->m_tcpSocket->localAddress(),
+                                  d->m_tcpSocket->localPort());
+    d->m_localEndpoint.code = QKnxNetIp::HostProtocol::TCP_IPv4;
+    d->m_natEndpoint.code = QKnxNetIp::HostProtocol::TCP_IPv4;
+    d->m_remoteDataEndpoint.code = QKnxNetIp::HostProtocol::TCP_IPv4;
+
+    connect(d->m_tcpSocket, &QTcpSocket::connected, this, [&]() {
+        Q_D(QKnxNetIpEndpointConnection);
+        auto request = QKnxNetIpConnectRequestProxy::builder()
+            .setControlEndpoint(d->m_nat ? d->m_natEndpoint : d->m_localEndpoint)
+            .setDataEndpoint(d->m_nat ? d->m_natEndpoint : d->m_localEndpoint)
+            .setRequestInformation(d->m_cri)
+            .create();
+        d->m_controlEndpointVersion = request.header().protocolVersion();
+
+        qDebug() << "Sending connect request:" << request;
+        d->m_tcpSocket->write(request.bytes().toByteArray());
+    });
+
+    // TODO: Implement connect request timeout.
 }
 
 /*!
@@ -875,8 +1002,12 @@ void QKnxNetIpEndpointConnection::disconnectFromHost()
             .create();
 
         qDebug() << "Sending disconnect request:" << frame;
-        d->m_socket->writeDatagram(frame.bytes().toByteArray(),
-            d->m_remoteControlEndpoint.address, d->m_remoteControlEndpoint.port);
+        if (d->m_tcpSocket) {
+            d->m_tcpSocket->write(frame.bytes().toByteArray());
+        } else {
+            d->m_udpSocket->writeDatagram(frame.bytes().toByteArray(),
+                d->m_remoteControlEndpoint.address, d->m_remoteControlEndpoint.port);
+        }
 
         d->m_disconnectRequestTimer->start(QKnxNetIp::DisconnectRequestTimeout);
         // Fully disconnected will be handled inside the private cleanup function.

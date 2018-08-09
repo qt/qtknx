@@ -77,6 +77,7 @@ public:
     void setNatAware(bool isNatAware);
     void setLocalAddress(const QHostAddress &address);
     void setKnxNetIpServer(const QKnxNetIpServerInfo &server);
+    void setTcpEnable(bool value);
 
 public slots:
     void clearLogging();
@@ -108,6 +109,7 @@ private:
 
     QKnxNetIpServerInfo m_server;
     QKnxNetIpDeviceManagement m_management;
+    QKnxNetIp::HostProtocol m_proto { QKnxNetIp::HostProtocol::UDP_IPv4 };
 };
 
 #endif
