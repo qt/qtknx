@@ -101,7 +101,7 @@ QKnxNetIpSearchRequestProxy::QKnxNetIpSearchRequestProxy(const QKnxNetIpFrame &f
 
 /*!
     Returns \c true if the frame contains initialized values and is in itself
-    valid, otherwise returns \c false. A valid KNXnet/IP frame consist of a
+    valid, otherwise returns \c false. A valid KNXnet/IP frame consists of a
     search request with at least a valid header and a size in bytes
     corresponding to the total size of the KNXnet/IP frame header or a extended
     search request containing a valid header.

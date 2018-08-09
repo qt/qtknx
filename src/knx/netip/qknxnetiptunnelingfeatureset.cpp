@@ -104,7 +104,7 @@ QKnxNetIpTunnelingFeatureSetProxy::QKnxNetIpTunnelingFeatureSetProxy(const QKnxN
 
 /*!
     Returns \c true if the frame contains initialized values and is in itself
-    valid, otherwise returns \c false. A valid KNXnet/IP frame consist of
+    valid, otherwise returns \c false. A valid KNXnet/IP frame consists of
     at least a valid header and a size in bytes corresponding to the total size
     of the KNXnet/IP frame header.
 
