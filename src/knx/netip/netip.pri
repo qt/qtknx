@@ -51,7 +51,8 @@ PUBLIC_HEADERS += $$PWD/qknxnetip.h \
     $$PWD/qknxnetipsessionresponse.h \
     $$PWD/qknxnetipsessionauthenticate.h \
     $$PWD/qknxnetipsessionstatus.h \
-    $$PWD/qknxnetiptimernotify.h
+    $$PWD/qknxnetiptimernotify.h \
+    $$PWD/qknxnetipsecurewrapper.h
 
 PRIVATE_HEADERS += \
     $$PWD/qknxbuilderdata_p.h \
@@ -112,4 +113,5 @@ SOURCES += $$PWD/qknxnetip.cpp \
     $$PWD/qknxnetipsessionresponse.cpp \
     $$PWD/qknxnetipsessionauthenticate.cpp \
     $$PWD/qknxnetipsessionstatus.cpp \
-    $$PWD/qknxnetiptimernotify.cpp
+    $$PWD/qknxnetiptimernotify.cpp \
+    $$PWD/qknxnetipsecurewrapper.cpp
