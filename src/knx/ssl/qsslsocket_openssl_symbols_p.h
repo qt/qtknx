@@ -562,6 +562,19 @@ void q_SSL_get0_alpn_selected(const SSL *ssl, const unsigned char **data,
 #endif
 #endif // OPENSSL_VERSION_NUMBER >= 0x1000100fL ...
 
+#if OPENSSL_VERSION_NUMBER >= 0x10000000L
+    EVP_PKEY_CTX *q_EVP_PKEY_CTX_new(EVP_PKEY *pkey, ENGINE *e);
+    EVP_PKEY_CTX *q_EVP_PKEY_CTX_new_id(int id, ENGINE *e);
+    void q_EVP_PKEY_CTX_free(EVP_PKEY_CTX *ctx);
+
+    int q_EVP_PKEY_derive_init(EVP_PKEY_CTX *ctx);
+    int q_EVP_PKEY_derive_set_peer(EVP_PKEY_CTX *ctx, EVP_PKEY *peer);
+    int q_EVP_PKEY_derive(EVP_PKEY_CTX *ctx, unsigned char *key, size_t *keylen);
+
+    int q_EVP_PKEY_keygen_init(EVP_PKEY_CTX *ctx);
+    int q_EVP_PKEY_keygen(EVP_PKEY_CTX *ctx, EVP_PKEY **ppkey);
+#endif
+
 // Helper function
 class QDateTime;
 QDateTime q_getTimeFromASN1(const ASN1_TIME *aTime);

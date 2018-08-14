@@ -135,4 +135,19 @@ unsigned long q_SSL_SESSION_get_ticket_lifetime_hint(const SSL_SESSION *session)
 #define q_SSL_CTX_set_max_proto_version(ctx, version) \
         q_SSL_CTX_ctrl(ctx, SSL_CTRL_SET_MAX_PROTO_VERSION, version, nullptr)
 
+int q_EVP_PKEY_set_type(EVP_PKEY *pkey, int type);
+int q_EVP_PKEY_up_ref(EVP_PKEY *pkey);
+int q_EVP_PKEY_set1_tls_encodedpoint(EVP_PKEY *pkey,
+                                     const unsigned char *pt, size_t ptlen);
+
+EVP_PKEY *q_d2i_PrivateKey_bio(BIO *bp, EVP_PKEY **a);
+int q_i2d_PUBKEY_bio(BIO *bp, EVP_PKEY *pkey);
+int q_i2d_PUBKEY(EVP_PKEY *a, unsigned char **pp);
+
+int q_EVP_PKEY_get_raw_public_key(const EVP_PKEY *pkey, unsigned char *pub, size_t *len);
+EVP_PKEY *q_EVP_PKEY_new_raw_public_key(int type, ENGINE *e, const unsigned char *pub, size_t len);
+
+int q_EVP_PKEY_get_raw_private_key(const EVP_PKEY *pkey, unsigned char *priv, size_t *len);
+EVP_PKEY *q_EVP_PKEY_new_raw_private_key(int type, ENGINE *e, const unsigned char *priv, size_t len);
+
 #endif

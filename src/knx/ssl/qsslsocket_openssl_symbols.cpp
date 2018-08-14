@@ -179,6 +179,20 @@ DEFINEFUNC(unsigned long, SSL_SESSION_get_ticket_lifetime_hint, const SSL_SESSIO
 DEFINEFUNC4(void, DH_get0_pqg, const DH *dh, dh, const BIGNUM **p, p, const BIGNUM **q, q, const BIGNUM **g, g, return, DUMMYARG)
 DEFINEFUNC(int, DH_bits, DH *dh, dh, return 0, return)
 
+DEFINEFUNC2(int, EVP_PKEY_set_type, EVP_PKEY *pkey, pkey, int type, type, return 0, return)
+DEFINEFUNC3(int, EVP_PKEY_set1_tls_encodedpoint, EVP_PKEY *pkey, pkey, const unsigned char *pt, pt, size_t ptlen, ptlen, return 0, return)
+DEFINEFUNC(int, EVP_PKEY_up_ref, EVP_PKEY *pkey, pkey, return 0, return)
+
+DEFINEFUNC2(EVP_PKEY *, d2i_PrivateKey_bio, BIO *bp, bp, EVP_PKEY **a, a, return nullptr, return)
+DEFINEFUNC2(int, i2d_PUBKEY_bio, BIO *bp, bp, EVP_PKEY *pkey, pkey, return 0, return)
+DEFINEFUNC2(int, i2d_PUBKEY, EVP_PKEY *a, a, unsigned char **pp, pp, return 0, return)
+
+DEFINEFUNC3(int, EVP_PKEY_get_raw_public_key, const EVP_PKEY *pkey, pkey, unsigned char *pub, pub, size_t *len, len, return 0, return)
+DEFINEFUNC4(EVP_PKEY *, EVP_PKEY_new_raw_public_key, int type, type, ENGINE *e, e, const unsigned char *pub, pub, size_t len, len, return nullptr, return)
+
+DEFINEFUNC3(int, EVP_PKEY_get_raw_private_key, const EVP_PKEY *pkey, pkey, unsigned char *priv, priv, size_t *len, len, return 0, return)
+DEFINEFUNC4(EVP_PKEY *, EVP_PKEY_new_raw_private_key, int type, type, ENGINE *e, e, const unsigned char *priv, priv, size_t len, len, return nullptr, return)
+
 #else // QT_CONFIG(opensslv11)
 
 // Functions below are either deprecated or removed in OpenSSL >= 1.1:
@@ -544,6 +558,19 @@ DEFINEFUNC5(int, PKCS12_parse, PKCS12 *p12, p12, const char *pass, pass, EVP_PKE
             X509 **cert, cert, STACK_OF(X509) **ca, ca, return 1, return);
 DEFINEFUNC2(PKCS12 *, d2i_PKCS12_bio, BIO *bio, bio, PKCS12 **pkcs12, pkcs12, return 0, return);
 DEFINEFUNC(void, PKCS12_free, PKCS12 *pkcs12, pkcs12, return, DUMMYARG)
+
+#if OPENSSL_VERSION_NUMBER >= 0x10000000L
+    DEFINEFUNC2(EVP_PKEY_CTX *, EVP_PKEY_CTX_new, EVP_PKEY *pkey, pkey, ENGINE *e, e, return nullptr, return)
+    DEFINEFUNC2(EVP_PKEY_CTX *, EVP_PKEY_CTX_new_id, int id, id, ENGINE *e, e, return nullptr, return)
+    DEFINEFUNC(void, EVP_PKEY_CTX_free, EVP_PKEY_CTX *ctx, ctx, return, DUMMYARG)
+
+    DEFINEFUNC(int, EVP_PKEY_derive_init, EVP_PKEY_CTX *ctx, ctx, return 0, return)
+    DEFINEFUNC2(int, EVP_PKEY_derive_set_peer, EVP_PKEY_CTX *ctx, ctx, EVP_PKEY *peer, peer, return 0, return)
+    DEFINEFUNC3(int, EVP_PKEY_derive, EVP_PKEY_CTX *ctx, ctx, unsigned char *key, key, size_t *keylen, keylen, return 0, return)
+
+    DEFINEFUNC(int, EVP_PKEY_keygen_init, EVP_PKEY_CTX *ctx, ctx, return 0, return)
+    DEFINEFUNC2(int, EVP_PKEY_keygen, EVP_PKEY_CTX *ctx, ctx, EVP_PKEY **ppkey, ppkey, return 0, return)
+#endif
 
 #define RESOLVEFUNC(func) \
     if (!(_q_##func = _q_PTR_##func(libs.first->resolve(#func)))     \
@@ -923,6 +950,19 @@ bool q_resolveOpenSslSymbols()
     RESOLVEFUNC(DH_bits)
     RESOLVEFUNC(DSA_bits)
 
+    RESOLVEFUNC(EVP_PKEY_set_type)
+    RESOLVEFUNC(EVP_PKEY_up_ref)
+    RESOLVEFUNC(EVP_PKEY_set1_tls_encodedpoint)
+
+    RESOLVEFUNC(d2i_PrivateKey_bio)
+    RESOLVEFUNC(i2d_PUBKEY_bio)
+    RESOLVEFUNC(i2d_PUBKEY)
+
+    RESOLVEFUNC(EVP_PKEY_get_raw_public_key)
+    RESOLVEFUNC(EVP_PKEY_new_raw_public_key)
+    RESOLVEFUNC(EVP_PKEY_get_raw_private_key)
+    RESOLVEFUNC(EVP_PKEY_new_raw_private_key)
+
 #else // !opensslv11
 
     RESOLVEFUNC(ASN1_STRING_data)
@@ -1231,6 +1271,19 @@ bool q_resolveOpenSslSymbols()
     RESOLVEFUNC(PKCS12_parse)
     RESOLVEFUNC(d2i_PKCS12_bio)
     RESOLVEFUNC(PKCS12_free)
+
+#if OPENSSL_VERSION_NUMBER >= 0x10000000L
+    RESOLVEFUNC(EVP_PKEY_CTX_new)
+    RESOLVEFUNC(EVP_PKEY_CTX_new_id)
+    RESOLVEFUNC(EVP_PKEY_CTX_free)
+
+    RESOLVEFUNC(EVP_PKEY_derive_init)
+    RESOLVEFUNC(EVP_PKEY_derive_set_peer)
+    RESOLVEFUNC(EVP_PKEY_derive)
+
+    RESOLVEFUNC(EVP_PKEY_keygen_init)
+    RESOLVEFUNC(EVP_PKEY_keygen)
+#endif
 
     symbolsResolved = true;
     delete libs.first;
