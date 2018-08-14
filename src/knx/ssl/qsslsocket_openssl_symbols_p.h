@@ -69,7 +69,40 @@
 //
 
 #include <QtNetwork/private/qtnetworkglobal_p.h>
-#include "qsslsocket_openssl_p.h"
+
+#ifdef Q_OS_WIN
+#include <qt_windows.h>
+#if defined(OCSP_RESPONSE)
+#undef OCSP_RESPONSE
+#endif
+#if defined(X509_NAME)
+#undef X509_NAME
+#endif
+#endif // Q_OS_WIN
+
+#include <openssl/asn1.h>
+#include <openssl/bio.h>
+#include <openssl/bn.h>
+#include <openssl/err.h>
+#include <openssl/evp.h>
+#include <openssl/pem.h>
+#include <openssl/pkcs12.h>
+#include <openssl/pkcs7.h>
+#include <openssl/rand.h>
+#include <openssl/ssl.h>
+#include <openssl/stack.h>
+#include <openssl/x509.h>
+#include <openssl/x509v3.h>
+#include <openssl/x509_vfy.h>
+#include <openssl/dsa.h>
+#include <openssl/rsa.h>
+#include <openssl/crypto.h>
+#include <openssl/tls1.h>
+
+#if QT_CONFIG(opensslv11)
+#include <openssl/dh.h>
+#endif
+
 #include <QtCore/qglobal.h>
 
 QT_BEGIN_NAMESPACE

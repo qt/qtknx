@@ -2,7 +2,7 @@ TARGET = QtKnx
 
 QT = core
 CONFIG += c++11
-QT_FOR_PRIVATE += network core-private
+QT_FOR_PRIVATE += network core-private network-private
 
 QMAKE_DOCS = $$PWD/doc/qtknx.qdocconf
 
@@ -10,6 +10,7 @@ include (core/core.pri)
 include(dpt/dpt.pri)
 include(knxproj/knxproj.pri)
 include(netip/netip.pri)
+include(ssl/ssl.pri)
 
 DEFINES += QT_NO_CAST_FROM_ASCII
 
