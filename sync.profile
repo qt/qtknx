@@ -14,3 +14,9 @@
     "qknxnetiptunnelinginfodib.h" => "QKnxNetIpTunnelingSlotInfo",
     "qknxnetipsrp.h" => "QKnxNetIpSrpBuilder",
 );
+
+%deprecatedheaders = (
+    "QtKnx" => {
+        "qknxglobal.h" => "QtKnx/qtknxglobal.h"
+    }
+);

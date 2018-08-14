@@ -18,7 +18,7 @@ PUBLIC_HEADERS += \
     qknxaddress.h \
     qknxcontrolfield.h \
     qknxextendedcontrolfield.h \
-    qknxglobal.h \
+    qtknxglobal.h \
     qknxinterfaceobjectproperty.h \
     qknxinterfaceobjectpropertydatatype.h \
     qknxinterfaceobjecttype.h \
@@ -32,6 +32,7 @@ PUBLIC_HEADERS += \
     qknxutils.h
 
 PRIVATE_HEADERS += \
+    qtknxglobal_p.h \
     qknxtpdufactory_p.h
 
 SOURCES += \

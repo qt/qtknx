@@ -27,10 +27,11 @@
 **
 ******************************************************************************/
 
-#ifndef QKNXGLOBAL_H
-#define QKNXGLOBAL_H
+#ifndef QTKNXGLOBAL_H
+#define QTKNXGLOBAL_H
 
 #include <QtCore/qglobal.h>
+#include <QtKnx/qtknx-config.h>
 
 QT_BEGIN_NAMESPACE
 
