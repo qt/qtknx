@@ -35,7 +35,7 @@
 #include <QtKnx/qknxaddress.h>
 #include <QtKnx/qknxcontrolfield.h>
 #include <QtKnx/qknxextendedcontrolfield.h>
-#include <QtKnx/qknxglobal.h>
+#include <QtKnx/qtknxglobal.h>
 #include <QtKnx/qknxlinklayerframe.h>
 #include <QtKnx/qknxnamespace.h>
 #include <QtKnx/qknxtpdu.h>

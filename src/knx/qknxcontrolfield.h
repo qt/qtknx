@@ -32,7 +32,7 @@
 
 #include <QtCore/qdebug.h>
 #include <QtKnx/qknxbytearray.h>
-#include <QtKnx/qknxglobal.h>
+#include <QtKnx/qtknxglobal.h>
 
 #include <bitset>
 

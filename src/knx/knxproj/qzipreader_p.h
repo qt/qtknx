@@ -56,7 +56,7 @@
 #include <QtCore/qdatetime.h>
 #include <QtCore/qfile.h>
 #include <QtCore/qstring.h>
-#include <QtKnx/qknxglobal.h>
+#include <QtKnx/qtknxglobal.h>
 
 QT_BEGIN_NAMESPACE
 

@@ -34,7 +34,7 @@
 #include <QtCore/qshareddata.h>
 
 #include <QtKnx/qknxaddress.h>
-#include <QtKnx/qknxglobal.h>
+#include <QtKnx/qtknxglobal.h>
 #include <QtKnx/qknxnetipservicefamiliesdib.h>
 #include <QtKnx/qknxnetiptunnelinginfodib.h>
 

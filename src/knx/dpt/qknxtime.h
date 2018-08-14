@@ -31,7 +31,7 @@
 #define QKNXTIME_H
 
 #include <QtCore/qmetatype.h>
-#include <QtKnx/qknxglobal.h>
+#include <QtKnx/qtknxglobal.h>
 
 QT_BEGIN_NAMESPACE
 

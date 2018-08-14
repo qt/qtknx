@@ -42,7 +42,7 @@
 //
 
 #include <QtCore/qtimer.h>
-#include <QtKnx/qknxglobal.h>
+#include <QtKnx/qtknxglobal.h>
 #include <QtKnx/qknxnetip.h>
 #include <QtKnx/qknxnetipsearchrequest.h>
 #include <QtKnx/qknxnetipsearchresponse.h>

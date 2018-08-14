@@ -33,7 +33,7 @@
 #include <QtCore/qshareddata.h>
 #include <QtCore/qstring.h>
 
-#include <QtKnx/qknxglobal.h>
+#include <QtKnx/qtknxglobal.h>
 #include <QtKnx/qknxaddress.h>
 #include <QtKnx/qknxdatapointtype.h>
 

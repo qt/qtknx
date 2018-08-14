@@ -31,7 +31,7 @@
 #define QKNXNETIPDEVICEMANAGEMENT_H
 
 #include <QtKnx/qknxdevicemanagementframe.h>
-#include <QtKnx/qknxglobal.h>
+#include <QtKnx/qtknxglobal.h>
 #include <QtKnx/qknxnetipendpointconnection.h>
 
 QT_BEGIN_NAMESPACE

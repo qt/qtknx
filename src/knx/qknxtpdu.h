@@ -32,7 +32,7 @@
 
 #include <QtCore/qshareddata.h>
 #include <QtKnx/qknxbytearray.h>
-#include <QtKnx/qknxglobal.h>
+#include <QtKnx/qtknxglobal.h>
 #include <QtKnx/qknxnetip.h>
 
 QT_BEGIN_NAMESPACE

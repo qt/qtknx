@@ -31,7 +31,7 @@
 #define QKNXNETIPTUNNEL_H
 
 #include <QtKnx/qknxaddress.h>
-#include <QtKnx/qknxglobal.h>
+#include <QtKnx/qtknxglobal.h>
 #include <QtKnx/qknxnetipendpointconnection.h>
 #include <QtKnx/qknxlinklayerframe.h>
 

@@ -32,7 +32,7 @@
 
 #include <QtCore/qdebug.h>
 #include <QtCore/qstring.h>
-#include <QtKnx/qknxglobal.h>
+#include <QtKnx/qtknxglobal.h>
 #include <QtKnx/qknxutils.h>
 
 QT_BEGIN_NAMESPACE

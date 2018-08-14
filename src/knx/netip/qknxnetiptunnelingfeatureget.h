@@ -33,7 +33,7 @@
 #include <QtCore/qshareddata.h>
 
 #include <QtKnx/qknxnetipframe.h>
-#include <QtKnx/qknxglobal.h>
+#include <QtKnx/qtknxglobal.h>
 
 QT_BEGIN_NAMESPACE
 

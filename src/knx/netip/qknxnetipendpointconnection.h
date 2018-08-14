@@ -30,7 +30,7 @@
 #ifndef QKNXNETIPENDPOINTCONNECTION_H
 #define QKNXNETIPENDPOINTCONNECTION_H
 
-#include <QtKnx/qknxglobal.h>
+#include <QtKnx/qtknxglobal.h>
 #include <QtKnx/qknxnetipcri.h>
 #include <QtKnx/qknxnetiphpai.h>
 #include <QtKnx/qknxnetipframe.h>

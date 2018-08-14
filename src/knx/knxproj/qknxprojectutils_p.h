@@ -43,7 +43,7 @@
 
 #include <QtCore/qcoreapplication.h>
 #include <QtCore/qxmlstream.h>
-#include <QtKnx/qknxglobal.h>
+#include <QtKnx/qtknxglobal.h>
 
 QT_BEGIN_NAMESPACE
 

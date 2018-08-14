@@ -34,7 +34,7 @@
 #include <QtKnx/qknxnetipcrd.h>
 #include <QtKnx/qknxnetipframe.h>
 #include <QtKnx/qknxnetiphpai.h>
-#include <QtKnx/qknxglobal.h>
+#include <QtKnx/qtknxglobal.h>
 
 QT_BEGIN_NAMESPACE
 

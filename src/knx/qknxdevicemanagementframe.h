@@ -33,7 +33,7 @@
 #include <QtCore/qshareddata.h>
 
 #include <QtKnx/qknxbytearray.h>
-#include <QtKnx/qknxglobal.h>
+#include <QtKnx/qtknxglobal.h>
 #include <QtKnx/qknxinterfaceobjectproperty.h>
 #include <QtKnx/qknxinterfaceobjecttype.h>
 #include <QtKnx/qknxnetip.h>

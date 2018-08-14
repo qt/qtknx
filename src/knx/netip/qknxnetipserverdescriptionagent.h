@@ -32,7 +32,7 @@
 
 #include <QtCore/qobject.h>
 #include <QtCore/qvector.h>
-#include <QtKnx/qknxglobal.h>
+#include <QtKnx/qtknxglobal.h>
 #include <QtKnx/qknxnetipserverinfo.h>
 #include <QtNetwork/qhostaddress.h>
 

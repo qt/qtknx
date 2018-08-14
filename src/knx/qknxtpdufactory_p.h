@@ -42,7 +42,7 @@
 //
 
 #include <QtKnx/qknxaddress.h>
-#include <QtKnx/qknxglobal.h>
+#include <QtKnx/qtknxglobal.h>
 #include <QtKnx/qknxinterfaceobjectproperty.h>
 #include <QtKnx/qknxinterfaceobjectpropertydatatype.h>
 #include <QtKnx/qknxinterfaceobjecttype.h>

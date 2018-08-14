@@ -30,7 +30,7 @@
 #ifndef QKNXNETIP_H
 #define QKNXNETIP_H
 
-#include <QtKnx/qknxglobal.h>
+#include <QtKnx/qtknxglobal.h>
 #include <QtKnx/qknxnamespace.h>
 
 QT_BEGIN_NAMESPACE

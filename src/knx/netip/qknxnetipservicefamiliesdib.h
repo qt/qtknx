@@ -30,7 +30,7 @@
 #ifndef QKNXNETIPSERVICEFAMILIESDIB_H
 #define QKNXNETIPSERVICEFAMILIESDIB_H
 
-#include <QtKnx/qknxglobal.h>
+#include <QtKnx/qtknxglobal.h>
 #include <QtKnx/qknxnetipstruct.h>
 
 QT_BEGIN_NAMESPACE

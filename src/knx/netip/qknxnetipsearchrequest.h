@@ -32,7 +32,7 @@
 
 #include <QtKnx/qknxnetipframe.h>
 #include <QtKnx/qknxnetiphpai.h>
-#include <QtKnx/qknxglobal.h>
+#include <QtKnx/qtknxglobal.h>
 
 #include <QtCore/qshareddata.h>
 #include <QtCore/qvector.h>

@@ -43,7 +43,7 @@
 
 #include <QtCore/qtimer.h>
 #include <QtKnx/qknxaddress.h>
-#include <QtKnx/qknxglobal.h>
+#include <QtKnx/qtknxglobal.h>
 #include <QtKnx/qknxnetipendpointconnection.h>
 #include <QtNetwork/qhostaddress.h>
 #include <QtKnx/qknxdevicemanagementframe.h>

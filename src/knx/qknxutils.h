@@ -31,7 +31,7 @@
 #define QKNXUTILS_H
 
 #include <QtKnx/qknxbytearray.h>
-#include <QtKnx/qknxglobal.h>
+#include <QtKnx/qtknxglobal.h>
 #include <QtNetwork/qhostaddress.h>
 
 QT_BEGIN_NAMESPACE

@@ -33,7 +33,7 @@
 #include <QtCore/qvector.h>
 
 #include <QtKnx/qknxnetipframe.h>
-#include <QtKnx/qknxglobal.h>
+#include <QtKnx/qtknxglobal.h>
 #include <QtKnx/qknxnetipstruct.h>
 
 QT_BEGIN_NAMESPACE

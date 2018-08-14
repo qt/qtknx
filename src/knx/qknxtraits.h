@@ -30,7 +30,7 @@
 #ifndef QKNXTRAITS_H
 #define QKNXTRAITS_H
 
-#include <QtKnx/qknxglobal.h>
+#include <QtKnx/qtknxglobal.h>
 
 #include <array>
 #include <bitset>

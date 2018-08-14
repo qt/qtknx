@@ -31,7 +31,7 @@
 #define QKNXNAMESPACE_H
 
 #include <QtCore/qmetaobject.h>
-#include <QtKnx/qknxglobal.h>
+#include <QtKnx/qtknxglobal.h>
 
 QT_BEGIN_NAMESPACE
 

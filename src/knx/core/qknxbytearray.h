@@ -44,7 +44,7 @@
 #include <QtCore/qbytearray.h>
 #include <QtCore/qdebug.h>
 
-#include <QtKnx/qknxglobal.h>
+#include <QtKnx/qtknxglobal.h>
 
 #include <initializer_list>
 

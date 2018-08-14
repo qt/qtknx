@@ -31,7 +31,7 @@
 #define QKNXNETIPDEVICEDIB_H
 
 #include <QtKnx/qknxaddress.h>
-#include <QtKnx/qknxglobal.h>
+#include <QtKnx/qtknxglobal.h>
 #include <QtKnx/qknxnamespace.h>
 #include <QtKnx/qknxnetipstruct.h>
 

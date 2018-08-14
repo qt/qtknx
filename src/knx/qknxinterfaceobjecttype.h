@@ -31,7 +31,7 @@
 #define QKNXINTERFACEOBJECTTYPE_H
 
 #include <QtCore/qobject.h>
-#include <QtKnx/qknxglobal.h>
+#include <QtKnx/qtknxglobal.h>
 #include <QtKnx/qknxinterfaceobjectproperty.h>
 
 QT_BEGIN_NAMESPACE

@@ -32,7 +32,7 @@
 
 #include <QtCore/qdatetime.h>
 #include <QtKnx/qknxdatapointtype.h>
-#include <QtKnx/qknxglobal.h>
+#include <QtKnx/qtknxglobal.h>
 #include <QtKnx/qknxtime.h>
 
 QT_BEGIN_NAMESPACE

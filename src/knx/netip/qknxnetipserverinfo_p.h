@@ -42,7 +42,7 @@
 //
 
 #include <QtCore/qshareddata.h>
-#include <QtKnx/qknxglobal.h>
+#include <QtKnx/qtknxglobal.h>
 #include <QtKnx/qknxnetipdevicedib.h>
 #include <QtKnx/qknxnetiphpai.h>
 #include <QtKnx/qknxnetipservicefamiliesdib.h>

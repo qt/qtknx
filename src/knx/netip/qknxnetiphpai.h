@@ -30,7 +30,7 @@
 #ifndef QKNXNETIPHPAI_H
 #define QKNXNETIPHPAI_H
 
-#include <QtKnx/qknxglobal.h>
+#include <QtKnx/qtknxglobal.h>
 #include <QtKnx/qknxnetipstruct.h>
 #include <QtNetwork/qhostaddress.h>
 

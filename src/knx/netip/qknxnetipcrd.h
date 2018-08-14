@@ -31,7 +31,7 @@
 #define QKNXNETIPCRD_H
 
 #include <QtKnx/qknxaddress.h>
-#include <QtKnx/qknxglobal.h>
+#include <QtKnx/qtknxglobal.h>
 #include <QtKnx/qknxnetipstruct.h>
 
 QT_BEGIN_NAMESPACE

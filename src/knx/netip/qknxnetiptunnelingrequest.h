@@ -32,7 +32,7 @@
 
 #include <QtKnx/qknxnetip.h>
 #include <QtKnx/qknxnetipframe.h>
-#include <QtKnx/qknxglobal.h>
+#include <QtKnx/qtknxglobal.h>
 #include <QtKnx/qknxlinklayerframe.h>
 
 QT_BEGIN_NAMESPACE

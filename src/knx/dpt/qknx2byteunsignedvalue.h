@@ -31,7 +31,7 @@
 #define QKNX2BYTEUNSIGNEDVALUE_H
 
 #include <QtKnx/qknxdatapointtype.h>
-#include <QtKnx/qknxglobal.h>
+#include <QtKnx/qtknxglobal.h>
 
 QT_BEGIN_NAMESPACE
 
