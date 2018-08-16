@@ -82,7 +82,7 @@ bool QKnxProject::parseElement(QXmlStreamReader *reader, bool pedantic)
                 if (reader->name() == QStringLiteral("ProjectInformation")) {
                     if (pedantic && ProjectInformation.size() >= 1) {
                         reader->raiseError(tr("Pedantic error: Encountered element "
-                            "<ProjectInformation> more then once."));
+                            "<ProjectInformation> more than once."));
                         return false;
                     }
                     QKnxProjectInformation info;
@@ -94,7 +94,7 @@ bool QKnxProject::parseElement(QXmlStreamReader *reader, bool pedantic)
                         return false;
                     if (pedantic && Installations.size() > 16) {
                         reader->raiseError(tr("Pedantic error: Encountered element <Installation> "
-                            "more then sixteen times."));
+                            "more than sixteen times."));
                         return false;
                     }
                 } else if (reader->name() == QStringLiteral("UserFiles")) {

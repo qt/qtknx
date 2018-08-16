@@ -119,7 +119,7 @@ bool QKnxGroupAddressInfosPrivate::readProject(const QKnxProject &project)
 {
     if (projects.contains(project.Id)) {
         status = QKnxGroupAddressInfos::Status::ProjectError;
-        errorString = QKnxGroupAddressInfos::tr("Project '%1' exists more then once.")
+        errorString = QKnxGroupAddressInfos::tr("Project '%1' exists more than once.")
             .arg(project.Id);
         return false;
     }
@@ -129,7 +129,7 @@ bool QKnxGroupAddressInfosPrivate::readProject(const QKnxProject &project)
         for (const auto &install : qAsConst(project.Installations)) {
             if (info.installations.contains(install.Name)) {
                 status = QKnxGroupAddressInfos::Status::ProjectError;
-                errorString = QKnxGroupAddressInfos::tr("Installation '%1' exists more then once.")
+                errorString = QKnxGroupAddressInfos::tr("Installation '%1' exists more than once.")
                     .arg(install.Name.isEmpty() ? QStringLiteral("<empty>") : install.Name);
                 return false;
             }

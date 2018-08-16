@@ -143,7 +143,7 @@ bool QKnxLine::parseElement(QXmlStreamReader *reader, bool pedantic)
                 } else if (reader->name() == QStringLiteral("BusAccess")) {
                     if (pedantic && BusAccess.size() >= 1) {
                         reader->raiseError(tr("Pedantic error: Encountered element <BusAccess> "
-                            "more then once."));
+                            "more than once."));
                         return false;
                     }
                     QKnxBusAccess bus;
@@ -153,7 +153,7 @@ bool QKnxLine::parseElement(QXmlStreamReader *reader, bool pedantic)
                 } else if (reader->name() == QStringLiteral("AdditionalGroupAddresses")) {
                     if (pedantic && AdditionalGroupAddresses.size() > 1) {
                         reader->raiseError(tr("Pedantic error: Encountered element "
-                            "<AdditionalGroupAddresses> more then once."));
+                            "<AdditionalGroupAddresses> more than once."));
                         return false;
                     }
                     if (!QKnxProjectUtils::parseChildElement(reader, pedantic,
@@ -245,7 +245,7 @@ bool QKnxTopology::parseElement(QXmlStreamReader *reader, bool pedantic)
                 if (reader->name() == QStringLiteral("Area")) {
                     if (pedantic && Area.size() >= 16) {
                         reader->raiseError(tr("Pedantic error: Encountered element "
-                            "<Area> more then sixteen times."));
+                            "<Area> more than sixteen times."));
                         return false;
                     }
                     QKnxArea area;

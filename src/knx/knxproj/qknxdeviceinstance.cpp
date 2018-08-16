@@ -98,7 +98,7 @@ bool QKnxConnectors::parseElement(QXmlStreamReader *reader, bool pedantic)
                 if (reader->name() == QStringLiteral("Send")) {
                     if (pedantic && !Send.GroupAddressRefId.isNull()) {
                         reader->raiseError(tr("Pedantic error: Encountered element <Send> "
-                            "more then once."));
+                            "more than once."));
                         return false;
                     }
                     if (!fetchAttributes(reader->attributes(), &Send))
@@ -159,7 +159,7 @@ bool QKnxComObjectInstanceRef::parseElement(QXmlStreamReader *reader, bool pedan
                 if (reader->name() == QStringLiteral("Connectors")) {
                     if (pedantic && Connectors.size() > 1) {
                         reader->raiseError(tr("Pedantic error: Encountered element <Connectors> "
-                            "more then once."));
+                            "more than once."));
                         return false;
                     }
                     QKnxConnectors connectors;
@@ -352,7 +352,7 @@ bool QKnxBusInterface::parseElement(QXmlStreamReader *reader, bool pedantic)
                 if (reader->name() == QLatin1String("Connectors")) {
                     if (pedantic && Connectors.size() > 1) {
                         reader->raiseError(tr("Pedantic error: Encountered element <Connectors> "
-                            "more then once."));
+                            "more than once."));
                         return false;
                     }
 

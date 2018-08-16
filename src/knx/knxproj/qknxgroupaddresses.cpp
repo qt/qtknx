@@ -187,7 +187,7 @@ bool QKnxGroupAddresses::parseElement(QXmlStreamReader *reader, bool pedantic)
 
         if (pedantic && GroupRanges.size() > 0) {
             reader->raiseError(tr("Pedantic error: Encountered element <GroupRanges> "
-                "more then once."));
+                "more than once."));
             return false;
         }
 
@@ -198,7 +198,7 @@ bool QKnxGroupAddresses::parseElement(QXmlStreamReader *reader, bool pedantic)
                 if (reader->name() == QStringLiteral("GroupRange")) {
                     if (pedantic && GroupRanges.size() >= 65535) {
                         reader->raiseError(tr("Pedantic error: Encountered element <GroupRange> "
-                            "more then 65535 times."));
+                            "more than 65535 times."));
                         return false;
                     }
                     QKnxGroupRange range;

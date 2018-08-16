@@ -194,7 +194,7 @@ bool QKnxInstallation::parseElement(QXmlStreamReader *reader, bool pedantic)
                 if (reader->name() == QStringLiteral("Topology")) {
                     if (pedantic && Topology.size() >= 1) {
                         reader->raiseError(tr("Pedantic error: Encountered element "
-                            "<Topology> more then once."));
+                            "<Topology> more than once."));
                         return false;
                     }
                     QKnxTopology topology;
@@ -204,7 +204,7 @@ bool QKnxInstallation::parseElement(QXmlStreamReader *reader, bool pedantic)
                 } else if (reader->name() == QStringLiteral("Buildings")) {
                     if (pedantic && Buildings.size() >= 1) {
                         reader->raiseError(tr("Pedantic error: Encountered element "
-                            "<Buildings> more then once."));
+                            "<Buildings> more than once."));
                         return false;
                     }
                     QKnxBuildings buildings;
@@ -214,7 +214,7 @@ bool QKnxInstallation::parseElement(QXmlStreamReader *reader, bool pedantic)
                 } else if (reader->name() == QStringLiteral("GroupAddresses")) {
                     if (pedantic && GroupAddresses.size() >= 1) {
                         reader->raiseError(tr("Pedantic error: Encountered element "
-                            "<GroupAddresses> more then once."));
+                            "<GroupAddresses> more than once."));
                         return false;
                     }
                     QKnxGroupAddresses addresses;
@@ -227,7 +227,7 @@ bool QKnxInstallation::parseElement(QXmlStreamReader *reader, bool pedantic)
                 } else if (reader->name() == QStringLiteral("BusAccess")) {
                     if (pedantic && BusAccess.size() >= 1) {
                         reader->raiseError(tr("Pedantic error: Encountered element <BusAccess> "
-                            "more then once."));
+                            "more than once."));
                         return false;
                     }
                     QKnxBusAccess busAccess;
