@@ -349,18 +349,17 @@ QKnxNetIpRoutingInterface::FilterAction
     auto hopCount = extCtrlField.hopCount();
 
     if (dst.type() == QKnxAddress::Type::Group) {
+        // TODO: review this part
         auto gAdd = QKnxAddress::createGroup(dst.main(), dst.middle(), 0);
         bool routingCondition = true;
         if (m_routingMode == QKnxNetIpRoutingInterface::RoutingMode::FilterTableRouting)
             routingCondition = m_filterTable.contains(gAdd);
         if (m_routingMode == QKnxNetIpRoutingInterface::RoutingMode::BlockRouting)
             return QKnxNetIpRoutingInterface::FilterAction::IgnoreTotally;
-        if (routingCondition && hopCount > 0 && hopCount < 7)
+        if (routingCondition && hopCount > 0 && hopCount <= 7)
             return QKnxNetIpRoutingInterface::FilterAction::RouteDecremented;
         if (routingCondition && hopCount == 0)
             return QKnxNetIpRoutingInterface::FilterAction::IgnoreAcked;
-        if (hopCount == 7)
-            return QKnxNetIpRoutingInterface::FilterAction::RouteUnmodified;
         return QKnxNetIpRoutingInterface::FilterAction::IgnoreTotally;
     }
 
@@ -375,12 +374,9 @@ QKnxNetIpRoutingInterface::FilterAction
         bool notInOwnSubnetwork = (dst.main() != ownAddress.main())
             || (dst.middle() == ownAddress.middle());
         if (notInOwnSubnetwork) {
-            if (dst.sub() == 0)
-                // address to this line coupler
+            if (dst.sub() == 0) // address to this line coupler
                 return QKnxNetIpRoutingInterface::FilterAction::ForwardLocally;
-            if (hopCount == 7)
-                return QKnxNetIpRoutingInterface::FilterAction::RouteUnmodified;
-            if (hopCount > 0 && hopCount < 7)
+            if (hopCount > 0 && hopCount <= 7)
                 return QKnxNetIpRoutingInterface::FilterAction::RouteDecremented;
             return QKnxNetIpRoutingInterface::FilterAction::IgnoreAcked;
         }
@@ -393,17 +389,13 @@ QKnxNetIpRoutingInterface::FilterAction
         if (dst.middle() == 0 && dst.sub() == 0)
             // address to area coupler or backbone router.
             return QKnxNetIpRoutingInterface::FilterAction::ForwardLocally;
-        if (hopCount == 7)
-            return QKnxNetIpRoutingInterface::FilterAction::RouteUnmodified;
-        if (hopCount > 0 && hopCount < 7)
+        if (hopCount > 0 && hopCount <= 7)
             return QKnxNetIpRoutingInterface::FilterAction::RouteDecremented;
         return QKnxNetIpRoutingInterface::FilterAction::IgnoreAcked;
     }
 
     // main line to backbone routing
-    if (hopCount == 7)
-        return QKnxNetIpRoutingInterface::FilterAction::RouteUnmodified;
-    if (hopCount > 0 && hopCount < 7)
+    if (hopCount > 0 && hopCount <= 7)
         return QKnxNetIpRoutingInterface::FilterAction::RouteDecremented;
     return QKnxNetIpRoutingInterface::FilterAction::IgnoreAcked;
 }

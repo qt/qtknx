@@ -75,7 +75,6 @@ public:
 
     enum class FilterAction : quint8
     {
-        RouteUnmodified,
         RouteDecremented,
         RouteLast,
         ForwardLocally,
