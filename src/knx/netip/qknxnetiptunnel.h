@@ -61,8 +61,15 @@ public:
 
     bool sendFrame(const QKnxLinkLayerFrame &frame);
 
+    bool sendTunnelingFeatureGet(QKnx::InterfaceFeature feature);
+    bool sendTunnelingFeatureSet(QKnx::InterfaceFeature feature, const QKnxByteArray &value);
+
 Q_SIGNALS:
     void frameReceived(QKnxLinkLayerFrame frame);
+
+    void tunnelingFeatureInfoReceived(QKnx::InterfaceFeature feature, QKnxByteArray value);
+    void tunnelingFeatureResponseReceived(QKnx::InterfaceFeature feature, QKnx::ReturnCode code,
+                                          QKnxByteArray value);
 };
 
 QT_END_NAMESPACE

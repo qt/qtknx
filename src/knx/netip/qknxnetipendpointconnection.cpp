@@ -38,6 +38,10 @@
 #include "qknxnetipendpointconnection.h"
 #include "qknxnetipendpointconnection_p.h"
 #include "qknxnetiptunnelingacknowledge.h"
+#include "qknxnetiptunnelingfeatureget.h"
+#include "qknxnetiptunnelingfeatureset.h"
+#include "qknxnetiptunnelingfeatureinfo.h"
+#include "qknxnetiptunnelingfeatureresponse.h"
 #include "qknxnetiptunnelingrequest.h"
 #include "qnetworkdatagram.h"
 #include "qtcpsocket.h"
@@ -286,6 +290,7 @@ void QKnxNetIpEndpointConnectionPrivate::processReceivedFrame(const QHostAddress
     case QKnxNetIp::ServiceType::TunnelingAcknowledge:
         processTunnelingAcknowledge(frame);
         break;
+
     case QKnxNetIp::ServiceType::DeviceConfigurationRequest:
         processDeviceConfigurationRequest(frame);
         break;
@@ -293,6 +298,10 @@ void QKnxNetIpEndpointConnectionPrivate::processReceivedFrame(const QHostAddress
         processDeviceConfigurationAcknowledge(frame);
         break;
 
+    case QKnxNetIp::ServiceType::TunnelingFeatureInfo:
+    case QKnxNetIp::ServiceType::TunnelingFeatureResponse:
+        processFeatureFrame(frame);
+        break;
     default:
         break;
     }
@@ -565,6 +574,71 @@ bool QKnxNetIpEndpointConnectionPrivate::sendDeviceConfigurationRequest(const QK
     qDebug().noquote().nospace() << "Sending device configuration request:" << m_lastSendCemiRequest;
     return sendCemiRequest();
 }
+
+bool QKnxNetIpEndpointConnectionPrivate::sendTunnelingFeatureGet(QKnx::InterfaceFeature feature)
+{
+    m_lastSendCemiRequest = QKnxNetIpTunnelingFeatureGetProxy::builder()
+        .setChannelId(m_channelId)
+        .setSequenceNumber(m_sendCount)
+        .setFeatureIdentifier(feature)
+        .create();
+    qDebug().noquote() << "Sending tunneling feature get:" << m_lastSendCemiRequest;
+
+    return sendCemiRequest();
+}
+
+bool QKnxNetIpEndpointConnectionPrivate::sendTunnelingFeatureSet(QKnx::InterfaceFeature feature,
+    const QKnxByteArray &value)
+{
+    m_lastSendCemiRequest = QKnxNetIpTunnelingFeatureSetProxy::builder()
+        .setChannelId(m_channelId)
+        .setSequenceNumber(m_sendCount)
+        .setFeatureIdentifier(feature)
+        .setFeatureValue(value)
+        .create();
+    qDebug().noquote() << "Sending tunneling feature set:" << m_lastSendCemiRequest;
+
+    return sendCemiRequest();
+}
+
+void QKnxNetIpEndpointConnectionPrivate::processFeatureFrame(const QKnxNetIpFrame &frame)
+{
+    qDebug() << "Received tunneling feature frame:" << frame;
+
+    QKnxNetIpTunnelingFeatureInfoProxy proxy(frame);
+    if (m_tcpSocket || proxy.isValid()) {
+        processTunnelingFeatureFrame(frame);
+        return; // no need to send ACK in TCP connection
+    }
+
+    if (frame.channelId() == m_channelId) {
+        const bool counterEquals = (frame.sequenceNumber() == m_receiveCount);
+        if (counterEquals || (frame.sequenceNumber() + 1 == m_receiveCount)) {
+                // sequence equals -> acknowledge -> process frame
+                // sequence -1 -> acknowledge -> drop frame
+                auto ack = QKnxNetIpTunnelingAcknowledgeProxy::builder()
+                    .setChannelId(m_channelId)
+                    .setSequenceNumber(m_receiveCount)
+                    .setStatus(QKnxNetIp::Error::None)
+                    .create();
+
+                qDebug() << "Sending tunneling acknowledge:" << ack;
+                m_udpSocket->writeDatagram(ack.bytes().toByteArray(),
+                    m_remoteDataEndpoint.address, m_remoteDataEndpoint.port);
+
+                if (!counterEquals)
+                    return;
+                m_receiveCount++;
+                processTunnelingFeatureFrame(frame);
+        }
+    } else {
+        qDebug() << "Frame was ignored due to wrong channel ID. Expected:" << m_channelId
+            << "Current:" << frame.channelId();
+    }
+}
+
+void QKnxNetIpEndpointConnectionPrivate::processTunnelingFeatureFrame(const QKnxNetIpFrame &)
+{}
 
 void QKnxNetIpEndpointConnectionPrivate::processConnectResponse(const QKnxNetIpFrame &frame)
 {

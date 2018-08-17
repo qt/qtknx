@@ -328,6 +328,10 @@ QKnxNetIpFrame QKnxNetIpFrame::fromBytes(const QKnxByteArray &bytes, quint16 ind
     switch (header.serviceType()) {
         case QKnxNetIp::ServiceType::TunnelingRequest:
         case QKnxNetIp::ServiceType::TunnelingAcknowledge:
+        case QKnxNetIp::ServiceType::TunnelingFeatureGet:
+        case QKnxNetIp::ServiceType::TunnelingFeatureSet:
+        case QKnxNetIp::ServiceType::TunnelingFeatureInfo:
+        case QKnxNetIp::ServiceType::TunnelingFeatureResponse:
         case QKnxNetIp::ServiceType::DeviceConfigurationRequest:
         case QKnxNetIp::ServiceType::DeviceConfigurationAcknowledge: {
             connHeader = QKnxNetIpConnectionHeader::fromBytes(bytes, index);

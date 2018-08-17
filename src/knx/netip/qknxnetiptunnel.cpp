@@ -30,7 +30,9 @@
 #include "qknxnetipconnectresponse.h"
 #include "qknxnetipendpointconnection_p.h"
 #include "qknxnetiptunnel.h"
+#include "qknxnetiptunnelingfeatureinfo.h"
 #include "qknxnetiptunnelingrequest.h"
+#include "qknxnetiptunnelingfeatureresponse.h"
 
 QT_BEGIN_NAMESPACE
 
@@ -76,6 +78,26 @@ QT_BEGIN_NAMESPACE
     link layer frame \a frame as payload) from the KNXnet/IP server.
 */
 
+/*!
+    \fn void QKnxNetIpTunnel::tunnelingFeatureInfoReceived(QKnx::InterfaceFeature feature, QKnxByteArray value)
+
+    This signal is emitted when the KNXnet/IP tunneling client receives data
+    from the KNXnet/IP server consisting of a given interface \a feature and
+    the corresponding feature \a value.
+*/
+
+/*!
+    \fn void QKnxNetIpTunnel::tunnelingFeatureResponseReceived(QKnx::InterfaceFeature feature, QKnx::ReturnCode code, QKnxByteArray value)
+
+    This signal is emitted when the KNXnet/IP tunneling client receives data
+    from the KNXnet/IP server consisting of a given interface \a feature, the
+    corresponding feature \a value and a return code \a code.
+
+    The signal is emit after a successful tunneling feature get or tunneling
+    feature set.
+*/
+
+
 class QKnxNetIpTunnelPrivate : public QKnxNetIpEndpointConnectionPrivate
 {
     Q_DECLARE_PUBLIC(QKnxNetIpTunnel)
@@ -108,6 +130,24 @@ public:
             m_address = QKnxNetIpCrdProxy(crd).individualAddress();
         }
         QKnxNetIpEndpointConnectionPrivate::processConnectResponse(frame);
+    }
+
+    void processTunnelingFeatureFrame(const QKnxNetIpFrame &frame) override
+    {
+        Q_Q(QKnxNetIpTunnel);
+        if (frame.serviceType() == QKnxNetIp::ServiceType::TunnelingFeatureInfo) {
+            const QKnxNetIpTunnelingFeatureInfoProxy proxy(frame);
+            if (proxy.isValid()) {
+                emit q->tunnelingFeatureInfoReceived(proxy.featureIdentifier(),
+                    proxy.featureValue());
+            }
+        } else if (frame.serviceType() == QKnxNetIp::ServiceType::TunnelingFeatureResponse) {
+            const QKnxNetIpTunnelingFeatureResponseProxy proxy(frame);
+            if (proxy.isValid()) {
+                emit q->tunnelingFeatureResponseReceived(proxy.featureIdentifier(),
+                    proxy.returnCode(), proxy.featureValue());
+            }
+        }
     }
 
     void updateCri()
@@ -241,6 +281,49 @@ bool QKnxNetIpTunnel::sendFrame(const QKnxLinkLayerFrame &frame)
         return false; // 03_08_04 Tunneling v01.05.03, paragraph 2.4
 
     return d->sendTunnelingRequest(frame);
+}
+
+/*!
+    Creates a tunneling feature get frame and sets the requested feature
+    identifier to \a feature.
+
+    If the tunnel runs in bus monitor mode, no frames can be sent to the bus.
+
+    If no connection is currently established, returns \c false and does not
+    send the frame.
+*/
+bool QKnxNetIpTunnel::sendTunnelingFeatureGet(QKnx::InterfaceFeature feature)
+{
+    if (state() != State::Connected || !QKnx::isInterfaceFeature(feature))
+        return false;
+
+    Q_D(QKnxNetIpTunnel);
+    if (d->m_layer == QKnxNetIp::TunnelLayer::Busmonitor)
+        return false; // 03_08_04 Tunneling v01.05.03, paragraph 2.4
+
+    return d->sendTunnelingFeatureGet(feature);
+}
+
+/*!
+    Creates a tunneling feature set frame and sets the requested feature
+    identifier to \a feature and the feature value to set to \a value.
+
+    If the tunnel runs in bus monitor mode, no frames can be sent to the bus.
+
+    If no connection is currently established, returns \c false and does not
+    send the frame.
+*/
+bool QKnxNetIpTunnel::sendTunnelingFeatureSet(QKnx::InterfaceFeature feature,
+    const QKnxByteArray &value)
+{
+    if (state() != State::Connected || !QKnx::isInterfaceFeature(feature))
+        return false;
+
+    Q_D(QKnxNetIpTunnel);
+    if (d->m_layer == QKnxNetIp::TunnelLayer::Busmonitor)
+        return false; // 03_08_04 Tunneling v01.05.03, paragraph 2.4
+
+    return d->sendTunnelingFeatureSet(feature, value);
 }
 
 QT_END_NAMESPACE

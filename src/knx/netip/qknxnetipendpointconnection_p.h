@@ -141,6 +141,11 @@ public:
     virtual void processDeviceConfigurationRequest(const QKnxNetIpFrame &frame);
     virtual void processDeviceConfigurationAcknowledge(const QKnxNetIpFrame &frame);
 
+    bool sendTunnelingFeatureGet(QKnx::InterfaceFeature feature);
+    bool sendTunnelingFeatureSet(QKnx::InterfaceFeature feature, const QKnxByteArray &value);
+    virtual void processFeatureFrame(const QKnxNetIpFrame &frame);
+    virtual void processTunnelingFeatureFrame(const QKnxNetIpFrame &frame);
+
     // endpoint related processing
     virtual void processConnectResponse(const QKnxNetIpFrame &frame);
     virtual void processConnectionStateResponse(const QKnxNetIpFrame &frame);
