@@ -34,7 +34,56 @@ QT_BEGIN_NAMESPACE
 
 bool QKnxOpenSsl::s_libraryLoaded = false;
 bool QKnxOpenSsl::s_libraryEnabled = false;
+
+Q_GLOBAL_STATIC(QKnxOpenSsl, qt_QKnxOpenSsl)
 Q_GLOBAL_STATIC_WITH_ARGS(QMutex, qt_knxOpenSslInitMutex, (QMutex::Recursive))
+
+/*!
+    \internal
+*/
+bool QKnxOpenSsl::supportsSsl()
+{
+    return ensureLibraryLoaded();
+}
+
+/*!
+    \internal
+*/
+long QKnxOpenSsl::sslLibraryVersionNumber()
+{
+    if (!supportsSsl())
+        return 0;
+    return q_OpenSSL_version_num();
+}
+
+/*!
+    \internal
+*/
+QString QKnxOpenSsl::sslLibraryVersionString()
+{
+    if (!supportsSsl())
+        return QString();
+
+    const char *versionString = q_OpenSSL_version(OPENSSL_VERSION);
+    if (!versionString)
+        return QString();
+
+    return QString::fromLatin1(versionString);
+}
+
+/*!
+    \internal
+*/
+long QKnxOpenSsl::sslLibraryBuildVersionNumber()
+{
+    return OPENSSL_VERSION_NUMBER;
+}
+
+
+QString QKnxOpenSsl::sslLibraryBuildVersionString()
+{
+    return QStringLiteral(OPENSSL_VERSION_TEXT);
+}
 
 /*!
     \internal
@@ -107,7 +156,7 @@ QKnxCurve25519PublicKey::QKnxCurve25519PublicKey(const QKnxCurve25519PrivateKey 
     if (!key.d_ptr->m_evpPKey)
         return;
 
-    if (!QKnxOpenSsl::supportsSsl())
+    if (!qt_QKnxOpenSsl->supportsSsl())
         return;
 
     q_EVP_PKEY_up_ref(key.d_ptr->m_evpPKey);
@@ -130,7 +179,7 @@ bool QKnxCurve25519PublicKey::isNull() const
 */
 bool QKnxCurve25519PublicKey::isValid() const
 {
-    return QKnxOpenSsl::supportsSsl() && !isNull();
+    return qt_QKnxOpenSsl->supportsSsl() && !isNull();
 }
 
 /*!
@@ -160,7 +209,7 @@ QKnxByteArray QKnxCurve25519PublicKey::bytes() const
 QKnxCurve25519PublicKey QKnxCurve25519PublicKey::fromBytes(const QKnxByteArray &data, quint16 index)
 {
     auto ba = data.mid(index, 32);
-    if (!QKnxOpenSsl::supportsSsl() || ba.size() < 32)
+    if (!qt_QKnxOpenSsl->supportsSsl() || ba.size() < 32)
         return {};
 
     QKnxCurve25519PublicKey key;
@@ -217,7 +266,7 @@ QKnxCurve25519PublicKey &QKnxCurve25519PublicKey::operator=(const QKnxCurve25519
 QKnxCurve25519PrivateKey::QKnxCurve25519PrivateKey()
     : d_ptr(new QKnxCurve25519KeyData)
 {
-    if (!QKnxOpenSsl::supportsSsl())
+    if (!qt_QKnxOpenSsl->supportsSsl())
         return;
 
     if (auto *pctx = q_EVP_PKEY_CTX_new_id(NID_X25519, nullptr)) {
@@ -248,7 +297,7 @@ bool QKnxCurve25519PrivateKey::isNull() const
 */
 bool QKnxCurve25519PrivateKey::isValid() const
 {
-    return QKnxOpenSsl::supportsSsl() && !isNull();
+    return qt_QKnxOpenSsl->supportsSsl() && !isNull();
 }
 
 /*!
@@ -274,7 +323,7 @@ QKnxByteArray QKnxCurve25519PrivateKey::bytes() const
 QKnxCurve25519PrivateKey QKnxCurve25519PrivateKey::fromBytes(const QKnxByteArray &data, quint16 index)
 {
     auto ba = data.mid(index, 32);
-    if (!QKnxOpenSsl::supportsSsl() || ba.size() < 32)
+    if (!qt_QKnxOpenSsl->supportsSsl() || ba.size() < 32)
         return {};
 
     QKnxCurve25519PrivateKey key;
@@ -343,7 +392,7 @@ QKnxCurve25519PrivateKey &QKnxCurve25519PrivateKey::operator=(const QKnxCurve255
 QKnxByteArray QKnxCryptographicEngine::sharedSecret(const QKnxCurve25519PublicKey &pub,
                                                     const QKnxCurve25519PrivateKey &priv)
 {
-    if (!QKnxOpenSsl::supportsSsl())
+    if (!qt_QKnxOpenSsl->supportsSsl())
         return {};
 
     if (pub.isNull() || priv.isNull())

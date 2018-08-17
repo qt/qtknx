@@ -47,23 +47,19 @@
 
 QT_BEGIN_NAMESPACE
 
-struct QKnxOpenSsl
+class Q_AUTOTEST_EXPORT QKnxOpenSsl
 {
-    Q_AUTOTEST_EXPORT static bool supportsSsl()
-    {
-        return ensureLibraryLoaded();
-    }
+public:
+    static bool supportsSsl();
+    static long sslLibraryVersionNumber();
+    static QString sslLibraryVersionString();
+    static long sslLibraryBuildVersionNumber();
+    static QString sslLibraryBuildVersionString();
 
-    Q_AUTOTEST_EXPORT static long sslLibraryVersionNumber()
-    {
-        if (!supportsSsl())
-            return 0;
-        return q_OpenSSL_version_num();
-    }
-
-private:
+protected:
     static bool ensureLibraryLoaded();
 
+private:
     static bool s_libraryLoaded;
     static bool s_libraryEnabled;
 };
