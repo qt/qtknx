@@ -73,7 +73,7 @@ void tst_QKnxNetIpRoutingSystemBroadcast::setValidCemi()
     auto tpdu = QKnxTpduFactory::Multicast::createGroupValueReadTpdu();
     auto ctrl = QKnxControlField::builder()
                 .setFrameFormat(QKnxControlField::FrameFormat::Standard)
-                .setBroadcast(QKnxControlField::Broadcast::Domain)
+                .setBroadcast(QKnxControlField::Broadcast::System)
                 .setPriority(QKnxControlField::Priority::Normal)
                 .create();
 

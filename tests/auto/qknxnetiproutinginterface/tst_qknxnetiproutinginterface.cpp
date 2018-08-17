@@ -33,6 +33,7 @@
 #include <QtKnx/qknxnetiproutingbusy.h>
 #include <QtKnx/qknxnetiproutingindication.h>
 #include <QtKnx/qknxnetiproutinglostmessage.h>
+#include <QtKnx/qknxnetiproutingsystembroadcast.h>
 
 #include <QtKnx/private/qknxnetiproutinginterface_p.h>
 #include <QtKnx/private/qknxtestingrouter_p.h>
@@ -66,6 +67,7 @@ private slots:
     void test_routing_receives_indications();
     void test_routing_receives_busy();
     void test_routing_busy_sent_packets_same_individual_address();
+    void test_routing_interface_sends_system_broadcast();
     void test_routing_filter();
     void test_routing_filter_data();
 
@@ -405,6 +407,47 @@ void tst_QKnxNetIpRoutingInterface::test_routing_busy_sent_packets_same_individu
     QCOMPARE(m_routingInterface.state(), QKnxNetIpRoutingInterface::State::NeighborBusy);
 }
 
+void tst_QKnxNetIpRoutingInterface::test_routing_interface_sends_system_broadcast()
+{
+    if (!runTests)
+        return;
+
+    m_routingInterface.start();
+
+    auto dst = QKnxAddress::createGroup(1, 1, 1);
+    auto tpdu = QKnxTpduFactory::Multicast::createGroupValueReadTpdu();
+    auto ctrl = QKnxControlField::builder()
+        .setFrameFormat(QKnxControlField::FrameFormat::Standard)
+        .setBroadcast(QKnxControlField::Broadcast::System)
+        .setPriority(QKnxControlField::Priority::Normal)
+        .create();
+
+    auto extCtrl = QKnxExtendedControlField::builder()
+        .setDestinationAddressType(dst.type())
+        .setHopCount(6)
+        .create();
+
+    auto frame = QKnxLinkLayerFrame::builder()
+        .setControlField(ctrl)
+        .setExtendedControlField(extCtrl)
+        .setTpdu(tpdu)
+        .setDestinationAddress(dst)
+        .setSourceAddress({ QKnxAddress::Type::Individual, 0 })
+        .setMessageCode(QKnxLinkLayerFrame::MessageCode::DataIndication)
+        .setMedium(QKnx::MediumType::NetIP)
+        .createFrame();
+
+    bool sbcSent = false;
+    QObject::connect(&m_routingInterface,
+        &QKnxNetIpRoutingInterface::routingSystemBroadcastSent, [&](QKnxNetIpFrame frame) {
+            sbcSent = true;
+            QKnxNetIpRoutingSystemBroadcastProxy sbc(frame);
+            QVERIFY(sbc.isValid());
+    });
+    m_routingInterface.sendRoutingSystemBroadcast(frame);
+    QVERIFY(sbcSent);
+}
+
 void tst_QKnxNetIpRoutingInterface::test_routing_filter()
 {
     if (!runTests)
@@ -423,7 +466,6 @@ void tst_QKnxNetIpRoutingInterface::test_routing_filter()
     m_routingInterface.start();
 
     bool receivedIndication = false;
-
     QObject::connect(&m_routingInterface, &QKnxNetIpRoutingInterface::routingIndicationReceived
                      , [&](QKnxNetIpFrame frame
                      , QKnxNetIpRoutingInterface::FilterAction routingAction) {
@@ -432,7 +474,6 @@ void tst_QKnxNetIpRoutingInterface::test_routing_filter()
         QCOMPARE(routingAction, expectedRoutingAction);
         receivedIndication = true;
     });
-
 
     auto frame = dummyRoutingIndication(dst, hopCount);
     simulateFramesReceived(frame);

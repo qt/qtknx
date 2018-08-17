@@ -114,6 +114,7 @@ public Q_SLOTS:
     void sendRoutingIndication(const QKnxNetIpFrame &frame);
     void sendRoutingBusy(const QKnxNetIpFrame &frame);
     void sendRoutingLostMessage(const QKnxNetIpFrame &frame);
+    void sendRoutingSystemBroadcast(const QKnxLinkLayerFrame &linkFrame);
 
     void start();
     void stop();
@@ -122,6 +123,7 @@ Q_SIGNALS:
     void routingIndicationSent(QKnxNetIpFrame frame);
     void routingBusySent(QKnxNetIpFrame frame);
     void routingLostCountSent(QKnxNetIpFrame frame);
+    void routingSystemBroadcastSent(QKnxNetIpFrame frame);
 
     void routingIndicationReceived(QKnxNetIpFrame frame, QKnxNetIpRoutingInterface::FilterAction action);
     void routingBusyReceived(QKnxNetIpFrame frame);

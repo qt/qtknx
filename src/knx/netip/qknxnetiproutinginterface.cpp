@@ -34,6 +34,7 @@
 #include "qknxnetiproutingbusy.h"
 #include "qknxnetiproutingindication.h"
 #include "qknxnetiproutinglostmessage.h"
+#include "qknxnetiproutingsystembroadcast.h"
 
 #include <QtCore/qrandom.h>
 #include <QtCore/qtimer.h>
@@ -231,6 +232,13 @@ QT_BEGIN_NAMESPACE
 
     This signal is emitted when the KNXnet/IP router has finished sending the
     routing lost count \a frame.
+*/
+
+/*!
+    \fn void QKnxNetIpRoutingInterface::routingSystemBroadcastSent(QKnxNetIpFrame frame)
+
+    This signal is emitted when the KNXnet/IP router has finished sending the
+    routing system broadcast \a frame.
 */
 
 /*!
@@ -496,6 +504,30 @@ void QKnxNetIpRoutingInterface::sendRoutingLostMessage(const QKnxNetIpFrame &fra
             "lost count."));
     } else {
         emit routingLostCountSent(frame);
+    }
+}
+
+/*!
+    Multicasts the routing system broadcast \a frame through the network interface
+    associated with the QKnxNetIpRoutingInterface.
+*/
+void QKnxNetIpRoutingInterface::sendRoutingSystemBroadcast(const QKnxLinkLayerFrame &linkFrame)
+{
+    Q_D(QKnxNetIpRoutingInterface);
+
+    auto netipFrame = QKnxNetIpRoutingSystemBroadcastProxy::builder()
+        .setCemi(linkFrame)
+        .create();
+
+    QKnxNetIpRoutingSystemBroadcastProxy proxy(netipFrame);
+    if (!proxy.isValid())
+        return;
+
+    if (!d->sendFrame(netipFrame)) {
+        d->errorOccurred(QKnxNetIpRoutingInterface::Error::KnxRouting, tr("Could not send routing "
+            "system broadcast."));
+    } else {
+        emit routingSystemBroadcastSent(netipFrame);
     }
 }
 

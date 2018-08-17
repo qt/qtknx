@@ -92,8 +92,8 @@ namespace QKnxPrivate
         // specified in (AN 158: Data security) shall be set to 1.
         return linkFrame.extendedControlField().destinationAddressType() == QKnxAddress::Type::Group
                && linkFrame.controlField().broadcast() == QKnxControlField::Broadcast::System
-               && linkFrame.messageCode() != QKnxLinkLayerFrame::MessageCode::DataIndication
-               && linkFrame.destinationAddress().type() != QKnxAddress::Type::Group;
+               && linkFrame.messageCode() == QKnxLinkLayerFrame::MessageCode::DataIndication
+               && linkFrame.destinationAddress().type() == QKnxAddress::Type::Group;
     }
 }
 
@@ -166,9 +166,7 @@ QKnxNetIpRoutingSystemBroadcastProxy::Builder &
     QKnxNetIpRoutingSystemBroadcastProxy::Builder::setCemi(const QKnxLinkLayerFrame &cemi)
 {
     if (QKnxPrivate::isCemiValid(cemi))
-        return *this;
-
-    m_llf = cemi;
+        m_llf = cemi;
     return *this;
 }
 
