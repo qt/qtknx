@@ -242,6 +242,13 @@ QT_BEGIN_NAMESPACE
 */
 
 /*!
+    \fn void QKnxNetIpRoutingInterface::routingSystemBroadcastReceived(QKnxNetIpFrame frame)
+
+    This signal is emitted when the KNXnet/IP router receives the routing system
+    broadcast \a frame.
+*/
+
+/*!
     \fn void QKnxNetIpRoutingInterface::stateChanged(QKnxNetIpRoutingInterface::State state)
 
     This signal is emitted when the KNXnet/IP router transitions to a different

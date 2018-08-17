@@ -68,6 +68,7 @@ private slots:
     void test_routing_receives_busy();
     void test_routing_busy_sent_packets_same_individual_address();
     void test_routing_interface_sends_system_broadcast();
+    void test_routing_interface_receives_system_broadcast();
     void test_routing_filter();
     void test_routing_filter_data();
 
@@ -407,13 +408,8 @@ void tst_QKnxNetIpRoutingInterface::test_routing_busy_sent_packets_same_individu
     QCOMPARE(m_routingInterface.state(), QKnxNetIpRoutingInterface::State::NeighborBusy);
 }
 
-void tst_QKnxNetIpRoutingInterface::test_routing_interface_sends_system_broadcast()
+QKnxLinkLayerFrame generateDummySbcFrame()
 {
-    if (!runTests)
-        return;
-
-    m_routingInterface.start();
-
     auto dst = QKnxAddress::createGroup(1, 1, 1);
     auto tpdu = QKnxTpduFactory::Multicast::createGroupValueReadTpdu();
     auto ctrl = QKnxControlField::builder()
@@ -427,15 +423,23 @@ void tst_QKnxNetIpRoutingInterface::test_routing_interface_sends_system_broadcas
         .setHopCount(6)
         .create();
 
-    auto frame = QKnxLinkLayerFrame::builder()
-        .setControlField(ctrl)
-        .setExtendedControlField(extCtrl)
-        .setTpdu(tpdu)
-        .setDestinationAddress(dst)
-        .setSourceAddress({ QKnxAddress::Type::Individual, 0 })
-        .setMessageCode(QKnxLinkLayerFrame::MessageCode::DataIndication)
-        .setMedium(QKnx::MediumType::NetIP)
-        .createFrame();
+    return QKnxLinkLayerFrame::builder()
+           .setControlField(ctrl)
+           .setExtendedControlField(extCtrl)
+           .setTpdu(tpdu)
+           .setDestinationAddress(dst)
+           .setSourceAddress({ QKnxAddress::Type::Individual, 0 })
+           .setMessageCode(QKnxLinkLayerFrame::MessageCode::DataIndication)
+           .setMedium(QKnx::MediumType::NetIP)
+           .createFrame();
+}
+
+void tst_QKnxNetIpRoutingInterface::test_routing_interface_sends_system_broadcast()
+{
+    if (!runTests)
+        return;
+
+    m_routingInterface.start();
 
     bool sbcSent = false;
     QObject::connect(&m_routingInterface,
@@ -444,8 +448,32 @@ void tst_QKnxNetIpRoutingInterface::test_routing_interface_sends_system_broadcas
             QKnxNetIpRoutingSystemBroadcastProxy sbc(frame);
             QVERIFY(sbc.isValid());
     });
-    m_routingInterface.sendRoutingSystemBroadcast(frame);
+    m_routingInterface.sendRoutingSystemBroadcast(generateDummySbcFrame());
     QVERIFY(sbcSent);
+}
+
+void tst_QKnxNetIpRoutingInterface::test_routing_interface_receives_system_broadcast()
+{
+    if (!runTests)
+        return;
+
+    m_routingInterface.start();
+
+    bool sbcRcvEmitted = false;
+    QObject::connect(&m_routingInterface,
+                     &QKnxNetIpRoutingInterface::routingSystemBroadcastReceived
+                     , [&](QKnxNetIpFrame frame) {
+        sbcRcvEmitted = true;
+        QKnxNetIpRoutingSystemBroadcastProxy sbc(frame);
+        QVERIFY(sbc.isValid());
+    });
+
+    auto netIpFrame = QKnxNetIpRoutingSystemBroadcastProxy::builder()
+            .setCemi(generateDummySbcFrame())
+            .create();
+
+    simulateFramesReceived(netIpFrame);
+    QVERIFY(sbcRcvEmitted);
 }
 
 void tst_QKnxNetIpRoutingInterface::test_routing_filter()

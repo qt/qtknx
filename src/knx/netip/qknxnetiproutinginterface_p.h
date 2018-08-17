@@ -70,6 +70,7 @@ public:
     void processRoutingIndication(const QKnxNetIpFrame &frame);
     void processRoutingBusy(const QKnxNetIpFrame &frame);
     void processRoutingLostMessage(const QKnxNetIpFrame &frame);
+    void processRoutingSystemBroadcast(const QKnxNetIpFrame &frame);
 
     bool sendFrame(const QKnxNetIpFrame &frame);
 

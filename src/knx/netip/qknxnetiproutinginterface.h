@@ -128,6 +128,7 @@ Q_SIGNALS:
     void routingIndicationReceived(QKnxNetIpFrame frame, QKnxNetIpRoutingInterface::FilterAction action);
     void routingBusyReceived(QKnxNetIpFrame frame);
     void routingLostCountReceived(QKnxNetIpFrame frame);
+    void routingSystemBroadcastReceived(QKnxNetIpFrame frame);
 
     void stateChanged(QKnxNetIpRoutingInterface::State state);
     void errorOccurred(QKnxNetIpRoutingInterface::Error error, QString errorString);

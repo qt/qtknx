@@ -32,6 +32,7 @@
 #include "qknxnetiproutinginterface_p.h"
 #include "qknxnetiproutinginterface.h"
 #include "qknxnetiproutinglostmessage.h"
+#include "qknxnetiproutingsystembroadcast.h"
 
 #ifdef QT_BUILD_INTERNAL
 #include "qknxtestingrouter_p.h"
@@ -190,6 +191,9 @@ void QKnxNetIpRoutingInterfacePrivate::start()
             case QKnxNetIp::ServiceType::RoutingLostMessage:
                 processRoutingLostMessage(QKnxNetIpFrame::fromBytes(data, 0));
                 break;
+            case QKnxNetIp::ServiceType::RoutingSystemBroadcast:
+                processRoutingSystemBroadcast(QKnxNetIpFrame::fromBytes(data, 0));
+                break;
             default:
                 break;
             }
@@ -308,6 +312,19 @@ void QKnxNetIpRoutingInterfacePrivate::processRoutingLostMessage(const QKnxNetIp
 
     Q_Q(QKnxNetIpRoutingInterface);
     emit q->routingLostCountReceived(frame);
+}
+
+void QKnxNetIpRoutingInterfacePrivate::processRoutingSystemBroadcast(const QKnxNetIpFrame &frame)
+{
+    QKnxNetIpRoutingSystemBroadcastProxy sbc(frame);
+    if (sbc.isValid()) {
+        Q_Q(QKnxNetIpRoutingInterface);
+        emit q->routingSystemBroadcastReceived(frame);
+    } else {
+        errorOccurred(QKnxNetIpRoutingInterface::Error::KnxRouting,
+            QKnxNetIpRoutingInterface::tr("QKnxNetIp Routing System Broadcast is not correctly "
+                "formed."));
+    }
 }
 
 bool QKnxNetIpRoutingInterfacePrivate::sendFrame(const QKnxNetIpFrame &frame)
