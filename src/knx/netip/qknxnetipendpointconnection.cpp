@@ -585,9 +585,11 @@ void QKnxNetIpEndpointConnectionPrivate::processConnectResponse(const QKnxNetIpF
             QTimer::singleShot(0, [&]() { sendStateRequest(); });
             setAndEmitStateChanged(QKnxNetIpEndpointConnection::State::Connected);
         } else {
+            auto metaEnum = QMetaEnum::fromType<QKnxNetIp::Error>();
             setAndEmitErrorOccurred(QKnxNetIpEndpointConnection::Error::Acknowledge,
                 QKnxNetIpEndpointConnection::tr("Could not connect to remote control endpoint. "
-                    "Error code: 0x%1").arg(quint8(response.status()), 2, 16, QLatin1Char('0')));
+                    "Error code: 0x%1 (%2)").arg(quint8(response.status()), 2, 16, QLatin1Char('0'))
+                    .arg(QString::fromLatin1(metaEnum.valueToKey(int(response.status())))));
 
             Q_Q(QKnxNetIpEndpointConnection);
             q->disconnectFromHost();

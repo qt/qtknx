@@ -150,6 +150,8 @@ public:
     void setAndEmitStateChanged(QKnxNetIpEndpointConnection::State newState);
     void setAndEmitErrorOccurred(QKnxNetIpEndpointConnection::Error newError, const QString &message);
 
+    void setCri(const QKnxNetIpCri &cri) { m_cri = cri; }
+
 private:
     QKnxNetIpCri m_cri;
     Endpoint m_remoteDataEndpoint;

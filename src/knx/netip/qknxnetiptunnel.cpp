@@ -82,8 +82,8 @@ class QKnxNetIpTunnelPrivate : public QKnxNetIpEndpointConnectionPrivate
 
 public:
     QKnxNetIpTunnelPrivate(const QHostAddress &a, quint16 p, QKnxNetIp::TunnelLayer l)
-        : QKnxNetIpEndpointConnectionPrivate(a, p, QKnxNetIpCriProxy::builder().setTunnelLayer(l)
-            .create(), 1, QKnxNetIp::TunnelingRequestTimeout)
+        : QKnxNetIpEndpointConnectionPrivate(a, p, QKnxNetIpCriProxy::builder()
+            .setTunnelLayer(l).create(), 1, QKnxNetIp::TunnelingRequestTimeout)
         , m_layer(l)
     {}
 
@@ -110,8 +110,25 @@ public:
         QKnxNetIpEndpointConnectionPrivate::processConnectResponse(frame);
     }
 
+    void updateCri()
+    {
+        if (m_criAddress.isValid()) {
+            setCri(QKnxNetIpCriProxy::builder()
+                .setTunnelLayer(m_layer)
+                .setIndividualAddress(m_criAddress)
+                .create()
+            );
+        } else {
+            setCri(QKnxNetIpCriProxy::builder()
+                .setTunnelLayer(m_layer)
+                .create()
+            );
+        }
+    }
+
 private:
     QKnxAddress m_address;
+    QKnxAddress m_criAddress;
     QKnxNetIp::TunnelLayer m_layer { QKnxNetIp::TunnelLayer::Unknown };
 };
 
@@ -153,7 +170,8 @@ QKnxNetIpTunnel::QKnxNetIpTunnel(const QHostAddress &localAddress,
 {}
 
 /*!
-    Returns the individual address of the KNXnet/IP client.
+    Returns the individual address of the KNXnet/IP client assigned by the
+    KNXnet/IP server.
 */
 QKnxAddress QKnxNetIpTunnel::individualAddress() const
 {
@@ -161,16 +179,20 @@ QKnxAddress QKnxNetIpTunnel::individualAddress() const
 }
 
 /*!
-    \internal
+    Sets the requested individual address of the KNXnet/IP client extended
+    connect request information (CRI) structure to \a address.
 
-    Sets the individual address of the KNXnet/IP client to \a address.
+    If the \a address is a valid individual address, a extended CRI is used
+    to send the connect request. To reset the behavior in favor of a standard
+    CRI pass an invalid \a address to the function.
 */
 void QKnxNetIpTunnel::setIndividualAddress(const QKnxAddress &address)
 {
-    Q_ASSERT_X(false, "QKnxNetIpTunnelClient::setIndividualAddress", "Setting the individual "
-        "address used for tunnel connections not implemented yet.");
+    if (address.type() != QKnxAddress::Type::Individual)
+        return;
 
-    Q_UNUSED(address) // TODO: Maybe implement 03_08_04 Tunneling v01.05.03 AS.pdf, paragraph 3.2
+    d_func()->m_criAddress = address;
+    d_func()->updateCri();
 }
 
 /*!
@@ -191,9 +213,11 @@ QKnxNetIp::TunnelLayer QKnxNetIpTunnel::layer() const
 */
 void QKnxNetIpTunnel::setTunnelLayer(QKnxNetIp::TunnelLayer layer)
 {
-    if (state() != State::Disconnected)
+    if (!QKnxNetIp::isTunnelLayer(layer))
         return;
+
     d_func()->m_layer = layer;
+    d_func()->updateCri();
 }
 
 /*!

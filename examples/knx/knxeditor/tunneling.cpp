@@ -141,6 +141,11 @@ Tunneling::Tunneling(QWidget* parent)
             + frame.bytes().toHex().toByteArray()));
     });
 
+    connect(&m_tunnel, &QKnxNetIpTunnel::errorOccurred, this,
+        [&] (QKnxNetIpEndpointConnection::Error, QString errorString) {
+            ui->textOuputTunneling->append(errorString);
+    });
+
     updateControlField();
     updateExtendedControlField();
 
