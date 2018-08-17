@@ -28,7 +28,7 @@
 
 #include <QtCore/qdebug.h>
 #include <QtKnx/qknxcurve25519.h>
-#include <QtKnx/private/qknxcurve25519_p.h>
+#include <QtKnx/private/qknxcryptographicdata_p.h>
 #include <QtTest/qtest.h>
 
 QT_BEGIN_NAMESPACE

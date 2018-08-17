@@ -2,7 +2,7 @@ qtConfig(opensslv11) { # OpenSSL 1.1 support is required.
     HEADERS += ssl/qssl.h \
                ssl/qssl_p.h \
                ssl/qknxcurve25519.h \
-               ssl/qknxcurve25519_p.h
+               ssl/qknxcryptographicdata_p.h
 
     SOURCES += ssl/qssl.cpp \
                ssl/qknxcurve25519.cpp

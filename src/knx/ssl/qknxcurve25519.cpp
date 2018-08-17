@@ -28,7 +28,7 @@
 ******************************************************************************/
 
 #include "qknxcurve25519.h"
-#include "qknxcurve25519_p.h"
+#include "qknxcryptographicdata_p.h"
 
 QT_BEGIN_NAMESPACE
 

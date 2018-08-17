@@ -27,8 +27,8 @@
 **
 ******************************************************************************/
 
-#ifndef QKNXCURVE25519_P_H
-#define QKNXCURVE25519_P_H
+#ifndef QKNXCRYPTOGRAPHICDATA_P_H
+#define QKNXCRYPTOGRAPHICDATA_P_H
 
 //
 //  W A R N I N G
