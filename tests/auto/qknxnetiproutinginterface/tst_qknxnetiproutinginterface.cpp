@@ -459,9 +459,7 @@ void tst_QKnxNetIpRoutingInterface::test_routing_filter()
     QFETCH(int, hopCount);
     QFETCH(QKnxNetIpRoutingInterface::FilterTable, filterTable);
 
-    QKnxNetIpRoutingInterface m_routingInterface;
     m_routingInterface.setIndividualAddress(interfaceIndividualAddress);
-    m_routingInterface.setInterfaceAffinity(kIface);
     m_routingInterface.setFilterTable(filterTable);
     m_routingInterface.start();
 
