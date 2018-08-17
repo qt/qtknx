@@ -189,6 +189,11 @@
             <string>Tunneling</string>
            </attribute>
           </widget>
+          <widget class="TunnelingFeatures" name="tunnelingFeatures">
+           <attribute name="title">
+            <string>TunnelingFeatures</string>
+           </attribute>
+          </widget>
          </widget>
         </item>
        </layout>
@@ -317,6 +322,12 @@
    <class>Tunneling</class>
    <extends>QWidget</extends>
    <header>tunneling.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>TunnelingFeatures</class>
+   <extends>QWidget</extends>
+   <header>tunnelingfeatures.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

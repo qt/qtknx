@@ -107,22 +107,55 @@
           <string>Control field</string>
          </property>
          <layout class="QGridLayout" name="gridLayout">
-          <item row="0" column="2">
-           <widget class="QComboBox" name="frameFormat">
-            <property name="currentIndex">
-             <number>1</number>
-            </property>
+          <item row="5" column="2">
+           <widget class="QComboBox" name="confirm">
             <item>
              <property name="text">
-              <string>Extended</string>
+              <string>No error</string>
              </property>
             </item>
             <item>
              <property name="text">
-              <string>Standard</string>
+              <string>Error</string>
              </property>
             </item>
            </widget>
+          </item>
+          <item row="4" column="1">
+           <widget class="QLabel" name="label_10">
+            <property name="text">
+             <string>Acknowledge:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="6" column="1">
+           <spacer name="verticalSpacer_2">
+            <property name="orientation">
+             <enum>Qt::Vertical</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>20</width>
+              <height>40</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+          <item row="0" column="0">
+           <spacer name="horizontalSpacer">
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+            <property name="sizeType">
+             <enum>QSizePolicy::Fixed</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>20</width>
+              <height>20</height>
+             </size>
+            </property>
+           </spacer>
           </item>
           <item row="3" column="1">
            <widget class="QLabel" name="label_11">
@@ -158,20 +191,6 @@
             </item>
            </widget>
           </item>
-          <item row="5" column="2">
-           <widget class="QComboBox" name="confirm">
-            <item>
-             <property name="text">
-              <string>No error</string>
-             </property>
-            </item>
-            <item>
-             <property name="text">
-              <string>Error</string>
-             </property>
-            </item>
-           </widget>
-          </item>
           <item row="2" column="2">
            <widget class="QComboBox" name="broadcast">
             <property name="currentIndex">
@@ -185,64 +204,6 @@
             <item>
              <property name="text">
               <string>Domain</string>
-             </property>
-            </item>
-           </widget>
-          </item>
-          <item row="2" column="1">
-           <widget class="QLabel" name="label_8">
-            <property name="text">
-             <string>Broadcast:</string>
-            </property>
-           </widget>
-          </item>
-          <item row="5" column="1">
-           <widget class="QLabel" name="label_12">
-            <property name="text">
-             <string>Confirm:</string>
-            </property>
-           </widget>
-          </item>
-          <item row="1" column="1">
-           <widget class="QLabel" name="label_9">
-            <property name="text">
-             <string>Repeat:</string>
-            </property>
-           </widget>
-          </item>
-          <item row="0" column="1">
-           <widget class="QLabel" name="label_7">
-            <property name="text">
-             <string>Frame type:</string>
-            </property>
-           </widget>
-          </item>
-          <item row="0" column="0">
-           <spacer name="horizontalSpacer">
-            <property name="orientation">
-             <enum>Qt::Horizontal</enum>
-            </property>
-            <property name="sizeType">
-             <enum>QSizePolicy::Fixed</enum>
-            </property>
-            <property name="sizeHint" stdset="0">
-             <size>
-              <width>20</width>
-              <height>20</height>
-             </size>
-            </property>
-           </spacer>
-          </item>
-          <item row="4" column="2">
-           <widget class="QComboBox" name="acknowledge">
-            <item>
-             <property name="text">
-              <string>Not requested</string>
-             </property>
-            </item>
-            <item>
-             <property name="text">
-              <string>Requested</string>
              </property>
             </item>
            </widget>
@@ -264,25 +225,64 @@
             </item>
            </widget>
           </item>
-          <item row="4" column="1">
-           <widget class="QLabel" name="label_10">
+          <item row="0" column="1">
+           <widget class="QLabel" name="label_7">
             <property name="text">
-             <string>Acknowledge:</string>
+             <string>Frame type:</string>
             </property>
            </widget>
           </item>
-          <item row="6" column="1">
-           <spacer name="verticalSpacer_2">
-            <property name="orientation">
-             <enum>Qt::Vertical</enum>
+          <item row="2" column="1">
+           <widget class="QLabel" name="label_8">
+            <property name="text">
+             <string>Broadcast:</string>
             </property>
-            <property name="sizeHint" stdset="0">
-             <size>
-              <width>20</width>
-              <height>40</height>
-             </size>
+           </widget>
+          </item>
+          <item row="1" column="1">
+           <widget class="QLabel" name="label_9">
+            <property name="text">
+             <string>Repeat:</string>
             </property>
-           </spacer>
+           </widget>
+          </item>
+          <item row="4" column="2">
+           <widget class="QComboBox" name="acknowledge">
+            <item>
+             <property name="text">
+              <string>Not requested</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>Requested</string>
+             </property>
+            </item>
+           </widget>
+          </item>
+          <item row="5" column="1">
+           <widget class="QLabel" name="label_12">
+            <property name="text">
+             <string>Confirm:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="2">
+           <widget class="QComboBox" name="frameFormat">
+            <property name="currentIndex">
+             <number>1</number>
+            </property>
+            <item>
+             <property name="text">
+              <string>Extended</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>Standard</string>
+             </property>
+            </item>
+           </widget>
           </item>
          </layout>
         </widget>

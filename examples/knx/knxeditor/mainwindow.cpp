@@ -90,6 +90,7 @@ MainWindow::MainWindow(QWidget *parent)
 
     ui->tunneling->setEnabled(false);
     ui->deviceManagement->setEnabled(false);
+    ui->tunnelingFeatures->setEnabled(false);
 
     ui->serverBox->addItem(tr("Press Scan button to discover KNX server(s)"));
 
@@ -140,6 +141,7 @@ MainWindow::MainWindow(QWidget *parent)
         ui->tunneling->setNatAware(checked);
         m_discoveryAgent.setNatAware(checked);
         ui->deviceManagement->setNatAware(checked);
+        ui->tunnelingFeatures->setNatAware(checked);
     });
 
     connect(ui->localIpBox, QOverload<int>::of(&QComboBox::activated), this,
@@ -215,6 +217,9 @@ void MainWindow::newServerSelected(int serverBoxIndex)
 
         ui->deviceManagement->setEnabled(true);
         ui->deviceManagement->setKnxNetIpServer(m_server);
+
+        ui->tunnelingFeatures->setEnabled(true);
+        ui->tunnelingFeatures->setKnxNetIpServer(m_server);
     }
     ui->radioButtonTCP->setEnabled(version2Supported);
 }
@@ -241,6 +246,7 @@ void MainWindow::newIPAddressSelected(int localIpBoxIndex)
 
     ui->tunneling->setLocalAddress(newAddress);
     ui->deviceManagement->setLocalAddress(newAddress);
+    ui->tunnelingFeatures->setLocalAddress(newAddress);
 }
 
 void MainWindow::showServerAndServices(const QKnxNetIpServerInfo &info)
@@ -265,6 +271,7 @@ void MainWindow::on_radioButtonTCP_toggled(bool checked)
 {
     ui->tunneling->setTcpEnable(checked);
     ui->deviceManagement->setTcpEnable(checked);
+    ui->tunnelingFeatures->setTcpEnable(checked);
 }
 
 void MainWindow::fillLocalIpBox()
