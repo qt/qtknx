@@ -34,6 +34,7 @@
 
 #include <QtKnx/qknxbytearray.h>
 #include <QtKnx/qtknxglobal.h>
+#include <QtKnx/qknxnetipframe.h>
 
 QT_BEGIN_NAMESPACE
 
@@ -86,13 +87,42 @@ private:
 class Q_KNX_EXPORT QKnxCryptographicEngine final
 {
 public:
+    enum class Mode : quint8 {
+        Decrypt = 0x00,
+        Encrypt = 0x01
+    };
+
     QKnxCryptographicEngine() = delete;
     ~QKnxCryptographicEngine() = default;
 
     static QKnxByteArray sharedSecret(const QKnxCurve25519PublicKey &pub,
                                       const QKnxCurve25519PrivateKey &priv);
+
+    static QKnxByteArray sessionKey(const QKnxByteArray &sharedSecret);
+    static QKnxByteArray sessionKey(const QKnxCurve25519PublicKey &pub,
+                                    const QKnxCurve25519PrivateKey &priv);
+
+    static QKnxByteArray userPasswordHash(const QByteArray &password);
+    static QKnxByteArray deviceAuthenticationCodeHash(const QByteArray &password);
+
+    static QKnxByteArray messageAuthenticationCode(QKnxCryptographicEngine::Mode mode,
+                                                   quint16 secureSessionId,
+                                                   const QKnxNetIpFrameHeader &header,
+                                                   const QKnxCurve25519PublicKey &client,
+                                                   const QKnxCurve25519PublicKey &server,
+                                                   const QKnxByteArray &deviceAuthenticationCode);
+
+    static QKnxByteArray pkcs5Pbkdf2HmacSha256(const QByteArray &password, const QKnxByteArray &salt,
+        qint32 iterations, quint8 derivedKeyLength);
 };
 
 QT_END_NAMESPACE
 
 #endif
+
+/*
+b752be246459260f6b0c4801fbd5a67599f83b4057b3ef1e79e469ac17234e15
+b752be246459260f6b0c4801fbd5a67599f83b4057b3ef1e79e469ac17234e15
+
+061009520038 0001 b752be246459260f6b0c4801fbd5a67599f83b4057b3ef1e79e469ac17234e15
+*/

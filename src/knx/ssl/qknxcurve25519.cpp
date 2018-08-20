@@ -30,6 +30,15 @@
 #include "qknxcurve25519.h"
 #include "qknxcryptographicdata_p.h"
 
+#include "qknxnetipsessionauthenticate.h"
+#include "qknxnetipsecurewrapper.h"
+#include "qknxnetipsessionrequest.h"
+#include "qknxnetipsessionresponse.h"
+#include "qknxnetipsessionstatus.h"
+#include "qknxnetiptimernotify.h"
+
+#include <QtCore/qcryptographichash.h>
+
 QT_BEGIN_NAMESPACE
 
 bool QKnxOpenSsl::s_libraryLoaded = false;
@@ -209,7 +218,10 @@ QKnxByteArray QKnxCurve25519PublicKey::bytes() const
 QKnxCurve25519PublicKey QKnxCurve25519PublicKey::fromBytes(const QKnxByteArray &data, quint16 index)
 {
     auto ba = data.mid(index, 32);
-    if (!qt_QKnxOpenSsl->supportsSsl() || ba.size() < 32)
+    if (ba.size() < 32)
+        return {};
+
+    if (!qt_QKnxOpenSsl->supportsSsl())
         return {};
 
     QKnxCurve25519PublicKey key;
@@ -392,10 +404,10 @@ QKnxCurve25519PrivateKey &QKnxCurve25519PrivateKey::operator=(const QKnxCurve255
 QKnxByteArray QKnxCryptographicEngine::sharedSecret(const QKnxCurve25519PublicKey &pub,
                                                     const QKnxCurve25519PrivateKey &priv)
 {
-    if (!qt_QKnxOpenSsl->supportsSsl())
+    if (pub.isNull() || priv.isNull())
         return {};
 
-    if (pub.isNull() || priv.isNull())
+    if (!qt_QKnxOpenSsl->supportsSsl())
         return {};
 
     auto evpPKeyCtx = q_EVP_PKEY_CTX_new(priv.d_ptr->m_evpPKey, nullptr);
@@ -426,5 +438,173 @@ QKnxByteArray QKnxCryptographicEngine::sharedSecret(const QKnxCurve25519PublicKe
     return ba;
 }
 
-QT_END_NAMESPACE
+QKnxByteArray QKnxCryptographicEngine::sessionKey(const QKnxByteArray &sharedSecret)
+{
+    if (sharedSecret.isEmpty())
+        return {};
 
+    return QKnxByteArray::fromByteArray(QCryptographicHash::hash(sharedSecret.toByteArray(),
+        QCryptographicHash::Sha256)).mid(0, 16);
+}
+
+QKnxByteArray QKnxCryptographicEngine::sessionKey(const QKnxCurve25519PublicKey &pub,
+                                                  const QKnxCurve25519PrivateKey & priv)
+{
+    return sessionKey(sharedSecret(pub, priv));
+}
+
+QKnxByteArray QKnxCryptographicEngine::userPasswordHash(const QByteArray &password)
+{
+    return pkcs5Pbkdf2HmacSha256(password,
+        QKnxByteArray("user-password.1.secure.ip.knx.org", 33), 0x10000, 16);
+}
+
+QKnxByteArray QKnxCryptographicEngine::deviceAuthenticationCodeHash(const QByteArray &password)
+{
+    return pkcs5Pbkdf2HmacSha256(password,
+        QKnxByteArray("device-authentication-code.1.secure.ip.knx.org", 46), 0x10000, 16);
+}
+
+namespace QKnxPrivate
+{
+    static QKnxByteArray xor(const QKnxByteArray &left, const QKnxByteArray &right)
+    {
+        QKnxByteArray result(qMax(left.size(), right.size()), Qt::Uninitialized);
+        for (int i = result.size() - 1; i >= 0; --i)
+            result.set(i, left.value(i, 0x00) ^ right.value(i, 0x00));
+        return result;
+    }
+
+    static QKnxByteArray doCrypt(int mode, const QKnxByteArray &key, const QKnxByteArray &iv,
+        const QKnxByteArray &data)
+    {
+        QSharedPointer<EVP_CIPHER_CTX> ctxPtr(q_EVP_CIPHER_CTX_new(), q_EVP_CIPHER_CTX_free);
+        if (ctxPtr.isNull())
+            return {};
+
+        const auto ctx = ctxPtr.data();
+        if (q_EVP_CipherInit_ex(ctx, q_EVP_aes_128_cbc(), nullptr, nullptr, nullptr, mode) <= 0)
+            return {};
+
+        if (q_EVP_CIPHER_CTX_set_padding(ctx, 0) <= 0)
+            return {};
+
+        Q_ASSERT(q_EVP_CIPHER_CTX_iv_length(ctx) == 16);
+        Q_ASSERT(q_EVP_CIPHER_CTX_key_length(ctx) == 16);
+
+        if (q_EVP_CipherInit_ex(ctx, nullptr, nullptr, key.constData(), iv.constData(), mode) <= 0)
+            return {};
+
+        int outl;
+        QKnxByteArray out(EVP_MAX_BLOCK_LENGTH, 0x00);
+        if (q_EVP_CipherUpdate(ctx, out.data(), &outl,  data.constData(), data.size()) <= 0)
+            return {};
+
+        int outlen;
+        if (q_EVP_CipherFinal_ex(ctx, out.data() + outl, &outlen) <= 0)
+            return {};
+
+        return out.mid(0, outl + outlen);
+    }
+}
+
+QKnxByteArray QKnxCryptographicEngine::messageAuthenticationCode(QKnxCryptographicEngine::Mode mode,
+    quint16 secureId, const QKnxNetIpFrameHeader &frameHdr, const QKnxCurve25519PublicKey &publicKey,
+    const QKnxCurve25519PublicKey &peerKey, const QKnxByteArray &deviceAuthenticationCode)
+{
+    if (mode > QKnxCryptographicEngine::Mode::Encrypt
+        || !frameHdr.isValid()
+        || publicKey.isNull() || peerKey.isNull()
+        || deviceAuthenticationCode.isEmpty()) {
+            return {};
+    }
+
+    QKnxByteArray iv, ctr0; // initialization vector, block counter
+    if (frameHdr.serviceType() == QKnxNetIp::ServiceType::SecureWrapper) {
+        // |--------------------------------------------------------------------|
+        // |  0  |  ...  |  5  |  6  |  ...  |  11  |  12  |  13  |  14  |  15  |
+        // |--------------------------------------------------------------------|
+        // |   Sequence info   |    Serial number   |     Tag     |      Q      |
+        // |--------------------------------------------------------------------|
+
+        // Q Shall be the length of the payload in octets, which is the length of
+        // the original, encapsulated KNXnet/IP frame.
+        iv = QKnxByteArray { /* TODO: Implement the scheme above */ };
+
+        // |--------------------------------------------------------------------|
+        // |  0  |  ...  |  5  |  6  |  ...  |  11  |  12  |  13  |  14  |  15  |
+        // |--------------------------------------------------------------------|
+        // |   Sequence info   |    Serial number   |     Tag     |  ff  |  i   |
+        // |--------------------------------------------------------------------|
+
+        // For Ctr0 the counter [i] shall be 00h initially. Each counter value [i]
+        // shall be calculated by incrementing the preceding counter value by 1.
+        ctr0 = QKnxByteArray { /* TODO: Implement the scheme above */ };
+    } else if (frameHdr.serviceType() == QKnxNetIp::ServiceType::SessionResponse
+        || frameHdr.serviceType() == QKnxNetIp::ServiceType::SessionAuthenticate) {
+        iv = QKnxByteArray { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+            0x00, 0x00, 0x00, 0x00, 0x00 };
+        ctr0 = QKnxByteArray { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+            0x00, 0x00, 0x00, 0xff, 0x00 };
+    } else if (frameHdr.serviceType() == QKnxNetIp::ServiceType::TimerNotify) {
+        // |--------------------------------------------------------------------|
+        // |  0  |  ...  |  5  |  6  |  ...  |  11  |  12  |  13  |  14  |  15  |
+        // |--------------------------------------------------------------------|
+        // |    Timer value    |    Serial number   |     Tag     |  Q = 0000h  |
+        // |--------------------------------------------------------------------|
+        iv = QKnxByteArray { /* TODO: Implement the scheme above */ };
+
+        // |--------------------------------------------------------------------|
+        // |  0  |  ...  |  5  |  6  |  ...  |  11  |  12  |  13  |  14  |  15  |
+        // |--------------------------------------------------------------------|
+        // |    Timer value    |    Serial number   |     Tag     |  ff  | 00h  |
+        // |--------------------------------------------------------------------|
+        ctr0 = QKnxByteArray { /* TODO: Implement the scheme above */ };
+    }
+
+    if (iv.isEmpty() || ctr0.isEmpty())
+        return {};
+
+    auto header = frameHdr.bytes();
+    auto xor = QKnxPrivate::xor (publicKey.bytes(), peerKey.bytes());
+    auto sessionId = QKnxUtils::QUint16::bytes(quint16(secureId));
+
+    auto A = QKnxByteArray({ 0x00, 0x28 }) + header + sessionId + xor;
+    A.resize(48); // pad
+
+    if (!qt_QKnxOpenSsl->supportsSsl())
+        return {};
+
+    auto B0 = iv;
+    auto B1 = A.mid(0, 16);
+    auto B2 = A.mid(16, 16);
+    auto B3 = A.mid(32, 16);
+
+    int m = int(mode);
+    auto Y0 = QKnxPrivate::doCrypt(m, deviceAuthenticationCode, iv, QKnxPrivate::xor(B0, { 0x00 }));
+    auto Y1 = QKnxPrivate::doCrypt(m, deviceAuthenticationCode, iv, QKnxPrivate::xor(B1, Y0));
+    auto Y2 = QKnxPrivate::doCrypt(m, deviceAuthenticationCode, iv, QKnxPrivate::xor(B2, Y1));
+    auto Y3 = QKnxPrivate::doCrypt(m, deviceAuthenticationCode, iv, QKnxPrivate::xor(B3, Y2));
+    auto S0 = QKnxPrivate::doCrypt(m, deviceAuthenticationCode, iv, ctr0);
+
+    return QKnxPrivate::xor(S0, Y3);
+}
+
+QKnxByteArray QKnxCryptographicEngine::pkcs5Pbkdf2HmacSha256(const QByteArray &password,
+    const QKnxByteArray &salt, qint32 iterations, quint8 derivedKeyLength)
+{
+    if (derivedKeyLength > 32)
+        return {};
+
+    if (!qt_QKnxOpenSsl->supportsSsl())
+        return {};
+
+    QKnxByteArray out(derivedKeyLength, 0x00);
+    if (q_PKCS5_PBKDF2_HMAC(password.constData(), password.size(), salt.constData(), salt.size(),
+        iterations, q_EVP_sha256(), out.size(), out.data()) <= 0) {
+            return {};
+    }
+    return out;
+}
+
+QT_END_NAMESPACE
