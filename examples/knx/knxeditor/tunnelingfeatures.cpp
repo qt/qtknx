@@ -33,12 +33,45 @@
 #include <QtCore/QMetaEnum>
 #include <QtCore/QMetaType>
 #include <QtKnx/QKnx1Bit>
+#include <QtKnx/QKnx>
+#include <QtKnx/QKnxUtils>
+
+bool validFeature(const QKnx::NetIp::ServiceType &frameType, const QKnx::InterfaceFeature &feature,
+                  const QKnxByteArray &value)
+{
+    using ServType = QKnx::NetIp::ServiceType;
+    if (frameType != ServType::TunnelingFeatureSet)
+        return true;
+
+    using FeatureType = QKnx::InterfaceFeature;
+    switch (feature) {
+        case FeatureType::SupportedEmiType:
+        case FeatureType::HostDeviceDescriptorType0:
+        case FeatureType::KnxManufacturerCode:
+        case FeatureType::IndividualAddress:
+        case FeatureType::MaximumApduLength:
+            return value.size() == 2;
+        case FeatureType::BusConnectionStatus:
+        case FeatureType::InterfaceFeatureInfoServiceEnable:
+            return value.size() == 1 && ((value.at(0) == 0x01) || (value.at(0) == 0x00));
+        case FeatureType::ActiveEmiType:
+            return value.size() == 1;
+        default:
+            break;
+    }
+
+    return false;
+}
 
 TunnelingFeatures::TunnelingFeatures(QWidget *parent)
     : QWidget(parent)
     , ui(new Ui::TunnelingFeatures)
 {
     ui->setupUi(this);
+
+    ui->tunnelServiceType->setEnabled(false);
+    ui->featureIdentifier->setEnabled(false);
+    ui->featureValue->setEnabled(false);
 
     connect(ui->connectTunneling, &QPushButton::clicked, this, [&]() {
         ui->textOuputTunneling->append(tr("Connecting to: %1 on port: %2 protocol: %3").arg(m_server
@@ -51,17 +84,24 @@ TunnelingFeatures::TunnelingFeatures(QWidget *parent)
 
     connect(ui->tunnelingSend, &QPushButton::clicked, this, [&]() {
         using ServType = QKnx::NetIp::ServiceType;
-        ServType type = ServType(quint16(ServType::TunnelingFeatureGet)
-            + ui->tunnelServiceType->currentIndex());
+        ServType type = ServType(quint16(ServType::TunnelingFeatureGet));
+        if (ui->tunnelServiceType->currentIndex() == 1)
+            type = ServType(quint16(ServType::TunnelingFeatureSet));
+
         using FeatureType = QKnx::InterfaceFeature;
         FeatureType featureType = FeatureType(quint8(FeatureType::SupportedEmiType)
             + ui->featureIdentifier->currentIndex());
-        QKnx1Bit featureEnable(true);
+
+        QKnxByteArray bytes = QKnxByteArray::fromHex(ui->featureValue->text().toUtf8());
         QKnxNetIpFrame frame;
+
         if (type == ServType::TunnelingFeatureGet)
             m_tunnel.sendTunnelingFeatureGet(featureType);
         else if (type == ServType::TunnelingFeatureSet)
-            m_tunnel.sendTunnelingFeatureSet(featureType, featureEnable.bytes());
+            m_tunnel.sendTunnelingFeatureSet(featureType, bytes);
+
+        ui->statusBar->setText(tr("Status: (%1) Messages sent.").arg(m_tunnel
+            .sequenceCount(QKnxNetIpEndpointConnection::SequenceType::Send) + 1));
     });
 
     connect(&m_tunnel, &QKnxNetIpTunnel::tunnelingFeatureInfoReceived, this,
@@ -87,17 +127,48 @@ TunnelingFeatures::TunnelingFeatures(QWidget *parent)
 
         auto metaEnum = QMetaEnum::fromType<QKnx::InterfaceFeature>();
         auto metaReturnCode = QMetaEnum::fromType<QKnx::ReturnCode>();
-        if (feature == QKnx::InterfaceFeature::InterfaceFeatureInfoServiceEnable) {
+        if (feature == QKnx::InterfaceFeature::InterfaceFeatureInfoServiceEnable
+            || feature == QKnx::InterfaceFeature::BusConnectionStatus) {
             auto state = QKnxSwitch::State(value.at(0));
             auto metaEnumState = QMetaEnum::fromType<QKnxSwitch::State>();
             ui->textOuputTunneling->append(tr("Received Tunneling Feature Response: Feature (%1), "
-                "Return Code(%2), Value (%3)")
+                "Return Code (%2), Value (%3)")
             .arg(QString::fromLatin1(metaEnum.valueToKey(int(feature))))
             .arg(QString::fromLatin1(metaReturnCode.valueToKey(int(code))))
             .arg(QString::fromLatin1(metaEnumState.valueToKey(int(state)))));
+        } else if (feature == QKnx::InterfaceFeature::IndividualAddress) {
+            ui->textOuputTunneling->append(tr("Received Tunneling Feature Response: Feature (%1), "
+                "Return Code (%2), Individual Address Value (%3)")
+            .arg(QString::fromLatin1(metaEnum.valueToKey(int(feature))))
+            .arg(QString::fromLatin1(metaReturnCode.valueToKey(int(code))))
+            .arg(QKnxAddress(QKnxAddress::Type::Individual, value).toString()));
+        } else if (feature == QKnx::InterfaceFeature::KnxManufacturerCode
+                   || feature == QKnx::InterfaceFeature::MaximumApduLength) {
+            ui->textOuputTunneling->append(tr("Received Tunneling Feature Response: Feature (%1), "
+                "Return Code (%2), Value (%3)")
+            .arg(QString::fromLatin1(metaEnum.valueToKey(int(feature))))
+            .arg(QString::fromLatin1(metaReturnCode.valueToKey(int(code))))
+            .arg(QKnxUtils::QUint16::fromBytes(value)));
+        } else if (feature == QKnx::InterfaceFeature::ActiveEmiType
+                   || feature == QKnx::InterfaceFeature::SupportedEmiType) {
+            QString str;
+            auto  types = QKnx::EmiTypes(value.at(0));
+            auto metaEmiType =  QMetaEnum::fromType<QKnx::EmiType>();
+            if (types.testFlag(QKnx::EmiType::EMI1))
+                str = QLatin1String(metaEmiType.valueToKey(int(QKnx::EmiType::EMI1)));
+            if (types.testFlag(QKnx::EmiType::EMI2))
+                str += "|" + QLatin1String(metaEmiType.valueToKey(int(QKnx::EmiType::EMI2)));
+            if (types.testFlag(QKnx::EmiType::cEMI))
+                str += "|" + QLatin1String(metaEmiType.valueToKey(int(QKnx::EmiType::cEMI)));
+            ui->textOuputTunneling->append(tr("Received Tunneling Feature Response: Feature (%1), "
+                "Return Code (%2), EMI (%3)")
+            .arg(QString::fromLatin1(metaEnum.valueToKey(int(feature))))
+            .arg(QString::fromLatin1(metaReturnCode.valueToKey(int(code))))
+            .arg(str.isEmpty() ? QLatin1String(metaEmiType.valueToKey(int(QKnx::EmiType::Unknown)))
+                : str));
         } else {
             ui->textOuputTunneling->append(tr("Received Tunneling Feature Response: Feature (%1), "
-                    "Return Code(%2), Value: ")
+                    "Return Code (%2), Value: ")
                 .arg(metaEnum.valueToKey(int(feature)))
                 .arg(QString::fromLatin1(metaReturnCode.valueToKey(int(code))))
                 + QLatin1String(value.toByteArray(), value.size()));
@@ -107,10 +178,19 @@ TunnelingFeatures::TunnelingFeatures(QWidget *parent)
     connect(&m_tunnel, &QKnxNetIpTunnel::connected, this, [&] {
         ui->connectTunneling->setEnabled(false);
         ui->disconnectTunneling->setEnabled(true);
-        ui->tunnelingSend->setEnabled(true);
-
+        ui->tunnelServiceType->setEnabled(true);
+        ui->featureIdentifier->setEnabled(true);
+        if (ui->tunnelServiceType->currentText() == "TunnelingFeatureSet") {
+            ui->featureValue->setEnabled(true);
+            ui->tunnelingSend->setEnabled(!ui->featureValue->text().isEmpty());
+        } else {
+            ui->featureValue->setEnabled(false);
+            ui->tunnelingSend->setEnabled(true);
+        }
         ui->textOuputTunneling->append(tr("Successfully connected to: %1 on port: %2").arg(m_server
             .controlEndpointAddress().toString()).arg(m_server.controlEndpointPort()));
+
+        ui->statusBar->setText("Status: Connected.");
     });
 
     connect(ui->disconnectTunneling, &QPushButton::clicked, this, [&]() {
@@ -121,13 +201,36 @@ TunnelingFeatures::TunnelingFeatures(QWidget *parent)
         ui->connectTunneling->setEnabled(true);
         ui->disconnectTunneling->setEnabled(false);
         ui->tunnelingSend->setEnabled(false);
+        ui->tunnelServiceType->setEnabled(false);
+        ui->featureIdentifier->setEnabled(false);
+        ui->featureValue->setEnabled(false);
         ui->textOuputTunneling->append(tr("Successfully disconnected from: %1 on port: %2\n")
             .arg(m_server.controlEndpointAddress().toString()).arg(m_server.controlEndpointPort()));
+        ui->statusBar->setText("Status: Disconnected.");
     });
 
     connect(&m_tunnel, &QKnxNetIpTunnel::errorOccurred, this,
         [&] (QKnxNetIpEndpointConnection::Error, QString errorString) {
             ui->textOuputTunneling->append(errorString);
+    });
+
+    connect(ui->tunnelServiceType, &QComboBox::currentTextChanged, this, [&](const QString &text) {
+        if (text == QString("TunnelingFeatureSet")) {
+            ui->featureValue->setEnabled(true);
+            ui->statusBar->setText("Status: Fill in the feature type and value fields.");
+        } else {
+            ui->featureValue->setEnabled(false);
+            ui->statusBar->setText("");
+        }
+        checkFeatureValue();
+    });
+
+    connect(ui->featureValue, &QLineEdit::textChanged, this, [&](const QString &) {
+        checkFeatureValue();
+    });
+
+    connect(ui->featureIdentifier, &QComboBox::currentTextChanged, this, [&](const QString &) {
+        checkFeatureValue();
     });
 }
 
@@ -157,9 +260,39 @@ void TunnelingFeatures::setKnxNetIpServer(const QKnxNetIpServerInfo &server)
         ui->disconnectTunneling->setEnabled(false);
     }
     ui->tunnelingSend->setEnabled(false);
+    ui->statusBar->setText("Status: Start by clicking connect.");
 }
 
 void TunnelingFeatures::setTcpEnable(bool value)
 {
     m_protocol = (value ? QKnxNetIp::HostProtocol::TCP_IPv4 : QKnxNetIp::HostProtocol::UDP_IPv4);
+}
+
+void TunnelingFeatures::checkFeatureValue()
+{
+    if (!ui->featureValue->isEnabled()) {
+        ui->statusBar->setText("");
+        ui->tunnelingSend->setEnabled(m_tunnel.state() == QKnxNetIpEndpointConnection::State::Connected);
+        return;
+    }
+
+    using ServType = QKnx::NetIp::ServiceType;
+    ServType type = ServType(quint16(ServType::TunnelingFeatureGet));
+    if (ui->tunnelServiceType->currentIndex() == 1)
+        type = ServType(quint16(ServType::TunnelingFeatureSet));
+
+    using FeatureType = QKnx::InterfaceFeature;
+    FeatureType featureType = FeatureType(quint8(FeatureType::SupportedEmiType)
+        + ui->featureIdentifier->currentIndex());
+
+    QKnxByteArray bytes = QKnxByteArray::fromHex(ui->featureValue->text().toUtf8());
+    auto text = ui->featureValue->text();
+    if (text.isEmpty() || !validFeature(type, featureType, bytes)
+        || ((text.size() % 2) != 0)) {
+        ui->statusBar->setText("Status: Invalid value entered");
+        ui->tunnelingSend->setEnabled(false);
+        return;
+    }
+    ui->statusBar->setText("Status: Valid value entered, click send.");
+    ui->tunnelingSend->setEnabled(m_tunnel.state() == QKnxNetIpEndpointConnection::State::Connected);
 }
