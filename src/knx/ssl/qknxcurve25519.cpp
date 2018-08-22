@@ -336,7 +336,7 @@ QKnxCurve25519PrivateKey QKnxCurve25519PrivateKey::fromBytes(const QKnxByteArray
     auto tmp = pkcs8 + ba;  // PKCS #8 is a standard syntax for storing private key information
 
     BIO *bio = nullptr;
-    if (bio = q_BIO_new_mem_buf(reinterpret_cast<void *> (tmp.data()), tmp.size()))
+    if ((bio = q_BIO_new_mem_buf(reinterpret_cast<void *> (tmp.data()), tmp.size())))
         key.d_ptr->m_evpPKey = q_d2i_PrivateKey_bio(bio, nullptr);
     q_BIO_free(bio);
 
