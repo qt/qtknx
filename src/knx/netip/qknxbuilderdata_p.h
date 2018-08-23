@@ -61,31 +61,31 @@ public:
     QKnxByteArray m_featureValue;
 };
 
-class SrpBuilders::ProgrammingMode::ProgrammingModePrivate : public QSharedData
+class QKnxNetIpSrpProxy::ProgrammingModePrivate : public QSharedData
 {
 public:
-    bool m_mandatory { false };
+    bool m_mandatory { true };
 };
 
-class SrpBuilders::MacAddress::MacAddressPrivate : public QSharedData
+class QKnxNetIpSrpProxy::MacAddressPrivate : public QSharedData
 {
 public:
     QKnxByteArray m_macAddress;
-    bool m_mandatory { false };
+    bool m_mandatory { true };
 };
 
-class SrpBuilders::SupportedFamily::SupportedFamilyPrivate : public QSharedData
+class QKnxNetIpSrpProxy::SupportedFamilyPrivate : public QSharedData
 {
 public:
-    QVector<QKnxServiceInfo> m_infos;
-    bool m_mandatory { false };
+    QKnxServiceInfo m_info;
+    bool m_mandatory { true };
 };
 
-class SrpBuilders::RequestDibs::RequestDibsPrivate : public QSharedData
+class QKnxNetIpSrpProxy::RequestDibsPrivate : public QSharedData
 {
 public:
     QVector<QKnxNetIp::DescriptionType> m_types;
-    bool m_mandatory { false };
+    bool m_mandatory { true };
 };
 
 class QKnxNetIpSearchRequestExtendedBuilderPrivate : public QSharedData

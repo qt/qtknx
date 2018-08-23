@@ -166,21 +166,21 @@
     can be used to create SRP blocks of each SRP type:
 
     \list
-        \li The \l SrpBuilders::MacAddress class provides the means to create
-            a \e {Select By MAC Address} SRP. It indicates that the KNXnet/IP
-            client is interested only in responses from the KNXnet/IP server
-            with the given MAC address.
-        \li The \l SrpBuilders::ProgrammingMode class provides the means to
-            create a \e {Select By Programming Mode} SRP. It indicates that the
-            client is interested only in responses from servers in which
+        \li The \l QKnxNetIpSrpProxy::MacAddress class provides the means to
+            create a \e {Select By MAC Address} SRP. It indicates that the
+            KNXnet/IP client is interested only in responses from the KNXnet/IP
+            server with the given MAC address.
+        \li The \l QKnxNetIpSrpProxy::ProgrammingMode class provides the means
+            to create a \e {Select By Programming Mode} SRP. It indicates that
+            the client is interested only in responses from servers in which
             Programming Mode is currently enabled.
-        \li The \l SrpBuilders::SupportedFamily class provides the means to
-            create a \e {Select By Service} SRP. It indicates that the client
+        \li The \l QKnxNetIpSrpProxy::SupportedFamily class provides the means
+            to create a \e {Select By Service} SRP. It indicates that the client
             is interested only in responses from servers supporting the given
             service family in at least the given version.
-        \li The \l SrpBuilders::RequestDibs class provides the means to create
-            a \e {Request DIBs} SRP. It indicates that the client is interested
-            in the listed description information blocks (DIBs).
+        \li The \l QKnxNetIpSrpProxy::RequestDibs class provides the means to
+            create a \e {Request DIBs} SRP. It indicates that the client is
+            interested in the listed description information blocks (DIBs).
     \endlist
 
     \section1 Creating and Maintaining Communication Channels

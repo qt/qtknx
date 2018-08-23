@@ -74,7 +74,7 @@ QT_BEGIN_NAMESPACE
 
     \code
         QHostAddress clientLocalAddress = ...
-        auto builder = SrpBuilders::MacAddress();
+        auto builder = QKnxNetIpSrpProxy::macAddressBuilder();
 
         QKnxNetIpServerDiscoveryAgent agent(clientLocalAddress);
         agent.setDiscoveryMode(QKnxNetIpServerDiscoveryAgent::DiscoveryMode::CoreV2);
@@ -747,8 +747,8 @@ QVector<QKnxNetIpSrp> QKnxNetIpServerDiscoveryAgent::extendedSearchParameters() 
     additional information regarding the search (for example to restrict the
     set of KNXnet/IP servers that are expected to respond).
 
-    \sa SrpBuilders::MacAddress, SrpBuilders::ProgrammingMode,
-    SrpBuilders::SupportedFamily, SrpBuilders::RequestDibs
+    \sa QKnxNetIpSrpProxy::MacAddress, QKnxNetIpSrpProxy::ProgrammingMode,
+        QKnxNetIpSrpProxy::SupportedFamily, QKnxNetIpSrpProxy::RequestDibs
 */
 void QKnxNetIpServerDiscoveryAgent::setExtendedSearchParameters(const QVector<QKnxNetIpSrp> &srps)
 {

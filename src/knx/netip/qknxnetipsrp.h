@@ -38,84 +38,109 @@
 QT_BEGIN_NAMESPACE
 
 struct QKnxServiceInfo;
-namespace SrpBuilders {
 
-class Q_KNX_EXPORT ProgrammingMode final
+class Q_KNX_EXPORT QKnxNetIpSrpProxy final
 {
-public:
-    ProgrammingMode();
-    ~ProgrammingMode();
-
-    ProgrammingMode(const ProgrammingMode &other);
-    ProgrammingMode &operator=(const ProgrammingMode &other);
-
-    ProgrammingMode &setMandatory(bool value = true);
-
-    QKnxNetIpSrp create() const;
-
-private:
-    class ProgrammingModePrivate;
-    QSharedDataPointer<ProgrammingModePrivate> d_ptr;
-};
-
-class Q_KNX_EXPORT MacAddress final
-{
-public:
-    MacAddress();
-    ~MacAddress();
-
-    MacAddress(const MacAddress &other);
-    MacAddress &operator=(const MacAddress &other);
-
-    MacAddress &setMac(const QKnxByteArray &macAdd);
-    MacAddress &setMandatory(bool value = true);
-
-    QKnxNetIpSrp create() const;
-
-private:
     class MacAddressPrivate;
-    QSharedDataPointer<MacAddressPrivate> d_ptr;
-};
-
-class Q_KNX_EXPORT SupportedFamily final
-{
-public:
-    SupportedFamily();
-    ~SupportedFamily();
-
-    SupportedFamily(const SupportedFamily &other);
-    SupportedFamily &operator=(const SupportedFamily &other);
-
-    SupportedFamily &setServiceInfos(const QVector<QKnxServiceInfo> &infos);
-    SupportedFamily &setMandatory(bool value = true);
-
-    QKnxNetIpSrp create() const;
-
-private:
-    class SupportedFamilyPrivate;
-    QSharedDataPointer<SupportedFamilyPrivate> d_ptr;
-};
-
-class Q_KNX_EXPORT RequestDibs final
-{
-public:
-    RequestDibs();
-    ~RequestDibs();
-
-    RequestDibs(const RequestDibs &other);
-    RequestDibs &operator=(const RequestDibs &other);
-
-    RequestDibs &setDescriptionTypes(const QVector<QKnxNetIp::DescriptionType> &types);
-    RequestDibs &setMandatory(bool value = true);
-
-    QKnxNetIpSrp create() const;
-
-private:
+    class ProgrammingModePrivate;
     class RequestDibsPrivate;
-    QSharedDataPointer<RequestDibsPrivate> d_ptr;
-};
+    class SupportedFamilyPrivate;
 
-}
+public:
+    QKnxNetIpSrpProxy() = delete;
+    ~QKnxNetIpSrpProxy() = default;
+
+    QKnxNetIpSrpProxy(const QKnxNetIpSrp &&) = delete;
+    explicit QKnxNetIpSrpProxy(const QKnxNetIpSrp &srp);
+
+    bool isValid() const;
+    bool isMandatory() const;
+
+    QKnxNetIp::SearchParameterType searchParameterType() const;
+
+    bool programmingModeOnly() const;
+    QKnxByteArray macAddress() const;
+    QKnxServiceInfo serviceInfo() const;
+    QVector<QKnxNetIp::DescriptionType> descriptionTypes() const;
+
+    class Q_KNX_EXPORT ProgrammingMode final
+    {
+    public:
+        ProgrammingMode();
+        ~ProgrammingMode();
+
+        ProgrammingMode(const ProgrammingMode &other);
+        ProgrammingMode &operator=(const ProgrammingMode &other);
+
+        ProgrammingMode &setMandatory(bool value);
+
+        QKnxNetIpSrp create() const;
+
+    private:
+        QSharedDataPointer<ProgrammingModePrivate> d_ptr;
+    };
+    static QKnxNetIpSrpProxy::ProgrammingMode programmingModeBuilder();
+
+    class Q_KNX_EXPORT MacAddress final
+    {
+    public:
+        MacAddress();
+        ~MacAddress();
+
+        MacAddress(const MacAddress &other);
+        MacAddress &operator=(const MacAddress &other);
+
+        MacAddress &setMac(const QKnxByteArray &macAdd);
+        MacAddress &setMandatory(bool value);
+
+        QKnxNetIpSrp create() const;
+
+    private:
+        QSharedDataPointer<MacAddressPrivate> d_ptr;
+    };
+    static QKnxNetIpSrpProxy::MacAddress macAddressBuilder();
+
+    class Q_KNX_EXPORT SupportedFamily final
+    {
+    public:
+        SupportedFamily();
+        ~SupportedFamily();
+
+        SupportedFamily(const SupportedFamily &other);
+        SupportedFamily &operator=(const SupportedFamily &other);
+
+        SupportedFamily &setServiceInfo(const QKnxServiceInfo &info);
+        SupportedFamily &setMandatory(bool value);
+
+        QKnxNetIpSrp create() const;
+
+    private:
+        QSharedDataPointer<SupportedFamilyPrivate> d_ptr;
+    };
+    static QKnxNetIpSrpProxy::SupportedFamily supportedFamilyBuilder();
+
+    class Q_KNX_EXPORT RequestDibs final
+    {
+    public:
+        RequestDibs();
+        ~RequestDibs();
+
+        RequestDibs(const RequestDibs &other);
+        RequestDibs &operator=(const RequestDibs &other);
+
+        RequestDibs &setDescriptionTypes(const QVector<QKnxNetIp::DescriptionType> &types);
+        RequestDibs &setMandatory(bool value);
+
+        QKnxNetIpSrp create() const;
+
+    private:
+        QSharedDataPointer<RequestDibsPrivate> d_ptr;
+    };
+    static QKnxNetIpSrpProxy::RequestDibs requestDibsBuilder();
+
+private:
+    QKnxNetIpSrp m_srp;
+};
 
 QT_END_NAMESPACE
 

@@ -83,6 +83,17 @@ QT_BEGIN_NAMESPACE
 */
 
 /*!
+    \fn template <typename CodeType> QKnxNetIpStructHeader<CodeType>::QKnxNetIpStructHeader(CodeType code, quint16 dataSize, bool mandatory)
+
+    Constructs a valid header object and sets the KNXnet/IP structure
+    identifier to \a code, the data size to \a dataSize, and the mandatory
+    flag to \a mandatory.
+    Additionally it updates the header and total size of the structure.
+
+    \sa isValid(), code(), setCode(), dataSize(), setDataSize(), setMandatory()
+*/
+
+/*!
     \fn template <typename CodeType> bool QKnxNetIpStructHeader<CodeType>::isNull() const
 
     Returns \c true if this is a default constructed header, otherwise returns

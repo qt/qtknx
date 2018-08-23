@@ -37,42 +37,178 @@
 
 QT_BEGIN_NAMESPACE
 
-using namespace SrpBuilders;
-
 /*!
-    \namespace SrpBuilders
+    \class QKnxNetIpSrpProxy
 
     \since 5.12
     \inmodule QtKnx
 
-    \brief Contains various builders for creating the search request parameters
-    (SRP) included in an extended search request.
+    \brief The QKnxNetIpSrpProxy class encapsulates methods to introspect the
+    various search request parameter (SRP) structures and provides a collection
+    of builders for creating such SRP structures to be included in an extended
+    search request.
+
+    \note When using QKnxNetIpSrpProxy, care must be taken to ensure that the
+    referenced KNXnet/IP SRP structure outlives the proxy on all code paths,
+    lest the proxy ends up referencing deleted data.
 
     The following SRP types are available:
-
     \list
-        \li \l {SrpBuilders::MacAddress}{Select By MAC Address} indicates that
-            the KNXnet/IP client is interested only in the response from the
-            KNXnet/IP server with the given MAC address.
-        \li \l {SrpBuilders::ProgrammingMode}{Select By Programming Mode}
+        \li \l {QKnxNetIpSrpProxy::MacAddress}{Select By MAC Address}
+            indicates that the KNXnet/IP client is interested only in the
+            response from the KNXnet/IP server with the given MAC address.
+        \li \l {QKnxNetIpSrpProxy::ProgrammingMode}{Select By Programming Mode}
             indicates that the client is interested only in responses from
             servers in which Programming Mode is currently enabled.
-        \li \l {SrpBuilders::SupportedFamily}{Select By Service} indicates that
-            the client is interested only in responses from servers supporting
-            the given service family in at least the given version.
-        \li \l {SrpBuilders::RequestDibs}{Request DIBs} indicates that the
-            client is interested in the listed description information blocks
+        \li \l {QKnxNetIpSrpProxy::SupportedFamily}{Select By Service}
+            indicates that the client is interested only in responses from
+            servers supporting the given service family in at least the given
+            version.
+        \li \l {QKnxNetIpSrpProxy::RequestDibs}{Request DIBs} indicates that
+            the client is interested in the listed description information blocks
             (DIBs).
     \endlist
+
+    Reading the supported service families can be achieved like this:
+    \code
+        auto srp = QKnxNetIpSrp::fromBytes(...);
+
+        QKnxNetIpSrpProxy proxy(srp);
+        if (!proxy.isValid())
+            return;
+
+        if (proxy().searchParameterType() != QKnxNetIp::SearchParameterType::SelectByMACAddress)
+            return;
+
+        auto mandatory = proxy.isMandatory();
+        auto macAddress = proxy.macAddress();
+    \endcode
+
+    \sa programmingModeBuilder(), macAddressBuilder(), supportedFamilyBuilder(),
+    requestDibsBuilder()
 */
 
 /*!
-    \class SrpBuilders::ProgrammingMode
+    \internal
+    \fn QKnxNetIpSrpProxy::QKnxNetIpSrpProxy()
+*/
+
+/*!
+    \internal
+    \fn QKnxNetIpSrpProxy::~QKnxNetIpSrpProxy()
+*/
+
+/*!
+    \internal
+    \fn QKnxNetIpSrpProxy::QKnxNetIpSrpProxy(const QKnxNetIpSrp &&)
+*/
+
+/*!
+    Constructs a proxy object with the specified KNXnet/IP SRP structure
+    \a srp to read the encapsulated search request parameters.
+*/
+QKnxNetIpSrpProxy::QKnxNetIpSrpProxy(const QKnxNetIpSrp &srp)
+    : m_srp(srp)
+{}
+
+/*!
+    Returns \c true if the KNXnet/IP structure to create the object is a valid
+    KNXnet/IP SRP structure; otherwise returns \c false.
+*/
+bool QKnxNetIpSrpProxy::isValid() const
+{
+    if (m_srp.code() == QKnxNetIp::SearchParameterType::SelectByProgrammingMode)
+        return m_srp.isValid() && m_srp.size() == 8;
+
+    if (m_srp.code() == QKnxNetIp::SearchParameterType::SelectByMACAddress)
+        return m_srp.isValid() && m_srp.size() == 14;
+
+    if (m_srp.code() == QKnxNetIp::SearchParameterType::SelectByServiceSRP)
+        return m_srp.isValid() && m_srp.size() == 10;
+
+    return (m_srp.code() != QKnxNetIp::SearchParameterType::RequestDIBs) && m_srp.isValid()
+        && (m_srp.size() >= 10) && (m_srp.size() % 2 == 0); // must be even sized
+}
+
+/*!
+    Returns \c true if the mandatory bit is set; otherwise returns \c false.
+*/
+bool QKnxNetIpSrpProxy::isMandatory() const
+{
+    return m_srp.header().isMandatory();
+}
+
+/*!
+    Return the search parameter type from KNXnet/IP structure if the object
+    passed during construction was valid, otherwise returns QKnx::NetIp::Unknown.
+*/
+QKnxNetIp::SearchParameterType QKnxNetIpSrpProxy::searchParameterType() const
+{
+    if (isValid())
+        return m_srp.code();
+    return QKnxNetIp::SearchParameterType::Unknown;
+}
+
+/*!
+    Returns \c true if the search request was limited to devices in programming
+    mode; otherwise returns \c false.
+*/
+bool QKnxNetIpSrpProxy::programmingModeOnly() const
+{
+    return isValid() && (m_srp.code() == QKnxNetIp::SearchParameterType::SelectByProgrammingMode);
+}
+
+/*!
+    Returns an array of bytes that represent the MAC address used as
+    search criteria if the object that was passed during construction
+    was valid; otherwise returns an empty byte array.
+*/
+QKnxByteArray QKnxNetIpSrpProxy::macAddress() const
+{
+    if (isValid() && m_srp.code() == QKnxNetIp::SearchParameterType::SelectByMACAddress)
+        return m_srp.constData();
+    return {};
+}
+
+/*!
+    Returns a QKnxServiceInfo structure used as search criteria if the
+    object that was passed during construction was valid; otherwise returns
+    a \l {default-constructed value}.
+*/
+QKnxServiceInfo QKnxNetIpSrpProxy::serviceInfo() const
+{
+    if (isValid() && m_srp.code() == QKnxNetIp::SearchParameterType::SelectByMACAddress) {
+        const auto &data = m_srp.constData();
+        return { QKnxNetIp::ServiceFamily(data.value(0)), data.value(1) };
+    }
+    return {};
+}
+
+/*!
+    Returns a vector of QKnx::NetIp::DescriptionType enumeration values used as
+    search criteria if the object that was passed during construction was valid;
+    otherwise returns an empty vector.
+*/
+QVector<QKnxNetIp::DescriptionType> QKnxNetIpSrpProxy::descriptionTypes() const
+{
+    QVector<QKnxNetIp::DescriptionType> types;
+    if (isValid() && m_srp.code() == QKnxNetIp::SearchParameterType::RequestDIBs) {
+        const auto &data = m_srp.constData();
+        for (quint16 i = 0; i < m_srp.dataSize(); i++)
+            types.append(QKnxNetIp::DescriptionType(data.value(i)));
+    }
+    return types;
+}
+
+
+/*!
+    \class QKnxNetIpSrpProxy::ProgrammingMode
 
     \since 5.12
     \inmodule QtKnx
+    \inheaderfile QKnxNetIpSrpProxy
 
-    \brief The SrpBuilders::ProgrammingMode class provides the means to
+    \brief The QKnxNetIpSrpProxy::ProgrammingMode class provides the means to
     create the \e {Select By Programming Mode} SRP for the extended search
     request.
 
@@ -81,12 +217,14 @@ using namespace SrpBuilders;
     enabled. If Programming Mode is not enabled in a KNXnet/IP server, then
     the server does not respond to this search request.
 
+    \note By default the mandatory flag is set to \c true.
+
     The common way to create this SRP is:
 
     \code
-        auto srpMode = ProgrammingMode()
-                       .setMandatory()
-                       .create();
+        auto srpMode = QKnxNetIpSrpProxy::programmingModeBuilder()
+            .setMandatory(true)
+            .create();
     \endcode
 
     \sa QKnxNetIpSearchRequestProxy
@@ -95,27 +233,28 @@ using namespace SrpBuilders;
 /*!
     Constructs a builder for SRPs of the type Select By Programming Mode.
 */
-ProgrammingMode::ProgrammingMode()
-    : d_ptr(new ProgrammingMode::ProgrammingModePrivate)
+QKnxNetIpSrpProxy::ProgrammingMode::ProgrammingMode()
+    : d_ptr(new ProgrammingModePrivate)
 {}
 
 /*!
     Destroys a Select By Programming Mode SRP.
 */
-ProgrammingMode::~ProgrammingMode()
+QKnxNetIpSrpProxy::ProgrammingMode::~ProgrammingMode()
 {}
 
 /*!
     Constructs a copy of \a other.
 */
-ProgrammingMode::ProgrammingMode(const ProgrammingMode &other)
+QKnxNetIpSrpProxy::ProgrammingMode::ProgrammingMode(const ProgrammingMode &other)
     : d_ptr(other.d_ptr)
 {}
 
 /*!
     Assigns \a other to this Programming Mode builder and returns a reference.
 */
-ProgrammingMode &ProgrammingMode::operator=(const ProgrammingMode &other)
+QKnxNetIpSrpProxy::ProgrammingMode &
+    QKnxNetIpSrpProxy::ProgrammingMode::operator=(const ProgrammingMode &other)
 {
     d_ptr = other.d_ptr;
     return *this;
@@ -126,7 +265,7 @@ ProgrammingMode &ProgrammingMode::operator=(const ProgrammingMode &other)
 
     \note The mandatory bit is the first significant bit of the Type Code field.
 */
-ProgrammingMode &ProgrammingMode::setMandatory(bool value)
+QKnxNetIpSrpProxy::ProgrammingMode &QKnxNetIpSrpProxy::ProgrammingMode::setMandatory(bool value)
 {
     d_ptr->m_mandatory = value;
     return *this;
@@ -135,21 +274,29 @@ ProgrammingMode &ProgrammingMode::setMandatory(bool value)
 /*!
     Creates a Select By Programming Mode SRP.
 */
-QKnxNetIpSrp ProgrammingMode::create() const
+QKnxNetIpSrp QKnxNetIpSrpProxy::ProgrammingMode::create() const
 {
-    auto header = QKnxNetIpStructHeader<QKnxNetIp::SearchParameterType>
-                  (QKnxNetIp::SearchParameterType::SelectByProgrammingMode, 0);
-    header.setMandatory(d_ptr->m_mandatory);
-    return QKnxNetIpSrp(header);
+    return { { QKnxNetIp::SearchParameterType::SelectByProgrammingMode, 0, d_ptr->m_mandatory } };
 }
 
 /*!
-    \class SrpBuilders::MacAddress
+    Returns a builder object to create a KNXnet/IP programming mode SRP
+    structure.
+*/
+QKnxNetIpSrpProxy::ProgrammingMode QKnxNetIpSrpProxy::programmingModeBuilder()
+{
+    return QKnxNetIpSrpProxy::ProgrammingMode();
+}
+
+
+/*!
+    \class QKnxNetIpSrpProxy::MacAddress
 
     \since 5.12
     \inmodule QtKnx
+    \inheaderfile QKnxNetIpSrpProxy
 
-    \brief The SrpBuilders::MacAddress class provides the means to
+    \brief The QKnxNetIpSrpProxy::MacAddress class provides the means to
     create the \e {Select By MAC Address} SRP for the extended search
     request.
 
@@ -158,14 +305,15 @@ QKnxNetIpSrp ProgrammingMode::create() const
     If the KNXnet/IP server’s MAC address is different from the given MAC
     address, then it does not respond to this search request.
 
+    \note By default the mandatory flag is set to \c true.
+
     The common way to create this SRP is:
 
     \code
         auto macAddress = QKnxByteArray::fromHex("4CCC6AE40000");
-        auto srpMac = MacAddress()
-                      .setMandatory()
-                      .setMac(macAddress)
-                      .create();
+        auto srpMac = QKnxNetIpSrpProxy::macAddressBuilder()
+            .setMac(macAddress)
+            .create();
     \endcode
 
     \sa QKnxNetIpSearchRequestProxy
@@ -174,27 +322,28 @@ QKnxNetIpSrp ProgrammingMode::create() const
 /*!
     Constructs a builder for a Select By MAC Address SRP.
 */
-MacAddress::MacAddress()
+QKnxNetIpSrpProxy::MacAddress::MacAddress()
     : d_ptr(new MacAddressPrivate)
 {}
 
 /*!
     Destroys the builder.
 */
-MacAddress::~MacAddress()
+QKnxNetIpSrpProxy::MacAddress::~MacAddress()
 {}
 
 /*!
     Constructs a copy of \a other.
 */
-MacAddress::MacAddress(const MacAddress &other)
+QKnxNetIpSrpProxy::MacAddress::MacAddress(const QKnxNetIpSrpProxy::MacAddress &other)
     : d_ptr(other.d_ptr)
 {}
 
 /*!
-    Assigns \a other to this Mac Address builder and returns a reference.
+    Assigns \a other to this MAC Address builder and returns a reference.
 */
-MacAddress &MacAddress::operator=(const MacAddress &other)
+QKnxNetIpSrpProxy::MacAddress &
+    QKnxNetIpSrpProxy::MacAddress::operator=(const MacAddress &other)
 {
     d_ptr = other.d_ptr;
     return *this;
@@ -203,8 +352,8 @@ MacAddress &MacAddress::operator=(const MacAddress &other)
 /*!
     Sets the MAC address \a macAdd to be used by the builder.
 */
-MacAddress &
-MacAddress::setMac(const QKnxByteArray &macAdd)
+QKnxNetIpSrpProxy::MacAddress &
+    QKnxNetIpSrpProxy::MacAddress::setMac(const QKnxByteArray &macAdd)
 {
     d_ptr->m_macAddress = macAdd;
     return *this;
@@ -215,7 +364,7 @@ MacAddress::setMac(const QKnxByteArray &macAdd)
 
     \note The mandatory bit is the first significant bit of the Type Code field.
 */
-MacAddress &MacAddress::setMandatory(bool value)
+QKnxNetIpSrpProxy::MacAddress &QKnxNetIpSrpProxy::MacAddress::setMandatory(bool value)
 {
     d_ptr->m_mandatory = value;
     return *this;
@@ -224,21 +373,30 @@ MacAddress &MacAddress::setMandatory(bool value)
 /*!
     Creates a Select By MAC Address SRP.
 */
-QKnxNetIpSrp MacAddress::create() const
+QKnxNetIpSrp QKnxNetIpSrpProxy::MacAddress::create() const
 {
-    auto header = QKnxNetIpStructHeader<QKnxNetIp::SearchParameterType>
-                  (QKnxNetIp::SearchParameterType::SelectByMACAddress, 6);
-    header.setMandatory(d_ptr->m_mandatory);
-    return QKnxNetIpSrp(header, d_ptr->m_macAddress);
+    return { { QKnxNetIp::SearchParameterType::SelectByMACAddress, 6, d_ptr->m_mandatory },
+        d_ptr->m_macAddress };
 }
 
 /*!
-    \class SrpBuilders::SupportedFamily
+    Returns a builder object to create a KNXnet/IP MAC address SRP
+    structure.
+*/
+QKnxNetIpSrpProxy::MacAddress QKnxNetIpSrpProxy::macAddressBuilder()
+{
+    return QKnxNetIpSrpProxy::MacAddress();
+}
+
+
+/*!
+    \class QKnxNetIpSrpProxy::SupportedFamily
 
     \since 5.12
     \inmodule QtKnx
+    \inheaderfile QKnxNetIpSrpProxy
 
-    \brief The SrpBuilders::SupportedFamily class provides the means to
+    \brief The QKnxNetIpSrpProxy::SupportedFamily class provides the means to
     create a \e {Select By Service} SRP for an extended search request.
 
     The client includes this SRP to indicate that it is interested
@@ -249,17 +407,13 @@ QKnxNetIpSrp MacAddress::create() const
     supports the given service family only in a lower version, then it does
     not respond to this search request.
 
+    \note By default the mandatory flag is set to \c true.
+
     The common way to create this SRP is:
 
     \code
-        QVector<QKnxServiceInfo> families;
-        families.append({ QKnxNetIp::ServiceFamily::Core, 9 });
-        families.append({ QKnxNetIp::ServiceFamily::DeviceManagement, 10 });
-        families.append({ QKnxNetIp::ServiceFamily::IpTunneling, 11 });
-
-        auto srpDibs = SupportedFamily()
-            .setMandatory()
-            .setServiceInfos(families)
+        auto srpDibs = QKnxNetIpSrpProxy::supportedFamilyBuilder()
+            .setServiceInfo({ QKnxNetIp::ServiceFamily::Core, 2 })
             .create();
     \endcode
 
@@ -270,24 +424,28 @@ QKnxNetIpSrp MacAddress::create() const
     Constructs a builder for a Select By Service SRP of an extended search
     request.
 */
-SupportedFamily::SupportedFamily()
+QKnxNetIpSrpProxy::SupportedFamily::SupportedFamily()
     : d_ptr(new SupportedFamilyPrivate)
 {}
 
 /*!
     Destroys the Select By Service SRP builder.
 */
-SupportedFamily::~SupportedFamily()
+QKnxNetIpSrpProxy::SupportedFamily::~SupportedFamily()
 {}
 
-SupportedFamily::SupportedFamily(const SupportedFamily &other)
+/*!
+    Constructs a copy of \a other.
+*/
+QKnxNetIpSrpProxy::SupportedFamily::SupportedFamily(const SupportedFamily &other)
     : d_ptr(other.d_ptr)
 {}
 
 /*!
     Assigns \a other to this Select By Service builder and returns a reference.
 */
-SupportedFamily &SupportedFamily::operator=(const SupportedFamily &other)
+QKnxNetIpSrpProxy::SupportedFamily &
+    QKnxNetIpSrpProxy::SupportedFamily::operator=(const SupportedFamily &other)
 {
     d_ptr = other.d_ptr;
     return *this;
@@ -295,18 +453,19 @@ SupportedFamily &SupportedFamily::operator=(const SupportedFamily &other)
 
 /*!
     Sets the supported service families and versions of the KNXnet/IP SRP
-    structure to \a infos and returns a reference to the SRP builder.
+    structure to \a info and returns a reference to the SRP builder.
 */
-SupportedFamily &SupportedFamily::setServiceInfos(const QVector<QKnxServiceInfo> &infos)
+QKnxNetIpSrpProxy::SupportedFamily &
+    QKnxNetIpSrpProxy::SupportedFamily::setServiceInfo(const QKnxServiceInfo &info)
 {
-    d_ptr->m_infos = infos;
+    d_ptr->m_info = info;
     return *this;
 }
 
 /*!
     Sets the mandatory bit flag of the Type Code field to \a value.
 */
-SupportedFamily &SupportedFamily::setMandatory(bool value)
+QKnxNetIpSrpProxy::SupportedFamily &QKnxNetIpSrpProxy::SupportedFamily::setMandatory(bool value)
 {
     d_ptr->m_mandatory = value;
     return *this;
@@ -315,30 +474,34 @@ SupportedFamily &SupportedFamily::setMandatory(bool value)
 /*!
     Creates the Select By Service SRP.
 */
-QKnxNetIpSrp SupportedFamily::create() const
+QKnxNetIpSrp QKnxNetIpSrpProxy::SupportedFamily::create() const
 {
-    auto header = QKnxNetIpStructHeader<QKnxNetIp::SearchParameterType>
-                  (QKnxNetIp::SearchParameterType::SelectByServiceSRP, 2);
-    header.setMandatory(d_ptr->m_mandatory);
-
-    QKnxByteArray bytes;
-    for (const auto &info : qAsConst(d_ptr->m_infos))
-        bytes += { quint8(info.ServiceFamily), info.ServiceFamilyVersion };
-
-    return QKnxNetIpSrp(header, bytes);
+    return { { QKnxNetIp::SearchParameterType::SelectByServiceSRP, 2, d_ptr->m_mandatory },
+        { quint8(d_ptr->m_info.ServiceFamily), d_ptr->m_info.ServiceFamilyVersion } };
 }
 
 /*!
-    \class SrpBuilders::RequestDibs
+    Returns a builder object to create a KNXnet/IP supported service family SRP
+    structure.
+*/
+QKnxNetIpSrpProxy::SupportedFamily QKnxNetIpSrpProxy::supportedFamilyBuilder()
+{
+    return QKnxNetIpSrpProxy::SupportedFamily();
+}
+
+
+/*!
+    \class QKnxNetIpSrpProxy::RequestDibs
 
     \since 5.12
     \inmodule QtKnx
+    \inheaderfile QKnxNetIpSrpProxy
 
-    \brief The SrpBuilders::RequestDibs class provides the means to
+    \brief The QKnxNetIpSrpProxy::RequestDibs class provides the means to
     create the \e {Request DIBs} SRP for the extended search request.
 
     The client includes this SRP to indicate that it is interested in the
-    listed description type information blocks (DIBs). This SRP does not
+    listed device information blocks (DIBs). This SRP does not
     influence the decision of the KNXnet/IP server whether or not to respond
     to the search request.
 
@@ -347,11 +510,12 @@ QKnxNetIpSrp SupportedFamily::create() const
     \l {QKnx::NetIp::DescriptionType} {QKnxNetIp::DescriptionType::Unknown}
     to make the structure length even.
 
+    \note By default the mandatory flag is set to \c true.
+
     The common way to create this SRP is:
 
     \code
-        auto srpDibs = RequestDibs()
-            .setMandatory()
+        auto srpDibs = QKnxNetIpSrpProxy::requestDibsBuilder()
             .setDescriptionTypes({
                 QKnxNetIp::DescriptionType::DeviceInfo,
                 QKnxNetIp::DescriptionType::SupportedServiceFamilies,
@@ -366,21 +530,28 @@ QKnxNetIpSrp SupportedFamily::create() const
 /*!
     Constructs a builder for a Request DIBs SRP.
 */
-RequestDibs::RequestDibs()
-    : d_ptr(new RequestDibs::RequestDibsPrivate)
+QKnxNetIpSrpProxy::RequestDibs::RequestDibs()
+    : d_ptr(new RequestDibsPrivate)
 {}
 
 /*!
     Destroys the Request DIBs SRP builder.
 */
-RequestDibs::~RequestDibs()
+QKnxNetIpSrpProxy::RequestDibs::~RequestDibs()
 {}
 
-RequestDibs::RequestDibs(const RequestDibs &other)
+/*!
+    Constructs a copy of \a other.
+*/
+QKnxNetIpSrpProxy::RequestDibs::RequestDibs(const RequestDibs &other)
     : d_ptr(other.d_ptr)
 {}
 
-RequestDibs &RequestDibs::operator=(const RequestDibs &other)
+/*!
+    Assigns \a other to this Request DIBs builder and returns a reference.
+*/
+QKnxNetIpSrpProxy::RequestDibs &
+    QKnxNetIpSrpProxy::RequestDibs::operator=(const RequestDibs &other)
 {
     d_ptr = other.d_ptr;
     return *this;
@@ -390,7 +561,8 @@ RequestDibs &RequestDibs::operator=(const RequestDibs &other)
     Sets the requested description types of the KNXnet/IP SRP structure to
     \a types and returns a reference to the SRP builder.
 */
-RequestDibs &RequestDibs::setDescriptionTypes(const QVector<QKnxNetIp::DescriptionType> &types)
+QKnxNetIpSrpProxy::RequestDibs &
+    QKnxNetIpSrpProxy::RequestDibs::setDescriptionTypes(const QVector<QKnxNetIp::DescriptionType> &types)
 {
     d_ptr->m_types = types;
     return *this;
@@ -399,7 +571,7 @@ RequestDibs &RequestDibs::setDescriptionTypes(const QVector<QKnxNetIp::Descripti
 /*!
     Sets the mandatory flag to \a value.
 */
-RequestDibs &RequestDibs::setMandatory(bool value)
+QKnxNetIpSrpProxy::RequestDibs &QKnxNetIpSrpProxy::RequestDibs::setMandatory(bool value)
 {
     d_ptr->m_mandatory = value;
     return *this;
@@ -408,18 +580,24 @@ RequestDibs &RequestDibs::setMandatory(bool value)
 /*!
     Creates a Request Dibs SRP.
 */
-QKnxNetIpSrp RequestDibs::create() const
+QKnxNetIpSrp QKnxNetIpSrpProxy::RequestDibs::create() const
 {
     const auto &types = d_ptr->m_types;
     QKnxByteArray bytes((types.size() % 2) == 0 ? types.size() : types.size() + 1, 0x00);
     for (int i = 0; i < types.size(); ++i)
         bytes.set(i, quint8(types[i]));
 
-    auto header = QKnxNetIpStructHeader<QKnxNetIp::SearchParameterType>
-                  (QKnxNetIp::SearchParameterType::RequestDIBs, bytes.size());
-    header.setMandatory(d_ptr->m_mandatory);
+    return { { QKnxNetIp::SearchParameterType::RequestDIBs, quint16(bytes.size()),
+        d_ptr->m_mandatory }, bytes };
+}
 
-    return QKnxNetIpSrp(header, bytes);
+/*!
+    Returns a builder object to create a KNXnet/IP requested DIBs SRP
+    structure.
+*/
+QKnxNetIpSrpProxy::RequestDibs QKnxNetIpSrpProxy::requestDibsBuilder()
+{
+    return QKnxNetIpSrpProxy::RequestDibs();
 }
 
 QT_END_NAMESPACE

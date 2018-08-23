@@ -274,25 +274,25 @@ QKnxNetIpFrame QKnxNetIpSearchRequestProxy::Builder::create() const
     answers from the different servers directly in a point-to-point manner.
     Typically, it should contain the KNXnet/IP system setup multicast address
     to ensure reception from KNXnet/IP servers that are on a different
-    subnetwork. Additionally, the client may include 0 or more search request
+    subnetwork. Additionally, the client may include \c 0 or more search request
     parameter blocks.
 
     The common way to create a search request is:
 
     \code
-        auto hpai = QKnxNetIpHpaiProxy::builder().create();
-        auto macAddress = QKnxByteArray::fromHex("4CCC6AE40000");
-        QKnxNetIpSrp macSrp = SrpBuilders::MacAddress()
-                               .setMandatory()
-                               .setMac(macAddress)
-                               .create();
-        auto modeSrp = SrpBuilders::ProgrammingMode()
-                       .setMandatory()
+        auto hpai = ... // create HPAI;
+        auto macAddress = ... // fetch and set the MAC address;
+
+        auto macSrp = QKnxNetIpSrpProxy::macAddressBuilder()
+            .setMac(macAddress)
+            .create();
+        auto modeSrp = QKnxNetIpSrpProxy::programmingModeBuilder()
+                       .setMandatory(true)
                        .create();
-        auto srps = { macSrp, modeSrp };
+
         auto netIpFrame = QKnxNetIpSearchRequestProxy::extendedBuilder()
             .setDiscoveryEndpoint(hpai)
-            .setExtendedParameter(srps)
+            .setExtendedParameter({ macSrp, modeSrp })
             .create();
     \endcode
 

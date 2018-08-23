@@ -154,14 +154,14 @@ int main(int argc, char *argv[])
     if (parser.isSet("filterProg")) {
         agent.setDiscoveryMode(agent.discoveryMode()
             | QKnxNetIpServerDiscoveryAgent::DiscoveryMode::CoreV2);
-        agent.setExtendedSearchParameters({ SrpBuilders::ProgrammingMode().create() });
+        agent.setExtendedSearchParameters({ QKnxNetIpSrpProxy::programmingModeBuilder().create() });
     }
 
     if (parser.isSet("filterMAC")) {
         agent.setDiscoveryMode(agent.discoveryMode()
             | QKnxNetIpServerDiscoveryAgent::DiscoveryMode::CoreV2);
         agent.setExtendedSearchParameters(QVector<QKnxNetIpSrp>({
-            SrpBuilders::MacAddress()
+            QKnxNetIpSrpProxy::macAddressBuilder()
                 .setMac(QKnxByteArray::fromHex(parser.value("filterMAC").toLatin1()))
                 .create()
         }) + agent.extendedSearchParameters());
@@ -179,9 +179,8 @@ int main(int argc, char *argv[])
                 | QKnxNetIpServerDiscoveryAgent::DiscoveryMode::CoreV2);
 
             agent.setExtendedSearchParameters(QVector<QKnxNetIpSrp>({
-                SrpBuilders::SupportedFamily()
-                    .setMandatory()
-                    .setServiceInfos({ { QKnxNetIp::ServiceFamily(left), right } })
+                QKnxNetIpSrpProxy::supportedFamilyBuilder()
+                    .setServiceInfo({ QKnxNetIp::ServiceFamily(left), right })
                     .create()
             }) + agent.extendedSearchParameters());
         }

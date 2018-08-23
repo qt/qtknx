@@ -232,6 +232,10 @@ private slots:
         header.setCode(QKnxNetIp::SearchParameterType::SelectByMACAddress);
         QCOMPARE(header.isMandatory(), true);
         QCOMPARE(header.code(), QKnxNetIp::SearchParameterType::SelectByMACAddress);
+
+        header = { QKnxNetIp::SearchParameterType::RequestDIBs, 2, true};
+        QCOMPARE(header.isMandatory(), true);
+        QCOMPARE(header.code(), QKnxNetIp::SearchParameterType::RequestDIBs);
     }
 
     void structHeaderWithMandatoryFlag()

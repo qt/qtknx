@@ -56,6 +56,15 @@ public:
         setDataSize(dataSize);
     }
 
+    template <typename T = CodeType,
+        typename = typename std::enable_if<is_type<T, QKnxNetIp::SearchParameterType>::value>::type>
+    QKnxNetIpStructHeader(CodeType code, quint16 dataSize, bool mandatory)
+    {
+        setCode(code);
+        setDataSize(dataSize);
+        setMandatory(mandatory);
+    }
+
     bool isNull() const
     {
         return bool(size() == 0);
