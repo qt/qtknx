@@ -63,7 +63,7 @@ QT_BEGIN_NAMESPACE
         quint48 seqNumber = proxy.sequenceNumber();
         QKnxByteArray number = proxy.serialNumber();
         quint16 tag = proxy.tag();
-        auto frame = proxy.encapsulatedFrame();
+        QKnxByteArray frame = proxy.encapsulatedFrame();
         QKnxByteArray code = proxy.messageAuthenticationCode();
     \endcode
 
@@ -145,12 +145,12 @@ quint16 QKnxNetIpSecureWrapperProxy::messageTag() const
 }
 
 /*!
-    Returns the encapsulated frame from the generic KNXnet/IP secure wrapper
-    frame.
+    Returns the encrypted encapsulated frame from the generic KNXnet/IP secure
+    wrapper frame.
 */
-QKnxNetIpFrame QKnxNetIpSecureWrapperProxy::encapsulatedFrame() const
+QKnxByteArray QKnxNetIpSecureWrapperProxy::encapsulatedFrame() const
 {
-    return QKnxNetIpFrame::fromBytes(m_frame.constData(), 18);
+    return m_frame.constData().mid(18, m_frame.dataSize() - 16);
 }
 
 /*!
@@ -159,10 +159,7 @@ QKnxNetIpFrame QKnxNetIpSecureWrapperProxy::encapsulatedFrame() const
 */
 QKnxByteArray QKnxNetIpSecureWrapperProxy::messageAuthenticationCode() const
 {
-    const auto header = QKnxNetIpFrameHeader::fromBytes(m_frame.constData(), 18);
-    if (!header.isValid())
-        return {};
-    return m_frame.constData().mid(18 + header.totalSize());
+    return m_frame.constData().mid(m_frame.dataSize() - 16);
 }
 
 /*!
@@ -189,11 +186,12 @@ QKnxNetIpSecureWrapperProxy::Builder QKnxNetIpSecureWrapperProxy::builder()
 
     \code
         auto auth = ... // create the full 128 bit CCM-MAC
+        auto frame = ... // create encrypted frame
 
         auto netIpFrame = QKnxNetIpSecureWrapperProxy::builder()
             .setSequenceNumber(15021976)
             .setSerialNumber(QKnxByteArray::fromHex("0123456789AB"))
-            .setEncapsulatedFrame(
+            .setEncapsulatedFrame(frame)
             .setMessageAuthenticationCode(auth)
             .create();
     \endcode
@@ -264,14 +262,14 @@ QKnxNetIpSecureWrapperProxy::Builder &
 }
 
 /*!
-    Sets the encapsulated KNXnet/IP frame to \a frame and returns a reference
-    to the builder.
+    Sets the encapsulated and already encrypted KNXnet/IP frame to \a frame and
+    returns a reference to the builder.
 
     \note A secure wrapper frame cannot be encapsulated in another secure
     wrapper frame and will result in creating an invalid frame.
 */
 QKnxNetIpSecureWrapperProxy::Builder &
-    QKnxNetIpSecureWrapperProxy::Builder::setEncapsulatedFrame(const QKnxNetIpFrame &frame)
+    QKnxNetIpSecureWrapperProxy::Builder::setEncapsulatedFrame(const QKnxByteArray &frame)
 {
     m_frame = frame;
     return *this;
@@ -302,12 +300,11 @@ QKnxNetIpFrame QKnxNetIpSecureWrapperProxy::Builder::create() const
     if (m_seqNumber > Q_UINT48_MAX || m_serial.size() != 6 ||  m_authCode.size() != 16)
         return { QKnxNetIp::ServiceType::SecureWrapper };
 
-    if (!m_frame.isValid() || m_frame.serviceType() == QKnxNetIp::ServiceType::SecureWrapper)
-        return { QKnxNetIp::ServiceType::SecureWrapper };
+    // TODO: introspect the frame and reject secure wrapper frames
 
     return { QKnxNetIp::ServiceType::SecureWrapper, QKnxUtils::QUint16::bytes(m_sessionId)
         + QKnxUtils::QUint48::bytes(m_seqNumber) + m_serial + QKnxUtils::QUint16::bytes(m_tag)
-        + m_frame.bytes() + m_authCode };
+        + m_frame + m_authCode };
 }
 
 QT_END_NAMESPACE

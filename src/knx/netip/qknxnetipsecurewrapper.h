@@ -50,7 +50,7 @@ public:
     quint48 sequenceNumber() const;
     QKnxByteArray serialNumber() const;
     quint16 messageTag() const;
-    QKnxNetIpFrame encapsulatedFrame() const;
+    QKnxByteArray encapsulatedFrame() const;
     QKnxByteArray messageAuthenticationCode() const;
 
     class Q_KNX_EXPORT Builder final
@@ -60,7 +60,7 @@ public:
         Builder &setSequenceNumber(quint48 seqNumber);
         Builder &setSerialNumber(const QKnxByteArray &serialNumber);
         Builder &setMessageTag(quint16 tag);
-        Builder &setEncapsulatedFrame(const QKnxNetIpFrame &frame);
+        Builder &setEncapsulatedFrame(const QKnxByteArray &frame);
         Builder &setMessageAuthenticationCode(const QKnxByteArray &data);
 
         QKnxNetIpFrame create() const;
@@ -69,7 +69,7 @@ public:
         quint16 m_sessionId { 0 };
         quint64 m_seqNumber { Q_UINT48_MAX + 1 };
         QKnxByteArray m_serial;
-        QKnxNetIpFrame m_frame;
+        QKnxByteArray m_frame;
         quint16 m_tag { 0 };
         QKnxByteArray m_authCode;
     };
