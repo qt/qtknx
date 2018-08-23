@@ -39,6 +39,7 @@ QT_BEGIN_NAMESPACE
 */
 
 /*!
+    \since 5.12
     \enum QKnx::EmiType
 
     This enum describes the various external message interface (EMI) types
@@ -70,6 +71,7 @@ QT_BEGIN_NAMESPACE
 */
 
 /*!
+    \since 5.12
     \enum QKnx::MediumStatus
 
     This enum type holds the medium status if the KNXnet/IP router or server
@@ -87,6 +89,7 @@ QT_BEGIN_NAMESPACE
 */
 
 /*!
+    \since 5.12
     \enum QKnx::InterfaceFeature
 
     This enumeration contains the values to identify an interface feature
@@ -116,6 +119,7 @@ QT_BEGIN_NAMESPACE
 */
 
 /*!
+    \since 5.12
     \fn QKnx::isInterfaceFeature(QKnx::InterfaceFeature feature)
 
     Returns \c true if the specified \a feature is a part of the
@@ -140,6 +144,7 @@ bool QKnx::isInterfaceFeature(QKnx::InterfaceFeature feature)
 }
 
 /*!
+    \since 5.12
     \enum QKnx::ReturnCode
 
     This enumeration contains the generic return codes used in the KNX

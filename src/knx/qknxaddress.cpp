@@ -221,6 +221,8 @@ QKnxAddress QKnxAddress::createIndividual(quint8 area, quint16 line, quint8 sequ
 }
 
 /*!
+    \since 5.12
+
     Depending on the type of the address, this function returns either the area
     component or the main component of the address.
 */
@@ -232,6 +234,8 @@ quint8 QKnxAddress::main() const
 }
 
 /*!
+    \since 5.12
+
     Depending on the type of the address, this function returns either the line
     component or the middle component of the address.
 */
@@ -245,6 +249,8 @@ quint8 QKnxAddress::middle() const
 }
 
 /*!
+    \since 5.12
+
     Depending on the type and the given \a notation, this function returns
     either the device component or the sub component of the address.
 

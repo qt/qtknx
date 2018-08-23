@@ -986,6 +986,8 @@ void QKnxNetIpEndpointConnection::connectToHost(const QHostAddress &address, qui
 }
 
 /*!
+    \since 5.12
+
     Establishes a connection to the host with \a address, \a port and \a proto.
 */
 void QKnxNetIpEndpointConnection::connectToHost(const QHostAddress &address, quint16 port,

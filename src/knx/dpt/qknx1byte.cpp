@@ -1356,6 +1356,7 @@ QKnxActuatorConnectType::Type QKnxActuatorConnectType::type() const
     \inherits QKnx1Byte
     \inmodule QtKnx
     \ingroup qtknx-datapoint-types
+    \since 5.12
 
     \brief The QKnxCloudCover class is a datapoint type for storing the
     scale of the sky obscured by clouds when observed from a particular

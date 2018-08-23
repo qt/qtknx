@@ -148,6 +148,8 @@ QVector<QKnxServiceInfo> QKnxNetIpServerInfo::supportedServices() const
 }
 
 /*!
+    \since 5.12
+
     Returns the available tunneling slots of the discovered KNXnet/IP server
     if it supports providing this kind of information; otherwise returns an
     empty vector.
@@ -160,6 +162,8 @@ QVector<QKnxNetIpTunnelingSlotInfo> QKnxNetIpServerInfo::tunnelingSlotInfos() co
 }
 
 /*!
+    \since 5.12
+
     Returns the medium status of the discovered KNXnet/IP server if it supports
     extended device information; otherwise returns \l QKnx::Unknown.
 */
@@ -172,6 +176,8 @@ QKnx::MediumStatus QKnxNetIpServerInfo::mediumStatus() const
 }
 
 /*!
+    \since 5.12
+
     Returns the maximum local application protocol data unit (APDU) length of
     the discovered KNXnet/IP server if it supports extended device information;
     otherwise returns a \l {default-constructed value} which can be \c 0.
@@ -182,6 +188,8 @@ quint16 QKnxNetIpServerInfo::maximumLocalApduLength() const
 }
 
 /*!
+    \since 5.12
+
     Returns the mask version (device descriptor 0) of the discovered
     KNXnet/IP server if it supports extended device information; otherwise
     returns a \l {default-constructed value} which can be \c 0.
@@ -222,6 +230,8 @@ QKnxNetIpDib QKnxNetIpServerInfo::services() const
 }
 
 /*!
+    \since 5.12
+
     Returns tunneling information if available on a KNXnet/IP server.
 
     \sa QKnxNetIpTunnelingInfoDibProxy
@@ -232,6 +242,8 @@ QKnxNetIpDib QKnxNetIpServerInfo::tunnelingInfo() const
 }
 
 /*!
+    \since 5.12
+
     Returns extended hardware information about the KNXnet/IP server hardware.
 
     \sa QKnxNetIpExtendedDeviceDibProxy

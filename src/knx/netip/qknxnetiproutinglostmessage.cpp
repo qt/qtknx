@@ -37,6 +37,7 @@ QT_BEGIN_NAMESPACE
 
     \inmodule QtKnx
     \ingroup qtknx-netip
+    \ingroup qtknx-routing
 
     \brief The QKnxNetIpRoutingLostMessageProxy class provides the means to read
     a routing-lost message from the generic \l QKnxNetIpFrame class and to

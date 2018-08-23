@@ -149,6 +149,8 @@ QKnxNetIpDib QKnxNetIpSearchResponseProxy::supportedFamilies() const
 }
 
 /*!
+    \since 5.12
+
     Returns the vector of optional KNXnet/IP server device information block
     (DIB) structures of the extended search response frame. The function
     therefor will remove the mandatory device hardware and service family DIB.
@@ -170,6 +172,8 @@ QVector<QKnxNetIpDib> QKnxNetIpSearchResponseProxy::optionalDibs() const
 }
 
 /*!
+    \since 5.12
+
     Returns the vector of KNXnet/IP server device information blocks (DIBs)
     structure of the extended search response frame. The vector can be empty
     if no such structures are present or in case of an error while extracting
@@ -215,6 +219,8 @@ bool QKnxNetIpSearchResponseProxy::isValid() const
 }
 
 /*!
+    \since 5.12
+
     Returns \c true if the frame service type is an extended search response,
     otherwise returns \c false.
 */
@@ -232,6 +238,8 @@ QKnxNetIpSearchResponseProxy::Builder QKnxNetIpSearchResponseProxy::builder()
 }
 
 /*!
+    \since 5.12
+
     Returns a builder object to create a KNXnet/IP extended search response
     frame.
 */
@@ -345,8 +353,8 @@ QKnxNetIpFrame QKnxNetIpSearchResponseProxy::Builder::create() const
 /*!
     \class QKnxNetIpSearchResponseProxy::ExtendedBuilder
 
+    \since 5.12
     \inmodule QtKnx
-    \ingroup qtknx-netip
     \inheaderfile QKnxNetIpSearchResponseProxy
 
     \brief The QKnxNetIpSearchResponseProxy::ExtendedBuilder class provides

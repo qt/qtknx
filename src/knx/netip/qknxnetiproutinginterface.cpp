@@ -48,6 +48,7 @@ QT_BEGIN_NAMESPACE
     \inmodule QtKnx
     \ingroup qtknx-routing
     \ingroup qtknx-netip
+    \since 5.12
 
     \brief The QKnxNetIpRoutingInterface class enables sending and receiving
     routing KNXnet/IP packets to and from other KNXnet/IP routers.
@@ -146,12 +147,6 @@ QT_BEGIN_NAMESPACE
     received layer service data unit (LSDU). An LSDU is a type of frame used by
     the L_Data service belonging to the data link layer.
 
-    \value RouteUnmodified
-        The LSDU shall be routed from one subnetwork (on the primary side or the
-        secondary side) to the second subnetwork side (on the secondary side or
-        the primary side) without modification of the hop count value. The LSDU
-        shall only be routed to the second subnetwork after it has been
-        positively acknowledged on the first subnetwork.
     \value RouteDecremented
         The LSDU shall be routed from one subnetwork (on the primary
         side or the secondary side) to the second subnetwork side (on the
@@ -515,8 +510,8 @@ void QKnxNetIpRoutingInterface::sendRoutingLostMessage(const QKnxNetIpFrame &fra
 }
 
 /*!
-    Multicasts the routing system broadcast \a frame through the network interface
-    associated with the QKnxNetIpRoutingInterface.
+    Multicasts the routing system broadcast \a linkFrame through the network
+    interface associated with the QKnxNetIpRoutingInterface.
 */
 void QKnxNetIpRoutingInterface::sendRoutingSystemBroadcast(const QKnxLinkLayerFrame &linkFrame)
 {

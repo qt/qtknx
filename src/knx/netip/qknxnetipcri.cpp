@@ -115,6 +115,8 @@ bool QKnxNetIpCriProxy::isValid() const
 }
 
 /*!
+    \since 5.12
+
     Returns \c true if this is an extended connection request information (CRI)
     frame; otherwise returns \c false.
 
@@ -155,6 +157,8 @@ QKnxNetIp::TunnelLayer QKnxNetIpCriProxy::tunnelLayer() const
 }
 
 /*!
+    \since 5.12
+
     Returns the individual address of the extended connection request information
     structure if the object that was passed during construction was valid and an
     extended structure; otherwise returns \l QKnx::NetIp::Unknown.
@@ -243,6 +247,8 @@ QKnxNetIpCriProxy::Builder &
 }
 
 /*!
+    \since 5.12
+
     Sets the individual address of the extended connection request information
     to \a address and returns a reference to the builder.
 

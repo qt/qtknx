@@ -130,9 +130,8 @@ bool QKnxOpenSsl::ensureLibraryLoaded()
 
 
 /*!
-    \class QKnxCurve25519PublicKey
-
     \inmodule QtKnx
+    \class QKnxCurve25519PublicKey
 
     \since 5.12
     \ingroup qtknx-general-classes
@@ -141,7 +140,9 @@ bool QKnxOpenSsl::ensureLibraryLoaded()
     public key to be used with the elliptic curve Diffie-Hellman (ECDH) key
     agreement scheme.
 
-    TODO: Add more documentation
+    This class is part of the Qt KNX module and currently available as a
+    Technology Preview, and therefore the API and functionality provided
+    by the module may be subject to change at any time without prior notice.
 */
 
 /*!
@@ -269,7 +270,9 @@ QKnxCurve25519PublicKey &QKnxCurve25519PublicKey::operator=(const QKnxCurve25519
     private key to be used with the elliptic curve Diffie-Hellman (ECDH) key
     agreement scheme.
 
-    TODO: Add more documentation
+    This class is part of the Qt KNX module and currently available as a
+    Technology Preview, and therefore the API and functionality provided
+    by the module may be subject to change at any time without prior notice.
 */
 
 /*!
@@ -375,15 +378,22 @@ QKnxCurve25519PrivateKey &QKnxCurve25519PrivateKey::operator=(const QKnxCurve255
 /*!
     \class QKnxCryptographicEngine
 
-    \inmodule QtKnx
-
     \since 5.12
+    \inmodule QtKnx
     \ingroup qtknx-general-classes
 
     \brief The QKnxCryptographicEngine class provides the means to handle all
     KNXnet/IP security related tasks.
 
-    TODO: Add more documentation
+    This class is part of the Qt KNX module and currently available as a
+    Technology Preview, and therefore the API and functionality provided
+    by the module may be subject to change at any time without prior notice.
+*/
+
+/*!
+    \internal
+    \since 5.12
+    \enum QKnxCryptographicEngine::Mode
 */
 
 /*!
@@ -438,6 +448,9 @@ QKnxByteArray QKnxCryptographicEngine::sharedSecret(const QKnxCurve25519PublicKe
     return ba;
 }
 
+/*!
+    Returns the session key calculated from the given secret \a sharedSecret.
+*/
 QKnxByteArray QKnxCryptographicEngine::sessionKey(const QKnxByteArray &sharedSecret)
 {
     if (sharedSecret.isEmpty())
@@ -447,18 +460,39 @@ QKnxByteArray QKnxCryptographicEngine::sessionKey(const QKnxByteArray &sharedSec
         QCryptographicHash::Sha256)).mid(0, 16);
 }
 
+/*!
+    Returns the session key calculated from the given peer public key \a pub
+    and the private key \a priv.
+*/
 QKnxByteArray QKnxCryptographicEngine::sessionKey(const QKnxCurve25519PublicKey &pub,
-                                                  const QKnxCurve25519PrivateKey & priv)
+                                                  const QKnxCurve25519PrivateKey &priv)
 {
     return sessionKey(sharedSecret(pub, priv));
 }
 
+/*!
+    Returns the password hash derived from the user chosen password \a password.
+
+    \note The salt used in the Password-Based Key Derivation Function (PBKDF2)
+    function is set to \e {user-password.1.secure.ip.knx.org}.
+
+    \sa pkcs5Pbkdf2HmacSha256()
+*/
 QKnxByteArray QKnxCryptographicEngine::userPasswordHash(const QByteArray &password)
 {
     return pkcs5Pbkdf2HmacSha256(password,
         QKnxByteArray("user-password.1.secure.ip.knx.org", 33), 0x10000, 16);
 }
 
+/*!
+    Returns the device authentication code hash derived from the user chosen
+    password \a password.
+
+    \note The salt used in the Password-Based Key Derivation Function (PBKDF2)
+    function is set to \e {device-authentication-code.1.secure.ip.knx.org}.
+
+    \sa pkcs5Pbkdf2HmacSha256()
+*/
 QKnxByteArray QKnxCryptographicEngine::deviceAuthenticationCodeHash(const QByteArray &password)
 {
     return pkcs5Pbkdf2HmacSha256(password,
@@ -508,6 +542,9 @@ namespace QKnxPrivate
     }
 }
 
+/*!
+    \internal
+*/
 QKnxByteArray QKnxCryptographicEngine::messageAuthenticationCode(QKnxCryptographicEngine::Mode mode,
     quint16 secureId, const QKnxNetIpFrameHeader &frameHdr, const QKnxCurve25519PublicKey &publicKey,
     const QKnxCurve25519PublicKey &peerKey, const QKnxByteArray &deviceAuthenticationCode)
@@ -590,6 +627,11 @@ QKnxByteArray QKnxCryptographicEngine::messageAuthenticationCode(QKnxCryptograph
     return QKnxPrivate::xor(S0, Y3);
 }
 
+/*!
+    Returns the hash code derived from the user chosen password \a password,
+    with the given \a salt and \a iterations.
+    The value of \a derivedKeyLength should be in the range \c 0 to \c 32.
+*/
 QKnxByteArray QKnxCryptographicEngine::pkcs5Pbkdf2HmacSha256(const QByteArray &password,
     const QKnxByteArray &salt, qint32 iterations, quint8 derivedKeyLength)
 {
