@@ -570,6 +570,17 @@ DEFINEFUNC(void, PKCS12_free, PKCS12 *pkcs12, pkcs12, return, DUMMYARG)
 
     DEFINEFUNC(int, EVP_PKEY_keygen_init, EVP_PKEY_CTX *ctx, ctx, return 0, return)
     DEFINEFUNC2(int, EVP_PKEY_keygen, EVP_PKEY_CTX *ctx, ctx, EVP_PKEY **ppkey, ppkey, return 0, return)
+
+    DEFINEFUNC(int, EVP_CIPHER_CTX_key_length, const EVP_CIPHER_CTX *ctx, ctx, return 0, return)
+    DEFINEFUNC(int, EVP_CIPHER_CTX_iv_length, const EVP_CIPHER_CTX *ctx, ctx, return 0, return)
+    DEFINEFUNC3(int, EVP_CipherFinal_ex, EVP_CIPHER_CTX *ctx, ctx, unsigned char *outm, outm, int *outl, outl, return 0, return)
+
+    DEFINEFUNC(const EVP_CIPHER *, EVP_aes_128_cbc, DUMMYARG, DUMMYARG, return nullptr, return)
+    DEFINEFUNC2(int, EVP_CIPHER_CTX_set_padding, EVP_CIPHER_CTX *x, x, int padding, padding, return 0, return)
+
+    DEFINEFUNC8(int, PKCS5_PBKDF2_HMAC, const char *pass, pass, int passlen, passlen, const unsigned char *salt, salt, \
+        int saltlen, saltlen, int iter, iter, const EVP_MD *digest, digest, int keylen, keylen, unsigned char *out, out, return 0, return)
+    DEFINEFUNC(const EVP_MD *, EVP_sha256, DUMMYARG, DUMMYARG, return nullptr, return)
 #endif
 
 #define RESOLVEFUNC(func) \
@@ -1283,6 +1294,16 @@ bool q_resolveOpenSslSymbols()
 
     RESOLVEFUNC(EVP_PKEY_keygen_init)
     RESOLVEFUNC(EVP_PKEY_keygen)
+
+    RESOLVEFUNC(EVP_CIPHER_CTX_key_length)
+    RESOLVEFUNC(EVP_CIPHER_CTX_iv_length)
+    RESOLVEFUNC(EVP_CipherFinal_ex)
+
+    RESOLVEFUNC(EVP_aes_128_cbc)
+    RESOLVEFUNC(EVP_CIPHER_CTX_set_padding)
+
+    RESOLVEFUNC(PKCS5_PBKDF2_HMAC)
+    RESOLVEFUNC(EVP_sha256)
 #endif
 
     symbolsResolved = true;

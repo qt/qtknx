@@ -196,6 +196,18 @@ QT_BEGIN_NAMESPACE
         funcret _q_##func(a, b, c, d, e, f, g); \
     }
 
+// ret func(arg1, arg2, arg3, arg4, arg6, arg7, arg8)
+#  define DEFINEFUNC8(ret, func, arg1, a, arg2, b, arg3, c, arg4, d, arg5, e, arg6, f, arg7, g, arg8, h, err, funcret) \
+    typedef ret (*_q_PTR_##func)(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8);   \
+    static _q_PTR_##func _q_##func = 0;                                                   \
+    ret q_##func(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8) { \
+        if (Q_UNLIKELY(!_q_##func)) { \
+            qsslSocketUnresolvedSymbolWarning(#func); \
+            err; \
+        }   \
+        funcret _q_##func(a, b, c, d, e, f, g, h); \
+    }
+
 // ret func(arg1, arg2, arg3, arg4, arg6, arg7, arg8, arg9)
 #  define DEFINEFUNC9(ret, func, arg1, a, arg2, b, arg3, c, arg4, d, arg5, e, arg6, f, arg7, g, arg8, h, arg9, i, err, funcret) \
     typedef ret (*_q_PTR_##func)(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9);   \
@@ -573,6 +585,17 @@ void q_SSL_get0_alpn_selected(const SSL *ssl, const unsigned char **data,
 
     int q_EVP_PKEY_keygen_init(EVP_PKEY_CTX *ctx);
     int q_EVP_PKEY_keygen(EVP_PKEY_CTX *ctx, EVP_PKEY **ppkey);
+
+    int q_EVP_CIPHER_CTX_key_length(const EVP_CIPHER_CTX *ctx);
+    int q_EVP_CIPHER_CTX_iv_length(const EVP_CIPHER_CTX *ctx);
+    int q_EVP_CipherFinal_ex(EVP_CIPHER_CTX *ctx, unsigned char *outm, int *outl);
+
+    const EVP_CIPHER *q_EVP_aes_128_cbc(void);
+    int q_EVP_CIPHER_CTX_set_padding(EVP_CIPHER_CTX *x, int padding);
+
+    int q_PKCS5_PBKDF2_HMAC(const char *pass, int passlen, const unsigned char *salt, int saltlen,
+        int iter, const EVP_MD *digest, int keylen, unsigned char *out);
+    const EVP_MD *q_EVP_sha256(void);
 #endif
 
 // Helper function

@@ -648,6 +648,7 @@ bool QKnxNetIp::isCapability(Capability capability)
 
 /*!
     \enum QKnx::NetIp::SearchParameterType
+    \since 5.12
 
     This enum is used in an extended search request to filter out devices in the
     KNXnet/IP server discovery phase.
@@ -676,6 +677,8 @@ bool QKnxNetIp::isCapability(Capability capability)
 */
 
 /*!
+    \since 5.12
+
     Returns \c true if the specified \a type is a part of the \l
     SearchParameterType enumeration; otherwise returns \c false.
 */
@@ -698,6 +701,7 @@ bool QKnx::NetIp::isStructType(QKnx::NetIp::SearchParameterType type)
 
 /*!
     \enum QKnx::NetIp::SecureSessionStatus
+    \since 5.12
 
     This enum is used in a frame sent at any stage of the secure session
     handshake to indicate an error condition or status information.

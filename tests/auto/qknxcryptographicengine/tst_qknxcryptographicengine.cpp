@@ -27,7 +27,9 @@
 ******************************************************************************/
 
 #include <QtCore/qdebug.h>
+#include <QtCore/qloggingcategory.h>
 #include <QtKnx/qknxcurve25519.h>
+#include <QtKnx/qknxnetipsessionresponse.h>
 #include <QtKnx/private/qknxcryptographicdata_p.h>
 #include <QtTest/qtest.h>
 
@@ -46,6 +48,11 @@ class tst_qknxcryptographicengine : public QObject
     Q_OBJECT
 
 private slots:
+    void initTestCase()
+    {
+        QLoggingCategory::setFilterRules("qt.network.ssl=false");
+    }
+
     void testPublicKey()
     {
         QKnxCurve25519PublicKey key;
@@ -140,6 +147,52 @@ private slots:
         QCOMPARE(secret, QKnxByteArray::fromHex("d801525217618f0da90a4ff22148aee0"
             "ff4c19b430e8081223ffe99c81a98b05"));
     }
+
+    void testSessionKey()
+    {
+        auto sharedSecret = QKnxByteArray::fromHex("d801525217618f0da90a4ff22148aee0"
+            "ff4c19b430e8081223ffe99c81a98b05");
+        auto result = QKnxCryptographicEngine::sessionKey(sharedSecret);
+        QCOMPARE(result, QKnxByteArray::fromHex("289426c2912535ba98279a4d1843c487"));
+    }
+
+    void PKCS5_PBKDF2_HMAC()
+    {
+        // session authenticate
+        auto result = QKnxCryptographicEngine::userPasswordHash({ "secret" });
+        QCOMPARE(result, QKnxByteArray::fromHex("03fcedb66660251ec81a1a716901696a"));
+
+        // session response
+        result = QKnxCryptographicEngine::deviceAuthenticationCodeHash({ "trustme" });
+        QCOMPARE(result, QKnxByteArray::fromHex("e158e4012047bd6cc41aafbc5c04c1fc"));
+    }
+
+    void testMessageAuthenticationCode()
+    {
+        if (QKnxOpenSsl::sslLibraryVersionNumber() < 0x1010000fL)
+            return;
+
+        auto clientBytes = QKnxByteArray::fromHex("0aa227b4fd7a32319ba9960ac036ce0e"
+            "5c4507b5ae55161f1078b1dcfb3cb631");
+        auto client = QKnxCurve25519PublicKey::fromBytes(clientBytes);
+
+        auto serverBytes = QKnxByteArray::fromHex("bdf099909923143ef0a5de0b3be3687b"
+            "c5bd3cf5f9e6f901699cd870ec1ff824");
+        auto server = QKnxCurve25519PublicKey::fromBytes(serverBytes);
+
+        auto authCode = QKnxCryptographicEngine::messageAuthenticationCode(
+            QKnxCryptographicEngine::Mode::Encrypt, 0x0001,
+            QKnxNetIpFrameHeader { QKnxNetIp::ServiceType::SessionResponse, 0x32 },
+            client,
+            server,
+            QKnxByteArray::fromHex("e158e4012047bd6cc41aafbc5c04c1fc")
+        );
+
+        QCOMPARE(authCode, QKnxByteArray::fromHex("a922505aaa436163570bd5494c2df2a3"));
+    }
+
+    void cleanupTestCase()
+    {}
 };
 
 

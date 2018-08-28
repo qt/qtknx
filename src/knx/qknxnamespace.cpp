@@ -39,6 +39,26 @@ QT_BEGIN_NAMESPACE
 */
 
 /*!
+    \since 5.12
+    \enum QKnx::EmiType
+
+    This enum describes the various external message interface (EMI) types
+    supported by KNX bus.
+
+    \value Unknown
+            The supported EMI type is unknown.
+    \value EMI1
+            The supported EMI is type 1 used by bus coupler units (BCU) model
+            type 1.
+    \value EMI2
+            The supported EMI is type 2 used by bus coupler units (BCU) model
+            type 2.
+    \value cEMI
+            The supported EMI type is known as \e {common EMI} and a generic
+            structure for medium independent KNX messages.
+*/
+
+/*!
     \enum QKnx::MediumType
 
     This enum describes the various medium types supported by KNX bus.
@@ -51,6 +71,7 @@ QT_BEGIN_NAMESPACE
 */
 
 /*!
+    \since 5.12
     \enum QKnx::MediumStatus
 
     This enum type holds the medium status if the KNXnet/IP router or server
@@ -68,6 +89,7 @@ QT_BEGIN_NAMESPACE
 */
 
 /*!
+    \since 5.12
     \enum QKnx::InterfaceFeature
 
     This enumeration contains the values to identify an interface feature
@@ -97,6 +119,7 @@ QT_BEGIN_NAMESPACE
 */
 
 /*!
+    \since 5.12
     \fn QKnx::isInterfaceFeature(QKnx::InterfaceFeature feature)
 
     Returns \c true if the specified \a feature is a part of the
@@ -121,6 +144,7 @@ bool QKnx::isInterfaceFeature(QKnx::InterfaceFeature feature)
 }
 
 /*!
+    \since 5.12
     \enum QKnx::ReturnCode
 
     This enumeration contains the generic return codes used in the KNX

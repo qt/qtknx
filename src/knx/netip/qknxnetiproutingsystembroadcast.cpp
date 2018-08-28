@@ -41,6 +41,8 @@ QT_BEGIN_NAMESPACE
 
     \inmodule QtKnx
     \ingroup qtknx-netip
+    \ingroup qtknx-routing
+    \since 5.12
 
     \brief The QKnxNetIpRoutingSystemBroadcastProxy class provides the means
     to introspect a generic routing system broadcast \l QKnxNetIpFrame and to

@@ -35,6 +35,7 @@ QT_BEGIN_NAMESPACE
 /*!
     \class QKnxNetIpTunnelingFeatureResponseProxy
 
+    \since 5.12
     \inmodule QtKnx
     \ingroup qtknx-netip
     \ingroup qtknx-tunneling

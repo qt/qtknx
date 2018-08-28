@@ -34,6 +34,7 @@ QT_BEGIN_NAMESPACE
 /*!
     \class QKnxNetIpSessionRequestProxy
 
+    \since 5.12
     \inmodule QtKnx
     \ingroup qtknx-netip
 

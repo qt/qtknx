@@ -39,6 +39,16 @@ namespace QKnx
 {
     Q_KNX_EXPORT Q_NAMESPACE
 
+    enum class EmiType : quint8
+    {
+        Unknown,
+        EMI1 = 0x01,
+        EMI2 = 0x02,
+        cEMI = 0x04
+    };
+    Q_ENUM_NS(EmiType)
+    Q_DECLARE_FLAGS(EmiTypes, EmiType)
+
     enum class MediumType : quint8
     {
         Unknown = 0x00,
@@ -94,6 +104,9 @@ namespace QKnx
     };
     Q_ENUM_NS(ReturnCode)
 }
+Q_DECLARE_OPERATORS_FOR_FLAGS(QKnx::EmiTypes)
+
+Q_DECLARE_TYPEINFO(QKnx::EmiType, Q_PRIMITIVE_TYPE);
 Q_DECLARE_TYPEINFO(QKnx::MediumType, Q_PRIMITIVE_TYPE);
 Q_DECLARE_TYPEINFO(QKnx::InterfaceFeature, Q_PRIMITIVE_TYPE);
 Q_DECLARE_TYPEINFO(QKnx::ReturnCode, Q_PRIMITIVE_TYPE);

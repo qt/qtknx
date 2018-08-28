@@ -37,6 +37,7 @@ QT_BEGIN_NAMESPACE
     \inmodule QtKnx
     \class QKnxSecuredServiceInfo
 
+    \since 5.12
     \ingroup qtknx-netip
 
     \brief The QKnxSecuredServiceInfo class contains the supported service
@@ -63,9 +64,10 @@ QT_BEGIN_NAMESPACE
 */
 
 /*!
+    \inmodule QtKnx
     \class QKnxNetIpSecuredServiceFamiliesDibProxy
 
-    \inmodule QtKnx
+    \since 5.12
     \ingroup qtknx-netip
 
     \brief The QKnxNetIpSecuredServiceFamiliesDibProxy class provides the

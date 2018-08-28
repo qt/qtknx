@@ -42,7 +42,9 @@ using namespace SrpBuilders;
 /*!
     \namespace SrpBuilders
 
+    \since 5.12
     \inmodule QtKnx
+
     \brief Contains various builders for creating the search request parameters
     (SRP) included in an extended search request.
 
@@ -66,8 +68,9 @@ using namespace SrpBuilders;
 
 /*!
     \class SrpBuilders::ProgrammingMode
+
+    \since 5.12
     \inmodule QtKnx
-    \ingroup qtknx-netip
 
     \brief The SrpBuilders::ProgrammingMode class provides the means to
     create the \e {Select By Programming Mode} SRP for the extended search
@@ -142,8 +145,9 @@ QKnxNetIpSrp ProgrammingMode::create() const
 
 /*!
     \class SrpBuilders::MacAddress
+
+    \since 5.12
     \inmodule QtKnx
-    \ingroup qtknx-netip
 
     \brief The SrpBuilders::MacAddress class provides the means to
     create the \e {Select By MAC Address} SRP for the extended search
@@ -230,8 +234,9 @@ QKnxNetIpSrp MacAddress::create() const
 
 /*!
     \class SrpBuilders::SupportedFamily
+
+    \since 5.12
     \inmodule QtKnx
-    \ingroup qtknx-netip
 
     \brief The SrpBuilders::SupportedFamily class provides the means to
     create a \e {Select By Service} SRP for an extended search request.
@@ -325,8 +330,9 @@ QKnxNetIpSrp SupportedFamily::create() const
 
 /*!
     \class SrpBuilders::RequestDibs
+
+    \since 5.12
     \inmodule QtKnx
-    \ingroup qtknx-netip
 
     \brief The SrpBuilders::RequestDibs class provides the means to
     create the \e {Request DIBs} SRP for the extended search request.

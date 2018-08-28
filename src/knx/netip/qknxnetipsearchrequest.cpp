@@ -128,6 +128,8 @@ bool QKnxNetIpSearchRequestProxy::isValid() const
 }
 
 /*!
+    \since 5.12
+
     Returns \c true if the frame service type is search request extended,
     otherwise returns \c false.
 */
@@ -145,6 +147,8 @@ QKnxNetIpHpai QKnxNetIpSearchRequestProxy::discoveryEndpoint() const
 }
 
 /*!
+    \since 5.12
+
     Returns a vector of extended search request parameter (SRP) structures.
     The vector can be empty if no such structures are present or in case of
     an error while extracting the SRPs.
@@ -179,6 +183,8 @@ QKnxNetIpSearchRequestProxy::Builder QKnxNetIpSearchRequestProxy::builder()
 }
 
 /*!
+    \since 5.12
+
     Returns a builder object to create a KNXnet/IP extended search request frame.
 */
 QKnxNetIpSearchRequestProxy::ExtendedBuilder QKnxNetIpSearchRequestProxy::extendedBuilder()
@@ -255,6 +261,9 @@ QKnxNetIpFrame QKnxNetIpSearchRequestProxy::Builder::create() const
     \class QKnxNetIpSearchRequestProxy::ExtendedBuilder
 
     \inmodule QtKnx
+    \since 5.12
+    \inheaderfile QKnxNetIpSearchRequestProxy
+
     \brief The QKnxNetIpSearchRequestProxy::ExtendedBuilder class provides
     the means to create a KNXnet/IP extended search request.
 

@@ -104,7 +104,10 @@ QT_BEGIN_NAMESPACE
 
 /*!
     \class QKnxNetIpSrp
+
+    \since 5.12
     \inmodule QtKnx
+    \ingroup qtknx-netip
 
     \brief The QKnxNetIpSrp class stores an extended search request parameter
     (SRP).
@@ -304,6 +307,7 @@ QDebug operator<<(QDebug debug, const QKnxNetIpStruct<QKnxNetIp::DescriptionType
 }
 
 /*!
+    \since 5.12
     \relates QKnxNetIpStruct
 
     Writes the KNXnet/IP extended search parameter request \a srp to the

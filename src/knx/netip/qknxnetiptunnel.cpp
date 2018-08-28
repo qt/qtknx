@@ -79,6 +79,7 @@ QT_BEGIN_NAMESPACE
 */
 
 /*!
+    \since 5.12
     \fn void QKnxNetIpTunnel::tunnelingFeatureInfoReceived(QKnx::InterfaceFeature feature, QKnxByteArray value)
 
     This signal is emitted when the KNXnet/IP tunneling client receives data
@@ -87,6 +88,7 @@ QT_BEGIN_NAMESPACE
 */
 
 /*!
+    \since 5.12
     \fn void QKnxNetIpTunnel::tunnelingFeatureResponseReceived(QKnx::InterfaceFeature feature, QKnx::ReturnCode code, QKnxByteArray value)
 
     This signal is emitted when the KNXnet/IP tunneling client receives data
@@ -284,6 +286,8 @@ bool QKnxNetIpTunnel::sendFrame(const QKnxLinkLayerFrame &frame)
 }
 
 /*!
+    \since 5.12
+
     Creates a tunneling feature get frame and sets the requested feature
     identifier to \a feature.
 
@@ -305,6 +309,8 @@ bool QKnxNetIpTunnel::sendTunnelingFeatureGet(QKnx::InterfaceFeature feature)
 }
 
 /*!
+    \since 5.12
+
     Creates a tunneling feature set frame and sets the requested feature
     identifier to \a feature and the feature value to set to \a value.
 

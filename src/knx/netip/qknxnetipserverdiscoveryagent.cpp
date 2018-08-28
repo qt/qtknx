@@ -135,6 +135,7 @@ QT_BEGIN_NAMESPACE
 
 /*!
     \enum QKnxNetIpServerDiscoveryAgent::DiscoveryMode
+    \since 5.12
 
     This enum type holds the mode that the agent is set up with to send
     search request messages. A combination of both values is permitted.
@@ -701,6 +702,8 @@ void QKnxNetIpServerDiscoveryAgent::setResponseType(QKnxNetIpServerDiscoveryAgen
 }
 
 /*!
+    \since 5.12
+
     Returns the search mode used to discover a KNXnet/IP server on the network
     and by default returns \l {QKnxNetIpServerDiscoveryAgent::CoreV1}.
 */
@@ -711,6 +714,8 @@ QKnxNetIpServerDiscoveryAgent::DiscoveryModes QKnxNetIpServerDiscoveryAgent::dis
 }
 
 /*!
+    \since 5.12
+
     Sets the search mode used to discover a KNXnet/IP server on the network to
     \a mode. The function supports \l {QKnxNetIpServerDiscoveryAgent::CoreV1},
     \l {QKnxNetIpServerDiscoveryAgent::CoreV2}, or a combination of both.
@@ -723,6 +728,7 @@ void QKnxNetIpServerDiscoveryAgent::setDiscoveryMode(QKnxNetIpServerDiscoveryAge
 }
 
 /*!
+    \since 5.12
     Returns the search request parameter (SRP) objects used in an
     \l {QKnxNetIpServerDiscoveryAgent::CoreV2} {extended search request}.
 */
@@ -733,6 +739,8 @@ QVector<QKnxNetIpSrp> QKnxNetIpServerDiscoveryAgent::extendedSearchParameters() 
 }
 
 /*!
+    \since 5.12
+
     Sets the extended search request parameter (SRP) objects to \a srps.
 
     The discovery agent may include zero or more SRP objects to transfer

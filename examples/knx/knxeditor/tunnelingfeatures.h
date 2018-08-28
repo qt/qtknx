@@ -55,6 +55,7 @@ public:
     void setTcpEnable(bool value);
 
 private:
+    void checkFeatureValue();
     Ui::TunnelingFeatures *ui;
 
     QKnxNetIpServerInfo m_server;
