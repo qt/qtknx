@@ -47,7 +47,7 @@
 
 QT_BEGIN_NAMESPACE
 
-class Q_AUTOTEST_EXPORT QKnxOpenSsl
+class Q_KNX_EXPORT QKnxOpenSsl
 {
 public:
     static bool supportsSsl();

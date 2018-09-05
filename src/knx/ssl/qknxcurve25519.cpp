@@ -501,7 +501,7 @@ QKnxByteArray QKnxCryptographicEngine::deviceAuthenticationCodeHash(const QByteA
 
 namespace QKnxPrivate
 {
-    static QKnxByteArray xor(const QKnxByteArray &left, const QKnxByteArray &right)
+    static QKnxByteArray XOR(const QKnxByteArray &left, const QKnxByteArray &right)
     {
         QKnxByteArray result(qMax(left.size(), right.size()), Qt::Uninitialized);
         for (int i = result.size() - 1; i >= 0; --i)
@@ -603,10 +603,10 @@ QKnxByteArray QKnxCryptographicEngine::messageAuthenticationCode(QKnxCryptograph
         return {};
 
     auto header = frameHdr.bytes();
-    auto xor = QKnxPrivate::xor (publicKey.bytes(), peerKey.bytes());
+    auto xorResult = QKnxPrivate::XOR(publicKey.bytes(), peerKey.bytes());
     auto sessionId = QKnxUtils::QUint16::bytes(quint16(secureId));
 
-    auto A = QKnxByteArray({ 0x00, 0x28 }) + header + sessionId + xor;
+    auto A = QKnxByteArray({ 0x00, 0x28 }) + header + sessionId + xorResult;
     A.resize(48); // pad
 
     if (!qt_QKnxOpenSsl->supportsSsl())
@@ -618,13 +618,13 @@ QKnxByteArray QKnxCryptographicEngine::messageAuthenticationCode(QKnxCryptograph
     auto B3 = A.mid(32, 16);
 
     int m = int(mode);
-    auto Y0 = QKnxPrivate::doCrypt(m, deviceAuthenticationCode, iv, QKnxPrivate::xor(B0, { 0x00 }));
-    auto Y1 = QKnxPrivate::doCrypt(m, deviceAuthenticationCode, iv, QKnxPrivate::xor(B1, Y0));
-    auto Y2 = QKnxPrivate::doCrypt(m, deviceAuthenticationCode, iv, QKnxPrivate::xor(B2, Y1));
-    auto Y3 = QKnxPrivate::doCrypt(m, deviceAuthenticationCode, iv, QKnxPrivate::xor(B3, Y2));
+    auto Y0 = QKnxPrivate::doCrypt(m, deviceAuthenticationCode, iv, QKnxPrivate::XOR(B0, { 0x00 }));
+    auto Y1 = QKnxPrivate::doCrypt(m, deviceAuthenticationCode, iv, QKnxPrivate::XOR(B1, Y0));
+    auto Y2 = QKnxPrivate::doCrypt(m, deviceAuthenticationCode, iv, QKnxPrivate::XOR(B2, Y1));
+    auto Y3 = QKnxPrivate::doCrypt(m, deviceAuthenticationCode, iv, QKnxPrivate::XOR(B3, Y2));
     auto S0 = QKnxPrivate::doCrypt(m, deviceAuthenticationCode, iv, ctr0);
 
-    return QKnxPrivate::xor(S0, Y3);
+    return QKnxPrivate::XOR(S0, Y3);
 }
 
 /*!
