@@ -44,11 +44,19 @@ QT_BEGIN_NAMESPACE
     class and to create a KNXnet/IP session authentication frame from provided
     data.
 
-    TODO: Add more documentation. AN159 paragraph 2.2.3.8 SESSION_AUTHENTICATE
+    This class is part of the Qt KNX module and currently available as a
+    Technology Preview, and therefore the API and functionality provided
+    by the class may be subject to change at any time without prior notice.
+
+    This frame will be sent by the KNXnet/IP secure client to the control
+    endpoint of the KNXnet/IP secure server after the Diffie-Hellman handshake
+    to authenticate the user against the server device.
+    The maximum time a KNXnet/IP secure client will wait for an authentication
+    status response of the KNXnet/IP secure server is 10 seconds.
 
     \note When using QKnxNetIpSessionAuthenticateProxy, care must be taken to
-    ensure that the referenced KNXnet/IP DIB structure outlives the proxy on
-    all code paths, lest the proxy ends up referencing deleted data.
+    ensure that the referenced KNXnet/IP frame outlives the proxy on all code
+    paths, lest the proxy ends up referencing deleted data.
 
     The following code sample illustrates how to read the session authentication
     information:
@@ -148,7 +156,15 @@ QKnxNetIpSessionAuthenticateProxy::Builder QKnxNetIpSessionAuthenticateProxy::bu
     \brief The QKnxNetIpSessionAuthenticateProxy::Builder class provides the
     means to create a KNXnet/IP session authentication frame.
 
-    TODO: Add more documentation. AN159 paragraph 2.2.3.8 SESSION_AUTHENTICATE
+    This class is part of the Qt KNX module and currently available as a
+    Technology Preview, and therefore the API and functionality provided
+    by the class may be subject to change at any time without prior notice.
+
+    This frame will be sent by the KNXnet/IP secure client to the control
+    endpoint of the KNXnet/IP secure server after the Diffie-Hellman handshake
+    to authenticate the user against the server device.
+    The maximum time a KNXnet/IP secure client will wait for an authentication
+    status response of the KNXnet/IP secure server is 10 seconds.
 
     The common way to create a session authentication frame is:
 
@@ -161,6 +177,8 @@ QKnxNetIpSessionAuthenticateProxy::Builder QKnxNetIpSessionAuthenticateProxy::bu
             .setMessageAuthenticationCode(auth)
             .create();
     \endcode
+
+    \sa QKnxCryptographicEngine
 */
 
 /*!

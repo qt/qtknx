@@ -44,11 +44,18 @@ QT_BEGIN_NAMESPACE
     class and to create a KNXnet/IP secure session status frame from provided
     data.
 
-    TODO: Add more documentation. AN159 paragraph 2.2.3.9 SESSION_STATUS
+    This class is part of the Qt KNX module and currently available as a
+    Technology Preview, and therefore the API and functionality provided
+    by the class may be subject to change at any time without prior notice.
 
-    \note When using QKnxNetIpSessionStatusProxy, care must be taken to
-    ensure that the referenced KNXnet/IP DIB structure outlives the proxy on
-    all code paths, lest the proxy ends up referencing deleted data.
+    This frame may be sent by the KNXnet/IP secure server to the KNXnet/IP
+    secure client or by the KNXnet/IP secure client to the KNXnet/IP secure
+    server at any stage of the secure session handshake to indicate an error
+    condition or to convey status information.
+
+    \note When using QKnxNetIpSessionStatusProxy, care must be taken to ensure
+    that the referenced KNXnet/IP frame outlives the proxy on all code paths,
+    lest the proxy ends up referencing deleted data.
 
     The following code sample illustrates how to read the session status
     information:
@@ -133,7 +140,14 @@ QKnxNetIpSessionStatusProxy::Builder QKnxNetIpSessionStatusProxy::builder()
     \brief The QKnxNetIpSessionStatusProxy::Builder class provides the
     means to create a KNXnet/IP secure session status frame.
 
-    TODO: Add more documentation. AN159 paragraph 2.2.3.9 SESSION_STATUS
+    This class is part of the Qt KNX module and currently available as a
+    Technology Preview, and therefore the API and functionality provided
+    by the class may be subject to change at any time without prior notice.
+
+    This frame may be sent by the KNXnet/IP secure server to the KNXnet/IP
+    secure client or by the KNXnet/IP secure client to the KNXnet/IP secure
+    server at any stage of the secure session handshake to indicate an error
+    condition or to convey status information.
 
     The common way to create a session status frame is:
 

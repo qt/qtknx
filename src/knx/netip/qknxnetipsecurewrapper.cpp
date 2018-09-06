@@ -43,11 +43,17 @@ QT_BEGIN_NAMESPACE
     secure wrapper data inside the generic \l QKnxNetIpFrame class and to create
     a KNXnet/IP secure wrapper frame from provided data.
 
-    TODO: Add more documentation. AN159 paragraph 2.2.1.3 SECURE_WRAPPER
+    This class is part of the Qt KNX module and currently available as a
+    Technology Preview, and therefore the API and functionality provided
+    by the class may be subject to change at any time without prior notice.
 
-    \note When using QKnxNetIpSecureWrapperProxy, care must be taken to
-    ensure that the referenced KNXnet/IP DIB structure outlives the proxy on
-    all code paths, lest the proxy ends up referencing deleted data.
+    This frame will be sent during secure KNXnet/IP communication and includes
+    a fully encrypted KNXnet/IP frame as well as information needed to decrypt
+    the encapsulated frame and to ensure data integrity and freshness.
+
+    \note When using QKnxNetIpSecureWrapperProxy, care must be taken to ensure
+    that the referenced KNXnet/IP frame outlives the proxy on all code paths,
+    lest the proxy ends up referencing deleted data.
 
     The following code sample illustrates how to read the secure wrapper
     information:
@@ -154,7 +160,7 @@ QKnxByteArray QKnxNetIpSecureWrapperProxy::encapsulatedFrame() const
 }
 
 /*!
-    Returns the AES128 CCM message authentication code from the generic
+    Returns the AES128 CCM message authentication code (MAC) from the generic
     KNXnet/IP secure wrapper frame with a fixed size of \c 16 bytes.
 */
 QKnxByteArray QKnxNetIpSecureWrapperProxy::messageAuthenticationCode() const
@@ -180,7 +186,13 @@ QKnxNetIpSecureWrapperProxy::Builder QKnxNetIpSecureWrapperProxy::builder()
     \brief The QKnxNetIpSecureWrapperProxy::Builder class provides the
     means to create a KNXnet/IP secure wrapper frame.
 
-    TODO: Add more documentation. AN159 paragraph 2.2.1.3 SECURE_WRAPPER
+    This class is part of the Qt KNX module and currently available as a
+    Technology Preview, and therefore the API and functionality provided
+    by the class may be subject to change at any time without prior notice.
+
+    This frame will be sent during secure KNXnet/IP communication and includes
+    a fully encrypted KNXnet/IP frame as well as information needed to decrypt
+    the encapsulated frame and to ensure data integrity and freshness.
 
     The common way to create a secure wrapper frame is:
 
@@ -195,6 +207,8 @@ QKnxNetIpSecureWrapperProxy::Builder QKnxNetIpSecureWrapperProxy::builder()
             .setMessageAuthenticationCode(auth)
             .create();
     \endcode
+
+    \sa QKnxCryptographicEngine
 */
 
 /*!
@@ -276,9 +290,9 @@ QKnxNetIpSecureWrapperProxy::Builder &
 }
 
 /*!
-    Sets the AES128 CCM message authentication code of the generic KNXnet/IP
-    secure wrapper frame to \a data and returns a reference to builder. The
-    message authentication code has a fixed size of \c 16 bytes.
+    Sets the AES128 CCM message authentication code (MAC) of the generic
+    KNXnet/IP secure wrapper frame to \a data and returns a reference to
+    builder. The MAC has a fixed size of \c 16 bytes.
 */
 QKnxNetIpSecureWrapperProxy::Builder &
     QKnxNetIpSecureWrapperProxy::Builder::setMessageAuthenticationCode(const QKnxByteArray &data)

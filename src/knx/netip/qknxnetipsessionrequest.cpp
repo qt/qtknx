@@ -42,11 +42,19 @@ QT_BEGIN_NAMESPACE
     introspect session request data inside the generic \l QKnxNetIpFrame
     class and to create a KNXnet/IP session request frame from provided data.
 
-    TODO: Add more documentation. AN159 paragraph 2.2.3.6 SESSION_REQUEST
+    This class is part of the Qt KNX module and currently available as a
+    Technology Preview, and therefore the API and functionality provided
+    by the class may be subject to change at any time without prior notice.
+
+    This frame will be sent by a KNXnet/IP secure client to the control
+    endpoint of the KNXnet/IP secure server to initiate the secure session
+    setup handshake for a new secure communication channel.
+    The maximum time a KNXnet/IP secure client will wait for a response of the
+    KNXnet/IP secure server is 10 seconds.
 
     \note When using QKnxNetIpSessionRequestProxy, care must be taken to ensure
-    that the referenced KNXnet/IP DIB structure outlives the proxy on all code
-    paths, lest the proxy ends up referencing deleted data.
+    that the referenced KNXnet/IP frame outlives the proxy on all code paths,
+    lest the proxy ends up referencing deleted data.
 
     The following code sample illustrates how to read the session request
     information:
@@ -146,7 +154,15 @@ QKnxNetIpSessionRequestProxy::Builder QKnxNetIpSessionRequestProxy::builder()
     \brief The QKnxNetIpSessionRequestProxy::Builder class provides the
     means to create a KNXnet/IP session request frame.
 
-    TODO: Add more documentation. AN159 paragraph 2.2.3.6 SESSION_REQUEST
+    This class is part of the Qt KNX module and currently available as a
+    Technology Preview, and therefore the API and functionality provided
+    by the class may be subject to change at any time without prior notice.
+
+    This frame will be sent by a KNXnet/IP secure client to the control
+    endpoint of the KNXnet/IP secure server to initiate the secure session
+    setup handshake for a new secure communication channel.
+    The maximum time a KNXnet/IP secure client will wait for a response of the
+    KNXnet/IP secure server is 10 seconds.
 
     The common way to create a session request frame is:
 

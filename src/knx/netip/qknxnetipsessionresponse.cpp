@@ -43,11 +43,17 @@ QT_BEGIN_NAMESPACE
     class and to create a KNXnet/IP session response frame from provided
     data.
 
-    TODO: Add more documentation. AN159 paragraph 2.2.3.7 SESSION_RESPONSE
+    This class is part of the Qt KNX module and currently available as a
+    Technology Preview, and therefore the API and functionality provided
+    by the class may be subject to change at any time without prior notice.
+
+    This frame will be sent by the KNXnet/IP secure server to the KNXnet/IP
+    secure client control endpoint in response to a received secure session
+    request frame.
 
     \note When using QKnxNetIpSessionResponseProxy, care must be taken to
-    ensure that the referenced KNXnet/IP DIB structure outlives the proxy
-    on all code paths, lest the proxy ends up referencing deleted data.
+    ensure that the referenced KNXnet/IP frame outlives the proxy on all code
+    paths, lest the proxy ends up referencing deleted data.
 
     The following code sample illustrates how to read the session response
     information:
@@ -154,7 +160,13 @@ QKnxNetIpSessionResponseProxy::Builder QKnxNetIpSessionResponseProxy::builder()
     \brief The QKnxNetIpSessionResponseProxy::Builder class provides the
     means to create a KNXnet/IP session response frame.
 
-    TODO: Add more documentation. AN159 paragraph 2.2.3.7 SESSION_RESPONSE
+    This class is part of the Qt KNX module and currently available as a
+    Technology Preview, and therefore the API and functionality provided
+    by the class may be subject to change at any time without prior notice.
+
+    This frame will be sent by the KNXnet/IP secure server to the KNXnet/IP
+    secure client control endpoint in response to a received secure session
+    request frame.
 
     The common way to create a session response frame is:
 
@@ -168,6 +180,8 @@ QKnxNetIpSessionResponseProxy::Builder QKnxNetIpSessionResponseProxy::builder()
             .setMessageAuthenticationCode(auth)
             .create();
     \endcode
+
+    \sa QKnxCryptographicEngine
 */
 
 /*!

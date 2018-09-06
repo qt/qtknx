@@ -43,11 +43,18 @@ QT_BEGIN_NAMESPACE
     timer notify data inside the generic \l QKnxNetIpFrame class and to create
     a KNXnet/IP timer notify frame from provided data.
 
-    TODO: Add more documentation. AN159 paragraph 2.2.2.4 TIMER_NOTIFY
+    This class is part of the Qt KNX module and currently available as a
+    Technology Preview, and therefore the API and functionality provided
+    by the class may be subject to change at any time without prior notice.
 
-    \note When using QKnxNetIpTimerNotifyProxy, care must be taken to
-    ensure that the referenced KNXnet/IP DIB structure outlives the proxy on
-    all code paths, lest the proxy ends up referencing deleted data.
+    This frame will be sent during secure KNXnet/IP multicast group
+    communication to keep the multicast group member's timer values
+    synchronized. The frame is therefore sent to the KNXnet/IP routing
+    endpoint on port \c 3671 of the configured routing multicast address.
+
+    \note When using QKnxNetIpTimerNotifyProxy, care must be taken to ensure
+    that the referenced KNXnet/IP frame outlives the proxy on all code paths,
+    lest the proxy ends up referencing deleted data.
 
     The following code sample illustrates how to read the timer notify
     information:
@@ -160,7 +167,14 @@ QKnxNetIpTimerNotifyProxy::Builder QKnxNetIpTimerNotifyProxy::builder()
     \brief The QKnxNetIpTimerNotifyProxy::Builder class provides the
     means to create a KNXnet/IP timer notify frame.
 
-    TODO: Add more documentation. AN159 paragraph 2.2.3.9 SESSION_STATUS
+    This class is part of the Qt KNX module and currently available as a
+    Technology Preview, and therefore the API and functionality provided
+    by the class may be subject to change at any time without prior notice.
+
+    This frame will be sent during secure KNXnet/IP multicast group
+    communication to keep the multicast group member's timer values
+    synchronized. The frame is therefore sent to the KNXnet/IP routing
+    endpoint on port \c 3671 of the configured routing multicast address.
 
     The common way to create a timer notify frame is:
 
@@ -174,6 +188,8 @@ QKnxNetIpTimerNotifyProxy::Builder QKnxNetIpTimerNotifyProxy::builder()
             .setMessageAuthenticationCode(auth)
             .create();
     \endcode
+
+    \sa QKnxCryptographicEngine
 */
 
 /*!
