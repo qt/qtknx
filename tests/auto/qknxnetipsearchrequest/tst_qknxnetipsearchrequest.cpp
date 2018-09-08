@@ -116,9 +116,7 @@ void tst_QKnxNetIpSearchRequest::testDebugStream()
 
 void tst_QKnxNetIpSearchRequest::tst_srpBuilders()
 {
-    using namespace SrpBuilders;
-    auto srpMode = ProgrammingMode()
-                   .setMandatory()
+    auto srpMode = QKnxNetIpSrpProxy::programmingModeBuilder()
                    .create();
     QCOMPARE(srpMode.code(),
              QKnxNetIp::SearchParameterType::SelectByProgrammingMode);
@@ -127,8 +125,7 @@ void tst_QKnxNetIpSearchRequest::tst_srpBuilders()
     QVERIFY(srpMode.isValid());
 
     auto macAddress = QKnxByteArray::fromHex("4CCC6AE40000");
-    auto srpMac = MacAddress()
-                  .setMandatory()
+    auto srpMac = QKnxNetIpSrpProxy::macAddressBuilder()
                   .setMac(macAddress)
                   .create();
     QCOMPARE(srpMac.code(),
@@ -139,9 +136,8 @@ void tst_QKnxNetIpSearchRequest::tst_srpBuilders()
 
     auto serviceFamilyId = QKnxNetIp::ServiceFamily::ObjectServer;
     quint8 minVersion = 4;
-    auto srpSupportedFamily = SupportedFamily()
-        .setMandatory()
-        .setServiceInfos({ { serviceFamilyId, minVersion } })
+    auto srpSupportedFamily = QKnxNetIpSrpProxy::supportedFamilyBuilder()
+        .setServiceInfo({ serviceFamilyId, minVersion })
         .create();
     QCOMPARE(srpSupportedFamily.code(),
              QKnxNetIp::SearchParameterType::SelectByServiceSRP);
@@ -154,8 +150,7 @@ void tst_QKnxNetIpSearchRequest::tst_srpBuilders()
     types.append(QKnxNetIp::DescriptionType::DeviceInfo);
     types.append(QKnxNetIp::DescriptionType::SupportedServiceFamilies);
     types.append(QKnxNetIp::DescriptionType::ExtendedDeviceInfo);
-    QKnxNetIpSrp srpDibs = RequestDibs()
-                   .setMandatory()
+    QKnxNetIpSrp srpDibs = QKnxNetIpSrpProxy::requestDibsBuilder()
                    .setDescriptionTypes(types)
                    .create();
     QCOMPARE(srpDibs.code(), QKnxNetIp::SearchParameterType::RequestDIBs);
@@ -189,12 +184,10 @@ void tst_QKnxNetIpSearchRequest::testExtendSearchRequest()
 {
     auto macAddress1 = QKnxByteArray::fromHex("4CCC6AE40001");
     auto macAddress2 = QKnxByteArray::fromHex("4CCC6AE40002");
-    QKnxNetIpSrp macSrp1 = SrpBuilders::MacAddress()
-                                    .setMandatory()
+    QKnxNetIpSrp macSrp1 = QKnxNetIpSrpProxy::macAddressBuilder()
                                     .setMac(macAddress1)
                                     .create();
-    QKnxNetIpSrp macSrp2 = SrpBuilders::MacAddress()
-                                    .setMandatory()
+    QKnxNetIpSrp macSrp2 = QKnxNetIpSrpProxy::macAddressBuilder()
                                     .setMac(macAddress2)
                                     .create();
     QVector<QKnxNetIpSrp> srps = { macSrp1, macSrp2 };
