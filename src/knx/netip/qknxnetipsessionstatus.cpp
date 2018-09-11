@@ -158,6 +158,27 @@ QKnxNetIpSessionStatusProxy::Builder QKnxNetIpSessionStatusProxy::builder()
     \endcode
 */
 
+class QKnxNetIpSessionStatusBuilderPrivate : public QSharedData
+{
+public:
+    QKnxNetIpSessionStatusBuilderPrivate() = default;
+    ~QKnxNetIpSessionStatusBuilderPrivate() = default;
+
+    QKnxNetIp::SecureSessionStatus m_status = QKnxNetIp::SecureSessionStatus::Unknown;
+};
+
+/*!
+    Creates a new empty session status frame builder object.
+*/
+QKnxNetIpSessionStatusProxy::Builder::Builder()
+    : d_ptr(new QKnxNetIpSessionStatusBuilderPrivate)
+{}
+
+/*!
+    Destroys the object and frees any allocated resources.
+*/
+QKnxNetIpSessionStatusProxy::Builder::~Builder() = default;
+
 /*!
     Sets the status of the KNXnet/IP session status frame to \a status
     and returns a reference to the builder.
@@ -165,7 +186,7 @@ QKnxNetIpSessionStatusProxy::Builder QKnxNetIpSessionStatusProxy::builder()
 QKnxNetIpSessionStatusProxy::Builder &
     QKnxNetIpSessionStatusProxy::Builder::setStatus(QKnxNetIp::SecureSessionStatus status)
 {
-    m_status = status;
+    d_ptr->m_status = status;
     return *this;
 }
 
@@ -179,11 +200,28 @@ QKnxNetIpSessionStatusProxy::Builder &
 */
 QKnxNetIpFrame QKnxNetIpSessionStatusProxy::Builder::create() const
 {
-    if (m_status > QKnxNetIp::SecureSessionStatus::Close)
+    if (d_ptr->m_status > QKnxNetIp::SecureSessionStatus::Close)
         return { QKnxNetIp::ServiceType::SessionStatus };
 
     return { QKnxNetIp::ServiceType::SessionStatus,
-        QKnxUtils::QUint16::bytes(quint16(m_status) << 8) };
+        QKnxUtils::QUint16::bytes(quint16(d_ptr->m_status) << 8) };
+}
+
+/*!
+    Constructs a copy of \a other.
+*/
+QKnxNetIpSessionStatusProxy::Builder::Builder(const Builder &other)
+    : d_ptr(other.d_ptr)
+{}
+
+/*!
+    Assigns the specified \a other to this object.
+*/
+QKnxNetIpSessionStatusProxy::Builder &
+    QKnxNetIpSessionStatusProxy::Builder::operator=(const Builder &other)
+{
+    d_ptr = other.d_ptr;
+    return *this;
 }
 
 QT_END_NAMESPACE

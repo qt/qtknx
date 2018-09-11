@@ -178,6 +178,28 @@ QKnxNetIpSessionRequestProxy::Builder QKnxNetIpSessionRequestProxy::builder()
     \endcode
 */
 
+class QKnxNetIpSessionRequestBuilderPrivate : public QSharedData
+{
+public:
+    QKnxNetIpSessionRequestBuilderPrivate() = default;
+    ~QKnxNetIpSessionRequestBuilderPrivate() = default;
+
+    QKnxNetIpHpai m_hpai;
+    QKnxByteArray m_publicKey;
+};
+
+/*!
+    Creates a new empty session request frame builder object.
+*/
+QKnxNetIpSessionRequestProxy::Builder::Builder()
+    : d_ptr(new QKnxNetIpSessionRequestBuilderPrivate)
+{}
+
+/*!
+    Destroys the object and frees any allocated resources.
+*/
+QKnxNetIpSessionRequestProxy::Builder::~Builder() = default;
+
 /*!
     Sets the control endpoint of the KNXnet/IP session request frame to \a hpai
     and returns a reference to the builder.
@@ -185,7 +207,7 @@ QKnxNetIpSessionRequestProxy::Builder QKnxNetIpSessionRequestProxy::builder()
 QKnxNetIpSessionRequestProxy::Builder &
     QKnxNetIpSessionRequestProxy::Builder::setControlEndpoint(const QKnxNetIpHpai &hpai)
 {
-    m_hpai = hpai;
+    d_ptr->m_hpai = hpai;
     return *this;
 }
 
@@ -198,7 +220,7 @@ QKnxNetIpSessionRequestProxy::Builder &
 QKnxNetIpSessionRequestProxy::Builder &
     QKnxNetIpSessionRequestProxy::Builder::setPublicKey(const QKnxByteArray &publicKey)
 {
-    m_publicKey = publicKey;
+    d_ptr->m_publicKey = publicKey;
     return *this;
 }
 
@@ -212,9 +234,26 @@ QKnxNetIpSessionRequestProxy::Builder &
 */
 QKnxNetIpFrame QKnxNetIpSessionRequestProxy::Builder::create() const
 {
-    if (m_hpai.isValid() && m_publicKey.size() == 32)
-        return { QKnxNetIp::ServiceType::SessionRequest, m_hpai.bytes() + m_publicKey };
+    if (d_ptr->m_hpai.isValid() && d_ptr->m_publicKey.size() == 32)
+        return { QKnxNetIp::ServiceType::SessionRequest, d_ptr->m_hpai.bytes() + d_ptr->m_publicKey };
     return { QKnxNetIp::ServiceType::SessionRequest };
+}
+
+/*!
+    Constructs a copy of \a other.
+*/
+QKnxNetIpSessionRequestProxy::Builder::Builder(const Builder &other)
+    : d_ptr(other.d_ptr)
+{}
+
+/*!
+    Assigns the specified \a other to this object.
+*/
+QKnxNetIpSessionRequestProxy::Builder &
+    QKnxNetIpSessionRequestProxy::Builder::operator=(const Builder &other)
+{
+    d_ptr = other.d_ptr;
+    return *this;
 }
 
 QT_END_NAMESPACE

@@ -192,6 +192,30 @@ QKnxNetIpTimerNotifyProxy::Builder QKnxNetIpTimerNotifyProxy::builder()
     \sa QKnxCryptographicEngine
 */
 
+class QKnxNetIpTimerNotifyBuilderPrivate : public QSharedData
+{
+public:
+    QKnxNetIpTimerNotifyBuilderPrivate() = default;
+    ~QKnxNetIpTimerNotifyBuilderPrivate() = default;
+
+    quint64 m_timer { Q_UINT48_MAX + 1 };
+    QKnxByteArray m_serial;
+    qint32 m_tag { -1 };
+    QKnxByteArray m_authCode;
+};
+
+/*!
+    Creates a new empty timer notify frame builder object.
+*/
+QKnxNetIpTimerNotifyProxy::Builder::Builder()
+    : d_ptr(new QKnxNetIpTimerNotifyBuilderPrivate)
+{}
+
+/*!
+    Destroys the object and frees any allocated resources.
+*/
+QKnxNetIpTimerNotifyProxy::Builder::~Builder() = default;
+
 /*!
     Sets the timer value to \a timerValue and returns a reference to the
     builder.
@@ -203,7 +227,7 @@ QKnxNetIpTimerNotifyProxy::Builder QKnxNetIpTimerNotifyProxy::builder()
 QKnxNetIpTimerNotifyProxy::Builder &
     QKnxNetIpTimerNotifyProxy::Builder::setTimerValue(quint48 timerValue)
 {
-    m_timer = timerValue;
+    d_ptr->m_timer = timerValue;
     return *this;
 }
 
@@ -216,7 +240,7 @@ QKnxNetIpTimerNotifyProxy::Builder &
 QKnxNetIpTimerNotifyProxy::Builder &
     QKnxNetIpTimerNotifyProxy::Builder::setSerialNumber(const QKnxByteArray &serialNumber)
 {
-    m_serial = serialNumber;
+    d_ptr->m_serial = serialNumber;
     return *this;
 }
 
@@ -230,7 +254,7 @@ QKnxNetIpTimerNotifyProxy::Builder &
 */
 QKnxNetIpTimerNotifyProxy::Builder &QKnxNetIpTimerNotifyProxy::Builder::setMessageTag(quint16 tag)
 {
-    m_tag = tag;
+    d_ptr->m_tag = tag;
     return *this;
 }
 
@@ -242,7 +266,7 @@ QKnxNetIpTimerNotifyProxy::Builder &QKnxNetIpTimerNotifyProxy::Builder::setMessa
 QKnxNetIpTimerNotifyProxy::Builder &
     QKnxNetIpTimerNotifyProxy::Builder::setMessageAuthenticationCode(const QKnxByteArray &data)
 {
-    m_authCode = data;
+    d_ptr->m_authCode = data;
     return *this;
 }
 
@@ -256,11 +280,29 @@ QKnxNetIpTimerNotifyProxy::Builder &
 */
 QKnxNetIpFrame QKnxNetIpTimerNotifyProxy::Builder::create() const
 {
-    if (m_timer <= Q_UINT48_MAX && m_serial.size() == 6 && m_tag >= 0 && m_authCode.size() == 16) {
-        return { QKnxNetIp::ServiceType::TimerNotify, QKnxUtils::QUint48::bytes(m_timer)
-            + m_serial + QKnxUtils::QUint16::bytes(m_tag) + m_authCode };
+    if (d_ptr->m_timer <= Q_UINT48_MAX && d_ptr->m_serial.size() == 6 && d_ptr->m_tag >= 0
+        && d_ptr->m_authCode.size() == 16) {
+            return { QKnxNetIp::ServiceType::TimerNotify, QKnxUtils::QUint48::bytes(d_ptr->m_timer)
+                + d_ptr->m_serial + QKnxUtils::QUint16::bytes(d_ptr->m_tag) + d_ptr->m_authCode };
     }
     return { QKnxNetIp::ServiceType::TimerNotify };
+}
+
+/*!
+    Constructs a copy of \a other.
+*/
+QKnxNetIpTimerNotifyProxy::Builder::Builder(const Builder &other)
+    : d_ptr(other.d_ptr)
+{}
+
+/*!
+    Assigns the specified \a other to this object.
+*/
+QKnxNetIpTimerNotifyProxy::Builder &
+    QKnxNetIpTimerNotifyProxy::Builder::operator=(const Builder &other)
+{
+    d_ptr = other.d_ptr;
+    return *this;
 }
 
 QT_END_NAMESPACE

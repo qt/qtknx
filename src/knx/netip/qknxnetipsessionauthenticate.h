@@ -35,6 +35,7 @@
 
 QT_BEGIN_NAMESPACE
 
+class QKnxNetIpSessionAuthenticateBuilderPrivate;
 class Q_KNX_EXPORT QKnxNetIpSessionAuthenticateProxy final
 {
 public:
@@ -52,14 +53,19 @@ public:
     class Q_KNX_EXPORT Builder final
     {
     public:
+        Builder();
+        ~Builder();
+
         Builder &setUserId(quint16 userId);
         Builder &setMessageAuthenticationCode(const QKnxByteArray &data);
 
         QKnxNetIpFrame create() const;
 
+        Builder(const Builder &other);
+        Builder &operator=(const Builder &other);
+
     private:
-        quint16 m_id { 0 };
-        QKnxByteArray m_authCode;
+        QSharedDataPointer<QKnxNetIpSessionAuthenticateBuilderPrivate> d_ptr;
     };
     static QKnxNetIpSessionAuthenticateProxy::Builder builder();
 

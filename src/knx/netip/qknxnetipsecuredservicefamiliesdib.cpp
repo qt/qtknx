@@ -116,6 +116,15 @@ QT_BEGIN_NAMESPACE
     \fn QKnxNetIpSecuredServiceFamiliesDibProxy::QKnxNetIpSecuredServiceFamiliesDibProxy(const QKnxNetIpDib &&)
 */
 
+class QKnxNetIpSecuredServiceFamiliesDibBuilderPrivate : public QSharedData
+{
+public:
+    QKnxNetIpSecuredServiceFamiliesDibBuilderPrivate() = default;
+    ~QKnxNetIpSecuredServiceFamiliesDibBuilderPrivate() = default;
+
+    QVector<QKnxSecuredServiceInfo> m_infos;
+};
+
 /*!
     Constructs a proxy object with the specified KNXnet/IP DIB structure
     \a dib to read the supported service families and security versions.
@@ -198,15 +207,27 @@ QKnxNetIpSecuredServiceFamiliesDibProxy::Builder QKnxNetIpSecuredServiceFamilies
 */
 
 /*!
+    Constructs a KnxNet/IP secured service families dib builder.
+*/
+QKnxNetIpSecuredServiceFamiliesDibProxy::Builder::Builder()
+    : d_ptr(new QKnxNetIpSecuredServiceFamiliesDibBuilderPrivate)
+{}
+
+/*!
+    Destroys the object and frees any allocated resources.
+*/
+QKnxNetIpSecuredServiceFamiliesDibProxy::Builder::~Builder() = default;
+
+/*!
     Sets the supported service families and versions of the KNXnet/IP DIB
     structure to \a infos and returns a reference to the builder.
 */
 QKnxNetIpSecuredServiceFamiliesDibProxy::Builder &QKnxNetIpSecuredServiceFamiliesDibProxy::
     Builder::setServiceInfos(const QVector<QKnxSecuredServiceInfo> &infos)
 {
-    m_infos = infos;
+    d_ptr->m_infos = infos;
 
-    std::sort(m_infos.begin(), m_infos.end(),
+    std::sort(d_ptr->m_infos.begin(), d_ptr->m_infos.end(),
         [](const QKnxSecuredServiceInfo &a, const QKnxSecuredServiceInfo &b) {
             if (a.ServiceFamily < b.ServiceFamily)
                 return true;
@@ -216,11 +237,11 @@ QKnxNetIpSecuredServiceFamiliesDibProxy::Builder &QKnxNetIpSecuredServiceFamilie
             }
             return false;
     });
-    m_infos.erase(std::unique(m_infos.begin(), m_infos.end(),
+    d_ptr->m_infos.erase(std::unique(d_ptr->m_infos.begin(), d_ptr->m_infos.end(),
         [](const QKnxSecuredServiceInfo &a, const QKnxSecuredServiceInfo &b) {
         return a.ServiceFamily == b.ServiceFamily
             && a.RequiredSecurityVersion == b.RequiredSecurityVersion;
-    }), m_infos.end());
+    }), d_ptr->m_infos.end());
 
     return *this;
 }
@@ -236,9 +257,26 @@ QKnxNetIpSecuredServiceFamiliesDibProxy::Builder &QKnxNetIpSecuredServiceFamilie
 QKnxNetIpDib QKnxNetIpSecuredServiceFamiliesDibProxy::Builder::create() const
 {
     QKnxByteArray bytes;
-    for (const auto &info : qAsConst(m_infos))
+    for (const auto &info : qAsConst(d_ptr->m_infos))
         bytes += { quint8(info.ServiceFamily), info.RequiredSecurityVersion };
     return { QKnxNetIp::DescriptionType::SecuredServices, bytes };
+}
+
+/*!
+    Constructs a copy of \a other.
+*/
+QKnxNetIpSecuredServiceFamiliesDibProxy::Builder::Builder(const Builder &other)
+    : d_ptr(other.d_ptr)
+{}
+
+/*!
+    Assigns the specified \a other to this object.
+*/
+QKnxNetIpSecuredServiceFamiliesDibProxy::Builder &
+    QKnxNetIpSecuredServiceFamiliesDibProxy::Builder::operator=(const Builder &other)
+{
+    d_ptr = other.d_ptr;
+    return *this;
 }
 
 QT_END_NAMESPACE

@@ -35,6 +35,7 @@
 
 QT_BEGIN_NAMESPACE
 
+class QKnxNetIpSessionStatusBuilderPrivate;
 class Q_KNX_EXPORT QKnxNetIpSessionStatusProxy final
 {
 public:
@@ -50,12 +51,18 @@ public:
     class Q_KNX_EXPORT Builder final
     {
     public:
+        Builder();
+        ~Builder();
+
         Builder &setStatus(QKnxNetIp::SecureSessionStatus status);
 
         QKnxNetIpFrame create() const;
 
+        Builder(const Builder &other);
+        Builder &operator=(const Builder &other);
+
     private:
-        QKnxNetIp::SecureSessionStatus m_status = QKnxNetIp::SecureSessionStatus::Unknown;
+        QSharedDataPointer<QKnxNetIpSessionStatusBuilderPrivate> d_ptr;
     };
     static QKnxNetIpSessionStatusProxy::Builder builder();
 

@@ -181,6 +181,28 @@ QKnxNetIpSessionAuthenticateProxy::Builder QKnxNetIpSessionAuthenticateProxy::bu
     \sa QKnxCryptographicEngine
 */
 
+class QKnxNetIpSessionAuthenticateBuilderPrivate : public QSharedData
+{
+public:
+    QKnxNetIpSessionAuthenticateBuilderPrivate() = default;
+    ~QKnxNetIpSessionAuthenticateBuilderPrivate() = default;
+
+    quint16 m_id { 0 };
+    QKnxByteArray m_authCode;
+};
+
+/*!
+    Creates a new empty session authenticate frame builder.
+*/
+QKnxNetIpSessionAuthenticateProxy::Builder::Builder()
+    : d_ptr(new QKnxNetIpSessionAuthenticateBuilderPrivate)
+{}
+
+/*!
+    Destroys the object and frees any allocated resources.
+*/
+QKnxNetIpSessionAuthenticateProxy::Builder::~Builder() = default;
+
 /*!
     Sets the user ID of the KNXnet/IP session authentication frame to \a userId
     and returns a reference to the builder.
@@ -191,7 +213,7 @@ QKnxNetIpSessionAuthenticateProxy::Builder QKnxNetIpSessionAuthenticateProxy::bu
 QKnxNetIpSessionAuthenticateProxy::Builder &
     QKnxNetIpSessionAuthenticateProxy::Builder::setUserId(quint16 userId)
 {
-    m_id = userId;
+    d_ptr->m_id = userId;
     return *this;
 }
 
@@ -203,7 +225,7 @@ QKnxNetIpSessionAuthenticateProxy::Builder &
 QKnxNetIpSessionAuthenticateProxy::Builder &
     QKnxNetIpSessionAuthenticateProxy::Builder::setMessageAuthenticationCode(const QKnxByteArray &data)
 {
-    m_authCode = data;
+    d_ptr->m_authCode = data;
     return *this;
 }
 
@@ -217,11 +239,28 @@ QKnxNetIpSessionAuthenticateProxy::Builder &
 */
 QKnxNetIpFrame QKnxNetIpSessionAuthenticateProxy::Builder::create() const
 {
-    if (m_id == 0 || m_id >= 0x80 ||  m_authCode.size() != 16)
+    if (d_ptr->m_id == 0 || d_ptr->m_id >= 0x80 ||  d_ptr->m_authCode.size() != 16)
         return { QKnxNetIp::ServiceType::SessionAuthenticate };
 
-    return { QKnxNetIp::ServiceType::SessionAuthenticate, QKnxUtils::QUint16::bytes(m_id)
-        + m_authCode };
+    return { QKnxNetIp::ServiceType::SessionAuthenticate, QKnxUtils::QUint16::bytes(d_ptr->m_id)
+        + d_ptr->m_authCode };
+}
+
+/*!
+    Constructs a copy of \a other.
+*/
+QKnxNetIpSessionAuthenticateProxy::Builder::Builder(const Builder &other)
+    : d_ptr(other.d_ptr)
+{}
+
+/*!
+    Assigns the specified \a other to this object.
+*/
+QKnxNetIpSessionAuthenticateProxy::Builder &
+    QKnxNetIpSessionAuthenticateProxy::Builder::operator=(const Builder &other)
+{
+    d_ptr = other.d_ptr;
+    return *this;
 }
 
 QT_END_NAMESPACE

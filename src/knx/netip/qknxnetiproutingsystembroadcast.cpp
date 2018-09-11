@@ -85,6 +85,15 @@ QT_BEGIN_NAMESPACE
     \internal
 */
 
+class QKnxNetIpRoutingSystemBroadcastBuilderPrivate : public QSharedData
+{
+public:
+    QKnxNetIpRoutingSystemBroadcastBuilderPrivate() = default;
+    ~QKnxNetIpRoutingSystemBroadcastBuilderPrivate() = default;
+
+    QKnxLinkLayerFrame m_llf;
+};
+
 namespace QKnxPrivate
 {
     static bool isCemiValid(const QKnxLinkLayerFrame &linkFrame)
@@ -161,6 +170,18 @@ QKnxNetIpRoutingSystemBroadcastProxy::Builder QKnxNetIpRoutingSystemBroadcastPro
 */
 
 /*!
+    Creates a new empty system broadcast frame builder object.
+*/
+QKnxNetIpRoutingSystemBroadcastProxy::Builder::Builder()
+    : d_ptr(new QKnxNetIpRoutingSystemBroadcastBuilderPrivate)
+{}
+
+/*!
+    Destroys the object and frees any allocated resources.
+*/
+QKnxNetIpRoutingSystemBroadcastProxy::Builder::~Builder() = default;
+
+/*!
     Sets the cEMI frame containing the routing system broadcast message to
     \a cemi.
 */
@@ -168,7 +189,7 @@ QKnxNetIpRoutingSystemBroadcastProxy::Builder &
     QKnxNetIpRoutingSystemBroadcastProxy::Builder::setCemi(const QKnxLinkLayerFrame &cemi)
 {
     if (QKnxPrivate::isCemiValid(cemi))
-        m_llf = cemi;
+        d_ptr->m_llf = cemi;
     return *this;
 }
 
@@ -177,9 +198,26 @@ QKnxNetIpRoutingSystemBroadcastProxy::Builder &
 */
 QKnxNetIpFrame QKnxNetIpRoutingSystemBroadcastProxy::Builder::create() const
 {
-    if (!m_llf.isValid())
+    if (!d_ptr->m_llf.isValid())
         return {};
-    return { QKnxNetIp::ServiceType::RoutingSystemBroadcast, m_llf.bytes() };
+    return { QKnxNetIp::ServiceType::RoutingSystemBroadcast, d_ptr->m_llf.bytes() };
+}
+
+/*!
+    Constructs a copy of \a other.
+*/
+QKnxNetIpRoutingSystemBroadcastProxy::Builder::Builder(const Builder &other)
+    : d_ptr(other.d_ptr)
+{}
+
+/*!
+    Assigns the specified \a other to this object.
+*/
+QKnxNetIpRoutingSystemBroadcastProxy::Builder &
+    QKnxNetIpRoutingSystemBroadcastProxy::Builder::operator=(const Builder &other)
+{
+    d_ptr = other.d_ptr;
+    return *this;
 }
 
 QT_END_NAMESPACE

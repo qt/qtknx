@@ -41,6 +41,7 @@ struct Q_KNX_EXPORT QKnxSecuredServiceInfo
     quint8 RequiredSecurityVersion;
 };
 
+class QKnxNetIpSecuredServiceFamiliesDibBuilderPrivate;
 class Q_KNX_EXPORT QKnxNetIpSecuredServiceFamiliesDibProxy final
 {
 public:
@@ -58,12 +59,18 @@ public:
     class Q_KNX_EXPORT Builder final
     {
     public:
+        Builder();
+        ~Builder();
+
         Builder &setServiceInfos(const QVector<QKnxSecuredServiceInfo> &infos);
 
         QKnxNetIpDib create() const;
 
+        Builder(const Builder &other);
+        Builder &operator=(const Builder &other);
+
     private:
-        QVector<QKnxSecuredServiceInfo> m_infos;
+        QSharedDataPointer<QKnxNetIpSecuredServiceFamiliesDibBuilderPrivate> d_ptr;
     };
     static QKnxNetIpSecuredServiceFamiliesDibProxy::Builder builder();
 
