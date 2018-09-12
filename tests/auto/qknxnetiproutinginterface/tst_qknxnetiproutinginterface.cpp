@@ -91,6 +91,9 @@ tst_QKnxNetIpRoutingInterface::tst_QKnxNetIpRoutingInterface()
     const auto interfaces = QNetworkInterface::allInterfaces();
     QNetworkInterface foundIface;
     for (const auto &iface : interfaces) {
+        if (iface.flags() != QNetworkInterface::IsLoopBack)
+            continue;
+
         if (iface.addressEntries().isEmpty())
             continue;
 
