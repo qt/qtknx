@@ -182,7 +182,7 @@ QKnxNetIpFrame QKnxNetIpSessionStatusProxy::Builder::create() const
     if (m_status > QKnxNetIp::SecureSessionStatus::Close)
         return { QKnxNetIp::ServiceType::SessionStatus };
 
-    return { QKnxNetIp::ServiceType::SessionAuthenticate,
+    return { QKnxNetIp::ServiceType::SessionStatus,
         QKnxUtils::QUint16::bytes(quint16(m_status) << 8) };
 }
 
