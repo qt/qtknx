@@ -52,13 +52,13 @@ public:
     class Q_KNX_EXPORT Builder final
     {
     public:
-        Builder &setUserId(quint8 userId);
+        Builder &setUserId(quint16 userId);
         Builder &setMessageAuthenticationCode(const QKnxByteArray &data);
 
         QKnxNetIpFrame create() const;
 
     private:
-        quint8 m_id { 0 };
+        quint16 m_id { 0 };
         QKnxByteArray m_authCode;
     };
     static QKnxNetIpSessionAuthenticateProxy::Builder builder();
