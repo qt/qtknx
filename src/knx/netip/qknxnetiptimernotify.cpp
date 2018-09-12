@@ -141,7 +141,7 @@ quint16 QKnxNetIpTimerNotifyProxy::messageTag() const
 }
 
 /*!
-    Returns the AES128 CCM message authentication code from the generic
+    Returns the AES128 CCM message authentication code (MAC) from the generic
     KNXnet/IP secure timer notify frame with a fixed size of \c 16 bytes.
 */
 QKnxByteArray QKnxNetIpTimerNotifyProxy::messageAuthenticationCode() const
@@ -246,7 +246,7 @@ QKnxNetIpTimerNotifyProxy::Builder &
 
 /*!
     Sets the message tag of the generic KNXnet/IP timer notify frame to \a tag
-    and returns a reference to builder.
+    and returns a reference to the builder.
 
     In case of a periodic or initial notify the tag contains a random value. In
     case of an update notify this is the value of the outdated frame triggering
@@ -259,9 +259,9 @@ QKnxNetIpTimerNotifyProxy::Builder &QKnxNetIpTimerNotifyProxy::Builder::setMessa
 }
 
 /*!
-    Sets the AES128 CCM message authentication code of the generic KNXnet/IP
-    timer notify frame to \a data and returns a reference to builder. The
-    message authentication code has a fixed size of \c 16 bytes.
+    Sets the AES128 CCM message authentication code (MAC) of the generic
+    KNXnet/IP timer notify frame to \a data and returns a reference to the
+    builder. The MAC has a fixed size of \c 16 bytes.
 */
 QKnxNetIpTimerNotifyProxy::Builder &
     QKnxNetIpTimerNotifyProxy::Builder::setMessageAuthenticationCode(const QKnxByteArray &data)

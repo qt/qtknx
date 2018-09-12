@@ -262,7 +262,7 @@ QKnxNetIpSecureWrapperProxy::Builder &
 
 /*!
     Sets the message tag of the generic KNXnet/IP secure wrapper frame to \a tag
-    and returns a reference to builder. By default value is set to \c 0x0000.
+    and returns a reference to the builder. By default value is set to \c 0x0000.
 
     This field contains an arbitrary value to differentiate two KNXnet/IP
     secure wrapper multicast frames sent by one KNXnet/IP device within the

@@ -130,7 +130,7 @@ quint8 QKnxNetIpSessionAuthenticateProxy::userId() const
 }
 
 /*!
-    Returns the AES128 CCM message authentication code from the generic
+    Returns the AES128 CCM message authentication code (MAC) from the generic
     KNXnet/IP session authentication frame with a fixed size of \c 16 bytes.
 */
 QKnxByteArray QKnxNetIpSessionAuthenticateProxy::messageAuthenticationCode() const
@@ -218,9 +218,9 @@ QKnxNetIpSessionAuthenticateProxy::Builder &
 }
 
 /*!
-    Sets the AES128 CCM message authentication code of the generic KNXnet/IP
-    session authentication frame to \a data and returns a reference to builder.
-    The message authentication code has a fixed size of \c 16 bytes.
+    Sets the AES128 CCM message authentication code (MAC) of the generic
+    KNXnet/IP session authentication frame to \a data and returns a reference
+    to the builder. The MAC has a fixed size of \c 16 bytes.
 */
 QKnxNetIpSessionAuthenticateProxy::Builder &
     QKnxNetIpSessionAuthenticateProxy::Builder::setMessageAuthenticationCode(const QKnxByteArray &data)
