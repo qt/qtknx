@@ -588,13 +588,11 @@ void q_SSL_get0_alpn_selected(const SSL *ssl, const unsigned char **data,
 
     int q_EVP_CIPHER_CTX_key_length(const EVP_CIPHER_CTX *ctx);
     int q_EVP_CIPHER_CTX_iv_length(const EVP_CIPHER_CTX *ctx);
+    int q_EVP_CIPHER_block_size(const EVP_CIPHER *cipher);
     int q_EVP_CipherFinal_ex(EVP_CIPHER_CTX *ctx, unsigned char *outm, int *outl);
 
-    const EVP_CIPHER *q_EVP_aes_128_cbc(void);
     int q_EVP_CIPHER_CTX_set_padding(EVP_CIPHER_CTX *x, int padding);
 
-    int q_PKCS5_PBKDF2_HMAC(const char *pass, int passlen, const unsigned char *salt, int saltlen,
-        int iter, const EVP_MD *digest, int keylen, unsigned char *out);
     const EVP_MD *q_EVP_sha256(void);
 #endif
 

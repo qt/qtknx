@@ -29,7 +29,12 @@
 #include <QtCore/qdebug.h>
 #include <QtCore/qloggingcategory.h>
 #include <QtKnx/qknxcurve25519.h>
+#include <QtKnx/qknxlinklayerframebuilder.h>
+#include <QtKnx/qknxnetiproutingindication.h>
+#include <QtKnx/qknxnetipsecurewrapper.h>
+#include <QtKnx/qknxnetipsessionauthenticate.h>
 #include <QtKnx/qknxnetipsessionresponse.h>
+#include <QtKnx/qknxnetipsessionstatus.h>
 #include <QtKnx/private/qknxcryptographicdata_p.h>
 #include <QtTest/qtest.h>
 
@@ -172,23 +177,185 @@ private slots:
         if (QKnxOpenSsl::sslLibraryVersionNumber() < 0x1010000fL)
             return;
 
-        auto clientBytes = QKnxByteArray::fromHex("0aa227b4fd7a32319ba9960ac036ce0e"
-            "5c4507b5ae55161f1078b1dcfb3cb631");
-        auto client = QKnxCurve25519PublicKey::fromBytes(clientBytes);
+        /* This test more or less follows KNX AN156 - Annex A */
 
-        auto serverBytes = QKnxByteArray::fromHex("bdf099909923143ef0a5de0b3be3687b"
-            "c5bd3cf5f9e6f901699cd870ec1ff824");
-        auto server = QKnxCurve25519PublicKey::fromBytes(serverBytes);
+        auto clientPublicKey = QKnxCurve25519PublicKey::fromBytes(QKnxByteArray::fromHex("0aa227b4"
+            "fd7a32319ba9960ac036ce0e5c4507b5ae55161f1078b1dcfb3cb631"));
 
-        auto authCode = QKnxCryptographicEngine::messageAuthenticationCode(
-            QKnxCryptographicEngine::Mode::Encrypt, 0x0001,
-            QKnxNetIpFrameHeader { QKnxNetIp::ServiceType::SessionResponse, 0x32 },
-            client,
-            server,
-            QKnxByteArray::fromHex("e158e4012047bd6cc41aafbc5c04c1fc")
-        );
+        auto serverPrivateKey = QKnxCurve25519PrivateKey::fromBytes(QKnxByteArray::fromHex("68c174"
+            "4813f4e65cf10cca671caa1336a796b4ac40cc5cf2655674225c1e5264"));
+        auto serverPublicKey = QKnxCurve25519PublicKey::fromBytes(QKnxByteArray::fromHex("bdf09990"
+            "9923143ef0a5de0b3be3687bc5bd3cf5f9e6f901699cd870ec1ff824"));
 
-        QCOMPARE(authCode, QKnxByteArray::fromHex("a922505aaa436163570bd5494c2df2a3"));
+        QCOMPARE(serverPublicKey.bytes(), QKnxCurve25519PublicKey(serverPrivateKey).bytes());
+
+        /* Session Response */
+
+        const QByteArray deviceAuthenticationPassword { "trustme" };
+        auto deviceAuthenticationCode =
+            QKnxCryptographicEngine::deviceAuthenticationCodeHash(deviceAuthenticationPassword);
+
+        QCOMPARE(deviceAuthenticationCode, QKnxByteArray::fromHex("e158e4012047bd6cc41aafbc5c04c1fc"));
+
+        auto knxNetIpSecureHeader = QKnxNetIpFrameHeader::fromBytes(QKnxByteArray::fromHex("061009520038"));
+        quint16 secureSessionIdentifier = 0x0001;
+        auto XOR_X_Y = QKnxCryptographicEngine::XOR(clientPublicKey.bytes(), serverPublicKey.bytes());
+
+        QCOMPARE(XOR_X_Y,
+            QKnxByteArray::fromHex("b752be246459260f6b0c4801fbd5a67599f83b4057b3ef1e79e469ac17234e15"));
+
+        auto mac = QKnxCryptographicEngine::calculateMessageAuthenticationCode(deviceAuthenticationCode,
+            knxNetIpSecureHeader, secureSessionIdentifier, XOR_X_Y);
+        QCOMPARE(mac, QKnxByteArray::fromHex("da3dc6af79896aa6ee7573d69950c283"));
+
+        auto encMac = QKnxCryptographicEngine::encryptMessageAuthenticationCode(deviceAuthenticationCode,
+            mac);
+        QCOMPARE(encMac, QKnxByteArray::fromHex("a922505aaa436163570bd5494c2df2a3"));
+
+        auto decMac = QKnxCryptographicEngine::decryptMessageAuthenticationCode(deviceAuthenticationCode, encMac);
+        QCOMPARE(decMac, mac);
+
+        auto sharedSecret = QKnxCryptographicEngine::sharedSecret(clientPublicKey, serverPrivateKey);
+        QCOMPARE(sharedSecret,
+            QKnxByteArray::fromHex("d801525217618f0da90a4ff22148aee0ff4c19b430e8081223ffe99c81a98b05"));
+
+        auto sessionKey = QKnxCryptographicEngine::sessionKey(sharedSecret);
+        QCOMPARE(sessionKey, QKnxByteArray::fromHex("289426c2912535ba98279a4d1843c487"));
+
+        /* Session Authenticate */
+
+        const QByteArray password { "secret" };
+        auto passwordHash = QKnxCryptographicEngine::userPasswordHash(password);
+
+        QCOMPARE(passwordHash, QKnxByteArray::fromHex("03fcedb66660251ec81a1a716901696a"));
+
+        knxNetIpSecureHeader = QKnxNetIpFrameHeader::fromBytes(QKnxByteArray::fromHex("061009530018"));
+        quint16 userId = 0x0001;
+
+        mac = QKnxCryptographicEngine::calculateMessageAuthenticationCode(passwordHash,
+            knxNetIpSecureHeader, userId, XOR_X_Y);
+        QCOMPARE(mac, QKnxByteArray::fromHex("741669f5e32bff6fa2edf51c52d4bd8f"));
+
+        encMac = QKnxCryptographicEngine::encryptMessageAuthenticationCode(passwordHash, mac);
+        QCOMPARE(encMac, QKnxByteArray::fromHex("1f1d59ea9f12a152e5d9727f08462cde"));
+
+        decMac = QKnxCryptographicEngine::decryptMessageAuthenticationCode(passwordHash, encMac);
+        QCOMPARE(decMac, mac);
+
+        auto sequenceNumber = 0x000000000000;
+        auto serialNumber = QKnxByteArray::fromHex("00fa12345678");
+        auto messageTag = 0xaffe;
+        knxNetIpSecureHeader = QKnxNetIpFrameHeader::fromBytes(QKnxByteArray::fromHex("06100950003e"));
+
+        auto frame = QKnxNetIpSessionAuthenticateProxy::builder()
+            .setUserId(userId)
+            .setMessageAuthenticationCode(encMac)
+            .create();
+
+        mac = QKnxCryptographicEngine::calculateMessageAuthenticationCode(sessionKey,
+            knxNetIpSecureHeader, secureSessionIdentifier, frame.bytes(), sequenceNumber,
+            serialNumber, messageTag);
+        QCOMPARE(mac, QKnxByteArray::fromHex("602280d0896beaa7106e7248f67f2eef"));
+
+        encMac = QKnxCryptographicEngine::encryptMessageAuthenticationCode(sessionKey, mac,
+            sequenceNumber, serialNumber, messageTag);
+        QCOMPARE(encMac, QKnxByteArray::fromHex("52dba8e7e4bd80bd7d868a3ae78749de"));
+
+        decMac = QKnxCryptographicEngine::decryptMessageAuthenticationCode(sessionKey, encMac,
+            sequenceNumber, serialNumber, messageTag);
+        QCOMPARE(decMac, mac);
+
+        auto encData = QKnxCryptographicEngine::encryptSecureWrapperPayload(sessionKey,
+            frame, sequenceNumber, serialNumber, messageTag);
+        QCOMPARE(encData, QKnxByteArray::fromHex("7915a4f36e6e4208d28b4a207d8f35c0d138c26a7b5e7169"));
+
+        auto decData = QKnxCryptographicEngine::decryptSecureWrapperPayload(sessionKey,
+            encData, sequenceNumber, serialNumber, messageTag);
+        QCOMPARE(decData, frame.bytes());
+
+        /* Session Status */
+
+        serialNumber = QKnxByteArray::fromHex("00faaaaaaaaa");
+        knxNetIpSecureHeader = QKnxNetIpFrameHeader::fromBytes(QKnxByteArray::fromHex("06100950002e"));
+
+        frame = QKnxNetIpSessionStatusProxy::builder()
+            .setStatus(QKnxNetIp::SecureSessionStatus::AuthenticationSuccess)
+            .create();
+
+        mac = QKnxCryptographicEngine::calculateMessageAuthenticationCode(sessionKey,
+            knxNetIpSecureHeader, secureSessionIdentifier, frame.bytes(), sequenceNumber,
+            serialNumber, messageTag);
+        QCOMPARE(mac, QKnxByteArray::fromHex("a8ed2796a566cd60b91a4de5c1144cbc"));
+
+        encMac = QKnxCryptographicEngine::encryptMessageAuthenticationCode(sessionKey, mac,
+            sequenceNumber, serialNumber, messageTag);
+        QCOMPARE(encMac, QKnxByteArray::fromHex("a373c3e0b4bde4497c395e4b1c2f46a1"));
+
+        decMac = QKnxCryptographicEngine::decryptMessageAuthenticationCode(sessionKey, encMac,
+            sequenceNumber, serialNumber, messageTag);
+        QCOMPARE(decMac, mac);
+
+        encData = QKnxCryptographicEngine::encryptSecureWrapperPayload(sessionKey,
+            frame, sequenceNumber, serialNumber, messageTag);
+        QCOMPARE(encData, QKnxByteArray::fromHex("26156db5c749888f"));
+
+        decData = QKnxCryptographicEngine::decryptSecureWrapperPayload(sessionKey,
+            encData, sequenceNumber, serialNumber, messageTag);
+        QCOMPARE(decData, frame.bytes());
+
+        /* Routing Indication */
+
+        frame = QKnxNetIpRoutingIndicationProxy::builder()
+            .setCemi(QKnxLinkLayerFrame::builder()
+                .setMedium(QKnx::MediumType::NetIP)
+                .setData(QKnxByteArray::fromHex("2900bcd011590ade010081"))
+                .createFrame())
+            .create();
+
+        auto backboneKey = QKnxByteArray::fromHex("000102030405060708090a0b0c0d0e0f");
+        quint48 timerValue = 211938428830917;
+        serialNumber = QKnxByteArray::fromHex("00fa12345678");
+        knxNetIpSecureHeader = QKnxNetIpFrameHeader::fromBytes(QKnxByteArray::fromHex("061009500037"));
+        secureSessionIdentifier = 0x0000;
+
+        mac = QKnxCryptographicEngine::calculateMessageAuthenticationCode(backboneKey,
+            knxNetIpSecureHeader, secureSessionIdentifier, frame.bytes(), timerValue,
+            serialNumber, messageTag);
+        QCOMPARE(mac, QKnxByteArray::fromHex("bd0a294b952554b23539204c2271d26b"));
+
+        encMac = QKnxCryptographicEngine::encryptMessageAuthenticationCode(backboneKey, mac,
+            timerValue, serialNumber, messageTag);
+        QCOMPARE(encMac, QKnxByteArray::fromHex("7212a03aaae49da85689774c1d2b4da4"));
+
+        decMac = QKnxCryptographicEngine::decryptMessageAuthenticationCode(backboneKey, encMac,
+            timerValue, serialNumber, messageTag);
+        QCOMPARE(decMac, mac);
+
+        encData = QKnxCryptographicEngine::encryptSecureWrapperPayload(backboneKey,
+            frame, timerValue, serialNumber, messageTag);
+        QCOMPARE(encData, QKnxByteArray::fromHex("b7ee7e8a1c2f7bbabec775fd6e10d0bc4b"));
+
+        decData = QKnxCryptographicEngine::decryptSecureWrapperPayload(backboneKey,
+            encData, timerValue, serialNumber, messageTag);
+        QCOMPARE(decData, frame.bytes());
+
+        /* Timer Notify */
+
+        knxNetIpSecureHeader = QKnxNetIpFrameHeader::fromBytes(QKnxByteArray::fromHex("061009550024"));
+
+        mac = QKnxCryptographicEngine::calculateMessageAuthenticationCode(backboneKey,
+            knxNetIpSecureHeader, secureSessionIdentifier, {}, timerValue,
+            serialNumber, messageTag);
+        QCOMPARE(mac, QKnxByteArray::fromHex("21631241bc1f784d6d03da070580464a"));
+
+        encMac = QKnxCryptographicEngine::encryptMessageAuthenticationCode(backboneKey, mac,
+            timerValue, serialNumber, messageTag);
+        QCOMPARE(encMac, QKnxByteArray::fromHex("ee7b9b3083deb1570eb38d073adad985"));
+
+        decMac = QKnxCryptographicEngine::decryptMessageAuthenticationCode(backboneKey, encMac,
+            timerValue, serialNumber, messageTag);
+        QCOMPARE(decMac, mac);
+
     }
 
     void cleanupTestCase()
