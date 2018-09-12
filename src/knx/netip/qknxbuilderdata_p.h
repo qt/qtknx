@@ -47,6 +47,10 @@
 #include <QtKnx/qknxnetipservicefamiliesdib.h>
 #include <QtKnx/qknxnetipsrp.h>
 
+#if QT_CONFIG(opensslv11)
+# include "qknxcurve25519.h"
+#endif
+
 QT_BEGIN_NAMESPACE
 
 class QKnxFeatureBuilderPrivate : public QSharedData
@@ -123,6 +127,39 @@ public:
     QKnxByteArray m_encryptedFrame;
     QKnxNetIpFrame m_unencryptedFrame;
     quint16 m_tag { 0 };
+    QKnxByteArray m_authCode;
+};
+
+class QKnxNetIpTimerNotifyBuilderPrivate : public QSharedData
+{
+public:
+    QKnxNetIpTimerNotifyBuilderPrivate() = default;
+    ~QKnxNetIpTimerNotifyBuilderPrivate() = default;
+
+    quint64 m_timer { Q_UINT48_MAX + 1 };
+    QKnxByteArray m_serial;
+    qint32 m_tag { -1 };
+    QKnxByteArray m_authCode;
+};
+
+class QKnxNetIpSessionResponseBuilderPrivate : public QSharedData
+{
+public:
+    QKnxNetIpSessionResponseBuilderPrivate() = default;
+    ~QKnxNetIpSessionResponseBuilderPrivate() = default;
+
+    qint32 m_id { -1 };
+    QKnxByteArray m_serverPublicKey;
+    QKnxByteArray m_authCode;
+};
+
+class QKnxNetIpSessionAuthenticateBuilderPrivate : public QSharedData
+{
+public:
+    QKnxNetIpSessionAuthenticateBuilderPrivate() = default;
+    ~QKnxNetIpSessionAuthenticateBuilderPrivate() = default;
+
+    quint8 m_id { 0 };
     QKnxByteArray m_authCode;
 };
 

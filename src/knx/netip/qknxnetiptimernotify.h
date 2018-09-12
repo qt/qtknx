@@ -73,6 +73,26 @@ public:
     };
     static QKnxNetIpTimerNotifyProxy::Builder builder();
 
+    class Q_KNX_EXPORT SecureBuilder final
+    {
+    public:
+        SecureBuilder();
+        ~SecureBuilder();
+
+        SecureBuilder &setTimerValue(quint48 timerValue);
+        SecureBuilder &setSerialNumber(const QKnxByteArray &serialNumber);
+        SecureBuilder &setMessageTag(quint16 tag);
+
+        QKnxNetIpFrame create(const QKnxByteArray &backboneKey, quint16 sessionId) const;
+
+        SecureBuilder(const SecureBuilder &other);
+        SecureBuilder &operator=(const SecureBuilder &other);
+
+    private:
+        QSharedDataPointer<QKnxNetIpTimerNotifyBuilderPrivate> d_ptr;
+    };
+    static QKnxNetIpTimerNotifyProxy::SecureBuilder secureBuilder();
+
 private:
     const QKnxNetIpFrame &m_frame;
 };

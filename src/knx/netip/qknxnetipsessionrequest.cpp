@@ -185,7 +185,7 @@ public:
     ~QKnxNetIpSessionRequestBuilderPrivate() = default;
 
     QKnxNetIpHpai m_hpai;
-    QKnxByteArray m_publicKey;
+    QKnxByteArray m_serverPublicKey;
 };
 
 /*!
@@ -220,7 +220,7 @@ QKnxNetIpSessionRequestProxy::Builder &
 QKnxNetIpSessionRequestProxy::Builder &
     QKnxNetIpSessionRequestProxy::Builder::setPublicKey(const QKnxByteArray &publicKey)
 {
-    d_ptr->m_publicKey = publicKey;
+    d_ptr->m_serverPublicKey = publicKey;
     return *this;
 }
 
@@ -234,8 +234,8 @@ QKnxNetIpSessionRequestProxy::Builder &
 */
 QKnxNetIpFrame QKnxNetIpSessionRequestProxy::Builder::create() const
 {
-    if (d_ptr->m_hpai.isValid() && d_ptr->m_publicKey.size() == 32)
-        return { QKnxNetIp::ServiceType::SessionRequest, d_ptr->m_hpai.bytes() + d_ptr->m_publicKey };
+    if (d_ptr->m_hpai.isValid() && d_ptr->m_serverPublicKey.size() == 32)
+        return { QKnxNetIp::ServiceType::SessionRequest, d_ptr->m_hpai.bytes() + d_ptr->m_serverPublicKey };
     return { QKnxNetIp::ServiceType::SessionRequest };
 }
 

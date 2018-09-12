@@ -27,6 +27,7 @@
 **
 ******************************************************************************/
 
+#include "qknxbuilderdata_p.h"
 #include "qknxnetiptimernotify.h"
 #include "qknxutils.h"
 
@@ -192,18 +193,6 @@ QKnxNetIpTimerNotifyProxy::Builder QKnxNetIpTimerNotifyProxy::builder()
     \sa QKnxCryptographicEngine
 */
 
-class QKnxNetIpTimerNotifyBuilderPrivate : public QSharedData
-{
-public:
-    QKnxNetIpTimerNotifyBuilderPrivate() = default;
-    ~QKnxNetIpTimerNotifyBuilderPrivate() = default;
-
-    quint64 m_timer { Q_UINT48_MAX + 1 };
-    QKnxByteArray m_serial;
-    qint32 m_tag { -1 };
-    QKnxByteArray m_authCode;
-};
-
 /*!
     Creates a new empty timer notify frame builder object.
 */
@@ -303,6 +292,164 @@ QKnxNetIpTimerNotifyProxy::Builder &
 {
     d_ptr = other.d_ptr;
     return *this;
+}
+
+
+/*!
+    \class QKnxNetIpTimerNotifyProxy::SecureBuilder
+
+    \inmodule QtKnx
+    \inheaderfile QKnxNetIpTimerNotifyProxy
+
+    \brief The QKnxNetIpTimerNotifyProxy::SecureBuilder class provides the
+    means to create a KNXnet/IP timer notify frame.
+
+    This class is part of the Qt KNX module and currently available as a
+    Technology Preview, and therefore the API and functionality provided
+    by the class may be subject to change at any time without prior notice.
+
+    \note To use this class OpenSSL must be supported on your target system.
+
+    This frame will be sent during secure KNXnet/IP multicast group
+    communication to keep the multicast group member's timer values
+    synchronized. The frame is therefore sent to the KNXnet/IP routing
+    endpoint on port \c 3671 of the configured routing multicast address.
+
+    The common way to create a timer notify frame is:
+
+    \code
+        auto sessionId = ...
+        auto backboneKey = ... // the backbone key used
+
+        auto netIpFrame = QKnxNetIpTimerNotifyProxy::builder()
+            .setTimerValue(15021976)
+            .setSerialNumber(QKnxByteArray::fromHex("0123456789AB"))
+            .setMessageTag(quint16(QRandomGenerator::global()->generate())
+            .create(backboneKey, sessionId);
+    \endcode
+
+    \sa QKnxCryptographicEngine
+*/
+
+/*!
+    Creates a new empty timer notify frame builder object.
+*/
+QKnxNetIpTimerNotifyProxy::SecureBuilder::SecureBuilder()
+    : d_ptr(new QKnxNetIpTimerNotifyBuilderPrivate)
+{}
+
+/*!
+    Destroys the object and frees any allocated resources.
+*/
+QKnxNetIpTimerNotifyProxy::SecureBuilder::~SecureBuilder() = default;
+
+/*!
+    Sets the timer value to \a timerValue and returns a reference to the
+    builder.
+
+    \note The size of a timer value is limited to 48 bits, so the maximum
+    number can be \c 281474976710655. Passing a larger value will result in
+    creating an invalid frame.
+*/
+QKnxNetIpTimerNotifyProxy::SecureBuilder &
+    QKnxNetIpTimerNotifyProxy::SecureBuilder::setTimerValue(quint48 timerValue)
+{
+    d_ptr->m_timer = timerValue;
+    return *this;
+}
+
+/*!
+    Sets the serial number to \a serialNumber and returns a reference to the
+    builder.
+
+    \note The serial number must contain exactly 6 bytes.
+*/
+QKnxNetIpTimerNotifyProxy::SecureBuilder &
+    QKnxNetIpTimerNotifyProxy::SecureBuilder::setSerialNumber(const QKnxByteArray &serialNumber)
+{
+    d_ptr->m_serial = serialNumber;
+    return *this;
+}
+
+/*!
+    Sets the message tag of the generic KNXnet/IP timer notify frame to \a tag
+    and returns a reference to the builder.
+
+    In case of a periodic or initial notify the tag contains a random value. In
+    case of an update notify this is the value of the outdated frame triggering
+    the update.
+*/
+QKnxNetIpTimerNotifyProxy::SecureBuilder &
+    QKnxNetIpTimerNotifyProxy::SecureBuilder::setMessageTag(quint16 tag)
+{
+    d_ptr->m_tag = tag;
+    return *this;
+}
+
+/*!
+    Creates and returns a KNXnet/IP timer notify frame.
+
+    The function calculates the AES128 CCM message authentication code (MAC)
+    with the given backbone key \a backboneKey and the session ID \a ssid and
+    appends it to the newly created frame.
+
+    \note The returned frame may be invalid depending on the values used during
+    setup.
+
+    \sa isValid()
+*/
+QKnxNetIpFrame
+    QKnxNetIpTimerNotifyProxy::SecureBuilder::create(const QKnxByteArray &backboneKey, quint16 ssid) const
+{
+#if QT_CONFIG(opensslv11)
+    if (d_ptr->m_timer > Q_UINT48_MAX || d_ptr->m_serial.size() != 6 || d_ptr->m_tag < 0)
+        return { QKnxNetIp::ServiceType::TimerNotify };
+
+    auto builder = QKnxNetIpTimerNotifyProxy::builder();
+    auto frame = builder
+        .setTimerValue(d_ptr->m_timer)
+        .setSerialNumber(d_ptr->m_serial)
+        .setMessageTag(d_ptr->m_tag)
+        .setMessageAuthenticationCode(QKnxByteArray(16, 0x00)) // dummy MAC to get a proper header
+        .create();
+
+    auto mac = QKnxCryptographicEngine::calculateMessageAuthenticationCode(backboneKey,
+        frame.header(), ssid, {}, d_ptr->m_timer, d_ptr->m_serial, d_ptr->m_tag);
+
+    mac = QKnxCryptographicEngine::encryptMessageAuthenticationCode(backboneKey, mac,
+        d_ptr->m_timer, d_ptr->m_serial, d_ptr->m_tag);
+
+    return builder.setMessageAuthenticationCode(mac).create();
+#else
+    Q_UNUSED(backboneKey)
+    Q_UNUSED(ssid)
+    return { QKnxNetIp::ServiceType::TimerNotify };
+#endif
+}
+
+/*!
+    Constructs a copy of \a other.
+*/
+QKnxNetIpTimerNotifyProxy::SecureBuilder::SecureBuilder(const SecureBuilder &other)
+    : d_ptr(other.d_ptr)
+{}
+
+/*!
+    Assigns the specified \a other to this object.
+*/
+QKnxNetIpTimerNotifyProxy::SecureBuilder &
+    QKnxNetIpTimerNotifyProxy::SecureBuilder::operator=(const SecureBuilder &other)
+{
+    d_ptr = other.d_ptr;
+    return *this;
+}
+
+/*!
+    Returns a secure builder object to create a KNXnet/IP timer notify frame.
+*/
+QKnxNetIpTimerNotifyProxy::SecureBuilder QKnxNetIpTimerNotifyProxy::secureBuilder()
+{
+    return QKnxNetIpTimerNotifyProxy::SecureBuilder();
 }
 
 QT_END_NAMESPACE

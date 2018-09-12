@@ -59,7 +59,7 @@ public:
         ~Builder();
 
         Builder &setSecureSessionId(quint16 sessionId);
-        Builder &setPublicKey(const QKnxByteArray &publicKey);
+        Builder &setPublicKey(const QKnxByteArray &serverPublicKey);
         Builder &setMessageAuthenticationCode(const QKnxByteArray &data);
 
         QKnxNetIpFrame create() const;
@@ -71,6 +71,26 @@ public:
         QSharedDataPointer<QKnxNetIpSessionResponseBuilderPrivate> d_ptr;
     };
     static QKnxNetIpSessionResponseProxy::Builder builder();
+
+    class Q_KNX_EXPORT SecureBuilder final
+    {
+    public:
+        SecureBuilder();
+        ~SecureBuilder();
+
+        SecureBuilder &setSecureSessionId(quint16 sessionId);
+        SecureBuilder &setPublicKey(const QKnxByteArray &serverPublicKey);
+
+        QKnxNetIpFrame create(const QByteArray &devicePassword,
+                              const QKnxByteArray &clientPublicKey) const;
+
+        SecureBuilder(const SecureBuilder &other);
+        SecureBuilder &operator=(const SecureBuilder &other);
+
+    private:
+        QSharedDataPointer<QKnxNetIpSessionResponseBuilderPrivate> d_ptr;
+    };
+    static QKnxNetIpSessionResponseProxy::SecureBuilder secureBuilder();
 
 private:
     const QKnxNetIpFrame &m_frame;

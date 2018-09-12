@@ -77,6 +77,28 @@ public:
     };
     static QKnxNetIpSecureWrapperProxy::Builder builder();
 
+    class Q_KNX_EXPORT SecureBuilder final
+    {
+    public:
+        SecureBuilder();
+        ~SecureBuilder();
+
+        SecureBuilder &setSecureSessionId(quint16 sessionId);
+        SecureBuilder &setSequenceNumber(quint48 seqNumber);
+        SecureBuilder &setSerialNumber(const QKnxByteArray &serialNumber);
+        SecureBuilder &setMessageTag(quint16 tag);
+        SecureBuilder &setEncapsulatedFrame(const QKnxNetIpFrame &frame);
+
+        QKnxNetIpFrame create(const QKnxByteArray &sessionKey) const;
+
+        SecureBuilder(const SecureBuilder &other);
+        SecureBuilder &operator=(const SecureBuilder &other);
+
+    private:
+        QSharedDataPointer<QKnxNetIpSecureWrapperPrivate> d_ptr;
+    };
+    static QKnxNetIpSecureWrapperProxy::SecureBuilder secureBuilder();
+
 private:
     const QKnxNetIpFrame &m_frame;
 };

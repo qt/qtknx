@@ -27,6 +27,7 @@
 **
 ******************************************************************************/
 
+#include "qknxbuilderdata_p.h"
 #include "qknxnetipsessionauthenticate.h"
 #include "qknxutils.h"
 
@@ -104,7 +105,7 @@ QKnxNetIpSessionAuthenticateProxy::QKnxNetIpSessionAuthenticateProxy(const QKnxN
     at least a valid header and a size in bytes corresponding to the total size
     of the KNXnet/IP frame header.
 
-    \note A userId() with the value \c 0x0000 or a value above \c 0x0080
+    \note A userId() with the value \c 0x00 or a value above \c 0x80
     is considered invalid according to the KNX application note AN159.
 
     \note KNXnet/IP session authentication frames currently have a fixed size
@@ -135,7 +136,7 @@ quint8 QKnxNetIpSessionAuthenticateProxy::userId() const
 */
 QKnxByteArray QKnxNetIpSessionAuthenticateProxy::messageAuthenticationCode() const
 {
-    return m_frame.constData().mid(sizeof(quint16) + 32);
+    return m_frame.constData().mid(sizeof(quint16));
 }
 
 /*!
@@ -181,18 +182,8 @@ QKnxNetIpSessionAuthenticateProxy::Builder QKnxNetIpSessionAuthenticateProxy::bu
     \sa QKnxCryptographicEngine
 */
 
-class QKnxNetIpSessionAuthenticateBuilderPrivate : public QSharedData
-{
-public:
-    QKnxNetIpSessionAuthenticateBuilderPrivate() = default;
-    ~QKnxNetIpSessionAuthenticateBuilderPrivate() = default;
-
-    quint16 m_id { 0 };
-    QKnxByteArray m_authCode;
-};
-
 /*!
-    Creates a new empty session authenticate frame builder.
+    Creates a new empty session authentication frame builder.
 */
 QKnxNetIpSessionAuthenticateProxy::Builder::Builder()
     : d_ptr(new QKnxNetIpSessionAuthenticateBuilderPrivate)
@@ -207,11 +198,11 @@ QKnxNetIpSessionAuthenticateProxy::Builder::~Builder() = default;
     Sets the user ID of the KNXnet/IP session authentication frame to \a userId
     and returns a reference to the builder.
 
-    \note A userId() with the value \c 0x0000 or a value above \c 0x0080
+    \note A userId() with the value \c 0x00 or a value above \c 0x80
     is considered invalid according to the KNX application note AN159.
 */
 QKnxNetIpSessionAuthenticateProxy::Builder &
-    QKnxNetIpSessionAuthenticateProxy::Builder::setUserId(quint16 userId)
+    QKnxNetIpSessionAuthenticateProxy::Builder::setUserId(quint8 userId)
 {
     d_ptr->m_id = userId;
     return *this;
@@ -261,6 +252,134 @@ QKnxNetIpSessionAuthenticateProxy::Builder &
 {
     d_ptr = other.d_ptr;
     return *this;
+}
+
+
+/*!
+    \class QKnxNetIpSessionAuthenticateProxy::SecureBuilder
+
+    \inmodule QtKnx
+    \inheaderfile QKnxNetIpSessionAuthenticateProxy
+
+    \brief The QKnxNetIpSessionAuthenticateProxy::SecureBuilder class provides the
+    means to create a KNXnet/IP session authentication frame.
+
+    This class is part of the Qt KNX module and currently available as a
+    Technology Preview, and therefore the API and functionality provided
+    by the class may be subject to change at any time without prior notice.
+
+    \note To use this class OpenSSL must be supported on your target system.
+
+    This frame will be sent by the KNXnet/IP secure client to the control
+    endpoint of the KNXnet/IP secure server after the Diffie-Hellman handshake
+    to authenticate the user against the server device.
+    The maximum time a KNXnet/IP secure client will wait for an authentication
+    status response of the KNXnet/IP secure server is 10 seconds.
+
+    The common way to create a session authentication frame is:
+
+    \code
+        quint16 mgmtLevelAccess = 0x0001;
+
+        auto netIpFrame = QKnxNetIpSessionAuthenticateProxy::secureBuilder()
+            .setUserId(mgmtLevelAccess)
+            .create(passwordHash, clientKey, serverKey);
+    \endcode
+
+    \sa QKnxCryptographicEngine
+*/
+
+/*!
+    Creates a new empty session authentication frame builder.
+*/
+QKnxNetIpSessionAuthenticateProxy::SecureBuilder::SecureBuilder()
+    : d_ptr(new QKnxNetIpSessionAuthenticateBuilderPrivate)
+{}
+
+/*!
+    Destroys the object and frees any allocated resources.
+*/
+QKnxNetIpSessionAuthenticateProxy::SecureBuilder::~SecureBuilder() = default;
+
+/*!
+    Sets the user ID of the KNXnet/IP session authentication frame to \a userId
+    and returns a reference to the builder.
+
+    \note A userId() with the value \c 0x00 or a value above \c 0x80
+    is considered invalid according to the KNX application note AN159.
+*/
+QKnxNetIpSessionAuthenticateProxy::SecureBuilder &
+    QKnxNetIpSessionAuthenticateProxy::SecureBuilder::setUserId(quint8 userId)
+{
+    d_ptr->m_id = userId;
+    return *this;
+}
+
+/*!
+    Creates and returns a KNXnet/IP session authentication frame.
+
+    The function calculates the AES128 CCM message authentication code (MAC)
+    with the given user session password \a sessionPassword, the Curve25519
+    client public key \a clientPublicKey, the Curve25519 server public key
+    \a serverPublicKey and appends it to the newly created frame.
+
+    \note The returned frame may be invalid depending on the values used during
+    setup.
+
+    \sa isValid()
+*/
+QKnxNetIpFrame QKnxNetIpSessionAuthenticateProxy::SecureBuilder::create(
+                                                        const QByteArray &sessionPassword,
+                                                        const QKnxByteArray &clientPublicKey,
+                                                        const QKnxByteArray &serverPublicKey) const
+{
+#if QT_CONFIG(opensslv11)
+    if (d_ptr->m_id == 0 || d_ptr->m_id >= 0x80 )
+        return { QKnxNetIp::ServiceType::SessionAuthenticate };
+
+    auto builder = QKnxNetIpSessionAuthenticateProxy::builder();
+    auto frame = builder
+        .setUserId(d_ptr->m_id)
+        .setMessageAuthenticationCode(QKnxByteArray(16, 0x00)) // dummy MAC to get a proper header
+        .create();
+
+    auto userPasswordHash = QKnxCryptographicEngine::userPasswordHash(sessionPassword);
+    auto mac = QKnxCryptographicEngine::calculateMessageAuthenticationCode(userPasswordHash, frame.
+        header(), d_ptr->m_id, QKnxCryptographicEngine::XOR(clientPublicKey, serverPublicKey));
+    mac = QKnxCryptographicEngine::encryptMessageAuthenticationCode(userPasswordHash, mac);
+
+    return builder.setMessageAuthenticationCode(mac).create();
+#else
+    Q_UNUSED(sessionPassword)
+    Q_UNUSED(clientPublicKey)
+    Q_UNUSED(serverPublicKey)
+    return { QKnxNetIp::ServiceType::SessionAuthenticate };
+#endif
+}
+
+/*!
+    Constructs a copy of \a other.
+*/
+QKnxNetIpSessionAuthenticateProxy::SecureBuilder::SecureBuilder(const SecureBuilder &other)
+    : d_ptr(other.d_ptr)
+{}
+
+/*!
+    Assigns the specified \a other to this object.
+*/
+QKnxNetIpSessionAuthenticateProxy::SecureBuilder &
+    QKnxNetIpSessionAuthenticateProxy::SecureBuilder::operator=(const SecureBuilder &other)
+{
+    d_ptr = other.d_ptr;
+    return *this;
+}
+
+/*!
+    Returns a builder object to create a KNXnet/IP session authentication frame.
+*/
+QKnxNetIpSessionAuthenticateProxy::SecureBuilder QKnxNetIpSessionAuthenticateProxy::secureBuilder()
+{
+    return QKnxNetIpSessionAuthenticateProxy::SecureBuilder();
 }
 
 QT_END_NAMESPACE

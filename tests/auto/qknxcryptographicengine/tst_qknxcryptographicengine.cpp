@@ -35,6 +35,7 @@
 #include <QtKnx/qknxnetipsessionauthenticate.h>
 #include <QtKnx/qknxnetipsessionresponse.h>
 #include <QtKnx/qknxnetipsessionstatus.h>
+#include <QtKnx/qknxnetiptimernotify.h>
 #include <QtKnx/private/qknxcryptographicdata_p.h>
 #include <QtTest/qtest.h>
 
@@ -356,6 +357,145 @@ private slots:
             timerValue, serialNumber, messageTag);
         QCOMPARE(decMac, mac);
 
+    }
+
+    void testSecureWrapperFrame()
+    {
+        auto sessionAuthenticate = QKnxNetIpSessionAuthenticateProxy::builder()
+            .setUserId(0x0001)
+            .setMessageAuthenticationCode(QKnxByteArray::fromHex("1f1d59ea9f12a152e5d9727f08462cde"))
+            .create();
+
+        auto sequenceNumber = 0x000000000000;
+        auto serialNumber = QKnxByteArray::fromHex("00fa12345678");
+        auto messageTag = 0xaffe;
+        quint16 secureSessionIdentifier = 0x0001;
+        auto sessionKey = QKnxByteArray::fromHex("289426c2912535ba98279a4d1843c487");
+
+        auto secureWrapper = QKnxNetIpSecureWrapperProxy::secureBuilder()
+            .setSecureSessionId(secureSessionIdentifier)
+            .setSequenceNumber(sequenceNumber)
+            .setSerialNumber(serialNumber)
+            .setMessageTag(messageTag)
+            .setEncapsulatedFrame(sessionAuthenticate)
+            .create(sessionKey);
+        QCOMPARE(secureWrapper.isValid(), true);
+
+        const QKnxNetIpSecureWrapperProxy proxy(secureWrapper);
+        QCOMPARE(proxy.isValid(), true);
+        QCOMPARE(proxy.secureSessionId(), secureSessionIdentifier);
+        QCOMPARE(proxy.sequenceNumber(), sequenceNumber);
+        QCOMPARE(proxy.serialNumber(), serialNumber);
+        QCOMPARE(proxy.messageTag(),messageTag);
+        QCOMPARE(proxy.messageAuthenticationCode(),
+            QKnxByteArray::fromHex("52dba8e7e4bd80bd7d868a3ae78749de"));
+        QCOMPARE(proxy.encapsulatedFrame(),
+            QKnxByteArray::fromHex("7915a4f36e6e4208d28b4a207d8f35c0d138c26a7b5e7169"));
+    }
+
+    void testTimerNotifyFrame()
+    {
+        quint48 timerValue = 211938428830917;
+        auto serialNumber = QKnxByteArray::fromHex("00fa12345678");
+        auto messageTag = 0xaffe;
+        auto mac = QKnxByteArray::fromHex("ee7b9b3083deb1570eb38d073adad985");
+
+        auto timerNotify = QKnxNetIpTimerNotifyProxy::builder()
+            .setTimerValue(timerValue)
+            .setSerialNumber(serialNumber)
+            .setMessageTag(messageTag)
+            .setMessageAuthenticationCode(mac)
+            .create();
+
+        QKnxNetIpTimerNotifyProxy proxy(timerNotify);
+        QCOMPARE(proxy.isValid(), true);
+        QCOMPARE(proxy.timerValue(), timerValue);
+        QCOMPARE(proxy.serialNumber(), serialNumber);
+        QCOMPARE(proxy.messageTag(), messageTag);
+        QCOMPARE(proxy.messageAuthenticationCode(), mac);
+
+        quint16 sessionId = 0x0000;
+        auto backboneKey = QKnxByteArray::fromHex("000102030405060708090a0b0c0d0e0f");
+
+        auto secureTimerNotify = QKnxNetIpTimerNotifyProxy::secureBuilder()
+            .setTimerValue(timerValue)
+            .setSerialNumber(serialNumber)
+            .setMessageTag(messageTag)
+            .create(backboneKey, sessionId);
+
+        QKnxNetIpTimerNotifyProxy proxy2(secureTimerNotify);
+        QCOMPARE(proxy2.isValid(), true);
+        QCOMPARE(proxy2.timerValue(), timerValue);
+        QCOMPARE(proxy2.serialNumber(), serialNumber);
+        QCOMPARE(proxy2.messageTag(), messageTag);
+        QCOMPARE(proxy2.messageAuthenticationCode(), mac);
+    }
+
+    void testSessionResponseFrame()
+    {
+        auto clientPublicKey = QKnxCurve25519PublicKey::fromBytes(QKnxByteArray::fromHex("0aa227b4"
+            "fd7a32319ba9960ac036ce0e5c4507b5ae55161f1078b1dcfb3cb631"));
+        auto serverPublicKey = QKnxCurve25519PublicKey::fromBytes(QKnxByteArray::fromHex("bdf09990"
+            "9923143ef0a5de0b3be3687bc5bd3cf5f9e6f901699cd870ec1ff824"));
+
+        quint16 secureSessionIdentifier = 0x0001;
+        const QByteArray deviceAuthenticationPassword { "trustme" };
+        auto mac = QKnxByteArray::fromHex("a922505aaa436163570bd5494c2df2a3");
+
+        auto sessionResponse = QKnxNetIpSessionResponseProxy::builder()
+            .setSecureSessionId(secureSessionIdentifier)
+            .setPublicKey(serverPublicKey.bytes())
+            .setMessageAuthenticationCode(mac)
+            .create();
+
+        QKnxNetIpSessionResponseProxy proxy(sessionResponse);
+        QCOMPARE(proxy.isValid(), true);
+        QCOMPARE(proxy.secureSessionId(), secureSessionIdentifier);
+        QCOMPARE(proxy.publicKey(), serverPublicKey.bytes());
+        QCOMPARE(proxy.messageAuthenticationCode(), mac);
+
+        sessionResponse = QKnxNetIpSessionResponseProxy::secureBuilder()
+            .setSecureSessionId(secureSessionIdentifier)
+            .setPublicKey(serverPublicKey.bytes())
+            .create(deviceAuthenticationPassword, clientPublicKey.bytes());
+
+        QKnxNetIpSessionResponseProxy proxy2(sessionResponse);
+        QCOMPARE(proxy2.isValid(), true);
+        QCOMPARE(proxy2.secureSessionId(), secureSessionIdentifier);
+        QCOMPARE(proxy2.publicKey(), serverPublicKey.bytes());
+        QCOMPARE(proxy2.messageAuthenticationCode(), mac);
+    }
+
+    void testSessionAuthenticateFrame()
+    {
+
+        auto clientPublicKey = QKnxCurve25519PublicKey::fromBytes(QKnxByteArray::fromHex("0aa227b4"
+            "fd7a32319ba9960ac036ce0e5c4507b5ae55161f1078b1dcfb3cb631"));
+        auto serverPublicKey = QKnxCurve25519PublicKey::fromBytes(QKnxByteArray::fromHex("bdf09990"
+            "9923143ef0a5de0b3be3687bc5bd3cf5f9e6f901699cd870ec1ff824"));
+
+        quint16 userId = 0x0001;
+        const QByteArray password { "secret" };
+        auto mac = QKnxByteArray::fromHex("1f1d59ea9f12a152e5d9727f08462cde");
+
+        auto sessionAuth = QKnxNetIpSessionAuthenticateProxy::builder()
+            .setUserId(userId)
+            .setMessageAuthenticationCode(mac)
+            .create();
+
+        QKnxNetIpSessionAuthenticateProxy proxy(sessionAuth);
+        QCOMPARE(proxy.isValid(), true);
+        QCOMPARE(proxy.userId(), userId);
+        QCOMPARE(proxy.messageAuthenticationCode(), mac);
+
+        auto sessionAuth2 = QKnxNetIpSessionAuthenticateProxy::secureBuilder()
+            .setUserId(userId)
+            .create(password, clientPublicKey.bytes(), serverPublicKey.bytes());
+
+        QKnxNetIpSessionAuthenticateProxy proxy2(sessionAuth2);
+        QCOMPARE(proxy2.isValid(), true);
+        QCOMPARE(proxy2.userId(), userId);
+        QCOMPARE(proxy2.messageAuthenticationCode(), mac);
     }
 
     void cleanupTestCase()
