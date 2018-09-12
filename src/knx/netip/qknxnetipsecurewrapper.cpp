@@ -147,7 +147,7 @@ QKnxByteArray QKnxNetIpSecureWrapperProxy::serialNumber() const
 */
 quint16 QKnxNetIpSecureWrapperProxy::messageTag() const
 {
-    return QKnxUtils::QUint16::fromBytes(m_frame.constData().mid(16));
+    return QKnxUtils::QUint16::fromBytes(m_frame.constData().mid(14));
 }
 
 /*!
@@ -156,7 +156,8 @@ quint16 QKnxNetIpSecureWrapperProxy::messageTag() const
 */
 QKnxByteArray QKnxNetIpSecureWrapperProxy::encapsulatedFrame() const
 {
-    return m_frame.constData().mid(18, m_frame.dataSize() - 16);
+    auto data = m_frame.constData().mid(16);
+    return data.mid(0, data.size() - 16); // remove the MAC
 }
 
 /*!
