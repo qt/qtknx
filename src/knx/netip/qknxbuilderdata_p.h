@@ -43,6 +43,7 @@
 
 #include <QtCore/qshareddata.h>
 #include <QtKnx/qknxnamespace.h>
+#include <QtKnx/qknxnetipframe.h>
 #include <QtKnx/qknxnetipservicefamiliesdib.h>
 #include <QtKnx/qknxnetipsrp.h>
 
@@ -108,6 +109,21 @@ public:
     QSet<QKnxNetIpDib> m_optionalDibs;
     QKnxNetIpDib m_hardware;
     QKnxNetIpDib m_supFamilies;
+};
+
+class QKnxNetIpSecureWrapperPrivate : public QSharedData
+{
+public:
+    QKnxNetIpSecureWrapperPrivate() = default;
+    ~QKnxNetIpSecureWrapperPrivate() = default;
+
+    quint16 m_sessionId { 0 };
+    quint64 m_seqNumber { Q_UINT48_MAX + 1 };
+    QKnxByteArray m_serial;
+    QKnxByteArray m_encryptedFrame;
+    QKnxNetIpFrame m_unencryptedFrame;
+    quint16 m_tag { 0 };
+    QKnxByteArray m_authCode;
 };
 
 QT_END_NAMESPACE

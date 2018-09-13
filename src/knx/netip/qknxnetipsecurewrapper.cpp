@@ -27,6 +27,7 @@
 **
 ******************************************************************************/
 
+#include "qknxbuilderdata_p.h"
 #include "qknxnetipsecurewrapper.h"
 #include "qknxutils.h"
 
@@ -213,6 +214,18 @@ QKnxNetIpSecureWrapperProxy::Builder QKnxNetIpSecureWrapperProxy::builder()
 */
 
 /*!
+    Creates a new empty secure wrapper frame builder object.
+*/
+QKnxNetIpSecureWrapperProxy::Builder::Builder()
+    : d_ptr(new QKnxNetIpSecureWrapperPrivate)
+{}
+
+/*!
+    Destroys the object and frees any allocated resources.
+*/
+QKnxNetIpSecureWrapperProxy::Builder::~Builder() = default;
+
+/*!
     Sets the secure session ID to \a sessionId and returns a reference to the
     builder. By default value is set to \c 0x0000.
 
@@ -223,7 +236,7 @@ QKnxNetIpSecureWrapperProxy::Builder QKnxNetIpSecureWrapperProxy::builder()
 QKnxNetIpSecureWrapperProxy::Builder &
     QKnxNetIpSecureWrapperProxy::Builder::setSecureSessionId(quint16 sessionId)
 {
-    m_sessionId = sessionId;
+    d_ptr->m_sessionId = sessionId;
     return *this;
 }
 
@@ -243,7 +256,7 @@ QKnxNetIpSecureWrapperProxy::Builder &
 QKnxNetIpSecureWrapperProxy::Builder &
     QKnxNetIpSecureWrapperProxy::Builder::setSequenceNumber(quint48 seqNumber)
 {
-    m_seqNumber = seqNumber;
+    d_ptr->m_seqNumber = seqNumber;
     return *this;
 }
 
@@ -256,7 +269,7 @@ QKnxNetIpSecureWrapperProxy::Builder &
 QKnxNetIpSecureWrapperProxy::Builder &
     QKnxNetIpSecureWrapperProxy::Builder::setSerialNumber(const QKnxByteArray &serialNumber)
 {
-    m_serial = serialNumber;
+    d_ptr->m_serial = serialNumber;
     return *this;
 }
 
@@ -272,7 +285,7 @@ QKnxNetIpSecureWrapperProxy::Builder &
 QKnxNetIpSecureWrapperProxy::Builder &
     QKnxNetIpSecureWrapperProxy::Builder::setMessageTag(quint16 tag)
 {
-    m_tag = tag;
+    d_ptr->m_tag = tag;
     return *this;
 }
 
@@ -286,7 +299,7 @@ QKnxNetIpSecureWrapperProxy::Builder &
 QKnxNetIpSecureWrapperProxy::Builder &
     QKnxNetIpSecureWrapperProxy::Builder::setEncapsulatedFrame(const QKnxByteArray &frame)
 {
-    m_frame = frame;
+    d_ptr->m_encryptedFrame = frame;
     return *this;
 }
 
@@ -298,7 +311,7 @@ QKnxNetIpSecureWrapperProxy::Builder &
 QKnxNetIpSecureWrapperProxy::Builder &
     QKnxNetIpSecureWrapperProxy::Builder::setMessageAuthenticationCode(const QKnxByteArray &data)
 {
-    m_authCode = data;
+    d_ptr->m_authCode = data;
     return *this;
 }
 
@@ -312,14 +325,33 @@ QKnxNetIpSecureWrapperProxy::Builder &
 */
 QKnxNetIpFrame QKnxNetIpSecureWrapperProxy::Builder::create() const
 {
-    if (m_seqNumber > Q_UINT48_MAX || m_serial.size() != 6 ||  m_authCode.size() != 16)
-        return { QKnxNetIp::ServiceType::SecureWrapper };
+    if (d_ptr->m_seqNumber > Q_UINT48_MAX || d_ptr->m_serial.size() != 6
+        ||  d_ptr->m_authCode.size() != 16) {
+            return { QKnxNetIp::ServiceType::SecureWrapper };
+    }
 
-    // TODO: introspect the frame and reject secure wrapper frames
+    // TODO: introspect the frame and reject secure wrapper frames if possible at all
 
-    return { QKnxNetIp::ServiceType::SecureWrapper, QKnxUtils::QUint16::bytes(m_sessionId)
-        + QKnxUtils::QUint48::bytes(m_seqNumber) + m_serial + QKnxUtils::QUint16::bytes(m_tag)
-        + m_frame + m_authCode };
+    return { QKnxNetIp::ServiceType::SecureWrapper, QKnxUtils::QUint16::bytes(d_ptr->m_sessionId)
+        + QKnxUtils::QUint48::bytes(d_ptr->m_seqNumber) + d_ptr->m_serial
+        + QKnxUtils::QUint16::bytes(d_ptr->m_tag) + d_ptr->m_encryptedFrame + d_ptr->m_authCode };
+}
+
+/*!
+    Constructs a copy of \a other.
+*/
+QKnxNetIpSecureWrapperProxy::Builder::Builder(const Builder &other)
+    : d_ptr(other.d_ptr)
+{}
+
+/*!
+    Assigns the specified \a other to this object.
+*/
+QKnxNetIpSecureWrapperProxy::Builder &
+    QKnxNetIpSecureWrapperProxy::Builder::operator=(const Builder &other)
+{
+    d_ptr = other.d_ptr;
+    return *this;
 }
 
 QT_END_NAMESPACE

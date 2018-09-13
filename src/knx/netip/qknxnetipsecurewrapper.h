@@ -35,6 +35,7 @@
 
 QT_BEGIN_NAMESPACE
 
+class QKnxNetIpSecureWrapperPrivate;
 class Q_KNX_EXPORT QKnxNetIpSecureWrapperProxy final
 {
 public:
@@ -56,6 +57,9 @@ public:
     class Q_KNX_EXPORT Builder final
     {
     public:
+        Builder();
+        ~Builder();
+
         Builder &setSecureSessionId(quint16 sessionId);
         Builder &setSequenceNumber(quint48 seqNumber);
         Builder &setSerialNumber(const QKnxByteArray &serialNumber);
@@ -65,13 +69,11 @@ public:
 
         QKnxNetIpFrame create() const;
 
+        Builder(const Builder &other);
+        Builder &operator=(const Builder &other);
+
     private:
-        quint16 m_sessionId { 0 };
-        quint64 m_seqNumber { Q_UINT48_MAX + 1 };
-        QKnxByteArray m_serial;
-        QKnxByteArray m_frame;
-        quint16 m_tag { 0 };
-        QKnxByteArray m_authCode;
+        QSharedDataPointer<QKnxNetIpSecureWrapperPrivate> d_ptr;
     };
     static QKnxNetIpSecureWrapperProxy::Builder builder();
 
