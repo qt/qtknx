@@ -367,7 +367,7 @@ QKnxNetIpRoutingInterface::FilterAction
 
     if (dst.type() == QKnxAddress::Type::Group) {
         // TODO: review this part
-        auto gAdd = QKnxAddress::createGroup(dst.main(), dst.middle(), 0);
+        auto gAdd = QKnxAddress::createGroup(dst.mainOrAreaSection(), dst.middleOrLineSection(), 0);
         bool routingCondition = true;
         if (m_routingMode == QKnxNetIpRoutingInterface::RoutingMode::FilterTableRouting)
             routingCondition = m_filterTable.contains(gAdd);
@@ -385,13 +385,13 @@ QKnxNetIpRoutingInterface::FilterAction
         return QKnxNetIpRoutingInterface::FilterAction::IgnoreTotally;
 
     auto ownAddress = m_individualAddress;
-    bool isLineCoupler = ownAddress.middle() != 0;
+    bool isLineCoupler = ownAddress.middleOrLineSection() != 0;
     if (isLineCoupler) {
         // sub-line to main line routing
-        bool notInOwnSubnetwork = (dst.main() != ownAddress.main())
-            || (dst.middle() == ownAddress.middle());
+        bool notInOwnSubnetwork = (dst.mainOrAreaSection() != ownAddress.mainOrAreaSection())
+            || (dst.middleOrLineSection() == ownAddress.middleOrLineSection());
         if (notInOwnSubnetwork) {
-            if (dst.sub() == 0) // address to this line coupler
+            if (dst.subOrDeviceSection() == 0) // address to this line coupler
                 return QKnxNetIpRoutingInterface::FilterAction::ForwardLocally;
             if (hopCount > 0 && hopCount <= 7)
                 return QKnxNetIpRoutingInterface::FilterAction::RouteDecremented;
@@ -402,8 +402,8 @@ QKnxNetIpRoutingInterface::FilterAction
     }
 
     // backbone to main line
-    if (dst.main() == ownAddress.main()) {
-        if (dst.middle() == 0 && dst.sub() == 0)
+    if (dst.mainOrAreaSection() == ownAddress.mainOrAreaSection()) {
+        if (dst.middleOrLineSection() == 0 && dst.subOrDeviceSection() == 0)
             // address to area coupler or backbone router.
             return QKnxNetIpRoutingInterface::FilterAction::ForwardLocally;
         if (hopCount > 0 && hopCount <= 7)
