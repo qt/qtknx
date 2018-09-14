@@ -178,11 +178,11 @@ QT_BEGIN_NAMESPACE
     apply on telegrams of a point-to-multipoint connectionless communication
     mode with standard group addresses.
 
-    \value BlockRouting
+    \value Block
             No telegrams are allowed to be forwarded on the interface.
     \value RouteAll
             All telegrams are routed and the filter table is ignored.
-    \value FilterTableRouting
+    \value Filter
             All telegrams with destination addresses not in the filter table are
             blocked, the rest of telegrams are forwarded.
 */
@@ -292,7 +292,7 @@ void QKnxNetIpRoutingInterface::setFilterTable(const QKnxNetIpRoutingInterface::
 {
     Q_D(QKnxNetIpRoutingInterface);
     d->m_filterTable = table;
-    d->m_routingMode = RoutingMode::FilterTableRouting;
+    d->m_routingMode = RoutingMode::Filter;
 }
 
 /*!

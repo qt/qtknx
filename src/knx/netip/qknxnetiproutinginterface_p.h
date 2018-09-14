@@ -114,7 +114,7 @@ public:
     QString m_errorMessage;
 
     QKnxNetIpRoutingInterface::FilterTable m_filterTable;
-    QKnxNetIpRoutingInterface::RoutingMode m_routingMode { QKnxNetIpRoutingInterface::RoutingMode::BlockRouting };
+    QKnxNetIpRoutingInterface::RoutingMode m_routingMode { QKnxNetIpRoutingInterface::RoutingMode::Block };
 };
 
 QT_END_NAMESPACE

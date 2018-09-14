@@ -369,9 +369,9 @@ QKnxNetIpRoutingInterface::FilterAction
         // TODO: review this part
         auto gAdd = QKnxAddress::createGroup(dst.mainOrAreaSection(), dst.middleOrLineSection(), 0);
         bool routingCondition = true;
-        if (m_routingMode == QKnxNetIpRoutingInterface::RoutingMode::FilterTableRouting)
+        if (m_routingMode == QKnxNetIpRoutingInterface::RoutingMode::Filter)
             routingCondition = m_filterTable.contains(gAdd);
-        if (m_routingMode == QKnxNetIpRoutingInterface::RoutingMode::BlockRouting)
+        if (m_routingMode == QKnxNetIpRoutingInterface::RoutingMode::Block)
             return QKnxNetIpRoutingInterface::FilterAction::IgnoreTotally;
         if (routingCondition && hopCount > 0 && hopCount <= 7)
             return QKnxNetIpRoutingInterface::FilterAction::RouteDecremented;

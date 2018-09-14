@@ -85,9 +85,9 @@ public:
 
     enum class RoutingMode : quint8
     {
-        BlockRouting,
+        Block,
         RouteAll,
-        FilterTableRouting
+        Filter
     };
 
     QKnxNetIpRoutingInterface(QObject *parent = nullptr);

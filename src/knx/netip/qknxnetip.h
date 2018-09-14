@@ -162,7 +162,7 @@ namespace QKnx
             NoMoreUniqueConnections = 0x25,
             DataConnection = 0x26,
             KnxConnection = 0x27,
-            AuthorizationError = 0x28,
+            Authorization = 0x28,
             TunnelingLayer = 0x29,
             NoTunnelingAddress = 0x2d,
             ConnectionInUse = 0x2e

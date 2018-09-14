@@ -405,7 +405,7 @@ bool QKnxNetIp::isServiceType(QKnxNetIp::ServiceType type)
     \value KnxConnection
     The KNXnet/IP server device detects an error concerning the KNX connection
     with the specified ID.
-    \value AuthorizationError
+    \value Authorization
     The KNXnet/IP client is not authorized to use the requested individual
     address in the extended connection request information (CRI) structure.
     \value TunnelingLayer
