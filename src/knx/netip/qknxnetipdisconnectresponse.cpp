@@ -51,18 +51,22 @@ QT_BEGIN_NAMESPACE
     \l QKnxNetIpTunnel or \l QKnxNetIpDeviceManagement
     class is used to establish a functional connection to a KNXnet/IP server.
 
+    \note When using QKnxNetIpDisconnectResponseProxy, care must be taken to
+    ensure that the referenced KNXnet/IP frame outlives the proxy on all code
+    paths, lest the proxy ends up referencing deleted data.
+
     The following code sample illustrates how to read the disconnection response
     information sent by a KNXnet/IP client:
 
     \code
         auto netIpFrame = QKnxNetIpFrame::fromBytes(...);
 
-        const QKnxNetIpDisconnectRequestProxy disconnectRequest(netIpFrame);
-        if (!disconnectRequest.isValid())
+        const QKnxNetIpDisconnectResponseProxy proxy(netIpFrame);
+        if (!proxy.isValid())
             return;
 
-        quint8 chanId = disconnectRequest.channelId();
-        QKnx::NetIp::Error state = disconnectRequest.status();
+        quint8 chanId = proxy.channelId();
+        QKnx::NetIp::Error state = proxy.status();
     \endcode
 
     \sa builder(), QKnxNetIpDisconnectRequestProxy,

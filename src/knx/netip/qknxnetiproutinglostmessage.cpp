@@ -54,17 +54,21 @@ QT_BEGIN_NAMESPACE
     state of the router or device (\l QKnx::NetIp::DeviceState) and the number
     of lost frames.
 
+    \note When using QKnxNetIpRoutingLostMessageProxy, care must be taken to
+    ensure that the referenced KNXnet/IP frame outlives the proxy on all code
+    paths, lest the proxy ends up referencing deleted data.
+
     The following code sample illustrates how to read the routing-lost message
     information sent by a KNXnet/IP router:
 
     \code
         auto netIpFrame = QKnxNetIpFrame::fromBytes(...);
 
-        QKnxNetIpRoutingLostMessageProxy routingProxy(netIpFrame);
-        if (!routingProxy.isValid())
+        QKnxNetIpRoutingLostMessageProxy proxy(netIpFrame);
+        if (!proxy.isValid())
             return;
 
-        if (routingProxy.deviceState() == QKnx::NetIp::DeviceState::KnxFault) {
+        if (proxy.deviceState() == QKnx::NetIp::DeviceState::KnxFault) {
             ....
         }
     \endcode

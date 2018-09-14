@@ -65,19 +65,23 @@ QT_BEGIN_NAMESPACE
     \l QKnxNetIpServerDescriptionAgent and \l QKnxNetIpServerInfo to check
     that the server supports the requested connection type and options.
 
+    \note When using QKnxNetIpTunnelingRequestProxy, care must be taken to
+    ensure that the referenced KNXnet/IP frame outlives the proxy on all code
+    paths, lest the proxy ends up referencing deleted data.
+
     The following code sample illustrates how to read the tunneling request
     information sent by a KNXnet/IP client:
 
     \code
         auto netIpFrame = QKnxNetIpFrame::fromBytes(...);
 
-        const QKnxNetIpTunnelingRequestProxy tunnelRequest(netIpFrame);
-        if (!tunnelRequest.isValid())
+        const QKnxNetIpTunnelingRequestProxy proxy(netIpFrame);
+        if (!proxy.isValid())
             return;
 
-        auto chanId = tunnelRequest.channelId();
-        auto seqNum = tunnelRequest.sequenceNumber();
-        auto knxLinkFrame = tunnelRequest.cemi();
+        auto chanId = proxy.channelId();
+        auto seqNum = proxy.sequenceNumber();
+        auto knxLinkFrame = proxy.cemi();
     \endcode
 
     \sa builder(), QKnxNetIpTunnelingAcknowledgeProxy,

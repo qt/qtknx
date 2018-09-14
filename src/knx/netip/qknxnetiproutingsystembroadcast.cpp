@@ -53,17 +53,21 @@ QT_BEGIN_NAMESPACE
     KNXnet/IP devices configured on different backbone keys are not able to
     communicate between each other.
 
+    \note When using QKnxNetIpRoutingSystemBroadcastProxy, care must be taken
+    to ensure that the referenced KNXnet/IP frame outlives the proxy on all code
+    paths, lest the proxy ends up referencing deleted data.
+
     The following code sample illustrates how to introspect a routing system
     broadcast frame:
 
     \code
         auto netIpFrame = QKnxNetIpFrame::fromBytes(...);
 
-        const QKnxNetIpRoutingSystemBroadcastProxy sbc(netIpFrame);
-        if (!sbc.isValid())
+        const QKnxNetIpRoutingSystemBroadcastProxy proxy(netIpFrame);
+        if (!proxy.isValid())
             return;
 
-        auto linkFrame = sbc.linkLayerFrame();
+        auto linkFrame = proxy.linkLayerFrame();
     \endcode
 
     \sa builder(), QKnxNetIpRoutingSystemBroadcastProxy,

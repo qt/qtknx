@@ -53,19 +53,23 @@ QT_BEGIN_NAMESPACE
     service used, the \l {QKnx::ReturnCode} {return code} in case of feature-set
     service, and the feature value as a byte array.
 
+    \note When using QKnxNetIpTunnelingFeatureResponseProxy, care must be taken
+    to ensure that the referenced KNXnet/IP frame outlives the proxy on all code
+    paths, lest the proxy ends up referencing deleted data.
+
     The following code sample illustrates how to read the tunneling
     feature-response information sent by a KNXnet/IP server:
 
     \code
         auto netIpFrame = QKnxNetIpFrame::fromBytes(...);
 
-        const QKnxNetIpTunnelingFeatureResponseProxy response(netIpFrame);
-        if (!response.isValid())
+        const QKnxNetIpTunnelingFeatureResponseProxy proxy(netIpFrame);
+        if (!proxy.isValid())
             return;
 
-        auto id = response.featureIdentifier();
-        auto returnCode = response.returnCode();
-        auto value = response.featureValue();
+        auto id = proxy.featureIdentifier();
+        auto returnCode = proxy.returnCode();
+        auto value = proxy.featureValue();
     \endcode
 
     \sa builder(), QKnxNetIpTunnelingFeatureGetProxy,

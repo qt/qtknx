@@ -77,19 +77,23 @@ QT_BEGIN_NAMESPACE
     \l QKnxNetIpTunnel or \l QKnxNetIpDeviceManagement
     class is used to establish a functional connection to a KNXnet/IP server.
 
+    \note When using QKnxNetIpDeviceConfigurationRequestProxy, care must be
+    taken to ensure that the referenced KNXnet/IP frame outlives the proxy on
+    all code paths, lest the proxy ends up referencing deleted data.
+
     The following code sample illustrates how to read the device configuration
     request information sent by a KNXnet/IP client:
 
     \code
         auto netIpFrame = QKnxNetIpFrame::fromBytes(...);
 
-        const QKnxNetIpDeviceConfigurationRequestProxy configRequest(netIpFrame);
-        if (!configRequest.isValid())
+        const QKnxNetIpDeviceConfigurationRequestProxy proxy(netIpFrame);
+        if (!proxy.isValid())
             return;
 
-        quint8 chanId = configRequest.channelId();
-        quint8 seqNum = configRequest.sequenceNumber();
-        auto knxLinkFrame = configRequest.cemi();
+        quint8 chanId = proxy.channelId();
+        quint8 seqNum = proxy.sequenceNumber();
+        auto knxLinkFrame = proxy.cemi();
     \endcode
 
     \sa builder(), QKnxNetIpServerDiscoveryAgent,
