@@ -142,7 +142,7 @@ bool QKnxOpenSsl::ensureLibraryLoaded()
 
     This class is part of the Qt KNX module and currently available as a
     Technology Preview, and therefore the API and functionality provided
-    by the module may be subject to change at any time without prior notice.
+    by the class may be subject to change at any time without prior notice.
 */
 
 /*!
@@ -272,7 +272,7 @@ QKnxCurve25519PublicKey &QKnxCurve25519PublicKey::operator=(const QKnxCurve25519
 
     This class is part of the Qt KNX module and currently available as a
     Technology Preview, and therefore the API and functionality provided
-    by the module may be subject to change at any time without prior notice.
+    by the class may be subject to change at any time without prior notice.
 */
 
 /*!
@@ -387,13 +387,97 @@ QKnxCurve25519PrivateKey &QKnxCurve25519PrivateKey::operator=(const QKnxCurve255
 
     This class is part of the Qt KNX module and currently available as a
     Technology Preview, and therefore the API and functionality provided
-    by the module may be subject to change at any time without prior notice.
-*/
+    by the class may be subject to change at any time without prior notice.
 
-/*!
-    \internal
-    \since 5.12
-    \enum QKnxCryptographicEngine::Mode
+    \section2 Calculating Message Authentication Codes
+
+    The calculateMessageAuthenticationCode() function can be used to compute a
+    message authentication code (MAC) for a KNXnet/IP secure frame. The fields
+    that  are used to calculate the MAC depend on the type of the frame, such
+    as \e {session response frame}, \e {session authentication frame}, or
+    \e {timer notify frame}.
+
+    The example code shows how to calculate the MAC for the most common secure
+    frames:
+
+    \code
+        auto dummyMac = QKnxByteArray(16, 000); // dummy to get a valid header
+
+        // Session Response Frame
+
+        quint16 secureSessionIdentifier = 0x0001;
+        auto responseBuilder = QKnxNetIpSessionResponseProxy::builder();
+
+        // create an intermediate frame to fetch a valid frame header
+        auto netIpFrame = responseBuilder
+            .setSecureSessionId(secureSessionIdentifier)
+            .setPublicKey(serverPublicKey)
+            .setMessageAuthenticationCode(dummyMac)
+            .create();
+
+        auto deviceAuthenticationHash =
+            QKnxCryptographicEngine::deviceAuthenticationCodeHash({ "trustme" });
+        auto XOR_X_Y = QKnxCryptographicEngine::XOR(clientPublicKey.bytes(), serverPublicKey.bytes());
+
+        auto mac = QKnxCryptographicEngine::calculateMessageAuthenticationCode(deviceAuthenticationHash,
+            netIpFrame.header(), secureSessionIdentifier, XOR_X_Y);
+
+        // create the final frame including the calculated MAC
+        netIpFrame = responseBuilder.
+            .setMessageAuthenticationCode(mac)
+            .create();
+
+
+        // Session Authenticate Frame
+
+        quint16 userId = 0x0001; // management level access
+        auto authenticateBuilder = QKnxNetIpSessionAuthenticateProxy::builder()'
+
+        // create an intermediate frame to fetch a valid frame header
+        netIpFrame = authenticateBuilder
+            .setUserId(userId)
+            .setMessageAuthenticationCode(dummyMac)
+            .create();
+
+        auto passwordHash = QKnxCryptographicEngine::userPasswordHash({ "secret" });
+
+        mac = QKnxCryptographicEngine::calculateMessageAuthenticationCode(passwordHash,
+            netIpFrame.header(), userId, XOR_X_Y);
+
+        // create the final frame including the calculated MAC
+        netIpFrame = responseBuilder.
+            .setMessageAuthenticationCode(mac)
+            .create();
+
+
+        // Timer Notify Frame
+
+        quint48 timerValue = 211938428830917;
+        auto serialNumber = QKnxByteArray::fromHex("00fa12345678");
+        quint16 messageTag = quint16(QRandomGenerator::global()->generate();
+
+        auto timerNotifyBuilder = QKnxNetIpTimerNotifyProxy::builder();
+
+        // create an intermediate frame to fetch a valid frame header
+        netIpFrame = timerNotifyBuilder
+            .setTimerValue(timerValue)
+            .setSerialNumber(serialNumber)
+            .setMessageTag(messageTag)
+            .setMessageAuthenticationCode(dummyMac)
+            .create();
+
+        QKnxByteArray dummyPayload;
+        quint16 dummySession = 0x0000;
+        auto backboneKey = QKnxByteArray::fromHex("000102030405060708090a0b0c0d0e0f");
+
+        mac = QKnxCryptographicEngine::calculateMessageAuthenticationCode(backboneKey,
+            netIpFrame.header(), dummySession, dummyPayload, timerValue, serialNumber, messageTag);
+
+        // create the final frame including the calculated MAC
+        netIpFrame = responseBuilder.
+            .setMessageAuthenticationCode(mac)
+            .create();
+    \endcode
 */
 
 /*!
@@ -499,25 +583,44 @@ QKnxByteArray QKnxCryptographicEngine::deviceAuthenticationCodeHash(const QByteA
         QKnxByteArray("device-authentication-code.1.secure.ip.knx.org", 46), 0x10000, 16);
 }
 
+/*!
+    Performs a bytewise XOR operation on the arguments \a left and \a right.
+    If the arguments are not equal in size, the function uses only the shorter
+    array for the operation. If \a adjust is set to \c true, the arrays are made
+    equal by padding them with \c 0x00 bytes.
+*/
+QKnxByteArray QKnxCryptographicEngine::XOR(const QKnxByteArray &left, const QKnxByteArray &right,
+    bool adjust)
+{
+    QKnxByteArray result(adjust ? qMax(left.size(), right.size()) : qMin(left.size(), right.size()),
+        Qt::Uninitialized);
+    for (int i = result.size() - 1; i >= 0; --i)
+        result.set(i, left.value(i, 0x00) ^ right.value(i, 0x00));
+    return result;
+}
+
 namespace QKnxPrivate
 {
-    static QKnxByteArray XOR(const QKnxByteArray &left, const QKnxByteArray &right)
+    static QKnxByteArray b0(quint48 sequence, const QKnxByteArray &serial, quint16 tag, quint16 len)
     {
-        QKnxByteArray result(qMax(left.size(), right.size()), Qt::Uninitialized);
-        for (int i = result.size() - 1; i >= 0; --i)
-            result.set(i, left.value(i, 0x00) ^ right.value(i, 0x00));
-        return result;
+        return QKnxUtils::QUint48::bytes(sequence) + serial + QKnxUtils::QUint16::bytes(tag)
+            + QKnxUtils::QUint16::bytes(len);
     }
 
-    static QKnxByteArray doCrypt(int mode, const QKnxByteArray &key, const QKnxByteArray &iv,
-        const QKnxByteArray &data)
+    static QKnxByteArray ctr0(quint48 sequence, const QKnxByteArray &serial, quint16 tag)
+    {
+        return QKnxPrivate::b0(sequence, serial, tag, 0xff00);
+    }
+
+    static QKnxByteArray encrypt(const QKnxByteArray &key, const QKnxByteArray &data)
     {
         QSharedPointer<EVP_CIPHER_CTX> ctxPtr(q_EVP_CIPHER_CTX_new(), q_EVP_CIPHER_CTX_free);
         if (ctxPtr.isNull())
             return {};
 
         const auto ctx = ctxPtr.data();
-        if (q_EVP_CipherInit_ex(ctx, q_EVP_aes_128_cbc(), nullptr, nullptr, nullptr, mode) <= 0)
+        const auto c = q_EVP_aes_128_cbc();
+        if (q_EVP_CipherInit_ex(ctx, c, nullptr, nullptr, nullptr, 0x01) <= 0)
             return {};
 
         if (q_EVP_CIPHER_CTX_set_padding(ctx, 0) <= 0)
@@ -526,105 +629,168 @@ namespace QKnxPrivate
         Q_ASSERT(q_EVP_CIPHER_CTX_iv_length(ctx) == 16);
         Q_ASSERT(q_EVP_CIPHER_CTX_key_length(ctx) == 16);
 
-        if (q_EVP_CipherInit_ex(ctx, nullptr, nullptr, key.constData(), iv.constData(), mode) <= 0)
+        static const quint8 iv[16] { 0x00 };
+        if (q_EVP_CipherInit_ex(ctx, nullptr, nullptr, key.constData(), iv, 0x01) <= 0)
             return {};
 
-        int outl;
-        QKnxByteArray out(EVP_MAX_BLOCK_LENGTH, 0x00);
-        if (q_EVP_CipherUpdate(ctx, out.data(), &outl,  data.constData(), data.size()) <= 0)
+        int outl, offset = 0;
+        QKnxByteArray out(data.size() + q_EVP_CIPHER_block_size(c), 0x00);
+        if (q_EVP_CipherUpdate(ctx, out.data(), &outl, data.constData(), data.size()) <= 0)
+            return {};
+        offset += outl;
+
+        if (q_EVP_CipherFinal_ex(ctx, out.data() + offset, &outl) <= 0)
+            return {};
+        offset += outl;
+
+        return out.mid(offset - 16, 16);
+    }
+
+    static QKnxByteArray processMAC(const QKnxByteArray &key, const QKnxByteArray &mac,
+        quint48 sequenceNumber, const QKnxByteArray &serialNumber, quint16 messageTag)
+    {
+        if (key.isEmpty() || mac.isEmpty())
             return {};
 
-        int outlen;
-        if (q_EVP_CipherFinal_ex(ctx, out.data() + outl, &outlen) <= 0)
+        auto Ctr0 = QKnxPrivate::ctr0(sequenceNumber,
+            (serialNumber.isEmpty() ? QKnxByteArray(6, 0x00) : serialNumber), messageTag);
+
+        return QKnxCryptographicEngine::XOR(QKnxPrivate::encrypt(key, Ctr0), mac);
+    }
+
+    static QKnxByteArray processPayload(const QKnxByteArray &key, const QKnxByteArray &payload,
+        quint48 sequenceNumber, const QKnxByteArray &serialNumber, quint16 messageTag)
+    {
+        if (key.isEmpty() || payload.isEmpty())
             return {};
 
-        return out.mid(0, outl + outlen);
+        auto Ctr0 = QKnxPrivate::ctr0(sequenceNumber,
+            (serialNumber.isEmpty() ? QKnxByteArray(6, 0x00) : serialNumber), messageTag);
+
+        QKnxByteArray ctrArray;
+        for (int i = 0; i < (payload.size() + 15) >> 4; ++i) {
+            Ctr0.set(15, Ctr0.at(15) + 1);
+            ctrArray += QKnxPrivate::encrypt(key, Ctr0);
+        }
+
+        return QKnxCryptographicEngine::XOR(ctrArray, payload, false);
     }
 }
 
 /*!
-    \internal
+    Computes a message authentication code (MAC) using the given \a key,
+    \a header, and \a id for the given \a data. Returns an array of bytes that
+    represent the calculated MAC or an empty byte array in case of an error.
+
+    \note The \a sequenceNumber, \a serialNumber, and \a messageTag values
+    are required to calculate a valid MAC for KNXnet/IP secure wrapper frames.
+    For all other types of secure frames, the possibly given values are ignored
+    and \c 0 is used instead. For timer notify frames, \e {default-constructed}
+    values are used instead of the \a id and \a data values.
+
+    For an example of using this function, see
+    \l {Calculating Message Authentication Codes}.
 */
-QKnxByteArray QKnxCryptographicEngine::messageAuthenticationCode(QKnxCryptographicEngine::Mode mode,
-    quint16 secureId, const QKnxNetIpFrameHeader &frameHdr, const QKnxCurve25519PublicKey &publicKey,
-    const QKnxCurve25519PublicKey &peerKey, const QKnxByteArray &deviceAuthenticationCode)
+QKnxByteArray QKnxCryptographicEngine::calculateMessageAuthenticationCode(const QKnxByteArray &key,
+    const QKnxNetIpFrameHeader &header, quint16 id, const QKnxByteArray &data,
+    quint48 sequenceNumber, const QKnxByteArray &serialNumber, quint16 messageTag)
 {
-    if (mode > QKnxCryptographicEngine::Mode::Encrypt
-        || !frameHdr.isValid()
-        || publicKey.isNull() || peerKey.isNull()
-        || deviceAuthenticationCode.isEmpty()) {
+    if (key.isEmpty() || !header.isValid())
+        return {};
+
+    auto sn = (serialNumber.isEmpty() ? QKnxByteArray(6, 0x00) : serialNumber);
+
+    QKnxByteArray B0, B;
+    if (header.serviceType() == QKnxNetIp::ServiceType::SecureWrapper) {
+        if (data.isEmpty())
             return {};
+
+        const auto A = header.bytes() + QKnxUtils::QUint16::bytes(id);
+        B0 = QKnxPrivate::b0(sequenceNumber, sn, messageTag, data.size());
+        B = B0 + QKnxUtils::QUint16::bytes(A.size()) + A + data;
+    } else if (header.serviceType() == QKnxNetIp::ServiceType::SessionResponse
+        || header.serviceType() == QKnxNetIp::ServiceType::SessionAuthenticate) {
+            if (data.isEmpty())
+                return {};
+
+            const auto A = header.bytes() + QKnxUtils::QUint16::bytes(id);
+            B0 = QKnxPrivate::b0(sequenceNumber, sn, messageTag, 0);
+            B = B0 + QKnxUtils::QUint16::bytes(A.size() + data.size()) + A + data;
+    } else if (header.serviceType() == QKnxNetIp::ServiceType::TimerNotify) {
+        const auto A = header.bytes();
+        B0 = QKnxPrivate::b0(sequenceNumber, sn, messageTag, 0);
+        B = B0 + QKnxUtils::QUint16::bytes(A.size()) + A;
     }
 
-    QKnxByteArray iv, ctr0; // initialization vector, block counter
-    if (frameHdr.serviceType() == QKnxNetIp::ServiceType::SecureWrapper) {
-        // |--------------------------------------------------------------------|
-        // |  0  |  ...  |  5  |  6  |  ...  |  11  |  12  |  13  |  14  |  15  |
-        // |--------------------------------------------------------------------|
-        // |   Sequence info   |    Serial number   |     Tag     |      Q      |
-        // |--------------------------------------------------------------------|
-
-        // Q Shall be the length of the payload in octets, which is the length of
-        // the original, encapsulated KNXnet/IP frame.
-        iv = QKnxByteArray { /* TODO: Implement the scheme above */ };
-
-        // |--------------------------------------------------------------------|
-        // |  0  |  ...  |  5  |  6  |  ...  |  11  |  12  |  13  |  14  |  15  |
-        // |--------------------------------------------------------------------|
-        // |   Sequence info   |    Serial number   |     Tag     |  ff  |  i   |
-        // |--------------------------------------------------------------------|
-
-        // For Ctr0 the counter [i] shall be 00h initially. Each counter value [i]
-        // shall be calculated by incrementing the preceding counter value by 1.
-        ctr0 = QKnxByteArray { /* TODO: Implement the scheme above */ };
-    } else if (frameHdr.serviceType() == QKnxNetIp::ServiceType::SessionResponse
-        || frameHdr.serviceType() == QKnxNetIp::ServiceType::SessionAuthenticate) {
-        iv = QKnxByteArray { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-            0x00, 0x00, 0x00, 0x00, 0x00 };
-        ctr0 = QKnxByteArray { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-            0x00, 0x00, 0x00, 0xff, 0x00 };
-    } else if (frameHdr.serviceType() == QKnxNetIp::ServiceType::TimerNotify) {
-        // |--------------------------------------------------------------------|
-        // |  0  |  ...  |  5  |  6  |  ...  |  11  |  12  |  13  |  14  |  15  |
-        // |--------------------------------------------------------------------|
-        // |    Timer value    |    Serial number   |     Tag     |  Q = 0000h  |
-        // |--------------------------------------------------------------------|
-        iv = QKnxByteArray { /* TODO: Implement the scheme above */ };
-
-        // |--------------------------------------------------------------------|
-        // |  0  |  ...  |  5  |  6  |  ...  |  11  |  12  |  13  |  14  |  15  |
-        // |--------------------------------------------------------------------|
-        // |    Timer value    |    Serial number   |     Tag     |  ff  | 00h  |
-        // |--------------------------------------------------------------------|
-        ctr0 = QKnxByteArray { /* TODO: Implement the scheme above */ };
-    }
-
-    if (iv.isEmpty() || ctr0.isEmpty())
+    if (B.isEmpty())
         return {};
+    B.resize(B.size() + (16 - (B.size() % 16))); // pad to multiple of 16
 
-    auto header = frameHdr.bytes();
-    auto xorResult = QKnxPrivate::XOR(publicKey.bytes(), peerKey.bytes());
-    auto sessionId = QKnxUtils::QUint16::bytes(quint16(secureId));
+    return QKnxPrivate::encrypt(key, B);
+}
 
-    auto A = QKnxByteArray({ 0x00, 0x28 }) + header + sessionId + xorResult;
-    A.resize(48); // pad
-
-    if (!qt_QKnxOpenSsl->supportsSsl())
+/*!
+    Encrypts the given KNXnet/IP frame \a frame with the given key \a key,
+    sequence number \a sequenceNumber, serial number \a serialNumber, and
+    message tag \a messageTag. Returns an array of bytes that represent the
+    encrypted frame or an empty byte array in case of an error or invalid
+    KNXnet/IP frame \a frame.
+*/
+QKnxByteArray QKnxCryptographicEngine::encryptSecureWrapperPayload(const QKnxByteArray &key,
+    const QKnxNetIpFrame &frame, quint48 sequenceNumber, const QKnxByteArray &serialNumber,
+    quint16 messageTag)
+{
+    if (!frame.isValid())
         return {};
+    return QKnxPrivate::processPayload(key, frame.bytes(), sequenceNumber, serialNumber, messageTag);
+}
 
-    auto B0 = iv;
-    auto B1 = A.mid(0, 16);
-    auto B2 = A.mid(16, 16);
-    auto B3 = A.mid(32, 16);
+/*!
+    Decrypts the given KNXnet/IP frame \a frame with the given key \a key,
+    sequence number \a sequenceNumber, serial number \a serialNumber, and
+    message tag \a messageTag. Returns an array of bytes that represent the
+    decrypted frame or an empty byte array in case of an error.
+*/
+QKnxByteArray QKnxCryptographicEngine::decryptSecureWrapperPayload(const QKnxByteArray &key,
+    const QKnxByteArray &frame, quint48 sequenceNumber, const QKnxByteArray &serialNumber,
+    quint16 messageTag)
+{
+    return QKnxPrivate::processPayload(key, frame, sequenceNumber, serialNumber, messageTag);
+}
 
-    int m = int(mode);
-    auto Y0 = QKnxPrivate::doCrypt(m, deviceAuthenticationCode, iv, QKnxPrivate::XOR(B0, { 0x00 }));
-    auto Y1 = QKnxPrivate::doCrypt(m, deviceAuthenticationCode, iv, QKnxPrivate::XOR(B1, Y0));
-    auto Y2 = QKnxPrivate::doCrypt(m, deviceAuthenticationCode, iv, QKnxPrivate::XOR(B2, Y1));
-    auto Y3 = QKnxPrivate::doCrypt(m, deviceAuthenticationCode, iv, QKnxPrivate::XOR(B3, Y2));
-    auto S0 = QKnxPrivate::doCrypt(m, deviceAuthenticationCode, iv, ctr0);
+/*!
+    Encrypts the given message authentication code (MAC) \a mac with the given
+    key \a key, sequence number \a sequenceNumber, serial number \a serialNumber,
+    and message tag \a messageTag. Returns an array of bytes that represent
+    the encrypted MAC or an empty byte array in case of an error.
 
-    return QKnxPrivate::XOR(S0, Y3);
+    \note The \a sequenceNumber, \a serialNumber and \a messageTag are mandatory
+    to properly encrypt the MAC for KNXnet/IP secure wrapper frame, for all other
+    secure frames the default value of \c 0 can be used.
+*/
+QKnxByteArray QKnxCryptographicEngine::encryptMessageAuthenticationCode(const QKnxByteArray &key,
+    const QKnxByteArray &mac, quint48 sequenceNumber, const QKnxByteArray &serialNumber,
+    quint16 messageTag)
+{
+    return QKnxPrivate::processMAC(key, mac, sequenceNumber, serialNumber, messageTag);
+}
+
+/*!
+    Decrypts the given message authentication code (MAC) \a mac with the given
+    key \a key, sequence number \a sequenceNumber, serial number \a serialNumber,
+    and message tag \a messageTag. Returns an array of bytes that represent
+    the decrypted MAC or an empty byte array in case of an error.
+
+    \note The \a sequenceNumber, \a serialNumber and \a messageTag values are
+    required to properly decrypt the MAC for KNXnet/IP secure wrapper frame.
+    For all other secure frames, the default value of \c 0 can be used.
+
+*/
+QKnxByteArray QKnxCryptographicEngine::decryptMessageAuthenticationCode(const QKnxByteArray &key,
+    const QKnxByteArray &mac, quint48 sequenceNumber, const QKnxByteArray &serialNumber,
+    quint16 messageTag)
+{
+    return QKnxPrivate::processMAC(key, mac, sequenceNumber, serialNumber, messageTag);
 }
 
 /*!

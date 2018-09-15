@@ -87,11 +87,6 @@ private:
 class Q_KNX_EXPORT QKnxCryptographicEngine final
 {
 public:
-    enum class Mode : quint8 {
-        Decrypt = 0x00,
-        Encrypt = 0x01
-    };
-
     QKnxCryptographicEngine() = delete;
     ~QKnxCryptographicEngine() = default;
 
@@ -105,12 +100,39 @@ public:
     static QKnxByteArray userPasswordHash(const QByteArray &password);
     static QKnxByteArray deviceAuthenticationCodeHash(const QByteArray &password);
 
-    static QKnxByteArray messageAuthenticationCode(QKnxCryptographicEngine::Mode mode,
-                                                   quint16 secureSessionId,
-                                                   const QKnxNetIpFrameHeader &header,
-                                                   const QKnxCurve25519PublicKey &client,
-                                                   const QKnxCurve25519PublicKey &server,
-                                                   const QKnxByteArray &deviceAuthenticationCode);
+    static QKnxByteArray XOR(const QKnxByteArray &l, const QKnxByteArray &r, bool adjust = true);
+
+    static QKnxByteArray calculateMessageAuthenticationCode(const QKnxByteArray &key,
+                                                            const QKnxNetIpFrameHeader &header,
+                                                            quint16 id,
+                                                            const QKnxByteArray &data,
+                                                            quint48 sequenceNumber = 0,
+                                                            const QKnxByteArray &serialNumber = {},
+                                                            quint16 messageTag = 0);
+
+    static QKnxByteArray encryptSecureWrapperPayload(const QKnxByteArray &key,
+                                                     const QKnxNetIpFrame &frame,
+                                                     quint48 sequenceNumber,
+                                                     const QKnxByteArray &serialNumber,
+                                                     quint16 messageTag);
+
+    static QKnxByteArray decryptSecureWrapperPayload(const QKnxByteArray &key,
+                                                     const QKnxByteArray &frame,
+                                                     quint48 sequenceNumber,
+                                                     const QKnxByteArray &serialNumber,
+                                                     quint16 messageTag);
+
+    static QKnxByteArray encryptMessageAuthenticationCode(const QKnxByteArray &key,
+                                                          const QKnxByteArray &mac,
+                                                          quint48 sequenceNumber = 0,
+                                                          const QKnxByteArray &serialNumber = {},
+                                                          quint16 messageTag = 0);
+
+    static QKnxByteArray decryptMessageAuthenticationCode(const QKnxByteArray &key,
+                                                          const QKnxByteArray &data,
+                                                          quint48 sequenceNumber = 0,
+                                                          const QKnxByteArray &serialNumber = {},
+                                                          quint16 messageTag = 0);
 
     static QKnxByteArray pkcs5Pbkdf2HmacSha256(const QByteArray &password, const QKnxByteArray &salt,
         qint32 iterations, quint8 derivedKeyLength);

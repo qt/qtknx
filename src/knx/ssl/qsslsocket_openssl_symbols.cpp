@@ -573,6 +573,7 @@ DEFINEFUNC(void, PKCS12_free, PKCS12 *pkcs12, pkcs12, return, DUMMYARG)
 
     DEFINEFUNC(int, EVP_CIPHER_CTX_key_length, const EVP_CIPHER_CTX *ctx, ctx, return 0, return)
     DEFINEFUNC(int, EVP_CIPHER_CTX_iv_length, const EVP_CIPHER_CTX *ctx, ctx, return 0, return)
+    DEFINEFUNC(int, EVP_CIPHER_block_size, const EVP_CIPHER *cipher, cipher, return 0, return)
     DEFINEFUNC3(int, EVP_CipherFinal_ex, EVP_CIPHER_CTX *ctx, ctx, unsigned char *outm, outm, int *outl, outl, return 0, return)
 
     DEFINEFUNC(const EVP_CIPHER *, EVP_aes_128_cbc, DUMMYARG, DUMMYARG, return nullptr, return)
@@ -1297,6 +1298,7 @@ bool q_resolveOpenSslSymbols()
 
     RESOLVEFUNC(EVP_CIPHER_CTX_key_length)
     RESOLVEFUNC(EVP_CIPHER_CTX_iv_length)
+    RESOLVEFUNC(EVP_CIPHER_block_size)
     RESOLVEFUNC(EVP_CipherFinal_ex)
 
     RESOLVEFUNC(EVP_aes_128_cbc)

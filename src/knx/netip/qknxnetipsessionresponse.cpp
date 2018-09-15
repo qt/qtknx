@@ -43,11 +43,17 @@ QT_BEGIN_NAMESPACE
     class and to create a KNXnet/IP session response frame from provided
     data.
 
-    TODO: Add more documentation. AN159 paragraph 2.2.3.7 SESSION_RESPONSE
+    This class is part of the Qt KNX module and currently available as a
+    Technology Preview, and therefore the API and functionality provided
+    by the class may be subject to change at any time without prior notice.
+
+    This frame will be sent by the KNXnet/IP secure server to the KNXnet/IP
+    secure client control endpoint in response to a received secure session
+    request frame.
 
     \note When using QKnxNetIpSessionResponseProxy, care must be taken to
-    ensure that the referenced KNXnet/IP DIB structure outlives the proxy
-    on all code paths, lest the proxy ends up referencing deleted data.
+    ensure that the referenced KNXnet/IP frame outlives the proxy on all code
+    paths, lest the proxy ends up referencing deleted data.
 
     The following code sample illustrates how to read the session response
     information:
@@ -128,7 +134,7 @@ QKnxByteArray QKnxNetIpSessionResponseProxy::publicKey() const
 }
 
 /*!
-    Returns the AES128 CCM message authentication code from the generic
+    Returns the AES128 CCM message authentication code (MAC) from the generic
     KNXnet/IP session response frame with a fixed size of \c 16 bytes.
 */
 QKnxByteArray QKnxNetIpSessionResponseProxy::messageAuthenticationCode() const
@@ -154,7 +160,13 @@ QKnxNetIpSessionResponseProxy::Builder QKnxNetIpSessionResponseProxy::builder()
     \brief The QKnxNetIpSessionResponseProxy::Builder class provides the
     means to create a KNXnet/IP session response frame.
 
-    TODO: Add more documentation. AN159 paragraph 2.2.3.7 SESSION_RESPONSE
+    This class is part of the Qt KNX module and currently available as a
+    Technology Preview, and therefore the API and functionality provided
+    by the class may be subject to change at any time without prior notice.
+
+    This frame will be sent by the KNXnet/IP secure server to the KNXnet/IP
+    secure client control endpoint in response to a received secure session
+    request frame.
 
     The common way to create a session response frame is:
 
@@ -168,7 +180,32 @@ QKnxNetIpSessionResponseProxy::Builder QKnxNetIpSessionResponseProxy::builder()
             .setMessageAuthenticationCode(auth)
             .create();
     \endcode
+
+    \sa QKnxCryptographicEngine
 */
+
+class QKnxNetIpSessionResponseBuilderPrivate : public QSharedData
+{
+public:
+    QKnxNetIpSessionResponseBuilderPrivate() = default;
+    ~QKnxNetIpSessionResponseBuilderPrivate() = default;
+
+    qint32 m_id { -1 };
+    QKnxByteArray m_publicKey;
+    QKnxByteArray m_authCode;
+};
+
+/*!
+    Creates a new empty session response builder object.
+*/
+QKnxNetIpSessionResponseProxy::Builder::Builder()
+    : d_ptr(new QKnxNetIpSessionResponseBuilderPrivate)
+{}
+
+/*!
+    Destroys the object and frees any allocated resources.
+*/
+QKnxNetIpSessionResponseProxy::Builder::~Builder() = default;
 
 /*!
     Sets the secure session ID of the KNXnet/IP session response frame to
@@ -177,7 +214,7 @@ QKnxNetIpSessionResponseProxy::Builder QKnxNetIpSessionResponseProxy::builder()
 QKnxNetIpSessionResponseProxy::Builder &
     QKnxNetIpSessionResponseProxy::Builder::setSecureSessionId(quint16 sessionId)
 {
-    m_id = sessionId;
+    d_ptr->m_id = sessionId;
     return *this;
 }
 
@@ -189,19 +226,19 @@ QKnxNetIpSessionResponseProxy::Builder &
 QKnxNetIpSessionResponseProxy::Builder &
     QKnxNetIpSessionResponseProxy::Builder::setPublicKey(const QKnxByteArray &publicKey)
 {
-    m_publicKey = publicKey;
+    d_ptr->m_publicKey = publicKey;
     return *this;
 }
 
 /*!
-    Sets the AES128 CCM message authentication code of the generic KNXnet/IP
-    session response frame to \a data and returns a reference to builder. The
-    message authentication code has a fixed size of \c 16 bytes.
+    Sets the AES128 CCM message authentication code (MAC) of the generic
+    KNXnet/IP session response frame to \a data and returns a reference to the
+    builder. The MAC has a fixed size of \c 16 bytes.
 */
 QKnxNetIpSessionResponseProxy::Builder &
     QKnxNetIpSessionResponseProxy::Builder::setMessageAuthenticationCode(const QKnxByteArray &data)
 {
-    m_authCode = data;
+    d_ptr->m_authCode = data;
     return *this;
 }
 
@@ -215,10 +252,28 @@ QKnxNetIpSessionResponseProxy::Builder &
 */
 QKnxNetIpFrame QKnxNetIpSessionResponseProxy::Builder::create() const
 {
-    if (m_id < 0 || m_publicKey.size() != 32 || m_authCode.size() != 16)
+    if (d_ptr->m_id < 0 || d_ptr->m_publicKey.size() != 32 || d_ptr->m_authCode.size() != 16)
         return { QKnxNetIp::ServiceType::SessionResponse };
-    return { QKnxNetIp::ServiceType::SessionResponse, QKnxUtils::QUint16::bytes(m_id) + m_publicKey
-        + m_authCode };
+
+    return { QKnxNetIp::ServiceType::SessionResponse, QKnxUtils::QUint16::bytes(d_ptr->m_id)
+        + d_ptr->m_publicKey + d_ptr->m_authCode };
+}
+
+/*!
+    Constructs a copy of \a other.
+*/
+QKnxNetIpSessionResponseProxy::Builder::Builder(const Builder &other)
+    : d_ptr(other.d_ptr)
+{}
+
+/*!
+    Assigns the specified \a other to this object.
+*/
+QKnxNetIpSessionResponseProxy::Builder &
+    QKnxNetIpSessionResponseProxy::Builder::operator=(const Builder &other)
+{
+    d_ptr = other.d_ptr;
+    return *this;
 }
 
 QT_END_NAMESPACE

@@ -36,6 +36,7 @@
 
 QT_BEGIN_NAMESPACE
 
+class QKnxNetIpSessionRequestBuilderPrivate;
 class Q_KNX_EXPORT QKnxNetIpSessionRequestProxy final
 {
 public:
@@ -53,14 +54,19 @@ public:
     class Q_KNX_EXPORT Builder final
     {
     public:
+        Builder();
+        ~Builder();
+
         Builder &setControlEndpoint(const QKnxNetIpHpai &hpai);
         Builder &setPublicKey(const QKnxByteArray &publicKey);
 
         QKnxNetIpFrame create() const;
 
+        Builder(const Builder &other);
+        Builder &operator=(const Builder &other);
+
     private:
-        QKnxNetIpHpai m_hpai;
-        QKnxByteArray m_publicKey;
+        QSharedDataPointer<QKnxNetIpSessionRequestBuilderPrivate> d_ptr;
     };
     static QKnxNetIpSessionRequestProxy::Builder builder();
 

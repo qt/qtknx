@@ -44,11 +44,19 @@ QT_BEGIN_NAMESPACE
     class and to create a KNXnet/IP session authentication frame from provided
     data.
 
-    TODO: Add more documentation. AN159 paragraph 2.2.3.8 SESSION_AUTHENTICATE
+    This class is part of the Qt KNX module and currently available as a
+    Technology Preview, and therefore the API and functionality provided
+    by the class may be subject to change at any time without prior notice.
+
+    This frame will be sent by the KNXnet/IP secure client to the control
+    endpoint of the KNXnet/IP secure server after the Diffie-Hellman handshake
+    to authenticate the user against the server device.
+    The maximum time a KNXnet/IP secure client will wait for an authentication
+    status response of the KNXnet/IP secure server is 10 seconds.
 
     \note When using QKnxNetIpSessionAuthenticateProxy, care must be taken to
-    ensure that the referenced KNXnet/IP DIB structure outlives the proxy on
-    all code paths, lest the proxy ends up referencing deleted data.
+    ensure that the referenced KNXnet/IP frame outlives the proxy on all code
+    paths, lest the proxy ends up referencing deleted data.
 
     The following code sample illustrates how to read the session authentication
     information:
@@ -96,7 +104,7 @@ QKnxNetIpSessionAuthenticateProxy::QKnxNetIpSessionAuthenticateProxy(const QKnxN
     at least a valid header and a size in bytes corresponding to the total size
     of the KNXnet/IP frame header.
 
-    \note A userId() with the value \c 0x00 or a value above \c 0x80
+    \note A userId() with the value \c 0x0000 or a value above \c 0x0080
     is considered invalid according to the KNX application note AN159.
 
     \note KNXnet/IP session authentication frames currently have a fixed size
@@ -122,7 +130,7 @@ quint8 QKnxNetIpSessionAuthenticateProxy::userId() const
 }
 
 /*!
-    Returns the AES128 CCM message authentication code from the generic
+    Returns the AES128 CCM message authentication code (MAC) from the generic
     KNXnet/IP session authentication frame with a fixed size of \c 16 bytes.
 */
 QKnxByteArray QKnxNetIpSessionAuthenticateProxy::messageAuthenticationCode() const
@@ -148,12 +156,20 @@ QKnxNetIpSessionAuthenticateProxy::Builder QKnxNetIpSessionAuthenticateProxy::bu
     \brief The QKnxNetIpSessionAuthenticateProxy::Builder class provides the
     means to create a KNXnet/IP session authentication frame.
 
-    TODO: Add more documentation. AN159 paragraph 2.2.3.8 SESSION_AUTHENTICATE
+    This class is part of the Qt KNX module and currently available as a
+    Technology Preview, and therefore the API and functionality provided
+    by the class may be subject to change at any time without prior notice.
+
+    This frame will be sent by the KNXnet/IP secure client to the control
+    endpoint of the KNXnet/IP secure server after the Diffie-Hellman handshake
+    to authenticate the user against the server device.
+    The maximum time a KNXnet/IP secure client will wait for an authentication
+    status response of the KNXnet/IP secure server is 10 seconds.
 
     The common way to create a session authentication frame is:
 
     \code
-        quint8 mgmtLevelAccess = 0x01;
+        quint16 mgmtLevelAccess = 0x0001;
         auto auth = ... // create the full 128 bit CCM-MAC
 
         auto netIpFrame = QKnxNetIpSessionAuthenticateProxy::builder()
@@ -161,31 +177,55 @@ QKnxNetIpSessionAuthenticateProxy::Builder QKnxNetIpSessionAuthenticateProxy::bu
             .setMessageAuthenticationCode(auth)
             .create();
     \endcode
+
+    \sa QKnxCryptographicEngine
 */
+
+class QKnxNetIpSessionAuthenticateBuilderPrivate : public QSharedData
+{
+public:
+    QKnxNetIpSessionAuthenticateBuilderPrivate() = default;
+    ~QKnxNetIpSessionAuthenticateBuilderPrivate() = default;
+
+    quint16 m_id { 0 };
+    QKnxByteArray m_authCode;
+};
+
+/*!
+    Creates a new empty session authenticate frame builder.
+*/
+QKnxNetIpSessionAuthenticateProxy::Builder::Builder()
+    : d_ptr(new QKnxNetIpSessionAuthenticateBuilderPrivate)
+{}
+
+/*!
+    Destroys the object and frees any allocated resources.
+*/
+QKnxNetIpSessionAuthenticateProxy::Builder::~Builder() = default;
 
 /*!
     Sets the user ID of the KNXnet/IP session authentication frame to \a userId
     and returns a reference to the builder.
 
-    \note A userId() with the value \c 0x00 or a value above \c 0x80
+    \note A userId() with the value \c 0x0000 or a value above \c 0x0080
     is considered invalid according to the KNX application note AN159.
 */
 QKnxNetIpSessionAuthenticateProxy::Builder &
-    QKnxNetIpSessionAuthenticateProxy::Builder::setUserId(quint8 userId)
+    QKnxNetIpSessionAuthenticateProxy::Builder::setUserId(quint16 userId)
 {
-    m_id = userId;
+    d_ptr->m_id = userId;
     return *this;
 }
 
 /*!
-    Sets the AES128 CCM message authentication code of the generic KNXnet/IP
-    session authentication frame to \a data and returns a reference to builder.
-    The message authentication code has a fixed size of \c 16 bytes.
+    Sets the AES128 CCM message authentication code (MAC) of the generic
+    KNXnet/IP session authentication frame to \a data and returns a reference
+    to the builder. The MAC has a fixed size of \c 16 bytes.
 */
 QKnxNetIpSessionAuthenticateProxy::Builder &
     QKnxNetIpSessionAuthenticateProxy::Builder::setMessageAuthenticationCode(const QKnxByteArray &data)
 {
-    m_authCode = data;
+    d_ptr->m_authCode = data;
     return *this;
 }
 
@@ -199,11 +239,28 @@ QKnxNetIpSessionAuthenticateProxy::Builder &
 */
 QKnxNetIpFrame QKnxNetIpSessionAuthenticateProxy::Builder::create() const
 {
-    if (m_id == 0 || m_id >= 0x80 ||  m_authCode.size() != 16)
+    if (d_ptr->m_id == 0 || d_ptr->m_id >= 0x80 ||  d_ptr->m_authCode.size() != 16)
         return { QKnxNetIp::ServiceType::SessionAuthenticate };
 
-    return { QKnxNetIp::ServiceType::SessionAuthenticate, QKnxUtils::QUint16::bytes(quint16(m_id))
-        + m_authCode };
+    return { QKnxNetIp::ServiceType::SessionAuthenticate, QKnxUtils::QUint16::bytes(d_ptr->m_id)
+        + d_ptr->m_authCode };
+}
+
+/*!
+    Constructs a copy of \a other.
+*/
+QKnxNetIpSessionAuthenticateProxy::Builder::Builder(const Builder &other)
+    : d_ptr(other.d_ptr)
+{}
+
+/*!
+    Assigns the specified \a other to this object.
+*/
+QKnxNetIpSessionAuthenticateProxy::Builder &
+    QKnxNetIpSessionAuthenticateProxy::Builder::operator=(const Builder &other)
+{
+    d_ptr = other.d_ptr;
+    return *this;
 }
 
 QT_END_NAMESPACE

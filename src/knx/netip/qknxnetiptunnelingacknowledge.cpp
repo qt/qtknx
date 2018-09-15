@@ -64,19 +64,23 @@ QT_BEGIN_NAMESPACE
     \l QKnxNetIpTunnel or \l QKnxNetIpDeviceManagement
     class is used to establish a functional connection to a KNXnet/IP server.
 
+    \note When using QKnxNetIpTunnelingAcknowledgeProxy, care must be taken to
+    ensure that the referenced KNXnet/IP frame outlives the proxy on all code
+    paths, lest the proxy ends up referencing deleted data.
+
     The following code sample illustrates how to read the tunneling
     acknowledgment information sent by a KNXnet/IP client:
 
     \code
         auto netIpFrame = QKnxNetIpFrame::fromBytes(...);
 
-        const QKnxNetIpTunnelingAcknowledgeProxy tunnelAck(netIpFrame);
-        if (!tunnelAck.isValid())
+        const QKnxNetIpTunnelingAcknowledgeProxy proxy(netIpFrame);
+        if (!proxy.isValid())
             return;
 
-        auto chanId = tunnelAck.channelId();
-        auto seqNum = tunnelAck.sequenceNumber();
-        auto tunnelStatus = tunnelAck.status();
+        auto chanId = proxy.channelId();
+        auto seqNum = proxy.sequenceNumber();
+        auto tunnelStatus = proxy.status();
     \endcode
 
     \sa builder(), QKnxNetIpTunnelingRequestProxy, {Qt KNX Tunneling Classes},

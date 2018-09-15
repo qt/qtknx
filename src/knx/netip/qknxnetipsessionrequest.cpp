@@ -42,11 +42,19 @@ QT_BEGIN_NAMESPACE
     introspect session request data inside the generic \l QKnxNetIpFrame
     class and to create a KNXnet/IP session request frame from provided data.
 
-    TODO: Add more documentation. AN159 paragraph 2.2.3.6 SESSION_REQUEST
+    This class is part of the Qt KNX module and currently available as a
+    Technology Preview, and therefore the API and functionality provided
+    by the class may be subject to change at any time without prior notice.
+
+    This frame will be sent by a KNXnet/IP secure client to the control
+    endpoint of the KNXnet/IP secure server to initiate the secure session
+    setup handshake for a new secure communication channel.
+    The maximum time a KNXnet/IP secure client will wait for a response of the
+    KNXnet/IP secure server is 10 seconds.
 
     \note When using QKnxNetIpSessionRequestProxy, care must be taken to ensure
-    that the referenced KNXnet/IP DIB structure outlives the proxy on all code
-    paths, lest the proxy ends up referencing deleted data.
+    that the referenced KNXnet/IP frame outlives the proxy on all code paths,
+    lest the proxy ends up referencing deleted data.
 
     The following code sample illustrates how to read the session request
     information:
@@ -146,7 +154,15 @@ QKnxNetIpSessionRequestProxy::Builder QKnxNetIpSessionRequestProxy::builder()
     \brief The QKnxNetIpSessionRequestProxy::Builder class provides the
     means to create a KNXnet/IP session request frame.
 
-    TODO: Add more documentation. AN159 paragraph 2.2.3.6 SESSION_REQUEST
+    This class is part of the Qt KNX module and currently available as a
+    Technology Preview, and therefore the API and functionality provided
+    by the class may be subject to change at any time without prior notice.
+
+    This frame will be sent by a KNXnet/IP secure client to the control
+    endpoint of the KNXnet/IP secure server to initiate the secure session
+    setup handshake for a new secure communication channel.
+    The maximum time a KNXnet/IP secure client will wait for a response of the
+    KNXnet/IP secure server is 10 seconds.
 
     The common way to create a session request frame is:
 
@@ -162,6 +178,28 @@ QKnxNetIpSessionRequestProxy::Builder QKnxNetIpSessionRequestProxy::builder()
     \endcode
 */
 
+class QKnxNetIpSessionRequestBuilderPrivate : public QSharedData
+{
+public:
+    QKnxNetIpSessionRequestBuilderPrivate() = default;
+    ~QKnxNetIpSessionRequestBuilderPrivate() = default;
+
+    QKnxNetIpHpai m_hpai;
+    QKnxByteArray m_publicKey;
+};
+
+/*!
+    Creates a new empty session request frame builder object.
+*/
+QKnxNetIpSessionRequestProxy::Builder::Builder()
+    : d_ptr(new QKnxNetIpSessionRequestBuilderPrivate)
+{}
+
+/*!
+    Destroys the object and frees any allocated resources.
+*/
+QKnxNetIpSessionRequestProxy::Builder::~Builder() = default;
+
 /*!
     Sets the control endpoint of the KNXnet/IP session request frame to \a hpai
     and returns a reference to the builder.
@@ -169,7 +207,7 @@ QKnxNetIpSessionRequestProxy::Builder QKnxNetIpSessionRequestProxy::builder()
 QKnxNetIpSessionRequestProxy::Builder &
     QKnxNetIpSessionRequestProxy::Builder::setControlEndpoint(const QKnxNetIpHpai &hpai)
 {
-    m_hpai = hpai;
+    d_ptr->m_hpai = hpai;
     return *this;
 }
 
@@ -182,7 +220,7 @@ QKnxNetIpSessionRequestProxy::Builder &
 QKnxNetIpSessionRequestProxy::Builder &
     QKnxNetIpSessionRequestProxy::Builder::setPublicKey(const QKnxByteArray &publicKey)
 {
-    m_publicKey = publicKey;
+    d_ptr->m_publicKey = publicKey;
     return *this;
 }
 
@@ -196,9 +234,26 @@ QKnxNetIpSessionRequestProxy::Builder &
 */
 QKnxNetIpFrame QKnxNetIpSessionRequestProxy::Builder::create() const
 {
-    if (m_hpai.isValid() && m_publicKey.size() == 32)
-        return { QKnxNetIp::ServiceType::SessionRequest, m_hpai.bytes() + m_publicKey };
+    if (d_ptr->m_hpai.isValid() && d_ptr->m_publicKey.size() == 32)
+        return { QKnxNetIp::ServiceType::SessionRequest, d_ptr->m_hpai.bytes() + d_ptr->m_publicKey };
     return { QKnxNetIp::ServiceType::SessionRequest };
+}
+
+/*!
+    Constructs a copy of \a other.
+*/
+QKnxNetIpSessionRequestProxy::Builder::Builder(const Builder &other)
+    : d_ptr(other.d_ptr)
+{}
+
+/*!
+    Assigns the specified \a other to this object.
+*/
+QKnxNetIpSessionRequestProxy::Builder &
+    QKnxNetIpSessionRequestProxy::Builder::operator=(const Builder &other)
+{
+    d_ptr = other.d_ptr;
+    return *this;
 }
 
 QT_END_NAMESPACE

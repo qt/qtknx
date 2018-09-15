@@ -58,6 +58,10 @@ QT_BEGIN_NAMESPACE
     If the tunneling server does not respond to the tunneling feature-get
     service frame the tunneling client may or may not repeat the request.
 
+    \note When using QKnxNetIpTunnelingFeatureGetProxy, care must be taken to
+    ensure that the referenced KNXnet/IP frame outlives the proxy on all code
+    paths, lest the proxy ends up referencing deleted data.
+
     The following code sample illustrates how to read the tunneling
     feature-get information sent by a KNXnet/IP client:
 

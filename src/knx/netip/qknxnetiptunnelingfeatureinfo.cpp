@@ -65,6 +65,10 @@ QT_BEGIN_NAMESPACE
     The tunneling server addresses the tunneling feature-info service frame
     to the data endpoint of the established tunneling connection.
 
+    \note When using QKnxNetIpTunnelingFeatureInfoProxy, care must be taken to
+    ensure that the referenced KNXnet/IP frame outlives the proxy on all code
+    paths, lest the proxy ends up referencing deleted data.
+
     The following code sample illustrates how to read the tunneling
     feature-info service information sent by a KNXnet/IP server:
 

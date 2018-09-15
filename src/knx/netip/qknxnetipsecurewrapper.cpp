@@ -27,6 +27,7 @@
 **
 ******************************************************************************/
 
+#include "qknxbuilderdata_p.h"
 #include "qknxnetipsecurewrapper.h"
 #include "qknxutils.h"
 
@@ -43,11 +44,17 @@ QT_BEGIN_NAMESPACE
     secure wrapper data inside the generic \l QKnxNetIpFrame class and to create
     a KNXnet/IP secure wrapper frame from provided data.
 
-    TODO: Add more documentation. AN159 paragraph 2.2.1.3 SECURE_WRAPPER
+    This class is part of the Qt KNX module and currently available as a
+    Technology Preview, and therefore the API and functionality provided
+    by the class may be subject to change at any time without prior notice.
 
-    \note When using QKnxNetIpSecureWrapperProxy, care must be taken to
-    ensure that the referenced KNXnet/IP DIB structure outlives the proxy on
-    all code paths, lest the proxy ends up referencing deleted data.
+    This frame will be sent during secure KNXnet/IP communication and includes
+    a fully encrypted KNXnet/IP frame as well as information needed to decrypt
+    the encapsulated frame and to ensure data integrity and freshness.
+
+    \note When using QKnxNetIpSecureWrapperProxy, care must be taken to ensure
+    that the referenced KNXnet/IP frame outlives the proxy on all code paths,
+    lest the proxy ends up referencing deleted data.
 
     The following code sample illustrates how to read the secure wrapper
     information:
@@ -141,7 +148,7 @@ QKnxByteArray QKnxNetIpSecureWrapperProxy::serialNumber() const
 */
 quint16 QKnxNetIpSecureWrapperProxy::messageTag() const
 {
-    return QKnxUtils::QUint16::fromBytes(m_frame.constData().mid(16));
+    return QKnxUtils::QUint16::fromBytes(m_frame.constData().mid(14));
 }
 
 /*!
@@ -150,11 +157,12 @@ quint16 QKnxNetIpSecureWrapperProxy::messageTag() const
 */
 QKnxByteArray QKnxNetIpSecureWrapperProxy::encapsulatedFrame() const
 {
-    return m_frame.constData().mid(18, m_frame.dataSize() - 16);
+    auto data = m_frame.constData().mid(16);
+    return data.mid(0, data.size() - 16); // remove the MAC
 }
 
 /*!
-    Returns the AES128 CCM message authentication code from the generic
+    Returns the AES128 CCM message authentication code (MAC) from the generic
     KNXnet/IP secure wrapper frame with a fixed size of \c 16 bytes.
 */
 QKnxByteArray QKnxNetIpSecureWrapperProxy::messageAuthenticationCode() const
@@ -180,7 +188,13 @@ QKnxNetIpSecureWrapperProxy::Builder QKnxNetIpSecureWrapperProxy::builder()
     \brief The QKnxNetIpSecureWrapperProxy::Builder class provides the
     means to create a KNXnet/IP secure wrapper frame.
 
-    TODO: Add more documentation. AN159 paragraph 2.2.1.3 SECURE_WRAPPER
+    This class is part of the Qt KNX module and currently available as a
+    Technology Preview, and therefore the API and functionality provided
+    by the class may be subject to change at any time without prior notice.
+
+    This frame will be sent during secure KNXnet/IP communication and includes
+    a fully encrypted KNXnet/IP frame as well as information needed to decrypt
+    the encapsulated frame and to ensure data integrity and freshness.
 
     The common way to create a secure wrapper frame is:
 
@@ -195,7 +209,21 @@ QKnxNetIpSecureWrapperProxy::Builder QKnxNetIpSecureWrapperProxy::builder()
             .setMessageAuthenticationCode(auth)
             .create();
     \endcode
+
+    \sa QKnxCryptographicEngine
 */
+
+/*!
+    Creates a new empty secure wrapper frame builder object.
+*/
+QKnxNetIpSecureWrapperProxy::Builder::Builder()
+    : d_ptr(new QKnxNetIpSecureWrapperPrivate)
+{}
+
+/*!
+    Destroys the object and frees any allocated resources.
+*/
+QKnxNetIpSecureWrapperProxy::Builder::~Builder() = default;
 
 /*!
     Sets the secure session ID to \a sessionId and returns a reference to the
@@ -208,7 +236,7 @@ QKnxNetIpSecureWrapperProxy::Builder QKnxNetIpSecureWrapperProxy::builder()
 QKnxNetIpSecureWrapperProxy::Builder &
     QKnxNetIpSecureWrapperProxy::Builder::setSecureSessionId(quint16 sessionId)
 {
-    m_sessionId = sessionId;
+    d_ptr->m_sessionId = sessionId;
     return *this;
 }
 
@@ -228,7 +256,7 @@ QKnxNetIpSecureWrapperProxy::Builder &
 QKnxNetIpSecureWrapperProxy::Builder &
     QKnxNetIpSecureWrapperProxy::Builder::setSequenceNumber(quint48 seqNumber)
 {
-    m_seqNumber = seqNumber;
+    d_ptr->m_seqNumber = seqNumber;
     return *this;
 }
 
@@ -241,13 +269,13 @@ QKnxNetIpSecureWrapperProxy::Builder &
 QKnxNetIpSecureWrapperProxy::Builder &
     QKnxNetIpSecureWrapperProxy::Builder::setSerialNumber(const QKnxByteArray &serialNumber)
 {
-    m_serial = serialNumber;
+    d_ptr->m_serial = serialNumber;
     return *this;
 }
 
 /*!
     Sets the message tag of the generic KNXnet/IP secure wrapper frame to \a tag
-    and returns a reference to builder. By default value is set to \c 0x0000.
+    and returns a reference to the builder. By default value is set to \c 0x0000.
 
     This field contains an arbitrary value to differentiate two KNXnet/IP
     secure wrapper multicast frames sent by one KNXnet/IP device within the
@@ -257,7 +285,7 @@ QKnxNetIpSecureWrapperProxy::Builder &
 QKnxNetIpSecureWrapperProxy::Builder &
     QKnxNetIpSecureWrapperProxy::Builder::setMessageTag(quint16 tag)
 {
-    m_tag = tag;
+    d_ptr->m_tag = tag;
     return *this;
 }
 
@@ -271,19 +299,19 @@ QKnxNetIpSecureWrapperProxy::Builder &
 QKnxNetIpSecureWrapperProxy::Builder &
     QKnxNetIpSecureWrapperProxy::Builder::setEncapsulatedFrame(const QKnxByteArray &frame)
 {
-    m_frame = frame;
+    d_ptr->m_encryptedFrame = frame;
     return *this;
 }
 
 /*!
-    Sets the AES128 CCM message authentication code of the generic KNXnet/IP
-    secure wrapper frame to \a data and returns a reference to builder. The
-    message authentication code has a fixed size of \c 16 bytes.
+    Sets the AES128 CCM message authentication code (MAC) of the generic
+    KNXnet/IP secure wrapper frame to \a data and returns a reference to
+    builder. The MAC has a fixed size of \c 16 bytes.
 */
 QKnxNetIpSecureWrapperProxy::Builder &
     QKnxNetIpSecureWrapperProxy::Builder::setMessageAuthenticationCode(const QKnxByteArray &data)
 {
-    m_authCode = data;
+    d_ptr->m_authCode = data;
     return *this;
 }
 
@@ -297,14 +325,33 @@ QKnxNetIpSecureWrapperProxy::Builder &
 */
 QKnxNetIpFrame QKnxNetIpSecureWrapperProxy::Builder::create() const
 {
-    if (m_seqNumber > Q_UINT48_MAX || m_serial.size() != 6 ||  m_authCode.size() != 16)
-        return { QKnxNetIp::ServiceType::SecureWrapper };
+    if (d_ptr->m_seqNumber > Q_UINT48_MAX || d_ptr->m_serial.size() != 6
+        ||  d_ptr->m_authCode.size() != 16) {
+            return { QKnxNetIp::ServiceType::SecureWrapper };
+    }
 
-    // TODO: introspect the frame and reject secure wrapper frames
+    // TODO: introspect the frame and reject secure wrapper frames if possible at all
 
-    return { QKnxNetIp::ServiceType::SecureWrapper, QKnxUtils::QUint16::bytes(m_sessionId)
-        + QKnxUtils::QUint48::bytes(m_seqNumber) + m_serial + QKnxUtils::QUint16::bytes(m_tag)
-        + m_frame + m_authCode };
+    return { QKnxNetIp::ServiceType::SecureWrapper, QKnxUtils::QUint16::bytes(d_ptr->m_sessionId)
+        + QKnxUtils::QUint48::bytes(d_ptr->m_seqNumber) + d_ptr->m_serial
+        + QKnxUtils::QUint16::bytes(d_ptr->m_tag) + d_ptr->m_encryptedFrame + d_ptr->m_authCode };
+}
+
+/*!
+    Constructs a copy of \a other.
+*/
+QKnxNetIpSecureWrapperProxy::Builder::Builder(const Builder &other)
+    : d_ptr(other.d_ptr)
+{}
+
+/*!
+    Assigns the specified \a other to this object.
+*/
+QKnxNetIpSecureWrapperProxy::Builder &
+    QKnxNetIpSecureWrapperProxy::Builder::operator=(const Builder &other)
+{
+    d_ptr = other.d_ptr;
+    return *this;
 }
 
 QT_END_NAMESPACE

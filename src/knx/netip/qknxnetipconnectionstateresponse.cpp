@@ -51,18 +51,22 @@ QT_BEGIN_NAMESPACE
     \l QKnxNetIpTunnel or \l QKnxNetIpDeviceManagement
     class is used to establish a functional connection to a KNXnet/IP server.
 
+    \note When using QKnxNetIpConnectionStateResponseProxy, care must be taken
+    to ensure that the referenced KNXnet/IP frame outlives the proxy on all code
+    paths, lest the proxy ends up referencing deleted data.
+
     The following code sample illustrates how to read the connection state
     response information sent by a KNXnet/IP server:
 
     \code
         auto netIpFrame = QKnxNetIpFrame::fromBytes(...);
 
-        const QKnxNetIpConnectionStateResponseProxy connectionStateResponse(netIpFrame);
-        if (!connectionStateResponse.isValid())
+        const QKnxNetIpConnectionStateResponseProxy proxy(netIpFrame);
+        if (!proxy.isValid())
             return;
 
-        auto chanId = connectionStateResponse.channelId();
-        auto status = connectionStateResponse.status();
+        auto chanId = proxy.channelId();
+        auto status = proxy.status();
     \endcode
 
     \sa builder(), QKnxNetIpConnectionStateRequestProxy, {Qt KNXnet/IP Connection Classes}

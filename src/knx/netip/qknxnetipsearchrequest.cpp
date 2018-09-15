@@ -59,17 +59,21 @@ QT_BEGIN_NAMESPACE
     \l QKnxNetIpServerDiscoveryAgent and \l QKnxNetIpServerInfo are provided to
     discover KNXnet/IP servers on the network.
 
+    \note When using QKnxNetIpSearchRequestProxy, care must be taken to
+    ensure that the referenced KNXnet/IP frame outlives the proxy on all code
+    paths, lest the proxy ends up referencing deleted data.
+
     The following code sample illustrates how to read the search request
     information sent by a KNXnet/IP client:
 
     \code
         auto netIpFrame = QKnxNetIpFrame::fromBytes(...);
 
-        QKnxNetIpSearchRequestProxy searchRequest(netIpFrame);
-        if (!searchRequest.isValid())
+        QKnxNetIpSearchRequestProxy proxy(netIpFrame);
+        if (!proxy.isValid())
             return;
 
-        QKnxNetIpHpai hpai = searchRequest.discoveryEndpoint();
+        QKnxNetIpHpai hpai = proxy.discoveryEndpoint();
         // ...
     \endcode
 

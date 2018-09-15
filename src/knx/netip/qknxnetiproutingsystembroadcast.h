@@ -37,6 +37,7 @@
 
 QT_BEGIN_NAMESPACE
 
+class QKnxNetIpRoutingSystemBroadcastBuilderPrivate;
 class Q_KNX_EXPORT QKnxNetIpRoutingSystemBroadcastProxy final
 {
 public:
@@ -53,12 +54,18 @@ public:
     class Q_KNX_EXPORT Builder final
     {
     public:
+        Builder();
+        ~Builder();
+
         Builder &setCemi(const QKnxLinkLayerFrame &cemi);
 
         QKnxNetIpFrame create() const;
 
+        Builder(const Builder &other);
+        Builder &operator=(const Builder &other);
+
     private:
-        QKnxLinkLayerFrame m_llf;
+        QSharedDataPointer<QKnxNetIpRoutingSystemBroadcastBuilderPrivate> d_ptr;
     };
     static QKnxNetIpRoutingSystemBroadcastProxy::Builder builder();
 

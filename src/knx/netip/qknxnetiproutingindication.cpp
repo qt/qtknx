@@ -45,17 +45,21 @@ QT_BEGIN_NAMESPACE
     A routing indication is sent by a KNXnet/IP router or device to transmit KNX
     link layer frames over IP networks.
 
+    \note When using QKnxNetIpRoutingIndicationProxy, care must be taken to
+    ensure that the referenced KNXnet/IP frame outlives the proxy on all code
+    paths, lest the proxy ends up referencing deleted data.
+
     The following code sample illustrates how to read the routing indication
     information sent by a KNXnet/IP router or device:
 
     \code
         auto netIpFrame = QKnxNetIpFrame::fromBytes(...);
 
-        const QKnxNetIpRoutingIndicationProxy routingIndication(netIpFrame);
-        if (!routingIndication.isValid())
+        const QKnxNetIpRoutingIndicationProxy proxy(netIpFrame);
+        if (!proxy.isValid())
             return;
 
-        auto linkFrame = routingIndication.linkLayerFrame();
+        auto linkFrame = proxy.linkLayerFrame();
     \endcode
 
     \sa builder(), QKnxNetIpRoutingLostMessageProxy, QKnxNetIpRoutingBusyProxy,

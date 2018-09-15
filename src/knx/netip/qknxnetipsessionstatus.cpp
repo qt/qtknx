@@ -44,11 +44,18 @@ QT_BEGIN_NAMESPACE
     class and to create a KNXnet/IP secure session status frame from provided
     data.
 
-    TODO: Add more documentation. AN159 paragraph 2.2.3.9 SESSION_STATUS
+    This class is part of the Qt KNX module and currently available as a
+    Technology Preview, and therefore the API and functionality provided
+    by the class may be subject to change at any time without prior notice.
 
-    \note When using QKnxNetIpSessionStatusProxy, care must be taken to
-    ensure that the referenced KNXnet/IP DIB structure outlives the proxy on
-    all code paths, lest the proxy ends up referencing deleted data.
+    This frame may be sent by the KNXnet/IP secure server to the KNXnet/IP
+    secure client or by the KNXnet/IP secure client to the KNXnet/IP secure
+    server at any stage of the secure session handshake to indicate an error
+    condition or to convey status information.
+
+    \note When using QKnxNetIpSessionStatusProxy, care must be taken to ensure
+    that the referenced KNXnet/IP frame outlives the proxy on all code paths,
+    lest the proxy ends up referencing deleted data.
 
     The following code sample illustrates how to read the session status
     information:
@@ -133,7 +140,14 @@ QKnxNetIpSessionStatusProxy::Builder QKnxNetIpSessionStatusProxy::builder()
     \brief The QKnxNetIpSessionStatusProxy::Builder class provides the
     means to create a KNXnet/IP secure session status frame.
 
-    TODO: Add more documentation. AN159 paragraph 2.2.3.9 SESSION_STATUS
+    This class is part of the Qt KNX module and currently available as a
+    Technology Preview, and therefore the API and functionality provided
+    by the class may be subject to change at any time without prior notice.
+
+    This frame may be sent by the KNXnet/IP secure server to the KNXnet/IP
+    secure client or by the KNXnet/IP secure client to the KNXnet/IP secure
+    server at any stage of the secure session handshake to indicate an error
+    condition or to convey status information.
 
     The common way to create a session status frame is:
 
@@ -144,6 +158,27 @@ QKnxNetIpSessionStatusProxy::Builder QKnxNetIpSessionStatusProxy::builder()
     \endcode
 */
 
+class QKnxNetIpSessionStatusBuilderPrivate : public QSharedData
+{
+public:
+    QKnxNetIpSessionStatusBuilderPrivate() = default;
+    ~QKnxNetIpSessionStatusBuilderPrivate() = default;
+
+    QKnxNetIp::SecureSessionStatus m_status = QKnxNetIp::SecureSessionStatus::Unknown;
+};
+
+/*!
+    Creates a new empty session status frame builder object.
+*/
+QKnxNetIpSessionStatusProxy::Builder::Builder()
+    : d_ptr(new QKnxNetIpSessionStatusBuilderPrivate)
+{}
+
+/*!
+    Destroys the object and frees any allocated resources.
+*/
+QKnxNetIpSessionStatusProxy::Builder::~Builder() = default;
+
 /*!
     Sets the status of the KNXnet/IP session status frame to \a status
     and returns a reference to the builder.
@@ -151,7 +186,7 @@ QKnxNetIpSessionStatusProxy::Builder QKnxNetIpSessionStatusProxy::builder()
 QKnxNetIpSessionStatusProxy::Builder &
     QKnxNetIpSessionStatusProxy::Builder::setStatus(QKnxNetIp::SecureSessionStatus status)
 {
-    m_status = status;
+    d_ptr->m_status = status;
     return *this;
 }
 
@@ -165,11 +200,28 @@ QKnxNetIpSessionStatusProxy::Builder &
 */
 QKnxNetIpFrame QKnxNetIpSessionStatusProxy::Builder::create() const
 {
-    if (m_status > QKnxNetIp::SecureSessionStatus::Close)
+    if (d_ptr->m_status > QKnxNetIp::SecureSessionStatus::Close)
         return { QKnxNetIp::ServiceType::SessionStatus };
 
-    return { QKnxNetIp::ServiceType::SessionAuthenticate,
-        QKnxUtils::QUint16::bytes(quint16(m_status) << 8) };
+    return { QKnxNetIp::ServiceType::SessionStatus,
+        QKnxUtils::QUint16::bytes(quint16(d_ptr->m_status) << 8) };
+}
+
+/*!
+    Constructs a copy of \a other.
+*/
+QKnxNetIpSessionStatusProxy::Builder::Builder(const Builder &other)
+    : d_ptr(other.d_ptr)
+{}
+
+/*!
+    Assigns the specified \a other to this object.
+*/
+QKnxNetIpSessionStatusProxy::Builder &
+    QKnxNetIpSessionStatusProxy::Builder::operator=(const Builder &other)
+{
+    d_ptr = other.d_ptr;
+    return *this;
 }
 
 QT_END_NAMESPACE

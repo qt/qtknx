@@ -327,7 +327,7 @@ QKnxNetIpSrpProxy::MacAddress::MacAddress()
 {}
 
 /*!
-    Destroys the builder.
+    Destroys the object and frees any allocated resources.
 */
 QKnxNetIpSrpProxy::MacAddress::~MacAddress()
 {}

@@ -59,17 +59,21 @@ QT_BEGIN_NAMESPACE
     control field. The control field is set to \c 0000h, which requires all
     routers and devices to act upon receiving the router busy message.
 
+    \note When using QKnxNetIpRoutingBusyProxy, care must be taken to ensure
+    that the referenced KNXnet/IP frame outlives the proxy on all code paths,
+    lest the proxy ends up referencing deleted data.
+
     The following code sample illustrates how to read the router busy message
     information sent by a KNXnet/IP router or device:
 
     \code
         auto netIpFrame = QKnxNetIpFrame::fromBytes(...);
 
-        const QKnxNetIpRoutingBusyProxy routerAnswer(netIpFrame);
-        if (!routerAnswer.isValid())
+        const QKnxNetIpRoutingBusyProxy proxy(netIpFrame);
+        if (!proxy.isValid())
             return;
 
-        auto busyTime = routerAnswer.routingBusyWaitTime();
+        auto busyTime = proxy.routingBusyWaitTime();
     \endcode
 
     The sending device will wait for \c busyTime before sending the next frame.

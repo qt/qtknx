@@ -58,19 +58,23 @@ QT_BEGIN_NAMESPACE
     \l QKnxNetIpServerDescriptionAgent and \l QKnxNetIpServerInfo to check
     that the server supports the requested connection type and options.
 
+    \note When using QKnxNetIpConnectRequestProxy, care must be taken to ensure
+    that the referenced KNXnet/IP frame outlives the proxy on all code paths,
+    lest the proxy ends up referencing deleted data.
+
     The following code sample illustrates how to read the connection request
     information sent by a KNXnet/IP client:
 
     \code
         auto frame = QKnxNetIpFrame::fromBytes(...);
 
-        const QKnxNetIpConnectRequestProxy request(frame);
-        if (!request.isValid())
+        const QKnxNetIpConnectRequestProxy proxy(frame);
+        if (!proxy.isValid())
             return;
 
-        auto ctrlEndpoint = request.controlEndpoint();
-        auto dataEndpoint = request.dataEndpoint();
-        auto cri = request. requestInformation();
+        auto ctrlEndpoint = proxy.controlEndpoint();
+        auto dataEndpoint = proxy.dataEndpoint();
+        auto cri = proxy. requestInformation();
     \endcode
 
     \sa builder(), {Qt KNXnet/IP Connection Classes}

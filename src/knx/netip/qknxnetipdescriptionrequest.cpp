@@ -49,17 +49,21 @@ QT_BEGIN_NAMESPACE
     \l QKnxNetIpServerDescriptionAgent and \l QKnxNetIpServerInfo are provided to
     check that the server supports the requested connection type and options.
 
+    \note When using QKnxNetIpDescriptionRequestProxy, care must be taken to
+    ensure that the referenced KNXnet/IP frame outlives the proxy on all code
+    paths, lest the proxy ends up referencing deleted data.
+
     The following code sample illustrates how to read the description request
     information sent by a KNXnet/IP client:
 
     \code
         auto netIpFrame = QKnxNetIpFrame::fromBytes(...);
 
-        const QKnxNetIpDescriptionRequestProxy descriptionRequest(netIpFrame);
-        if (!descriptionRequest.isValid())
+        const QKnxNetIpDescriptionRequestProxy proxy(netIpFrame);
+        if (!proxy.isValid())
             return;
 
-        auto endPoint = descriptionRequest.controlEndpoint();
+        auto endPoint = proxy.controlEndpoint();
     \endcode
 
     \sa builder(), QKnxNetIpDescriptionResponseProxy, {Qt KNXnet/IP Connection Classes}

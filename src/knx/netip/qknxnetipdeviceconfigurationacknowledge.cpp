@@ -62,19 +62,23 @@ QT_BEGIN_NAMESPACE
     \l QKnxNetIpTunnel or \l QKnxNetIpDeviceManagement
     class is used to establish a functional connection to a KNXnet/IP server.
 
+    \note When using QKnxNetIpDeviceConfigurationAcknowledgeProxy, care must be
+    taken to ensure that the referenced KNXnet/IP frame outlives the proxy on
+    all code paths, lest the proxy ends up referencing deleted data.
+
     The following code sample illustrates how to read the device configuration
     acknowledgment information sent by a KNXnet/IP client:
 
     \code
         auto frame = QKnxNetIpFrame::fromBytes(...);
 
-        const QKnxNetIpDeviceConfigurationAcknowledgeProxy configAck(netIpFrame);
-        if (!configAck.isValid())
+        const QKnxNetIpDeviceConfigurationAcknowledgeProxy proxy(netIpFrame);
+        if (!proxy.isValid())
             return;
 
-        quint8 chanId = configAck.channelId();
-        quint8 seqNum = configAck.sequenceNumber();
-        QKnx::NetIp::Error error = configAck.status();
+        quint8 chanId = proxy.channelId();
+        quint8 seqNum = proxy.sequenceNumber();
+        QKnx::NetIp::Error error = proxy.status();
     \endcode
 
     \sa builder(), QKnxNetIpDeviceConfigurationRequestProxy,

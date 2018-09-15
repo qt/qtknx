@@ -61,6 +61,10 @@ QT_BEGIN_NAMESPACE
     tunneling server sends a tunneling feature-response frame. The frame
     contains the written value and a \l {QKnx::ReturnCode} {return code}.
 
+    \note When using QKnxNetIpTunnelingFeatureSetProxy, care must be taken to
+    ensure that the referenced KNXnet/IP frame outlives the proxy on all code
+    paths, lest the proxy ends up referencing deleted data.
+
     The following code sample illustrates how to read the tunneling feature-set
     service information sent by a KNXnet/IP client:
 

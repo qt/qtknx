@@ -35,6 +35,7 @@
 
 QT_BEGIN_NAMESPACE
 
+class QKnxNetIpTimerNotifyBuilderPrivate;
 class Q_KNX_EXPORT QKnxNetIpTimerNotifyProxy final
 {
 public:
@@ -54,6 +55,9 @@ public:
     class Q_KNX_EXPORT Builder final
     {
     public:
+        Builder();
+        ~Builder();
+
         Builder &setTimerValue(quint48 timerValue);
         Builder &setSerialNumber(const QKnxByteArray &serialNumber);
         Builder &setMessageTag(quint16 tag);
@@ -61,11 +65,11 @@ public:
 
         QKnxNetIpFrame create() const;
 
+        Builder(const Builder &other);
+        Builder &operator=(const Builder &other);
+
     private:
-        quint64 m_timer { Q_UINT48_MAX + 1 };
-        QKnxByteArray m_serial;
-        qint32 m_tag { -1 };
-        QKnxByteArray m_authCode;
+        QSharedDataPointer<QKnxNetIpTimerNotifyBuilderPrivate> d_ptr;
     };
     static QKnxNetIpTimerNotifyProxy::Builder builder();
 

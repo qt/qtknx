@@ -43,11 +43,18 @@ QT_BEGIN_NAMESPACE
     timer notify data inside the generic \l QKnxNetIpFrame class and to create
     a KNXnet/IP timer notify frame from provided data.
 
-    TODO: Add more documentation. AN159 paragraph 2.2.2.4 TIMER_NOTIFY
+    This class is part of the Qt KNX module and currently available as a
+    Technology Preview, and therefore the API and functionality provided
+    by the class may be subject to change at any time without prior notice.
 
-    \note When using QKnxNetIpTimerNotifyProxy, care must be taken to
-    ensure that the referenced KNXnet/IP DIB structure outlives the proxy on
-    all code paths, lest the proxy ends up referencing deleted data.
+    This frame will be sent during secure KNXnet/IP multicast group
+    communication to keep the multicast group member's timer values
+    synchronized. The frame is therefore sent to the KNXnet/IP routing
+    endpoint on port \c 3671 of the configured routing multicast address.
+
+    \note When using QKnxNetIpTimerNotifyProxy, care must be taken to ensure
+    that the referenced KNXnet/IP frame outlives the proxy on all code paths,
+    lest the proxy ends up referencing deleted data.
 
     The following code sample illustrates how to read the timer notify
     information:
@@ -134,7 +141,7 @@ quint16 QKnxNetIpTimerNotifyProxy::messageTag() const
 }
 
 /*!
-    Returns the AES128 CCM message authentication code from the generic
+    Returns the AES128 CCM message authentication code (MAC) from the generic
     KNXnet/IP secure timer notify frame with a fixed size of \c 16 bytes.
 */
 QKnxByteArray QKnxNetIpTimerNotifyProxy::messageAuthenticationCode() const
@@ -160,7 +167,14 @@ QKnxNetIpTimerNotifyProxy::Builder QKnxNetIpTimerNotifyProxy::builder()
     \brief The QKnxNetIpTimerNotifyProxy::Builder class provides the
     means to create a KNXnet/IP timer notify frame.
 
-    TODO: Add more documentation. AN159 paragraph 2.2.3.9 SESSION_STATUS
+    This class is part of the Qt KNX module and currently available as a
+    Technology Preview, and therefore the API and functionality provided
+    by the class may be subject to change at any time without prior notice.
+
+    This frame will be sent during secure KNXnet/IP multicast group
+    communication to keep the multicast group member's timer values
+    synchronized. The frame is therefore sent to the KNXnet/IP routing
+    endpoint on port \c 3671 of the configured routing multicast address.
 
     The common way to create a timer notify frame is:
 
@@ -174,7 +188,33 @@ QKnxNetIpTimerNotifyProxy::Builder QKnxNetIpTimerNotifyProxy::builder()
             .setMessageAuthenticationCode(auth)
             .create();
     \endcode
+
+    \sa QKnxCryptographicEngine
 */
+
+class QKnxNetIpTimerNotifyBuilderPrivate : public QSharedData
+{
+public:
+    QKnxNetIpTimerNotifyBuilderPrivate() = default;
+    ~QKnxNetIpTimerNotifyBuilderPrivate() = default;
+
+    quint64 m_timer { Q_UINT48_MAX + 1 };
+    QKnxByteArray m_serial;
+    qint32 m_tag { -1 };
+    QKnxByteArray m_authCode;
+};
+
+/*!
+    Creates a new empty timer notify frame builder object.
+*/
+QKnxNetIpTimerNotifyProxy::Builder::Builder()
+    : d_ptr(new QKnxNetIpTimerNotifyBuilderPrivate)
+{}
+
+/*!
+    Destroys the object and frees any allocated resources.
+*/
+QKnxNetIpTimerNotifyProxy::Builder::~Builder() = default;
 
 /*!
     Sets the timer value to \a timerValue and returns a reference to the
@@ -187,7 +227,7 @@ QKnxNetIpTimerNotifyProxy::Builder QKnxNetIpTimerNotifyProxy::builder()
 QKnxNetIpTimerNotifyProxy::Builder &
     QKnxNetIpTimerNotifyProxy::Builder::setTimerValue(quint48 timerValue)
 {
-    m_timer = timerValue;
+    d_ptr->m_timer = timerValue;
     return *this;
 }
 
@@ -200,13 +240,13 @@ QKnxNetIpTimerNotifyProxy::Builder &
 QKnxNetIpTimerNotifyProxy::Builder &
     QKnxNetIpTimerNotifyProxy::Builder::setSerialNumber(const QKnxByteArray &serialNumber)
 {
-    m_serial = serialNumber;
+    d_ptr->m_serial = serialNumber;
     return *this;
 }
 
 /*!
     Sets the message tag of the generic KNXnet/IP timer notify frame to \a tag
-    and returns a reference to builder.
+    and returns a reference to the builder.
 
     In case of a periodic or initial notify the tag contains a random value. In
     case of an update notify this is the value of the outdated frame triggering
@@ -214,19 +254,19 @@ QKnxNetIpTimerNotifyProxy::Builder &
 */
 QKnxNetIpTimerNotifyProxy::Builder &QKnxNetIpTimerNotifyProxy::Builder::setMessageTag(quint16 tag)
 {
-    m_tag = tag;
+    d_ptr->m_tag = tag;
     return *this;
 }
 
 /*!
-    Sets the AES128 CCM message authentication code of the generic KNXnet/IP
-    timer notify frame to \a data and returns a reference to builder. The
-    message authentication code has a fixed size of \c 16 bytes.
+    Sets the AES128 CCM message authentication code (MAC) of the generic
+    KNXnet/IP timer notify frame to \a data and returns a reference to the
+    builder. The MAC has a fixed size of \c 16 bytes.
 */
 QKnxNetIpTimerNotifyProxy::Builder &
     QKnxNetIpTimerNotifyProxy::Builder::setMessageAuthenticationCode(const QKnxByteArray &data)
 {
-    m_authCode = data;
+    d_ptr->m_authCode = data;
     return *this;
 }
 
@@ -240,11 +280,29 @@ QKnxNetIpTimerNotifyProxy::Builder &
 */
 QKnxNetIpFrame QKnxNetIpTimerNotifyProxy::Builder::create() const
 {
-    if (m_timer <= Q_UINT48_MAX && m_serial.size() == 6 && m_tag >= 0 && m_authCode.size() == 16) {
-        return { QKnxNetIp::ServiceType::TimerNotify, QKnxUtils::QUint48::bytes(m_timer)
-            + m_serial + QKnxUtils::QUint16::bytes(m_tag) + m_authCode };
+    if (d_ptr->m_timer <= Q_UINT48_MAX && d_ptr->m_serial.size() == 6 && d_ptr->m_tag >= 0
+        && d_ptr->m_authCode.size() == 16) {
+            return { QKnxNetIp::ServiceType::TimerNotify, QKnxUtils::QUint48::bytes(d_ptr->m_timer)
+                + d_ptr->m_serial + QKnxUtils::QUint16::bytes(d_ptr->m_tag) + d_ptr->m_authCode };
     }
     return { QKnxNetIp::ServiceType::TimerNotify };
+}
+
+/*!
+    Constructs a copy of \a other.
+*/
+QKnxNetIpTimerNotifyProxy::Builder::Builder(const Builder &other)
+    : d_ptr(other.d_ptr)
+{}
+
+/*!
+    Assigns the specified \a other to this object.
+*/
+QKnxNetIpTimerNotifyProxy::Builder &
+    QKnxNetIpTimerNotifyProxy::Builder::operator=(const Builder &other)
+{
+    d_ptr = other.d_ptr;
+    return *this;
 }
 
 QT_END_NAMESPACE
