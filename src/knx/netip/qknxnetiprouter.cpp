@@ -27,8 +27,8 @@
 **
 ******************************************************************************/
 
-#include "qknxnetiproutinginterface.h"
-#include "qknxnetiproutinginterface_p.h"
+#include "qknxnetiprouter.h"
+#include "qknxnetiprouter_p.h"
 #include "qknxnetip.h"
 #include "qknxnetipframe.h"
 #include "qknxnetiproutingbusy.h"
@@ -43,14 +43,14 @@
 QT_BEGIN_NAMESPACE
 
 /*!
-    \class QKnxNetIpRoutingInterface
+    \class QKnxNetIpRouter
 
     \inmodule QtKnx
     \ingroup qtknx-routing
     \ingroup qtknx-netip
     \since 5.12
 
-    \brief The QKnxNetIpRoutingInterface class enables sending and receiving
+    \brief The QKnxNetIpRouter class enables sending and receiving
     routing KNXnet/IP packets to and from other KNXnet/IP routers.
 
     KNXnet/IP routing is defined as a set of KNXnet/IP routers communicating
@@ -63,15 +63,15 @@ QT_BEGIN_NAMESPACE
     backbone that connects KNX subnets and is a high-speed replacement for
     the KNX backbone.
 
-    The QKnxNetIpRoutingInterface is bound to a physical network interface
+    The QKnxNetIpRouter is bound to a physical network interface
     which is used for transmitting and receiving the routing frames. It also
     requires the multicast address used by the KNX installation.
 
     The following code sample illustrates how to use the
-    QKnxNetIpRoutingInterface to send and receive KNXnet/IP frames:
+    QKnxNetIpRouter to send and receive KNXnet/IP frames:
 
     \code
-        QKnxNetIpRoutingInterface router;
+        QKnxNetIpRouter router;
         router.setInterfaceAffinity(QNetworkInterface::interfaceFromName("eth0"));
         router.setMulticastAddress(QHostAddress("224.0.23.32"));
         router.start();
@@ -89,7 +89,7 @@ QT_BEGIN_NAMESPACE
 
         // Processing routing indications received
         QObject::connect(&router,
-                         &QKnxNetIpRoutingInterface::routingIndicationReceived,
+                         &QKnxNetIpRouter::routingIndicationReceived,
                      [](QKnxNetIpFrame frame) {
                 QKnxNetIpRoutingIndicationProxy indication(frame);
                 qInfo().noquote() << "Received routing indication:"
@@ -102,16 +102,19 @@ QT_BEGIN_NAMESPACE
 */
 
 /*!
-    \typedef QKnxNetIpRoutingInterface::FilterTable
+    \typedef QKnxNetIpRouter::FilterTable
 
-    A synonym for QKnxNetIpRoutingInterface::QSet<QKnxAddress> which is the
-    type used to store the filter table of the routing interface.
+    A synonym for QKnxNetIpRouter::QSet<QKnxAddress> which is the type used
+    to store the filter table of the router. The filter table is interpreted
+    as whitelist by the routing algorithm. The addresses stored are allowed
+    to be routed. Any frame which has a destination address that is not contained
+    in the table is blocked.
 */
 
 /*!
-    \enum QKnxNetIpRoutingInterface::State
+    \enum QKnxNetIpRouter::State
 
-    This enum holds the state of the QKnxNetIpRoutingInterface.
+    This enum holds the state of the QKnxNetIpRouter.
 
     \value NotInit
             Router not started yet.
@@ -120,7 +123,7 @@ QT_BEGIN_NAMESPACE
             for sending.
     \value NeighborBusy
             A KNX router in the same network sent a busy message or the
-            QKnxNetIpRoutingInterface itself detected a busy situation.
+            QKnxNetIpRouter itself detected a busy situation.
     \value Stop
             Router has been explicitly stopped by the user.
     \value Failure
@@ -128,9 +131,9 @@ QT_BEGIN_NAMESPACE
 */
 
 /*!
-    \enum QKnxNetIpRoutingInterface::Error
+    \enum QKnxNetIpRouter::Error
 
-    This enum holds the state of the QKnxNetIpRoutingInterface.
+    This enum holds the state of the QKnxNetIpRouter.
 
     \value None
             No errors.
@@ -141,7 +144,7 @@ QT_BEGIN_NAMESPACE
 */
 
 /*!
-    \enum QKnxNetIpRoutingInterface::FilterAction
+    \enum QKnxNetIpRouter::FilterAction
 
     This enum holds the possible courses of action of a router in response to a
     received layer service data unit (LSDU). An LSDU is a type of frame used by
@@ -172,7 +175,7 @@ QT_BEGIN_NAMESPACE
 */
 
 /*!
-    \enum QKnxNetIpRoutingInterface::RoutingMode
+    \enum QKnxNetIpRouter::RoutingMode
 
     This enum holds the possible parameterization actions that a router shall
     apply on telegrams of a point-to-multipoint connectionless communication
@@ -188,109 +191,109 @@ QT_BEGIN_NAMESPACE
 */
 
 /*!
-    \fn void QKnxNetIpRoutingInterface::routingIndicationReceived(QKnxNetIpFrame frame, QKnxNetIpRoutingInterface::FilterAction routingAction)
+    \fn void QKnxNetIpRouter::routingIndicationReceived(QKnxNetIpFrame frame, QKnxNetIpRouter::FilterAction routingAction)
 
     This signal is emitted when the KNXnet/IP router receives a routing indication
     \a frame and specifies the action \a routingAction to be applied by the router.
 */
 
 /*!
-    \fn void QKnxNetIpRoutingInterface::routingBusyReceived(QKnxNetIpFrame frame)
+    \fn void QKnxNetIpRouter::routingBusyReceived(QKnxNetIpFrame frame)
 
     This signal is emitted when the KNXnet/IP router receives a routing busy
     \a frame.
 */
 
 /*!
-    \fn void QKnxNetIpRoutingInterface::routingLostCountReceived(QKnxNetIpFrame frame)
+    \fn void QKnxNetIpRouter::routingLostCountReceived(QKnxNetIpFrame frame)
 
     This signal is emitted when the KNXnet/IP router receives a routing lost
     count message held in \a frame.
 */
 
 /*!
-    \fn void QKnxNetIpRoutingInterface::routingIndicationSent(QKnxNetIpFrame frame)
+    \fn void QKnxNetIpRouter::routingIndicationSent(QKnxNetIpFrame frame)
 
     This signal is emitted when the KNXnet/IP router has finished sending the
     routing indication \a frame.
 */
 
 /*!
-    \fn void QKnxNetIpRoutingInterface::routingBusySent(QKnxNetIpFrame frame)
+    \fn void QKnxNetIpRouter::routingBusySent(QKnxNetIpFrame frame)
 
     This signal is emitted when the KNXnet/IP router has finished sending the
     routing busy \a frame.
 */
 
 /*!
-    \fn void QKnxNetIpRoutingInterface::routingLostCountSent(QKnxNetIpFrame frame)
+    \fn void QKnxNetIpRouter::routingLostCountSent(QKnxNetIpFrame frame)
 
     This signal is emitted when the KNXnet/IP router has finished sending the
     routing lost count \a frame.
 */
 
 /*!
-    \fn void QKnxNetIpRoutingInterface::routingSystemBroadcastSent(QKnxNetIpFrame frame)
+    \fn void QKnxNetIpRouter::routingSystemBroadcastSent(QKnxNetIpFrame frame)
 
     This signal is emitted when the KNXnet/IP router has finished sending the
     routing system broadcast \a frame.
 */
 
 /*!
-    \fn void QKnxNetIpRoutingInterface::routingSystemBroadcastReceived(QKnxNetIpFrame frame)
+    \fn void QKnxNetIpRouter::routingSystemBroadcastReceived(QKnxNetIpFrame frame)
 
     This signal is emitted when the KNXnet/IP router receives the routing system
     broadcast \a frame.
 */
 
 /*!
-    \fn void QKnxNetIpRoutingInterface::stateChanged(QKnxNetIpRoutingInterface::State state)
+    \fn void QKnxNetIpRouter::stateChanged(QKnxNetIpRouter::State state)
 
     This signal is emitted when the KNXnet/IP router transitions to a different
     \a state.
 */
 
 /*!
-    \fn void QKnxNetIpRoutingInterface::errorOccurred(QKnxNetIpRoutingInterface::Error error, QString errorString)
+    \fn void QKnxNetIpRouter::errorOccurred(QKnxNetIpRouter::Error error, QString errorString)
 
     This signal is emitted when the KNXnet/IP router encounters the error \a
     error that is described by \a errorString.
 */
 
 /*!
-    Returns the current state of the KNX routing interface.
+    Returns the current state of the KNX router.
 */
-QKnxNetIpRoutingInterface::State QKnxNetIpRoutingInterface::state() const
+QKnxNetIpRouter::State QKnxNetIpRouter::state() const
 {
-    Q_D(const QKnxNetIpRoutingInterface);
+    Q_D(const QKnxNetIpRouter);
     return d->m_state;
 }
 
 /*!
     Returns a QString describing the latest known error that occurred in the
-    KNX routing interface.
+    KNX router.
 */
-QString QKnxNetIpRoutingInterface::errorString() const
+QString QKnxNetIpRouter::errorString() const
 {
-    Q_D(const QKnxNetIpRoutingInterface);
+    Q_D(const QKnxNetIpRouter);
     return d->m_errorMessage;
 }
 
 /*!
     Returns the filter table used by the routing algorithm.
 */
-QKnxNetIpRoutingInterface::FilterTable QKnxNetIpRoutingInterface::filterTable() const
+QKnxNetIpRouter::FilterTable QKnxNetIpRouter::filterTable() const
 {
-    Q_D(const QKnxNetIpRoutingInterface);
+    Q_D(const QKnxNetIpRouter);
     return d->m_filterTable;
 }
 
 /*!
     Sets the filter table used by the routing algorithm to \a table.
  */
-void QKnxNetIpRoutingInterface::setFilterTable(const QKnxNetIpRoutingInterface::FilterTable &table)
+void QKnxNetIpRouter::setFilterTable(const QKnxNetIpRouter::FilterTable &table)
 {
-    Q_D(QKnxNetIpRoutingInterface);
+    Q_D(QKnxNetIpRouter);
     d->m_filterTable = table;
     d->m_routingMode = RoutingMode::Filter;
 }
@@ -298,54 +301,54 @@ void QKnxNetIpRoutingInterface::setFilterTable(const QKnxNetIpRoutingInterface::
 /*!
     Returns the routing mode.
 */
-QKnxNetIpRoutingInterface::RoutingMode QKnxNetIpRoutingInterface::routingMode() const
+QKnxNetIpRouter::RoutingMode QKnxNetIpRouter::routingMode() const
 {
-    Q_D(const QKnxNetIpRoutingInterface);
+    Q_D(const QKnxNetIpRouter);
     return d->m_routingMode;
 }
 
 /*!
-    Sets the interface routing mode to \a mode.
+    Sets the routing mode to \a mode.
  */
-void QKnxNetIpRoutingInterface::setRoutingMode(QKnxNetIpRoutingInterface::RoutingMode mode)
+void QKnxNetIpRouter::setRoutingMode(QKnxNetIpRouter::RoutingMode mode)
 {
-    Q_D(QKnxNetIpRoutingInterface);
+    Q_D(QKnxNetIpRouter);
     d->m_routingMode = mode;
 }
 
 /*!
-    Returns an error code that describes the last error that occurred in the
-    KNX routing interface.
+    Returns an routing error code that describing the last error occurred in the
+    KNX router.
 */
-QKnxNetIpRoutingInterface::Error QKnxNetIpRoutingInterface::error() const
+QKnxNetIpRouter::Error QKnxNetIpRouter::error() const
 {
-    Q_D(const QKnxNetIpRoutingInterface);
+    Q_D(const QKnxNetIpRouter);
     return d->m_error;
 }
 
 /*!
-    Constructs a KNXnet/IP routing interface with the parent \a parent.
+    Constructs a KNXnet/IP router with the parent \a parent.
 */
-QKnxNetIpRoutingInterface::QKnxNetIpRoutingInterface(QObject *parent)
-    : QObject(*new QKnxNetIpRoutingInterfacePrivate, parent)
+QKnxNetIpRouter::QKnxNetIpRouter(QObject *parent)
+    : QObject(*new QKnxNetIpRouterPrivate, parent)
 {}
 
 /*!
     Returns the current network interface used by this KNX routing instance.
  */
-QNetworkInterface QKnxNetIpRoutingInterface::interfaceAffinity() const
+QNetworkInterface QKnxNetIpRouter::interfaceAffinity() const
 {
-    Q_D(const QKnxNetIpRoutingInterface);
+    Q_D(const QKnxNetIpRouter);
     return d->m_iface;
 }
 
 /*!
     Searches for the network interface that is bound to \a address that the
-    QKnxNetIpRoutingInterface instance shall use.
+    QKnxNetIpRouter instance shall use.
  */
-void QKnxNetIpRoutingInterface::setInterfaceAffinity(const QHostAddress &address)
+void QKnxNetIpRouter::setInterfaceAffinity(const QHostAddress &address)
 {
-    Q_D(QKnxNetIpRoutingInterface);
+    Q_D(QKnxNetIpRouter);
 
     const auto interfaces = QNetworkInterface::allInterfaces();
     for (const auto &iface : interfaces) {
@@ -372,9 +375,9 @@ void QKnxNetIpRoutingInterface::setInterfaceAffinity(const QHostAddress &address
     Sets the network interface \a iface that the QNetworkInterface instance
     shall use.
  */
-void QKnxNetIpRoutingInterface::setInterfaceAffinity(const QNetworkInterface &iface)
+void QKnxNetIpRouter::setInterfaceAffinity(const QNetworkInterface &iface)
 {
-    Q_D(QKnxNetIpRoutingInterface);
+    Q_D(QKnxNetIpRouter);
     if (iface.flags().testFlag(QNetworkInterface::IsRunning))
         d->m_iface = iface;
     else
@@ -382,20 +385,20 @@ void QKnxNetIpRoutingInterface::setInterfaceAffinity(const QNetworkInterface &if
 }
 
 /*!
-    Returns the multicast address used by the QKnxNetIpRoutingInterface.
+    Returns the multicast address used by the QKnxNetIpRouter.
  */
-QHostAddress QKnxNetIpRoutingInterface::multicastAddress() const
+QHostAddress QKnxNetIpRouter::multicastAddress() const
 {
-    Q_D(const QKnxNetIpRoutingInterface);
+    Q_D(const QKnxNetIpRouter);
     return d->m_multicastAddress;
 }
 
 /*!
     Sets the multicast address to \a address.
  */
-void QKnxNetIpRoutingInterface::setMulticastAddress(const QHostAddress &address)
+void QKnxNetIpRouter::setMulticastAddress(const QHostAddress &address)
 {
-    Q_D(QKnxNetIpRoutingInterface);
+    Q_D(QKnxNetIpRouter);
 
     auto isIPv4 = false;
     address.toIPv4Address(&isIPv4);
@@ -408,20 +411,20 @@ void QKnxNetIpRoutingInterface::setMulticastAddress(const QHostAddress &address)
 /*!
     Returns the routing interface's individual address.
 */
-QKnxAddress QKnxNetIpRoutingInterface::individualAddress() const
+QKnxAddress QKnxNetIpRouter::individualAddress() const
 {
-    Q_D(const QKnxNetIpRoutingInterface);
+    Q_D(const QKnxNetIpRouter);
     return d->m_individualAddress;
 }
 
 /*!
     Sets the routing interface's individual address to \a address.
 */
-void QKnxNetIpRoutingInterface::setIndividualAddress(const QKnxAddress &address)
+void QKnxNetIpRouter::setIndividualAddress(const QKnxAddress &address)
 {
-    Q_D(QKnxNetIpRoutingInterface);
+    Q_D(QKnxNetIpRouter);
     if (!address.isCouplerOrRouter()) {
-        d->errorOccurred(QKnxNetIpRoutingInterface::Error::KnxRouting, tr("Could not set "
+        d->errorOccurred(QKnxNetIpRouter::Error::KnxRouting, tr("Could not set "
             "individual address."));
     } else {
         d->m_individualAddress = address;
@@ -430,13 +433,13 @@ void QKnxNetIpRoutingInterface::setIndividualAddress(const QKnxAddress &address)
 
 /*!
     Multicasts the routing indication \a frame through the network interface
-    associated with the QKnxNetIpRoutingInterface.
+    associated with the QKnxNetIpRouter.
  */
-void QKnxNetIpRoutingInterface::sendRoutingIndication(const QKnxNetIpFrame &frame)
+void QKnxNetIpRouter::sendRoutingIndication(const QKnxNetIpFrame &frame)
 {
-    Q_D(QKnxNetIpRoutingInterface);
+    Q_D(QKnxNetIpRouter);
 
-    if (d->m_state != QKnxNetIpRoutingInterface::State::Routing)
+    if (d->m_state != QKnxNetIpRouter::State::Routing)
         return;
 
     QKnxNetIpRoutingIndicationProxy indication(frame);
@@ -444,7 +447,7 @@ void QKnxNetIpRoutingInterface::sendRoutingIndication(const QKnxNetIpFrame &fram
         return;
 
     if (!d->sendFrame(frame)) {
-        d->errorOccurred(QKnxNetIpRoutingInterface::Error::KnxRouting, tr("Could not send routing "
+        d->errorOccurred(QKnxNetIpRouter::Error::KnxRouting, tr("Could not send routing "
             "indication."));
     } else {
         emit routingIndicationSent(frame);
@@ -453,9 +456,9 @@ void QKnxNetIpRoutingInterface::sendRoutingIndication(const QKnxNetIpFrame &fram
 
 /*!
     Multicasts the routing indication \a linkFrame through the network interface
-    associated with the QKnxNetIpRoutingInterface.
+    associated with the QKnxNetIpRouter.
  */
-void QKnxNetIpRoutingInterface::sendRoutingIndication(const QKnxLinkLayerFrame &linkFrame)
+void QKnxNetIpRouter::sendRoutingIndication(const QKnxLinkLayerFrame &linkFrame)
 {
     auto netIpFrame = QKnxNetIpRoutingIndicationProxy::builder()
         .setCemi(linkFrame)
@@ -465,13 +468,13 @@ void QKnxNetIpRoutingInterface::sendRoutingIndication(const QKnxLinkLayerFrame &
 
 /*!
     Multicasts the routing busy message containing \a frame through the
-    network interface associated with the QKnxNetIpRoutingInterface.
+    network interface associated with the QKnxNetIpRouter.
 */
-void QKnxNetIpRoutingInterface::sendRoutingBusy(const QKnxNetIpFrame &frame)
+void QKnxNetIpRouter::sendRoutingBusy(const QKnxNetIpFrame &frame)
 {
-    Q_D(QKnxNetIpRoutingInterface);
+    Q_D(QKnxNetIpRouter);
 
-    if (d->m_state != QKnxNetIpRoutingInterface::State::Routing)
+    if (d->m_state != QKnxNetIpRouter::State::Routing)
         return;
 
     QKnxNetIpRoutingBusyProxy routingBusy(frame);
@@ -479,7 +482,7 @@ void QKnxNetIpRoutingInterface::sendRoutingBusy(const QKnxNetIpFrame &frame)
         return;
 
     if (!d->sendFrame(frame)) {
-        d->errorOccurred(QKnxNetIpRoutingInterface::Error::KnxRouting, tr("Could not send routing "
+        d->errorOccurred(QKnxNetIpRouter::Error::KnxRouting, tr("Could not send routing "
             "busy."));
     } else {
         emit routingBusySent(frame);
@@ -488,13 +491,13 @@ void QKnxNetIpRoutingInterface::sendRoutingBusy(const QKnxNetIpFrame &frame)
 
 /*!
     Multicasts the routing lost message \a frame through the network interface
-    associated with the QKnxNetIpRoutingInterface.
+    associated with the QKnxNetIpRouter.
 */
-void QKnxNetIpRoutingInterface::sendRoutingLostMessage(const QKnxNetIpFrame &frame)
+void QKnxNetIpRouter::sendRoutingLostMessage(const QKnxNetIpFrame &frame)
 {
-    Q_D(QKnxNetIpRoutingInterface);
+    Q_D(QKnxNetIpRouter);
 
-    if (d->m_state != QKnxNetIpRoutingInterface::State::Routing)
+    if (d->m_state != QKnxNetIpRouter::State::Routing)
         return;
 
     QKnxNetIpRoutingLostMessageProxy lostMessageFrame(frame);
@@ -502,7 +505,7 @@ void QKnxNetIpRoutingInterface::sendRoutingLostMessage(const QKnxNetIpFrame &fra
         return;
 
     if (!d->sendFrame(frame)) {
-        d->errorOccurred(QKnxNetIpRoutingInterface::Error::KnxRouting, tr("Could not send routing "
+        d->errorOccurred(QKnxNetIpRouter::Error::KnxRouting, tr("Could not send routing "
             "lost count."));
     } else {
         emit routingLostCountSent(frame);
@@ -511,11 +514,11 @@ void QKnxNetIpRoutingInterface::sendRoutingLostMessage(const QKnxNetIpFrame &fra
 
 /*!
     Multicasts the routing system broadcast \a linkFrame through the network
-    interface associated with the QKnxNetIpRoutingInterface.
+    interface associated with the QKnxNetIpRouter.
 */
-void QKnxNetIpRoutingInterface::sendRoutingSystemBroadcast(const QKnxLinkLayerFrame &linkFrame)
+void QKnxNetIpRouter::sendRoutingSystemBroadcast(const QKnxLinkLayerFrame &linkFrame)
 {
-    Q_D(QKnxNetIpRoutingInterface);
+    Q_D(QKnxNetIpRouter);
 
     auto netipFrame = QKnxNetIpRoutingSystemBroadcastProxy::builder()
         .setCemi(linkFrame)
@@ -526,7 +529,7 @@ void QKnxNetIpRoutingInterface::sendRoutingSystemBroadcast(const QKnxLinkLayerFr
         return;
 
     if (!d->sendFrame(netipFrame)) {
-        d->errorOccurred(QKnxNetIpRoutingInterface::Error::KnxRouting, tr("Could not send routing "
+        d->errorOccurred(QKnxNetIpRouter::Error::KnxRouting, tr("Could not send routing "
             "system broadcast."));
     } else {
         emit routingSystemBroadcastSent(netipFrame);
@@ -534,12 +537,12 @@ void QKnxNetIpRoutingInterface::sendRoutingSystemBroadcast(const QKnxLinkLayerFr
 }
 
 /*!
-    Signals the QKnxNetIpRoutingInterface to start listening for messages
+    Signals the QKnxNetIpRouter to start listening for messages
     received and accept sending messages.
 */
-void QKnxNetIpRoutingInterface::start()
+void QKnxNetIpRouter::start()
 {
-    Q_D(QKnxNetIpRoutingInterface);
+    Q_D(QKnxNetIpRouter);
     if (d->m_state == State::NotInit)
         d->start();
     else if (d->m_state == State::Failure || d->m_state == State::Stop)
@@ -547,14 +550,14 @@ void QKnxNetIpRoutingInterface::start()
 }
 
 /*!
-    Stops the QKnxNetIpRoutingInterface. No messages can be received and/or
+    Stops the QKnxNetIpRouter. No messages can be received and/or
     sent to the network.
 */
-void QKnxNetIpRoutingInterface::stop()
+void QKnxNetIpRouter::stop()
 {
-    Q_D(QKnxNetIpRoutingInterface);
+    Q_D(QKnxNetIpRouter);
     d->stop();
-    d->changeState(QKnxNetIpRoutingInterface::State::Stop);
+    d->changeState(QKnxNetIpRouter::State::Stop);
 }
 
 QT_END_NAMESPACE

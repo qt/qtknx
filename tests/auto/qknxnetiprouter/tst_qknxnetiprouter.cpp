@@ -29,14 +29,14 @@
 
 #include <QtKnx/qknxnetipframe.h>
 #include <QtKnx/qknxlinklayerframebuilder.h>
-#include <QtKnx/qknxnetiproutinginterface.h>
+#include <QtKnx/qknxnetiprouter.h>
 #include <QtKnx/qknxnetiproutingbusy.h>
 #include <QtKnx/qknxnetiproutingindication.h>
 #include <QtKnx/qknxnetiproutinglostmessage.h>
 #include <QtKnx/qknxnetiproutingsystembroadcast.h>
 
-#include <QtKnx/private/qknxnetiproutinginterface_p.h>
-#include <QtKnx/private/qknxtestingrouter_p.h>
+#include <QtKnx/private/qknxnetiprouter_p.h>
+#include <QtKnx/private/qknxnetiptestrouter_p.h>
 #include <QtKnx/private/qknxtpdufactory_p.h>
 
 #include <QtCore/qdebug.h>
@@ -49,12 +49,12 @@ Q_DECLARE_METATYPE(QKnxAddress)
 
 #ifdef QT_BUILD_INTERNAL
 
-class tst_QKnxNetIpRoutingInterface : public QObject
+class tst_QKnxNetIpRouter : public QObject
 {
     Q_OBJECT
 
 public:
-    tst_QKnxNetIpRoutingInterface();
+    tst_QKnxNetIpRouter();
 
 private slots:
     void initTestCase();
@@ -81,10 +81,10 @@ private:
     QNetworkInterface kIface;
     QHostAddress kMulticastAddress { QString("224.0.23.12") };
 
-    QKnxNetIpRoutingInterface m_routingInterface;
+    QKnxNetIpRouter m_router;
 };
 
-tst_QKnxNetIpRoutingInterface::tst_QKnxNetIpRoutingInterface()
+tst_QKnxNetIpRouter::tst_QKnxNetIpRouter()
 {
     // look for one interface running and able to multicast
 
@@ -106,7 +106,7 @@ tst_QKnxNetIpRoutingInterface::tst_QKnxNetIpRoutingInterface()
     }
 }
 
-void tst_QKnxNetIpRoutingInterface::initTestCase()
+void tst_QKnxNetIpRouter::initTestCase()
 {
     // don't run test case if this check fails
     runTests = kIface.flags().testFlag(QNetworkInterface::IsRunning)
@@ -116,87 +116,87 @@ void tst_QKnxNetIpRoutingInterface::initTestCase()
         return;
 
     auto interfaceIndividualAddress = QKnxAddress::createIndividual(1, 1, 0);
-    m_routingInterface.setIndividualAddress(interfaceIndividualAddress);
-    m_routingInterface.setInterfaceAffinity(kIface);
+    m_router.setIndividualAddress(interfaceIndividualAddress);
+    m_router.setInterfaceAffinity(kIface);
 }
 
-void tst_QKnxNetIpRoutingInterface::cleanup()
+void tst_QKnxNetIpRouter::cleanup()
 {
     if (!runTests)
         return;
 
-    m_routingInterface.disconnect();
-    m_routingInterface.stop();
+    m_router.disconnect();
+    m_router.stop();
 }
 
-void tst_QKnxNetIpRoutingInterface::test_network_interface()
+void tst_QKnxNetIpRouter::test_network_interface()
 {
     if (!runTests)
         return;
 
     bool errorEmitted = false;
-    QObject::connect(&m_routingInterface, &QKnxNetIpRoutingInterface::errorOccurred,
-            [&](QKnxNetIpRoutingInterface::Error error, QString errorString){
-        QCOMPARE(error, QKnxNetIpRoutingInterface::Error::Network);
-        QCOMPARE(error, m_routingInterface.error());
-        QCOMPARE(errorString, m_routingInterface.errorString());
-        QCOMPARE(m_routingInterface.state(), QKnxNetIpRoutingInterface::State::Failure);
+    QObject::connect(&m_router, &QKnxNetIpRouter::errorOccurred,
+            [&](QKnxNetIpRouter::Error error, QString errorString){
+        QCOMPARE(error, QKnxNetIpRouter::Error::Network);
+        QCOMPARE(error, m_router.error());
+        QCOMPARE(errorString, m_router.errorString());
+        QCOMPARE(m_router.state(), QKnxNetIpRouter::State::Failure);
         errorEmitted = true;
     });
     {
         // setting invalid interface should cause error
         auto m_iface = QNetworkInterface();
-        m_routingInterface.setInterfaceAffinity(m_iface);
+        m_router.setInterfaceAffinity(m_iface);
         QVERIFY(errorEmitted);
     }
     {
         // setting invalid interface using IP address of the interface
         errorEmitted = false;
-        m_routingInterface.setInterfaceAffinity(QHostAddress("2.2.2.2"));
+        m_router.setInterfaceAffinity(QHostAddress("2.2.2.2"));
         QVERIFY(errorEmitted);
     }
     {
         // local host address does not allow multicast
         errorEmitted = false;
-        m_routingInterface.setInterfaceAffinity(QHostAddress(QHostAddress::LocalHost));
+        m_router.setInterfaceAffinity(QHostAddress(QHostAddress::LocalHost));
         QVERIFY(errorEmitted);
     }
     {
         // setting a valid interface no signal emitted
         errorEmitted = false;
-        m_routingInterface.setInterfaceAffinity(kIface);
+        m_router.setInterfaceAffinity(kIface);
         QVERIFY(!errorEmitted);
-        QCOMPARE(kIface.index(), m_routingInterface.interfaceAffinity().index());
+        QCOMPARE(kIface.index(), m_router.interfaceAffinity().index());
     }
 }
 
-void tst_QKnxNetIpRoutingInterface::test_multicast_address()
+void tst_QKnxNetIpRouter::test_multicast_address()
 {
     if (!runTests)
         return;
 
     {
         // default multicast address
-        QKnxNetIpRoutingInterface m_router;
+        QKnxNetIpRouter m_router;
         QCOMPARE(m_router.multicastAddress(), kMulticastAddress);
     }
     {
         // setting an invalid multicast address shouldn't work
-        QKnxNetIpRoutingInterface m_router;
+        QKnxNetIpRouter m_router;
         auto kMulticastAddress = QHostAddress(QHostAddress::LocalHost);
         m_router.setMulticastAddress(kMulticastAddress);
         QVERIFY(m_router.multicastAddress() != kMulticastAddress);
     }
     {
         // setting a valid multicast address
-        QKnxNetIpRoutingInterface m_router;
+        QKnxNetIpRouter m_router;
         auto address = QHostAddress("224.0.55.55");
         m_router.setMulticastAddress(address);
         QCOMPARE(m_router.multicastAddress(), address);
     }
 }
 
-void tst_QKnxNetIpRoutingInterface::test_udp_sockets()
+void tst_QKnxNetIpRouter::test_udp_sockets()
 {
     if (!runTests)
         return;
@@ -260,7 +260,7 @@ QKnxNetIpFrame dummyRoutingIndication(QKnxAddress dst = QKnxAddress::createIndiv
                       .create();
 }
 
-void tst_QKnxNetIpRoutingInterface::simulateFramesReceived(const QKnxNetIpFrame &netIpFrame, int numFrames)
+void tst_QKnxNetIpRouter::simulateFramesReceived(const QKnxNetIpFrame &netIpFrame, int numFrames)
 {
     if (!runTests)
         return;
@@ -277,7 +277,7 @@ void tst_QKnxNetIpRoutingInterface::simulateFramesReceived(const QKnxNetIpFrame 
     }
 
     // notify router socket to wait for any received packet
-    TestingRouter::instance()->emitReadyRead();
+    QKnxNetIpTestRouter::instance()->emitReadyRead();
 
     if (s) {
         s->disconnect();
@@ -285,29 +285,29 @@ void tst_QKnxNetIpRoutingInterface::simulateFramesReceived(const QKnxNetIpFrame 
     }
 }
 
-void tst_QKnxNetIpRoutingInterface::test_routing()
+void tst_QKnxNetIpRouter::test_routing()
 {
     if (!runTests)
         return;
 
     bool stateChangedEmitted = false;
-    QObject::connect(&m_routingInterface, &QKnxNetIpRoutingInterface::stateChanged
-                     , [&](QKnxNetIpRoutingInterface::State state) {
+    QObject::connect(&m_router, &QKnxNetIpRouter::stateChanged
+                     , [&](QKnxNetIpRouter::State state) {
         stateChangedEmitted = true;
-        QCOMPARE(state, QKnxNetIpRoutingInterface::State::Routing);
+        QCOMPARE(state, QKnxNetIpRouter::State::Routing);
     });
 
-    m_routingInterface.start();
+    m_router.start();
     QVERIFY(stateChangedEmitted);
 }
 
 
-void tst_QKnxNetIpRoutingInterface::test_routing_sends_indications()
+void tst_QKnxNetIpRouter::test_routing_sends_indications()
 {
     if (!runTests)
         return;
 
-    m_routingInterface.start();
+    m_router.start();
 
     auto bytes  = QKnxByteArray::fromHex("2900b4e000000002010000");
     auto frameSent = QKnxLinkLayerFrame::builder()
@@ -316,57 +316,57 @@ void tst_QKnxNetIpRoutingInterface::test_routing_sends_indications()
                      .createFrame();
 
     bool indicationSentEmitted = false;
-    QObject::connect(&m_routingInterface, &QKnxNetIpRoutingInterface::routingIndicationSent
+    QObject::connect(&m_router, &QKnxNetIpRouter::routingIndicationSent
                      , [&](QKnxNetIpFrame frame) {
         indicationSentEmitted = true;
         QKnxNetIpRoutingIndicationProxy indicationSent(frame);
         QVERIFY(indicationSent.isValid());
         QCOMPARE(indicationSent.linkLayerFrame().bytes(), frameSent.bytes());
     });
-    m_routingInterface.sendRoutingIndication(frameSent);
+    m_router.sendRoutingIndication(frameSent);
     QVERIFY(indicationSentEmitted);
 
     bool stateChangedEmitted = false;
-    QObject::connect(&m_routingInterface, &QKnxNetIpRoutingInterface::stateChanged
-                     , [&](QKnxNetIpRoutingInterface::State state) {
+    QObject::connect(&m_router, &QKnxNetIpRouter::stateChanged
+                     , [&](QKnxNetIpRouter::State state) {
         stateChangedEmitted = true;
-        QCOMPARE(state, QKnxNetIpRoutingInterface::State::Stop);
+        QCOMPARE(state, QKnxNetIpRouter::State::Stop);
     });
-    m_routingInterface.stop();
+    m_router.stop();
     QVERIFY(stateChangedEmitted);
 }
 
 // Test receiving routing indications!
-void tst_QKnxNetIpRoutingInterface::test_routing_receives_indications()
+void tst_QKnxNetIpRouter::test_routing_receives_indications()
 {
     if (!runTests)
         return;
 
-    m_routingInterface.start();
+    m_router.start();
 
     bool indicationRcvEmitted = false;
-    QObject::connect(&m_routingInterface, &QKnxNetIpRoutingInterface::routingIndicationReceived
+    QObject::connect(&m_router, &QKnxNetIpRouter::routingIndicationReceived
                      , [&](QKnxNetIpFrame frame
-                     , QKnxNetIpRoutingInterface::FilterAction routingAction) {
+                     , QKnxNetIpRouter::FilterAction routingAction) {
         indicationRcvEmitted = true;
         QKnxNetIpRoutingIndicationProxy indicationRcv(frame);
         QVERIFY(indicationRcv.isValid());
-        QCOMPARE(routingAction, QKnxNetIpRoutingInterface::FilterAction::RouteDecremented);
+        QCOMPARE(routingAction, QKnxNetIpRouter::FilterAction::RouteDecremented);
     });
     simulateFramesReceived(dummyRoutingIndication());
     QVERIFY(indicationRcvEmitted);
 }
 
-void tst_QKnxNetIpRoutingInterface::test_routing_receives_busy()
+void tst_QKnxNetIpRouter::test_routing_receives_busy()
 {
     if (!runTests)
         return;
 
     // test receiving routing busy!
-    m_routingInterface.start();
+    m_router.start();
 
     bool indicationRcvEmitted = false;
-    QObject::connect(&m_routingInterface, &QKnxNetIpRoutingInterface::routingBusyReceived
+    QObject::connect(&m_router, &QKnxNetIpRouter::routingBusyReceived
                      , [&](QKnxNetIpFrame frame) {
         indicationRcvEmitted = true;
         QKnxNetIpRoutingBusyProxy busy(frame);
@@ -382,21 +382,21 @@ void tst_QKnxNetIpRoutingInterface::test_routing_receives_busy()
     QVERIFY(indicationRcvEmitted);
 }
 
-void tst_QKnxNetIpRoutingInterface::test_routing_busy_sent_packets_same_individual_address()
+void tst_QKnxNetIpRouter::test_routing_busy_sent_packets_same_individual_address()
 {
     if (!runTests)
         return;
 
     // test receiving routing indications!
-    m_routingInterface.start();
+    m_router.start();
 
     int indRecvCount = 0;
-    QObject::connect(&m_routingInterface, &QKnxNetIpRoutingInterface::routingIndicationReceived
+    QObject::connect(&m_router, &QKnxNetIpRouter::routingIndicationReceived
                      , [&](QKnxNetIpFrame frame
-                     , QKnxNetIpRoutingInterface::FilterAction routingAction) {
+                     , QKnxNetIpRouter::FilterAction routingAction) {
         QKnxNetIpRoutingIndicationProxy indicationRcv(frame);
         QVERIFY(indicationRcv.isValid());
-        QCOMPARE(routingAction, QKnxNetIpRoutingInterface::FilterAction::RouteDecremented);
+        QCOMPARE(routingAction, QKnxNetIpRouter::FilterAction::RouteDecremented);
         indRecvCount++;
     });
     simulateFramesReceived(dummyRoutingIndication(), 7);
@@ -405,10 +405,10 @@ void tst_QKnxNetIpRoutingInterface::test_routing_busy_sent_packets_same_individu
     // the same individual address. Router shall send automatically a busy message
     QCOMPARE(indRecvCount, 6);
 
-    QCOMPARE(TestingRouter::instance()->routerInstance()->m_framesReadCount, 6);
-    QCOMPARE(TestingRouter::instance()->routerInstance()->m_sameKnxDstAddressIndicationCount, 5);
+    QCOMPARE(QKnxNetIpTestRouter::instance()->routerInstance()->m_framesReadCount, 6);
+    QCOMPARE(QKnxNetIpTestRouter::instance()->routerInstance()->m_sameKnxDstAddressIndicationCount, 5);
 
-    QCOMPARE(m_routingInterface.state(), QKnxNetIpRoutingInterface::State::NeighborBusy);
+    QCOMPARE(m_router.state(), QKnxNetIpRouter::State::NeighborBusy);
 }
 
 QKnxLinkLayerFrame generateDummySbcFrame()
@@ -437,34 +437,34 @@ QKnxLinkLayerFrame generateDummySbcFrame()
            .createFrame();
 }
 
-void tst_QKnxNetIpRoutingInterface::test_routing_interface_sends_system_broadcast()
+void tst_QKnxNetIpRouter::test_routing_interface_sends_system_broadcast()
 {
     if (!runTests)
         return;
 
-    m_routingInterface.start();
+    m_router.start();
 
     bool sbcSent = false;
-    QObject::connect(&m_routingInterface,
-        &QKnxNetIpRoutingInterface::routingSystemBroadcastSent, [&](QKnxNetIpFrame frame) {
+    QObject::connect(&m_router,
+        &QKnxNetIpRouter::routingSystemBroadcastSent, [&](QKnxNetIpFrame frame) {
             sbcSent = true;
             QKnxNetIpRoutingSystemBroadcastProxy sbc(frame);
             QVERIFY(sbc.isValid());
     });
-    m_routingInterface.sendRoutingSystemBroadcast(generateDummySbcFrame());
+    m_router.sendRoutingSystemBroadcast(generateDummySbcFrame());
     QVERIFY(sbcSent);
 }
 
-void tst_QKnxNetIpRoutingInterface::test_routing_interface_receives_system_broadcast()
+void tst_QKnxNetIpRouter::test_routing_interface_receives_system_broadcast()
 {
     if (!runTests)
         return;
 
-    m_routingInterface.start();
+    m_router.start();
 
     bool sbcRcvEmitted = false;
-    QObject::connect(&m_routingInterface,
-                     &QKnxNetIpRoutingInterface::routingSystemBroadcastReceived
+    QObject::connect(&m_router,
+                     &QKnxNetIpRouter::routingSystemBroadcastReceived
                      , [&](QKnxNetIpFrame frame) {
         sbcRcvEmitted = true;
         QKnxNetIpRoutingSystemBroadcastProxy sbc(frame);
@@ -479,25 +479,25 @@ void tst_QKnxNetIpRoutingInterface::test_routing_interface_receives_system_broad
     QVERIFY(sbcRcvEmitted);
 }
 
-void tst_QKnxNetIpRoutingInterface::test_routing_filter()
+void tst_QKnxNetIpRouter::test_routing_filter()
 {
     if (!runTests)
         return;
 
     QFETCH(QKnxAddress, interfaceIndividualAddress);
-    QFETCH(QKnxNetIpRoutingInterface::FilterAction, expectedRoutingAction);
+    QFETCH(QKnxNetIpRouter::FilterAction, expectedRoutingAction);
     QFETCH(QKnxAddress, dst);
     QFETCH(int, hopCount);
-    QFETCH(QKnxNetIpRoutingInterface::FilterTable, filterTable);
+    QFETCH(QKnxNetIpRouter::FilterTable, filterTable);
 
-    m_routingInterface.setIndividualAddress(interfaceIndividualAddress);
-    m_routingInterface.setFilterTable(filterTable);
-    m_routingInterface.start();
+    m_router.setIndividualAddress(interfaceIndividualAddress);
+    m_router.setFilterTable(filterTable);
+    m_router.start();
 
     bool receivedIndication = false;
-    QObject::connect(&m_routingInterface, &QKnxNetIpRoutingInterface::routingIndicationReceived
+    QObject::connect(&m_router, &QKnxNetIpRouter::routingIndicationReceived
                      , [&](QKnxNetIpFrame frame
-                     , QKnxNetIpRoutingInterface::FilterAction routingAction) {
+                     , QKnxNetIpRouter::FilterAction routingAction) {
         QKnxNetIpRoutingIndicationProxy indicationRcv(frame);
         QVERIFY(indicationRcv.isValid());
         QCOMPARE(routingAction, expectedRoutingAction);
@@ -509,56 +509,56 @@ void tst_QKnxNetIpRoutingInterface::test_routing_filter()
     QVERIFY(receivedIndication);
 }
 
-void tst_QKnxNetIpRoutingInterface::test_routing_filter_data()
+void tst_QKnxNetIpRouter::test_routing_filter_data()
 {
     QTest::addColumn<QKnxAddress>("interfaceIndividualAddress");
     QTest::addColumn<QKnxAddress>("dst");
     QTest::addColumn<int>("hopCount");
-    QTest::addColumn<QKnxNetIpRoutingInterface::FilterAction>("expectedRoutingAction");
-    QTest::addColumn<QKnxNetIpRoutingInterface::FilterTable>("filterTable");
+    QTest::addColumn<QKnxNetIpRouter::FilterAction>("expectedRoutingAction");
+    QTest::addColumn<QKnxNetIpRouter::FilterTable>("filterTable");
 
-    QKnxNetIpRoutingInterface::FilterTable filterTable;
+    QKnxNetIpRouter::FilterTable filterTable;
     filterTable << QKnxAddress::createGroup(1,1,0);
     QTest::newRow("RouterIndividual(1.1.0)_groupDestination(1.1.1)_hop6")
         << QKnxAddress::createIndividual(1,1,0)
         << QKnxAddress::createGroup(1,1,1)
         << 6
-        << QKnxNetIpRoutingInterface::FilterAction::RouteDecremented
+        << QKnxNetIpRouter::FilterAction::RouteDecremented
         << filterTable;
 
     QTest::newRow("destinationAddressFiltered")
         << QKnxAddress::createIndividual(1,1,0)
         << QKnxAddress::createGroup(1,2,1)
         << 6
-        << QKnxNetIpRoutingInterface::FilterAction::IgnoreTotally
+        << QKnxNetIpRouter::FilterAction::IgnoreTotally
         << filterTable;
 
     QTest::newRow("RouterIndividual(1.1.0)_groupDestination(1.1.1)_hop0")
         << QKnxAddress::createIndividual(1,1,0)
         << QKnxAddress::createGroup(1,1,1)
         << 0
-        << QKnxNetIpRoutingInterface::FilterAction::IgnoreAcked
+        << QKnxNetIpRouter::FilterAction::IgnoreAcked
         << filterTable;
 
     QTest::newRow("RouterIndividual(1.1.0)_individualDestination(1.1.1)_hop0")
         << QKnxAddress::createIndividual(1,1,0)
         << QKnxAddress::createIndividual(1,1,1)
         << 0
-        << QKnxNetIpRoutingInterface::FilterAction::IgnoreAcked
+        << QKnxNetIpRouter::FilterAction::IgnoreAcked
         << filterTable;
 
     QTest::newRow("RouterIndividual(1.1.0)_individualDestination(1.1.1)_hop5")
         << QKnxAddress::createIndividual(1,1,0)
         << QKnxAddress::createIndividual(1,1,1)
         << 5
-        << QKnxNetIpRoutingInterface::FilterAction::RouteDecremented
+        << QKnxNetIpRouter::FilterAction::RouteDecremented
         << filterTable;
 
     QTest::newRow("RouterIndividual(1.1.0)_individualDestination(1.1.1)_hop5")
         << QKnxAddress::createIndividual(1,1,0)
         << QKnxAddress::createIndividual(1,1,0)
         << 5
-        << QKnxNetIpRoutingInterface::FilterAction::ForwardLocally
+        << QKnxNetIpRouter::FilterAction::ForwardLocally
         << filterTable;
 }
 
@@ -567,19 +567,19 @@ void tst_QKnxNetIpRoutingInterface::test_routing_filter_data()
 
 #else
 
-class tst_QKnxNetIpRoutingInterface : public QObject
+class tst_QKnxNetIpRouter : public QObject
 {
     Q_OBJECT
 
 private slots:
     void initTestCase()
     {
-        QSKIP("QKnxNetIpRoutingInterface methods aren't available to test");
+        QSKIP("QKnxNetIpRouter methods aren't available to test");
     }
 };
 
 #endif
 
-QTEST_MAIN(tst_QKnxNetIpRoutingInterface)
+QTEST_MAIN(tst_QKnxNetIpRouter)
 
-#include "tst_qknxnetiproutinginterface.moc"
+#include "tst_qknxnetiprouter.moc"

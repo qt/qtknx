@@ -46,7 +46,7 @@ SUBDIRS += cmake \
     qknxnetipsecuredservicefamiliesdib \
     qknxnetipsessionrequest \
     qknxnetipsessionresponse \
-    qknxnetiproutinginterface
+    qknxnetiprouter
 
 QT_FOR_CONFIG += network
 qtConfig(opensslv11):SUBDIRS+=qknxcryptographicengine

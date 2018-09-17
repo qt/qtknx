@@ -27,8 +27,8 @@
 **
 ******************************************************************************/
 
-#ifndef QKNXNETIPROUTINGINTERFACE_P_H
-#define QKNXNETIPROUTINGINTERFACE_P_H
+#ifndef QKNXNETIPROUTER_P_H
+#define QKNXNETIPROUTER_P_H
 
 //
 //  W A R N I N G
@@ -41,12 +41,12 @@
 // We mean it.
 //
 
-#include <QtCore/private/qobject_p.h>
 #include <QtCore/qtimer.h>
+#include <QtCore/private/qobject_p.h>
 
 #include <QtKnx/qknxnetip.h>
 #include <QtKnx/qknxnetipframe.h>
-#include <QtKnx/qknxnetiproutinginterface.h>
+#include <QtKnx/qknxnetiprouter.h>
 
 #include <QtNetwork/qnetworkdatagram.h>
 #include <QtNetwork/qnetworkinterface.h>
@@ -54,12 +54,12 @@
 
 QT_BEGIN_NAMESPACE
 
-class QKnxNetIpRoutingInterfacePrivate : public QObjectPrivate
+class QKnxNetIpRouterPrivate : public QObjectPrivate
 {
-    Q_DECLARE_PUBLIC(QKnxNetIpRoutingInterface)
+    Q_DECLARE_PUBLIC(QKnxNetIpRouter)
 public:
-    QKnxNetIpRoutingInterfacePrivate() = default;
-    ~QKnxNetIpRoutingInterfacePrivate() = default;
+    QKnxNetIpRouterPrivate() = default;
+    ~QKnxNetIpRouterPrivate() = default;
 
     void start();
     void restart();
@@ -76,10 +76,10 @@ public:
 
     void flowControlHandling(quint16 newBusyWaitTime);
 
-    void changeState(QKnxNetIpRoutingInterface::State state);
-    void errorOccurred(QKnxNetIpRoutingInterface::Error error, const QString &errorString);
+    void changeState(QKnxNetIpRouter::State state);
+    void errorOccurred(QKnxNetIpRouter::Error error, const QString &errorString);
 
-    QKnxNetIpRoutingInterface::FilterAction filterAction(const QKnxLinkLayerFrame &frame);
+    QKnxNetIpRouter::FilterAction filterAction(const QKnxLinkLayerFrame &frame);
 
     QUdpSocket *m_socket { nullptr };
 
@@ -94,7 +94,7 @@ public:
     quint16 m_multicastPort { QKnxNetIp::Constants::DefaultPort };
     QHostAddress m_ownAddress;
 
-    QKnxNetIpRoutingInterface::State m_state { QKnxNetIpRoutingInterface::State::NotInit };
+    QKnxNetIpRouter::State m_state { QKnxNetIpRouter::State::NotInit };
 
     quint16 m_busyWaitTime { QKnxNetIp::RoutingBusyWaitTime };
     QTimer *m_busyTimer { nullptr };
@@ -110,11 +110,11 @@ public:
     BusyTimerStage m_busyStage { BusyTimerStage::NotInit };
     quint32 m_busyCounter { 0 };
 
-    QKnxNetIpRoutingInterface::Error m_error { QKnxNetIpRoutingInterface::Error::None };
+    QKnxNetIpRouter::Error m_error { QKnxNetIpRouter::Error::None };
     QString m_errorMessage;
 
-    QKnxNetIpRoutingInterface::FilterTable m_filterTable;
-    QKnxNetIpRoutingInterface::RoutingMode m_routingMode { QKnxNetIpRoutingInterface::RoutingMode::Block };
+    QKnxNetIpRouter::FilterTable m_filterTable;
+    QKnxNetIpRouter::RoutingMode m_routingMode { QKnxNetIpRouter::RoutingMode::Block };
 };
 
 QT_END_NAMESPACE

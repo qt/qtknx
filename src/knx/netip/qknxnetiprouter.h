@@ -27,8 +27,8 @@
 **
 ******************************************************************************/
 
-#ifndef QKNXNETIPROUTINGINTERFACE_H
-#define QKNXNETIPROUTINGINTERFACE_H
+#ifndef QKNXNETIPROUTER_H
+#define QKNXNETIPROUTER_H
 
 #include <QtKnx/qknxaddress.h>
 #include <QtKnx/qknxnetipframe.h>
@@ -41,12 +41,12 @@
 
 QT_BEGIN_NAMESPACE
 
-class QKnxNetIpRoutingInterfacePrivate;
-class Q_KNX_EXPORT QKnxNetIpRoutingInterface : public QObject
+class QKnxNetIpRouterPrivate;
+class Q_KNX_EXPORT QKnxNetIpRouter : public QObject
 {
     Q_OBJECT
-    Q_DISABLE_COPY(QKnxNetIpRoutingInterface)
-    Q_DECLARE_PRIVATE(QKnxNetIpRoutingInterface)
+    Q_DISABLE_COPY(QKnxNetIpRouter)
+    Q_DECLARE_PRIVATE(QKnxNetIpRouter)
 
 public:
     using FilterTable = QSet<QKnxAddress>;
@@ -60,7 +60,7 @@ public:
         Failure
     };
     Q_ENUM(State)
-    QKnxNetIpRoutingInterface::State state() const;
+    QKnxNetIpRouter::State state() const;
 
     enum class Error : quint8
     {
@@ -71,7 +71,7 @@ public:
     Q_ENUM(Error)
 
     QString errorString() const;
-    QKnxNetIpRoutingInterface::Error error() const;
+    QKnxNetIpRouter::Error error() const;
 
     enum class FilterAction : quint8
     {
@@ -90,8 +90,8 @@ public:
         Filter
     };
 
-    QKnxNetIpRoutingInterface(QObject *parent = nullptr);
-    ~QKnxNetIpRoutingInterface() = default;
+    QKnxNetIpRouter(QObject *parent = nullptr);
+    ~QKnxNetIpRouter() = default;
 
     RoutingMode routingMode() const;
     void setRoutingMode(RoutingMode mode);
@@ -125,13 +125,13 @@ Q_SIGNALS:
     void routingLostCountSent(QKnxNetIpFrame frame);
     void routingSystemBroadcastSent(QKnxNetIpFrame frame);
 
-    void routingIndicationReceived(QKnxNetIpFrame frame, QKnxNetIpRoutingInterface::FilterAction action);
+    void routingIndicationReceived(QKnxNetIpFrame frame, QKnxNetIpRouter::FilterAction action);
     void routingBusyReceived(QKnxNetIpFrame frame);
     void routingLostCountReceived(QKnxNetIpFrame frame);
     void routingSystemBroadcastReceived(QKnxNetIpFrame frame);
 
-    void stateChanged(QKnxNetIpRoutingInterface::State state);
-    void errorOccurred(QKnxNetIpRoutingInterface::Error error, QString errorString);
+    void stateChanged(QKnxNetIpRouter::State state);
+    void errorOccurred(QKnxNetIpRouter::Error error, QString errorString);
 };
 
 QT_END_NAMESPACE
