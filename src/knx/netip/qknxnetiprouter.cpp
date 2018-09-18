@@ -272,7 +272,7 @@ QString QKnxNetIpRouter::errorString() const
 /*!
     Returns the filter table used by the routing algorithm.
 */
-QKnxNetIpRouter::FilterTable QKnxNetIpRouter::filterTable() const
+QKnxNetIpRouter::KnxAddressWhitelist QKnxNetIpRouter::filterTable() const
 {
     Q_D(const QKnxNetIpRouter);
     return d->m_filterTable;
@@ -281,7 +281,7 @@ QKnxNetIpRouter::FilterTable QKnxNetIpRouter::filterTable() const
 /*!
     Sets the filter table used by the routing algorithm to \a table.
  */
-void QKnxNetIpRouter::setFilterTable(const QKnxNetIpRouter::FilterTable &table)
+void QKnxNetIpRouter::setFilterTable(const QKnxNetIpRouter::KnxAddressWhitelist &table)
 {
     Q_D(QKnxNetIpRouter);
     d->m_filterTable = table;

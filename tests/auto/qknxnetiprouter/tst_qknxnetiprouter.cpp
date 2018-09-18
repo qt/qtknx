@@ -477,10 +477,10 @@ void tst_QKnxNetIpRouter::test_routing_filter()
     QFETCH(QKnxNetIpRouter::FilterAction, expectedRoutingAction);
     QFETCH(QKnxAddress, dst);
     QFETCH(int, hopCount);
-    QFETCH(QKnxNetIpRouter::FilterTable, filterTable);
+    QFETCH(QKnxNetIpRouter::KnxAddressWhitelist, whitelist);
 
     m_router.setIndividualAddress(interfaceIndividualAddress);
-    m_router.setFilterTable(filterTable);
+    m_router.setFilterTable(whitelist);
     m_router.start();
 
     bool receivedIndication = false;
@@ -503,9 +503,9 @@ void tst_QKnxNetIpRouter::test_routing_filter_data()
     QTest::addColumn<QKnxAddress>("dst");
     QTest::addColumn<int>("hopCount");
     QTest::addColumn<QKnxNetIpRouter::FilterAction>("expectedRoutingAction");
-    QTest::addColumn<QKnxNetIpRouter::FilterTable>("filterTable");
+    QTest::addColumn<QKnxNetIpRouter::KnxAddressWhitelist>("whitelist");
 
-    QKnxNetIpRouter::FilterTable filterTable;
+    QKnxNetIpRouter::KnxAddressWhitelist filterTable;
     filterTable << QKnxAddress::createGroup(1, 1, 1);
     QTest::newRow("RouterIndividual(1.1.0)_groupDestination(1.1.1)_hop6")
         << QKnxAddress::createIndividual(1, 1, 0)

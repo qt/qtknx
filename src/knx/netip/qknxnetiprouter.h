@@ -49,7 +49,7 @@ class Q_KNX_EXPORT QKnxNetIpRouter : public QObject
     Q_DECLARE_PRIVATE(QKnxNetIpRouter)
 
 public:
-    using FilterTable = QSet<QKnxAddress>;
+    using KnxAddressWhitelist = QSet<QKnxAddress>;
 
     enum class State : quint8
     {
@@ -96,8 +96,8 @@ public:
     RoutingMode routingMode() const;
     void setRoutingMode(RoutingMode mode);
 
-    FilterTable filterTable() const;
-    void setFilterTable(const FilterTable &table);
+    KnxAddressWhitelist filterTable() const;
+    void setFilterTable(const KnxAddressWhitelist &table);
 
     QNetworkInterface interfaceAffinity() const;
     void setInterfaceAffinity(const QHostAddress &address);

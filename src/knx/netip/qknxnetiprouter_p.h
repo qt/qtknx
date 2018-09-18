@@ -113,7 +113,7 @@ public:
     QKnxNetIpRouter::Error m_error { QKnxNetIpRouter::Error::None };
     QString m_errorMessage;
 
-    QKnxNetIpRouter::FilterTable m_filterTable;
+    QKnxNetIpRouter::KnxAddressWhitelist m_filterTable;
     QKnxNetIpRouter::RoutingMode m_routingMode { QKnxNetIpRouter::RoutingMode::Block };
 };
 
