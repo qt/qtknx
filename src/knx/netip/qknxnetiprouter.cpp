@@ -53,16 +53,6 @@ QT_BEGIN_NAMESPACE
     \brief The QKnxNetIpRouter class enables sending and receiving
     routing KNXnet/IP packets to and from other KNXnet/IP routers.
 
-    KNXnet/IP routing is defined as a set of KNXnet/IP routers communicating
-    over a one-to-many communication relationship (multicast), in which KNX
-    data shall be transferred from one device to one or more other devices
-    simultaneously over an IP network. A set of KNXnet/IP routers can replace
-    KNX line and backbone couplers and connected main lines, allowing usage
-    of existing cabling (such as Ethernet) and faster transmission times (and
-    simultaneousness) between KNX subnets. The IP network acts as a fast
-    backbone that connects KNX subnets and is a high-speed replacement for
-    the KNX backbone.
-
     The QKnxNetIpRouter is bound to a physical network interface
     which is used for transmitting and receiving the routing frames. It also
     requires the multicast address used by the KNX installation.
@@ -98,16 +88,16 @@ QT_BEGIN_NAMESPACE
 
     \endcode
 
-    \sa QKnxLinkLayerFrame
+    \sa QKnxLinkLayerFrame, Routing
 */
 
 /*!
     \typedef QKnxNetIpRouter::FilterTable
 
-    A synonym for QKnxNetIpRouter::QSet<QKnxAddress> which is the type used
+    A synonym for QKnxNetIpRouter::QSet<QKnxAddress>, which is the type used
     to store the filter table of the router. The filter table is interpreted
-    as whitelist by the routing algorithm. The addresses stored are allowed
-    to be routed. Any frame which has a destination address that is not contained
+    as a whitelist by the routing algorithm. The addresses stored are allowed
+    to be routed. Any frame with a destination address that is not contained
     in the table is blocked.
 */
 
@@ -317,7 +307,7 @@ void QKnxNetIpRouter::setRoutingMode(QKnxNetIpRouter::RoutingMode mode)
 }
 
 /*!
-    Returns an routing error code that describing the last error occurred in the
+    Returns a routing error code that describes the last error to occur in the
     KNX router.
 */
 QKnxNetIpRouter::Error QKnxNetIpRouter::error() const
@@ -550,7 +540,7 @@ void QKnxNetIpRouter::start()
 }
 
 /*!
-    Stops the QKnxNetIpRouter. No messages can be received and/or
+    Stops the QKnxNetIpRouter. No messages can be received from or
     sent to the network.
 */
 void QKnxNetIpRouter::stop()
