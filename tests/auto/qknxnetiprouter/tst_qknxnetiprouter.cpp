@@ -518,7 +518,7 @@ void tst_QKnxNetIpRouter::test_routing_filter_data()
     QTest::addColumn<QKnxNetIpRouter::FilterTable>("filterTable");
 
     QKnxNetIpRouter::FilterTable filterTable;
-    filterTable << QKnxAddress::createGroup(1,1,0);
+    filterTable << QKnxAddress::createGroup(1, 1, 1);
     QTest::newRow("RouterIndividual(1.1.0)_groupDestination(1.1.1)_hop6")
         << QKnxAddress::createIndividual(1,1,0)
         << QKnxAddress::createGroup(1,1,1)

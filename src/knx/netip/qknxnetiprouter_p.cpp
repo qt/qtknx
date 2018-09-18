@@ -366,11 +366,9 @@ QKnxNetIpRouter::FilterAction
     auto hopCount = extCtrlField.hopCount();
 
     if (dst.type() == QKnxAddress::Type::Group) {
-        // TODO: review this part
-        auto gAdd = QKnxAddress::createGroup(dst.mainOrAreaSection(), dst.middleOrLineSection(), 0);
         bool routingCondition = true;
         if (m_routingMode == QKnxNetIpRouter::RoutingMode::Filter)
-            routingCondition = m_filterTable.contains(gAdd);
+            routingCondition = m_filterTable.contains(dst);
         if (m_routingMode == QKnxNetIpRouter::RoutingMode::Block)
             return QKnxNetIpRouter::FilterAction::IgnoreTotally;
         if (routingCondition && hopCount > 0 && hopCount <= 7)
@@ -386,25 +384,31 @@ QKnxNetIpRouter::FilterAction
 
     auto ownAddress = m_individualAddress;
     bool isLineCoupler = ownAddress.middleOrLineSection() != 0;
+
     if (isLineCoupler) {
-        // sub-line to main line routing
-        bool notInOwnSubnetwork = (dst.mainOrAreaSection() != ownAddress.mainOrAreaSection())
-            || (dst.middleOrLineSection() == ownAddress.middleOrLineSection());
-        if (notInOwnSubnetwork) {
-            if (dst.subOrDeviceSection() == 0) // address to this line coupler
+        bool mainLineToSubline = (dst.mainOrAreaSection() == ownAddress.mainOrAreaSection())
+                                 && (dst.middleOrLineSection() == ownAddress.middleOrLineSection());
+        if (mainLineToSubline) {
+            if (dst.subOrDeviceSection() == 0)
                 return QKnxNetIpRouter::FilterAction::ForwardLocally;
+            if (hopCount > 0 && hopCount <= 7)
+                    return QKnxNetIpRouter::FilterAction::RouteDecremented;
+            return QKnxNetIpRouter::FilterAction::IgnoreAcked;
+        }
+
+        bool sublineToMainline = !mainLineToSubline;
+        if (sublineToMainline) {
             if (hopCount > 0 && hopCount <= 7)
                 return QKnxNetIpRouter::FilterAction::RouteDecremented;
             return QKnxNetIpRouter::FilterAction::IgnoreAcked;
         }
-        // no main line to sub-line routing done by a KNXnet/IP RoutingInteface
+
         return QKnxNetIpRouter::FilterAction::IgnoreTotally;
     }
 
-    // backbone to main line
-    if (dst.mainOrAreaSection() == ownAddress.mainOrAreaSection()) {
+    bool backboneToMainLine = dst.mainOrAreaSection() == ownAddress.mainOrAreaSection();
+    if (backboneToMainLine) {
         if (dst.middleOrLineSection() == 0 && dst.subOrDeviceSection() == 0)
-            // address to area coupler or backbone router.
             return QKnxNetIpRouter::FilterAction::ForwardLocally;
         if (hopCount > 0 && hopCount <= 7)
             return QKnxNetIpRouter::FilterAction::RouteDecremented;
