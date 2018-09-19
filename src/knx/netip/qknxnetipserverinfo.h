@@ -85,7 +85,12 @@ public:
 
 private:
     QKnxNetIpServerInfo(const QKnxNetIpHpai &hpai, const QKnxNetIpDib &hardware,
-        QKnxNetIpDib services); // ### Qt6: pass services as const reference
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+        QKnxNetIpDib services);
+#else
+        const QKnxNetIpDib &services);
+#endif
+
     QKnxNetIpServerInfo(const QKnxNetIpHpai &hpai, const QKnxNetIpDib &hardware,
         const QKnxNetIpDib &services, const QKnxNetIpDib &tunnelingInfo,
         const QKnxNetIpDib &extendedHardware);
