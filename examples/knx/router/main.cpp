@@ -126,7 +126,10 @@ void setupRouterCLI(QKnxNetIpRouter &router,
                 .setData(tmp.isEmpty() ? bytes : QKnxByteArray::fromHex(tmp))
                 .setMedium(QKnx::MediumType::NetIP)
                 .createFrame();
-            router.sendRoutingIndication(frame);
+            auto indication = QKnxNetIpRoutingIndicationProxy::builder()
+                              .setCemi(frame)
+                              .create();
+            router.sendRoutingIndication(indication);
         } else if (cliParser.isSet("busy")) {
             auto routingBusyFrame = QKnxNetIpRoutingBusyProxy::builder()
                 .setDeviceState(QKnxNetIp::DeviceState::IpFault)

@@ -110,11 +110,10 @@ public:
     void setIndividualAddress(const QKnxAddress &address);
 
 public Q_SLOTS:
-    void sendRoutingIndication(const QKnxLinkLayerFrame &linkFrame);
     void sendRoutingIndication(const QKnxNetIpFrame &frame);
     void sendRoutingBusy(const QKnxNetIpFrame &frame);
     void sendRoutingLostMessage(const QKnxNetIpFrame &frame);
-    void sendRoutingSystemBroadcast(const QKnxLinkLayerFrame &linkFrame);
+    void sendRoutingSystemBroadcast(const QKnxNetIpFrame &frame);
 
     void start();
     void stop();

@@ -61,10 +61,11 @@ QT_BEGIN_NAMESPACE
     QKnxNetIpRouter to send and receive KNXnet/IP frames:
 
     \code
-        QKnxNetIpRouter router;
-        router.setInterfaceAffinity(QNetworkInterface::interfaceFromName("eth0"));
-        router.setMulticastAddress(QHostAddress("224.0.23.32"));
-        router.start();
+        QKnxNetIpRouter router1;
+        QKnxNetIpRouter router2;
+        router1.setInterfaceAffinity(QNetworkInterface::interfaceFromName("eth0"));
+        router1.setMulticastAddress(QHostAddress("224.0.23.32"));
+        router1.start();
 
         auto busyWaitTime = ...
         auto busyControlField = ...
@@ -75,15 +76,38 @@ QT_BEGIN_NAMESPACE
             .setRoutingBusyWaitTime(busyWaitTime)
             .setRoutingBusyControl(busyControlField)
             .create();
-        router.sendRoutingBusy(routingBusyFrame);
+        router1.sendRoutingBusy(routingBusyFrame);
 
         // Processing routing indications received
-        QObject::connect(&router,
+        QObject::connect(&router1,
                          &QKnxNetIpRouter::routingIndicationReceived,
-                     [](QKnxNetIpFrame frame) {
+                     [](QKnxNetIpFrame frame,
+                        QKnxNetIpRouter::FilterAction routingAction) {
                 QKnxNetIpRoutingIndicationProxy indication(frame);
                 qInfo().noquote() << "Received routing indication:"
                                   << indication.isValid();
+
+                switch (routingAction) {
+                case QKnxNetIpRouter::FilterAction::RouteDecremented:
+                    auto cemi = indication.cemi();
+                    auto extCtrl = cemi.extendedControlField();
+                    count = extCtrl.hopCount();
+                    // decrement and send to other subnet
+                    extCtrl.setHopCount(--count);
+                    auto newIndication =  QKnxNetIpRoutingIndicationProxy::builder()
+                                            .setCemi(cemi)
+                                            .create();
+                    router2.sendRoutingIndication(newIndication)
+                    // ....
+                case QKnxNetIpRouter::FilterAction::RouteLast:
+                case QKnxNetIpRouter::FilterAction::ForwardLocally:
+                case QKnxNetIpRouter::FilterAction::IgnoreTotally:
+                case QKnxNetIpRouter::FilterAction::IgnoreAcked:
+                //....
+                default:
+                    break;
+                }
+                //....
         });
 
     \endcode
@@ -92,7 +116,7 @@ QT_BEGIN_NAMESPACE
 */
 
 /*!
-    \typedef QKnxNetIpRouter::FilterTable
+    \typedef QKnxNetIpRouter::KnxAddressWhitelist
 
     A synonym for QKnxNetIpRouter::QSet<QKnxAddress>, which is the type used
     to store the filter table of the router. The filter table is interpreted
@@ -285,7 +309,6 @@ void QKnxNetIpRouter::setFilterTable(const QKnxNetIpRouter::KnxAddressWhitelist 
 {
     Q_D(QKnxNetIpRouter);
     d->m_filterTable = table;
-    d->m_routingMode = RoutingMode::Filter;
 }
 
 /*!
@@ -445,18 +468,6 @@ void QKnxNetIpRouter::sendRoutingIndication(const QKnxNetIpFrame &frame)
 }
 
 /*!
-    Multicasts the routing indication \a linkFrame through the network interface
-    associated with the QKnxNetIpRouter.
- */
-void QKnxNetIpRouter::sendRoutingIndication(const QKnxLinkLayerFrame &linkFrame)
-{
-    auto netIpFrame = QKnxNetIpRoutingIndicationProxy::builder()
-        .setCemi(linkFrame)
-        .create();
-    sendRoutingIndication(netIpFrame);
-}
-
-/*!
     Multicasts the routing busy message containing \a frame through the
     network interface associated with the QKnxNetIpRouter.
 */
@@ -503,29 +514,27 @@ void QKnxNetIpRouter::sendRoutingLostMessage(const QKnxNetIpFrame &frame)
 }
 
 /*!
-    Multicasts the routing system broadcast \a linkFrame through the network
+    Multicasts the routing system broadcast \a frame through the network
     interface associated with the QKnxNetIpRouter.
 */
-void QKnxNetIpRouter::sendRoutingSystemBroadcast(const QKnxLinkLayerFrame &linkFrame)
+void QKnxNetIpRouter::sendRoutingSystemBroadcast(const QKnxNetIpFrame &frame)
 {
     Q_D(QKnxNetIpRouter);
 
-    auto netipFrame = QKnxNetIpRoutingSystemBroadcastProxy::builder()
-        .setCemi(linkFrame)
-        .create();
+    if (d->m_state != QKnxNetIpRouter::State::Routing)
+        return;
 
-    QKnxNetIpRoutingSystemBroadcastProxy proxy(netipFrame);
+    QKnxNetIpRoutingSystemBroadcastProxy proxy(frame);
     if (!proxy.isValid())
         return;
 
-    if (!d->sendFrame(netipFrame)) {
+    if (!d->sendFrame(frame)) {
         d->errorOccurred(QKnxNetIpRouter::Error::KnxRouting, tr("Could not send routing "
             "system broadcast."));
     } else {
-        emit routingSystemBroadcastSent(netipFrame);
+        emit routingSystemBroadcastSent(frame);
     }
 }
-
 /*!
     Signals the QKnxNetIpRouter to start listening for messages
     received and accept sending messages.

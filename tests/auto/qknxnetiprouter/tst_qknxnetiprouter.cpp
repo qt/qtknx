@@ -290,7 +290,10 @@ void tst_QKnxNetIpRouter::test_routing_sends_indications()
         QVERIFY(indicationSent.isValid());
         QCOMPARE(indicationSent.linkLayerFrame().bytes(), frameSent.bytes());
     });
-    m_router.sendRoutingIndication(frameSent);
+    auto indication = QKnxNetIpRoutingIndicationProxy::builder()
+                      .setCemi(frameSent)
+                      .create();
+    m_router.sendRoutingIndication(indication);
     QVERIFY(indicationSentEmitted);
 
     bool stateChangedEmitted = false;
@@ -441,7 +444,10 @@ void tst_QKnxNetIpRouter::test_routing_interface_sends_system_broadcast()
             QKnxNetIpRoutingSystemBroadcastProxy sbc(frame);
             QVERIFY(sbc.isValid());
     });
-    m_router.sendRoutingSystemBroadcast(generateDummySbcFrame());
+    auto routingBroadcast = QKnxNetIpRoutingSystemBroadcastProxy::builder()
+                            .setCemi(generateDummySbcFrame())
+                            .create();
+    m_router.sendRoutingSystemBroadcast(routingBroadcast);
     QVERIFY(sbcSent);
 }
 
