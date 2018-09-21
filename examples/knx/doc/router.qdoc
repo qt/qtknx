@@ -1,0 +1,182 @@
+/****************************************************************************
+**
+** Copyright (C) 2018 The Qt Company Ltd.
+** Contact: https://www.qt.io/licensing/
+**
+** This file is part of the documentation of the Qt Toolkit.
+**
+** $QT_BEGIN_LICENSE:FDL$
+** Commercial License Usage
+** Licensees holding valid commercial Qt licenses may use this file in
+** accordance with the commercial license agreement provided with the
+** Software or, alternatively, in accordance with the terms contained in
+** a written agreement between you and The Qt Company. For licensing terms
+** and conditions see https://www.qt.io/terms-conditions. For further
+** information use the contact form at https://www.qt.io/contact-us.
+**
+** GNU Free Documentation License Usage
+** Alternatively, this file may be used under the terms of the GNU Free
+** Documentation License version 1.3 as published by the Free Software
+** Foundation and appearing in the file included in the packaging of
+** this file. Please review the following information to ensure
+** the GNU Free Documentation License version 1.3 requirements
+** will be met: https://www.gnu.org/licenses/fdl-1.3.html.
+** $QT_END_LICENSE$
+**
+****************************************************************************/
+
+/*!
+    \example router
+    \title Router Example
+    \ingroup qtknx-examples
+
+    \brief A CLI client using a QKnxNetIpRouter.
+
+    This example shows a CLI client using a QKnxNetIpRouter to monitor
+    KNX frames sent by neighboring KNXnet/IP routers. It is a
+    CLI interactive client that allows the user to send a predifined
+    KNX frame on the default 224.0.23.12 multicast address that is the
+    most commonly used in KNX installations.
+
+    \section1 Usage
+    Here are the parameters that the client allows. For example, the
+    network interface used by the router and the multicast address
+    used can be changed to the user's needs.
+
+    \code Usage: ./router [options]
+Options:
+  -h, --help                                 Displays this help.
+  -n, --interface <InterfaceName>            Sets the network interface name
+                                             that the KNXnet/Ip routing
+                                             interface will use.
+  -m, --multicastAddress <multicastAddress>  Sets the multicast address that
+                                             the KNXnet/Ip routing interface
+                                             will use for sending routing
+                                             messages.
+  -i, --indication                           Sends routing indication messages.
+  -b, --busy                                 Sends routing busy messages.
+  --busyControlField <busyControlField>      Sets the busy control field of
+                                             busy messages.
+  --busyWaitTime <busyWaitTime>              Sets the wait time for busy
+                                             messages.
+  -l, --lost                                 Sends routing lost messages.
+  -r, --receiver                             Determines that this router will only
+                                             work as a KNXnet/IP routing message
+                                             receiver.
+    \endcode
+
+    There are two main modes of using the example. One of the modes is
+    using it as a receiver of KNX frames. In this mode no other
+    messages can be sent. This mode is used to monitor KNXnet/IP
+    frames and it can be achieved by running the example like this:
+    \code
+    router -n eth0 --receiver
+    \endcode
+
+    In the other mode, in addition to receiving KNX frames the router
+    can send a unique type of KNX frames that has been predefined. The
+    type of frame to use can be specified as a parameter in the
+    command line.
+
+    For sending indication frames and receiving any other KNX frame
+    the example can be run like this:
+    \code
+    router -n eth0 --indication
+    \endcode
+
+    In this last command the router will send an indication KNX frame
+    every time the user hits the \key Enter. The router will also display
+    information about KNX frames received on that network interface.
+
+    For sending busy frames and routing lost messages, the example has
+    to be run in one of the following ways:
+    \code
+    router -n eth0 --busy --busyWaitTime 30
+    router -n eth0 --lost
+    \endcode
+
+    As explained above, it will send the predifined messages every
+    time the user hits the \key Enter. However, the message sent can be
+    customized by pasting the frame representation as a hexadecimal
+    stream of bytes and hitting \key Enter.
+
+    Here is an example of how the example looks like when running it:
+    \code
+router -n enp0s31f6 -i
+
+11:40:26 : Router is in Routing state.
+Network interface used:  enp0s31f6 ( QHostAddress("10.9.78.59") )
+Multicast address:  QHostAddress("224.0.23.12")
+Type 'quit' to stop the application.
+Type the hexadecimal content of the indication and hit 'enter'. Setting no content by default uses 1100b4e000000002010000.
+    \endcode
+
+    \section1 Implementation
+    The class QKnxNetIpRouter used in this example allows sending and
+    receiving routing KNXnet/IP packets to and from other KNXnet/IP
+    routers. There are some helper functions that will be explained in
+    the following lines.
+
+    The main function starts by instantiating the QKnxNetIpRouter
+    class. After that, in order to have a functional router, certain
+    properties of the QKnxNetIpRouter instance must be set up. This is
+    done by the method \c setupRouterSignalHandlers(). The following
+    code snippet shows where this happens:
+
+    \quotefromfile router/main.cpp
+    \skipto int main(
+    \printuntil {
+    \dots
+    \skipto QKnxNetIpRouter router
+    \printuntil multicastAddress);
+
+    The most important step to get a functional router is to assign it
+    a network interface. That way, the router is ready for monitoring
+    and sending KNX frames from/to other KNX routers and the KNX system
+    connected to that same network.
+
+    \quotefromfile router/main.cpp
+    \skipto void setupRouterSignalHandlers(
+    \printuntil multicastAddress);
+
+    The next step consists of setting the handlers that allow
+    monitoring KNXnet/IP frames received from neighboring KNX routers as
+    well as the frames sent by this router.
+
+    \quotefromfile router/main.cpp
+    \skipto void setupRouterSignalHandlers(
+    \printuntil {
+    \dots
+    \skipto QKnxNetIpRouter::routingIndicationReceived
+    \printuntil /^\}/
+
+    The client can respond to the \key Enter press events and send
+    predefined KNX messages. For this purpose a QTextStream instance
+    is used and a handler installed for capturing the signal
+    activated() emitted by the socket. The code below demonstrates this:
+
+    \quotefromfile router/main.cpp
+    \skipto void setupRouterCLI(
+    \printuntil endif
+    \dots
+    \skipto 1100b4e000000002010000
+    \printuntil sendRouting
+    \dots
+    \skipto /^\}/
+    \printuntil /^\}/
+
+    The last thing before calling \l QCoreApplication::exec() is the
+    \l QKnxNetIpRouter::start() call. The call notifies the router to
+    initialize its internal data and enables it to begin receiving and
+    sending KNX frames, as seen here:
+
+    \quotefromfile router/main.cpp
+    \skipto void startRouter(
+    \printuntil return;
+    \skipto /^\}/
+    \dots
+    \printuntil /^\}/
+
+    The \c startRouter() is a helper function that gets called at the
+    end of main.
+*/
