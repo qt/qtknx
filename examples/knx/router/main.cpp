@@ -53,9 +53,9 @@
 #include <QtCore/qdebug.h>
 #include <QtCore/qdatetime.h>
 
-#include <QtKnx/qknxnetiproutinginterface.h>
+#include <QtKnx/qknxnetiprouter.h>
 #include <QtKnx/qknxlinklayerframebuilder.h>
-#include <QtKnx/qknxnetiproutinginterface.h>
+#include <QtKnx/qknxnetiprouter.h>
 #include <QtKnx/qknxnetiproutingbusy.h>
 #include <QtKnx/qknxnetiproutingindication.h>
 #include <QtKnx/qknxnetiproutinglostmessage.h>
@@ -74,11 +74,11 @@
 # include <unistd.h>
 #endif
 
-void startRouter(QKnxNetIpRoutingInterface &router, const QCommandLineParser &cliParser)
+void startRouter(QKnxNetIpRouter &router, const QCommandLineParser &cliParser)
 {
     router.start();
 
-    if (router.error() != QKnxNetIpRoutingInterface::Error::None)
+    if (router.error() != QKnxNetIpRouter::Error::None)
         return;
 
     qInfo().noquote() << "Network interface used: "
@@ -102,7 +102,7 @@ void startRouter(QKnxNetIpRoutingInterface &router, const QCommandLineParser &cl
     }
 }
 
-void setupRouterCLI(QKnxNetIpRoutingInterface &router,
+void setupRouterCLI(QKnxNetIpRouter &router,
                     const QCommandLineParser &cliParser,
                     QTextStream & input,
 #ifdef Q_OS_WIN
@@ -126,7 +126,10 @@ void setupRouterCLI(QKnxNetIpRoutingInterface &router,
                 .setData(tmp.isEmpty() ? bytes : QKnxByteArray::fromHex(tmp))
                 .setMedium(QKnx::MediumType::NetIP)
                 .createFrame();
-            router.sendRoutingIndication(frame);
+            auto indication = QKnxNetIpRoutingIndicationProxy::builder()
+                              .setCemi(frame)
+                              .create();
+            router.sendRoutingIndication(indication);
         } else if (cliParser.isSet("busy")) {
             auto routingBusyFrame = QKnxNetIpRoutingBusyProxy::builder()
                 .setDeviceState(QKnxNetIp::DeviceState::IpFault)
@@ -144,36 +147,36 @@ void setupRouterCLI(QKnxNetIpRoutingInterface &router,
     });
 }
 
-void setupRouterSignalHandlers(QKnxNetIpRoutingInterface &router, const QNetworkInterface &iface,
+void setupRouterSignalHandlers(QKnxNetIpRouter &router, const QNetworkInterface &iface,
                  const QHostAddress &multicastAddress)
 {
     router.setInterfaceAffinity(iface);
     Q_ASSERT(router.interfaceAffinity().index() == iface.index());
     router.setMulticastAddress(multicastAddress);
 
-    QObject::connect(&router, &QKnxNetIpRoutingInterface::stateChanged,
-                     [&](QKnxNetIpRoutingInterface::State state) {
-        if (state == QKnxNetIpRoutingInterface::State::Routing)
+    QObject::connect(&router, &QKnxNetIpRouter::stateChanged,
+                     [&](QKnxNetIpRouter::State state) {
+        if (state == QKnxNetIpRouter::State::Routing)
             qInfo().noquote()  << QTime::currentTime().toString()
                                << ": Router is in Routing state.";
-        else if (state == QKnxNetIpRoutingInterface::State::Failure)
+        else if (state == QKnxNetIpRouter::State::Failure)
             qInfo().noquote()  << QTime::currentTime().toString()
                                << ": Error: " << router.errorString();
-        else if (state == QKnxNetIpRoutingInterface::State::NeighborBusy)
+        else if (state == QKnxNetIpRouter::State::NeighborBusy)
             qInfo().noquote() << QTime::currentTime().toString()
                               << ": Neighbor router is busy. Busy timer started";
-        else if (state == QKnxNetIpRoutingInterface::State::Stop)
+        else if (state == QKnxNetIpRouter::State::Stop)
             QCoreApplication::quit();
     });
 
-    QObject::connect(&router, &QKnxNetIpRoutingInterface::routingIndicationReceived,
+    QObject::connect(&router, &QKnxNetIpRouter::routingIndicationReceived,
                      [](QKnxNetIpFrame frame) {
         QKnxNetIpRoutingIndicationProxy indication(frame);
         qInfo().noquote() << "Received routing indication"
                           << indication.isValid();
     });
 
-    QObject::connect(&router, &QKnxNetIpRoutingInterface::routingBusyReceived,
+    QObject::connect(&router, &QKnxNetIpRouter::routingBusyReceived,
                      [](QKnxNetIpFrame frame) {
         QKnxNetIpRoutingBusyProxy busy(frame);
         qInfo().noquote() << "Received routing busy, wait time: "
@@ -181,26 +184,26 @@ void setupRouterSignalHandlers(QKnxNetIpRoutingInterface &router, const QNetwork
                           << busy.routingBusyControl();
     });
 
-    QObject::connect(&router, &QKnxNetIpRoutingInterface::routingLostCountReceived,
+    QObject::connect(&router, &QKnxNetIpRouter::routingLostCountReceived,
                      [](QKnxNetIpFrame frame) {
         QKnxNetIpRoutingLostMessageProxy lost(frame);
         qInfo().noquote() << "Received routing lost count"
                           << lost.deviceState();
     });
 
-    QObject::connect(&router, &QKnxNetIpRoutingInterface::routingIndicationSent,
+    QObject::connect(&router, &QKnxNetIpRouter::routingIndicationSent,
                      [](QKnxNetIpFrame frame) {
         qInfo().noquote() << "Sent routing indication";
         Q_UNUSED(frame);
     });
 
-    QObject::connect(&router, &QKnxNetIpRoutingInterface::routingBusySent,
+    QObject::connect(&router, &QKnxNetIpRouter::routingBusySent,
                      [](QKnxNetIpFrame frame) {
         qInfo().noquote() << "Sent routing busy";
         Q_UNUSED(frame);
     });
 
-    QObject::connect(&router, &QKnxNetIpRoutingInterface::routingLostCountSent,
+    QObject::connect(&router, &QKnxNetIpRouter::routingLostCountSent,
                      [](QKnxNetIpFrame frame) {
         qInfo().noquote() << "Sent routing lost count";
         Q_UNUSED(frame);
@@ -262,7 +265,7 @@ int main(int argc, char *argv[])
         cliParser.showHelp();
     }
 
-    QKnxNetIpRoutingInterface router;
+    QKnxNetIpRouter router;
     setupRouterSignalHandlers(router, iface, multicastAddress);
 
     QTextStream input(stdin, QIODevice::ReadOnly);

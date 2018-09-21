@@ -664,9 +664,9 @@ private slots:
 
         QTEST(address.type(), "type");
         QTEST(address.isValid(), "isValid");
-        QTEST(address.main(), "main");
-        QTEST(address.middle(), "middle");
-        QTEST(address.sub(notation), "sub");
+        QTEST(address.mainOrAreaSection(), "main");
+        QTEST(address.middleOrLineSection(), "middle");
+        QTEST(address.subOrDeviceSection(notation), "sub");
     }
 };
 

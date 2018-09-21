@@ -29,48 +29,48 @@
 
 #include "qknxnetiproutingbusy.h"
 #include "qknxnetiproutingindication.h"
-#include "qknxnetiproutinginterface_p.h"
-#include "qknxnetiproutinginterface.h"
+#include "qknxnetiprouter_p.h"
+#include "qknxnetiprouter.h"
 #include "qknxnetiproutinglostmessage.h"
 #include "qknxnetiproutingsystembroadcast.h"
 
 #ifdef QT_BUILD_INTERNAL
-#include "qknxtestingrouter_p.h"
+#include "qknxnetiptestrouter_p.h"
 #endif
 
 #include <QtCore/qrandom.h>
 
 QT_BEGIN_NAMESPACE
 
-void QKnxNetIpRoutingInterfacePrivate::errorOccurred(QKnxNetIpRoutingInterface::Error error,
+void QKnxNetIpRouterPrivate::errorOccurred(QKnxNetIpRouter::Error error,
     const QString &errorString)
 {
     m_error = error;
     m_errorMessage = errorString;
-    changeState(QKnxNetIpRoutingInterface::State::Failure);
+    changeState(QKnxNetIpRouter::State::Failure);
 
-    Q_Q(QKnxNetIpRoutingInterface);
+    Q_Q(QKnxNetIpRouter);
     emit q->errorOccurred(m_error, m_errorMessage);
 }
 
-void QKnxNetIpRoutingInterfacePrivate::changeState(QKnxNetIpRoutingInterface::State state)
+void QKnxNetIpRouterPrivate::changeState(QKnxNetIpRouter::State state)
 {
     if (m_state == state)
         return;
     m_state = state;
 
-    Q_Q(QKnxNetIpRoutingInterface);
+    Q_Q(QKnxNetIpRouter);
     emit q->stateChanged(m_state);
 }
 
-void QKnxNetIpRoutingInterfacePrivate::start()
+void QKnxNetIpRouterPrivate::start()
 {
-    if (m_state != QKnxNetIpRoutingInterface::State::NotInit
-        && m_state != QKnxNetIpRoutingInterface::State::Stop)
+    if (m_state != QKnxNetIpRouter::State::NotInit
+        && m_state != QKnxNetIpRouter::State::Stop)
         return;
 
 #ifdef QT_BUILD_INTERNAL
-    TestingRouter::instance()->setRouterInstance(this);
+    QKnxNetIpTestRouter::instance()->setRouterInstance(this);
 #endif
 
     if (!m_iface.isValid()) {
@@ -86,8 +86,8 @@ void QKnxNetIpRoutingInterfacePrivate::start()
         }
         // still no interface valid found
         if (!m_iface.isValid()) {
-            errorOccurred(QKnxNetIpRoutingInterface::Error::Network,
-                QKnxNetIpRoutingInterface::tr("Could not start routing because there isn't a "
+            errorOccurred(QKnxNetIpRouter::Error::Network,
+                QKnxNetIpRouter::tr("Could not start routing because there isn't a "
                     "valid interface."));
             return;
         }
@@ -111,7 +111,7 @@ void QKnxNetIpRoutingInterfacePrivate::start()
             m_busyTimer->setInterval(m_busyCounter * 100);
             m_busyTimer->start();
             m_busyStage = BusyTimerStage::SlowDuration;
-            this->changeState(QKnxNetIpRoutingInterface::State::Routing);
+            this->changeState(QKnxNetIpRouter::State::Routing);
             break;
         case BusyTimerStage::SlowDuration:
             m_busyTimer->setInterval(5);
@@ -138,18 +138,18 @@ void QKnxNetIpRoutingInterfacePrivate::start()
         case QUdpSocket::BoundState:
             m_socket->setMulticastInterface(m_iface);
             if (m_socket->joinMulticastGroup(m_multicastAddress, m_iface)) {
-                changeState(QKnxNetIpRoutingInterface::State::Routing);
+                changeState(QKnxNetIpRouter::State::Routing);
             } else {
-                errorOccurred(QKnxNetIpRoutingInterface::Error::Network,
-                    QKnxNetIpRoutingInterface::tr("Could not join multicast group."));
+                errorOccurred(QKnxNetIpRouter::Error::Network,
+                    QKnxNetIpRouter::tr("Could not join multicast group."));
             }
             break;
         case QUdpSocket::ClosingState:
             if (!m_socket->leaveMulticastGroup(m_multicastAddress, m_iface)) {
-                changeState(QKnxNetIpRoutingInterface::State::NotInit);
+                changeState(QKnxNetIpRouter::State::NotInit);
             } else {
-                errorOccurred(QKnxNetIpRoutingInterface::Error::Network,
-                    QKnxNetIpRoutingInterface::tr("Could not leave multicast group."));
+                errorOccurred(QKnxNetIpRouter::Error::Network,
+                    QKnxNetIpRouter::tr("Could not leave multicast group."));
             }
             break;
         default:
@@ -216,7 +216,7 @@ void QKnxNetIpRoutingInterfacePrivate::start()
     using overload = void (QUdpSocket::*)(QUdpSocket::SocketError);
     QObject::connect(m_socket,
         static_cast<overload>(&QUdpSocket::error), [&](QUdpSocket::SocketError) {
-        errorOccurred(QKnxNetIpRoutingInterface::Error::Network,
+        errorOccurred(QKnxNetIpRouter::Error::Network,
             m_socket->errorString());
     });
 
@@ -224,26 +224,26 @@ void QKnxNetIpRoutingInterfacePrivate::start()
     // initialize UDP socket and bind
     if (!m_socket->bind(QHostAddress(QHostAddress::AnyIPv4), m_multicastPort,
         (QUdpSocket::ShareAddress | QUdpSocket::ReuseAddressHint))) {
-            errorOccurred(QKnxNetIpRoutingInterface::Error::Network,
-                QKnxNetIpRoutingInterface::tr("Could not bind endpoint: %1")
+            errorOccurred(QKnxNetIpRouter::Error::Network,
+                QKnxNetIpRouter::tr("Could not bind endpoint: %1")
                 .arg(m_socket->errorString()));
     }
 }
 
-void QKnxNetIpRoutingInterfacePrivate::restart()
+void QKnxNetIpRouterPrivate::restart()
 {
     stop();
     start();
 }
 
-void QKnxNetIpRoutingInterfacePrivate::stop()
+void QKnxNetIpRouterPrivate::stop()
 {
-    if (m_state == QKnxNetIpRoutingInterface::State::NotInit)
+    if (m_state == QKnxNetIpRouter::State::NotInit)
         return;
     cleanup();
 }
 
-void QKnxNetIpRoutingInterfacePrivate::cleanup()
+void QKnxNetIpRouterPrivate::cleanup()
 {
     if (m_socket) {
         m_socket->disconnect();
@@ -261,15 +261,15 @@ void QKnxNetIpRoutingInterfacePrivate::cleanup()
     m_busyStage = BusyTimerStage::NotInit;
 
     m_errorMessage = QString();
-    m_error = QKnxNetIpRoutingInterface::Error::None;
+    m_error = QKnxNetIpRouter::Error::None;
 }
 
-void QKnxNetIpRoutingInterfacePrivate::processRoutingIndication(const QKnxNetIpFrame &frame)
+void QKnxNetIpRouterPrivate::processRoutingIndication(const QKnxNetIpFrame &frame)
 {
     QKnxNetIpRoutingIndicationProxy indication(frame);
     if (!indication.isValid()) {
-        errorOccurred(QKnxNetIpRoutingInterface::Error::KnxRouting,
-            QKnxNetIpRoutingInterface::tr("QKnxNetIp Routing Indication Message is not "
+        errorOccurred(QKnxNetIpRouter::Error::KnxRouting,
+            QKnxNetIpRouter::tr("QKnxNetIp Routing Indication Message is not "
                 "correctly formed."));
         return;
     }
@@ -284,11 +284,11 @@ void QKnxNetIpRoutingInterfacePrivate::processRoutingIndication(const QKnxNetIpF
         m_sameKnxDstAddressIndicationCount = 0;
     }
 
-    Q_Q(QKnxNetIpRoutingInterface);
+    Q_Q(QKnxNetIpRouter);
     emit q->routingIndicationReceived(frame, filterAction(cemi));
 }
 
-void QKnxNetIpRoutingInterfacePrivate::processRoutingBusy(const QKnxNetIpFrame &frame)
+void QKnxNetIpRouterPrivate::processRoutingBusy(const QKnxNetIpFrame &frame)
 {
     QKnxNetIpRoutingBusyProxy busyMessage(frame);
     if (!busyMessage.isValid())
@@ -296,40 +296,40 @@ void QKnxNetIpRoutingInterfacePrivate::processRoutingBusy(const QKnxNetIpFrame &
 
     flowControlHandling(busyMessage.routingBusyWaitTime());
 
-    Q_Q(QKnxNetIpRoutingInterface);
+    Q_Q(QKnxNetIpRouter);
     emit q->routingBusyReceived(frame);
 }
 
-void QKnxNetIpRoutingInterfacePrivate::processRoutingLostMessage(const QKnxNetIpFrame &frame)
+void QKnxNetIpRouterPrivate::processRoutingLostMessage(const QKnxNetIpFrame &frame)
 {
     QKnxNetIpRoutingLostMessageProxy lostMessage(frame);
     if (!lostMessage.isValid()) {
-        errorOccurred(QKnxNetIpRoutingInterface::Error::KnxRouting,
-            QKnxNetIpRoutingInterface::tr("QKnxNetIp Routing Lost Message is not "
+        errorOccurred(QKnxNetIpRouter::Error::KnxRouting,
+            QKnxNetIpRouter::tr("QKnxNetIp Routing Lost Message is not "
                 "correctly formed."));
         return;
     }
 
-    Q_Q(QKnxNetIpRoutingInterface);
+    Q_Q(QKnxNetIpRouter);
     emit q->routingLostCountReceived(frame);
 }
 
-void QKnxNetIpRoutingInterfacePrivate::processRoutingSystemBroadcast(const QKnxNetIpFrame &frame)
+void QKnxNetIpRouterPrivate::processRoutingSystemBroadcast(const QKnxNetIpFrame &frame)
 {
     QKnxNetIpRoutingSystemBroadcastProxy sbc(frame);
     if (sbc.isValid()) {
-        Q_Q(QKnxNetIpRoutingInterface);
+        Q_Q(QKnxNetIpRouter);
         emit q->routingSystemBroadcastReceived(frame);
     } else {
-        errorOccurred(QKnxNetIpRoutingInterface::Error::KnxRouting,
-            QKnxNetIpRoutingInterface::tr("QKnxNetIp Routing System Broadcast is not correctly "
+        errorOccurred(QKnxNetIpRouter::Error::KnxRouting,
+            QKnxNetIpRouter::tr("QKnxNetIp Routing System Broadcast is not correctly "
                 "formed."));
     }
 }
 
-bool QKnxNetIpRoutingInterfacePrivate::sendFrame(const QKnxNetIpFrame &frame)
+bool QKnxNetIpRouterPrivate::sendFrame(const QKnxNetIpFrame &frame)
 {
-    if (m_state != QKnxNetIpRoutingInterface::State::Routing)
+    if (m_state != QKnxNetIpRouter::State::Routing)
         return true; // no errors, only ignore the frame
 
     return m_socket->writeDatagram(frame.bytes().toByteArray(),
@@ -337,7 +337,7 @@ bool QKnxNetIpRoutingInterfacePrivate::sendFrame(const QKnxNetIpFrame &frame)
         m_multicastPort) != -1;
 }
 
-void QKnxNetIpRoutingInterfacePrivate::flowControlHandling(quint16 newBusyWaitTime)
+void QKnxNetIpRouterPrivate::flowControlHandling(quint16 newBusyWaitTime)
 {
     if (m_busyStage == BusyTimerStage::Wait) {
         auto elapsedTime = (m_busyTimer->interval() - m_busyTimer->remainingTime());
@@ -355,66 +355,70 @@ void QKnxNetIpRoutingInterfacePrivate::flowControlHandling(quint16 newBusyWaitTi
         m_busyStage = BusyTimerStage::Wait;
     }
     m_busyTimer->start();
-    changeState(QKnxNetIpRoutingInterface::State::NeighborBusy);
+    changeState(QKnxNetIpRouter::State::NeighborBusy);
 }
 
-QKnxNetIpRoutingInterface::FilterAction
-    QKnxNetIpRoutingInterfacePrivate::filterAction(const QKnxLinkLayerFrame &frame)
+QKnxNetIpRouter::FilterAction
+    QKnxNetIpRouterPrivate::filterAction(const QKnxLinkLayerFrame &frame)
 {
     auto dst = frame.destinationAddress();
     auto extCtrlField = frame.extendedControlField();
     auto hopCount = extCtrlField.hopCount();
 
     if (dst.type() == QKnxAddress::Type::Group) {
-        // TODO: review this part
-        auto gAdd = QKnxAddress::createGroup(dst.main(), dst.middle(), 0);
         bool routingCondition = true;
-        if (m_routingMode == QKnxNetIpRoutingInterface::RoutingMode::FilterTableRouting)
-            routingCondition = m_filterTable.contains(gAdd);
-        if (m_routingMode == QKnxNetIpRoutingInterface::RoutingMode::BlockRouting)
-            return QKnxNetIpRoutingInterface::FilterAction::IgnoreTotally;
+        if (m_routingMode == QKnxNetIpRouter::RoutingMode::Filter)
+            routingCondition = m_filterTable.contains(dst);
+        if (m_routingMode == QKnxNetIpRouter::RoutingMode::Block)
+            return QKnxNetIpRouter::FilterAction::IgnoreTotally;
         if (routingCondition && hopCount > 0 && hopCount <= 7)
-            return QKnxNetIpRoutingInterface::FilterAction::RouteDecremented;
+            return QKnxNetIpRouter::FilterAction::RouteDecremented;
         if (routingCondition && hopCount == 0)
-            return QKnxNetIpRoutingInterface::FilterAction::IgnoreAcked;
-        return QKnxNetIpRoutingInterface::FilterAction::IgnoreTotally;
+            return QKnxNetIpRouter::FilterAction::IgnoreAcked;
+        return QKnxNetIpRouter::FilterAction::IgnoreTotally;
     }
 
     // only gets here if destination address is individual
     if (!m_individualAddress.isValid())
-        return QKnxNetIpRoutingInterface::FilterAction::IgnoreTotally;
+        return QKnxNetIpRouter::FilterAction::IgnoreTotally;
 
     auto ownAddress = m_individualAddress;
-    bool isLineCoupler = ownAddress.middle() != 0;
+    bool isLineCoupler = ownAddress.middleOrLineSection() != 0;
+
     if (isLineCoupler) {
-        // sub-line to main line routing
-        bool notInOwnSubnetwork = (dst.main() != ownAddress.main())
-            || (dst.middle() == ownAddress.middle());
-        if (notInOwnSubnetwork) {
-            if (dst.sub() == 0) // address to this line coupler
-                return QKnxNetIpRoutingInterface::FilterAction::ForwardLocally;
+        bool mainLineToSubline = (dst.mainOrAreaSection() == ownAddress.mainOrAreaSection())
+                                 && (dst.middleOrLineSection() == ownAddress.middleOrLineSection());
+        if (mainLineToSubline) {
+            if (dst.subOrDeviceSection() == 0)
+                return QKnxNetIpRouter::FilterAction::ForwardLocally;
             if (hopCount > 0 && hopCount <= 7)
-                return QKnxNetIpRoutingInterface::FilterAction::RouteDecremented;
-            return QKnxNetIpRoutingInterface::FilterAction::IgnoreAcked;
+                    return QKnxNetIpRouter::FilterAction::RouteDecremented;
+            return QKnxNetIpRouter::FilterAction::IgnoreAcked;
         }
-        // no main line to sub-line routing done by a KNXnet/IP RoutingInteface
-        return QKnxNetIpRoutingInterface::FilterAction::IgnoreTotally;
+
+        bool sublineToMainline = !mainLineToSubline;
+        if (sublineToMainline) {
+            if (hopCount > 0 && hopCount <= 7)
+                return QKnxNetIpRouter::FilterAction::RouteDecremented;
+            return QKnxNetIpRouter::FilterAction::IgnoreAcked;
+        }
+
+        return QKnxNetIpRouter::FilterAction::IgnoreTotally;
     }
 
-    // backbone to main line
-    if (dst.main() == ownAddress.main()) {
-        if (dst.middle() == 0 && dst.sub() == 0)
-            // address to area coupler or backbone router.
-            return QKnxNetIpRoutingInterface::FilterAction::ForwardLocally;
+    bool backboneToMainLine = dst.mainOrAreaSection() == ownAddress.mainOrAreaSection();
+    if (backboneToMainLine) {
+        if (dst.middleOrLineSection() == 0 && dst.subOrDeviceSection() == 0)
+            return QKnxNetIpRouter::FilterAction::ForwardLocally;
         if (hopCount > 0 && hopCount <= 7)
-            return QKnxNetIpRoutingInterface::FilterAction::RouteDecremented;
-        return QKnxNetIpRoutingInterface::FilterAction::IgnoreAcked;
+            return QKnxNetIpRouter::FilterAction::RouteDecremented;
+        return QKnxNetIpRouter::FilterAction::IgnoreAcked;
     }
 
     // main line to backbone routing
     if (hopCount > 0 && hopCount <= 7)
-        return QKnxNetIpRoutingInterface::FilterAction::RouteDecremented;
-    return QKnxNetIpRoutingInterface::FilterAction::IgnoreAcked;
+        return QKnxNetIpRouter::FilterAction::RouteDecremented;
+    return QKnxNetIpRouter::FilterAction::IgnoreAcked;
 }
 
 QT_END_NAMESPACE

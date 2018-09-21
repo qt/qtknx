@@ -321,17 +321,23 @@ void QKnxNetIpServerInfo::swap(QKnxNetIpServerInfo &other) Q_DECL_NOTHROW
     d_ptr.swap(other.d_ptr);
 }
 
+
 /*!
     \internal
 */
 QKnxNetIpServerInfo::QKnxNetIpServerInfo(const QKnxNetIpHpai &hpai, const QKnxNetIpDib &hardware,
-        QKnxNetIpDib services) // ### Qt6: pass services as const reference
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+        QKnxNetIpDib services)
+#else
+        const QKnxNetIpDib &services) // ### Qt6: pass services as const reference
+#endif
     : QKnxNetIpServerInfo()
 {
     d_ptr->hpai = hpai;
     d_ptr->hardware = hardware;
     d_ptr->services = services;
 }
+
 
 /*!
     \internal

@@ -258,6 +258,19 @@
 
     \section1 Routing
 
+    KNXnet/IP routing is defined as a set of KNXnet/IP routers communicating
+    over a one-to-many communication relationship (multicast), in which KNX
+    data is transferred from one device to one or more other devices
+    simultaneously over an IP network. A set of KNXnet/IP routers can replace
+    KNX line and backbone couplers and connected main lines, allowing usage
+    of existing cabling (such as Ethernet) and faster transmission times (and
+    simultaneousness) between KNX subnets. The IP network acts as a fast
+    backbone that connects KNX subnets and is a high-speed replacement for
+    the KNX backbone.
+
+    The QKnxNetIpRouter class enables sending and receiving routing KNXnet/IP
+    packets to and from other KNXnet/IP routers.
+
     A routing indication is sent by a KNXnet/IP router or device to transmit KNX
     link layer frames over IP networks. The \l QKnxNetIpRoutingIndicationProxy
     and \l QKnxNetIpRoutingIndicationProxy::Builder class provides the means to

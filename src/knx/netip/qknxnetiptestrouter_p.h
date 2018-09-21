@@ -27,8 +27,8 @@
 **
 ******************************************************************************/
 
-#ifndef QKNXTESTINGROUTER_P_H
-#define QKNXTESTINGROUTER_P_H
+#ifndef QKNXNETIPTESTROUTER_P_H
+#define QKNXNETIPTESTROUTER_P_H
 
 //
 //  W A R N I N G
@@ -43,22 +43,43 @@
 
 #include <QtCore/qobject.h>
 
+#include <QtNetwork/qudpsocket.h>
+#include <QtNetwork/qhostaddress.h>
+
+#include <QtKnx/private/qknxnetiprouter_p.h>
+
 QT_BEGIN_NAMESPACE
 
-class QKnxNetIpRoutingInterfacePrivate;
-class Q_AUTOTEST_EXPORT TestingRouter
+class QKnxNetIpRouterPrivate;
+class Q_AUTOTEST_EXPORT QKnxNetIpTestRouter
 {
 public:
-    static TestingRouter *instance();
+    static QKnxNetIpTestRouter *instance()
+    {
+        static QKnxNetIpTestRouter routerInterface;
+        return &routerInterface;
+    }
 
-    void emitReadyRead(bool readAllPackets = true);
+    void emitReadyRead(bool readAllPackets = true)
+    {
+        Q_ASSERT(m_router);
+        auto socket = m_router->m_socket;
+        Q_ASSERT(socket);
 
-    QKnxNetIpRoutingInterfacePrivate *routerInstance();
-    void setRouterInstance(QKnxNetIpRoutingInterfacePrivate *router);
+        // By default the QKnxNetIpRouter gets the IP of the interface. A dummy
+        // address is assigned to trick the router into not discarding packets that
+        // have the same address as the interface used by the QKnxNetIpRouter
+        if (readAllPackets)
+            m_router->m_ownAddress = QHostAddress(16843010); //  setting ip 1.1.1.2
+        socket->waitForReadyRead(1);
+    }
+
+    QKnxNetIpRouterPrivate *routerInstance() { return m_router; }
+    void setRouterInstance(QKnxNetIpRouterPrivate *router) { m_router = router; }
 
 private:
-    TestingRouter() = default;
-    QKnxNetIpRoutingInterfacePrivate *m_router { nullptr };
+    QKnxNetIpTestRouter() = default;
+    QKnxNetIpRouterPrivate *m_router { nullptr };
 };
 
 QT_END_NAMESPACE
