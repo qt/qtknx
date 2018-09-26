@@ -29,12 +29,156 @@
     \example discoverer
     \title Discoverer Example
     \ingroup qtknx-examples
-    \brief Discovering KNX/netIP servers on the network.
+    \brief A CLI client for discovering KNX/netIP servers on the network.
 
     \e {Discoverer} shows how to implement and start a discovery agent that
     discovers KNX/netIP servers on the network.
 
-    In the main function, we create the discovery agent:
+    \section1 Usage
+    Below are the parameters that the client allows.
+    \code
+Usage: ./discoverer [options]
+
+Options:
+  -h, --help                         Displays this help.
+  -t, --timeout <timeout>            Discovery response timeout in seconds.
+  -n, --nat                          Use Network Address Translation to
+                                     traverse across network routers.
+  -u, --unicast                      Force unicast response. (defaults to
+                                     multicast response)
+  -a, --localAddress <localAddress>  The local IP address a response shall be
+                                     sent to. Implies <unicast>
+  -p, --localPort <localPort>        The local UDP port a response shall be
+                                     sent to (defaults to system assigned).
+                                     Implies <unicast>.
+  -m, --searchMode <searchMode>      Specifies the mode used to send search
+                                     request. Possible values: (default,
+                                     extended, both).
+  --filterProg                       Limit search responses to devices in
+                                     programming mode. Implies search mode
+                                     extended or both.
+  --filterMAC <MAC>                  Limit search responses to the given MAC
+                                     address. Implies search mode extended or
+                                     both.
+  --filterService <Service>          Limit search responses to devices
+                                     supporting the given KNXnet/IP service
+                                     family in at least the given version (e.g.
+                                     0202). Implies search mode extended or
+                                     both.
+  --descriptionType <Type>           Force returning DIBs inside the search
+                                     responses to to at least of the given set
+                                     of IDs (e.g. 010208). Implies search mode
+                                     extended or both.
+    \endcode
+
+    By default the client uses the default network interface determined by the
+    Operating System if no local IP address given. However, if an IP
+    is given, the client will use the interface attached to that IP.
+
+    The following lines show a few  examples of how to use the client:
+
+    \code
+./discoverer -m extended -a 127.0.0.1 -p 5543
+
+Device used to send the search request:
+  Network interface: lo, address: 127.0.0.1, port: 5543
+No server(s) found on the network.
+    \endcode
+
+    The command above uses the loopback interface. No KNX servers are
+    available on this interface and therefore none are showed.
+
+    \code
+./discoverer -m extended
+Device used to send the search request:
+  Network interface: Unknown, address: 0.0.0.0, port: 0
+
+1 server(s) found on the network.
+  Server: IPR/S3.5.1 IP Router,MDRC
+      Individual address: 1.1.0
+      Server control endpoint: 10.9.78.33:3671
+    Supported services:
+      KNXnet/IP Core, Version: 2
+      KNXnet/IP Device Management, Version: 2
+      KNXnet/IP Tunnel, Version: 2
+      KNXnet/IP Routing, Version: 2
+      KNXnet/IP Remote Configuration, Version: 1
+      KNXnet/IP Security, Version: 1
+    Extended hardware information:
+      Mask version: 091a
+      Max. local APDU length: 254
+      Medium status: Communication possible
+    \endcode
+
+    Unlike the previous command example, this one uses the default
+    network interface determined by the OS and shows that there is one
+    KNX server on the network with 10.9.78.33 and listening on port
+    3671. The \c searchMode parameter refers to the KNXnet/IP Core
+    version used. The \c extended mode indicates version 2 and can
+    make use of extended search parameters.
+
+    \code
+    ./discoverer -m extended --filterService 0202
+
+Device used to send the search request:
+  Network interface: Unknown, address: 0.0.0.0, port: 0
+
+1 server(s) found on the network.
+  Server: IPR/S3.5.1 IP Router,MDRC
+      Individual address: 1.1.0
+      Server control endpoint: 10.9.78.33:3671
+    Supported services:
+      KNXnet/IP Core, Version: 2
+      KNXnet/IP Device Management, Version: 2
+      KNXnet/IP Tunnel, Version: 2
+      KNXnet/IP Routing, Version: 2
+      KNXnet/IP Remote Configuration, Version: 1
+      KNXnet/IP Security, Version: 1
+    Extended hardware information:
+      Mask version: 091a
+      Max. local APDU length: 254
+      Medium status: Communication possible
+    \endcode
+
+    The above command makes use of the extended search parameters
+    available only in KNXnet/IP Core version 2. It limits the
+    search responses to devices supporting the given KNXnet/IP service
+    family 02 and in at least the given version 02.
+
+    In a network with two KNX routers, one of them only supporting
+    KNXnet/IP Core Version 1, the output showed by the client with the
+    default \c searchMode parameter set would be as follows:
+    \code
+./discoverer -m default
+
+Device used to send the search request:
+  Network interface: Unknown, address: 0.0.0.0, port: 0
+
+2 server(s) found on the network.
+  Server: IPR/S3.5.1 IP Router,MDRC
+      Individual address: 1.1.0
+      Server control endpoint: 10.9.78.33:3671
+    Supported services:
+      KNXnet/IP Core, Version: 2
+      KNXnet/IP Device Management, Version: 2
+      KNXnet/IP Tunnel, Version: 2
+      KNXnet/IP Routing, Version: 2
+      KNXnet/IP Remote Configuration, Version: 1
+
+  Server: IPS/S3.1.1 IP-Schnittstelle,RE
+      Individual address: 1.1.250
+      Server control endpoint: 10.9.78.81:3671
+    Supported services:
+      KNXnet/IP Core, Version: 1
+      KNXnet/IP Device Management, Version: 1
+      KNXnet/IP Tunnel, Version: 1
+      KNXnet/IP Remote Configuration, Version: 1
+    \endcode
+
+    \section1 Implementation
+
+    The client delegates all the implementation of the KNX discovery
+    to a \l QKnxNetIpServerDiscoveryAgent instance.
 
     \quotefromfile discoverer/main.cpp
     \skipto int main(
@@ -43,17 +187,33 @@
     \skipto QKnxNetIpServerDiscoveryAgent agent;
     \printuntil ;
 
-
-    Then, we start the discovery agent:
-
+    The discovery agent is started here:
+    \quotefromfile discoverer/main.cpp
+    \skipto int main(
+    \printuntil {
     \dots
-    \skipto agent.start
-    \printuntil ;
-
-    Finally, we recover a list of servers:
-
-    \dots
-    \skipto agent.discoveredServers
+    \skipto QKnxNetIpServerDiscoveryAgent agent;
     \printuntil ;
     \dots
+    \skipto QKnxNetIpServerDiscoveryAgent::finished
+    \printuntil ;
+    \printuntil exec();
+    \skipto /^\}/
+    \dots
+    \printuntil /^\}/
+
+    When the agent finishes discovering the servers, the main function
+    of the client is resumed. The above code snippet shows how the \l
+    QKnxNetIpServerDiscoveryAgent::finished() signal triggers a call to
+    \l QCoreApplication::quit(). The client execution then keeps going after
+    the \l QCoreApplication::exec().
+
+    Finally, we recover a list of servers and output the information found:
+    \quotefromfile discoverer/main.cpp
+    \skipto int main(
+    \printuntil {
+    \dots
+    \skipto agent.error
+    \printuntil /^\}/
+
 */
