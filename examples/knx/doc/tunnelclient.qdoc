@@ -34,18 +34,104 @@
     \e {Tunnel Client} shows how to create a tunnel connection to a KNX/netIP
     server.
 
-    In the main function, we create a tunnel connection:
+    \section1 Usage
+    Here are the parameters that the client accepts:
+    \code
+    Usage: ./tunnelclient [options]
+
+Options:
+  -h, --help                       Displays this help.
+  -t, --timeout <timeout>          The heartbeat timeout in seconds.
+  -n, --nat                        Use Network Address Translation to traverse
+                                   across network routers.
+  --localAddress <localAddress>    The local IP address used for the control
+                                   endpoint.
+  --localPort <localPort>          The local UDP port used for the control
+                                   endpoint.
+  --remoteAddress <remoteAddress>  The remote IP address used by the server the
+                                   control endpoint.
+  --remotePort <remotePort>        The remote UDP port used by the server the
+                                   control endpoint.
+    \endcode
+
+    The usual way to run the client is:
+    \code
+    ./tunnelclient --remoteAddress 10.9.78.81  --localAddress 10.9.78.59
+Sending connect request: 0x06100205001a08010a094e3bbf0b08010a094e3bbf0b04040200
+Type 'quit' to stop the application.
+Received connect response: 0x0610020600143d0008010a094e510e5704041103
+Sending connection state request: 0x0610020700103d0008010a094e3bbf0b
+Received connection state response: 0x0610020800083d00
+    \endcode
+
+    This is the initial state of the client. The client pauses
+    indefinitely waiting for keyboard interaction. The user can then
+    send KNX frames by pasting the stream of bytes directly into the
+    terminal. Pressing \key Enter will notify the client to
+    encapsulate the stream of bytes in a KNX tunneling request and
+    send it to the KNX server throughout the tunnel. This can be seen
+    below:
+
+    \code
+1100b4e000000002010000
+Sending tunneling request:0x061004200015043d00001100b4e000000002010000
+Received tunneling acknowledge: 0x06100421000a043d0000
+Received tunneling request: 0x061004200015043d00002e00b4e011030002010000
+Sending tunneling acknowledge: 0x06100421000a043d0000
+Received tunneling request: 0x061004200015043d01002900b4e011010002010040
+Sending tunneling acknowledge: 0x06100421000a043d0100
+    \endcode
+
+    By typing the word \e quit in the terminal the client will
+    disconnect and terminate.
+
+    \code
+quit
+Sending disconnect request: 0x0610020900103d0008010a094e3bbf0b
+Received disconnect response: 0x0610020a00083d00
+    \endcode
+
+    \section1 Implementation
+
+    In the main function, we create a tunnel connection by
+    instantiating the \l QKnxNetIpTunnel class. This class will manage
+    the tunnel connection.
 
     \quotefromfile tunnelclient/main.cpp
     \skipto int main(
     \printuntil {
     \dots
-    \skipto QKnxNetIpTunnel tunnel
+    \skipto setLocalAddress
     \printuntil ;
 
-    Then, we connect to the server using the server address and port number:
+    All of the CLI parameters are used to configure the \l
+    QKnxNetIpTunnel instance. A handler is installed to capture the
+    signal \l QKnxNetIpTunnel::disconnected that will terminate the
+    connection.
 
+    \quotefromfile tunnelclient/main.cpp
+    \dots
+    \skipto QKnxNetIpTunnel::disconnected
+    \printuntil ;
+
+    The connection is established using the server address and port
+    number previously provided and calling the method \l
+    QKnxNetIpTunnel::connectToHost.
+
+    \quotefromfile tunnelclient/main.cpp
+    \skipto int main(
+    \printuntil {
     \dots
     \skipto tunnel.connectToHost(
     \printuntil ;
+    \dots
+    \printuntil /^\}/
+
+    The signals \l QWinEventNotifier::activated (from Windows) and \l
+    QSocketNotifier::activated (from other platforms) are used for
+    detecting user data ready to be read from the terminal. The stream
+    of bytes is captured by a \l QTextStream instance. Then, a KNX
+    link layer frame is built from it and sent over the tunnel
+    connection.
+
 */
