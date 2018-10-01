@@ -1,0 +1,106 @@
+/****************************************************************************
+**
+** Copyright (C) 2018 The Qt Company Ltd.
+** Contact: https://www.qt.io/licensing/
+**
+** This file is part of the documentation of the Qt Toolkit.
+**
+** $QT_BEGIN_LICENSE:FDL$
+** Commercial License Usage
+** Licensees holding valid commercial Qt licenses may use this file in
+** accordance with the commercial license agreement provided with the
+** Software or, alternatively, in accordance with the terms contained in
+** a written agreement between you and The Qt Company. For licensing terms
+** and conditions see https://www.qt.io/terms-conditions. For further
+** information use the contact form at https://www.qt.io/contact-us.
+**
+** GNU Free Documentation License Usage
+** Alternatively, this file may be used under the terms of the GNU Free
+** Documentation License version 1.3 as published by the Free Software
+** Foundation and appearing in the file included in the packaging of
+** this file. Please review the following information to ensure
+** the GNU Free Documentation License version 1.3 requirements
+** will be met: https://www.gnu.org/licenses/fdl-1.3.html.
+** $QT_END_LICENSE$
+**
+****************************************************************************/
+
+/*!
+    \example knxproj
+    \title KNX Project Parser
+    \ingroup qtknx-examples
+
+    \brief A client that displays information about group
+    addresses contained in a KNX project.
+
+    \section1 Usage
+    Here are the parameters that the client accepts:
+    \code
+Usage: ./knxproj [options]
+KNX Project file parser
+
+Options:
+  -h, --help            Displays this help.
+  -v, --verbose         Show more details of the project file.
+  -p, --project <path>  Path to the project file to parse.
+    \endcode
+
+    Running the client is done using the following command:
+    \code
+./knxproj -v -p qt.io.knxproj
+Opening project file: qt.io.knxproj
+Status parsing project: No errors
+Project ids found: 1
+ # project "qt.io.test"
+     found 1 installation(s)
+  - Installation ""
+     found 95 Group address(es)
+      Living room Ceiling light switching: 1/1/0
+      Living room Desk light switching: 1/1/1
+      Living room Socket switching: 1/1/2
+      Kitchen Ceiling light switching: 1/1/8
+      Kitchen Working light switching: 1/1/9
+      Kitchen Dining corner switching: 1/1/10
+      Bedroom Ceiling light switching: 1/1/16
+      Bedroom Bed left switching: 1/1/17
+      Bedroom Bed right switching: 1/1/18
+      Bath room Ceiling light switching: 1/1/24
+      Bath room Mirror switching: 1/1/25
+      ...
+    \endcode
+
+    \section1 Implementation
+
+    In the main function, the class \l QKnxGroupAddressInfos is
+    instantiated. We pass the path to the KNX project file to the
+    constructor as a parameter. This class will provide access to
+    information about group addresses used inside the project file.
+
+    \quotefromfile knxproj/main.cpp
+    \skipto int main(
+    \printuntil {
+    \dots
+    \skipto infos(
+    \printuntil infos
+
+    The next step is to call the method \l
+    QKnxGroupAddressInfos::parse(). This signals the \l
+    QKnxGroupAddressInfos instance to read the project file and to
+    gather the information about the group addresses.
+
+    \printuntil parse
+
+    Before displaying the information that has been read from the
+    project file, we need to check if any errors were found parsing the
+    file:
+
+    \skipto infos.status
+    \printuntil }
+
+    Obtaining the project ids, the project's name, and the group
+    addresses used is done in this code snippet:
+
+    \skipto projId
+    \printuntil };
+
+*/
