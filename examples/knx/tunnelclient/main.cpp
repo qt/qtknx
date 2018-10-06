@@ -81,7 +81,7 @@ int main(int argc, char *argv[])
         { "remoteAddress", "The remote IP address used by the server the control endpoint.",
             "remoteAddress" },
         { "remotePort", "The remote UDP port used by the server the control endpoint.",
-            "remotePort" }
+            "remotePort", "3671" }
     });
     parser.process(app);
 
@@ -120,6 +120,8 @@ int main(int argc, char *argv[])
     if (tunnel.error() == QKnxNetIpTunnel::Error::None) {
         qInfo().noquote() << "Type 'quit' to stop the application.";
         app.exec();
+    } else {
+        qInfo().noquote() << tunnel.error() << tunnel.errorString();
     }
 
     return 0;
