@@ -43,6 +43,7 @@ class tst_QKnxNetIpDescriptionRequest: public QObject
 private slots:
     void testDefaultConstructor();
     void testConstructor();
+    void testValidationDescriptionRequest();
     void testDebugStream();
 };
 
@@ -53,6 +54,10 @@ void tst_QKnxNetIpDescriptionRequest::testDefaultConstructor()
 
     QCOMPARE(descriptionRequest.isValid(), false);
     QCOMPARE(descriptionRequest.controlEndpoint().isValid(), false);
+
+    frame = QKnxNetIpDescriptionRequestProxy::builder().create();
+    const QKnxNetIpDescriptionRequestProxy view(frame);
+    QCOMPARE(view.isValid(), false);
 }
 
 void tst_QKnxNetIpDescriptionRequest::testConstructor()
@@ -73,6 +78,52 @@ void tst_QKnxNetIpDescriptionRequest::testConstructor()
     QCOMPARE(descriptionRequest.controlEndpoint().isValid(), true);
     QCOMPARE(descriptionRequest.controlEndpoint().bytes(),
         QKnxByteArray::fromHex("08017f0000010e57"));
+}
+
+void tst_QKnxNetIpDescriptionRequest::testValidationDescriptionRequest()
+{
+    {
+        auto frame = QKnxNetIpDescriptionRequestProxy::builder()
+                     .setControlEndpoint(QKnxNetIpHpaiProxy::builder()
+                                         .setHostAddress(QHostAddress::LocalHost)
+                                         .setPort(3671).create())
+                     .create();
+        QCOMPARE(frame.isValid(), true);
+        const QKnxNetIpDescriptionRequestProxy view(frame);
+        QCOMPARE(view.isValid(), true);
+        // setting an invalid service type that should invalidate the proxy
+        frame.setServiceType(QKnxNetIp::ServiceType::TunnelingFeatureSet);
+        QCOMPARE(view.controlEndpoint().isValid(), true);
+        QCOMPARE(view.isValid(), false);
+    }
+    {
+        auto ctrlEndpoint = QKnxNetIpHpaiProxy::builder().create();
+        QCOMPARE(ctrlEndpoint.isValid(), true);
+        QKnxNetIpFrame frame = { QKnxNetIp::ServiceType::DescriptionRequest,
+                                 ctrlEndpoint.bytes() };
+        const QKnxNetIpDescriptionRequestProxy view(frame);
+        QCOMPARE(view.controlEndpoint().isValid(), true);
+        QCOMPARE(view.isValid(), true);
+    }
+    {
+        auto ctrlEndpoint = QKnxNetIpHpaiProxy::builder()
+                            // setting invalid host protocol
+                            .setHostProtocol(QKnxNetIp::HostProtocol(0x12))
+                            .setHostAddress(QHostAddress::LocalHost)
+                            .setPort(3671)
+                            .create();
+        QCOMPARE(ctrlEndpoint.isValid(), false);
+        QKnxNetIpFrame frame = { QKnxNetIp::ServiceType::DescriptionRequest,
+                                 ctrlEndpoint.bytes() };
+        const QKnxNetIpDescriptionRequestProxy view(frame);
+        QCOMPARE(view.controlEndpoint().isValid(), false);
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+        QCOMPARE(view.isValid(), false);
+#else
+        // TODO: request proxy validation should not accept an invalid HPAI
+        QCOMPARE(view.isValid(), true);
+#endif
+    }
 }
 
 void tst_QKnxNetIpDescriptionRequest::testDebugStream()
