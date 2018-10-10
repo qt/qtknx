@@ -29,6 +29,9 @@
 #include <QtCore/qdebug.h>
 #include <QtTest/qtest.h>
 #include <QtKnx/qknxnetiproutinglostmessage.h>
+#include <QtKnx/qknxnetip.h>
+#include <QtKnx/QKnxNetIpConnectionHeader>
+#include <QtKnx/qknxutils.h>
 
 static QString s_msg;
 static void myMessageHandler(QtMsgType, const QMessageLogContext &, const QString &msg)
@@ -44,6 +47,7 @@ private slots:
     void testDefaultConstructor();
     void testConstructor();
     void testDebugStream();
+    void testValidationRoutingLostMessage();
 };
 
 void tst_QKnxNetIpRoutingLostMessage::testDefaultConstructor()
@@ -53,8 +57,15 @@ void tst_QKnxNetIpRoutingLostMessage::testDefaultConstructor()
     QKnxNetIpRoutingLostMessageProxy routing(frame);
     QCOMPARE(routing.isValid(), false);
 
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    // TODO: make xxx::builder.create() consistent all around the module.
+    // if no setters used it should create an invalid object.
+    frame = QKnxNetIpRoutingLostMessageProxy::builder().create();
+    QCOMPARE(routing.isValid(), false);
+#else
     frame = QKnxNetIpRoutingLostMessageProxy::builder().create();
     QCOMPARE(routing.isValid(), true);
+#endif
 }
 
 void tst_QKnxNetIpRoutingLostMessage::testConstructor()
@@ -73,6 +84,53 @@ void tst_QKnxNetIpRoutingLostMessage::testConstructor()
 
     QCOMPARE(routing.deviceState(), QKnxNetIp::DeviceState::IpFault);
     QCOMPARE(routing.lostMessageCount(), quint16(0xffff));
+}
+
+void tst_QKnxNetIpRoutingLostMessage::testValidationRoutingLostMessage()
+{
+    quint16 messageCount = 6;
+    QKnxNetIp::DeviceState state = QKnxNetIp::DeviceState::IpFault;
+    {
+        // test Routing Lost Message frame with wrong service type set
+        auto lostFrame = QKnxNetIpRoutingLostMessageProxy::builder()
+                        .setDeviceState(state)
+                        .setLostMessageCount(messageCount)
+                        .create();
+        QCOMPARE(lostFrame.isValid(), true);
+        const QKnxNetIpRoutingLostMessageProxy view(lostFrame);
+        QCOMPARE(view.isValid(), true);
+        lostFrame.setServiceType(QKnxNetIp::ServiceType::TunnelingRequest);
+        QCOMPARE(view.isValid(), false);
+    }
+    {
+        // invalid Routing Lost Message frame.
+        // Wrong LostMessageInfo.Structure Length (0x02 should be 0x04)
+        QKnxNetIpFrame frame = { QKnxNetIp::ServiceType::RoutingLostMessage,
+                                 QKnxByteArray { 0x02, quint8(state) }
+                                 + QKnxUtils::QUint16::bytes(messageCount)
+                               };
+        QVERIFY(frame.size() == 10);
+        QCOMPARE(frame.isValid(), true);
+        const QKnxNetIpRoutingLostMessageProxy view(frame);
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+        QCOMPARE(view.isValid(), false);
+#else
+        // TODO: An invalid routing lost frame can be formed, isValid is
+        // not covering the case with wrong structure length
+        QCOMPARE(view.isValid(), true);
+#endif
+    }
+    {
+        // valid Routing Lost Message frame
+        QKnxNetIpFrame frame = { QKnxNetIp::ServiceType::RoutingLostMessage,
+                                 QKnxByteArray { 0x04, quint8(state) }
+                                 + QKnxUtils::QUint16::bytes(messageCount)
+                               };
+        QCOMPARE(frame.size(), 10);
+        QCOMPARE(frame.isValid(), true);
+        const QKnxNetIpRoutingLostMessageProxy view(frame);
+        QCOMPARE(view.isValid(), true);
+    }
 }
 
 void tst_QKnxNetIpRoutingLostMessage::testDebugStream()
