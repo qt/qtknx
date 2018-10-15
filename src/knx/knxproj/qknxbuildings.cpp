@@ -140,7 +140,7 @@ bool QKnxBuildingPart::parseElement(QXmlStreamReader *reader, bool pedantic)
     if (!reader || !reader->isStartElement())
         return false;
 
-    if (reader->name() == QLatin1String("BuildingPart")) {
+    if (reader->name() == QLatin1String("BuildingPart") || reader->name() == QLatin1String("Space")) {
        auto attrs = reader->attributes();
 
         // required attributes
@@ -161,14 +161,15 @@ bool QKnxBuildingPart::parseElement(QXmlStreamReader *reader, bool pedantic)
                 QStringLiteral("Building"), QStringLiteral("BuildingPart"),
                 QStringLiteral("Floor"), QStringLiteral("Room"),
                 QStringLiteral("DistributionBoard"), QStringLiteral("Stairway"),
-                QStringLiteral("Corridor")
+                QStringLiteral("Corridor"), QStringLiteral("Area"), QStringLiteral("Ground"),
+                QStringLiteral("Segment")
             }, &Type, reader, pedantic)) return false;
 
         if (!QKnxProjectUtils::fetchAttr(attrs, QStringLiteral("Puid"), &attr, reader))
             return false;
         Puid = attr.toUInt();
 
-        Type = attrs.value(QStringLiteral("Type")).toString(); // TODO: pedantic
+        Usage = attrs.value(QStringLiteral("Usage")).toString(); // TODO: pedantic
         Number = attrs.value(QStringLiteral("Number")).toString(); // TODO: pedantic
         Comment = attrs.value(QStringLiteral("Comment")).toString();
         Description = attrs.value(QStringLiteral("Description")).toString();
@@ -184,11 +185,12 @@ bool QKnxBuildingPart::parseElement(QXmlStreamReader *reader, bool pedantic)
         while (!reader->atEnd() && !reader->hasError()) {
             auto tokenType = reader->readNext();
             if (tokenType == QXmlStreamReader::TokenType::StartElement) {
-                if (reader->name() == QLatin1String("BuildingPart")) {
-                    QKnxBuildingPart part;
-                    if (!part.parseElement(reader, pedantic))
-                        return false;
-                    BuildingPart.append(part);
+                if (reader->name() == QLatin1String("BuildingPart")
+                    || reader->name() == QLatin1String("Space")) {
+                        QKnxBuildingPart part;
+                        if (!part.parseElement(reader, pedantic))
+                            return false;
+                        BuildingPart.append(part);
                 } else if (reader->name() == QStringLiteral("DeviceInstanceRef")) {
                     QStringRef attr;
                     if (!QKnxProjectUtils::fetchAttr(reader->attributes(), QLatin1String("RefId"),
@@ -204,12 +206,15 @@ bool QKnxBuildingPart::parseElement(QXmlStreamReader *reader, bool pedantic)
                     Function.append(function);
                 }
             } else if (tokenType == QXmlStreamReader::TokenType::EndElement) {
-                if (reader->name() == QLatin1String("BuildingPart"))
+                if (reader->name() == QLatin1String("BuildingPart")
+                    || reader->name() == QLatin1String("Space")) {
                     break;
+                }
             }
         }
     } else {
-        reader->raiseError(tr("Expected element <BuildingPart>, got: <%1>.").arg(reader->name()));
+        reader->raiseError(tr("Expected element <BuildingPart> or <Space>, got: <%1>.")
+            .arg(reader->name()));
     }
     return !reader->hasError();
 }
@@ -222,24 +227,28 @@ bool QKnxBuildings::parseElement(QXmlStreamReader *reader, bool pedantic)
     if (!reader || !reader->isStartElement())
         return false;
 
-    if (reader->name() == QLatin1String("Buildings")) {
+    if (reader->name() == QLatin1String("Buildings") || reader->name() == QLatin1String("Locations")) {
         // children
         while (!reader->atEnd() && !reader->hasError()) {
             auto tokenType = reader->readNext();
             if (tokenType == QXmlStreamReader::TokenType::StartElement) {
-                if (reader->name() == QLatin1String("BuildingPart")) {
-                    QKnxBuildingPart part;
-                    if (!part.parseElement(reader, pedantic))
-                        return false;
-                    BuildingPart.append(part);
+                if (reader->name() == QLatin1String("BuildingPart")
+                    || reader->name() == QLatin1String("Space")) {
+                        QKnxBuildingPart part;
+                        if (!part.parseElement(reader, pedantic))
+                            return false;
+                        BuildingPart.append(part);
                 }
             } else if (tokenType == QXmlStreamReader::TokenType::EndElement) {
-                if (reader->name() == QLatin1String("Buildings"))
-                    break;
+                if (reader->name() == QLatin1String("Buildings")
+                    || reader->name() == QLatin1String("Locations")) {
+                        break;
+                }
             }
         }
     } else {
-        reader->raiseError(tr("Expected element <Buildings>, got: <%1>.").arg(reader->name()));
+        reader->raiseError(tr("Expected element <Buildings> or <Locations>, got: <%1>.")
+            .arg(reader->name()));
     }
     return !reader->hasError();
 }

@@ -294,7 +294,9 @@ bool QKnxGroupAddressInfos::parse()
     QZipReader zipReader(&file);
     const auto fileInfos = zipReader.fileInfoList();
     for (const auto &fileInfo : qAsConst(fileInfos)) {
-        if (fileInfo.filePath.endsWith(QStringLiteral("0.xml")))
+        auto file = fileInfo.filePath;
+        file = file.mid(file.lastIndexOf(QLatin1Char('/'), -5) + 1);
+        if (file == QStringLiteral("0.xml"))
             files.insert(fileInfo.filePath);
     }
 

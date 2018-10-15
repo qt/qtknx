@@ -92,7 +92,9 @@ public:
     QString Id; // non-colonized name, pattern [\i-[:]][\c-[:]]*
     QString Name; // 255 character max.
     QString Type; // Building, BuildingPart, Floor, Room, DistributionBoard, Stairway, Corridor
+    QString Usage; // optional
     QString Number; // optional, 255 character max.
+
     QString Comment; // optional
     QString Description; // optional
 

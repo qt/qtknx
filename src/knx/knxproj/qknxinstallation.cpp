@@ -201,16 +201,17 @@ bool QKnxInstallation::parseElement(QXmlStreamReader *reader, bool pedantic)
                     if (!topology.parseElement(reader, pedantic))
                         return false;
                     Topology.append(topology);
-                } else if (reader->name() == QStringLiteral("Buildings")) {
-                    if (pedantic && Buildings.size() >= 1) {
-                        reader->raiseError(tr("Pedantic error: Encountered element "
-                            "<Buildings> more than once."));
-                        return false;
-                    }
-                    QKnxBuildings buildings;
-                    if (!buildings.parseElement(reader, pedantic))
-                        return false;
-                    Buildings.append(buildings);
+                } else if (reader->name() == QStringLiteral("Buildings")
+                    || reader->name() == QStringLiteral("Locations")) {
+                        if (pedantic && Buildings.size() >= 1) {
+                            reader->raiseError(tr("Pedantic error: Encountered element "
+                                "<%1> more than once.").arg(reader->name()));
+                            return false;
+                        }
+                        QKnxBuildings buildings;
+                        if (!buildings.parseElement(reader, pedantic))
+                            return false;
+                        Buildings.append(buildings);
                 } else if (reader->name() == QStringLiteral("GroupAddresses")) {
                     if (pedantic && GroupAddresses.size() >= 1) {
                         reader->raiseError(tr("Pedantic error: Encountered element "
