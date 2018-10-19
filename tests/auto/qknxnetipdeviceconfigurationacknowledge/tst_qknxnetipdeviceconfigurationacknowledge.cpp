@@ -29,6 +29,7 @@
 #include <QtCore/qdebug.h>
 #include <QtTest/qtest.h>
 #include <QtKnx/qknxnetipdeviceconfigurationacknowledge.h>
+#include <QtKnx/QKnxNetIpConnectionHeader>
 
 static QString s_msg;
 static void myMessageHandler(QtMsgType, const QMessageLogContext &, const QString &msg)
@@ -44,6 +45,7 @@ private slots:
     void testDefaultConstructor();
     void testConstructor();
     void testDebugStream();
+    void testProxyMethods();
 };
 
 void tst_QKnxNetIpDeviceConfigurationAcknowledge::testDefaultConstructor()
@@ -73,6 +75,55 @@ void tst_QKnxNetIpDeviceConfigurationAcknowledge::testConstructor()
     QCOMPARE(acknowledge.channelId(), quint8(255));
     QCOMPARE(acknowledge.sequenceNumber(), quint8(250));
     QCOMPARE(acknowledge.status(), QKnxNetIp::Error::ConnectionId);
+}
+
+void tst_QKnxNetIpDeviceConfigurationAcknowledge::testProxyMethods()
+{
+    quint8 channelId = 255;
+    quint8 sequenceNumber = 250;
+    auto status = QKnxNetIp::Error::ConnectionId;
+    auto frame = QKnxNetIpDeviceConfigurationAcknowledgeProxy::builder()
+        .setChannelId(channelId)
+        .setSequenceNumber(sequenceNumber)
+        .setStatus(status)
+        .create();
+    {
+        // Check channelId(), status() and isValid() with Wrong service type
+        QKnxNetIpFrame frame = { QKnxNetIp::ServiceType::DisconnectRequest,
+                                 QKnxNetIpConnectionHeader { channelId,
+                                                             sequenceNumber,
+                                                             quint8(status) }
+                               };
+        const QKnxNetIpDeviceConfigurationAcknowledgeProxy view(frame);
+        QCOMPARE(view.channelId(), channelId);
+        QCOMPARE(view.status(), status);
+        QCOMPARE(view.sequenceNumber(), sequenceNumber);
+        QCOMPARE(view.isValid(), false);
+    }
+    {
+        // Check channelId(), status(), sequenceNumber() and isValid() with
+        // valid device configuration acknowledge frame
+        QKnxNetIpFrame frame = { QKnxNetIp::ServiceType::DeviceConfigurationAcknowledge };
+        QCOMPARE(frame.header().size(), 6);
+        QCOMPARE(frame.dataSize(), 0);
+        QCOMPARE(frame.size(), 6);
+        const QKnxNetIpDeviceConfigurationAcknowledgeProxy view(frame);
+        QCOMPARE(view.isValid(), false);
+    }
+    {
+        // Check channelId(), status(), sequenceNumber() and isValid() with
+        // valid device configuration acknowledge frame
+        QKnxNetIpFrame frame = { QKnxNetIp::ServiceType::DeviceConfigurationAcknowledge,
+                                 QKnxNetIpConnectionHeader { channelId,
+                                                             sequenceNumber,
+                                                             quint8(status) }
+                               };
+        const QKnxNetIpDeviceConfigurationAcknowledgeProxy view(frame);
+        QCOMPARE(view.channelId(), channelId);
+        QCOMPARE(view.status(), status);
+        QCOMPARE(view.sequenceNumber(), sequenceNumber);
+        QCOMPARE(view.isValid(), true);
+    }
 }
 
 void tst_QKnxNetIpDeviceConfigurationAcknowledge::testDebugStream()
