@@ -31,7 +31,6 @@
 #define QTKNXGLOBAL_H
 
 #include <QtCore/qglobal.h>
-#include <QtKnx/qtknx-config.h>
 
 QT_BEGIN_NAMESPACE
 

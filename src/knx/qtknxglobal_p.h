@@ -43,6 +43,5 @@
 
 #include <QtKnx/qtknxglobal.h>
 #include <QtCore/private/qglobal_p.h>
-#include <QtKnx/private/qtknx-config_p.h>
 
 #endif
