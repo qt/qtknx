@@ -449,9 +449,18 @@ private Q_SLOTS:
         QCOMPARE(address.Security, QLatin1String("Auto"));
     }
 
-    void testBuildings()
+    void testBuildingsAndLocations_data()
     {
-        QFile file(":/data/buildings.xml");
+        QTest::addColumn<QString>("path");
+        QTest::newRow("Test 'buildings' XML") << ":/data/buildings.xml";
+        QTest::newRow("Test 'locations' XML") << ":/data/locations.xml";
+    }
+
+    void testBuildingsAndLocations()
+    {
+        QFETCH(QString, path);
+
+        QFile file(path);
         QCOMPARE(file.open(QIODevice::ReadOnly), true);
 
         QXmlStreamReader reader(&file);

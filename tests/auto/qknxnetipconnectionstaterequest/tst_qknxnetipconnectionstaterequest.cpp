@@ -29,6 +29,7 @@
 #include <QtCore/qdebug.h>
 #include <QtTest/qtest.h>
 #include <QtKnx/qknxnetipconnectionstaterequest.h>
+#include <QtKnx/qknxnetip.h>
 
 static QString s_msg;
 static void myMessageHandler(QtMsgType, const QMessageLogContext &, const QString &msg)
@@ -44,6 +45,7 @@ private slots:
     void testDefaultConstructor();
     void testConstructor();
     void testDebugStream();
+    void testProxyMethods();
 };
 
 void tst_QKnxNetIpConnectionStateRequest::testDefaultConstructor()
@@ -53,6 +55,10 @@ void tst_QKnxNetIpConnectionStateRequest::testDefaultConstructor()
     QCOMPARE(connectionStateRequest.isValid(), false);
     QCOMPARE(connectionStateRequest.channelId(), quint8(0));
     QCOMPARE(connectionStateRequest.controlEndpoint().isValid(), false);
+
+    frame = QKnxNetIpConnectionStateRequestProxy::builder().create();
+    const QKnxNetIpConnectionStateRequestProxy req(frame);
+    QCOMPARE(req.isValid(), false);
 }
 
 void tst_QKnxNetIpConnectionStateRequest::testConstructor()
@@ -78,6 +84,64 @@ void tst_QKnxNetIpConnectionStateRequest::testConstructor()
 
     QCOMPARE(connectionStateRequest.channelId(), quint8(255));
     QCOMPARE(connectionStateRequest.controlEndpoint().bytes(), hpai.bytes());
+}
+
+void tst_QKnxNetIpConnectionStateRequest::testProxyMethods()
+{
+    quint8 channelId = 255;
+    {
+        auto frame = QKnxNetIpConnectionStateRequestProxy::builder()
+                     .setChannelId(channelId)
+                     .setControlEndpoint(QKnxNetIpHpaiProxy::builder()
+                                         .setHostAddress(QHostAddress::LocalHost)
+                                         .setPort(3671)
+                                         .create())
+                     .create();
+        QCOMPARE(frame.isValid(), true);
+        const QKnxNetIpConnectionStateRequestProxy view(frame);
+        QCOMPARE(view.isValid(), true);
+        // Setting an invalid service type that should invalidate the proxy
+        frame.setServiceType(QKnxNetIp::ServiceType::TunnelingFeatureSet);
+        QCOMPARE(view.controlEndpoint().isValid(), true);
+        QCOMPARE(view.channelId(), channelId);
+        QCOMPARE(view.isValid(), false);
+    }
+    {
+        // Check channelId(), status() and isValid() on a ivalid connection state request
+        // with no channelId and status.
+        QKnxNetIpFrame frame = { QKnxNetIp::ServiceType::ConnectionStateRequest };
+        const QKnxNetIpConnectionStateRequestProxy view(frame);
+        QCOMPARE(frame.header().size(), 6);
+        QCOMPARE(frame.dataSize(), 0);
+        QCOMPARE(view.isValid(), false);
+    }
+    {
+        // Check channelId(), status() and isValid() on a ivalid connection state request
+        // missing control end point bytes.
+        QKnxNetIpFrame frame = { QKnxNetIp::ServiceType::ConnectionStateRequest,
+                                 QKnxByteArray { channelId, 0x00 }
+                               };
+        const QKnxNetIpConnectionStateRequestProxy view(frame);
+        QCOMPARE(frame.header().size(), 6);
+        QCOMPARE(frame.dataSize(), 2);
+        QCOMPARE(frame.size(), 8);
+        QCOMPARE(view.isValid(), false);
+    }
+    {
+        // Valid connection state request
+        auto ctrlEndpoint = QKnxNetIpHpaiProxy::builder().create();
+        QCOMPARE(ctrlEndpoint.isValid(), true);
+
+        QKnxNetIpFrame frame = { QKnxNetIp::ServiceType::ConnectionStateRequest,
+                                 QKnxByteArray { channelId, 0x00 }
+                                 + ctrlEndpoint.bytes()
+                               };
+        const QKnxNetIpConnectionStateRequestProxy view(frame);
+        QCOMPARE(view.controlEndpoint().isValid(), true);
+        QCOMPARE(view.channelId(), channelId);
+        QCOMPARE(frame.size(), 16);
+        QCOMPARE(view.isValid(), true);
+    }
 }
 
 void tst_QKnxNetIpConnectionStateRequest::testDebugStream()

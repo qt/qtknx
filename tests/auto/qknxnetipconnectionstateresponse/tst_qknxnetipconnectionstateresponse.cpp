@@ -29,6 +29,8 @@
 #include <QtCore/qdebug.h>
 #include <QtTest/qtest.h>
 #include <QtKnx/qknxnetipconnectionstateresponse.h>
+#include <QtKnx/QKnxNetIpHpaiProxy>
+#include <QtKnx/qknxnetip.h>
 
 static QString s_msg;
 static void myMessageHandler(QtMsgType, const QMessageLogContext &, const QString &msg)
@@ -43,6 +45,7 @@ class tst_QKnxNetIpConnectionStateResponse: public QObject
 private slots:
     void testDefaultConstructor();
     void testConstructor();
+    void testProxyMethods();
     void testDebugStream();
 };
 
@@ -54,6 +57,16 @@ void tst_QKnxNetIpConnectionStateResponse::testDefaultConstructor()
     QCOMPARE(connectionStateResponse.isValid(), false);
     QCOMPARE(connectionStateResponse.channelId(), quint8(0));
     QCOMPARE(connectionStateResponse.status(), QKnxNetIp::Error::None);
+
+    frame = QKnxNetIpConnectionStateResponseProxy::builder().create();
+    const QKnxNetIpConnectionStateResponseProxy response(frame);
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    QCOMPARE(response.isValid(), false);
+#else
+    // TODO: isValid is not consistent with connection state request and
+    // connection state response when creating a frame from an empty builder...
+    QCOMPARE(response.isValid(), true);
+#endif
 }
 
 void tst_QKnxNetIpConnectionStateResponse::testConstructor()
@@ -72,6 +85,39 @@ void tst_QKnxNetIpConnectionStateResponse::testConstructor()
     QCOMPARE(frame.data(), QKnxByteArray({ 0xc8, 0x21 }));
     QCOMPARE(connectionStateResponse.channelId(), channelId);
     QCOMPARE(connectionStateResponse.status(), QKnxNetIp::Error::ConnectionId);
+}
+
+void tst_QKnxNetIpConnectionStateResponse::testProxyMethods()
+{
+    quint8 channelId = 200;
+    auto status = QKnxNetIp::Error::ConnectionId;
+    {
+        // Check channelId(), status() and isValid() with Wrong service type
+        QKnxNetIpFrame frame = { QKnxNetIp::ServiceType::ConnectionStateRequest,
+                                 QKnxByteArray { channelId, quint8(status) } };
+        const QKnxNetIpConnectionStateResponseProxy view(frame);
+        QCOMPARE(view.channelId(), channelId);
+        QCOMPARE(view.status(), status);
+        QCOMPARE(view.isValid(), false);
+    }
+    {
+        // Check channelId(), status() and isValid() on a valid connection state response
+        QKnxNetIpFrame frame = { QKnxNetIp::ServiceType::ConnectionStateResponse,
+                                 QKnxByteArray { channelId, quint8(status) } };
+        const QKnxNetIpConnectionStateResponseProxy view(frame);
+        QCOMPARE(view.channelId(), channelId);
+        QCOMPARE(view.status(), status);
+        QCOMPARE(view.isValid(), true);
+    }
+    {
+        // Check channelId(), status() and isValid() on a ivalid connection state response
+        // with no channelId and status.
+        QKnxNetIpFrame frame = { QKnxNetIp::ServiceType::ConnectionStateResponse };
+        const QKnxNetIpConnectionStateResponseProxy view(frame);
+        QCOMPARE(frame.header().size(), 6);
+        QCOMPARE(frame.dataSize(), 0);
+        QCOMPARE(view.isValid(), false);
+    }
 }
 
 void tst_QKnxNetIpConnectionStateResponse::testDebugStream()

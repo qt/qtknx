@@ -38,6 +38,7 @@
 #include "qknxnetiptimernotify.h"
 
 #include <QtCore/qcryptographichash.h>
+#include <QMutex>
 
 QT_BEGIN_NAMESPACE
 

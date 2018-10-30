@@ -29,6 +29,8 @@
 #include <QtCore/qdebug.h>
 #include <QtTest/qtest.h>
 #include <QtKnx/qknxnetiptunnelingacknowledge.h>
+#include <QtKnx/qknxnetip.h>
+#include <QtKnx/QKnxNetIpConnectionHeader>
 
 static QString s_msg;
 static void myMessageHandler(QtMsgType, const QMessageLogContext &, const QString &msg)
@@ -44,6 +46,7 @@ private slots:
     void testDefaultConstructor();
     void testConstructor();
     void testDebugStream();
+    void testValidationTunnelingAcknowledge();
 };
 
 void tst_QKnxNetIpTunnelingAcknowledge::testDefaultConstructor()
@@ -52,11 +55,90 @@ void tst_QKnxNetIpTunnelingAcknowledge::testDefaultConstructor()
     QKnxNetIpTunnelingAcknowledgeProxy tunneling(frame);
 
     QCOMPARE(tunneling.isValid(), false);
+
+    frame = QKnxNetIpTunnelingAcknowledgeProxy::builder().create();
+    const QKnxNetIpTunnelingAcknowledgeProxy view(frame);
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    // TODO: make xxx::builder.create() consistent all around the module.
+    // if no setters used it should create an invalid object.
+    QCOMPARE(tunneling.isValid(), false);
+    QCOMPARE(view.isValid(), false);
+#else
+    QCOMPARE(tunneling.isValid(), true);
+    QCOMPARE(view.isValid(), true);
+#endif
 }
 
 void tst_QKnxNetIpTunnelingAcknowledge::testConstructor()
 {
-    // TODO: implement
+    quint8 channelId = 15;
+    quint8 sequenceNumber = 10;
+    QKnxNetIp::Error status = QKnxNetIp::Error::VersionNotSupported;
+
+    auto ackFrame = QKnxNetIpTunnelingAcknowledgeProxy::builder()
+               .setChannelId(channelId)
+               .setSequenceNumber(sequenceNumber)
+               .setStatus(status)
+               .create();
+
+    QCOMPARE(ackFrame.isValid(), true);
+    QCOMPARE(ackFrame.channelId(), channelId);
+    QCOMPARE(ackFrame.sequenceNumber(), sequenceNumber);
+    QCOMPARE(QKnxNetIp::Error(ackFrame.serviceTypeSpecificValue()), status);
+    QCOMPARE(ackFrame.data(), QKnxByteArray());
+
+    const QKnxNetIpTunnelingAcknowledgeProxy view(ackFrame);
+    QCOMPARE(view.isValid(), true);
+    QCOMPARE(view.channelId(), channelId);
+    QCOMPARE(view.sequenceNumber(), sequenceNumber);
+    QCOMPARE(QKnxNetIp::Error(view.status()), status);
+}
+
+void tst_QKnxNetIpTunnelingAcknowledge::testValidationTunnelingAcknowledge()
+{
+    quint8 channelId = 15;
+    quint8 sequenceNumber = 10;
+    QKnxNetIp::Error status = QKnxNetIp::Error::VersionNotSupported;
+    {
+        // test tunneling Acknowledge frame with wrong service type set
+        auto ackFrame = QKnxNetIpTunnelingAcknowledgeProxy::builder()
+                        .setChannelId(channelId)
+                        .setSequenceNumber(sequenceNumber)
+                        .setStatus(status)
+                        .create();
+        QCOMPARE(ackFrame.isValid(), true);
+        const QKnxNetIpTunnelingAcknowledgeProxy view(ackFrame);
+        QCOMPARE(view.isValid(), true);
+        ackFrame.setServiceType(QKnxNetIp::ServiceType::TunnelingRequest);
+        QCOMPARE(view.isValid(), false);
+    }
+    {
+        // missing channelId parameter, sequence number and status in header
+        QKnxNetIpConnectionHeader header;
+        QCOMPARE(header.size(), 0);
+        QCOMPARE(header.isValid(), false);
+        QKnxNetIpFrame frame = { QKnxNetIp::ServiceType::TunnelingAcknowledge,
+                                 header };
+        QVERIFY(frame.size() != 10);
+        QCOMPARE(frame.isValid(), false);
+        const QKnxNetIpTunnelingAcknowledgeProxy view(frame);
+        QCOMPARE(view.isValid(), false);
+    }
+    {
+        QKnxNetIpConnectionHeader header {
+            channelId,
+            sequenceNumber,
+            quint8(status)
+        };
+        QCOMPARE(header.size(), 4);
+        QCOMPARE(header.isValid(), true);
+        QKnxNetIpFrame frame = { QKnxNetIp::ServiceType::TunnelingAcknowledge,
+                                 header };
+        QCOMPARE(frame.size(), 10);
+        QCOMPARE(frame.isValid(), true);
+        const QKnxNetIpTunnelingAcknowledgeProxy view(frame);
+        QCOMPARE(view.isValid(), true);
+    }
 }
 
 void tst_QKnxNetIpTunnelingAcknowledge::testDebugStream()
