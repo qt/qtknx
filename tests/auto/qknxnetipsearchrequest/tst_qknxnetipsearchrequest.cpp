@@ -32,6 +32,22 @@
 #include <QtKnx/qknxnetipsrp.h>
 #include <QtKnx/QKnxServiceInfo>
 
+#if QT_VERSION < QT_VERSION_CHECK(5,13,0)
+ QT_BEGIN_NAMESPACE
+ bool operator==(const QKnxServiceInfo &lhs, const QKnxServiceInfo &rhs)
+ {
+     return (lhs.ServiceFamily == rhs.ServiceFamily)
+         && (lhs.ServiceFamilyVersion == rhs.ServiceFamilyVersion);
+ }
+ QT_END_NAMESPACE
+#endif
+
+char *toString(const QKnxByteArray &ba)
+{
+    using QTest::toString;
+    return toString("QKnxByteArray(" + ba.toByteArray() + ')');
+}
+
 static QString s_msg;
 static void myMessageHandler(QtMsgType, const QMessageLogContext &, const QString &msg)
 {
@@ -116,53 +132,92 @@ void tst_QKnxNetIpSearchRequest::testDebugStream()
 
 void tst_QKnxNetIpSearchRequest::tst_srpBuilders()
 {
-    auto srpMode = QKnxNetIpSrpProxy::programmingModeBuilder()
-                   .create();
-    QCOMPARE(srpMode.code(),
-             QKnxNetIp::SearchParameterType::SelectByProgrammingMode);
-    QVERIFY(srpMode.header().isMandatory());
-    QVERIFY(srpMode.header().isValid());
-    QVERIFY(srpMode.isValid());
+    auto srp = QKnxNetIpSrpProxy::programmingModeBuilder().create();
+    QCOMPARE(srp.code(), QKnxNetIp::SearchParameterType::SelectByProgrammingMode);
+    QVERIFY(srp.header().isMandatory());
+    QVERIFY(srp.header().isValid());
+    QVERIFY(srp.isValid());
+
+    {
+        QKnxNetIpSrpProxy proxy(srp);
+        QVERIFY(proxy.isValid());
+        QVERIFY(proxy.isMandatory());
+        QVERIFY(proxy.programmingModeOnly());
+        QCOMPARE(proxy.searchParameterType(), QKnxNetIp::SearchParameterType::SelectByProgrammingMode);
+
+        QCOMPARE(proxy.macAddress(), QKnxByteArray());
+        QCOMPARE(proxy.serviceInfo(), QKnxServiceInfo());
+        QCOMPARE(proxy.descriptionTypes(), QVector<QKnxNetIp::DescriptionType>());
+    }
 
     auto macAddress = QKnxByteArray::fromHex("4CCC6AE40000");
-    auto srpMac = QKnxNetIpSrpProxy::macAddressBuilder()
-                  .setMac(macAddress)
-                  .create();
-    QCOMPARE(srpMac.code(),
-             QKnxNetIp::SearchParameterType::SelectByMACAddress);
-    QVERIFY(srpMac.header().isMandatory());
-    QCOMPARE(srpMac.constData().mid(0,6), macAddress);
-    QVERIFY(srpMac.isValid());
-
-    auto serviceFamilyId = QKnxNetIp::ServiceFamily::ObjectServer;
-    quint8 minVersion = 4;
-    auto srpSupportedFamily = QKnxNetIpSrpProxy::supportedFamilyBuilder()
-        .setServiceInfo({ serviceFamilyId, minVersion })
+    srp = QKnxNetIpSrpProxy::macAddressBuilder()
+        .setMac(macAddress)
         .create();
-    QCOMPARE(srpSupportedFamily.code(),
-             QKnxNetIp::SearchParameterType::SelectByServiceSRP);
-    QVERIFY(srpSupportedFamily.header().isMandatory());
-    QCOMPARE(srpSupportedFamily.constData().at(0), quint8(serviceFamilyId));
-    QCOMPARE(srpSupportedFamily.constData().at(1), minVersion);
-    QVERIFY(srpSupportedFamily.isValid());
+    QCOMPARE(srp.code(), QKnxNetIp::SearchParameterType::SelectByMACAddress);
+    QVERIFY(srp.header().isMandatory());
+    QVERIFY(srp.header().isValid());
+    QVERIFY(srp.isValid());
 
-    QVector<QKnxNetIp::DescriptionType> types;
-    types.append(QKnxNetIp::DescriptionType::DeviceInfo);
-    types.append(QKnxNetIp::DescriptionType::SupportedServiceFamilies);
-    types.append(QKnxNetIp::DescriptionType::ExtendedDeviceInfo);
-    QKnxNetIpSrp srpDibs = QKnxNetIpSrpProxy::requestDibsBuilder()
-                   .setDescriptionTypes(types)
-                   .create();
-    QCOMPARE(srpDibs.code(), QKnxNetIp::SearchParameterType::RequestDIBs);
-    QVERIFY(srpDibs.header().isMandatory());
-    QVERIFY(srpDibs.isValid());
+    {
+        QKnxNetIpSrpProxy proxy(srp);
+        QVERIFY(proxy.isValid());
+        QVERIFY(proxy.isMandatory());
+        QCOMPARE(proxy.macAddress(), macAddress);
+        QCOMPARE(proxy.searchParameterType(), QKnxNetIp::SearchParameterType::SelectByMACAddress);
 
-    auto data = srpDibs.constData();
-    QCOMPARE(data.size(), 4);
+        QVERIFY(!proxy.programmingModeOnly());
+        QCOMPARE(proxy.serviceInfo(), QKnxServiceInfo());
+        QCOMPARE(proxy.descriptionTypes(), QVector<QKnxNetIp::DescriptionType>());
+    }
+
+    QKnxServiceInfo serviceInfo { QKnxNetIp::ServiceFamily::ObjectServer, 0x04 };
+    srp = QKnxNetIpSrpProxy::supportedFamilyBuilder()
+        .setServiceInfo(serviceInfo)
+        .create();
+    QCOMPARE(srp.code(), QKnxNetIp::SearchParameterType::SelectByService);
+    QVERIFY(srp.header().isMandatory());
+    QVERIFY(srp.header().isValid());
+    QVERIFY(srp.isValid());
+
+    {
+        QKnxNetIpSrpProxy proxy(srp);
+        QVERIFY(proxy.isValid());
+        QVERIFY(proxy.isMandatory());
+        QCOMPARE(proxy.serviceInfo(), serviceInfo);
+        QCOMPARE(proxy.searchParameterType(), QKnxNetIp::SearchParameterType::SelectByService);
+
+        QVERIFY(!proxy.programmingModeOnly());
+        QCOMPARE(proxy.macAddress(), QKnxByteArray());
+        QCOMPARE(proxy.descriptionTypes(), QVector<QKnxNetIp::DescriptionType>());
+    }
+
+    QVector<QKnxNetIp::DescriptionType> types {
+        QKnxNetIp::DescriptionType::DeviceInfo,
+        QKnxNetIp::DescriptionType::SupportedServiceFamilies,
+        QKnxNetIp::DescriptionType::ExtendedDeviceInfo
+    };
+
+    srp = QKnxNetIpSrpProxy::requestDibsBuilder()
+        .setDescriptionTypes(types)
+        .create();
+    QCOMPARE(srp.code(), QKnxNetIp::SearchParameterType::RequestDIBs);
+    QVERIFY(srp.header().isMandatory());
+    QVERIFY(srp.header().isValid());
+    QVERIFY(srp.isValid());
 
     types.append(QKnxNetIp::DescriptionType::Unknown);
-    for (int i = 0; i < data.size(); ++i)
-        QCOMPARE(QKnxNetIp::DescriptionType(data.at(i)), types[i]);
+    {
+        QKnxNetIpSrpProxy proxy(srp);
+        QVERIFY(proxy.isValid());
+        QVERIFY(proxy.isMandatory());
+        QCOMPARE(proxy.descriptionTypes(), types);
+        QCOMPARE(proxy.searchParameterType(), QKnxNetIp::SearchParameterType::RequestDIBs);
+
+        QVERIFY(!proxy.programmingModeOnly());
+        QCOMPARE(proxy.macAddress(), QKnxByteArray());
+        QCOMPARE(proxy.serviceInfo(), QKnxServiceInfo());
+    }
 }
 
 void tst_QKnxNetIpSearchRequest::tst_createSrpFromBytes()

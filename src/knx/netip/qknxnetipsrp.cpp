@@ -118,16 +118,18 @@ QKnxNetIpSrpProxy::QKnxNetIpSrpProxy(const QKnxNetIpSrp &srp)
 bool QKnxNetIpSrpProxy::isValid() const
 {
     if (m_srp.code() == QKnxNetIp::SearchParameterType::SelectByProgrammingMode)
-        return m_srp.isValid() && m_srp.size() == 8;
+        return m_srp.isValid() && m_srp.size() == 2;
 
     if (m_srp.code() == QKnxNetIp::SearchParameterType::SelectByMACAddress)
-        return m_srp.isValid() && m_srp.size() == 14;
+        return m_srp.isValid() && m_srp.size() == 8;
 
-    if (m_srp.code() == QKnxNetIp::SearchParameterType::SelectByServiceSRP)
-        return m_srp.isValid() && m_srp.size() == 10;
+    if (m_srp.code() == QKnxNetIp::SearchParameterType::SelectByService)
+        return m_srp.isValid() && m_srp.size() == 4;
 
-    return (m_srp.code() != QKnxNetIp::SearchParameterType::RequestDIBs) && m_srp.isValid()
-        && (m_srp.size() >= 10) && (m_srp.size() % 2 == 0); // must be even sized
+    if (m_srp.code() == QKnxNetIp::SearchParameterType::RequestDIBs) // must be even sized
+        return m_srp.isValid() && (m_srp.size() >= 4) && (m_srp.size() % 2 == 0);
+
+    return false;
 }
 
 /*!
@@ -177,7 +179,7 @@ QKnxByteArray QKnxNetIpSrpProxy::macAddress() const
 */
 QKnxServiceInfo QKnxNetIpSrpProxy::serviceInfo() const
 {
-    if (isValid() && m_srp.code() == QKnxNetIp::SearchParameterType::SelectByMACAddress) {
+    if (isValid() && m_srp.code() == QKnxNetIp::SearchParameterType::SelectByService) {
         const auto &data = m_srp.constData();
         return { QKnxNetIp::ServiceFamily(data.value(0)), data.value(1) };
     }
@@ -476,7 +478,7 @@ QKnxNetIpSrpProxy::SupportedFamily &QKnxNetIpSrpProxy::SupportedFamily::setManda
 */
 QKnxNetIpSrp QKnxNetIpSrpProxy::SupportedFamily::create() const
 {
-    return { { QKnxNetIp::SearchParameterType::SelectByServiceSRP, 2, d_ptr->m_mandatory },
+    return { { QKnxNetIp::SearchParameterType::SelectByService, 2, d_ptr->m_mandatory },
         { quint8(d_ptr->m_info.ServiceFamily), d_ptr->m_info.ServiceFamilyVersion } };
 }
 
