@@ -102,18 +102,20 @@ static inline void copyUShort(uchar *dest, const uchar *src)
 static void writeMSDosDate(uchar *dest, const QDateTime& dt)
 {
     if (dt.isValid()) {
+        const auto dtTime = dt.time();
         quint16 time =
-            (dt.time().hour() << 11)    // 5 bit hour
-            | (dt.time().minute() << 5)   // 6 bit minute
-            | (dt.time().second() >> 1);  // 5 bit double seconds
+            (dtTime.hour() << 11)    // 5 bit hour
+            | (dtTime.minute() << 5)   // 6 bit minute
+            | (dtTime.second() >> 1);  // 5 bit double seconds
 
         dest[0] = time & 0xff;
         dest[1] = time >> 8;
 
+        const auto dtData = dt.date();
         quint16 date =
-            ((dt.date().year() - 1980) << 9) // 7 bit year 1980-based
-            | (dt.date().month() << 5)           // 4 bit month
-            | (dt.date().day());                 // 5 bit day
+            ((dtData.year() - 1980) << 9) // 7 bit year 1980-based
+            | (dtData.month() << 5)           // 4 bit month
+            | (dtData.day());                 // 5 bit day
 
         dest[2] = char(date);
         dest[3] = char(date >> 8);
@@ -1034,11 +1036,11 @@ bool QZipReader::extractAll(const QString &destinationDir) const
 
     // set up symlinks
     for (const FileInfo &fi : allFiles) {
-        const QString absPath = destinationDir + QDir::separator() + fi.filePath;
         if (fi.isSymLink) {
             QString destination = QFile::decodeName(fileData(fi.filePath));
             if (destination.isEmpty())
                 return false;
+            const QString absPath = destinationDir + QDir::separator() + fi.filePath;
             QFileInfo linkFi(absPath);
             if (!QFile::exists(linkFi.absolutePath()))
                 QDir::root().mkpath(linkFi.absolutePath());
@@ -1052,8 +1054,8 @@ bool QZipReader::extractAll(const QString &destinationDir) const
     }
 
     for (const FileInfo &fi : allFiles) {
-        const QString absPath = destinationDir + QDir::separator() + fi.filePath;
         if (fi.isFile) {
+            const QString absPath = destinationDir + QDir::separator() + fi.filePath;
             QFile f(absPath);
             if (!f.open(QIODevice::WriteOnly))
                 return false;
