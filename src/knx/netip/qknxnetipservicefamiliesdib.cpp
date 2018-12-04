@@ -67,6 +67,29 @@ QT_BEGIN_NAMESPACE
 */
 
 /*!
+    \since 5.13
+
+    Returns \c true if this object and the given \a other are equal; otherwise
+    returns \c false.
+*/
+bool QKnxServiceInfo::operator==(const QKnxServiceInfo &other) const
+{
+    return ServiceFamily == other.ServiceFamily && ServiceFamilyVersion == other.ServiceFamilyVersion;
+}
+
+/*!
+    \since 5.13
+
+    Returns \c true if this object and the given \a other are not equal;
+    otherwise returns \c false.
+*/
+bool QKnxServiceInfo::operator!=(const QKnxServiceInfo &other) const
+{
+    return !operator==(other);
+}
+
+
+/*!
     \class QKnxNetIpServiceFamiliesDibProxy
 
     \inmodule QtKnx

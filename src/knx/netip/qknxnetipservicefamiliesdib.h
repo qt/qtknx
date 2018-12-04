@@ -39,6 +39,9 @@ struct Q_KNX_EXPORT QKnxServiceInfo
 {
     QKnxNetIp::ServiceFamily ServiceFamily;
     quint8 ServiceFamilyVersion;
+
+    bool operator==(const QKnxServiceInfo &other) const;
+    bool operator!=(const QKnxServiceInfo &other) const;
 };
 
 class Q_KNX_EXPORT QKnxNetIpServiceFamiliesDibProxy final
