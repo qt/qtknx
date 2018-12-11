@@ -177,22 +177,22 @@ void tst_QKnxNetIpRouter::test_multicast_address()
 
     {
         // default multicast address
-        QKnxNetIpRouter m_router;
-        QCOMPARE(m_router.multicastAddress(), kMulticastAddress);
+        QKnxNetIpRouter router;
+        QCOMPARE(router.multicastAddress(), kMulticastAddress);
     }
     {
         // setting an invalid multicast address shouldn't work
-        QKnxNetIpRouter m_router;
-        auto kMulticastAddress = QHostAddress(QHostAddress::LocalHost);
-        m_router.setMulticastAddress(kMulticastAddress);
-        QVERIFY(m_router.multicastAddress() != kMulticastAddress);
+        QKnxNetIpRouter router;
+        auto multicastAddress = QHostAddress(QHostAddress::LocalHost);
+        router.setMulticastAddress(kMulticastAddress);
+        QVERIFY(router.multicastAddress() != multicastAddress);
     }
     {
         // setting a valid multicast address
-        QKnxNetIpRouter m_router;
+        QKnxNetIpRouter router;
         auto address = QHostAddress("224.0.55.55");
-        m_router.setMulticastAddress(address);
-        QCOMPARE(m_router.multicastAddress(), address);
+        router.setMulticastAddress(address);
+        QCOMPARE(router.multicastAddress(), address);
     }
 }
 
@@ -234,7 +234,7 @@ void tst_QKnxNetIpRouter::simulateFramesReceived(const QKnxNetIpFrame &netIpFram
     if (!runTests)
         return;
 
-    QUdpSocket * s = new QUdpSocket();
+    QUdpSocket *s = new QUdpSocket();
 
     s->bind(QHostAddress(QHostAddress::AnyIPv4), 0);
     s->setMulticastInterface(kIface);
@@ -248,10 +248,8 @@ void tst_QKnxNetIpRouter::simulateFramesReceived(const QKnxNetIpFrame &netIpFram
     // notify router socket to wait for any received packet
     QKnxNetIpTestRouter::instance()->emitReadyRead();
 
-    if (s) {
-        s->disconnect();
-        s->deleteLater();
-    }
+    s->disconnect();
+    s->deleteLater();
 }
 
 void tst_QKnxNetIpRouter::test_routing()

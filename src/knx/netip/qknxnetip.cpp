@@ -656,16 +656,20 @@ bool QKnxNetIp::isCapability(Capability capability)
     \omitvalue Unknown
     \value Invalid
            The extended search request parameter contains an invalid value.
+           Usually the invalid value is used to test the behavior of a KNXnet/IP
+           router or server for unknown SRPs.
     \value SelectByProgrammingMode
             Client is interested only in the response from KNXnet/IP servers
             in programming mode currently enabled.
     \value SelectByMACAddress
             Client is interested only in the response from KNXnet/IP servers
             with the given MAC address.
-    \value SelectByServiceSRP
+    \value SelectByService
             Client is interested only in the response from KNXnet/IP servers
             supporting the given KNXnet/IP service family in at least the given
             version.
+    \value SelectByServiceSRP
+            This enum value has been deprecated. Use \l SelectByService instead.
     \value RequestDIBs
             Client includes this search request parameter (SRP) to indicate
             that it is interested in the listed DIBs. This SRP shall not
@@ -687,7 +691,7 @@ bool QKnx::NetIp::isStructType(QKnx::NetIp::SearchParameterType type)
     switch (QKnx::NetIp::SearchParameterType(quint8(type) & ~(0x80))) {
     case QKnx::NetIp::SearchParameterType::SelectByProgrammingMode:
     case QKnx::NetIp::SearchParameterType::SelectByMACAddress:
-    case QKnx::NetIp::SearchParameterType::SelectByServiceSRP:
+    case QKnx::NetIp::SearchParameterType::SelectByService:
     case QKnx::NetIp::SearchParameterType::RequestDIBs:
         return true;
     case QKnx::NetIp::SearchParameterType::Reserved01:

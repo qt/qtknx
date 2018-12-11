@@ -77,9 +77,10 @@ void QKnxNetIpRouterPrivate::start()
         // Choose first interface available and capable of multicasting
         const auto interfaces = QNetworkInterface::allInterfaces();
         for (const auto &iface : interfaces) {
-            if (iface.flags().testFlag(QNetworkInterface::IsRunning)
-                && iface.flags().testFlag(QNetworkInterface::CanMulticast)
-                && !iface.flags().testFlag(QNetworkInterface::IsLoopBack)) {
+            const auto flags = iface.flags();
+            if (flags.testFlag(QNetworkInterface::IsRunning)
+                && flags.testFlag(QNetworkInterface::CanMulticast)
+                && !flags.testFlag(QNetworkInterface::IsLoopBack)) {
                 m_iface = iface;
                 break;
             }

@@ -276,7 +276,8 @@ namespace QKnx
             Invalid = 0x00,
             SelectByProgrammingMode = 0x01,
             SelectByMACAddress = 0x02,
-            SelectByServiceSRP = 0x03,
+            SelectByService = 0x03,
+            SelectByServiceSRP = 0x03, // ### Qt6: remove
             RequestDIBs = 0x04,
             Reserved01 = 0x05,
             Reserved02 = 0x06,
