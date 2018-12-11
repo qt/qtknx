@@ -219,7 +219,7 @@ void tst_QKnxTpduFactory::testTpdu()
     QCOMPARE(tpdu.bytes(), QKnxByteArray({ 0x00, 0xbf }));
 
     tpdu.setData({ 0x43 });
-    QCOMPARE(tpdu.data(), QKnxByteArray(1, { 0x43 }));
+    QCOMPARE(tpdu.data(), QKnxByteArray(1, 0x43));
     QCOMPARE(tpdu.bytes(), QKnxByteArray({ 0x00, 0x80, 0x43 }));
 
     tpdu = { QKnxTpdu::TransportControlField::DataGroup,

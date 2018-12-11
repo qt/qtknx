@@ -76,7 +76,7 @@ private Q_SLOTS:
         QCOMPARE(projectInfo.CodePage, QLatin1String("us-ascii"));
         QCOMPARE(projectInfo.BusAccessLegacyMode, true);
         QCOMPARE(projectInfo.Guid, QLatin1String("eae8eae4-34f3-433b-bb22-5acdba366889"));
-        QCOMPARE(projectInfo.LastUsedPuid, 47);
+        QCOMPARE(projectInfo.LastUsedPuid, 47u);
 
         QCOMPARE(projectInfo.HistoryEntries.size(), 2);
         QCOMPARE(projectInfo.HistoryEntries[0].Date,
@@ -316,7 +316,7 @@ private Q_SLOTS:
         auto address = subRange.GroupAddress[0];
 
         QCOMPARE(address.Id, QLatin1String("P-050F-0_GA-355"));
-        QCOMPARE(address.Address, 1);
+        QCOMPARE(address.Address, 1u);
         QCOMPARE(address.Name, QLatin1String("Name"));
         QCOMPARE(address.Description, QLatin1String("Description"));
         QCOMPARE(address.DatapointType, QLatin1String("DPST-1-1"));
@@ -331,7 +331,7 @@ private Q_SLOTS:
         address = subRange.GroupAddress[1];
 
         QCOMPARE(address.Id, QLatin1String("P-050F-0_GA-356"));
-        QCOMPARE(address.Address, 2);
+        QCOMPARE(address.Address, 2u);
         QCOMPARE(address.Name, QLatin1String("Name2"));
         QCOMPARE(address.Description, QLatin1String("Description2"));
         QCOMPARE(address.DatapointType, QLatin1String("DPST-20-102"));
@@ -361,7 +361,7 @@ private Q_SLOTS:
         address = groupRange.GroupAddress[0];
 
         QCOMPARE(address.Id, QLatin1String("P-050F-0_GA-261"));
-        QCOMPARE(address.Address, 2048);
+        QCOMPARE(address.Address, 2048u);
         QCOMPARE(address.Name, QLatin1String("Name3"));
         QCOMPARE(address.Description, QLatin1String("Description3"));
         QCOMPARE(address.DatapointType, QLatin1String("DPST-1-1"));
@@ -391,7 +391,7 @@ private Q_SLOTS:
         address = subRange.GroupAddress[0];
 
         QCOMPARE(address.Id, QLatin1String("P-050F-0_GA-262"));
-        QCOMPARE(address.Address, 2049);
+        QCOMPARE(address.Address, 2049u);
         QCOMPARE(address.Name, QLatin1String("Name4"));
         QCOMPARE(address.Description, QLatin1String("Description4"));
         QCOMPARE(address.DatapointType, QLatin1String("DPST-1-1"));
@@ -421,7 +421,7 @@ private Q_SLOTS:
         address = subRange.GroupAddress[0];
 
         QCOMPARE(address.Id, QLatin1String("P-050F-0_GA-358"));
-        QCOMPARE(address.Address, 2304);
+        QCOMPARE(address.Address, 2304u);
         QCOMPARE(address.Name, QLatin1String("Name5"));
         QCOMPARE(address.Description, QLatin1String("Description5"));
         QCOMPARE(address.DatapointType, QLatin1String("DPST-1-1"));
@@ -436,7 +436,7 @@ private Q_SLOTS:
         address = subRange.GroupAddress[1];
 
         QCOMPARE(address.Id, QLatin1String("P-050F-0_GA-359"));
-        QCOMPARE(address.Address, 2305);
+        QCOMPARE(address.Address, 2305u);
         QCOMPARE(address.Name, QLatin1String("Name6"));
         QCOMPARE(address.Description, QLatin1String("Description6"));
         QCOMPARE(address.DatapointType, QString());
@@ -765,7 +765,7 @@ private Q_SLOTS:
         QCOMPARE(devInstance.Security.LoadedDeviceManagementPassword, QLatin1String("LoadedMngmtPassword9"));
         QCOMPARE(devInstance.Security.LoadedIPRoutingBackboneKey, QLatin1String("LoadedIPRoutingBackboneKey9"));
         QCOMPARE(devInstance.Security.LoadedToolKey, QLatin1String("LoadedToolKey9"));
-        QCOMPARE(devInstance.Security.SequenceNumber, 9);
+        QCOMPARE(devInstance.Security.SequenceNumber, 9u);
         QCOMPARE(devInstance.Security.SequenceNumberTimestamp,
             QDateTime::fromString(QLatin1String("2009-09-09T15:02:26.2503409Z"), Qt::ISODateWithMs));
         QCOMPARE(devInstance.Security.ToolKey, QLatin1String("ToolKey9"));
