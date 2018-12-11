@@ -32,16 +32,6 @@
 #include <QtKnx/qknxnetipsrp.h>
 #include <QtKnx/QKnxServiceInfo>
 
-#if QT_VERSION < QT_VERSION_CHECK(5,13,0)
- QT_BEGIN_NAMESPACE
- bool operator==(const QKnxServiceInfo &lhs, const QKnxServiceInfo &rhs)
- {
-     return (lhs.ServiceFamily == rhs.ServiceFamily)
-         && (lhs.ServiceFamilyVersion == rhs.ServiceFamilyVersion);
- }
- QT_END_NAMESPACE
-#endif
-
 char *toString(const QKnxByteArray &ba)
 {
     using QTest::toString;
