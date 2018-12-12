@@ -105,8 +105,9 @@ QKnxNetIpSessionAuthenticateProxy::QKnxNetIpSessionAuthenticateProxy(const QKnxN
     at least a valid header and a size in bytes corresponding to the total size
     of the KNXnet/IP frame header.
 
-    \note A userId() with the value \c 0x00 or a value above \c 0x80
-    is considered invalid according to the KNX application note AN159.
+    \note A userId() with the value \c QKnxNetIp::SecureUserId::Reserved or
+    equal to or more than \c QKnxNetIp::SecureUserId::Invalid is considered
+    invalid according to the KNX application note AN159.
 
     \note KNXnet/IP session authentication frames currently have a fixed size
     of \c 24 bytes.
@@ -115,19 +116,16 @@ QKnxNetIpSessionAuthenticateProxy::QKnxNetIpSessionAuthenticateProxy(const QKnxN
 */
 bool QKnxNetIpSessionAuthenticateProxy::isValid() const
 {
-    const auto id = userId();
     return m_frame.isValid() && m_frame.serviceType() == QKnxNetIp::ServiceType::SessionAuthenticate
-        && m_frame.size() == 24 && id > 0 && id < 0x80; // 0x00 and values above 0x80 are reserved
+        && m_frame.size() == 24 && QKnxNetIp::isSecureUserId(userId());
 }
 
 /*!
-    Returns the user ID from the generic KNXnet/IP session authentication
-    frame. The value of \c 0 is a reserved value and indicates an invalid
-    user ID.
+    Returns the user ID from the generic KNXnet/IP session authentication frame.
 */
-quint8 QKnxNetIpSessionAuthenticateProxy::userId() const
+QKnxNetIp::SecureUserId QKnxNetIpSessionAuthenticateProxy::userId() const
 {
-    return m_frame.constData().value(1);
+    return static_cast<QKnxNetIp::SecureUserId> (m_frame.constData().value(1));
 }
 
 /*!
@@ -170,11 +168,10 @@ QKnxNetIpSessionAuthenticateProxy::Builder QKnxNetIpSessionAuthenticateProxy::bu
     The common way to create a session authentication frame is:
 
     \code
-        quint16 mgmtLevelAccess = 0x0001;
         auto auth = ... // create the full 128 bit CCM-MAC
 
         auto netIpFrame = QKnxNetIpSessionAuthenticateProxy::builder()
-            .setUserId(mgmtLevelAccess)
+            .setUserId(QKnxNetIp::SecureUserId::Management)
             .setMessageAuthenticationCode(auth)
             .create();
     \endcode
@@ -198,11 +195,12 @@ QKnxNetIpSessionAuthenticateProxy::Builder::~Builder() = default;
     Sets the user ID of the KNXnet/IP session authentication frame to \a userId
     and returns a reference to the builder.
 
-    \note A userId() with the value \c 0x00 or a value above \c 0x80
-    is considered invalid according to the KNX application note AN159.
+    \note A userId() with the value \c QKnxNetIp::SecureUserId::Reserved or
+    equal to or more than \c QKnxNetIp::SecureUserId::Invalid is considered
+    invalid according to the KNX application note AN159.
 */
 QKnxNetIpSessionAuthenticateProxy::Builder &
-    QKnxNetIpSessionAuthenticateProxy::Builder::setUserId(quint8 userId)
+    QKnxNetIpSessionAuthenticateProxy::Builder::setUserId(QKnxNetIp::SecureUserId userId)
 {
     d_ptr->m_id = userId;
     return *this;
@@ -279,10 +277,8 @@ QKnxNetIpSessionAuthenticateProxy::Builder &
     The common way to create a session authentication frame is:
 
     \code
-        quint16 mgmtLevelAccess = 0x0001;
-
         auto netIpFrame = QKnxNetIpSessionAuthenticateProxy::secureBuilder()
-            .setUserId(mgmtLevelAccess)
+            .setUserId(QKnxNetIp::SecureUserId::Management)
             .create(passwordHash, clientKey, serverKey);
     \endcode
 
@@ -305,11 +301,12 @@ QKnxNetIpSessionAuthenticateProxy::SecureBuilder::~SecureBuilder() = default;
     Sets the user ID of the KNXnet/IP session authentication frame to \a userId
     and returns a reference to the builder.
 
-    \note A userId() with the value \c 0x00 or a value above \c 0x80
-    is considered invalid according to the KNX application note AN159.
+    \note A userId() with the value \c QKnxNetIp::SecureUserId::Reserved or
+    equal to or more than \c QKnxNetIp::SecureUserId::Invalid is considered
+    invalid according to the KNX application note AN159.
 */
 QKnxNetIpSessionAuthenticateProxy::SecureBuilder &
-    QKnxNetIpSessionAuthenticateProxy::SecureBuilder::setUserId(quint8 userId)
+    QKnxNetIpSessionAuthenticateProxy::SecureBuilder::setUserId(QKnxNetIp::SecureUserId userId)
 {
     d_ptr->m_id = userId;
     return *this;
@@ -334,7 +331,7 @@ QKnxNetIpFrame QKnxNetIpSessionAuthenticateProxy::SecureBuilder::create(
                                                         const QKnxByteArray &serverPublicKey) const
 {
 #if QT_CONFIG(opensslv11)
-    if (d_ptr->m_id == 0 || d_ptr->m_id >= 0x80 )
+    if (!QKnxNetIp::isSecureUserId(d_ptr->m_id))
         return { QKnxNetIp::ServiceType::SessionAuthenticate };
 
     auto builder = QKnxNetIpSessionAuthenticateProxy::builder();

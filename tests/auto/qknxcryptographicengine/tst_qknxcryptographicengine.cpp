@@ -231,10 +231,9 @@ private slots:
         QCOMPARE(passwordHash, QKnxByteArray::fromHex("03fcedb66660251ec81a1a716901696a"));
 
         knxNetIpSecureHeader = QKnxNetIpFrameHeader::fromBytes(QKnxByteArray::fromHex("061009530018"));
-        quint16 userId = 0x0001;
 
         mac = QKnxCryptographicEngine::calculateMessageAuthenticationCode(passwordHash,
-            knxNetIpSecureHeader, userId, XOR_X_Y);
+            knxNetIpSecureHeader, QKnxNetIp::SecureUserId::Management, XOR_X_Y);
         QCOMPARE(mac, QKnxByteArray::fromHex("741669f5e32bff6fa2edf51c52d4bd8f"));
 
         encMac = QKnxCryptographicEngine::encryptMessageAuthenticationCode(passwordHash, mac);
@@ -249,7 +248,7 @@ private slots:
         knxNetIpSecureHeader = QKnxNetIpFrameHeader::fromBytes(QKnxByteArray::fromHex("06100950003e"));
 
         auto frame = QKnxNetIpSessionAuthenticateProxy::builder()
-            .setUserId(userId)
+            .setUserId(QKnxNetIp::SecureUserId::Management)
             .setMessageAuthenticationCode(encMac)
             .create();
 
@@ -362,7 +361,7 @@ private slots:
     void testSecureWrapperFrame()
     {
         auto sessionAuthenticate = QKnxNetIpSessionAuthenticateProxy::builder()
-            .setUserId(0x0001)
+            .setUserId(QKnxNetIp::SecureUserId::Management)
             .setMessageAuthenticationCode(QKnxByteArray::fromHex("1f1d59ea9f12a152e5d9727f08462cde"))
             .create();
 
@@ -474,34 +473,29 @@ private slots:
         auto serverPublicKey = QKnxCurve25519PublicKey::fromBytes(QKnxByteArray::fromHex("bdf09990"
             "9923143ef0a5de0b3be3687bc5bd3cf5f9e6f901699cd870ec1ff824"));
 
-        quint16 userId = 0x0001;
         const QByteArray password { "secret" };
         auto mac = QKnxByteArray::fromHex("1f1d59ea9f12a152e5d9727f08462cde");
 
         auto sessionAuth = QKnxNetIpSessionAuthenticateProxy::builder()
-            .setUserId(userId)
+            .setUserId(QKnxNetIp::SecureUserId::Management)
             .setMessageAuthenticationCode(mac)
             .create();
 
         QKnxNetIpSessionAuthenticateProxy proxy(sessionAuth);
         QCOMPARE(proxy.isValid(), true);
-        QCOMPARE(proxy.userId(), userId);
+        QCOMPARE(proxy.userId(), QKnxNetIp::SecureUserId::Management);
         QCOMPARE(proxy.messageAuthenticationCode(), mac);
 
         auto sessionAuth2 = QKnxNetIpSessionAuthenticateProxy::secureBuilder()
-            .setUserId(userId)
+            .setUserId(QKnxNetIp::SecureUserId::Management)
             .create(password, clientPublicKey.bytes(), serverPublicKey.bytes());
 
         QKnxNetIpSessionAuthenticateProxy proxy2(sessionAuth2);
         QCOMPARE(proxy2.isValid(), true);
-        QCOMPARE(proxy2.userId(), userId);
+        QCOMPARE(proxy2.userId(), QKnxNetIp::SecureUserId::Management);
         QCOMPARE(proxy2.messageAuthenticationCode(), mac);
     }
-
-    void cleanupTestCase()
-    {}
 };
-
 
 QTEST_APPLESS_MAIN(tst_qknxcryptographicengine)
 

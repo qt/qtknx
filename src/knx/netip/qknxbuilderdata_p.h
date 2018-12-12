@@ -159,7 +159,7 @@ public:
     QKnxNetIpSessionAuthenticateBuilderPrivate() = default;
     ~QKnxNetIpSessionAuthenticateBuilderPrivate() = default;
 
-    quint8 m_id { 0 };
+    QKnxNetIp::SecureUserId m_id { QKnxNetIp::SecureUserId::Invalid };
     QKnxByteArray m_authCode;
 };
 

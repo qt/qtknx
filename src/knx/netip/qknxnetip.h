@@ -297,6 +297,16 @@ namespace QKnx
             Unknown = 0xff
         };
         Q_ENUM_NS(SecureSessionStatus)
+
+        enum SecureUserId : quint8
+        {
+            Reserved = 0x00,
+            Management = 0x01,
+            UserRole = 0x02,
+            Invalid = 0x80
+        };
+        Q_ENUM_NS(SecureUserId)
+        Q_KNX_EXPORT bool isSecureUserId(SecureUserId userId);
     }
 }
 namespace QKnxNetIp = QKnx::NetIp;

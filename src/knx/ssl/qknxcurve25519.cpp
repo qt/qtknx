@@ -431,12 +431,11 @@ QKnxCurve25519PrivateKey &QKnxCurve25519PrivateKey::operator=(const QKnxCurve255
 
         // Session Authenticate Frame
 
-        quint16 userId = 0x0001; // management level access
         auto authenticateBuilder = QKnxNetIpSessionAuthenticateProxy::builder()'
 
         // create an intermediate frame to fetch a valid frame header
         netIpFrame = authenticateBuilder
-            .setUserId(userId)
+            .setUserId(QKnxNetIp::SecureUserId::Management)
             .setMessageAuthenticationCode(dummyMac)
             .create();
 

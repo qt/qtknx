@@ -727,4 +727,58 @@ bool QKnx::NetIp::isStructType(QKnx::NetIp::SearchParameterType type)
     \omitvalue Unknown
 */
 
+/*!
+    \enum QKnx::NetIp::SecureUserId
+    \since 5.13
+
+    The ID of the management client (MaC) or user that is used for the
+    authentication of the secure session.
+
+    \value Reserved
+            Reserved, please do not use.
+    \value Management
+            The management user ID.
+    \value UserRole
+            The first value in the possible range of user IDs.
+    \value Invalid
+            Invalid, please do not use any ID equal to or more than this value.
+
+    The management server (MaS) will use the user ID as an index into the
+    password hashes table to authenticate the MaC.
+
+    The access level (management or user level access - with possibly any device
+    dependent role) will determine the set of services accepted by the MaS after
+    authentication.
+
+    \table
+        \header
+            \li User ID
+            \li Description
+        \row
+            \li \c Management
+            \li This user ID requests access to all resources exposed by the
+                MaS including device management.
+        \row
+            \li \c User
+            \li This user ID requests access to all resources exposed by the
+                MaS except device management.
+    \endtable
+
+    In addition to access level, the user ID serves as an index into the
+    tunneling user table to determine if there are individual addresses
+    associated with the user. The management user ID has implicit access
+    to all available tunneling addresses.
+*/
+
+/*!
+    \since 5.13
+
+    Returns \c true if the specified \a userId is a in the range of the
+    \l SecureUserId enumeration; otherwise returns \c false.
+*/
+bool QKnx::NetIp::isSecureUserId(QKnx::NetIp::SecureUserId userId)
+{
+    return (userId > SecureUserId::Reserved && userId < SecureUserId::Invalid);
+}
+
 QT_END_NAMESPACE

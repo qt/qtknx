@@ -47,7 +47,7 @@ public:
 
     bool isValid() const;
 
-    quint8 userId() const;
+    QKnxNetIp::SecureUserId userId() const;
     QKnxByteArray messageAuthenticationCode() const;
 
     class Q_KNX_EXPORT Builder final
@@ -56,7 +56,7 @@ public:
         Builder();
         ~Builder();
 
-        Builder &setUserId(quint8 userId);
+        Builder &setUserId(QKnxNetIp::SecureUserId userId);
         Builder &setMessageAuthenticationCode(const QKnxByteArray &data);
 
         QKnxNetIpFrame create() const;
@@ -75,7 +75,7 @@ public:
         SecureBuilder();
         ~SecureBuilder();
 
-        SecureBuilder &setUserId(quint8 userId);
+        SecureBuilder &setUserId(QKnxNetIp::SecureUserId userId);
 
         QKnxNetIpFrame create(const QByteArray &sessionPassword,
                               const QKnxByteArray &clientPublicKey,
