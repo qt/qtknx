@@ -31,12 +31,6 @@
 #include <QtKnx/qknxextendedcontrolfield.h>
 #include <QtTest/qtest.h>
 
-static QString s_msg;
-static void myMessageHandler(QtMsgType, const QMessageLogContext &, const QString &msg)
-{
-    s_msg = msg;
-}
-
 class tst_QKnxControlField : public QObject
 {
     Q_OBJECT
