@@ -97,7 +97,7 @@ private slots:
             QKnxCurve25519PrivateKey key;
             QCOMPARE(key.isNull(), false);
             QCOMPARE(key.isValid(), true);
-            if (QKnxOpenSsl::sslLibraryVersionNumber() > 0x1010008fL)
+            if (QKnxOpenSsl::sslLibraryVersionNumber() >= 0x1010101fL)
                 QCOMPARE(key.bytes().size(), 32);
 
             auto bytes = QKnxByteArray::fromHex("b8fabd62665d8b9e8a9d8b1f4bca42c8"
@@ -105,7 +105,7 @@ private slots:
             key = QKnxCurve25519PrivateKey::fromBytes(bytes);
             QCOMPARE(key.isNull(), false);
             QCOMPARE(key.isValid(), true);
-            if (QKnxOpenSsl::sslLibraryVersionNumber() > 0x1010008fL)
+            if (QKnxOpenSsl::sslLibraryVersionNumber() >= 0x1010101fL)
                 QCOMPARE(key.bytes(), bytes);
 
             bytes = QKnxByteArray::fromHex("68c1744813f4e65cf10cca671caa1336"
@@ -113,7 +113,7 @@ private slots:
             key = QKnxCurve25519PrivateKey::fromBytes(bytes);
             QCOMPARE(key.isNull(), false);
             QCOMPARE(key.isValid(), true);
-            if (QKnxOpenSsl::sslLibraryVersionNumber() > 0x1010008fL)
+            if (QKnxOpenSsl::sslLibraryVersionNumber() >= 0x1010101fL)
                 QCOMPARE(key.bytes(), bytes);
 
         } else {
