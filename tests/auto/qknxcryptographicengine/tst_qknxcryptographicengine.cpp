@@ -366,9 +366,9 @@ private slots:
             .setMessageAuthenticationCode(QKnxByteArray::fromHex("1f1d59ea9f12a152e5d9727f08462cde"))
             .create();
 
-        auto sequenceNumber = 0x000000000000;
+        quint48 sequenceNumber = 0x000000000000;
         auto serialNumber = QKnxByteArray::fromHex("00fa12345678");
-        auto messageTag = 0xaffe;
+        quint16 messageTag = 0xaffe;
         quint16 secureSessionIdentifier = 0x0001;
         auto sessionKey = QKnxByteArray::fromHex("289426c2912535ba98279a4d1843c487");
 
@@ -386,7 +386,7 @@ private slots:
         QCOMPARE(proxy.secureSessionId(), secureSessionIdentifier);
         QCOMPARE(proxy.sequenceNumber(), sequenceNumber);
         QCOMPARE(proxy.serialNumber(), serialNumber);
-        QCOMPARE(proxy.messageTag(),messageTag);
+        QCOMPARE(proxy.messageTag(), messageTag);
         QCOMPARE(proxy.messageAuthenticationCode(),
             QKnxByteArray::fromHex("52dba8e7e4bd80bd7d868a3ae78749de"));
         QCOMPARE(proxy.encapsulatedFrame(),
@@ -397,7 +397,7 @@ private slots:
     {
         quint48 timerValue = 211938428830917;
         auto serialNumber = QKnxByteArray::fromHex("00fa12345678");
-        auto messageTag = 0xaffe;
+        quint16 messageTag = 0xaffe;
         auto mac = QKnxByteArray::fromHex("ee7b9b3083deb1570eb38d073adad985");
 
         auto timerNotify = QKnxNetIpTimerNotifyProxy::builder()
