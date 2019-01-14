@@ -107,7 +107,10 @@ private:
 class Q_KNX_EXPORT QKnxTime : public QKnxTimeBase<QKnxTime>
 {
 public:
-    using QKnxTimeBase::QKnxTimeBase;
+    QKnxTime() = default;
+    QKnxTime(quint8 h, quint8 m, quint8 s = 0, DayOfWeek day = DayOfWeek::Ignore)
+        : QKnxTimeBase<QKnxTime>(h,m,s,day)
+    {}
 
     bool isValid() const;
     static bool isValid(quint8 h, quint8 m, quint8 s);
@@ -116,7 +119,10 @@ public:
 class Q_KNX_EXPORT QKnxTime24 : public QKnxTimeBase<QKnxTime24>
 {
 public:
-    using QKnxTimeBase::QKnxTimeBase;
+    QKnxTime24() = default;
+    QKnxTime24(quint8 h, quint8 m, quint8 s = 0, DayOfWeek day = DayOfWeek::Ignore)
+        : QKnxTimeBase<QKnxTime24>(h,m,s,day)
+    {}
 
     bool isValid() const;
     static bool isValid(quint8 h, quint8 m, quint8 s);
