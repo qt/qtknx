@@ -561,6 +561,9 @@ void tst_QKnxDatapointType::dpt9_2ByteFloat()
 
 void tst_QKnxDatapointType::dpt10_TimeOfDay()
 {
+#if defined(Q_CC_MSVC) && Q_CC_MSVC == 1914
+    QSKIP("Test disabled, this test generates an undefined symbol compiler error.");
+#else
     QKnxTime time;
     QCOMPARE(time, QKnxTime());
     QCOMPARE(time.isNull(), true);
@@ -620,6 +623,7 @@ void tst_QKnxDatapointType::dpt10_TimeOfDay()
     QCOMPARE(QKnxDatapointTypeFactory::instance().containsMainType(timeOfDay.mainType()), true);
 
     QCOMPARE(time.staticMetaObject.enumeratorCount(), 1);
+#endif
 }
 
 void tst_QKnxDatapointType::dpt11_Date()
@@ -902,6 +906,9 @@ void tst_QKnxDatapointType::dpt18_SceneControl()
 
 void tst_QKnxDatapointType::dpt19_DateTime()
 {
+#if defined(Q_CC_MSVC) && Q_CC_MSVC == 1914
+    QSKIP("Test disabled, this test generates an undefined symbol compiler error.");
+#else
     QKnxTime24 time;
     QCOMPARE(time, QKnxTime24());
     QCOMPARE(time.isNull(), true);
@@ -944,6 +951,7 @@ void tst_QKnxDatapointType::dpt19_DateTime()
     QCOMPARE(time.staticMetaObject.enumeratorCount(), 1);
 
     // TODO: Extend the auto-test.
+#endif
 }
 
 void tst_QKnxDatapointType::dpt20_1Byte()
