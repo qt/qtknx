@@ -205,7 +205,7 @@ private slots:
         QCOMPARE(XOR_X_Y,
             QKnxByteArray::fromHex("b752be246459260f6b0c4801fbd5a67599f83b4057b3ef1e79e469ac17234e15"));
 
-        auto mac = QKnxCryptographicEngine::calculateMessageAuthenticationCode(deviceAuthenticationCode,
+        auto mac = QKnxCryptographicEngine::computeMessageAuthenticationCode(deviceAuthenticationCode,
             knxNetIpSecureHeader, secureSessionIdentifier, XOR_X_Y);
         QCOMPARE(mac, QKnxByteArray::fromHex("da3dc6af79896aa6ee7573d69950c283"));
 
@@ -232,7 +232,7 @@ private slots:
 
         knxNetIpSecureHeader = QKnxNetIpFrameHeader::fromBytes(QKnxByteArray::fromHex("061009530018"));
 
-        mac = QKnxCryptographicEngine::calculateMessageAuthenticationCode(passwordHash,
+        mac = QKnxCryptographicEngine::computeMessageAuthenticationCode(passwordHash,
             knxNetIpSecureHeader, QKnxNetIp::SecureUserId::Management, XOR_X_Y);
         QCOMPARE(mac, QKnxByteArray::fromHex("741669f5e32bff6fa2edf51c52d4bd8f"));
 
@@ -252,7 +252,7 @@ private slots:
             .setMessageAuthenticationCode(encMac)
             .create();
 
-        mac = QKnxCryptographicEngine::calculateMessageAuthenticationCode(sessionKey,
+        mac = QKnxCryptographicEngine::computeMessageAuthenticationCode(sessionKey,
             knxNetIpSecureHeader, secureSessionIdentifier, frame.bytes(), sequenceNumber,
             serialNumber, messageTag);
         QCOMPARE(mac, QKnxByteArray::fromHex("602280d0896beaa7106e7248f67f2eef"));
@@ -282,7 +282,7 @@ private slots:
             .setStatus(QKnxNetIp::SecureSessionStatus::AuthenticationSuccess)
             .create();
 
-        mac = QKnxCryptographicEngine::calculateMessageAuthenticationCode(sessionKey,
+        mac = QKnxCryptographicEngine::computeMessageAuthenticationCode(sessionKey,
             knxNetIpSecureHeader, secureSessionIdentifier, frame.bytes(), sequenceNumber,
             serialNumber, messageTag);
         QCOMPARE(mac, QKnxByteArray::fromHex("a8ed2796a566cd60b91a4de5c1144cbc"));
@@ -318,7 +318,7 @@ private slots:
         knxNetIpSecureHeader = QKnxNetIpFrameHeader::fromBytes(QKnxByteArray::fromHex("061009500037"));
         secureSessionIdentifier = 0x0000;
 
-        mac = QKnxCryptographicEngine::calculateMessageAuthenticationCode(backboneKey,
+        mac = QKnxCryptographicEngine::computeMessageAuthenticationCode(backboneKey,
             knxNetIpSecureHeader, secureSessionIdentifier, frame.bytes(), timerValue,
             serialNumber, messageTag);
         QCOMPARE(mac, QKnxByteArray::fromHex("bd0a294b952554b23539204c2271d26b"));
@@ -343,7 +343,7 @@ private slots:
 
         knxNetIpSecureHeader = QKnxNetIpFrameHeader::fromBytes(QKnxByteArray::fromHex("061009550024"));
 
-        mac = QKnxCryptographicEngine::calculateMessageAuthenticationCode(backboneKey,
+        mac = QKnxCryptographicEngine::computeMessageAuthenticationCode(backboneKey,
             knxNetIpSecureHeader, secureSessionIdentifier, {}, timerValue,
             serialNumber, messageTag);
         QCOMPARE(mac, QKnxByteArray::fromHex("21631241bc1f784d6d03da070580464a"));

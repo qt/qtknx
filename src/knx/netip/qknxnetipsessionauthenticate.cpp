@@ -315,7 +315,7 @@ QKnxNetIpSessionAuthenticateProxy::SecureBuilder &
 /*!
     Creates and returns a KNXnet/IP session authentication frame.
 
-    The function calculates the AES128 CCM message authentication code (MAC)
+    The function computes the AES128 CCM message authentication code (MAC)
     with the given user session password \a sessionPassword, the Curve25519
     client public key \a clientPublicKey, the Curve25519 server public key
     \a serverPublicKey and appends it to the newly created frame.
@@ -341,7 +341,7 @@ QKnxNetIpFrame QKnxNetIpSessionAuthenticateProxy::SecureBuilder::create(
         .create();
 
     auto userPasswordHash = QKnxCryptographicEngine::userPasswordHash(sessionPassword);
-    auto mac = QKnxCryptographicEngine::calculateMessageAuthenticationCode(userPasswordHash, frame.
+    auto mac = QKnxCryptographicEngine::computeMessageAuthenticationCode(userPasswordHash, frame.
         header(), d_ptr->m_id, QKnxCryptographicEngine::XOR(clientPublicKey, serverPublicKey));
     mac = QKnxCryptographicEngine::encryptMessageAuthenticationCode(userPasswordHash, mac);
 

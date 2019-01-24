@@ -341,7 +341,7 @@ QKnxNetIpSessionResponseProxy::SecureBuilder &
 /*!
     Creates and returns a KNXnet/IP session response frame.
 
-    The function calculates the AES128 CCM message authentication code (MAC)
+    The function computes the AES128 CCM message authentication code (MAC)
     with the given device password \a devicePassword and the Curve25519 client
     public key \a clientPublicKey and appends it to the newly created frame.
 
@@ -368,7 +368,7 @@ QKnxNetIpFrame QKnxNetIpSessionResponseProxy::SecureBuilder::create(const QByteA
         .setMessageAuthenticationCode(QKnxByteArray(16, 0x00)) // dummy MAC to get a proper header
         .create();
 
-    auto mac = QKnxCryptographicEngine::calculateMessageAuthenticationCode(deviceAuthenticationCode,
+    auto mac = QKnxCryptographicEngine::computeMessageAuthenticationCode(deviceAuthenticationCode,
         frame.header(), d_ptr->m_id, XOR_X_Y);
     mac = QKnxCryptographicEngine::encryptMessageAuthenticationCode(deviceAuthenticationCode, mac);
 

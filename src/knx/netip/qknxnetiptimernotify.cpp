@@ -389,7 +389,7 @@ QKnxNetIpTimerNotifyProxy::SecureBuilder &
 /*!
     Creates and returns a KNXnet/IP timer notify frame.
 
-    The function calculates the AES128 CCM message authentication code (MAC)
+    The function computes the AES128 CCM message authentication code (MAC)
     with the given backbone key \a backboneKey and the session ID \a ssid and
     appends it to the newly created frame.
 
@@ -413,7 +413,7 @@ QKnxNetIpFrame
         .setMessageAuthenticationCode(QKnxByteArray(16, 0x00)) // dummy MAC to get a proper header
         .create();
 
-    auto mac = QKnxCryptographicEngine::calculateMessageAuthenticationCode(backboneKey,
+    auto mac = QKnxCryptographicEngine::computeMessageAuthenticationCode(backboneKey,
         frame.header(), ssid, {}, d_ptr->m_timer, d_ptr->m_serial, d_ptr->m_tag);
 
     mac = QKnxCryptographicEngine::encryptMessageAuthenticationCode(backboneKey, mac,

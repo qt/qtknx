@@ -495,7 +495,7 @@ QKnxNetIpSecureWrapperProxy::SecureBuilder &
 
 /*!
     Creates and returns a KNXnet/IP secure wrapper frame. During creation the
-    encapsulated frame gets encrypted and the corresponding MAC calculated.
+    encapsulated frame gets encrypted and the corresponding MAC computed.
     The given session key \a sessionKey takes part of the encryption process.
     Both values, the encrypted frame and the MAC are appended to the KNXnet/IP
     secure wrapper frame.
@@ -529,7 +529,7 @@ QKnxNetIpFrame
         .setMessageAuthenticationCode(QKnxByteArray(16, 0x00)) // dummy MAC to get a proper header
         .create();
 
-    auto mac = QKnxCryptographicEngine::calculateMessageAuthenticationCode(sessionKey,
+    auto mac = QKnxCryptographicEngine::computeMessageAuthenticationCode(sessionKey,
         frame.header(), d_ptr->m_sessionId, d_ptr->m_unencryptedFrame.bytes(), d_ptr->m_seqNumber,
         d_ptr->m_serial, d_ptr->m_tag);
     mac = QKnxCryptographicEngine::encryptMessageAuthenticationCode(sessionKey, mac,

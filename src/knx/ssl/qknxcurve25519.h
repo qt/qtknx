@@ -102,13 +102,13 @@ public:
 
     static QKnxByteArray XOR(const QKnxByteArray &l, const QKnxByteArray &r, bool adjust = true);
 
-    static QKnxByteArray calculateMessageAuthenticationCode(const QKnxByteArray &key,
-                                                            const QKnxNetIpFrameHeader &header,
-                                                            quint16 id,
-                                                            const QKnxByteArray &data,
-                                                            quint48 sequenceNumber = 0,
-                                                            const QKnxByteArray &serialNumber = {},
-                                                            quint16 messageTag = 0);
+    static QKnxByteArray computeMessageAuthenticationCode(const QKnxByteArray &key,
+                                                          const QKnxNetIpFrameHeader &header,
+                                                          quint16 id,
+                                                          const QKnxByteArray &data,
+                                                          quint48 sequenceNumber = 0,
+                                                          const QKnxByteArray &serialNumber = {},
+                                                          quint16 messageTag = 0);
 
     static QKnxByteArray encryptSecureWrapperPayload(const QKnxByteArray &key,
                                                      const QKnxNetIpFrame &frame,

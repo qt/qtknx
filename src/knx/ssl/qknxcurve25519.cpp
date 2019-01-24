@@ -392,13 +392,13 @@ QKnxCurve25519PrivateKey &QKnxCurve25519PrivateKey::operator=(const QKnxCurve255
 
     \section2 Calculating Message Authentication Codes
 
-    The calculateMessageAuthenticationCode() function can be used to compute a
+    The computeMessageAuthenticationCode() function can be used to compute a
     message authentication code (MAC) for a KNXnet/IP secure frame. The fields
-    that  are used to calculate the MAC depend on the type of the frame, such
-    as \e {session response frame}, \e {session authentication frame}, or
+    that are used to compute the MAC depend on the type of the frame, such as
+    \e {session response frame}, \e {session authentication frame}, or
     \e {timer notify frame}.
 
-    The example code shows how to calculate the MAC for the most common secure
+    The example code shows how to compute the MAC for the most common secure
     frames:
 
     \code
@@ -420,10 +420,10 @@ QKnxCurve25519PrivateKey &QKnxCurve25519PrivateKey::operator=(const QKnxCurve255
             QKnxCryptographicEngine::deviceAuthenticationCodeHash({ "trustme" });
         auto XOR_X_Y = QKnxCryptographicEngine::XOR(clientPublicKey.bytes(), serverPublicKey.bytes());
 
-        auto mac = QKnxCryptographicEngine::calculateMessageAuthenticationCode(deviceAuthenticationHash,
+        auto mac = QKnxCryptographicEngine::computeMessageAuthenticationCode(deviceAuthenticationHash,
             netIpFrame.header(), secureSessionIdentifier, XOR_X_Y);
 
-        // create the final frame including the calculated MAC
+        // create the final frame including the computed MAC
         netIpFrame = responseBuilder.
             .setMessageAuthenticationCode(mac)
             .create();
@@ -441,10 +441,10 @@ QKnxCurve25519PrivateKey &QKnxCurve25519PrivateKey::operator=(const QKnxCurve255
 
         auto passwordHash = QKnxCryptographicEngine::userPasswordHash({ "secret" });
 
-        mac = QKnxCryptographicEngine::calculateMessageAuthenticationCode(passwordHash,
+        mac = QKnxCryptographicEngine::computeMessageAuthenticationCode(passwordHash,
             netIpFrame.header(), userId, XOR_X_Y);
 
-        // create the final frame including the calculated MAC
+        // create the final frame including the computed MAC
         netIpFrame = responseBuilder.
             .setMessageAuthenticationCode(mac)
             .create();
@@ -470,10 +470,10 @@ QKnxCurve25519PrivateKey &QKnxCurve25519PrivateKey::operator=(const QKnxCurve255
         quint16 dummySession = 0x0000;
         auto backboneKey = QKnxByteArray::fromHex("000102030405060708090a0b0c0d0e0f");
 
-        mac = QKnxCryptographicEngine::calculateMessageAuthenticationCode(backboneKey,
+        mac = QKnxCryptographicEngine::computeMessageAuthenticationCode(backboneKey,
             netIpFrame.header(), dummySession, dummyPayload, timerValue, serialNumber, messageTag);
 
-        // create the final frame including the calculated MAC
+        // create the final frame including the computed MAC
         netIpFrame = responseBuilder.
             .setMessageAuthenticationCode(mac)
             .create();
@@ -533,7 +533,7 @@ QKnxByteArray QKnxCryptographicEngine::sharedSecret(const QKnxCurve25519PublicKe
 }
 
 /*!
-    Returns the session key calculated from the given secret \a sharedSecret.
+    Returns the session key computed from the given secret \a sharedSecret.
 */
 QKnxByteArray QKnxCryptographicEngine::sessionKey(const QKnxByteArray &sharedSecret)
 {
@@ -545,7 +545,7 @@ QKnxByteArray QKnxCryptographicEngine::sessionKey(const QKnxByteArray &sharedSec
 }
 
 /*!
-    Returns the session key calculated from the given peer public key \a pub
+    Returns the session key computed from the given peer public key \a pub
     and the private key \a priv.
 */
 QKnxByteArray QKnxCryptographicEngine::sessionKey(const QKnxCurve25519PublicKey &pub,
@@ -680,10 +680,10 @@ namespace QKnxPrivate
 /*!
     Computes a message authentication code (MAC) using the given \a key,
     \a header, and \a id for the given \a data. Returns an array of bytes that
-    represent the calculated MAC or an empty byte array in case of an error.
+    represent the computed MAC or an empty byte array in case of an error.
 
     \note The \a sequenceNumber, \a serialNumber, and \a messageTag values
-    are required to calculate a valid MAC for KNXnet/IP secure wrapper frames.
+    are required to compute a valid MAC for KNXnet/IP secure wrapper frames.
     For all other types of secure frames, the possibly given values are ignored
     and \c 0 is used instead. For timer notify frames, \e {default-constructed}
     values are used instead of the \a id and \a data values.
@@ -691,7 +691,7 @@ namespace QKnxPrivate
     For an example of using this function, see
     \l {Calculating Message Authentication Codes}.
 */
-QKnxByteArray QKnxCryptographicEngine::calculateMessageAuthenticationCode(const QKnxByteArray &key,
+QKnxByteArray QKnxCryptographicEngine::computeMessageAuthenticationCode(const QKnxByteArray &key,
     const QKnxNetIpFrameHeader &header, quint16 id, const QKnxByteArray &data,
     quint48 sequenceNumber, const QKnxByteArray &serialNumber, quint16 messageTag)
 {
