@@ -449,8 +449,8 @@ QKnxNetIpSecureWrapperProxy::SecureBuilder &
 }
 
 /*!
-    Sets the serial number to \a serialNumber and returns a reference to the
-    builder.
+    Sets the serial number to \a serialNumber of the device sending the frame
+    and returns a reference to the builder.
 
     \note The serial number must contain exactly 6 bytes.
 */
