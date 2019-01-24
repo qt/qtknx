@@ -107,6 +107,8 @@ LocalDeviceManagement::LocalDeviceManagement(QWidget* parent)
     });
 
     connect(&m_management, &QKnxNetIpDeviceManagement::disconnected, this, [&] {
+        if (!ui)
+            return;
         m_awaitIoListResponse = true;
         ui->deviceManagementSendRequest->setEnabled(false);
         ui->connectRequestDeviceManagement->setEnabled(true);
@@ -142,6 +144,7 @@ LocalDeviceManagement::LocalDeviceManagement(QWidget* parent)
 LocalDeviceManagement::~LocalDeviceManagement()
 {
     delete ui;
+    ui = nullptr;
 }
 
 void LocalDeviceManagement::setNatAware(bool isNatAware)

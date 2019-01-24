@@ -113,6 +113,8 @@ Tunneling::Tunneling(QWidget* parent)
     });
 
     connect(&m_tunnel, &QKnxNetIpTunnel::disconnected, this, [&] {
+        if (!ui)
+            return;
         ui->connectTunneling->setEnabled(true);
         ui->disconnectTunneling->setEnabled(false);
         ui->tunnelingSendRequest->setEnabled(false);
@@ -241,6 +243,7 @@ Tunneling::Tunneling(QWidget* parent)
 Tunneling::~Tunneling()
 {
     delete ui;
+    ui = nullptr;
 }
 
 void Tunneling::setNatAware(bool isNatAware)
