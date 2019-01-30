@@ -365,7 +365,7 @@ int LocalDeviceManagement::keyToValue(const QMetaObject &object, const QString &
     auto enumCount = object.enumeratorCount();
     for (auto i = 0; i < enumCount; ++i) {
         int value = object.enumerator(i).keyToValue(key.toLatin1(), ok);
-        if (value != -1 && ok)
+        if (value != -1 && *ok)
             return value;
     }
     return -1;
