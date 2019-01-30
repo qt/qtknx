@@ -41,12 +41,17 @@
 // We mean it.
 //
 
-#include <QtKnx/qtknxglobal.h>
+#include <QtKnx/qknxcurve25519.h>
+#include <private/qtnetworkglobal_p.h>
+
+#if QT_CONFIG(opensslv11)
 #include <QtKnx/private/qsslsocket_openssl_symbols_p.h>
 #include <QtKnx/private/qsslsocket_openssl11_symbols_p.h>
+#endif
 
 QT_BEGIN_NAMESPACE
 
+#if QT_CONFIG(opensslv11)
 class Q_KNX_EXPORT QKnxOpenSsl
 {
 public:
@@ -63,17 +68,28 @@ private:
     static bool s_libraryLoaded;
     static bool s_libraryEnabled;
 };
+#endif
 
-class QKnxCurve25519KeyData : public QSharedData
+class QKnxSecureKeyData : public QSharedData
 {
 public:
-    QKnxCurve25519KeyData() = default;
-    ~QKnxCurve25519KeyData()
+    QKnxSecureKeyData() = default;
+    ~QKnxSecureKeyData()
     {
+#if QT_CONFIG(opensslv11)
         q_EVP_PKEY_free(m_evpPKey);
+#endif
     }
 
+    bool isTypeValid() const
+    {
+        return m_type >= QKnxSecureKey::Type::Private && m_type < QKnxSecureKey::Type::Invalid;
+    }
+
+#if QT_CONFIG(opensslv11)
     EVP_PKEY *m_evpPKey { nullptr };
+#endif
+    QKnxSecureKey::Type m_type { QKnxSecureKey::Type::Invalid };
 };
 
 QT_END_NAMESPACE

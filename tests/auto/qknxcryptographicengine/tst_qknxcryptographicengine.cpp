@@ -56,72 +56,85 @@ class tst_qknxcryptographicengine : public QObject
 private slots:
     void initTestCase()
     {
+#if QT_CONFIG(opensslv11)
         QLoggingCategory::setFilterRules("qt.network.ssl=false");
+#else
+        QSKIP("KNX secure methods aren't available to test");
+#endif
     }
 
+#if QT_CONFIG(opensslv11)
     void testPublicKey()
     {
-        QKnxCurve25519PublicKey key;
+        QKnxSecureKey key;
         QCOMPARE(key.isNull(), true);
         QCOMPARE(key.isValid(), false);
         QCOMPARE(key.bytes(), QKnxByteArray());
+        QCOMPARE(key.type(), QKnxSecureKey::Type::Invalid);
 
         if (QKnxOpenSsl::sslLibraryVersionNumber() < 0x1010000fL)
             return;
 
         auto bytes = QKnxByteArray::fromHex("bdf099909923143ef0a5de0b3be3687b"
             "c5bd3cf5f9e6f901699cd870ec1ff824");
-        key = QKnxCurve25519PublicKey::fromBytes(bytes);
+        key = QKnxSecureKey::fromBytes(QKnxSecureKey::Type::Public, bytes);
         QCOMPARE(key.isNull(), false);
         QCOMPARE(key.isValid(), true);
         QCOMPARE(key.bytes(), bytes);
+        QCOMPARE(key.type(), QKnxSecureKey::Type::Public);
 
         bytes = QKnxByteArray::fromHex("0aa227b4fd7a32319ba9960ac036ce0e"
             "5c4507b5ae55161f1078b1dcfb3cb631");
-        key = QKnxCurve25519PublicKey::fromBytes(bytes);
+        key = QKnxSecureKey::fromBytes(QKnxSecureKey::Type::Public, bytes);
         QCOMPARE(key.isNull(), false);
         QCOMPARE(key.isValid(), true);
         QCOMPARE(key.bytes(), bytes);
+        QCOMPARE(key.type(), QKnxSecureKey::Type::Public);
 
         // derive public key from private key
-        key = { QKnxCurve25519PrivateKey::fromBytes(QKnxByteArray::fromHex("b8fabd62665d8b9e8a9d"
-            "8b1f4bca42c8c2789a6110f50e9dd785b3ede883f378")) };
+        key = QKnxSecureKey::publicKeyFromPrivate(QKnxByteArray::fromHex("b8fabd62665d8b9e8a9d"
+            "8b1f4bca42c8c2789a6110f50e9dd785b3ede883f378"));
         QCOMPARE(key.isNull(), false);
         QCOMPARE(key.isValid(), true);
         QCOMPARE(key.bytes(), bytes);
+        QCOMPARE(key.type(), QKnxSecureKey::Type::Public);
     }
 
     void testPrivateKey()
     {
-        if (QKnxOpenSsl::sslLibraryVersionNumber() >= 0x1010000fL) {
-            QKnxCurve25519PrivateKey key;
-            QCOMPARE(key.isNull(), false);
-            QCOMPARE(key.isValid(), true);
-            if (QKnxOpenSsl::sslLibraryVersionNumber() >= 0x1010101fL)
-                QCOMPARE(key.bytes().size(), 32);
+        QKnxSecureKey key;
+        QCOMPARE(key.isNull(), true);
+        QCOMPARE(key.isValid(), false);
+        QCOMPARE(key.bytes(), QKnxByteArray());
+        QCOMPARE(key.type(), QKnxSecureKey::Type::Invalid);
 
-            auto bytes = QKnxByteArray::fromHex("b8fabd62665d8b9e8a9d8b1f4bca42c8"
-                "c2789a6110f50e9dd785b3ede883f378");
-            key = QKnxCurve25519PrivateKey::fromBytes(bytes);
-            QCOMPARE(key.isNull(), false);
-            QCOMPARE(key.isValid(), true);
-            if (QKnxOpenSsl::sslLibraryVersionNumber() >= 0x1010101fL)
-                QCOMPARE(key.bytes(), bytes);
+        if (QKnxOpenSsl::sslLibraryVersionNumber() < 0x1010000fL)
+            return;
 
-            bytes = QKnxByteArray::fromHex("68c1744813f4e65cf10cca671caa1336"
-                "a796b4ac40cc5cf2655674225c1e5264");
-            key = QKnxCurve25519PrivateKey::fromBytes(bytes);
-            QCOMPARE(key.isNull(), false);
-            QCOMPARE(key.isValid(), true);
-            if (QKnxOpenSsl::sslLibraryVersionNumber() >= 0x1010101fL)
-                QCOMPARE(key.bytes(), bytes);
+        key = QKnxSecureKey::generatePrivateKey();
+        QCOMPARE(key.isNull(), false);
+        QCOMPARE(key.isValid(), true);
+        if (QKnxOpenSsl::sslLibraryVersionNumber() >= 0x1010101fL)
+            QCOMPARE(key.bytes().size(), 32);
+        QCOMPARE(key.type(), QKnxSecureKey::Type::Private);
 
-        } else {
-            QKnxCurve25519PrivateKey key;
-            QCOMPARE(key.isNull(), true);
-            QCOMPARE(key.isValid(), false);
-            QCOMPARE(key.bytes(), QKnxByteArray());
-        }
+        auto bytes = QKnxByteArray::fromHex("b8fabd62665d8b9e8a9d8b1f4bca42c8"
+            "c2789a6110f50e9dd785b3ede883f378");
+        key = QKnxSecureKey::fromBytes(QKnxSecureKey::Type::Private, bytes);
+        QCOMPARE(key.isNull(), false);
+        QCOMPARE(key.isValid(), true);
+        if (QKnxOpenSsl::sslLibraryVersionNumber() >= 0x1010101fL)
+            QCOMPARE(key.bytes(), bytes);
+        QCOMPARE(key.type(), QKnxSecureKey::Type::Private);
+
+        bytes = QKnxByteArray::fromHex("68c1744813f4e65cf10cca671caa1336"
+            "a796b4ac40cc5cf2655674225c1e5264");
+        key = QKnxSecureKey::fromBytes(QKnxSecureKey::Type::Private, bytes);
+        QCOMPARE(key.isNull(), false);
+        QCOMPARE(key.isValid(), true);
+        if (QKnxOpenSsl::sslLibraryVersionNumber() >= 0x1010101fL)
+            QCOMPARE(key.bytes(), bytes);
+        QCOMPARE(key.type(), QKnxSecureKey::Type::Private);
     }
 
     void testSharedSecret()
@@ -131,25 +144,23 @@ private slots:
 
         auto pubBytes = QKnxByteArray::fromHex("0aa227b4fd7a32319ba9960ac036ce0e"
             "5c4507b5ae55161f1078b1dcfb3cb631");
-        auto pubKey = QKnxCurve25519PublicKey::fromBytes(pubBytes);
+        auto pubKey = QKnxSecureKey::fromBytes(QKnxSecureKey::Type::Public, pubBytes);
 
         auto privBytes = QKnxByteArray::fromHex("68c1744813f4e65cf10cca671caa1336"
             "a796b4ac40cc5cf2655674225c1e5264");
-        auto privKey = QKnxCurve25519PrivateKey::fromBytes(privBytes);
+        auto privKey = QKnxSecureKey::fromBytes(QKnxSecureKey::Type::Private, privBytes);
 
-        auto secret = QKnxCryptographicEngine::sharedSecret(pubKey, privKey);
+        auto secret = QKnxSecureKey::sharedSecret(privKey, pubKey);
         QCOMPARE(secret, QKnxByteArray::fromHex("d801525217618f0da90a4ff22148aee0"
             "ff4c19b430e8081223ffe99c81a98b05"));
 
         pubBytes = QKnxByteArray::fromHex("bdf099909923143ef0a5de0b3be3687b"
             "c5bd3cf5f9e6f901699cd870ec1ff824");
-        pubKey = QKnxCurve25519PublicKey::fromBytes(pubBytes);
 
         privBytes = QKnxByteArray::fromHex("b8fabd62665d8b9e8a9d8b1f4bca42c8"
             "c2789a6110f50e9dd785b3ede883f378");
-        privKey = QKnxCurve25519PrivateKey::fromBytes(privBytes);
 
-        secret = QKnxCryptographicEngine::sharedSecret(pubKey, privKey);
+        secret = QKnxSecureKey::sharedSecret(privBytes, pubBytes);
         QCOMPARE(secret, QKnxByteArray::fromHex("d801525217618f0da90a4ff22148aee0"
             "ff4c19b430e8081223ffe99c81a98b05"));
     }
@@ -180,15 +191,18 @@ private slots:
 
         /* This test more or less follows KNX AN156 - Annex A */
 
-        auto clientPublicKey = QKnxCurve25519PublicKey::fromBytes(QKnxByteArray::fromHex("0aa227b4"
-            "fd7a32319ba9960ac036ce0e5c4507b5ae55161f1078b1dcfb3cb631"));
+        auto clientPublicKey = QKnxSecureKey::fromBytes(QKnxSecureKey::Type::Public,
+            QKnxByteArray::fromHex("0aa227b4fd7a32319ba9960ac036ce0e5c4507b5ae55161f1078b1dcfb3c"
+                "b631"));
 
-        auto serverPrivateKey = QKnxCurve25519PrivateKey::fromBytes(QKnxByteArray::fromHex("68c174"
-            "4813f4e65cf10cca671caa1336a796b4ac40cc5cf2655674225c1e5264"));
-        auto serverPublicKey = QKnxCurve25519PublicKey::fromBytes(QKnxByteArray::fromHex("bdf09990"
-            "9923143ef0a5de0b3be3687bc5bd3cf5f9e6f901699cd870ec1ff824"));
+        auto serverPrivateKey = QKnxSecureKey::fromBytes(QKnxSecureKey::Type::Private,
+            QKnxByteArray::fromHex("68c1744813f4e65cf10cca671caa1336a796b4ac40cc5cf2655674225c1e"
+                "5264"));
+        auto serverPublicKey = QKnxSecureKey::fromBytes(QKnxSecureKey::Type::Public,
+            QKnxByteArray::fromHex("bdf099909923143ef0a5de0b3be3687bc5bd3cf5f9e6f901699cd870ec1f"
+                "f824"));
 
-        QCOMPARE(serverPublicKey.bytes(), QKnxCurve25519PublicKey(serverPrivateKey).bytes());
+        QCOMPARE(serverPublicKey, QKnxSecureKey::publicKeyFromPrivate(serverPrivateKey));
 
         /* Session Response */
 
@@ -213,10 +227,11 @@ private slots:
             mac);
         QCOMPARE(encMac, QKnxByteArray::fromHex("a922505aaa436163570bd5494c2df2a3"));
 
-        auto decMac = QKnxCryptographicEngine::decryptMessageAuthenticationCode(deviceAuthenticationCode, encMac);
+        auto decMac = QKnxCryptographicEngine::decryptMessageAuthenticationCode(deviceAuthenticationCode,
+            encMac);
         QCOMPARE(decMac, mac);
 
-        auto sharedSecret = QKnxCryptographicEngine::sharedSecret(clientPublicKey, serverPrivateKey);
+        auto sharedSecret = QKnxSecureKey::sharedSecret(serverPrivateKey, clientPublicKey);
         QCOMPARE(sharedSecret,
             QKnxByteArray::fromHex("d801525217618f0da90a4ff22148aee0ff4c19b430e8081223ffe99c81a98b05"));
 
@@ -432,10 +447,10 @@ private slots:
 
     void testSessionResponseFrame()
     {
-        auto clientPublicKey = QKnxCurve25519PublicKey::fromBytes(QKnxByteArray::fromHex("0aa227b4"
-            "fd7a32319ba9960ac036ce0e5c4507b5ae55161f1078b1dcfb3cb631"));
-        auto serverPublicKey = QKnxCurve25519PublicKey::fromBytes(QKnxByteArray::fromHex("bdf09990"
-            "9923143ef0a5de0b3be3687bc5bd3cf5f9e6f901699cd870ec1ff824"));
+        auto clientPublicKey = QKnxByteArray::fromHex("0aa227b4"
+            "fd7a32319ba9960ac036ce0e5c4507b5ae55161f1078b1dcfb3cb631");
+        auto serverPublicKey = QKnxByteArray::fromHex("bdf09990"
+            "9923143ef0a5de0b3be3687bc5bd3cf5f9e6f901699cd870ec1ff824");
 
         quint16 secureSessionIdentifier = 0x0001;
         const QByteArray deviceAuthenticationPassword { "trustme" };
@@ -443,35 +458,35 @@ private slots:
 
         auto sessionResponse = QKnxNetIpSessionResponseProxy::builder()
             .setSecureSessionId(secureSessionIdentifier)
-            .setPublicKey(serverPublicKey.bytes())
+            .setPublicKey(serverPublicKey)
             .setMessageAuthenticationCode(mac)
             .create();
 
         QKnxNetIpSessionResponseProxy proxy(sessionResponse);
         QCOMPARE(proxy.isValid(), true);
         QCOMPARE(proxy.secureSessionId(), secureSessionIdentifier);
-        QCOMPARE(proxy.publicKey(), serverPublicKey.bytes());
+        QCOMPARE(proxy.publicKey(), serverPublicKey);
         QCOMPARE(proxy.messageAuthenticationCode(), mac);
 
         sessionResponse = QKnxNetIpSessionResponseProxy::secureBuilder()
             .setSecureSessionId(secureSessionIdentifier)
-            .setPublicKey(serverPublicKey.bytes())
-            .create(deviceAuthenticationPassword, clientPublicKey.bytes());
+            .setPublicKey(serverPublicKey)
+            .create(deviceAuthenticationPassword, clientPublicKey);
 
         QKnxNetIpSessionResponseProxy proxy2(sessionResponse);
         QCOMPARE(proxy2.isValid(), true);
         QCOMPARE(proxy2.secureSessionId(), secureSessionIdentifier);
-        QCOMPARE(proxy2.publicKey(), serverPublicKey.bytes());
+        QCOMPARE(proxy2.publicKey(), serverPublicKey);
         QCOMPARE(proxy2.messageAuthenticationCode(), mac);
     }
 
     void testSessionAuthenticateFrame()
     {
 
-        auto clientPublicKey = QKnxCurve25519PublicKey::fromBytes(QKnxByteArray::fromHex("0aa227b4"
-            "fd7a32319ba9960ac036ce0e5c4507b5ae55161f1078b1dcfb3cb631"));
-        auto serverPublicKey = QKnxCurve25519PublicKey::fromBytes(QKnxByteArray::fromHex("bdf09990"
-            "9923143ef0a5de0b3be3687bc5bd3cf5f9e6f901699cd870ec1ff824"));
+        auto clientPublicKey = QKnxByteArray::fromHex("0aa227b4"
+            "fd7a32319ba9960ac036ce0e5c4507b5ae55161f1078b1dcfb3cb631");
+        auto serverPublicKey = QKnxByteArray::fromHex("bdf09990"
+            "9923143ef0a5de0b3be3687bc5bd3cf5f9e6f901699cd870ec1ff824");
 
         const QByteArray password { "secret" };
         auto mac = QKnxByteArray::fromHex("1f1d59ea9f12a152e5d9727f08462cde");
@@ -488,13 +503,14 @@ private slots:
 
         auto sessionAuth2 = QKnxNetIpSessionAuthenticateProxy::secureBuilder()
             .setUserId(QKnxNetIp::SecureUserId::Management)
-            .create(password, clientPublicKey.bytes(), serverPublicKey.bytes());
+            .create(password, clientPublicKey, serverPublicKey);
 
         QKnxNetIpSessionAuthenticateProxy proxy2(sessionAuth2);
         QCOMPARE(proxy2.isValid(), true);
         QCOMPARE(proxy2.userId(), QKnxNetIp::SecureUserId::Management);
         QCOMPARE(proxy2.messageAuthenticationCode(), mac);
     }
+#endif
 };
 
 QTEST_APPLESS_MAIN(tst_qknxcryptographicengine)

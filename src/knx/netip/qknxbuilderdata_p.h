@@ -42,14 +42,12 @@
 //
 
 #include <QtCore/qshareddata.h>
+
+#include <QtKnx/qknxcurve25519.h>
 #include <QtKnx/qknxnamespace.h>
 #include <QtKnx/qknxnetipframe.h>
 #include <QtKnx/qknxnetipservicefamiliesdib.h>
 #include <QtKnx/qknxnetipsrp.h>
-
-#if QT_CONFIG(opensslv11)
-# include "qknxcurve25519.h"
-#endif
 
 QT_BEGIN_NAMESPACE
 

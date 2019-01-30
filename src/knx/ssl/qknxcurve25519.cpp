@@ -38,10 +38,13 @@
 #include "qknxnetiptimernotify.h"
 
 #include <QtCore/qcryptographichash.h>
-#include <QMutex>
+#include <QtCore/qmutex.h>
+
+#include <QtNetwork/qpassworddigestor.h>
 
 QT_BEGIN_NAMESPACE
 
+#if QT_CONFIG(opensslv11)
 bool QKnxOpenSsl::s_libraryLoaded = false;
 bool QKnxOpenSsl::s_libraryEnabled = false;
 
@@ -89,7 +92,9 @@ long QKnxOpenSsl::sslLibraryBuildVersionNumber()
     return OPENSSL_VERSION_NUMBER;
 }
 
-
+/*!
+    \internal
+*/
 QString QKnxOpenSsl::sslLibraryBuildVersionString()
 {
     return QStringLiteral(OPENSSL_VERSION_TEXT);
@@ -128,18 +133,19 @@ bool QKnxOpenSsl::ensureLibraryLoaded()
     }
     return s_libraryEnabled;
 }
+#endif
 
 
 /*!
-    \inmodule QtKnx
-    \class QKnxCurve25519PublicKey
+    \class QKnxSecureKey
 
-    \since 5.12
+    \inmodule QtKnx
+
+    \since 5.13
     \ingroup qtknx-general-classes
 
-    \brief The QKnxCurve25519PublicKey class represents the elliptic-curve
-    public key to be used with the elliptic curve Diffie-Hellman (ECDH) key
-    agreement scheme.
+    \brief The QKnxSecureKey class represents the elliptic-curve secure key to
+    be used with the elliptic curve Diffie-Hellman (ECDH) key agreement scheme.
 
     This class is part of the Qt KNX module and currently available as a
     Technology Preview, and therefore the API and functionality provided
@@ -147,232 +153,312 @@ bool QKnxOpenSsl::ensureLibraryLoaded()
 */
 
 /*!
-    Constructs an empty invalid public key.
+    \enum QKnxSecureKey::Type
+
+    Describes the types of keys QKnxSecureKey supports.
+
+    \value Private      A private key.
+    \value Public       A public key.
+    \value Invalid      An invalid key, please do not use.
 */
-QKnxCurve25519PublicKey::QKnxCurve25519PublicKey()
-    : d_ptr(new QKnxCurve25519KeyData)
+
+/*!
+    Constructs an empty invalid secure key.
+*/
+QKnxSecureKey::QKnxSecureKey()
+    : d_ptr(new QKnxSecureKeyData)
 {}
 
 /*!
-    Destroys the public key and releases all allocated resources.
+    Destroys the secure key and releases all allocated resources.
 */
-QKnxCurve25519PublicKey::~QKnxCurve25519PublicKey() = default;
+QKnxSecureKey::~QKnxSecureKey() = default;
 
 /*!
-    Creates a new public key with the given private key \a key.
+    Returns the type of the key: \l {QKnxSecureKey::Public}{Public} or
+    \l {QKnxSecureKey::Private}{Private}.
 */
-QKnxCurve25519PublicKey::QKnxCurve25519PublicKey(const QKnxCurve25519PrivateKey &key)
-    : d_ptr(new QKnxCurve25519KeyData)
+QKnxSecureKey::Type QKnxSecureKey::type() const
 {
-    if (!key.d_ptr->m_evpPKey)
-        return;
-
-    if (!qt_QKnxOpenSsl->supportsSsl())
-        return;
-
-    q_EVP_PKEY_up_ref(key.d_ptr->m_evpPKey);
-    d_ptr->m_evpPKey = key.d_ptr->m_evpPKey;
+    return d_ptr->m_type;
 }
 
 /*!
-    Returns \c true if this is a default constructed public key; otherwise
-    returns \c false. A public key is considered null if it contains no
+    Returns \c true if this is a default constructed secure key; otherwise
+    returns \c false. A secure key is considered \c null if it contains no
     initialized values.
 */
-bool QKnxCurve25519PublicKey::isNull() const
+bool QKnxSecureKey::isNull() const
 {
+#if QT_CONFIG(opensslv11)
     return d_ptr->m_evpPKey == nullptr;
+#else
+    return true;
+#endif
 }
 
 /*!
-    Returns \c true if OpenSSL is available and if the public key contains
-    initialized values, otherwise returns \c false.
+    Returns \c true if OpenSSL is available and if the key contains initialized
+    values, otherwise returns \c false.
 */
-bool QKnxCurve25519PublicKey::isValid() const
+bool QKnxSecureKey::isValid() const
 {
-    return qt_QKnxOpenSsl->supportsSsl() && !isNull();
+#if QT_CONFIG(opensslv11)
+    return !isNull() && d_ptr->isTypeValid() && QKnxOpenSsl::supportsSsl();
+#else
+    return false;
+#endif
 }
 
 /*!
-    Returns an array of bytes that represent the Curve25519 raw public key.
+    Returns an array of bytes that represent the Curve25519 raw secure key.
+
+    \note The function will return an empty byte array for the private
+    key unless OpenSLL with version 1.1.1a is used as back-end.
 */
-QKnxByteArray QKnxCurve25519PublicKey::bytes() const
+QKnxByteArray QKnxSecureKey::bytes() const
 {
+#if QT_CONFIG(opensslv11)
     if (!isValid())
         return {};
 
-    size_t len = 32;
-    QKnxByteArray ba(int(len), 0);
-    if (q_EVP_PKEY_get_raw_public_key(d_ptr->m_evpPKey, ba.data(), &len) > 0)
-        return ba; // preferred way
+    if (d_ptr->m_type == Type::Private) {
+        size_t len = 32;
+        QKnxByteArray ba(int(len), 0);
+        if (q_EVP_PKEY_get_raw_private_key(d_ptr->m_evpPKey, ba.data(), &len) <= 0)
+            return {}; // preferred, no other way possible
+        return ba;
+    }
 
-    ba.resize(q_i2d_PUBKEY(d_ptr->m_evpPKey, nullptr));
-    auto tmp = ba.data();
+    size_t len = 32;
+    QKnxByteArray pub(32, Qt::Uninitialized);
+    if (q_EVP_PKEY_get_raw_public_key(d_ptr->m_evpPKey, pub.data(), &len) > 0)
+        return pub; // preferred way
+
+    pub.resize(q_i2d_PUBKEY(d_ptr->m_evpPKey, nullptr));
+    auto tmp = pub.data();
     q_i2d_PUBKEY(d_ptr->m_evpPKey, &tmp);
-    return ba.right(32);
+    return pub.right(32);
+#else
+    return {};
+#endif
 }
 
 /*!
-    Constructs the public key from the byte array \a data starting at position
-    \a index inside the array if OpenSSL is available and no error occurs;
+    Constructs the Curve25519 secure key from the byte array \a data starting
+    at position \a index inside the array and sets the key type to \a type if
+    OpenSSL is available and no error occurs;
     otherwise returns a \e {default-constructed key} which can be invalid.
 */
-QKnxCurve25519PublicKey QKnxCurve25519PublicKey::fromBytes(const QKnxByteArray &data, quint16 index)
+QKnxSecureKey QKnxSecureKey::fromBytes(QKnxSecureKey::Type type, const QKnxByteArray &data,
+    quint16 index)
 {
+#if QT_CONFIG(opensslv11)
     auto ba = data.mid(index, 32);
     if (ba.size() < 32)
         return {};
 
-    if (!qt_QKnxOpenSsl->supportsSsl())
+    if (!QKnxOpenSsl::supportsSsl())
         return {};
 
-    QKnxCurve25519PublicKey key;
-    key.d_ptr->m_evpPKey = q_EVP_PKEY_new_raw_public_key(NID_X25519, nullptr, ba.constData(),
-        ba.size()); // preferred way
-    if (key.d_ptr->m_evpPKey)
+    QKnxSecureKey key;
+    key.d_ptr->m_type = type;
+
+    if (type == Type::Private) {
+        key.d_ptr->m_evpPKey = q_EVP_PKEY_new_raw_private_key(NID_X25519, nullptr, ba.constData(),
+            ba.size()); // preferred way
+        if (key.d_ptr->m_evpPKey)
+            return key;
+
+        static const auto pkcs8 = QKnxByteArray::fromHex("302e020100300506032b656e04220420");
+        auto tmp = pkcs8 + ba;  // PKCS #8 is a standard syntax for storing private key information
+
+        BIO *bio = nullptr;
+        if ((bio = q_BIO_new_mem_buf(reinterpret_cast<void *> (tmp.data()), tmp.size())))
+            key.d_ptr->m_evpPKey = q_d2i_PrivateKey_bio(bio, nullptr);
+        q_BIO_free(bio);
         return key;
+    }
 
-    key.d_ptr->m_evpPKey = q_EVP_PKEY_new();
-    if (q_EVP_PKEY_set_type(key.d_ptr->m_evpPKey, NID_X25519) <= 0)
-        return {};
+    if (type == Type::Public) {
+        key.d_ptr->m_evpPKey = q_EVP_PKEY_new_raw_public_key(NID_X25519, nullptr, ba.constData(),
+            ba.size()); // preferred way
+        if (key.d_ptr->m_evpPKey)
+            return key;
 
-    if (q_EVP_PKEY_set1_tls_encodedpoint(key.d_ptr->m_evpPKey, ba.constData(), ba.size()) <= 0)
-        return {};
+        key.d_ptr->m_evpPKey = q_EVP_PKEY_new();
+        if (q_EVP_PKEY_set_type(key.d_ptr->m_evpPKey, NID_X25519) <= 0)
+            return {};
 
-    return key;
+        if (q_EVP_PKEY_set1_tls_encodedpoint(key.d_ptr->m_evpPKey, ba.constData(), ba.size()) <= 0)
+            return {};
+        return key;
+    }
+#else
+    Q_UNUSED(type)
+    Q_UNUSED(data)
+    Q_UNUSED(index)
+#endif
+    return {};
 }
 
 /*!
-    Constructs a copy of \a other.
+    Returns a new valid private key if OpenSSL is available and no error occurs.
 */
-QKnxCurve25519PublicKey::QKnxCurve25519PublicKey(const QKnxCurve25519PublicKey &other)
-    : d_ptr(other.d_ptr)
-{}
-
-/*!
-    Assigns the specified \a other to this object.
-*/
-QKnxCurve25519PublicKey &QKnxCurve25519PublicKey::operator=(const QKnxCurve25519PublicKey &other)
+QKnxSecureKey QKnxSecureKey::generatePrivateKey()
 {
-    d_ptr = other.d_ptr;
-    return *this;
-}
-
-
-/*!
-    \class QKnxCurve25519PrivateKey
-
-    \inmodule QtKnx
-
-    \since 5.12
-    \ingroup qtknx-general-classes
-
-    \brief The QKnxCurve25519PrivateKey class represents the elliptic-curve
-    private key to be used with the elliptic curve Diffie-Hellman (ECDH) key
-    agreement scheme.
-
-    This class is part of the Qt KNX module and currently available as a
-    Technology Preview, and therefore the API and functionality provided
-    by the class may be subject to change at any time without prior notice.
-*/
-
-/*!
-    Constructs a valid private key if OpenSSL is available and no error occurs.
-*/
-QKnxCurve25519PrivateKey::QKnxCurve25519PrivateKey()
-    : d_ptr(new QKnxCurve25519KeyData)
-{
-    if (!qt_QKnxOpenSsl->supportsSsl())
-        return;
+    QKnxSecureKey key;
+#if QT_CONFIG(opensslv11)
+    if (!QKnxOpenSsl::supportsSsl())
+        return key;
 
     if (auto *pctx = q_EVP_PKEY_CTX_new_id(NID_X25519, nullptr)) {
         q_EVP_PKEY_keygen_init(pctx);
-        q_EVP_PKEY_keygen(pctx, &d_ptr->m_evpPKey);
+        key.d_ptr->m_type = Type::Private;
+        q_EVP_PKEY_keygen(pctx, &key.d_ptr->m_evpPKey);
         q_EVP_PKEY_CTX_free(pctx);
     }
-}
-
-/*!
-    Destroys the private key and releases all allocated resources.
-*/
-QKnxCurve25519PrivateKey::~QKnxCurve25519PrivateKey() = default;
-
-/*!
-    Returns \c true if this is a default constructed private key; otherwise
-    returns \c false. A private key is considered null if it contains no
-    initialized values.
-*/
-bool QKnxCurve25519PrivateKey::isNull() const
-{
-    return d_ptr->m_evpPKey == nullptr;
-}
-
-/*!
-    Returns \c true if OpenSSL is available and if the private key contains
-    initialized values, otherwise returns \c false.
-*/
-bool QKnxCurve25519PrivateKey::isValid() const
-{
-    return qt_QKnxOpenSsl->supportsSsl() && !isNull();
-}
-
-/*!
-    Returns an array of bytes that represent the Curve25519 raw private key.
-*/
-QKnxByteArray QKnxCurve25519PrivateKey::bytes() const
-{
-    if (!isValid())
-        return {};
-
-    size_t len = 32;
-    QKnxByteArray ba(int(len), 0);
-    if (q_EVP_PKEY_get_raw_private_key(d_ptr->m_evpPKey, ba.data(), &len) <= 0)
-        return {}; // preferred, no other way possible
-    return ba;
-}
-
-/*!
-    Constructs the private key from the byte array \a data starting at position
-    \a index inside the array if OpenSSL is available and no error occurs;
-    otherwise returns a \e {default-constructed key} which can be invalid.
-*/
-QKnxCurve25519PrivateKey QKnxCurve25519PrivateKey::fromBytes(const QKnxByteArray &data, quint16 index)
-{
-    auto ba = data.mid(index, 32);
-    if (!qt_QKnxOpenSsl->supportsSsl() || ba.size() < 32)
-        return {};
-
-    QKnxCurve25519PrivateKey key;
-    key.d_ptr->m_evpPKey = q_EVP_PKEY_new_raw_private_key(NID_X25519, nullptr, ba.constData(),
-        ba.size()); // preferred way
-    if (key.d_ptr->m_evpPKey)
-        return key;
-
-    static const auto pkcs8 = QKnxByteArray::fromHex("302e020100300506032b656e04220420");
-    auto tmp = pkcs8 + ba;  // PKCS #8 is a standard syntax for storing private key information
-
-    BIO *bio = nullptr;
-    if ((bio = q_BIO_new_mem_buf(reinterpret_cast<void *> (tmp.data()), tmp.size())))
-        key.d_ptr->m_evpPKey = q_d2i_PrivateKey_bio(bio, nullptr);
-    q_BIO_free(bio);
-
+#endif
     return key;
 }
 
 /*!
+    Returns a new valid public key with the given private key \a privateKey if
+    OpenSSL is available and no error occurs.
+*/
+QKnxSecureKey QKnxSecureKey::publicKeyFromPrivate(const QKnxSecureKey &privateKey)
+{
+    QKnxSecureKey key;
+#if QT_CONFIG(opensslv11)
+    if (privateKey.type() == QKnxSecureKey::Type::Private && privateKey.isValid()) {
+        q_EVP_PKEY_up_ref(privateKey.d_ptr->m_evpPKey);
+        key.d_ptr->m_type = Type::Public;
+        key.d_ptr->m_evpPKey = privateKey.d_ptr->m_evpPKey;
+    }
+#else
+    Q_UNUSED(privateKey)
+#endif
+    return key;
+}
+
+/*!
+    \overload publicKeyFromPrivate()
+*/
+QKnxSecureKey QKnxSecureKey::publicKeyFromPrivate(const QKnxByteArray &privateKey)
+{
+    return QKnxSecureKey::publicKeyFromPrivate(QKnxSecureKey::fromBytes(QKnxSecureKey::Type::Private,
+        privateKey));
+}
+
+/*!
+    Sets \a privateKey to a new valid private key and \a publicKey to a new
+    valid public key derived from the freshly generated private key if OpenSSL
+    is available and no error occurs.
+*/
+void QKnxSecureKey::generateKeys(QKnxSecureKey *privateKey, QKnxSecureKey *publicKey)
+{
+    if (!privateKey || !publicKey)
+        return;
+
+    *privateKey = generatePrivateKey();
+    *publicKey = publicKeyFromPrivate(*privateKey);
+}
+
+/*!
+    Derives and returns the shared secret from the given private key
+    \a privateKey and the peer's public key \a peerPublicKey if OpenSSL
+    is available and no error occurs;
+    otherwise returns a \l {default-constructed value} which can be empty.
+*/
+QKnxByteArray QKnxSecureKey::sharedSecret(const QKnxSecureKey &privateKey,
+                                          const QKnxSecureKey &peerPublicKey)
+{
+#if QT_CONFIG(opensslv11)
+    if (privateKey.type() != QKnxSecureKey::Type::Private || !privateKey.isValid())
+        return {};
+
+    if (peerPublicKey.type() != QKnxSecureKey::Type::Public || !peerPublicKey.isValid())
+        return {};
+
+    auto evpPKeyCtx = q_EVP_PKEY_CTX_new(privateKey.d_ptr->m_evpPKey, nullptr);
+    if (!evpPKeyCtx)
+        return {};
+
+    struct ScopedFree final
+    {
+        ScopedFree(EVP_PKEY_CTX *key) : m_evpPKeyCtx(key) {}
+        ~ScopedFree() { q_EVP_PKEY_CTX_free(m_evpPKeyCtx); }
+        EVP_PKEY_CTX *m_evpPKeyCtx = nullptr;
+    } _ { evpPKeyCtx };
+
+    if (q_EVP_PKEY_derive_init(evpPKeyCtx) <= 0)
+        return {};
+
+    if (q_EVP_PKEY_derive_set_peer(evpPKeyCtx, peerPublicKey.d_ptr->m_evpPKey) <= 0)
+        return {};
+
+    size_t keylen = 0;
+    if (q_EVP_PKEY_derive(evpPKeyCtx, nullptr, &keylen) <= 0)
+        return {};
+
+    QKnxByteArray ba(int(keylen), 0);
+    if (q_EVP_PKEY_derive(evpPKeyCtx, ba.data(), &keylen) <= 0)
+        return {};
+    return ba;
+#else
+    Q_UNUSED(privateKey)
+    Q_UNUSED(peerPublicKey)
+    return {};
+#endif
+}
+
+/*!
+    \overload sharedSecret()
+*/
+QKnxByteArray QKnxSecureKey::sharedSecret(const QKnxByteArray &privateKey,
+    const QKnxByteArray &peerPublicKey)
+{
+    return sharedSecret(QKnxSecureKey::fromBytes(QKnxSecureKey::Type::Private, privateKey),
+        QKnxSecureKey::fromBytes(QKnxSecureKey::Type::Public, peerPublicKey));
+}
+
+
+/*!
     Constructs a copy of \a other.
 */
-QKnxCurve25519PrivateKey::QKnxCurve25519PrivateKey(const QKnxCurve25519PrivateKey &other)
+QKnxSecureKey::QKnxSecureKey(const QKnxSecureKey &other)
     : d_ptr(other.d_ptr)
 {}
 
 /*!
     Assigns the specified \a other to this object.
 */
-QKnxCurve25519PrivateKey &QKnxCurve25519PrivateKey::operator=(const QKnxCurve25519PrivateKey &other)
+QKnxSecureKey &QKnxSecureKey::operator=(const QKnxSecureKey &other)
 {
     d_ptr = other.d_ptr;
     return *this;
+}
+
+/*!
+    Returns \c true if this key and the given \a other key are equal; otherwise
+    returns \c false.
+*/
+bool QKnxSecureKey::operator==(const QKnxSecureKey &other) const
+{
+    return d_ptr == other.d_ptr
+#if QT_CONFIG(opensslv11)
+        || (d_ptr->m_evpPKey == other.d_ptr->m_evpPKey && d_ptr->m_type == other.d_ptr->m_type)
+#endif
+        || (bytes() == other.bytes());
+}
+
+/*!
+    Returns \c true if this key and the given \a other key are not equal;
+    otherwise returns \c false.
+*/
+bool QKnxSecureKey::operator!=(const QKnxSecureKey &other) const
+{
+    return !operator==(other);
 }
 
 
@@ -491,45 +577,24 @@ QKnxCurve25519PrivateKey &QKnxCurve25519PrivateKey::operator=(const QKnxCurve255
 */
 
 /*!
-    Derives and returns the shared secret from the given public peer key \a pub
-    and the private key \a priv if OpenSSL is available and no error occurs;
+    Returns the session key calculated from the given private key
+    \a privateKey and the peer's public key \a peerPublicKey if OpenSSL is
+    available and no error occurs;
     otherwise returns a \l {default-constructed value} which can be empty.
 */
-QKnxByteArray QKnxCryptographicEngine::sharedSecret(const QKnxCurve25519PublicKey &pub,
-                                                    const QKnxCurve25519PrivateKey &priv)
+QKnxByteArray QKnxCryptographicEngine::sessionKey(const QKnxSecureKey &privateKey,
+                                                  const QKnxSecureKey &peerPublicKey)
 {
-    if (pub.isNull() || priv.isNull())
-        return {};
+    return sessionKey(QKnxSecureKey::sharedSecret(privateKey, peerPublicKey));
+}
 
-    if (!qt_QKnxOpenSsl->supportsSsl())
-        return {};
-
-    auto evpPKeyCtx = q_EVP_PKEY_CTX_new(priv.d_ptr->m_evpPKey, nullptr);
-    if (!evpPKeyCtx)
-        return {};
-
-    struct ScopedFree final
-    {
-        ScopedFree(EVP_PKEY_CTX *key) : m_evpPKeyCtx(key) {}
-        ~ScopedFree() { q_EVP_PKEY_CTX_free(m_evpPKeyCtx); }
-        EVP_PKEY_CTX *m_evpPKeyCtx = nullptr;
-    } _ { evpPKeyCtx };
-
-    if (q_EVP_PKEY_derive_init(evpPKeyCtx) <= 0)
-        return {};
-
-    if (q_EVP_PKEY_derive_set_peer(evpPKeyCtx, pub.d_ptr->m_evpPKey) <= 0)
-        return {};
-
-    size_t keylen = 0;
-    if (q_EVP_PKEY_derive(evpPKeyCtx, nullptr, &keylen) <= 0)
-        return {};
-
-    QKnxByteArray ba(int(keylen), 0);
-    if (q_EVP_PKEY_derive(evpPKeyCtx, ba.data(), &keylen) <= 0)
-        return {};
-
-    return ba;
+/*!
+    \overload sessionKey()
+*/
+QKnxByteArray QKnxCryptographicEngine::sessionKey(const QKnxByteArray &privateKey,
+                                                  const QKnxByteArray &peerPublicKey)
+{
+    return sessionKey(QKnxSecureKey::sharedSecret(privateKey, peerPublicKey));
 }
 
 /*!
@@ -545,27 +610,16 @@ QKnxByteArray QKnxCryptographicEngine::sessionKey(const QKnxByteArray &sharedSec
 }
 
 /*!
-    Returns the session key computed from the given peer public key \a pub
-    and the private key \a priv.
-*/
-QKnxByteArray QKnxCryptographicEngine::sessionKey(const QKnxCurve25519PublicKey &pub,
-                                                  const QKnxCurve25519PrivateKey &priv)
-{
-    return sessionKey(sharedSecret(pub, priv));
-}
-
-/*!
     Returns the password hash derived from the user chosen password \a password.
 
     \note The salt used in the Password-Based Key Derivation Function (PBKDF2)
     function is set to \e {user-password.1.secure.ip.knx.org}.
-
-    \sa pkcs5Pbkdf2HmacSha256()
 */
 QKnxByteArray QKnxCryptographicEngine::userPasswordHash(const QByteArray &password)
 {
-    return pkcs5Pbkdf2HmacSha256(password,
-        QKnxByteArray("user-password.1.secure.ip.knx.org", 33), 0x10000, 16);
+    const auto hash = QPasswordDigestor::deriveKeyPbkdf2(QCryptographicHash::Algorithm::Sha256,
+        password, QByteArray("user-password.1.secure.ip.knx.org"), 0x10000, 16);
+    return QKnxByteArray::fromByteArray(hash);
 }
 
 /*!
@@ -574,13 +628,12 @@ QKnxByteArray QKnxCryptographicEngine::userPasswordHash(const QByteArray &passwo
 
     \note The salt used in the Password-Based Key Derivation Function (PBKDF2)
     function is set to \e {device-authentication-code.1.secure.ip.knx.org}.
-
-    \sa pkcs5Pbkdf2HmacSha256()
 */
 QKnxByteArray QKnxCryptographicEngine::deviceAuthenticationCodeHash(const QByteArray &password)
 {
-    return pkcs5Pbkdf2HmacSha256(password,
-        QKnxByteArray("device-authentication-code.1.secure.ip.knx.org", 46), 0x10000, 16);
+    const auto hash = QPasswordDigestor::deriveKeyPbkdf2(QCryptographicHash::Algorithm::Sha256,
+        password, "device-authentication-code.1.secure.ip.knx.org", 0x10000, 16);
+    return QKnxByteArray::fromByteArray(hash);
 }
 
 /*!
@@ -614,6 +667,10 @@ namespace QKnxPrivate
 
     static QKnxByteArray encrypt(const QKnxByteArray &key, const QKnxByteArray &data)
     {
+#if QT_CONFIG(opensslv11)
+        if (!qt_QKnxOpenSsl->supportsSsl())
+            return {};
+
         QSharedPointer<EVP_CIPHER_CTX> ctxPtr(q_EVP_CIPHER_CTX_new(), q_EVP_CIPHER_CTX_free);
         if (ctxPtr.isNull())
             return {};
@@ -644,6 +701,11 @@ namespace QKnxPrivate
         offset += outl;
 
         return out.mid(offset - 16, 16);
+#else
+        Q_UNUSED(key)
+        Q_UNUSED(data)
+        return {};
+#endif
     }
 
     static QKnxByteArray processMAC(const QKnxByteArray &key, const QKnxByteArray &mac,
@@ -706,8 +768,8 @@ QKnxByteArray QKnxCryptographicEngine::computeMessageAuthenticationCode(const QK
             return {};
 
         const auto A = header.bytes() + QKnxUtils::QUint16::bytes(id);
-        B0 = QKnxPrivate::b0(sequenceNumber, sn, messageTag, data.size());
-        B = B0 + QKnxUtils::QUint16::bytes(A.size()) + A + data;
+        B0 = QKnxPrivate::b0(sequenceNumber, sn, messageTag, quint16(data.size()));
+        B = B0 + QKnxUtils::QUint16::bytes(quint16(A.size())) + A + data;
     } else if (header.serviceType() == QKnxNetIp::ServiceType::SessionResponse
         || header.serviceType() == QKnxNetIp::ServiceType::SessionAuthenticate) {
             if (data.isEmpty())
@@ -715,11 +777,11 @@ QKnxByteArray QKnxCryptographicEngine::computeMessageAuthenticationCode(const QK
 
             const auto A = header.bytes() + QKnxUtils::QUint16::bytes(id);
             B0 = QKnxPrivate::b0(sequenceNumber, sn, messageTag, 0);
-            B = B0 + QKnxUtils::QUint16::bytes(A.size() + data.size()) + A + data;
+            B = B0 + QKnxUtils::QUint16::bytes(quint16(A.size() + data.size())) + A + data;
     } else if (header.serviceType() == QKnxNetIp::ServiceType::TimerNotify) {
         const auto A = header.bytes();
         B0 = QKnxPrivate::b0(sequenceNumber, sn, messageTag, 0);
-        B = B0 + QKnxUtils::QUint16::bytes(A.size()) + A;
+        B = B0 + QKnxUtils::QUint16::bytes(quint16(A.size())) + A;
     }
 
     if (B.isEmpty())
@@ -791,28 +853,6 @@ QKnxByteArray QKnxCryptographicEngine::decryptMessageAuthenticationCode(const QK
     quint16 messageTag)
 {
     return QKnxPrivate::processMAC(key, mac, sequenceNumber, serialNumber, messageTag);
-}
-
-/*!
-    Returns the hash code derived from the user chosen password \a password,
-    with the given \a salt and \a iterations.
-    The value of \a derivedKeyLength should be in the range \c 0 to \c 32.
-*/
-QKnxByteArray QKnxCryptographicEngine::pkcs5Pbkdf2HmacSha256(const QByteArray &password,
-    const QKnxByteArray &salt, qint32 iterations, quint8 derivedKeyLength)
-{
-    if (derivedKeyLength > 32)
-        return {};
-
-    if (!qt_QKnxOpenSsl->supportsSsl())
-        return {};
-
-    QKnxByteArray out(derivedKeyLength, 0x00);
-    if (q_PKCS5_PBKDF2_HMAC(password.constData(), password.size(), salt.constData(), salt.size(),
-        iterations, q_EVP_sha256(), out.size(), out.data()) <= 0) {
-            return {};
-    }
-    return out;
 }
 
 QT_END_NAMESPACE

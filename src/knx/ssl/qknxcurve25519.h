@@ -38,50 +38,48 @@
 
 QT_BEGIN_NAMESPACE
 
-class QKnxCurve25519KeyData;
-class QKnxCurve25519PrivateKey;
-
-class Q_KNX_EXPORT QKnxCurve25519PublicKey final
+class QKnxSecureKeyData;
+class Q_KNX_EXPORT QKnxSecureKey final
 {
 public:
-    QKnxCurve25519PublicKey();
-    ~QKnxCurve25519PublicKey();
+    enum class Type : quint8 {
+        Private,
+        Public,
+        Invalid
+    };
+    QKnxSecureKey::Type type() const;
 
-    QKnxCurve25519PublicKey(const QKnxCurve25519PrivateKey &key);
+    QKnxSecureKey();
+    ~QKnxSecureKey();
 
     bool isNull() const;
     bool isValid() const;
 
     QKnxByteArray bytes() const;
-    static QKnxCurve25519PublicKey fromBytes(const QKnxByteArray &data, quint16 index = 0);
+    static QKnxSecureKey fromBytes(QKnxSecureKey::Type type,
+                                   const QKnxByteArray &data,
+                                   quint16 index = 0);
 
-    QKnxCurve25519PublicKey(const QKnxCurve25519PublicKey &other);
-    QKnxCurve25519PublicKey &operator=(const QKnxCurve25519PublicKey &other);
+    static QKnxSecureKey generatePrivateKey();
 
-private:
-    friend class QKnxCryptographicEngine;
-    QSharedDataPointer<QKnxCurve25519KeyData> d_ptr;
-};
+    static QKnxSecureKey publicKeyFromPrivate(const QKnxSecureKey &privateKey);
+    static QKnxSecureKey publicKeyFromPrivate(const QKnxByteArray &privateKey);
 
-class Q_KNX_EXPORT QKnxCurve25519PrivateKey final
-{
-public:
-    QKnxCurve25519PrivateKey();
-    ~QKnxCurve25519PrivateKey();
+    static void generateKeys(QKnxSecureKey *privateKey, QKnxSecureKey *publicKey);
 
-    bool isNull() const;
-    bool isValid() const;
+    static QKnxByteArray sharedSecret(const QKnxSecureKey &privateKey,
+                                      const QKnxSecureKey &peerPublicKey);
+    static QKnxByteArray sharedSecret(const QKnxByteArray &privateKey,
+                                      const QKnxByteArray &peerPublicKey);
 
-    QKnxByteArray bytes() const;
-    static QKnxCurve25519PrivateKey fromBytes(const QKnxByteArray &data, quint16 index = 0);
+    QKnxSecureKey(const QKnxSecureKey &other);
+    QKnxSecureKey &operator=(const QKnxSecureKey &other);
 
-    QKnxCurve25519PrivateKey(const QKnxCurve25519PrivateKey &other);
-    QKnxCurve25519PrivateKey &operator=(const QKnxCurve25519PrivateKey &other);
+    bool operator==(const QKnxSecureKey &other) const;
+    bool operator!=(const QKnxSecureKey &other) const;
 
 private:
-    friend class QKnxCurve25519PublicKey;
-    friend class QKnxCryptographicEngine;
-    QSharedDataPointer<QKnxCurve25519KeyData> d_ptr;
+    QSharedDataPointer<QKnxSecureKeyData> d_ptr;
 };
 
 class Q_KNX_EXPORT QKnxCryptographicEngine final
@@ -90,12 +88,11 @@ public:
     QKnxCryptographicEngine() = delete;
     ~QKnxCryptographicEngine() = default;
 
-    static QKnxByteArray sharedSecret(const QKnxCurve25519PublicKey &pub,
-                                      const QKnxCurve25519PrivateKey &priv);
-
+    static QKnxByteArray sessionKey(const QKnxSecureKey &privateKey,
+                                    const QKnxSecureKey &peerPublicKey);
+    static QKnxByteArray sessionKey(const QKnxByteArray &privateKey,
+                                    const QKnxByteArray &peerPublicKey);
     static QKnxByteArray sessionKey(const QKnxByteArray &sharedSecret);
-    static QKnxByteArray sessionKey(const QKnxCurve25519PublicKey &pub,
-                                    const QKnxCurve25519PrivateKey &priv);
 
     static QKnxByteArray userPasswordHash(const QByteArray &password);
     static QKnxByteArray deviceAuthenticationCodeHash(const QByteArray &password);
@@ -133,9 +130,6 @@ public:
                                                           quint48 sequenceNumber = 0,
                                                           const QKnxByteArray &serialNumber = {},
                                                           quint16 messageTag = 0);
-
-    static QKnxByteArray pkcs5Pbkdf2HmacSha256(const QByteArray &password, const QKnxByteArray &salt,
-        qint32 iterations, quint8 derivedKeyLength);
 };
 
 QT_END_NAMESPACE
