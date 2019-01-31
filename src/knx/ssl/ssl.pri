@@ -1,9 +1,11 @@
 HEADERS += ssl/qknxcurve25519.h \
            ssl/qknxcryptographicdata_p.h \
-           ssl/qknxsecurekey.h
+           ssl/qknxsecurekey.h \
+           ssl/qknxsecureconfiguration.h
 
 SOURCES += ssl/qknxcurve25519.cpp \
-           ssl/qknxsecurekey.cpp
+           ssl/qknxsecurekey.cpp \
+           ssl/qknxsecureconfiguration.cpp
 
 qtConfig(opensslv11) { # OpenSSL 1.1 support is required.
     HEADERS += ssl/qssl.h \

@@ -41,6 +41,7 @@
 // We mean it.
 //
 
+#include <QtKnx/qknxaddress.h>
 #include <QtKnx/qknxcurve25519.h>
 #include <private/qtnetworkglobal_p.h>
 
@@ -90,6 +91,21 @@ public:
     EVP_PKEY *m_evpPKey { nullptr };
 #endif
     QKnxSecureKey::Type m_type { QKnxSecureKey::Type::Invalid };
+};
+
+class QKnxSecureConfigurationPrivate : public QSharedData
+{
+public:
+    QKnxSecureConfigurationPrivate() = default;
+    ~QKnxSecureConfigurationPrivate() = default;
+
+    QKnxSecureKey privateKey;
+    QKnxSecureKey publicKey;
+    QKnxNetIp::SecureUserId userId { QKnxNetIp::SecureUserId::Reserved };
+    QByteArray userPassword;
+    QKnxAddress ia;
+    QByteArray deviceAuthenticationCode;
+    bool keepAlive { false };
 };
 
 QT_END_NAMESPACE
