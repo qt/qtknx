@@ -238,7 +238,12 @@ namespace QKnx
             TunnelingRequestTimeout = 1000,
 
             // KNXnet/IP routing service
-            RoutingBusyWaitTime = 100
+            RoutingBusyWaitTime = 100,
+
+            // KNXnet/IP secure session
+            SecureSessionTimeout = 60000,
+            SecureSessionRequestTimeout = 10000,
+            SecureSessionAuthenticateTimeout = 10000
         };
         Q_ENUM_NS(Timeout)
 

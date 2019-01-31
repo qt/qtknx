@@ -32,8 +32,10 @@
 
 #include <QtKnx/qtknxglobal.h>
 #include <QtKnx/qknxnetipcri.h>
-#include <QtKnx/qknxnetiphpai.h>
 #include <QtKnx/qknxnetipframe.h>
+#include <QtKnx/qknxnetiphpai.h>
+#include <QtKnx/qknxsecureconfiguration.h>
+
 #include <QtNetwork/qudpsocket.h>
 
 QT_BEGIN_NAMESPACE
@@ -67,6 +69,11 @@ public:
         Acknowledge,
         Heartbeat,
         Cemi,
+        SecureConfig,
+        SerialNumber,
+        AuthFailed,
+        Timeout,
+        Close,
         Unknown = 0x80
     };
     Q_ENUM(Error)
@@ -110,6 +117,15 @@ public:
     void connectToHost(const QKnxNetIpHpai &controlEndpoint);
     void connectToHost(const QHostAddress &address, quint16 port);
     void connectToHost(const QHostAddress &address, quint16 port, QKnxNetIp::HostProtocol proto);
+
+    QKnxByteArray serialNumer() const;
+    void setSerialNumber(const QKnxByteArray &serialNumber);
+
+    QKnxSecureConfiguration secureConfiguration() const;
+    void setSecureConfiguration(const QKnxSecureConfiguration &config);
+
+    void connectToHostEncrypted(const QKnxNetIpHpai &controlEndpoint);
+    void connectToHostEncrypted(const QHostAddress &address, quint16 port);
 
     void disconnectFromHost();
 

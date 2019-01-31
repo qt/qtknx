@@ -42,12 +42,15 @@
 //
 
 #include <QtCore/qtimer.h>
-#include <QtKnx/qknxaddress.h>
+
 #include <QtKnx/qtknxglobal.h>
-#include <QtKnx/qknxnetipendpointconnection.h>
-#include <QtNetwork/qhostaddress.h>
+#include <QtKnx/qknxaddress.h>
 #include <QtKnx/qknxdevicemanagementframe.h>
 #include <QtKnx/qknxlinklayerframe.h>
+#include <QtKnx/qknxnetipendpointconnection.h>
+#include <QtKnx/qknxsecureconfiguration.h>
+
+#include <QtNetwork/qhostaddress.h>
 
 #include <private/qobject_p.h>
 
@@ -79,6 +82,11 @@ struct Endpoint final
         : address(addr)
         , port(p)
     {}
+    Endpoint(const QHostAddress &addr, quint16 p, QKnxNetIp::HostProtocol c)
+        : address(addr)
+        , port(p)
+        , code(c)
+    {}
     explicit Endpoint(const QKnxNetIpHpaiProxy &hpai)
         : address(hpai.hostAddress())
         , port(hpai.port())
@@ -90,7 +98,7 @@ struct Endpoint final
     Endpoint &operator=(const QKnxNetIpHpai &s)
     {
         const QKnxNetIpHpaiProxy hpai(s);
-        address = hpai.hostAddress(); port = hpai.port();
+        code = hpai.hostProtocol(); address = hpai.hostAddress(); port = hpai.port();
         return *this;
     }
     operator QKnxNetIpHpai() const
@@ -128,7 +136,7 @@ public:
     bool sendCemiRequest();
     void sendStateRequest();
 
-    void processReceivedFrame(const QHostAddress &address, int port);
+    QKnxNetIp::ServiceType processReceivedFrame(const QKnxNetIpFrame &frame);
     virtual void process(const QKnxLinkLayerFrame &frame);
     virtual void process(const QKnxDeviceManagementFrame &frame);
 
@@ -203,6 +211,20 @@ private:
     QKnxByteArray m_rxBuffer;
 
     UserProperties m_user;
+
+    quint16 m_sessionId { 0 };
+    quint48 m_sequenceNumber { 0 };
+    bool m_waitForAuthentication { false };
+
+    QKnxByteArray m_xorX_Y;
+    QKnxByteArray m_deviceAuthHash;
+    QTimer *m_secureTimer { nullptr };
+
+    QKnxSecureKey m_serverPublicKey;
+    QKnxSecureConfiguration m_secureConfig;
+
+    // TODO: We need some kind of device configuration class as well.
+    QKnxByteArray m_serialNumber { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
 };
 
 QT_END_NAMESPACE

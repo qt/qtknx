@@ -37,6 +37,11 @@
 #include "qknxnetipdisconnectresponse.h"
 #include "qknxnetipendpointconnection.h"
 #include "qknxnetipendpointconnection_p.h"
+#include "qknxnetipsessionauthenticate.h"
+#include "qknxnetipsecurewrapper.h"
+#include "qknxnetipsessionrequest.h"
+#include "qknxnetipsessionresponse.h"
+#include "qknxnetipsessionstatus.h"
 #include "qknxnetiptunnelingacknowledge.h"
 #include "qknxnetiptunnelingfeatureget.h"
 #include "qknxnetiptunnelingfeatureset.h"
@@ -46,6 +51,8 @@
 #include "qnetworkdatagram.h"
 #include "qtcpsocket.h"
 #include "qudpsocket.h"
+
+#include "private/qknxcryptographicdata_p.h"
 
 QT_BEGIN_NAMESPACE
 /*!
@@ -177,6 +184,7 @@ void QKnxNetIpEndpointConnectionPrivate::setupTimer()
     QKnxPrivate::clearTimer(&m_connectionStateTimer);
     QKnxPrivate::clearTimer(&m_disconnectRequestTimer);
     QKnxPrivate::clearTimer(&m_acknowledgeTimer);
+    QKnxPrivate::clearTimer(&m_secureTimer);
 
     Q_Q(QKnxNetIpEndpointConnection);
     m_heartbeatTimer = new QTimer(q);
@@ -235,6 +243,9 @@ void QKnxNetIpEndpointConnectionPrivate::setupTimer()
             sendCemiRequest();
         }
     });
+
+    m_secureTimer = new QTimer(q);
+    m_secureTimer->setSingleShot(true);
 }
 
 namespace QKnxPrivate
@@ -245,33 +256,21 @@ namespace QKnxPrivate
     }
 }
 
-void QKnxNetIpEndpointConnectionPrivate::processReceivedFrame(const QHostAddress &address, int port)
+QKnxNetIp::ServiceType
+    QKnxNetIpEndpointConnectionPrivate::processReceivedFrame(const QKnxNetIpFrame &frame)
 {
-    const auto frame = QKnxNetIpFrame::fromBytes(m_rxBuffer);
-    if (!frame.isValid())
-        return;
-
-    // remove already processed KNX frame from buffer
-    m_rxBuffer.remove(0, frame.size());
-
     // TODO: fix the version and validity checks
-    // if (!m_supportedVersions.contains(header.protocolVersion())) {
+    // if (!m_supportedVersions.contains(frame.header().protocolVersion())) {
     //     send E_VERSION_NOT_SUPPORTED confirmation frame
     //     send disconnect request
-    // } else if (header.protocolVersion() != m_controlEndpointVersion) {
+    // } else if (frame.header().protocolVersion() != m_controlEndpointVersion) {
     //     send disconnect request
     // } else {
     // TODO: set the m_dataEndpointVersion once we receive or send the first frame
 
-    switch (frame.serviceType()) {
+    auto serviceType = frame.serviceType();
+    switch (serviceType) {
     case QKnxNetIp::ServiceType::ConnectResponse:
-        if (m_nat) { // TODO: Review this for TCP connections
-            if (QKnxPrivate::isNullOrLocal(m_remoteDataEndpoint.address)
-                || m_remoteDataEndpoint.port == 0) {
-                    m_remoteDataEndpoint.port = port;
-                    m_remoteDataEndpoint.address = address;
-            }
-        }
         processConnectResponse(frame);
         break;
     case QKnxNetIp::ServiceType::ConnectionStateResponse:
@@ -302,9 +301,201 @@ void QKnxNetIpEndpointConnectionPrivate::processReceivedFrame(const QHostAddress
     case QKnxNetIp::ServiceType::TunnelingFeatureResponse:
         processFeatureFrame(frame);
         break;
+    case QKnxNetIp::ServiceType::SecureWrapper: {
+        qDebug() << "Received secure wrapper frame:" << frame;
+
+        const QKnxNetIpSecureWrapperProxy proxy(frame);
+        if (!proxy.isValid())
+            break;
+
+        const auto sessionKey = QKnxCryptographicEngine::sessionKey(m_secureConfig
+            .d->privateKey, m_serverPublicKey);
+
+        auto decData = QKnxCryptographicEngine::decryptSecureWrapperPayload(sessionKey,
+            proxy.encapsulatedFrame(), proxy.sequenceNumber(), proxy.serialNumber(),
+            proxy.messageTag());
+
+        return processReceivedFrame(QKnxNetIpFrame::fromBytes(decData));
+    }   break;
+
+    case QKnxNetIp::ServiceType::SessionRequest:
+        qDebug() << "Unexpectedly received session request frame:" << frame;
+        break;
+
+    case QKnxNetIp::ServiceType::SessionResponse: {
+        qDebug() << "Received session response frame:" << frame;
+
+        QKnxNetIpSessionResponseProxy proxy(frame);
+        if (!proxy.isValid())
+            break;
+
+        m_deviceAuthHash = QKnxCryptographicEngine::deviceAuthenticationCodeHash(m_secureConfig.
+                d->deviceAuthenticationCode);
+        m_xorX_Y = QKnxCryptographicEngine::XOR(m_secureConfig.d->publicKey.bytes(), proxy
+            .publicKey());
+
+        auto mac = QKnxCryptographicEngine::computeMessageAuthenticationCode(m_deviceAuthHash,
+            frame.header(), proxy.secureSessionId(), m_xorX_Y);
+        auto decMac = QKnxCryptographicEngine::decryptMessageAuthenticationCode(m_deviceAuthHash,
+            proxy.messageAuthenticationCode());
+
+        if (decMac != mac)
+            break; // MAC could not be verified, bail out
+
+        m_secureTimer->stop();
+        m_secureTimer->disconnect();
+        m_sessionId = proxy.secureSessionId();
+        m_serverPublicKey = QKnxSecureKey::fromBytes(QKnxSecureKey::Type::Public, proxy.publicKey());
+
+        auto secureWrapper = QKnxNetIpSecureWrapperProxy::secureBuilder()
+            .setSecureSessionId(m_sessionId)
+            .setSequenceNumber(m_sequenceNumber)
+            .setSerialNumber(m_serialNumber)
+            // .setMessageTag(0x0000) TODO: Do we need an API for this?
+            .setEncapsulatedFrame(QKnxNetIpSessionAuthenticateProxy::secureBuilder()
+                .setUserId(m_secureConfig.d->userId)
+                .create(m_secureConfig.d->userPassword, m_secureConfig.d->publicKey.bytes(), proxy
+                    .publicKey()))
+            .create(QKnxCryptographicEngine::sessionKey(m_secureConfig.d->privateKey,
+                m_serverPublicKey));
+
+        ++m_sequenceNumber;
+        m_waitForAuthentication = true;
+        if (m_tcpSocket)
+            m_tcpSocket->write(secureWrapper.bytes().toByteArray());
+
+        QObject::connect(m_secureTimer, &QTimer::timeout, [&]() {
+            m_secureTimer->stop();
+            setAndEmitErrorOccurred(QKnxNetIpEndpointConnection::Error::AuthFailed,
+                QKnxNetIpEndpointConnection::tr("Did not receive session status frame."));
+
+            auto secureStatusWrapper = QKnxNetIpSecureWrapperProxy::secureBuilder()
+                .setSecureSessionId(m_sessionId)
+                .setSequenceNumber(m_sequenceNumber)
+                .setSerialNumber(m_serialNumber)
+                // .setMessageTag(0x0000) TODO: Do we need an API for this?
+                .setEncapsulatedFrame(QKnxNetIpSessionStatusProxy::builder()
+                    .setStatus(QKnxNetIp::SecureSessionStatus::Close)
+                    .create())
+                .create(QKnxCryptographicEngine::sessionKey(m_secureConfig.d->privateKey,
+                    m_serverPublicKey));
+            if (m_tcpSocket)
+                m_tcpSocket->write(secureStatusWrapper.bytes().toByteArray());
+
+            Q_Q(QKnxNetIpEndpointConnection);
+            q->disconnectFromHost();
+        });
+        m_secureTimer->start(QKnxNetIp::SecureSessionAuthenticateTimeout);
+    }   break;
+
+    case QKnxNetIp::ServiceType::SessionAuthenticate:
+        qDebug() << "Unexpectedly received session authenticate frame:" << frame;
+        break;
+
+    case QKnxNetIp::ServiceType::SessionStatus: {
+        qDebug() << "Received session status frame:" << frame;
+
+        QKnxNetIpSessionStatusProxy ssp(frame);
+        if (!ssp.isValid())
+            break;
+
+        bool close { false };
+        switch (ssp.status()) {
+        case QKnxNetIp::SecureSessionStatus::AuthenticationSuccess: {
+            if (m_waitForAuthentication) {
+                m_secureTimer->stop();
+                m_secureTimer->disconnect();
+                m_waitForAuthentication = false;
+                auto secureWrapper = QKnxNetIpSecureWrapperProxy::secureBuilder()
+                    .setSecureSessionId(m_sessionId)
+                    .setSequenceNumber(m_sequenceNumber)
+                    .setSerialNumber(m_serialNumber)
+                    // .setMessageTag(0x0000) TODO: Do we need an API for this?
+                    .setEncapsulatedFrame(QKnxNetIpConnectRequestProxy::builder()
+                        .setControlEndpoint(m_nat ? m_natEndpoint : m_localEndpoint)
+                        .setDataEndpoint(m_nat ? m_natEndpoint : m_localEndpoint)
+                        .setRequestInformation(m_cri)
+                        .create())
+                    .create(QKnxCryptographicEngine::sessionKey(m_secureConfig.d->privateKey,
+                        m_serverPublicKey));
+
+                ++m_sequenceNumber;
+                if (m_tcpSocket)
+                    m_tcpSocket->write(secureWrapper.bytes().toByteArray());
+
+                if (!m_secureConfig.d->keepAlive)
+                    break;
+
+                QObject::connect(m_secureTimer, &QTimer::timeout, [&]() {
+                    auto secureStatusWrapper = QKnxNetIpSecureWrapperProxy::secureBuilder()
+                        .setSecureSessionId(m_sessionId)
+                        .setSequenceNumber(m_sequenceNumber)
+                        .setSerialNumber(m_serialNumber)
+                        // .setMessageTag(0x0000) TODO: Do we need an API for this?
+                        .setEncapsulatedFrame(QKnxNetIpSessionStatusProxy::builder()
+                            .setStatus(QKnxNetIp::SecureSessionStatus::KeepAlive)
+                            .create())
+                        .create(QKnxCryptographicEngine::sessionKey(m_secureConfig.d->privateKey,
+                            m_serverPublicKey));
+                    qDebug() << "Sending keep alive status frame:" << secureStatusWrapper;
+
+                    ++m_sequenceNumber;
+                    if (m_tcpSocket)
+                        m_tcpSocket->write(secureStatusWrapper.bytes().toByteArray());
+                });
+                m_secureTimer->setSingleShot(false);
+                m_secureTimer->start(QKnxNetIp::Timeout::SecureSessionTimeout - 5000);
+            }
+        }   break;
+
+        case QKnxNetIp::SecureSessionStatus::KeepAlive:
+            // TODO: implement in case we're the server
+            qDebug() << "Unexpectedly received keep alive status frame:" << frame;
+            break;
+
+        case QKnxNetIp::SecureSessionStatus::AuthenticationFailed:
+            setAndEmitErrorOccurred(QKnxNetIpEndpointConnection::Error::AuthFailed,
+                QKnxNetIpEndpointConnection::tr("Secure session authentication failed."));
+            close = true;
+            break;
+
+        case QKnxNetIp::SecureSessionStatus::Unauthenticated:
+            setAndEmitErrorOccurred(QKnxNetIpEndpointConnection::Error::AuthFailed,
+                QKnxNetIpEndpointConnection::tr("Secure session not authenticated."));
+            close = true;
+            break;
+
+        case QKnxNetIp::SecureSessionStatus::Timeout:
+            setAndEmitErrorOccurred(QKnxNetIpEndpointConnection::Error::Timeout,
+                QKnxNetIpEndpointConnection::tr("A timeout occurred during secure session handshake."));
+            close = true;
+            break;
+
+        case QKnxNetIp::SecureSessionStatus::Close:
+            setAndEmitErrorOccurred(QKnxNetIpEndpointConnection::Error::Timeout,
+                QKnxNetIpEndpointConnection::tr("The server requested to close the secure session."));
+            close = true;
+            break;
+
+        default:
+            qDebug() << "Received unknown status frame:" << frame;
+            break;
+        }
+
+        if (close) {
+            Q_Q(QKnxNetIpEndpointConnection);
+            q->disconnectFromHost();
+        }
+    }   break;
+
+    case QKnxNetIp::ServiceType::TimerNotify:
+        qDebug() << "Unexpectedly received timer notify frame:" << frame;
+        break;
+
     default:
         break;
     }
+    return serviceType;
 }
 
 void QKnxNetIpEndpointConnectionPrivate::setup()
@@ -327,47 +518,52 @@ void QKnxNetIpEndpointConnectionPrivate::setup()
     m_errorString = QString();
     m_error = QKnxNetIpEndpointConnection::Error::None;
 
+    QAbstractSocket *socket = nullptr;
     if (m_tcpSocket) {
-        QObject::connect(m_tcpSocket, &QIODevice::readyRead, [&]() {
+        socket = m_tcpSocket;
+        QObject::connect(m_tcpSocket, &QTcpSocket::readyRead, [&]() {
+            if (m_tcpSocket->bytesAvailable() < QKnxNetIpFrameHeader::HeaderSize10)
+                return;
             m_rxBuffer += QKnxByteArray::fromByteArray(m_tcpSocket->readAll());
-            int bufferSize = m_rxBuffer.size();
-            bool continueProcessingRxBuffer = false;
-            do {
-                // TODO: AN184 v03 KNXnet-IP Core v2 AS, 2.2.3.2.3.2
-                processReceivedFrame(m_remoteControlEndpoint.address,
-                                m_remoteControlEndpoint.port);
-                continueProcessingRxBuffer = (m_rxBuffer.size() < bufferSize);
-                bufferSize = m_rxBuffer.size();
-            } while (continueProcessingRxBuffer);
-        });
 
-        using overload = void (QTcpSocket::*)(QTcpSocket::SocketError);
-        QObject::connect(m_tcpSocket,
-            static_cast<overload>(&QTcpSocket::error), [&](QTcpSocket::SocketError) {
-                setAndEmitErrorOccurred(QKnxNetIpEndpointConnection::Error::Network,
-                    m_tcpSocket->errorString());
+            // TODO: AN184 v03 KNXnet-IP Core v2 AS, 2.2.3.2.3.2
+            auto header = QKnxNetIpFrameHeader::fromBytes(m_rxBuffer);
+            if (header.isValid() && m_rxBuffer.size() < header.totalSize())
+                return;
 
-                Q_Q(QKnxNetIpEndpointConnection);
-                q->disconnectFromHost();
+            auto frame = QKnxNetIpFrame::fromBytes(m_rxBuffer);
+            m_rxBuffer.remove(0, header.totalSize());
+            processReceivedFrame(frame);
         });
     } else if (m_udpSocket) {
+        socket = m_udpSocket;
         QObject::connect(m_udpSocket, &QUdpSocket::readyRead, [&]() {
             while (m_udpSocket && m_udpSocket->state() == QUdpSocket::BoundState
                 && m_udpSocket->hasPendingDatagrams()) {
-                auto datagram = m_udpSocket->receiveDatagram();
-                m_rxBuffer += QKnxByteArray::fromByteArray(datagram.data());
-                processReceivedFrame(datagram.senderAddress(), datagram.senderPort());
+                    auto data = m_udpSocket->receiveDatagram().data();
+                    auto frame = QKnxNetIpFrame::fromBytes(QKnxByteArray::fromByteArray(data));
+                    if (processReceivedFrame(frame) != QKnxNetIp::ServiceType::ConnectResponse)
+                        continue;
+
+                    if (m_nat) { // TODO: Figure out if we need this for TCP connections?
+                        if (QKnxPrivate::isNullOrLocal(m_remoteDataEndpoint.address)
+                            || m_remoteDataEndpoint.port == 0) {
+                            auto datagram = m_udpSocket->receiveDatagram();
+                            m_remoteDataEndpoint.port = datagram.senderPort();
+                            m_remoteDataEndpoint.address = datagram.senderAddress();
+                        }
+                    }
             }
         });
+    }
 
-        using overload = void (QUdpSocket::*)(QUdpSocket::SocketError);
-        QObject::connect(m_udpSocket,
-            static_cast<overload>(&QUdpSocket::error), [&](QUdpSocket::SocketError) {
-            setAndEmitErrorOccurred(QKnxNetIpEndpointConnection::Error::Network,
-                m_udpSocket->errorString());
-
-            Q_Q(QKnxNetIpEndpointConnection);
-            q->disconnectFromHost();
+    if (socket) {
+        QObject::connect(socket, QOverload<QAbstractSocket::SocketError>::of(&QAbstractSocket::error),
+            [socket, this](QAbstractSocket::SocketError) {
+                setAndEmitErrorOccurred(QKnxNetIpEndpointConnection::Error::Network,
+                    socket->errorString());
+                Q_Q(QKnxNetIpEndpointConnection);
+                q->disconnectFromHost();
         });
     }
 }
@@ -379,11 +575,12 @@ void QKnxNetIpEndpointConnectionPrivate::cleanup()
     QKnxPrivate::clearTimer(&m_connectionStateTimer);
     QKnxPrivate::clearTimer(&m_disconnectRequestTimer);
     QKnxPrivate::clearTimer(&m_acknowledgeTimer);
+    QKnxPrivate::clearTimer(&m_secureTimer);
 
     if (m_udpSocket) {
         m_udpSocket->close();
         QKnxPrivate::clearSocket(&m_udpSocket);
-    } else {
+    } else if (m_tcpSocket) {
         m_tcpSocket->close();
         QKnxPrivate::clearSocket(&m_tcpSocket);
     }
@@ -402,7 +599,20 @@ bool QKnxNetIpEndpointConnectionPrivate::sendCemiRequest()
         m_cemiRequests++;
         m_acknowledgeTimer->start(m_acknowledgeTimeout);
     } else if (m_tcpSocket) {
-        m_tcpSocket->write(m_lastSendCemiRequest.bytes().toByteArray());
+        if (m_secureConfig.isValid()) {
+            auto secureFrame = QKnxNetIpSecureWrapperProxy::secureBuilder()
+                .setSecureSessionId(m_sessionId)
+                .setSequenceNumber(m_sequenceNumber)
+                .setSerialNumber(m_serialNumber)
+                // .setMessageTag(0x0000) TODO: Do we need an API for this?
+                .setEncapsulatedFrame(m_lastSendCemiRequest)
+                .create(QKnxCryptographicEngine::sessionKey(m_secureConfig.d->privateKey,
+                    m_serverPublicKey));
+            ++m_sequenceNumber;
+            m_tcpSocket->write(secureFrame.bytes().toByteArray());
+        } else {
+            m_tcpSocket->write(m_lastSendCemiRequest.bytes().toByteArray());
+        }
         m_waitForAcknowledgement = false;
     }
     return !m_waitForAcknowledgement;
@@ -414,7 +624,20 @@ void QKnxNetIpEndpointConnectionPrivate::sendStateRequest()
         .bytes().toHex();
 
     if (m_tcpSocket) {
-        m_tcpSocket->write(m_lastStateRequest.bytes().toByteArray());
+        if (m_secureConfig.isValid()) {
+            auto secureFrame = QKnxNetIpSecureWrapperProxy::secureBuilder()
+                .setSecureSessionId(m_sessionId)
+                .setSequenceNumber(m_sequenceNumber)
+                .setSerialNumber(m_serialNumber)
+                // .setMessageTag(0x0000) TODO: Do we need an API for this?
+                .setEncapsulatedFrame(m_lastStateRequest)
+                .create(QKnxCryptographicEngine::sessionKey(m_secureConfig.d->privateKey,
+                    m_serverPublicKey));
+            ++m_sequenceNumber;
+            m_tcpSocket->write(secureFrame.bytes().toByteArray());
+        } else {
+            m_tcpSocket->write(m_lastStateRequest.bytes().toByteArray());
+        }
     } else {
         m_udpSocket->writeDatagram(m_lastStateRequest.bytes().toByteArray(),
             m_remoteControlEndpoint.address, m_remoteControlEndpoint.port);
@@ -699,16 +922,27 @@ void QKnxNetIpEndpointConnectionPrivate::processDisconnectRequest(const QKnxNetI
 
     QKnxNetIpDisconnectRequestProxy request(frame);
     if (request.channelId() == m_channelId) {
-        auto frame = QKnxNetIpDisconnectResponseProxy::builder()
+        auto responseFrame = QKnxNetIpDisconnectResponseProxy::builder()
             .setChannelId(m_channelId)
             .setStatus(QKnxNetIp::Error::None)
             .create();
-        qDebug() << "Sending disconnect response:" << frame;
+        qDebug() << "Sending disconnect response:" << responseFrame;
         if (m_tcpSocket) {
-            m_tcpSocket->write(frame.bytes().toByteArray());
+            if (m_secureConfig.isValid()) {
+                responseFrame = QKnxNetIpSecureWrapperProxy::secureBuilder()
+                    .setSecureSessionId(m_sessionId)
+                    .setSequenceNumber(m_sequenceNumber)
+                    .setSerialNumber(m_serialNumber)
+                    // .setMessageTag(0x0000) TODO: Do we need an API for this?
+                    .setEncapsulatedFrame(responseFrame)
+                    .create(QKnxCryptographicEngine::sessionKey(m_secureConfig.d->privateKey,
+                        m_serverPublicKey));
+                ++m_sequenceNumber;
+            }
+            m_tcpSocket->write(responseFrame.bytes().toByteArray());
         } else {
-            m_udpSocket->writeDatagram(frame.bytes().toByteArray(),
-                                    m_remoteControlEndpoint.address, m_remoteControlEndpoint.port);
+            m_udpSocket->writeDatagram(responseFrame.bytes().toByteArray(),
+                m_remoteControlEndpoint.address, m_remoteControlEndpoint.port);
         }
 
         Q_Q(QKnxNetIpEndpointConnection);
@@ -757,7 +991,8 @@ void QKnxNetIpEndpointConnectionPrivate::setAndEmitErrorOccurred(
 }
 
 
-// -- QKnxNetIpClient
+// -- QKnxNetIpEndpointConnection
+
 /*!
     Destroys a connection and disconnects from the server.
 */
@@ -879,8 +1114,8 @@ quint32 QKnxNetIpEndpointConnection::heartbeatTimeout() const
 }
 
 /*!
-    Sets the value of the heartbeat timeout. Every \a msec a state request is sent over the
-    connection to keep it alive.
+    Sets the value of the heartbeat timeout. Every \a msec a state request is
+    sent over the connection to keep it alive.
 */
 void QKnxNetIpEndpointConnection::setHeartbeatTimeout(quint32 msec)
 {
@@ -939,7 +1174,7 @@ void QKnxNetIpEndpointConnection::connectToHost(const QHostAddress &address, qui
             "endpoint supported."));
         return;
     }
-    d->m_remoteControlEndpoint = Endpoint(address, port);
+    d->m_remoteControlEndpoint = { address, port };
 
     isIPv4 = false;
     d->m_user.address.toIPv4Address(&isIPv4);
@@ -952,23 +1187,14 @@ void QKnxNetIpEndpointConnection::connectToHost(const QHostAddress &address, qui
     d->setAndEmitStateChanged(QKnxNetIpEndpointConnection::State::Starting);
 
     QKnxPrivate::clearSocket(&(d->m_udpSocket));
-
     d->m_udpSocket = new QUdpSocket(this);
-    if (!d->m_udpSocket->bind(d->m_user.address, d->m_user.port)) {
-        d->setAndEmitErrorOccurred(QKnxNetIpEndpointConnection::Error::Network,
-            QKnxNetIpEndpointConnection::tr("Could not bind endpoint: %1")
-                .arg(d->m_udpSocket->errorString()));
-        QKnxPrivate::clearSocket(&d->m_udpSocket);
-        d->setAndEmitStateChanged(QKnxNetIpEndpointConnection::State::Disconnected);
-        return;
-    }
-    d->m_localEndpoint = Endpoint(d->m_udpSocket->localAddress(), d->m_udpSocket->localPort());
-
-    d->setAndEmitStateChanged(QKnxNetIpEndpointConnection::State::Bound);
-
     d->setup();
 
-    d->setAndEmitStateChanged(QKnxNetIpEndpointConnection::State::Connecting);
+    if (!d->m_udpSocket->bind(d->m_user.address, d->m_user.port))
+        return;
+    d->m_localEndpoint = { d->m_udpSocket->localAddress(), d->m_udpSocket->localPort() };
+
+    d->setAndEmitStateChanged(QKnxNetIpEndpointConnection::State::Bound);
 
     auto request = QKnxNetIpConnectRequestProxy::builder()
         .setControlEndpoint(d->m_nat ? d->m_natEndpoint : d->m_localEndpoint)
@@ -978,25 +1204,24 @@ void QKnxNetIpEndpointConnection::connectToHost(const QHostAddress &address, qui
     d->m_controlEndpointVersion = request.header().protocolVersion();
 
     qDebug() << "Sending connect request:" << request;
-
-    d->m_connectRequestTimer->start(QKnxNetIp::ConnectRequestTimeout);
-
+    d->setAndEmitStateChanged(QKnxNetIpEndpointConnection::State::Connecting);
     d->m_udpSocket->writeDatagram(request.bytes().toByteArray(),
         d->m_remoteControlEndpoint.address, d->m_remoteControlEndpoint.port);
+    d->m_connectRequestTimer->start(QKnxNetIp::ConnectRequestTimeout);
 }
 
 /*!
     \since 5.12
 
-    Establishes a connection to the host with \a address, \a port and \a proto.
+    Establishes a connection to the host with \a address, \a port and \a protocol.
 */
 void QKnxNetIpEndpointConnection::connectToHost(const QHostAddress &address, quint16 port,
-    QKnxNetIp::HostProtocol proto)
+    QKnxNetIp::HostProtocol protocol)
 {
-    if (proto == QKnxNetIp::HostProtocol::Unknown)
+    if (!QKnxNetIp::isStructType(protocol))
         return;
 
-    if (proto == QKnxNetIp::HostProtocol::UDP_IPv4) {
+    if (protocol == QKnxNetIp::HostProtocol::UDP_IPv4) {
         connectToHost(address, port);
         return;
     }
@@ -1013,8 +1238,7 @@ void QKnxNetIpEndpointConnection::connectToHost(const QHostAddress &address, qui
             "endpoint supported."));
         return;
     }
-    d->m_remoteControlEndpoint = Endpoint(address, port);
-    d->m_remoteControlEndpoint.code = QKnxNetIp::HostProtocol::TCP_IPv4;
+    d->m_remoteControlEndpoint = { address, port, QKnxNetIp::HostProtocol::TCP_IPv4 };
 
     isIPv4 = false;
     d->m_user.address.toIPv4Address(&isIPv4);
@@ -1027,18 +1251,14 @@ void QKnxNetIpEndpointConnection::connectToHost(const QHostAddress &address, qui
     d->setAndEmitStateChanged(QKnxNetIpEndpointConnection::State::Starting);
 
     QKnxPrivate::clearSocket(&(d->m_tcpSocket));
-
     d->m_tcpSocket = new QTcpSocket(this);
     d->setup();
 
     d->setAndEmitStateChanged(QKnxNetIpEndpointConnection::State::Connecting);
-
-    d->m_tcpSocket->abort();
     d->m_tcpSocket->connectToHost(address, port);
 
-    d->m_localEndpoint = Endpoint(d->m_tcpSocket->localAddress(),
-                                  d->m_tcpSocket->localPort());
-    d->m_localEndpoint.code = QKnxNetIp::HostProtocol::TCP_IPv4;
+    d->m_localEndpoint = { d->m_tcpSocket->localAddress(), d->m_tcpSocket->localPort(),
+        QKnxNetIp::HostProtocol::TCP_IPv4 };
     d->m_natEndpoint.code = QKnxNetIp::HostProtocol::TCP_IPv4;
     d->m_remoteDataEndpoint.code = QKnxNetIp::HostProtocol::TCP_IPv4;
 
@@ -1053,9 +1273,152 @@ void QKnxNetIpEndpointConnection::connectToHost(const QHostAddress &address, qui
 
         qDebug() << "Sending connect request:" << request;
         d->m_tcpSocket->write(request.bytes().toByteArray());
+        d->m_connectRequestTimer->start(QKnxNetIp::ConnectRequestTimeout);
     });
+}
 
-    // TODO: Implement connect request timeout.
+/*
+    \since 5.13
+
+    Returns the serial number of the device using this connection. The default
+    value is set to \c {0x000000000000}.
+*/
+QKnxByteArray QKnxNetIpEndpointConnection::serialNumer() const
+{
+    Q_D(const QKnxNetIpEndpointConnection);
+    return d->m_serialNumber;
+}
+
+/*
+    \since 5.13
+
+    Sets the serial number to \a serialNumber of the device using this
+    connection.
+
+    \note The serial number must contain exactly 6 bytes and cannot be changed
+    while the secure session is established.
+*/
+void QKnxNetIpEndpointConnection::setSerialNumber(const QKnxByteArray &serialNumber)
+{
+    Q_D(QKnxNetIpEndpointConnection);
+    if (d->m_state == QKnxNetIpEndpointConnection::State::Disconnected)
+        d->m_serialNumber = serialNumber;
+}
+
+/*!
+    \since 5.13
+
+    Returns the secure configuration used to establish the secure session.
+*/
+QKnxSecureConfiguration QKnxNetIpEndpointConnection::secureConfiguration() const
+{
+    Q_D(const QKnxNetIpEndpointConnection);
+    return d->m_secureConfig;
+}
+
+/*!
+    \since 5.13
+
+    Sets a secure configuration to be used to establish secure session
+    to \a {config}. The configuration cannot be changed while the secure
+    connection is established.
+*/
+void QKnxNetIpEndpointConnection::setSecureConfiguration(const QKnxSecureConfiguration &config)
+{
+    Q_D(QKnxNetIpEndpointConnection);
+    if (d->m_state == QKnxNetIpEndpointConnection::State::Disconnected)
+        d->m_secureConfig = config;
+}
+
+/*!
+    \since 5.13
+
+    Establishes a connection to the KNXnet/IP control endpoint \a controlEndpoint.
+
+    \sa setSerialNumber(), setSecureConfiguration()
+*/
+void QKnxNetIpEndpointConnection::connectToHostEncrypted(const QKnxNetIpHpai &controlEndpoint)
+{
+    const QKnxNetIpHpaiProxy proxy(controlEndpoint);
+    if (proxy.isValid() && proxy.hostProtocol() == QKnxNetIp::HostProtocol::TCP_IPv4)
+        connectToHost(proxy.hostAddress(), proxy.port());
+}
+
+/*
+    \since 5.13
+
+    Establishes a secure session to the host with \a address and \a port.
+
+    \sa setSerialNumber(), setSecureConfiguration()
+*/
+void QKnxNetIpEndpointConnection::connectToHostEncrypted(const QHostAddress &address, quint16 port)
+{
+    Q_D(QKnxNetIpEndpointConnection);
+    if (d->m_state != State::Disconnected)
+        return;
+
+    if (!d->m_secureConfig.isValid())
+        return d->setAndEmitErrorOccurred(Error::SecureConfig, tr("Invalid secure configuration."));
+
+    if (d->m_serialNumber.size() != 6)
+        return d->setAndEmitErrorOccurred(Error::SerialNumber, tr("Invalid device serial number."));
+
+    auto isIPv4 = false;
+    address.toIPv4Address(&isIPv4);
+    if (!isIPv4) {
+        d->setAndEmitErrorOccurred(Error::NotIPv4, tr("Only IPv4 addresses as remote control "
+            "endpoint supported."));
+        return;
+    }
+    d->m_remoteControlEndpoint = { address, port, QKnxNetIp::HostProtocol::TCP_IPv4 };
+
+    isIPv4 = false;
+    d->m_user.address.toIPv4Address(&isIPv4);
+    if (!isIPv4) {
+        d->setAndEmitErrorOccurred(Error::NotIPv4, tr("Only IPv4 addresses as local control "
+            "endpoint supported."));
+        return;
+    }
+
+    d->setAndEmitStateChanged(QKnxNetIpEndpointConnection::State::Starting);
+
+    QKnxPrivate::clearSocket(&(d->m_tcpSocket));
+    d->m_tcpSocket = new QTcpSocket(this);
+    d->setup();
+
+    d->m_sessionId = 0;
+    d->m_sequenceNumber = 0;
+    d->m_waitForAuthentication = false;
+
+    d->setAndEmitStateChanged(QKnxNetIpEndpointConnection::State::Connecting);
+    d->m_tcpSocket->connectToHost(address, port);
+
+    d->m_localEndpoint = Endpoint(d->m_tcpSocket->localAddress(),
+        d->m_tcpSocket->localPort(), QKnxNetIp::HostProtocol::TCP_IPv4);
+    d->m_natEndpoint.code = QKnxNetIp::HostProtocol::TCP_IPv4;
+    d->m_remoteDataEndpoint.code = QKnxNetIp::HostProtocol::TCP_IPv4;
+
+    connect(d->m_tcpSocket, &QTcpSocket::connected, this, [&]() {
+        Q_D(QKnxNetIpEndpointConnection);
+
+        auto request = QKnxNetIpSessionRequestProxy::builder()
+            .setControlEndpoint(d->m_nat ? d->m_natEndpoint : d->m_localEndpoint)
+            .setPublicKey(d->m_secureConfig.d->publicKey.bytes())
+            .create();
+        d->m_controlEndpointVersion = request.header().protocolVersion();
+
+        qDebug() << "Sending secure session request:" << request;
+        d->m_tcpSocket->write(request.bytes().toByteArray());
+
+        QObject::connect(d->m_secureTimer, &QTimer::timeout, this, [&]() {
+            Q_D(QKnxNetIpEndpointConnection);
+            d->m_secureTimer->stop();
+            d->setAndEmitErrorOccurred(QKnxNetIpEndpointConnection::Error::AuthFailed,
+                QKnxNetIpEndpointConnection::tr("Could not establish secure session."));
+            disconnectFromHost();
+        });
+        d->m_secureTimer->start(QKnxNetIp::SecureSessionRequestTimeout);
+    });
 }
 
 /*!
