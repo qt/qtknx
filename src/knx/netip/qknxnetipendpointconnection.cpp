@@ -498,9 +498,35 @@ QKnxNetIp::ServiceType
     return serviceType;
 }
 
-void QKnxNetIpEndpointConnectionPrivate::setup()
+bool QKnxNetIpEndpointConnectionPrivate::initConnection(const QHostAddress &a, quint16 p,
+    QKnxNetIp::HostProtocol hp)
 {
-    setupTimer();
+    if (!QKnxNetIp::isStructType(hp))
+        return false;
+
+    if (m_state != QKnxNetIpEndpointConnection::State::Disconnected)
+        return false;
+
+    auto isIPv4 = false;
+    a.toIPv4Address(&isIPv4);
+    if (!isIPv4) {
+        setAndEmitErrorOccurred(QKnxNetIpEndpointConnection::Error::NotIPv4,
+            QKnxNetIpEndpointConnection::tr("Only IPv4 addresses as remote control endpoint "
+                "supported."));
+        return false;
+    }
+    m_remoteControlEndpoint = { a, p, hp };
+
+    isIPv4 = false;
+    m_user.address.toIPv4Address(&isIPv4);
+    if (!isIPv4) {
+        setAndEmitErrorOccurred(QKnxNetIpEndpointConnection::Error::NotIPv4,
+            QKnxNetIpEndpointConnection::tr("Only IPv4 addresses as local control endpoint "
+                "supported."));
+        return false;
+    }
+
+    setAndEmitStateChanged(QKnxNetIpEndpointConnection::State::Starting);
 
     m_channelId = -1;
 
@@ -518,9 +544,21 @@ void QKnxNetIpEndpointConnectionPrivate::setup()
     m_errorString = QString();
     m_error = QKnxNetIpEndpointConnection::Error::None;
 
+    m_natEndpoint.hostProtocol = hp;
+    m_remoteDataEndpoint.hostProtocol = hp;
+
+    m_sessionId = 0;
+    m_sequenceNumber = 0;
+    m_waitForAuthentication = false;
+
+    setupTimer();
+
+    QKnxPrivate::clearSocket(&m_tcpSocket);
+    QKnxPrivate::clearSocket(&m_udpSocket);
+
     QAbstractSocket *socket = nullptr;
-    if (m_tcpSocket) {
-        socket = m_tcpSocket;
+    if (hp == QKnxNetIp::HostProtocol::TCP_IPv4) {
+        socket = m_tcpSocket = new QTcpSocket(q_func());;
         QObject::connect(m_tcpSocket, &QTcpSocket::readyRead, [&]() {
             if (m_tcpSocket->bytesAvailable() < QKnxNetIpFrameHeader::HeaderSize10)
                 return;
@@ -535,8 +573,8 @@ void QKnxNetIpEndpointConnectionPrivate::setup()
             m_rxBuffer.remove(0, header.totalSize());
             processReceivedFrame(frame);
         });
-    } else if (m_udpSocket) {
-        socket = m_udpSocket;
+    } else if (hp == QKnxNetIp::HostProtocol::UDP_IPv4) {
+        socket = m_udpSocket = new QUdpSocket(q_func());
         QObject::connect(m_udpSocket, &QUdpSocket::readyRead, [&]() {
             while (m_udpSocket && m_udpSocket->state() == QUdpSocket::BoundState
                 && m_udpSocket->hasPendingDatagrams()) {
@@ -555,6 +593,8 @@ void QKnxNetIpEndpointConnectionPrivate::setup()
                     }
             }
         });
+    } else {
+        return false;
     }
 
     if (socket) {
@@ -565,7 +605,12 @@ void QKnxNetIpEndpointConnectionPrivate::setup()
                 Q_Q(QKnxNetIpEndpointConnection);
                 q->disconnectFromHost();
         });
+    } else {
+        return false;
     }
+
+    setAndEmitStateChanged(QKnxNetIpEndpointConnection::State::Connecting);
+    return true;
 }
 
 void QKnxNetIpEndpointConnectionPrivate::cleanup()
@@ -1158,37 +1203,14 @@ void QKnxNetIpEndpointConnection::connectToHost(const QKnxNetIpHpai &controlEndp
 }
 
 /*!
-    Establishes a connection to the host with \a address and \a port.
+    Establishes a connection to the host with \a address and \a port via UDP.
 */
 void QKnxNetIpEndpointConnection::connectToHost(const QHostAddress &address, quint16 port)
 {
     Q_D(QKnxNetIpEndpointConnection);
 
-    if (d->m_state != State::Disconnected)
+    if (!d->initConnection(address, port, QKnxNetIp::HostProtocol::UDP_IPv4))
         return;
-
-    auto isIPv4 = false;
-    address.toIPv4Address(&isIPv4);
-    if (!isIPv4) {
-        d->setAndEmitErrorOccurred(Error::NotIPv4, tr("Only IPv4 addresses as remote control "
-            "endpoint supported."));
-        return;
-    }
-    d->m_remoteControlEndpoint = { address, port };
-
-    isIPv4 = false;
-    d->m_user.address.toIPv4Address(&isIPv4);
-    if (!isIPv4) {
-        d->setAndEmitErrorOccurred(Error::NotIPv4, tr("Only IPv4 addresses as local control "
-            "endpoint supported."));
-        return;
-    }
-
-    d->setAndEmitStateChanged(QKnxNetIpEndpointConnection::State::Starting);
-
-    QKnxPrivate::clearSocket(&(d->m_udpSocket));
-    d->m_udpSocket = new QUdpSocket(this);
-    d->setup();
 
     if (!d->m_udpSocket->bind(d->m_user.address, d->m_user.port))
         return;
@@ -1218,52 +1240,20 @@ void QKnxNetIpEndpointConnection::connectToHost(const QHostAddress &address, qui
 void QKnxNetIpEndpointConnection::connectToHost(const QHostAddress &address, quint16 port,
     QKnxNetIp::HostProtocol protocol)
 {
-    if (!QKnxNetIp::isStructType(protocol))
-        return;
+    if (protocol == QKnxNetIp::HostProtocol::UDP_IPv4)
+        return connectToHost(address, port);
 
-    if (protocol == QKnxNetIp::HostProtocol::UDP_IPv4) {
-        connectToHost(address, port);
-        return;
-    }
-
-    // establishing TCP connection
     Q_D(QKnxNetIpEndpointConnection);
-    if (d->m_state != State::Disconnected)
+    if (!d->initConnection(address, port, protocol))
         return;
 
-    auto isIPv4 = false;
-    address.toIPv4Address(&isIPv4);
-    if (!isIPv4) {
-        d->setAndEmitErrorOccurred(Error::NotIPv4, tr("Only IPv4 addresses as remote control "
-            "endpoint supported."));
-        return;
-    }
-    d->m_remoteControlEndpoint = { address, port, QKnxNetIp::HostProtocol::TCP_IPv4 };
-
-    isIPv4 = false;
-    d->m_user.address.toIPv4Address(&isIPv4);
-    if (!isIPv4) {
-        d->setAndEmitErrorOccurred(Error::NotIPv4, tr("Only IPv4 addresses as local control "
-            "endpoint supported."));
-        return;
-    }
-
-    d->setAndEmitStateChanged(QKnxNetIpEndpointConnection::State::Starting);
-
-    QKnxPrivate::clearSocket(&(d->m_tcpSocket));
-    d->m_tcpSocket = new QTcpSocket(this);
-    d->setup();
-
-    d->setAndEmitStateChanged(QKnxNetIpEndpointConnection::State::Connecting);
     d->m_tcpSocket->connectToHost(address, port);
-
-    d->m_localEndpoint = { d->m_tcpSocket->localAddress(), d->m_tcpSocket->localPort(),
-        QKnxNetIp::HostProtocol::TCP_IPv4 };
-    d->m_natEndpoint.code = QKnxNetIp::HostProtocol::TCP_IPv4;
-    d->m_remoteDataEndpoint.code = QKnxNetIp::HostProtocol::TCP_IPv4;
 
     connect(d->m_tcpSocket, &QTcpSocket::connected, this, [&]() {
         Q_D(QKnxNetIpEndpointConnection);
+        d->m_localEndpoint = { d->m_tcpSocket->localAddress(), d->m_tcpSocket->localPort(),
+            QKnxNetIp::HostProtocol::TCP_IPv4 };
+
         auto request = QKnxNetIpConnectRequestProxy::builder()
             .setControlEndpoint(d->m_nat ? d->m_natEndpoint : d->m_localEndpoint)
             .setDataEndpoint(d->m_nat ? d->m_natEndpoint : d->m_localEndpoint)
@@ -1354,7 +1344,7 @@ void QKnxNetIpEndpointConnection::connectToHostEncrypted(const QKnxNetIpHpai &co
 void QKnxNetIpEndpointConnection::connectToHostEncrypted(const QHostAddress &address, quint16 port)
 {
     Q_D(QKnxNetIpEndpointConnection);
-    if (d->m_state != State::Disconnected)
+    if (!d->initConnection(address, port, QKnxNetIp::HostProtocol::TCP_IPv4))
         return;
 
     if (!d->m_secureConfig.isValid())
@@ -1363,43 +1353,12 @@ void QKnxNetIpEndpointConnection::connectToHostEncrypted(const QHostAddress &add
     if (d->m_serialNumber.size() != 6)
         return d->setAndEmitErrorOccurred(Error::SerialNumber, tr("Invalid device serial number."));
 
-    auto isIPv4 = false;
-    address.toIPv4Address(&isIPv4);
-    if (!isIPv4) {
-        d->setAndEmitErrorOccurred(Error::NotIPv4, tr("Only IPv4 addresses as remote control "
-            "endpoint supported."));
-        return;
-    }
-    d->m_remoteControlEndpoint = { address, port, QKnxNetIp::HostProtocol::TCP_IPv4 };
-
-    isIPv4 = false;
-    d->m_user.address.toIPv4Address(&isIPv4);
-    if (!isIPv4) {
-        d->setAndEmitErrorOccurred(Error::NotIPv4, tr("Only IPv4 addresses as local control "
-            "endpoint supported."));
-        return;
-    }
-
-    d->setAndEmitStateChanged(QKnxNetIpEndpointConnection::State::Starting);
-
-    QKnxPrivate::clearSocket(&(d->m_tcpSocket));
-    d->m_tcpSocket = new QTcpSocket(this);
-    d->setup();
-
-    d->m_sessionId = 0;
-    d->m_sequenceNumber = 0;
-    d->m_waitForAuthentication = false;
-
-    d->setAndEmitStateChanged(QKnxNetIpEndpointConnection::State::Connecting);
     d->m_tcpSocket->connectToHost(address, port);
-
-    d->m_localEndpoint = Endpoint(d->m_tcpSocket->localAddress(),
-        d->m_tcpSocket->localPort(), QKnxNetIp::HostProtocol::TCP_IPv4);
-    d->m_natEndpoint.code = QKnxNetIp::HostProtocol::TCP_IPv4;
-    d->m_remoteDataEndpoint.code = QKnxNetIp::HostProtocol::TCP_IPv4;
 
     connect(d->m_tcpSocket, &QTcpSocket::connected, this, [&]() {
         Q_D(QKnxNetIpEndpointConnection);
+        d->m_localEndpoint = Endpoint(d->m_tcpSocket->localAddress(),
+            d->m_tcpSocket->localPort(), QKnxNetIp::HostProtocol::TCP_IPv4);
 
         auto request = QKnxNetIpSessionRequestProxy::builder()
             .setControlEndpoint(d->m_nat ? d->m_natEndpoint : d->m_localEndpoint)

@@ -85,7 +85,7 @@ struct Endpoint final
     Endpoint(const QHostAddress &addr, quint16 p, QKnxNetIp::HostProtocol c)
         : address(addr)
         , port(p)
-        , code(c)
+        , hostProtocol(c)
     {}
     explicit Endpoint(const QKnxNetIpHpaiProxy &hpai)
         : address(hpai.hostAddress())
@@ -98,7 +98,7 @@ struct Endpoint final
     Endpoint &operator=(const QKnxNetIpHpai &s)
     {
         const QKnxNetIpHpaiProxy hpai(s);
-        code = hpai.hostProtocol(); address = hpai.hostAddress(); port = hpai.port();
+        hostProtocol = hpai.hostProtocol(); address = hpai.hostAddress(); port = hpai.port();
         return *this;
     }
     operator QKnxNetIpHpai() const
@@ -106,13 +106,13 @@ struct Endpoint final
         return QKnxNetIpHpaiProxy::builder()
                 .setHostAddress(address)
                 .setPort(port)
-                .setHostProtocol(code)
+                .setHostProtocol(hostProtocol)
                 .create();
     }
 
     QHostAddress address { QHostAddress::LocalHost };
     quint16 port { 0 };
-    QKnxNetIp::HostProtocol code { QKnxNetIp::HostProtocol::UDP_IPv4 };
+    QKnxNetIp::HostProtocol hostProtocol { QKnxNetIp::HostProtocol::UDP_IPv4 };
 };
 
 class Q_KNX_EXPORT QKnxNetIpEndpointConnectionPrivate : public QObjectPrivate
@@ -129,8 +129,8 @@ public:
     {}
     ~QKnxNetIpEndpointConnectionPrivate() override = default;
 
-    void setup();
     void setupTimer();
+    bool initConnection(const QHostAddress &address, quint16 port, QKnxNetIp::HostProtocol hp);
     void cleanup();
 
     bool sendCemiRequest();
