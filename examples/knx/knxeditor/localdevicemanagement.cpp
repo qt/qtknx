@@ -137,6 +137,11 @@ LocalDeviceManagement::LocalDeviceManagement(QWidget* parent)
             handleIoListResponse(frame);
     });
 
+    connect(&m_management, &QKnxNetIpDeviceManagement::errorOccurred, this,
+        [&] (QKnxNetIpEndpointConnection::Error, QString errorString) {
+        ui->textOuputDeviceManagement->append(errorString);
+    });
+
     ui->cemiData->setValidator(new QRegExpValidator(QRegExp("[0-9a-fA-F]+")));
     ui->cemiFrame->setValidator(new QRegExpValidator(QRegExp("[0-9a-fA-F]+")));
 }
