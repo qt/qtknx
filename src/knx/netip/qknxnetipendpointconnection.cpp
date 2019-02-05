@@ -301,12 +301,21 @@ QKnxNetIp::ServiceType
     case QKnxNetIp::ServiceType::TunnelingFeatureResponse:
         processFeatureFrame(frame);
         break;
+
     case QKnxNetIp::ServiceType::SecureWrapper: {
         qDebug() << "Received secure wrapper frame:" << frame;
 
         const QKnxNetIpSecureWrapperProxy proxy(frame);
         if (!proxy.isValid())
             break;
+
+        auto mac = QKnxCryptographicEngine::computeMessageAuthenticationCode(m_deviceAuthHash,
+            frame.header(), proxy.secureSessionId(), m_xorX_Y);
+        auto decMac = QKnxCryptographicEngine::decryptMessageAuthenticationCode(m_deviceAuthHash,
+            proxy.messageAuthenticationCode());
+
+        if (decMac != mac)
+            break; // MAC could not be verified, bail out
 
         const auto sessionKey = QKnxCryptographicEngine::sessionKey(m_secureConfig
             .d->privateKey, m_serverPublicKey);
