@@ -43,7 +43,7 @@
 
 #include <QtCore/qshareddata.h>
 
-#include <QtKnx/qknxcurve25519.h>
+#include <QtKnx/qknxcryptographicengine.h>
 #include <QtKnx/qknxnamespace.h>
 #include <QtKnx/qknxnetipframe.h>
 #include <QtKnx/qknxnetipservicefamiliesdib.h>

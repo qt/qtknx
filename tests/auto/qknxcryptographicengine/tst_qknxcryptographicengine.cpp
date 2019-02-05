@@ -28,7 +28,7 @@
 
 #include <QtCore/qdebug.h>
 #include <QtCore/qloggingcategory.h>
-#include <QtKnx/qknxcurve25519.h>
+#include <QtKnx/qknxcryptographicengine.h>
 #include <QtKnx/qknxlinklayerframebuilder.h>
 #include <QtKnx/qknxnetiproutingindication.h>
 #include <QtKnx/qknxnetipsecurewrapper.h>

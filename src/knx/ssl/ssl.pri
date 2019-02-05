@@ -1,9 +1,9 @@
-HEADERS += ssl/qknxcurve25519.h \
+HEADERS += ssl/qknxcryptographicengine.h \
            ssl/qknxcryptographicdata_p.h \
            ssl/qknxsecurekey.h \
            ssl/qknxsecureconfiguration.h
 
-SOURCES += ssl/qknxcurve25519.cpp \
+SOURCES += ssl/qknxcryptographicengine.cpp \
            ssl/qknxsecurekey.cpp \
            ssl/qknxsecureconfiguration.cpp
 

@@ -42,7 +42,7 @@
 //
 
 #include <QtKnx/qknxaddress.h>
-#include <QtKnx/qknxcurve25519.h>
+#include <QtKnx/qknxcryptographicengine.h>
 #include <private/qtnetworkglobal_p.h>
 
 #if QT_CONFIG(opensslv11)

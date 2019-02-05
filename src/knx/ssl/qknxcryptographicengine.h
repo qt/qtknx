@@ -1,6 +1,6 @@
 /******************************************************************************
 **
-** Copyright (C) 2018 The Qt Company Ltd.
+** Copyright (C) 2019 The Qt Company Ltd.
 ** Contact: https://www.qt.io/licensing/
 **
 ** This file is part of the QtKnx module.
@@ -27,8 +27,8 @@
 **
 ******************************************************************************/
 
-#ifndef QKNXCURVE25519_H
-#define QKNXCURVE25519_H
+#ifndef QKNXCRYPTOGRAPHICENGINE_H
+#define QKNXCRYPTOGRAPHICENGINE_H
 
 #include <QtCore/qshareddata.h>
 
