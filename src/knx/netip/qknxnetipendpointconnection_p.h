@@ -109,8 +109,12 @@ struct Endpoint final
                 .setHostProtocol(hostProtocol)
                 .create();
     }
+    bool isNullOrLocal() const
+    {
+        return address.isNull() || address == QHostAddress::Any || address.isLoopback() || port == 0;
+    }
 
-    QHostAddress address { QHostAddress::LocalHost };
+    QHostAddress address { QHostAddress::Null };
     quint16 port { 0 };
     QKnxNetIp::HostProtocol hostProtocol { QKnxNetIp::HostProtocol::UDP_IPv4 };
 };

@@ -248,14 +248,6 @@ void QKnxNetIpEndpointConnectionPrivate::setupTimer()
     m_secureTimer->setSingleShot(true);
 }
 
-namespace QKnxPrivate
-{
-    static bool isNullOrLocal(const QHostAddress &address)
-    {
-        return address.isNull() || address == QHostAddress::Any || address.isLoopback();
-    }
-}
-
 QKnxNetIp::ServiceType
     QKnxNetIpEndpointConnectionPrivate::processReceivedFrame(const QKnxNetIpFrame &frame)
 {
@@ -554,7 +546,6 @@ bool QKnxNetIpEndpointConnectionPrivate::initConnection(const QHostAddress &a, q
     m_error = QKnxNetIpEndpointConnection::Error::None;
 
     m_routeBack.hostProtocol = hp;
-    m_remoteDataEndpoint.hostProtocol = hp;
 
     m_sessionId = 0;
     m_sequenceNumber = 0;
@@ -567,7 +558,7 @@ bool QKnxNetIpEndpointConnectionPrivate::initConnection(const QHostAddress &a, q
 
     QAbstractSocket *socket = nullptr;
     if (hp == QKnxNetIp::HostProtocol::TCP_IPv4) {
-        socket = m_tcpSocket = new QTcpSocket(q_func());;
+        socket = m_tcpSocket = new QTcpSocket(q_func());
         QObject::connect(m_tcpSocket, &QTcpSocket::readyRead, [&]() {
             if (m_tcpSocket->bytesAvailable() < QKnxNetIpFrameHeader::HeaderSize10)
                 return;
@@ -584,22 +575,16 @@ bool QKnxNetIpEndpointConnectionPrivate::initConnection(const QHostAddress &a, q
         });
     } else if (hp == QKnxNetIp::HostProtocol::UDP_IPv4) {
         socket = m_udpSocket = new QUdpSocket(q_func());
-        QObject::connect(m_udpSocket, &QUdpSocket::readyRead, [&]() {
+        QObject::connect(m_udpSocket, &QUdpSocket::readyRead, [hp, this]() {
             while (m_udpSocket && m_udpSocket->state() == QUdpSocket::BoundState
                 && m_udpSocket->hasPendingDatagrams()) {
-                    auto data = m_udpSocket->receiveDatagram().data();
-                    auto frame = QKnxNetIpFrame::fromBytes(QKnxByteArray::fromByteArray(data));
+                    auto tmp = m_udpSocket->receiveDatagram();
+                    auto frame = QKnxNetIpFrame::fromBytes(QKnxByteArray::fromByteArray(tmp.data()));
                     if (processReceivedFrame(frame) != QKnxNetIp::ServiceType::ConnectResponse)
                         continue;
 
-                    if (m_nat) { // TODO: Figure out if we need this for TCP connections?
-                        if (QKnxPrivate::isNullOrLocal(m_remoteDataEndpoint.address)
-                            || m_remoteDataEndpoint.port == 0) {
-                            auto datagram = m_udpSocket->receiveDatagram();
-                            m_remoteDataEndpoint.port = datagram.senderPort();
-                            m_remoteDataEndpoint.address = datagram.senderAddress();
-                        }
-                    }
+                    if (m_nat && m_remoteDataEndpoint.isNullOrLocal())
+                        m_remoteDataEndpoint = { tmp.senderAddress(), quint16(tmp.senderPort())};
             }
         });
     } else {
