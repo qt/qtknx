@@ -412,8 +412,8 @@ QKnxNetIp::ServiceType
                     .setSerialNumber(m_serialNumber)
                     // .setMessageTag(0x0000) TODO: Do we need an API for this?
                     .setEncapsulatedFrame(QKnxNetIpConnectRequestProxy::builder()
-                        .setControlEndpoint(m_nat ? m_natEndpoint : m_localEndpoint)
-                        .setDataEndpoint(m_nat ? m_natEndpoint : m_localEndpoint)
+                        .setControlEndpoint(m_nat ? m_routeBack : m_localEndpoint)
+                        .setDataEndpoint(m_nat ? m_routeBack : m_localEndpoint)
                         .setRequestInformation(m_cri)
                         .create())
                     .create(QKnxCryptographicEngine::sessionKey(m_secureConfig.d->privateKey,
@@ -544,7 +544,7 @@ bool QKnxNetIpEndpointConnectionPrivate::initConnection(const QHostAddress &a, q
     m_errorString = QString();
     m_error = QKnxNetIpEndpointConnection::Error::None;
 
-    m_natEndpoint.hostProtocol = hp;
+    m_routeBack.hostProtocol = hp;
     m_remoteDataEndpoint.hostProtocol = hp;
 
     m_sessionId = 0;
@@ -921,7 +921,7 @@ void QKnxNetIpEndpointConnectionPrivate::processConnectResponse(const QKnxNetIpF
             m_remoteDataEndpoint = response.dataEndpoint();
             m_lastStateRequest = QKnxNetIpConnectionStateRequestProxy::builder()
                 .setChannelId(m_channelId)
-                .setControlEndpoint(m_nat ? m_natEndpoint : m_localEndpoint)
+                .setControlEndpoint(m_nat ? m_routeBack : m_localEndpoint)
                 .create();
 
             QTimer::singleShot(0, [&]() { sendStateRequest(); });
@@ -1219,8 +1219,8 @@ void QKnxNetIpEndpointConnection::connectToHost(const QHostAddress &address, qui
     d->setAndEmitStateChanged(QKnxNetIpEndpointConnection::State::Bound);
 
     auto request = QKnxNetIpConnectRequestProxy::builder()
-        .setControlEndpoint(d->m_nat ? d->m_natEndpoint : d->m_localEndpoint)
-        .setDataEndpoint(d->m_nat ? d->m_natEndpoint : d->m_localEndpoint)
+        .setControlEndpoint(d->m_nat ? d->m_routeBack : d->m_localEndpoint)
+        .setDataEndpoint(d->m_nat ? d->m_routeBack : d->m_localEndpoint)
         .setRequestInformation(d->m_cri)
         .create();
     d->m_controlEndpointVersion = request.header().protocolVersion();
@@ -1255,8 +1255,8 @@ void QKnxNetIpEndpointConnection::connectToHost(const QHostAddress &address, qui
             QKnxNetIp::HostProtocol::TCP_IPv4 };
 
         auto request = QKnxNetIpConnectRequestProxy::builder()
-            .setControlEndpoint(d->m_nat ? d->m_natEndpoint : d->m_localEndpoint)
-            .setDataEndpoint(d->m_nat ? d->m_natEndpoint : d->m_localEndpoint)
+            .setControlEndpoint(d->m_nat ? d->m_routeBack : d->m_localEndpoint)
+            .setDataEndpoint(d->m_nat ? d->m_routeBack : d->m_localEndpoint)
             .setRequestInformation(d->m_cri)
             .create();
         d->m_controlEndpointVersion = request.header().protocolVersion();
@@ -1361,7 +1361,7 @@ void QKnxNetIpEndpointConnection::connectToHostEncrypted(const QHostAddress &add
             d->m_tcpSocket->localPort(), QKnxNetIp::HostProtocol::TCP_IPv4);
 
         auto request = QKnxNetIpSessionRequestProxy::builder()
-            .setControlEndpoint(d->m_nat ? d->m_natEndpoint : d->m_localEndpoint)
+            .setControlEndpoint(d->m_nat ? d->m_routeBack : d->m_localEndpoint)
             .setPublicKey(d->m_secureConfig.d->publicKey.bytes())
             .create();
         d->m_controlEndpointVersion = request.header().protocolVersion();
@@ -1398,7 +1398,7 @@ void QKnxNetIpEndpointConnection::disconnectFromHost()
     } else {
         auto frame = QKnxNetIpDisconnectRequestProxy::builder()
             .setChannelId(d->m_channelId)
-            .setControlEndpoint(d->m_nat ? d->m_natEndpoint : d->m_localEndpoint)
+            .setControlEndpoint(d->m_nat ? d->m_routeBack : d->m_localEndpoint)
             .create();
 
         qDebug() << "Sending disconnect request:" << frame;

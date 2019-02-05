@@ -170,7 +170,7 @@ private:
     Endpoint m_remoteDataEndpoint;
     Endpoint m_remoteControlEndpoint;
 
-    Endpoint m_natEndpoint { QHostAddress::AnyIPv4 };
+    Endpoint m_routeBack { QHostAddress::AnyIPv4 };
     Endpoint m_localEndpoint { QHostAddress::LocalHost };
 
     int m_channelId { -1 };
