@@ -698,8 +698,8 @@ QKnxDatapointType::QKnxDatapointType(Type type, int size)
     // Datapoint Type shall be identified by a 16 bit main number separated
     // by a dot from a 16 bit sub number. The assumption being made is that
     // QKnxDatapointType::Type is encoded in that way while omitting the dot.
-    int mainType = number.left(number.size() - 5).toInt(&okMain);
-    int subType = number.right(5).toInt(&okSub);
+    quint16 mainType = number.leftRef(number.size() - 5).toUShort(&okMain);
+    quint16 subType = number.rightRef(5).toUShort(&okSub);
 
     if (okMain && okSub)
         d_ptr->setup(mainType, subType, quint32(type), size);
@@ -1052,7 +1052,7 @@ QKnxDatapointType::Type QKnxDatapointType::toType(const QString &dpt)
     }
 
     quint32 type;
-    if (dtp.toType(mainType, subType, &type))
+    if (QKnxDatapointTypePrivate::toType(mainType, subType, &type))
         return static_cast<Type> (type);
     return QKnxDatapointType::Type::Unknown;
 }

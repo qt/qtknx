@@ -87,12 +87,14 @@ public:
             QKnxNetIp::DeviceConfigurationRequestTimeout)
     {}
 
-    void process(const QKnxDeviceManagementFrame &frame) override
-    {
-        Q_Q(QKnxNetIpDeviceManagement);
-        emit q->frameReceived(frame);
-    }
+    void process(const QKnxDeviceManagementFrame &frame) override;
 };
+
+void QKnxNetIpDeviceManagementPrivate::process(const QKnxDeviceManagementFrame &frame)
+{
+    Q_Q(QKnxNetIpDeviceManagement);
+    emit q->frameReceived(frame);
+}
 
 /*!
     Creates a device management connection with the parent \a parent.

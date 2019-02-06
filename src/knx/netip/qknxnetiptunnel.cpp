@@ -111,46 +111,9 @@ public:
         , m_layer(l)
     {}
 
-    void process(const QKnxLinkLayerFrame &frame) override
-    {
-        Q_Q(QKnxNetIpTunnel);
-        emit q->frameReceived(frame);
-    }
-
-    void processConnectResponse(const QKnxNetIpFrame &frame) override
-    {
-        QKnxNetIpConnectResponseProxy response(frame);
-        if (response.status() == QKnxNetIp::Error::NoMoreUniqueConnections) {
-            Q_ASSERT_X(false, "QKnxNetIpTunnelPrivate::process", "NoMoreUniqueConnections "
-                "error handling not implemented yet.");
-            // TODO: Maybe implement 03_08_04 Tunneling v01.05.03 AS.pdf, paragraph 3.3
-        }
-
-        Q_Q(QKnxNetIpTunnel);
-        if (q->state() != QKnxNetIpTunnel::Connected) {
-            const auto &crd = response.responseData();
-            m_address = QKnxNetIpCrdProxy(crd).individualAddress();
-        }
-        QKnxNetIpEndpointConnectionPrivate::processConnectResponse(frame);
-    }
-
-    void processTunnelingFeatureFrame(const QKnxNetIpFrame &frame) override
-    {
-        Q_Q(QKnxNetIpTunnel);
-        if (frame.serviceType() == QKnxNetIp::ServiceType::TunnelingFeatureInfo) {
-            const QKnxNetIpTunnelingFeatureInfoProxy proxy(frame);
-            if (proxy.isValid()) {
-                emit q->tunnelingFeatureInfoReceived(proxy.featureIdentifier(),
-                    proxy.featureValue());
-            }
-        } else if (frame.serviceType() == QKnxNetIp::ServiceType::TunnelingFeatureResponse) {
-            const QKnxNetIpTunnelingFeatureResponseProxy proxy(frame);
-            if (proxy.isValid()) {
-                emit q->tunnelingFeatureResponseReceived(proxy.featureIdentifier(),
-                    proxy.returnCode(), proxy.featureValue());
-            }
-        }
-    }
+    void process(const QKnxLinkLayerFrame &frame) override;
+    void processConnectResponse(const QKnxNetIpFrame &frame) override;
+    void processTunnelingFeatureFrame(const QKnxNetIpFrame &frame) override;
 
     void updateCri()
     {
@@ -173,6 +136,47 @@ private:
     QKnxAddress m_criAddress;
     QKnxNetIp::TunnelLayer m_layer { QKnxNetIp::TunnelLayer::Unknown };
 };
+
+void QKnxNetIpTunnelPrivate::process(const QKnxLinkLayerFrame &frame)
+{
+    Q_Q(QKnxNetIpTunnel);
+    emit q->frameReceived(frame);
+}
+
+void QKnxNetIpTunnelPrivate::processConnectResponse(const QKnxNetIpFrame &frame)
+{
+    QKnxNetIpConnectResponseProxy response(frame);
+    if (response.status() == QKnxNetIp::Error::NoMoreUniqueConnections) {
+        Q_ASSERT_X(false, "QKnxNetIpTunnelPrivate::process", "NoMoreUniqueConnections "
+            "error handling not implemented yet.");
+        // TODO: Maybe implement 03_08_04 Tunneling v01.05.03 AS.pdf, paragraph 3.3
+    }
+
+    Q_Q(QKnxNetIpTunnel);
+    if (q->state() != QKnxNetIpTunnel::Connected) {
+        const auto &crd = response.responseData();
+        m_address = QKnxNetIpCrdProxy(crd).individualAddress();
+    }
+    QKnxNetIpEndpointConnectionPrivate::processConnectResponse(frame);
+}
+
+void QKnxNetIpTunnelPrivate::processTunnelingFeatureFrame(const QKnxNetIpFrame &frame)
+{
+    Q_Q(QKnxNetIpTunnel);
+    if (frame.serviceType() == QKnxNetIp::ServiceType::TunnelingFeatureInfo) {
+        const QKnxNetIpTunnelingFeatureInfoProxy proxy(frame);
+        if (proxy.isValid()) {
+            emit q->tunnelingFeatureInfoReceived(proxy.featureIdentifier(),
+                proxy.featureValue());
+        }
+    } else if (frame.serviceType() == QKnxNetIp::ServiceType::TunnelingFeatureResponse) {
+        const QKnxNetIpTunnelingFeatureResponseProxy proxy(frame);
+        if (proxy.isValid()) {
+            emit q->tunnelingFeatureResponseReceived(proxy.featureIdentifier(),
+                proxy.returnCode(), proxy.featureValue());
+        }
+    }
+}
 
 /*!
     Creates a tunnel connection with the parent \a parent.
