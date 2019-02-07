@@ -579,8 +579,6 @@ DEFINEFUNC(void, PKCS12_free, PKCS12 *pkcs12, pkcs12, return, DUMMYARG)
     DEFINEFUNC(const EVP_CIPHER *, EVP_aes_128_cbc, DUMMYARG, DUMMYARG, return nullptr, return)
     DEFINEFUNC2(int, EVP_CIPHER_CTX_set_padding, EVP_CIPHER_CTX *x, x, int padding, padding, return 0, return)
 
-    DEFINEFUNC8(int, PKCS5_PBKDF2_HMAC, const char *pass, pass, int passlen, passlen, const unsigned char *salt, salt, \
-        int saltlen, saltlen, int iter, iter, const EVP_MD *digest, digest, int keylen, keylen, unsigned char *out, out, return 0, return)
     DEFINEFUNC(const EVP_MD *, EVP_sha256, DUMMYARG, DUMMYARG, return nullptr, return)
 #endif
 
@@ -1304,7 +1302,6 @@ bool q_resolveOpenSslSymbols()
     RESOLVEFUNC(EVP_aes_128_cbc)
     RESOLVEFUNC(EVP_CIPHER_CTX_set_padding)
 
-    RESOLVEFUNC(PKCS5_PBKDF2_HMAC)
     RESOLVEFUNC(EVP_sha256)
 #endif
 

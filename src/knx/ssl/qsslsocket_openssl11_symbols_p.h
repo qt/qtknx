@@ -151,7 +151,5 @@ int q_EVP_PKEY_get_raw_private_key(const EVP_PKEY *pkey, unsigned char *priv, si
 EVP_PKEY *q_EVP_PKEY_new_raw_private_key(int type, ENGINE *e, const unsigned char *priv, size_t len);
 
 const EVP_CIPHER *q_EVP_aes_128_cbc(void);
-int q_PKCS5_PBKDF2_HMAC(const char *pass, int passlen, const unsigned char *salt, int saltlen,
-    int iter, const EVP_MD *digest, int keylen, unsigned char *out);
 
 #endif
