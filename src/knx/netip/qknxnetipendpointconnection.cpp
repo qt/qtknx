@@ -27,6 +27,7 @@
 **
 ******************************************************************************/
 
+#include "qknxcryptographicengine.h"
 #include "qknxnetipconnectrequest.h"
 #include "qknxnetipconnectresponse.h"
 #include "qknxnetipconnectionstaterequest.h"
@@ -575,7 +576,7 @@ bool QKnxNetIpEndpointConnectionPrivate::initConnection(const QHostAddress &a, q
         });
     } else if (hp == QKnxNetIp::HostProtocol::UDP_IPv4) {
         socket = m_udpSocket = new QUdpSocket(q_func());
-        QObject::connect(m_udpSocket, &QUdpSocket::readyRead, [hp, this]() {
+        QObject::connect(m_udpSocket, &QUdpSocket::readyRead, [&]() {
             while (m_udpSocket && m_udpSocket->state() == QUdpSocket::BoundState
                 && m_udpSocket->hasPendingDatagrams()) {
                     auto tmp = m_udpSocket->receiveDatagram();

@@ -28,8 +28,6 @@
 ******************************************************************************/
 
 #include "qknxcryptographicengine.h"
-#include "qknxcryptographicdata_p.h"
-
 #include "qknxnetipsessionauthenticate.h"
 #include "qknxnetipsecurewrapper.h"
 #include "qknxnetipsessionrequest.h"
@@ -41,10 +39,28 @@
 #include <QtCore/qmutex.h>
 
 #include <QtNetwork/qpassworddigestor.h>
+#include <QtNetwork/private/qtnetworkglobal_p.h>
+
+#if QT_CONFIG(opensslv11)
+# include <QtKnx/private/qsslsocket_openssl_symbols_p.h>
+# include <QtKnx/private/qsslsocket_openssl11_symbols_p.h>
+#endif
 
 QT_BEGIN_NAMESPACE
 
-#if QT_CONFIG(opensslv11)
+class Q_KNX_EXPORT QKnxOpenSsl
+{
+public:
+    static bool supportsSsl();
+    static long sslLibraryVersionNumber();
+
+protected:
+    static bool ensureLibraryLoaded();
+
+private:
+    static bool s_libraryLoaded;
+    static bool s_libraryEnabled;
+};
 bool QKnxOpenSsl::s_libraryLoaded = false;
 bool QKnxOpenSsl::s_libraryEnabled = false;
 
@@ -56,60 +72,11 @@ Q_GLOBAL_STATIC_WITH_ARGS(QMutex, qt_knxOpenSslInitMutex, (QMutex::Recursive))
 */
 bool QKnxOpenSsl::supportsSsl()
 {
-    return ensureLibraryLoaded();
-}
-
-/*!
-    \internal
-*/
-long QKnxOpenSsl::sslLibraryVersionNumber()
-{
-    if (!supportsSsl())
-        return 0;
-    return q_OpenSSL_version_num();
-}
-
-/*!
-    \internal
-*/
-QString QKnxOpenSsl::sslLibraryVersionString()
-{
-    if (!supportsSsl())
-        return QString();
-
-    const char *versionString = q_OpenSSL_version(OPENSSL_VERSION);
-    if (!versionString)
-        return QString();
-
-    return QString::fromLatin1(versionString);
-}
-
-/*!
-    \internal
-*/
-long QKnxOpenSsl::sslLibraryBuildVersionNumber()
-{
-    return OPENSSL_VERSION_NUMBER;
-}
-
-/*!
-    \internal
-*/
-QString QKnxOpenSsl::sslLibraryBuildVersionString()
-{
-    return QStringLiteral(OPENSSL_VERSION_TEXT);
-}
-
-/*!
-    \internal
-*/
-bool QKnxOpenSsl::ensureLibraryLoaded()
-{
+#if QT_CONFIG(opensslv11)
     if (!q_resolveOpenSslSymbols())
         return false;
 
     const QMutexLocker locker(qt_knxOpenSslInitMutex);
-
     if (!s_libraryLoaded) {
         s_libraryLoaded = true;
 
@@ -132,8 +99,23 @@ bool QKnxOpenSsl::ensureLibraryLoaded()
         s_libraryEnabled = true;
     }
     return s_libraryEnabled;
-}
+#else
+    Q_UNUSED(qt_knxOpenSslInitMutex)
+    return false;
 #endif
+}
+
+/*!
+    \internal
+*/
+long QKnxOpenSsl::sslLibraryVersionNumber()
+{
+#if QT_CONFIG(opensslv11)
+    if (supportsSsl())
+        return q_OpenSSL_version_num();
+#endif
+    return 0;
+}
 
 
 /*!
@@ -249,6 +231,25 @@ bool QKnxOpenSsl::ensureLibraryLoaded()
     \internal
     \fn QKnxCryptographicEngine::~QKnxCryptographicEngine()
 */
+
+/*!
+    Determines if cryptography support is available. Returns \c true on success;
+    \c false otherwise.
+*/
+bool QKnxCryptographicEngine::supportsCryptography()
+{
+    return qt_QKnxOpenSsl->supportsSsl();
+}
+
+/*
+    Returns the OpenSSL version number of the OpenSSL library if OpenSSL is
+    available and used to provide cryptographic support; or \c 0 in any other
+    case.
+*/
+long QKnxCryptographicEngine::sslLibraryVersionNumber()
+{
+    return qt_QKnxOpenSsl->sslLibraryVersionNumber();
+}
 
 /*!
     Returns the session key calculated from the given private key

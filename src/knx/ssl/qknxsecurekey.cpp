@@ -27,10 +27,39 @@
 **
 ******************************************************************************/
 
-#include "qknxcryptographicdata_p.h"
 #include "qknxsecurekey.h"
+#include "qknxcryptographicengine.h"
+
+#include <QtNetwork/private/qtnetworkglobal_p.h>
+
+#if QT_CONFIG(opensslv11)
+# include <QtKnx/private/qsslsocket_openssl_symbols_p.h>
+# include <QtKnx/private/qsslsocket_openssl11_symbols_p.h>
+#endif
 
 QT_BEGIN_NAMESPACE
+
+class QKnxSecureKeyData : public QSharedData
+{
+public:
+    QKnxSecureKeyData() = default;
+    ~QKnxSecureKeyData()
+    {
+#if QT_CONFIG(opensslv11)
+        q_EVP_PKEY_free(m_evpPKey);
+#endif
+    }
+
+    bool isTypeValid() const
+    {
+        return m_type >= QKnxSecureKey::Type::Private && m_type < QKnxSecureKey::Type::Invalid;
+    }
+
+#if QT_CONFIG(opensslv11)
+    EVP_PKEY *m_evpPKey{ nullptr };
+#endif
+    QKnxSecureKey::Type m_type{ QKnxSecureKey::Type::Invalid };
+};
 
 /*!
     \since 5.13
@@ -99,7 +128,7 @@ bool QKnxSecureKey::isNull() const
 bool QKnxSecureKey::isValid() const
 {
 #if QT_CONFIG(opensslv11)
-    return !isNull() && d_ptr->isTypeValid() && QKnxOpenSsl::supportsSsl();
+    return !isNull() && d_ptr->isTypeValid() && QKnxCryptographicEngine::supportsCryptography();
 #else
     return false;
 #endif
@@ -153,7 +182,7 @@ QKnxSecureKey QKnxSecureKey::fromBytes(QKnxSecureKey::Type type, const QKnxByteA
     if (ba.size() < 32)
         return {};
 
-    if (!QKnxOpenSsl::supportsSsl())
+    if (!QKnxCryptographicEngine::supportsCryptography())
         return {};
 
     QKnxSecureKey key;
@@ -204,7 +233,7 @@ QKnxSecureKey QKnxSecureKey::generatePrivateKey()
 {
     QKnxSecureKey key;
 #if QT_CONFIG(opensslv11)
-    if (!QKnxOpenSsl::supportsSsl())
+    if (!QKnxCryptographicEngine::supportsCryptography())
         return key;
 
     if (auto *pctx = q_EVP_PKEY_CTX_new_id(NID_X25519, nullptr)) {

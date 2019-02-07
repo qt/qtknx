@@ -44,6 +44,9 @@ public:
     QKnxCryptographicEngine() = delete;
     ~QKnxCryptographicEngine() = default;
 
+    static bool supportsCryptography();
+    static long sslLibraryVersionNumber();
+
     static QKnxByteArray sessionKey(const QKnxSecureKey &privateKey,
                                     const QKnxSecureKey &peerPublicKey);
     static QKnxByteArray sessionKey(const QKnxByteArray &privateKey,

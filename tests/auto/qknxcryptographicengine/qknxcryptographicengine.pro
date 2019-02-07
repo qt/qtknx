@@ -1,6 +1,6 @@
 TARGET = tst_qknxcryptographicengine
 
-QT = core testlib knx knx-private
+QT = core testlib knx
 CONFIG += testcase c++11
 
 CONFIG -= app_bundle

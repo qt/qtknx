@@ -42,56 +42,10 @@
 //
 
 #include <QtKnx/qknxaddress.h>
-#include <QtKnx/qknxcryptographicengine.h>
-#include <private/qtnetworkglobal_p.h>
-
-#if QT_CONFIG(opensslv11)
-#include <QtKnx/private/qsslsocket_openssl_symbols_p.h>
-#include <QtKnx/private/qsslsocket_openssl11_symbols_p.h>
-#endif
+#include <QtKnx/qknxnetip.h>
+#include <QtKnx/qknxsecurekey.h>
 
 QT_BEGIN_NAMESPACE
-
-#if QT_CONFIG(opensslv11)
-class Q_KNX_EXPORT QKnxOpenSsl
-{
-public:
-    static bool supportsSsl();
-    static long sslLibraryVersionNumber();
-    static QString sslLibraryVersionString();
-    static long sslLibraryBuildVersionNumber();
-    static QString sslLibraryBuildVersionString();
-
-protected:
-    static bool ensureLibraryLoaded();
-
-private:
-    static bool s_libraryLoaded;
-    static bool s_libraryEnabled;
-};
-#endif
-
-class QKnxSecureKeyData : public QSharedData
-{
-public:
-    QKnxSecureKeyData() = default;
-    ~QKnxSecureKeyData()
-    {
-#if QT_CONFIG(opensslv11)
-        q_EVP_PKEY_free(m_evpPKey);
-#endif
-    }
-
-    bool isTypeValid() const
-    {
-        return m_type >= QKnxSecureKey::Type::Private && m_type < QKnxSecureKey::Type::Invalid;
-    }
-
-#if QT_CONFIG(opensslv11)
-    EVP_PKEY *m_evpPKey { nullptr };
-#endif
-    QKnxSecureKey::Type m_type { QKnxSecureKey::Type::Invalid };
-};
 
 class QKnxSecureConfigurationPrivate : public QSharedData
 {

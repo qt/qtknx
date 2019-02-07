@@ -36,7 +36,6 @@
 #include <QtKnx/qknxnetipsessionresponse.h>
 #include <QtKnx/qknxnetipsessionstatus.h>
 #include <QtKnx/qknxnetiptimernotify.h>
-#include <QtKnx/private/qknxcryptographicdata_p.h>
 #include <QtTest/qtest.h>
 
 QT_BEGIN_NAMESPACE
@@ -56,14 +55,9 @@ class tst_qknxcryptographicengine : public QObject
 private slots:
     void initTestCase()
     {
-#if QT_CONFIG(opensslv11)
         QLoggingCategory::setFilterRules("qt.network.ssl=false");
-#else
-        QSKIP("KNX secure methods aren't available to test");
-#endif
     }
 
-#if QT_CONFIG(opensslv11)
     void testPublicKey()
     {
         QKnxSecureKey key;
@@ -72,7 +66,7 @@ private slots:
         QCOMPARE(key.bytes(), QKnxByteArray());
         QCOMPARE(key.type(), QKnxSecureKey::Type::Invalid);
 
-        if (QKnxOpenSsl::sslLibraryVersionNumber() < 0x1010000fL)
+        if (QKnxCryptographicEngine::sslLibraryVersionNumber() < 0x1010000fL)
             return;
 
         auto bytes = QKnxByteArray::fromHex("bdf099909923143ef0a5de0b3be3687b"
@@ -108,13 +102,13 @@ private slots:
         QCOMPARE(key.bytes(), QKnxByteArray());
         QCOMPARE(key.type(), QKnxSecureKey::Type::Invalid);
 
-        if (QKnxOpenSsl::sslLibraryVersionNumber() < 0x1010000fL)
+        if (QKnxCryptographicEngine::sslLibraryVersionNumber() < 0x1010000fL)
             return;
 
         key = QKnxSecureKey::generatePrivateKey();
         QCOMPARE(key.isNull(), false);
         QCOMPARE(key.isValid(), true);
-        if (QKnxOpenSsl::sslLibraryVersionNumber() >= 0x1010101fL)
+        if (QKnxCryptographicEngine::sslLibraryVersionNumber() >= 0x1010101fL)
             QCOMPARE(key.bytes().size(), 32);
         QCOMPARE(key.type(), QKnxSecureKey::Type::Private);
 
@@ -123,7 +117,7 @@ private slots:
         key = QKnxSecureKey::fromBytes(QKnxSecureKey::Type::Private, bytes);
         QCOMPARE(key.isNull(), false);
         QCOMPARE(key.isValid(), true);
-        if (QKnxOpenSsl::sslLibraryVersionNumber() >= 0x1010101fL)
+        if (QKnxCryptographicEngine::sslLibraryVersionNumber() >= 0x1010101fL)
             QCOMPARE(key.bytes(), bytes);
         QCOMPARE(key.type(), QKnxSecureKey::Type::Private);
 
@@ -132,14 +126,14 @@ private slots:
         key = QKnxSecureKey::fromBytes(QKnxSecureKey::Type::Private, bytes);
         QCOMPARE(key.isNull(), false);
         QCOMPARE(key.isValid(), true);
-        if (QKnxOpenSsl::sslLibraryVersionNumber() >= 0x1010101fL)
+        if (QKnxCryptographicEngine::sslLibraryVersionNumber() >= 0x1010101fL)
             QCOMPARE(key.bytes(), bytes);
         QCOMPARE(key.type(), QKnxSecureKey::Type::Private);
     }
 
     void testSharedSecret()
     {
-        if (QKnxOpenSsl::sslLibraryVersionNumber() < 0x1010000fL)
+        if (QKnxCryptographicEngine::sslLibraryVersionNumber() < 0x1010000fL)
             return;
 
         auto pubBytes = QKnxByteArray::fromHex("0aa227b4fd7a32319ba9960ac036ce0e"
@@ -186,7 +180,7 @@ private slots:
 
     void testMessageAuthenticationCode()
     {
-        if (QKnxOpenSsl::sslLibraryVersionNumber() < 0x1010000fL)
+        if (QKnxCryptographicEngine::sslLibraryVersionNumber() < 0x1010000fL)
             return;
 
         /* This test more or less follows KNX AN156 - Annex A */
@@ -375,6 +369,9 @@ private slots:
 
     void testSecureWrapperFrame()
     {
+        if (QKnxCryptographicEngine::sslLibraryVersionNumber() < 0x1010000fL)
+            return;
+
         auto sessionAuthenticate = QKnxNetIpSessionAuthenticateProxy::builder()
             .setUserId(QKnxNetIp::SecureUserId::Management)
             .setMessageAuthenticationCode(QKnxByteArray::fromHex("1f1d59ea9f12a152e5d9727f08462cde"))
@@ -409,6 +406,9 @@ private slots:
 
     void testTimerNotifyFrame()
     {
+        if (QKnxCryptographicEngine::sslLibraryVersionNumber() < 0x1010000fL)
+            return;
+
         quint48 timerValue = 211938428830917;
         auto serialNumber = QKnxByteArray::fromHex("00fa12345678");
         quint16 messageTag = 0xaffe;
@@ -447,6 +447,9 @@ private slots:
 
     void testSessionResponseFrame()
     {
+        if (QKnxCryptographicEngine::sslLibraryVersionNumber() < 0x1010000fL)
+            return;
+
         auto clientPublicKey = QKnxByteArray::fromHex("0aa227b4"
             "fd7a32319ba9960ac036ce0e5c4507b5ae55161f1078b1dcfb3cb631");
         auto serverPublicKey = QKnxByteArray::fromHex("bdf09990"
@@ -482,6 +485,8 @@ private slots:
 
     void testSessionAuthenticateFrame()
     {
+        if (QKnxCryptographicEngine::sslLibraryVersionNumber() < 0x1010000fL)
+            return;
 
         auto clientPublicKey = QKnxByteArray::fromHex("0aa227b4"
             "fd7a32319ba9960ac036ce0e5c4507b5ae55161f1078b1dcfb3cb631");
@@ -510,7 +515,6 @@ private slots:
         QCOMPARE(proxy2.userId(), QKnxNetIp::SecureUserId::Management);
         QCOMPARE(proxy2.messageAuthenticationCode(), mac);
     }
-#endif
 };
 
 QTEST_APPLESS_MAIN(tst_qknxcryptographicengine)
