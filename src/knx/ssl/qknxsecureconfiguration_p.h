@@ -1,6 +1,6 @@
 /******************************************************************************
 **
-** Copyright (C) 2018 The Qt Company Ltd.
+** Copyright (C) 2019 The Qt Company Ltd.
 ** Contact: https://www.qt.io/licensing/
 **
 ** This file is part of the QtKnx module.
@@ -27,8 +27,8 @@
 **
 ******************************************************************************/
 
-#ifndef QKNXCRYPTOGRAPHICDATA_P_H
-#define QKNXCRYPTOGRAPHICDATA_P_H
+#ifndef QKNXSECURECONFIGURATION_P_H
+#define QKNXSECURECONFIGURATION_P_H
 
 //
 //  W A R N I N G

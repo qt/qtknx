@@ -28,7 +28,7 @@
 ****************************************************************************/
 
 #include "qknxsecureconfiguration.h"
-#include "private/qknxcryptographicdata_p.h"
+#include "private/qknxsecureconfiguration_p.h"
 
 QT_BEGIN_NAMESPACE
 
