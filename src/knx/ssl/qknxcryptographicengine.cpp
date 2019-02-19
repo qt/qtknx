@@ -349,6 +349,7 @@ namespace QKnxPrivate
         QSharedPointer<EVP_CIPHER_CTX> ctxPtr(q_EVP_CIPHER_CTX_new(), q_EVP_CIPHER_CTX_free);
         if (ctxPtr.isNull())
             return {};
+        q_EVP_CIPHER_CTX_reset(ctxPtr.data());
 
         const auto ctx = ctxPtr.data();
         const auto c = q_EVP_aes_128_cbc();
