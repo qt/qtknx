@@ -48,10 +48,17 @@ QT_BEGIN_NAMESPACE
 class QKnxSsl
 {
 public:
+    enum Mode
+    {
+        Decrypt = 0x00,
+        Encrypt = 0x01
+    };
+
     static bool supportsCryptography();
     static long sslLibraryVersionNumber();
 
-    static QKnxByteArray encrypt(const QKnxByteArray &key, const QKnxByteArray &data);
+    static QKnxByteArray doCrypt(const QKnxByteArray &key, const QKnxByteArray &iv,
+        const QKnxByteArray &data, Mode mode);
 };
 
 QT_END_NAMESPACE

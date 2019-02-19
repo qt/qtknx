@@ -129,7 +129,8 @@ long QKnxSsl::sslLibraryVersionNumber()
 /*!
     \internal
 */
-QKnxByteArray QKnxSsl::encrypt(const QKnxByteArray &key, const QKnxByteArray &data)
+QKnxByteArray QKnxSsl::doCrypt(const QKnxByteArray &key, const QKnxByteArray &iv,
+    const QKnxByteArray &data, Mode mode)
 {
 #if QT_CONFIG(opensslv11)
     if (!qt_QKnxOpenSsl->supportsSsl())
@@ -142,7 +143,7 @@ QKnxByteArray QKnxSsl::encrypt(const QKnxByteArray &key, const QKnxByteArray &da
 
     const auto ctx = ctxPtr.data();
     const auto c = q_EVP_aes_128_cbc();
-    if (q_EVP_CipherInit_ex(ctx, c, nullptr, nullptr, nullptr, 0x01) <= 0)
+    if (q_EVP_CipherInit_ex(ctx, c, nullptr, nullptr, nullptr, mode) <= 0)
         return {};
 
     if (q_EVP_CIPHER_CTX_set_padding(ctx, 0) <= 0)
@@ -151,8 +152,7 @@ QKnxByteArray QKnxSsl::encrypt(const QKnxByteArray &key, const QKnxByteArray &da
     Q_ASSERT(q_EVP_CIPHER_CTX_iv_length(ctx) == 16);
     Q_ASSERT(q_EVP_CIPHER_CTX_key_length(ctx) == 16);
 
-    static const quint8 iv[16] { 0x00 };
-    if (q_EVP_CipherInit_ex(ctx, nullptr, nullptr, key.constData(), iv, 0x01) <= 0)
+    if (q_EVP_CipherInit_ex(ctx, nullptr, nullptr, key.constData(), iv.constData(), mode) <= 0)
         return {};
 
     int outl, offset = 0;
@@ -165,10 +165,12 @@ QKnxByteArray QKnxSsl::encrypt(const QKnxByteArray &key, const QKnxByteArray &da
         return {};
     offset += outl;
 
-    return out.mid(offset - 16, 16);
+    return out.left(offset);
 #else
     Q_UNUSED(key)
+    Q_UNUSED(iv)
     Q_UNUSED(data)
+    Q_UNUSED(mode)
     return {};
 #endif
 }

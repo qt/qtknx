@@ -255,6 +255,8 @@ QKnxByteArray QKnxCryptographicEngine::XOR(const QKnxByteArray &left, const QKnx
 
 namespace QKnxPrivate
 {
+    static const quint8 iv[16] { 0x00 };
+
     static QKnxByteArray b0(quint48 sequence, const QKnxByteArray &serial, quint16 tag, quint16 len)
     {
         return QKnxUtils::QUint48::bytes(sequence) + serial + QKnxUtils::QUint16::bytes(tag)
@@ -275,7 +277,8 @@ namespace QKnxPrivate
         auto Ctr0 = QKnxPrivate::ctr0(sequenceNumber,
             (serialNumber.isEmpty() ? QKnxByteArray(6, 0x00) : serialNumber), messageTag);
 
-        return QKnxCryptographicEngine::XOR(QKnxSsl::encrypt(key, Ctr0), mac);
+        return QKnxCryptographicEngine::XOR(QKnxSsl::doCrypt(key, { iv, 16 }, Ctr0,
+            QKnxSsl::Encrypt).right(16), mac);
     }
 
     static QKnxByteArray processPayload(const QKnxByteArray &key, const QKnxByteArray &payload,
@@ -290,7 +293,7 @@ namespace QKnxPrivate
         QKnxByteArray ctrArray;
         for (int i = 0; i < (payload.size() + 15) >> 4; ++i) {
             Ctr0.set(15, Ctr0.at(15) + 1);
-            ctrArray += QKnxSsl::encrypt(key, Ctr0);
+            ctrArray += QKnxSsl::doCrypt(key, { iv, 16 }, Ctr0, QKnxSsl::Encrypt).right(16);
         }
 
         return QKnxCryptographicEngine::XOR(ctrArray, payload, false);
@@ -346,7 +349,7 @@ QKnxByteArray QKnxCryptographicEngine::computeMessageAuthenticationCode(const QK
         return {};
     B.resize(B.size() + (16 - (B.size() % 16))); // pad to multiple of 16
 
-    return QKnxSsl::encrypt(key, B);
+    return QKnxSsl::doCrypt(key, { QKnxPrivate::iv, 16 }, B, QKnxSsl::Encrypt).right(16);
 }
 
 /*!
