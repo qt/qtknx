@@ -1,11 +1,13 @@
 HEADERS += ssl/qknxcryptographicengine.h \
            ssl/qknxsecurekey.h \
            ssl/qknxsecureconfiguration.h \
-           ssl/qknxsecureconfiguration_p.h
+           ssl/qknxsecureconfiguration_p.h \
+           ssl/qknxssl_p.h
 
 SOURCES += ssl/qknxcryptographicengine.cpp \
            ssl/qknxsecurekey.cpp \
-           ssl/qknxsecureconfiguration.cpp
+           ssl/qknxsecureconfiguration.cpp \
+           ssl/qknxssl_openssl.cpp
 
 qtConfig(opensslv11) { # OpenSSL 1.1 support is required.
     SOURCES += ssl/qsslsocket_openssl_symbols.cpp
