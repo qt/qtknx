@@ -42,8 +42,20 @@ class QKnxSecureConfigurationPrivate;
 class Q_KNX_EXPORT QKnxSecureConfiguration
 {
 public:
+    enum class Type : quint8
+    {
+        Tunneling = 0x00,
+        DeviceManagement = 001
+    };
+
     QKnxSecureConfiguration();
     ~QKnxSecureConfiguration();
+
+    static QVector<QKnxSecureConfiguration> fromKeyring(QKnxSecureConfiguration::Type type,
+        const QString &keyring, const QByteArray &password, bool validate);
+
+    static QKnxSecureConfiguration fromKeyring(QKnxSecureConfiguration::Type type,
+        const QKnxAddress &ia, const QString &keyring, const QByteArray &password, bool validate);
 
     bool isNull() const;
     bool isValid() const;

@@ -27,10 +27,108 @@
 **
 ****************************************************************************/
 
+#include "qknxcryptographicengine.h"
 #include "qknxsecureconfiguration.h"
+
+#include <QtCore/qfile.h>
+
+#include "private/qknxkeyring_p.h"
 #include "private/qknxsecureconfiguration_p.h"
 
 QT_BEGIN_NAMESPACE
+
+namespace QKnxPrivate
+{
+    static QKnxSecureConfiguration fromInterface(const QKnx::Ets::Keyring::QKnxInterface &iface,
+        const QKnxByteArray &pwHash, const QKnxByteArray &createdHash)
+    {
+        QKnxSecureConfiguration s;
+        s.setUserId(QKnxNetIp::SecureUserId(iface.UserID));
+        s.setPrivateKey(QKnxSecureKey::generatePrivateKey());
+        s.setUserPassword(QKnxCryptographicEngine::decodeAndDecryptPassword(pwHash,
+            createdHash, iface.Password).toByteArray());
+        s.setIndividualAddress({ QKnxAddress::Type::Individual, iface.IndividualAddress });
+        s.setDeviceAuthenticationCode(QKnxCryptographicEngine::decodeAndDecryptPassword(pwHash,
+            createdHash, iface.Authentication).toByteArray());
+        return s;
+    }
+
+    static QKnxSecureConfiguration fromDevice(const QKnx::Ets::Keyring::QKnxDevice &device,
+        const QKnxByteArray &pwHash, const QKnxByteArray &createdHash)
+    {
+        QKnxSecureConfiguration s;
+        s.setUserId(QKnxNetIp::SecureUserId::Management);
+        s.setPrivateKey(QKnxSecureKey::generatePrivateKey());
+        s.setUserPassword(QKnxCryptographicEngine::decodeAndDecryptPassword(pwHash,
+            createdHash, device.ManagementPassword).toByteArray());
+        s.setIndividualAddress({ QKnxAddress::Type::Individual, device.IndividualAddress });
+        s.setDeviceAuthenticationCode(QKnxCryptographicEngine::decodeAndDecryptPassword(pwHash,
+            createdHash, device.Authentication).toByteArray());
+        return s;
+    }
+
+    static QVector<QKnxSecureConfiguration> fromKeyring(QKnxSecureConfiguration::Type type,
+        const QKnxAddress &ia, const QString &filePath, const QByteArray &password, bool validate)
+    {
+        QFile file;
+        file.setFileName(filePath);
+        if (!file.open(QIODevice::ReadOnly))
+            return {};
+
+        QXmlStreamReader reader(&file);
+        QKnx::Ets::Keyring::QKnxKeyring keyring;
+
+        const auto pwHash = QKnxCryptographicEngine::keyringPasswordHash(password);
+        if (validate) {
+            if (!keyring.validate(&reader, pwHash))
+                return {};
+            file.seek(0);
+            reader.setDevice(&file);
+        }
+
+        if (!keyring.parseElement(&reader, true))
+            return {};
+        const auto createdHash = QKnxCryptographicEngine::hashSha256(keyring.Created.toUtf8());
+
+        auto iaString = ia.toString();
+        QVector<QKnxSecureConfiguration> results;
+
+        if (type == QKnxSecureConfiguration::Type::Tunneling) {
+            if (keyring.Interface.isEmpty())
+                return {};
+
+            if (!iaString.isEmpty()) { // only a single interface is requested
+                for (const auto iface : qAsConst(keyring.Interface)) {
+                    if (iaString != iface.IndividualAddress)
+                        continue;
+                    return { QKnxPrivate::fromInterface(iface, pwHash, createdHash) };
+                }
+            } else {
+                for (const auto iface : qAsConst(keyring.Interface))
+                    results.append(QKnxPrivate::fromInterface(iface, pwHash, createdHash));
+            }
+        }
+
+        if (type == QKnxSecureConfiguration::Type::DeviceManagement) {
+            if (keyring.Devices.isEmpty())
+                return {};
+
+            const auto devices = keyring.Devices.value(0).Device;
+            if (!iaString.isEmpty()) { // only a single device is requested
+                for (const auto device : devices) {
+                    if (iaString != device.IndividualAddress)
+                        continue;
+                    return { QKnxPrivate::fromDevice(device, pwHash, createdHash) };
+                }
+            } else {
+                for (const auto device : devices)
+                    results.append(QKnxPrivate::fromDevice(device, pwHash, createdHash));
+            }
+        }
+
+        return results;
+    }
+}
 
 /*!
     \since 5.13
@@ -51,6 +149,18 @@ QT_BEGIN_NAMESPACE
 */
 
 /*!
+    \enum QKnxSecureConfiguration::Type
+
+    This enum holds the type of secure configuration that can be constructed
+    from an ETS exported keyring (*.knxkeys) file.
+
+    \value Tunneling
+            KNXnet/IP secure tunneling configuration.
+    \value DeviceManagement
+            KNXnet/IP secure device management configuration.
+*/
+
+/*!
     Constructs a new, empty, invalid secure configuration.
 
     \sa isNull(), isValid()
@@ -63,6 +173,39 @@ QKnxSecureConfiguration::QKnxSecureConfiguration()
     Releases any resources held by the secure configuration.
 */
 QKnxSecureConfiguration::~QKnxSecureConfiguration() = default;
+
+/*!
+    Constructs a vector of secure configurations for the given type
+    \a type from an ETS exported \a keyring (*.knxkeys) file that was
+    encrypted with the given password \a password. Set the \a validate
+    argument to \c true to verify that all data in the keyring file is
+    trustworthy, \c false to omit the check.
+
+    \note If an error occurred, no or invalid information for \a type
+     was found in the keyring file, the returned vector can be empty.
+*/
+QVector<QKnxSecureConfiguration> QKnxSecureConfiguration::fromKeyring(Type type,
+    const QString &keyring, const QByteArray &password, bool validate)
+{
+    return QKnxPrivate::fromKeyring(type, {}, keyring, password, validate);
+}
+
+/*!
+    Constructs a secure configurations for the given type \a type and the
+    given individual address \a ia from an ETS exported \a keyring (*.knxkeys)
+    file that was encrypted with the given password \a password.
+    Set the \a validate argument to \c true to verify that all data in the
+    keyring file is trustworthy, \c false to omit the check.
+
+    \note If an error occurred, no or invalid information for \a type or \a ia
+    was found in the keyring file;
+    the function returns a \l {default-constructed value} which can be invalid.
+*/
+QKnxSecureConfiguration QKnxSecureConfiguration::fromKeyring(QKnxSecureConfiguration::Type type,
+    const QKnxAddress &ia, const QString &keyring, const QByteArray &password, bool validate)
+{
+    return QKnxPrivate::fromKeyring(type, ia, keyring, password, validate).value(0, {});
+}
 
 /*!
     Returns \c true if this is a default constructed secure configuration;
@@ -177,6 +320,7 @@ QKnxAddress QKnxSecureConfiguration::individualAddress() const
 
 /*!
     Sets the requested individual address of the secure session to \a address.
+    Returns \c true on success; \c false otherwise.
 
     \note To request any of the freely available addresses for the secure
     session, or to reset the requested one, pass an invalid \a address to
@@ -184,10 +328,9 @@ QKnxAddress QKnxSecureConfiguration::individualAddress() const
 */
 bool QKnxSecureConfiguration::setIndividualAddress(const QKnxAddress &address)
 {
-    auto isIa = address.type() == QKnxAddress::Type::Individual;
-    if (isIa)
+    if ((address.type() == QKnxAddress::Type::Individual) || (!address.isValid()))
         d->ia = address;
-    return isIa;
+    return d->ia == address;
 }
 
 /*!

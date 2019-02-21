@@ -167,7 +167,7 @@ bool QKnxCryptographicEngine::supportsCryptography()
     return QKnxSsl::supportsCryptography();
 }
 
-/*
+/*!
     Returns the OpenSSL version number of the OpenSSL library if OpenSSL is
     available and used to provide cryptographic support; or \c 0 in any other
     case.
@@ -213,8 +213,8 @@ QKnxByteArray QKnxCryptographicEngine::sessionKey(const QKnxByteArray &sharedSec
 /*!
     Returns the password hash derived from the user chosen password \a password.
 
-    \note The salt used in the Password-Based Key Derivation Function (PBKDF2)
-    function is set to \e {user-password.1.secure.ip.knx.org}.
+    \note The salt used in the password-based key derivation function (PBKDF2)
+    is set to \e {user-password.1.secure.ip.knx.org}.
 */
 QKnxByteArray QKnxCryptographicEngine::userPasswordHash(const QByteArray &password)
 {
@@ -224,11 +224,25 @@ QKnxByteArray QKnxCryptographicEngine::userPasswordHash(const QByteArray &passwo
 }
 
 /*!
+    Returns the keyring password hash derived from the user chosen password
+    \a password.
+
+    \note The salt used in the password-based key derivation function (PBKDF2)
+    is set to \e {1.keyring.ets.knx.org}.
+*/
+QKnxByteArray QKnxCryptographicEngine::keyringPasswordHash(const QByteArray &password)
+{
+    const auto hash = QPasswordDigestor::deriveKeyPbkdf2(QCryptographicHash::Algorithm::Sha256,
+        password, "1.keyring.ets.knx.org", 0x10000, 16);
+    return QKnxByteArray::fromByteArray(hash);
+}
+
+/*!
     Returns the device authentication code hash derived from the user chosen
     password \a password.
 
-    \note The salt used in the Password-Based Key Derivation Function (PBKDF2)
-    function is set to \e {device-authentication-code.1.secure.ip.knx.org}.
+    \note The salt used in the password-based key derivation function (PBKDF2)
+    is set to \e {device-authentication-code.1.secure.ip.knx.org}.
 */
 QKnxByteArray QKnxCryptographicEngine::deviceAuthenticationCodeHash(const QByteArray &password)
 {
@@ -238,7 +252,15 @@ QKnxByteArray QKnxCryptographicEngine::deviceAuthenticationCodeHash(const QByteA
 }
 
 /*!
-    Performs a bytewise XOR operation on the arguments \a left and \a right.
+    Returns the hash of \a data using the \c Sha256 algorithm.
+*/
+QKnxByteArray QKnxCryptographicEngine::hashSha256(const QByteArray &data)
+{
+    return QKnxByteArray::fromByteArray(QCryptographicHash::hash(data, QCryptographicHash::Sha256));
+}
+
+/*!
+    Performs a byte-wise XOR operation on the arguments \a left and \a right.
     If the arguments are not equal in size, the function uses only the shorter
     array for the operation. If \a adjust is set to \c true, the arrays are made
     equal by padding them with \c 0x00 bytes.
@@ -353,6 +375,26 @@ QKnxByteArray QKnxCryptographicEngine::computeMessageAuthenticationCode(const QK
 }
 
 /*!
+    Decrypts the given \a data with \a key and the initial vector \a iv. Returns
+    an array of bytes that represents the decrypted data.
+*/
+QKnxByteArray QKnxCryptographicEngine::decrypt(const QKnxByteArray &key, const QKnxByteArray &iv,
+    const QKnxByteArray &data)
+{
+    return QKnxSsl::doCrypt(key, iv, data, QKnxSsl::Decrypt);
+}
+
+/*!
+    Encrypts the given \a data with \a key and the initial vector \a iv. Returns
+    an array of bytes that represents the encrypted data.
+*/
+QKnxByteArray QKnxCryptographicEngine::encrypt(const QKnxByteArray &key, const QKnxByteArray &iv,
+    const QKnxByteArray &data)
+{
+    return QKnxSsl::doCrypt(key, iv, data, QKnxSsl::Encrypt);
+}
+
+/*!
     Encrypts the given KNXnet/IP frame \a frame with the given key \a key,
     sequence number \a sequenceNumber, serial number \a serialNumber, and
     message tag \a messageTag. Returns an array of bytes that represent the
@@ -414,6 +456,39 @@ QKnxByteArray QKnxCryptographicEngine::decryptMessageAuthenticationCode(const QK
     quint16 messageTag)
 {
     return QKnxPrivate::processMAC(key, mac, sequenceNumber, serialNumber, messageTag);
+}
+
+/*!
+    Decodes and decrypts a tool key \a toolKey that was stored in an ETS
+    keyring (*.knxkeys) file with the given password hash \a passwordHash and
+    created hash \a createdHash.
+
+    Returns an array of bytes that represent the decrypted tool key or an empty
+    byte array in case of an error.
+*/
+QKnxByteArray QKnxCryptographicEngine::decodeAndDecryptToolKey(const QKnxByteArray &passwordHash,
+    const QKnxByteArray &createdHash, const QByteArray &toolKey)
+{
+    auto base64 = QKnxByteArray::fromByteArray(QByteArray::fromBase64(toolKey));
+    return QKnxSsl::doCrypt(passwordHash, createdHash, base64, QKnxSsl::Decrypt);
+}
+
+/*!
+    Decodes and decrypts a password \a password that was stored in an ETS
+    keyring (*.knxkeys) file with the given password hash \a passwordHash and
+    created hash \a createdHash.
+
+    Returns an array of bytes that represent the decrypted password or an empty
+    byte array in case of an error.
+*/
+QKnxByteArray QKnxCryptographicEngine::decodeAndDecryptPassword(const QKnxByteArray &passwordHash,
+        const QKnxByteArray &createdHash, const QByteArray &password)
+{
+    const auto base64 = QKnxByteArray::fromByteArray(QByteArray::fromBase64(password));
+    const auto decoded = QKnxSsl::doCrypt(passwordHash, createdHash, base64, QKnxSsl::Decrypt);
+
+    quint8 paddedSize = decoded.value(decoded.size() - 1);
+    return decoded.mid(8, decoded.size() - paddedSize - 8);
 }
 
 QT_END_NAMESPACE
