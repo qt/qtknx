@@ -35,88 +35,14 @@
 #include "qknxnetipsessionstatus.h"
 #include "qknxnetiptimernotify.h"
 
+#include "private/qknxssl_p.h"
+
 #include <QtCore/qcryptographichash.h>
 #include <QtCore/qmutex.h>
 
 #include <QtNetwork/qpassworddigestor.h>
-#include <QtNetwork/private/qtnetworkglobal_p.h>
-
-#if QT_CONFIG(opensslv11)
-# include <QtKnx/private/qsslsocket_openssl_symbols_p.h>
-# include <QtKnx/private/qsslsocket_openssl11_symbols_p.h>
-#endif
 
 QT_BEGIN_NAMESPACE
-
-class Q_KNX_EXPORT QKnxOpenSsl
-{
-public:
-    static bool supportsSsl();
-    static long sslLibraryVersionNumber();
-
-protected:
-    static bool ensureLibraryLoaded();
-
-private:
-    static bool s_libraryLoaded;
-    static bool s_libraryEnabled;
-};
-bool QKnxOpenSsl::s_libraryLoaded = false;
-bool QKnxOpenSsl::s_libraryEnabled = false;
-
-Q_GLOBAL_STATIC(QKnxOpenSsl, qt_QKnxOpenSsl)
-Q_GLOBAL_STATIC_WITH_ARGS(QMutex, qt_knxOpenSslInitMutex, (QMutex::Recursive))
-
-/*!
-    \internal
-*/
-bool QKnxOpenSsl::supportsSsl()
-{
-#if QT_CONFIG(opensslv11)
-    if (!q_resolveOpenSslSymbols())
-        return false;
-
-    const QMutexLocker locker(qt_knxOpenSslInitMutex);
-    if (!s_libraryLoaded) {
-        s_libraryLoaded = true;
-
-        // Initialize OpenSSL.
-        if (q_OPENSSL_init_ssl(0, nullptr) != 1)
-            return false;
-        q_SSL_load_error_strings();
-        q_OpenSSL_add_all_algorithms();
-
-        // Initialize OpenSSL's random seed.
-        if (!q_RAND_status()) {
-            qWarning("Random number generator not seeded, disabling SSL support");
-            return false;
-        }
-
-        if (q_EVP_PKEY_type(NID_X25519) == NID_undef) {
-            qWarning("The X25519 algorithm is not supported, disabling SSL support");
-            return false;
-        }
-        s_libraryEnabled = true;
-    }
-    return s_libraryEnabled;
-#else
-    Q_UNUSED(qt_knxOpenSslInitMutex)
-    return false;
-#endif
-}
-
-/*!
-    \internal
-*/
-long QKnxOpenSsl::sslLibraryVersionNumber()
-{
-#if QT_CONFIG(opensslv11)
-    if (supportsSsl())
-        return q_OpenSSL_version_num();
-#endif
-    return 0;
-}
-
 
 /*!
     \class QKnxCryptographicEngine
@@ -238,7 +164,7 @@ long QKnxOpenSsl::sslLibraryVersionNumber()
 */
 bool QKnxCryptographicEngine::supportsCryptography()
 {
-    return qt_QKnxOpenSsl->supportsSsl();
+    return QKnxSsl::supportsCryptography();
 }
 
 /*
@@ -248,7 +174,7 @@ bool QKnxCryptographicEngine::supportsCryptography()
 */
 long QKnxCryptographicEngine::sslLibraryVersionNumber()
 {
-    return qt_QKnxOpenSsl->sslLibraryVersionNumber();
+    return QKnxSsl::sslLibraryVersionNumber();
 }
 
 /*!
@@ -329,6 +255,8 @@ QKnxByteArray QKnxCryptographicEngine::XOR(const QKnxByteArray &left, const QKnx
 
 namespace QKnxPrivate
 {
+    static const quint8 iv[16] { 0x00 };
+
     static QKnxByteArray b0(quint48 sequence, const QKnxByteArray &serial, quint16 tag, quint16 len)
     {
         return QKnxUtils::QUint48::bytes(sequence) + serial + QKnxUtils::QUint16::bytes(tag)
@@ -340,49 +268,6 @@ namespace QKnxPrivate
         return QKnxPrivate::b0(sequence, serial, tag, 0xff00);
     }
 
-    static QKnxByteArray encrypt(const QKnxByteArray &key, const QKnxByteArray &data)
-    {
-#if QT_CONFIG(opensslv11)
-        if (!qt_QKnxOpenSsl->supportsSsl())
-            return {};
-
-        QSharedPointer<EVP_CIPHER_CTX> ctxPtr(q_EVP_CIPHER_CTX_new(), q_EVP_CIPHER_CTX_free);
-        if (ctxPtr.isNull())
-            return {};
-
-        const auto ctx = ctxPtr.data();
-        const auto c = q_EVP_aes_128_cbc();
-        if (q_EVP_CipherInit_ex(ctx, c, nullptr, nullptr, nullptr, 0x01) <= 0)
-            return {};
-
-        if (q_EVP_CIPHER_CTX_set_padding(ctx, 0) <= 0)
-            return {};
-
-        Q_ASSERT(q_EVP_CIPHER_CTX_iv_length(ctx) == 16);
-        Q_ASSERT(q_EVP_CIPHER_CTX_key_length(ctx) == 16);
-
-        static const quint8 iv[16] { 0x00 };
-        if (q_EVP_CipherInit_ex(ctx, nullptr, nullptr, key.constData(), iv, 0x01) <= 0)
-            return {};
-
-        int outl, offset = 0;
-        QKnxByteArray out(data.size() + q_EVP_CIPHER_block_size(c), 0x00);
-        if (q_EVP_CipherUpdate(ctx, out.data(), &outl, data.constData(), data.size()) <= 0)
-            return {};
-        offset += outl;
-
-        if (q_EVP_CipherFinal_ex(ctx, out.data() + offset, &outl) <= 0)
-            return {};
-        offset += outl;
-
-        return out.mid(offset - 16, 16);
-#else
-        Q_UNUSED(key)
-        Q_UNUSED(data)
-        return {};
-#endif
-    }
-
     static QKnxByteArray processMAC(const QKnxByteArray &key, const QKnxByteArray &mac,
         quint48 sequenceNumber, const QKnxByteArray &serialNumber, quint16 messageTag)
     {
@@ -392,7 +277,8 @@ namespace QKnxPrivate
         auto Ctr0 = QKnxPrivate::ctr0(sequenceNumber,
             (serialNumber.isEmpty() ? QKnxByteArray(6, 0x00) : serialNumber), messageTag);
 
-        return QKnxCryptographicEngine::XOR(QKnxPrivate::encrypt(key, Ctr0), mac);
+        return QKnxCryptographicEngine::XOR(QKnxSsl::doCrypt(key, { iv, 16 }, Ctr0,
+            QKnxSsl::Encrypt).right(16), mac);
     }
 
     static QKnxByteArray processPayload(const QKnxByteArray &key, const QKnxByteArray &payload,
@@ -407,7 +293,7 @@ namespace QKnxPrivate
         QKnxByteArray ctrArray;
         for (int i = 0; i < (payload.size() + 15) >> 4; ++i) {
             Ctr0.set(15, Ctr0.at(15) + 1);
-            ctrArray += QKnxPrivate::encrypt(key, Ctr0);
+            ctrArray += QKnxSsl::doCrypt(key, { iv, 16 }, Ctr0, QKnxSsl::Encrypt).right(16);
         }
 
         return QKnxCryptographicEngine::XOR(ctrArray, payload, false);
@@ -463,7 +349,7 @@ QKnxByteArray QKnxCryptographicEngine::computeMessageAuthenticationCode(const QK
         return {};
     B.resize(B.size() + (16 - (B.size() % 16))); // pad to multiple of 16
 
-    return QKnxPrivate::encrypt(key, B);
+    return QKnxSsl::doCrypt(key, { QKnxPrivate::iv, 16 }, B, QKnxSsl::Encrypt).right(16);
 }
 
 /*!

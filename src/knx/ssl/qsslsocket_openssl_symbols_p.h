@@ -103,9 +103,12 @@
 #include <openssl/dh.h>
 #endif
 
+#include <QtCore/qloggingcategory.h>
 #include <QtCore/qglobal.h>
 
 QT_BEGIN_NAMESPACE
+
+Q_DECLARE_LOGGING_CATEGORY(lcSsl)
 
 #define DUMMYARG
 

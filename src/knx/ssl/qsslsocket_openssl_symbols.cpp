@@ -54,7 +54,6 @@
 **
 ****************************************************************************/
 
-#include "qssl_p.h"
 #include "qsslsocket_openssl_symbols_p.h"
 
 #ifdef Q_OS_WIN
@@ -117,6 +116,8 @@ QT_BEGIN_NAMESPACE
     compiling host has installed, but the symbols are resolved at run-time,
     possibly with a different version of OpenSSL.
 */
+
+Q_LOGGING_CATEGORY(lcSsl, "qt.network.ssl");
 
 #ifndef QT_LINKED_OPENSSL
 
