@@ -118,7 +118,7 @@ public:
     void connectToHost(const QHostAddress &address, quint16 port);
     void connectToHost(const QHostAddress &address, quint16 port, QKnxNetIp::HostProtocol proto);
 
-    QKnxByteArray serialNumer() const;
+    QKnxByteArray serialNumber() const;
     void setSerialNumber(const QKnxByteArray &serialNumber);
 
     QKnxSecureConfiguration secureConfiguration() const;
