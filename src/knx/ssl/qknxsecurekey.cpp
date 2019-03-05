@@ -33,8 +33,8 @@
 #include <QtNetwork/private/qtnetworkglobal_p.h>
 
 #if QT_CONFIG(opensslv11)
-# include <QtKnx/private/qsslsocket_openssl_symbols_p.h>
-# include <QtKnx/private/qsslsocket_openssl11_symbols_p.h>
+# include "private/qsslsocket_openssl_symbols_p.h"
+# include "private/qsslsocket_openssl11_symbols_p.h"
 #endif
 
 QT_BEGIN_NAMESPACE
