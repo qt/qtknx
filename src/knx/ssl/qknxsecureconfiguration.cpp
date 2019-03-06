@@ -429,6 +429,7 @@ bool QKnxSecureConfiguration::operator==(const QKnxSecureConfiguration &other) c
     return d == other.d || (d->privateKey == other.d->privateKey
         && d->userId == other.d->userId
         && d->userPassword == other.d->userPassword
+        && d->ia == other.d->ia
         && d->deviceAuthenticationCode == other.d->deviceAuthenticationCode
         && d->keepAlive == other.d->keepAlive);
 }
