@@ -368,7 +368,7 @@ bool QKnxSecureConfiguration::isSecureSessionKeepAliveSet() const
 /*!
     Determines whether the connection should be kept alive. Set \a keepAlive to
     \c true to keep a secure session alive even if there is no traffic for more
-    than \l {KnxNetIp::SecureSessionTimeout} {60 seconds}.
+    than \l {QKnx::NetIp::SecureSessionTimeout} {60 seconds}.
 */
 void QKnxSecureConfiguration::setKeepSecureSessionAlive(bool keepAlive)
 {
