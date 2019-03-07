@@ -201,13 +201,13 @@ void QKnxNetIpEndpointConnectionPrivate::setupTimer()
     Q_Q(QKnxNetIpEndpointConnection);
     m_heartbeatTimer = new QTimer(q);
     m_heartbeatTimer->setSingleShot(true);
-    QObject::connect(m_heartbeatTimer, &QTimer::timeout, [&]() {
+    QObject::connect(m_heartbeatTimer, &QTimer::timeout, q, [&]() {
         sendStateRequest();
     });
 
     m_connectRequestTimer = new QTimer(q);
     m_connectRequestTimer->setSingleShot(true);
-    QObject::connect(m_connectRequestTimer, &QTimer::timeout, [&]() {
+    QObject::connect(m_connectRequestTimer, &QTimer::timeout, q, [&]() {
         setAndEmitStateChanged(QKnxNetIpEndpointConnection::State::Bound);
         setAndEmitErrorOccurred(QKnxNetIpEndpointConnection::Error::Acknowledge,
             QKnxNetIpEndpointConnection::tr("Connect request timeout."));
@@ -218,7 +218,7 @@ void QKnxNetIpEndpointConnectionPrivate::setupTimer()
 
     m_connectionStateTimer = new QTimer(q);
     m_connectionStateTimer->setSingleShot(true);
-    QObject::connect(m_connectionStateTimer, &QTimer::timeout, [&]() {
+    QObject::connect(m_connectionStateTimer, &QTimer::timeout, q, [&]() {
         m_heartbeatTimer->stop();
         m_connectionStateTimer->stop();
         if (m_stateRequests > m_maxStateRequests) {
@@ -234,7 +234,7 @@ void QKnxNetIpEndpointConnectionPrivate::setupTimer()
 
     m_disconnectRequestTimer = new QTimer(q);
     m_disconnectRequestTimer->setSingleShot(true);
-    QObject::connect(m_disconnectRequestTimer, &QTimer::timeout, [&] () {
+    QObject::connect(m_disconnectRequestTimer, &QTimer::timeout, q, [&] () {
         setAndEmitErrorOccurred(QKnxNetIpEndpointConnection::Error::Acknowledge,
             QKnxNetIpEndpointConnection::tr("Disconnect request timeout."));
         processDisconnectResponse(QKnxNetIpDisconnectResponseProxy::builder()
@@ -243,7 +243,7 @@ void QKnxNetIpEndpointConnectionPrivate::setupTimer()
 
     m_acknowledgeTimer = new QTimer(q);
     m_acknowledgeTimer->setSingleShot(true);
-    QObject::connect(m_acknowledgeTimer, &QTimer::timeout, [&]() {
+    QObject::connect(m_acknowledgeTimer, &QTimer::timeout, q, [&]() {
         if (m_cemiRequests > m_maxCemiRequest) {
             setAndEmitErrorOccurred(QKnxNetIpEndpointConnection::Error::Cemi,
                 QKnxNetIpEndpointConnection::tr("Did not receive acknowledge in time."));
@@ -377,7 +377,8 @@ QKnxNetIp::ServiceType
         if (m_tcpSocket)
             m_tcpSocket->write(secureWrapper.bytes().toByteArray());
 
-        QObject::connect(m_secureTimer, &QTimer::timeout, [&]() {
+        Q_Q(QKnxNetIpEndpointConnection);
+        QObject::connect(m_secureTimer, &QTimer::timeout, q, [&]() {
             m_secureTimer->stop();
             setAndEmitErrorOccurred(QKnxNetIpEndpointConnection::Error::AuthFailed,
                 QKnxNetIpEndpointConnection::tr("Did not receive session status frame."));
@@ -438,7 +439,8 @@ QKnxNetIp::ServiceType
                 if (!m_secureConfig.d->keepAlive)
                     break;
 
-                QObject::connect(m_secureTimer, &QTimer::timeout, [&]() {
+                Q_Q(QKnxNetIpEndpointConnection);
+                QObject::connect(m_secureTimer, &QTimer::timeout, q, [&]() {
                     auto secureStatusWrapper = QKnxNetIpSecureWrapperProxy::secureBuilder()
                         .setSecureSessionId(m_sessionId)
                         .setSequenceNumber(m_sequenceNumber)
@@ -566,10 +568,11 @@ bool QKnxNetIpEndpointConnectionPrivate::initConnection(const QHostAddress &a, q
     QKnxPrivate::clearSocket(&m_tcpSocket);
     QKnxPrivate::clearSocket(&m_udpSocket);
 
+    Q_Q(QKnxNetIpEndpointConnection);
     QAbstractSocket *socket = nullptr;
     if (hp == QKnxNetIp::HostProtocol::TCP_IPv4) {
         socket = m_tcpSocket = new QTcpSocket(q_func());
-        QObject::connect(m_tcpSocket, &QTcpSocket::readyRead, [&]() {
+        QObject::connect(m_tcpSocket, &QTcpSocket::readyRead, q, [&]() {
             if (m_tcpSocket->bytesAvailable() < QKnxNetIpFrameHeader::HeaderSize10)
                 return;
             m_rxBuffer += QKnxByteArray::fromByteArray(m_tcpSocket->readAll());
@@ -585,7 +588,7 @@ bool QKnxNetIpEndpointConnectionPrivate::initConnection(const QHostAddress &a, q
         });
     } else if (hp == QKnxNetIp::HostProtocol::UDP_IPv4) {
         socket = m_udpSocket = new QUdpSocket(q_func());
-        QObject::connect(m_udpSocket, &QUdpSocket::readyRead, [&]() {
+        QObject::connect(m_udpSocket, &QUdpSocket::readyRead, q, [&]() {
             while (m_udpSocket && m_udpSocket->state() == QUdpSocket::BoundState
                 && m_udpSocket->hasPendingDatagrams()) {
                     auto tmp = m_udpSocket->receiveDatagram();
@@ -603,7 +606,7 @@ bool QKnxNetIpEndpointConnectionPrivate::initConnection(const QHostAddress &a, q
 
     if (socket) {
         QObject::connect(socket, QOverload<QAbstractSocket::SocketError>::of(&QAbstractSocket::error),
-            [socket, this](QAbstractSocket::SocketError) {
+            q, [socket, this](QAbstractSocket::SocketError) {
                 setAndEmitErrorOccurred(QKnxNetIpEndpointConnection::Error::Network,
                     socket->errorString());
                 Q_Q(QKnxNetIpEndpointConnection);
@@ -928,7 +931,8 @@ void QKnxNetIpEndpointConnectionPrivate::processConnectResponse(const QKnxNetIpF
                     )
                 .create();
 
-            QTimer::singleShot(0, [&]() { sendStateRequest(); });
+            Q_Q(QKnxNetIpEndpointConnection);
+            QTimer::singleShot(0, q, [&]() { sendStateRequest(); });
             setAndEmitStateChanged(QKnxNetIpEndpointConnection::State::Connected);
         } else {
             auto metaEnum = QMetaEnum::fromType<QKnxNetIp::Error>();
