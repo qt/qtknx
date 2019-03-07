@@ -167,7 +167,30 @@ public:
     void setAndEmitStateChanged(QKnxNetIpEndpointConnection::State newState);
     void setAndEmitErrorOccurred(QKnxNetIpEndpointConnection::Error newError, const QString &message);
 
-    void setCri(const QKnxNetIpCri &cri) { m_cri = cri; }
+    QKnxNetIpCri cri() const { return m_cri; }
+    void updateCri(QKnxNetIp::TunnelLayer layer)
+    {
+        QKnxNetIpCriProxy proxy(m_cri);
+        m_cri = proxy.builder()
+            .setTunnelLayer(layer)
+            .setIndividualAddress(proxy.individualAddress())
+            .create();
+    }
+
+    void updateCri(const QKnxAddress &ia)
+    {
+        QKnxNetIpCriProxy proxy(m_cri);
+        if (ia.isValid()) {
+            m_cri = QKnxNetIpCriProxy::builder()
+                .setTunnelLayer(proxy.tunnelLayer())
+                .setIndividualAddress(ia)
+                .create();
+        } else {
+            m_cri = proxy.builder()
+                .setTunnelLayer(proxy.tunnelLayer())
+                .create();
+        }
+    }
 
 private:
     QKnxNetIpCri m_cri;

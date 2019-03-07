@@ -1322,8 +1322,10 @@ QKnxNetIpSecureConfiguration QKnxNetIpEndpointConnection::secureConfiguration() 
 void QKnxNetIpEndpointConnection::setSecureConfiguration(const QKnxNetIpSecureConfiguration &config)
 {
     Q_D(QKnxNetIpEndpointConnection);
-    if (d->m_state == QKnxNetIpEndpointConnection::State::Disconnected)
+    if (d->m_state == QKnxNetIpEndpointConnection::State::Disconnected) {
         d->m_secureConfig = config;
+        d->updateCri(config.individualAddress());
+    }
 }
 
 /*!
