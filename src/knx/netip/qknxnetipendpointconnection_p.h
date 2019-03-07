@@ -48,7 +48,7 @@
 #include <QtKnx/qknxdevicemanagementframe.h>
 #include <QtKnx/qknxlinklayerframe.h>
 #include <QtKnx/qknxnetipendpointconnection.h>
-#include <QtKnx/qknxsecureconfiguration.h>
+#include <QtKnx/qknxnetipsecureconfiguration.h>
 
 #include <QtNetwork/qhostaddress.h>
 
@@ -225,7 +225,7 @@ private:
     QTimer *m_secureTimer { nullptr };
 
     QKnxSecureKey m_serverPublicKey;
-    QKnxSecureConfiguration m_secureConfig;
+    QKnxNetIpSecureConfiguration m_secureConfig;
 
     // TODO: We need some kind of device configuration class as well.
     QKnxByteArray m_serialNumber { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };

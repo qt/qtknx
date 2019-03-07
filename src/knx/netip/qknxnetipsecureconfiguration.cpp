@@ -28,21 +28,21 @@
 ****************************************************************************/
 
 #include "qknxcryptographicengine.h"
-#include "qknxsecureconfiguration.h"
+#include "qknxnetipsecureconfiguration.h"
 
 #include <QtCore/qfile.h>
 
 #include "private/qknxkeyring_p.h"
-#include "private/qknxsecureconfiguration_p.h"
+#include "private/qknxnetipsecureconfiguration_p.h"
 
 QT_BEGIN_NAMESPACE
 
 namespace QKnxPrivate
 {
-    static QKnxSecureConfiguration fromInterface(const QKnx::Ets::Keyring::QKnxInterface &iface,
+    static QKnxNetIpSecureConfiguration fromInterface(const QKnx::Ets::Keyring::QKnxInterface &iface,
         const QKnxByteArray &pwHash, const QKnxByteArray &createdHash)
     {
-        QKnxSecureConfiguration s;
+        QKnxNetIpSecureConfiguration s;
         s.setUserId(QKnxNetIp::SecureUserId(iface.UserID));
         s.setPrivateKey(QKnxSecureKey::generatePrivateKey());
         s.setUserPassword(QKnxCryptographicEngine::decodeAndDecryptPassword(pwHash,
@@ -53,10 +53,10 @@ namespace QKnxPrivate
         return s;
     }
 
-    static QKnxSecureConfiguration fromDevice(const QKnx::Ets::Keyring::QKnxDevice &device,
+    static QKnxNetIpSecureConfiguration fromDevice(const QKnx::Ets::Keyring::QKnxDevice &device,
         const QKnxByteArray &pwHash, const QKnxByteArray &createdHash)
     {
-        QKnxSecureConfiguration s;
+        QKnxNetIpSecureConfiguration s;
         s.setUserId(QKnxNetIp::SecureUserId::Management);
         s.setPrivateKey(QKnxSecureKey::generatePrivateKey());
         s.setUserPassword(QKnxCryptographicEngine::decodeAndDecryptPassword(pwHash,
@@ -67,7 +67,7 @@ namespace QKnxPrivate
         return s;
     }
 
-    static QVector<QKnxSecureConfiguration> fromKeyring(QKnxSecureConfiguration::Type type,
+    static QVector<QKnxNetIpSecureConfiguration> fromKeyring(QKnxNetIpSecureConfiguration::Type type,
         const QKnxAddress &ia, const QString &filePath, const QByteArray &password, bool validate)
     {
         QFile file;
@@ -91,9 +91,9 @@ namespace QKnxPrivate
         const auto createdHash = QKnxCryptographicEngine::hashSha256(keyring.Created.toUtf8());
 
         auto iaString = ia.toString();
-        QVector<QKnxSecureConfiguration> results;
+        QVector<QKnxNetIpSecureConfiguration> results;
 
-        if (type == QKnxSecureConfiguration::Type::Tunneling) {
+        if (type == QKnxNetIpSecureConfiguration::Type::Tunneling) {
             if (keyring.Interface.isEmpty())
                 return {};
 
@@ -109,7 +109,7 @@ namespace QKnxPrivate
             }
         }
 
-        if (type == QKnxSecureConfiguration::Type::DeviceManagement) {
+        if (type == QKnxNetIpSecureConfiguration::Type::DeviceManagement) {
             if (keyring.Devices.isEmpty())
                 return {};
 
@@ -134,10 +134,10 @@ namespace QKnxPrivate
     \since 5.13
     \inmodule QtKnx
 
-    \class QKnxSecureConfiguration
+    \class QKnxNetIpSecureConfiguration
     \ingroup qtknx-general-classes
 
-    \brief The QKnxSecureConfiguration class holds configuration
+    \brief The QKnxNetIpSecureConfiguration class holds configuration
     options used for the secure session authentication process.
 
     It holds information such as secure key, user ID and password, device
@@ -149,7 +149,7 @@ namespace QKnxPrivate
 */
 
 /*!
-    \enum QKnxSecureConfiguration::Type
+    \enum QKnxNetIpSecureConfiguration::Type
 
     This enum holds the type of secure configuration that can be constructed
     from an ETS exported keyring (*.knxkeys) file.
@@ -165,14 +165,14 @@ namespace QKnxPrivate
 
     \sa isNull(), isValid()
 */
-QKnxSecureConfiguration::QKnxSecureConfiguration()
-    : d(new QKnxSecureConfigurationPrivate)
+QKnxNetIpSecureConfiguration::QKnxNetIpSecureConfiguration()
+    : d(new QKnxNetIpSecureConfigurationPrivate)
 {}
 
 /*!
     Releases any resources held by the secure configuration.
 */
-QKnxSecureConfiguration::~QKnxSecureConfiguration() = default;
+QKnxNetIpSecureConfiguration::~QKnxNetIpSecureConfiguration() = default;
 
 /*!
     Constructs a vector of secure configurations for the given type
@@ -184,7 +184,7 @@ QKnxSecureConfiguration::~QKnxSecureConfiguration() = default;
     \note If an error occurred, no or invalid information for \a type
      was found in the keyring file, the returned vector can be empty.
 */
-QVector<QKnxSecureConfiguration> QKnxSecureConfiguration::fromKeyring(Type type,
+QVector<QKnxNetIpSecureConfiguration> QKnxNetIpSecureConfiguration::fromKeyring(Type type,
     const QString &keyring, const QByteArray &password, bool validate)
 {
     return QKnxPrivate::fromKeyring(type, {}, keyring, password, validate);
@@ -201,7 +201,7 @@ QVector<QKnxSecureConfiguration> QKnxSecureConfiguration::fromKeyring(Type type,
     was found in the keyring file;
     the function returns a \l {default-constructed value} which can be invalid.
 */
-QKnxSecureConfiguration QKnxSecureConfiguration::fromKeyring(QKnxSecureConfiguration::Type type,
+QKnxNetIpSecureConfiguration QKnxNetIpSecureConfiguration::fromKeyring(QKnxNetIpSecureConfiguration::Type type,
     const QKnxAddress &ia, const QString &keyring, const QByteArray &password, bool validate)
 {
     return QKnxPrivate::fromKeyring(type, ia, keyring, password, validate).value(0, {});
@@ -212,7 +212,7 @@ QKnxSecureConfiguration QKnxSecureConfiguration::fromKeyring(QKnxSecureConfigura
     otherwise returns \c false. A secure configuration is considered \c null
     if it contains no initialized values.
 */
-bool QKnxSecureConfiguration::isNull() const
+bool QKnxNetIpSecureConfiguration::isNull() const
 {
     return d->privateKey.isNull() && d->userId == QKnxNetIp::SecureUserId::Reserved
         && d->userPassword.isNull() && d->deviceAuthenticationCode.isNull();
@@ -226,7 +226,7 @@ bool QKnxSecureConfiguration::isNull() const
     a valid \l {QKnxSecureKey} {secure key}, and sensible device authentication
     code.
 */
-bool QKnxSecureConfiguration::isValid() const
+bool QKnxNetIpSecureConfiguration::isValid() const
 {
     if (isNull())
         return false;
@@ -239,7 +239,7 @@ bool QKnxSecureConfiguration::isValid() const
     Returns the public \l {QKnxSecureKey} {secure key} used to establish the
     secure session. The public key is derived from the given private key.
 */
-QKnxSecureKey QKnxSecureConfiguration::publicKey() const
+QKnxSecureKey QKnxNetIpSecureConfiguration::publicKey() const
 {
     return d->publicKey;
 }
@@ -248,7 +248,7 @@ QKnxSecureKey QKnxSecureConfiguration::publicKey() const
     Returns the private \l {QKnxSecureKey} {secure key} used to establish the
     secure session.
 */
-QKnxSecureKey QKnxSecureConfiguration::privateKey() const
+QKnxSecureKey QKnxNetIpSecureConfiguration::privateKey() const
 {
     return d->privateKey;
 }
@@ -257,7 +257,7 @@ QKnxSecureKey QKnxSecureConfiguration::privateKey() const
     Set the \l {QKnxSecureKey} {secure key} used to establish the secure
     connection to \a key and returns \c true on success; \c false otherwise.
 */
-bool QKnxSecureConfiguration::setPrivateKey(const QKnxSecureKey &key)
+bool QKnxNetIpSecureConfiguration::setPrivateKey(const QKnxSecureKey &key)
 {
     auto valid = key.isValid() && key.type() == QKnxSecureKey::Type::Private;
     if (valid) {
@@ -270,7 +270,7 @@ bool QKnxSecureConfiguration::setPrivateKey(const QKnxSecureKey &key)
 /*!
     Returns the user ID used in the KNXnet/IP session authentication frame.
 */
-QKnxNetIp::SecureUserId QKnxSecureConfiguration::userId() const
+QKnxNetIp::SecureUserId QKnxNetIpSecureConfiguration::userId() const
 {
     return d->userId;
 }
@@ -283,7 +283,7 @@ QKnxNetIp::SecureUserId QKnxSecureConfiguration::userId() const
     equal to or more than \c QKnxNetIp::SecureUserId::Invalid is considered
     invalid according to the KNX application note AN159.
 */
-bool QKnxSecureConfiguration::setUserId(QKnxNetIp::SecureUserId userId)
+bool QKnxNetIpSecureConfiguration::setUserId(QKnxNetIp::SecureUserId userId)
 {
     auto valid = QKnxNetIp::isSecureUserId(userId);
     if (valid)
@@ -295,7 +295,7 @@ bool QKnxSecureConfiguration::setUserId(QKnxNetIp::SecureUserId userId)
     Returns the user password used to authenticate the user while establishing
     the secure session as an array of bytes.
 */
-QByteArray QKnxSecureConfiguration::userPassword() const
+QByteArray QKnxNetIpSecureConfiguration::userPassword() const
 {
     return d->userPassword;
 }
@@ -305,7 +305,7 @@ QByteArray QKnxSecureConfiguration::userPassword() const
     secure session to \a userPassword. Returns \c true on success; \c false
     otherwise.
 */
-void QKnxSecureConfiguration::setUserPassword(const QByteArray &userPassword)
+void QKnxNetIpSecureConfiguration::setUserPassword(const QByteArray &userPassword)
 {
     d->userPassword = userPassword;
 }
@@ -313,7 +313,7 @@ void QKnxSecureConfiguration::setUserPassword(const QByteArray &userPassword)
 /*!
     Returns the requested individual address for the secure session.
 */
-QKnxAddress QKnxSecureConfiguration::individualAddress() const
+QKnxAddress QKnxNetIpSecureConfiguration::individualAddress() const
 {
     return d->ia;
 }
@@ -326,7 +326,7 @@ QKnxAddress QKnxSecureConfiguration::individualAddress() const
     session, or to reset the requested one, pass an invalid \a address to
     the function.
 */
-bool QKnxSecureConfiguration::setIndividualAddress(const QKnxAddress &address)
+bool QKnxNetIpSecureConfiguration::setIndividualAddress(const QKnxAddress &address)
 {
     if ((address.type() == QKnxAddress::Type::Individual) || (!address.isValid()))
         d->ia = address;
@@ -337,7 +337,7 @@ bool QKnxSecureConfiguration::setIndividualAddress(const QKnxAddress &address)
     Returns the device authentication code to establish the secure session
     as an array of bytes.
 */
-QByteArray QKnxSecureConfiguration::deviceAuthenticationCode() const
+QByteArray QKnxNetIpSecureConfiguration::deviceAuthenticationCode() const
 {
     return d->deviceAuthenticationCode;
 }
@@ -348,7 +348,7 @@ QByteArray QKnxSecureConfiguration::deviceAuthenticationCode() const
 
     \note The device authentication code cannot be empty.
 */
-bool QKnxSecureConfiguration::setDeviceAuthenticationCode(const QByteArray &authenticationCode)
+bool QKnxNetIpSecureConfiguration::setDeviceAuthenticationCode(const QByteArray &authenticationCode)
 {
     auto valid = !authenticationCode.isEmpty();
     if (valid)
@@ -360,7 +360,7 @@ bool QKnxSecureConfiguration::setDeviceAuthenticationCode(const QByteArray &auth
     Returns \c true if the keep alive flag is set; \c false otherwise. By
     default this is set to \c false.
 */
-bool QKnxSecureConfiguration::isSecureSessionKeepAliveSet() const
+bool QKnxNetIpSecureConfiguration::isSecureSessionKeepAliveSet() const
 {
     return d->keepAlive;
 }
@@ -370,7 +370,7 @@ bool QKnxSecureConfiguration::isSecureSessionKeepAliveSet() const
     \c true to keep a secure session alive even if there is no traffic for more
     than \l {QKnx::NetIp::SecureSessionTimeout} {60 seconds}.
 */
-void QKnxSecureConfiguration::setKeepSecureSessionAlive(bool keepAlive)
+void QKnxNetIpSecureConfiguration::setKeepSecureSessionAlive(bool keepAlive)
 {
     d->keepAlive = keepAlive;
 }
@@ -378,14 +378,14 @@ void QKnxSecureConfiguration::setKeepSecureSessionAlive(bool keepAlive)
 /*!
     Constructs a copy of \a other.
 */
-QKnxSecureConfiguration::QKnxSecureConfiguration(const QKnxSecureConfiguration &other)
+QKnxNetIpSecureConfiguration::QKnxNetIpSecureConfiguration(const QKnxNetIpSecureConfiguration &other)
     : d(other.d)
 {}
 
 /*!
     Assigns the specified \a other to this secure configuration.
 */
-QKnxSecureConfiguration &QKnxSecureConfiguration::operator=(const QKnxSecureConfiguration &other)
+QKnxNetIpSecureConfiguration &QKnxNetIpSecureConfiguration::operator=(const QKnxNetIpSecureConfiguration &other)
 {
     d = other.d;
     return *this;
@@ -395,7 +395,7 @@ QKnxSecureConfiguration &QKnxSecureConfiguration::operator=(const QKnxSecureConf
     Move-constructs a secure configuration, making it point to the same secure
     configuration that \a other was pointing to.
 */
-QKnxSecureConfiguration::QKnxSecureConfiguration(QKnxSecureConfiguration &&other) Q_DECL_NOTHROW
+QKnxNetIpSecureConfiguration::QKnxNetIpSecureConfiguration(QKnxNetIpSecureConfiguration &&other) Q_DECL_NOTHROW
     : d(other.d)
 {
     other.d = nullptr;
@@ -404,8 +404,8 @@ QKnxSecureConfiguration::QKnxSecureConfiguration(QKnxSecureConfiguration &&other
 /*!
     Move-assigns \a other to this secure configuration.
 */
-QKnxSecureConfiguration &
-    QKnxSecureConfiguration::operator=(QKnxSecureConfiguration &&other) Q_DECL_NOTHROW
+QKnxNetIpSecureConfiguration &
+    QKnxNetIpSecureConfiguration::operator=(QKnxNetIpSecureConfiguration &&other) Q_DECL_NOTHROW
 {
     swap(other);
     return *this;
@@ -415,7 +415,7 @@ QKnxSecureConfiguration &
     Swaps \a other with this secure configuration. This operation is very fast
     and never fails.
 */
-void QKnxSecureConfiguration::swap(QKnxSecureConfiguration &other) Q_DECL_NOTHROW
+void QKnxNetIpSecureConfiguration::swap(QKnxNetIpSecureConfiguration &other) Q_DECL_NOTHROW
 {
     d.swap(other.d);
 }
@@ -424,7 +424,7 @@ void QKnxSecureConfiguration::swap(QKnxSecureConfiguration &other) Q_DECL_NOTHRO
     Returns \c true if this secure configuration and the given \a other are
     equal; otherwise returns \c false.
 */
-bool QKnxSecureConfiguration::operator==(const QKnxSecureConfiguration &other) const
+bool QKnxNetIpSecureConfiguration::operator==(const QKnxNetIpSecureConfiguration &other) const
 {
     return d == other.d || (d->privateKey == other.d->privateKey
         && d->userId == other.d->userId
@@ -438,7 +438,7 @@ bool QKnxSecureConfiguration::operator==(const QKnxSecureConfiguration &other) c
     Returns \c true if this secure configuration and the given \a other are not
     equal; otherwise returns \c false.
 */
-bool QKnxSecureConfiguration::operator!=(const QKnxSecureConfiguration &other) const
+bool QKnxNetIpSecureConfiguration::operator!=(const QKnxNetIpSecureConfiguration &other) const
 {
     return !operator==(other);
 }

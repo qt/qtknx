@@ -27,8 +27,8 @@
 **
 ******************************************************************************/
 
-#ifndef QKNXSECURECONFIGURATION_P_H
-#define QKNXSECURECONFIGURATION_P_H
+#ifndef QKNXNETIPSECURECONFIGURATION_P_H
+#define QKNXNETIPSECURECONFIGURATION_P_H
 
 //
 //  W A R N I N G
@@ -47,11 +47,11 @@
 
 QT_BEGIN_NAMESPACE
 
-class QKnxSecureConfigurationPrivate : public QSharedData
+class QKnxNetIpSecureConfigurationPrivate : public QSharedData
 {
 public:
-    QKnxSecureConfigurationPrivate() = default;
-    ~QKnxSecureConfigurationPrivate() = default;
+    QKnxNetIpSecureConfigurationPrivate() = default;
+    ~QKnxNetIpSecureConfigurationPrivate() = default;
 
     QKnxSecureKey privateKey;
     QKnxSecureKey publicKey;

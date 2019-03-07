@@ -53,7 +53,7 @@
 #include "qtcpsocket.h"
 #include "qudpsocket.h"
 
-#include "private/qknxsecureconfiguration_p.h"
+#include "private/qknxnetipsecureconfiguration_p.h"
 
 QT_BEGIN_NAMESPACE
 /*!
@@ -1306,7 +1306,7 @@ void QKnxNetIpEndpointConnection::setSerialNumber(const QKnxByteArray &serialNum
 
     Returns the secure configuration used to establish the secure session.
 */
-QKnxSecureConfiguration QKnxNetIpEndpointConnection::secureConfiguration() const
+QKnxNetIpSecureConfiguration QKnxNetIpEndpointConnection::secureConfiguration() const
 {
     Q_D(const QKnxNetIpEndpointConnection);
     return d->m_secureConfig;
@@ -1319,7 +1319,7 @@ QKnxSecureConfiguration QKnxNetIpEndpointConnection::secureConfiguration() const
     to \a {config}. The configuration cannot be changed while the secure
     connection is established.
 */
-void QKnxNetIpEndpointConnection::setSecureConfiguration(const QKnxSecureConfiguration &config)
+void QKnxNetIpEndpointConnection::setSecureConfiguration(const QKnxNetIpSecureConfiguration &config)
 {
     Q_D(QKnxNetIpEndpointConnection);
     if (d->m_state == QKnxNetIpEndpointConnection::State::Disconnected)
