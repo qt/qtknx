@@ -579,6 +579,15 @@ bool QKnxNetIp::isCapability(Capability capability)
     The timeout used to empty the incoming queue of a KNXnet/IP router or KNX
     IP device if the number of received datagrams exceeds the number of frames
     that the device can actually process.
+    \value SecureSessionTimeout
+        The maximum time an authenticated secure session can remain unused
+        without any communication before the secure session gets dropped.
+    \value SecureSessionRequestTimeout
+        The maximum time the KNXnet/IP client will wait for the session
+        response from the KNXnet/IP server after sending a session request.
+    \value SecureSessionAuthenticateTimeout
+        The maximum time the authentication process for a newly created secure
+        session may last until the unauthenticated session will be dropped.
 */
 
 /*!

@@ -114,7 +114,18 @@ QT_BEGIN_NAMESPACE
             State request timeout.
     \value Cemi
             No cEMI frame acknowledge in time.
+    \value SecureConfig
+            An invalid secure configuration was used to establish the connection.
+    \value SerialNumber
+            An invalid serial number was set for the device.
+    \value AuthFailed
+            The secure client was not successfully authenticated.
+    \value Timeout
+            A timeout occurred during secure session handshake.
+    \value Close
+            The server requested to close the secure session.
     \value Unknown
+            An unknown error occurred.
 */
 /*!
     \enum QKnxNetIpEndpointConnection::SequenceType
@@ -1262,19 +1273,19 @@ void QKnxNetIpEndpointConnection::connectToHost(const QHostAddress &address, qui
     });
 }
 
-/*
+/*!
     \since 5.13
 
     Returns the serial number of the device using this connection. The default
     value is set to \c {0x000000000000}.
 */
-QKnxByteArray QKnxNetIpEndpointConnection::serialNumer() const
+QKnxByteArray QKnxNetIpEndpointConnection::serialNumber() const
 {
     Q_D(const QKnxNetIpEndpointConnection);
     return d->m_serialNumber;
 }
 
-/*
+/*!
     \since 5.13
 
     Sets the serial number to \a serialNumber of the device using this
@@ -1329,7 +1340,7 @@ void QKnxNetIpEndpointConnection::connectToHostEncrypted(const QKnxNetIpHpai &co
         connectToHost(proxy.hostAddress(), proxy.port());
 }
 
-/*
+/*!
     \since 5.13
 
     Establishes a secure session to the host with \a address and \a port.
@@ -1409,6 +1420,9 @@ void QKnxNetIpEndpointConnection::disconnectFromHost()
     }
 }
 
+/*!
+    \internal
+*/
 QKnxNetIpEndpointConnection::QKnxNetIpEndpointConnection(QKnxNetIpEndpointConnectionPrivate &dd,
         QObject *parent)
     : QObject(dd, parent)
