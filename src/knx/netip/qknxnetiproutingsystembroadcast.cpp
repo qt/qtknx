@@ -67,7 +67,7 @@ QT_BEGIN_NAMESPACE
         if (!proxy.isValid())
             return;
 
-        auto linkFrame = proxy.linkLayerFrame();
+        auto linkFrame = proxy.cemi();
     \endcode
 
     \sa builder(), QKnxNetIpRoutingSystemBroadcastProxy,

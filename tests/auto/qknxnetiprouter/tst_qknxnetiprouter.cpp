@@ -286,7 +286,7 @@ void tst_QKnxNetIpRouter::test_routing_sends_indications()
         indicationSentEmitted = true;
         QKnxNetIpRoutingIndicationProxy indicationSent(frame);
         QVERIFY(indicationSent.isValid());
-        QCOMPARE(indicationSent.linkLayerFrame().bytes(), frameSent.bytes());
+        QCOMPARE(indicationSent.cemi().bytes(), frameSent.bytes());
     });
     auto indication = QKnxNetIpRoutingIndicationProxy::builder()
                       .setCemi(frameSent)
