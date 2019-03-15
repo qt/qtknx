@@ -419,14 +419,15 @@ QKnxNetIp::ServiceType
                 m_secureTimer->stop();
                 m_secureTimer->disconnect();
                 m_waitForAuthentication = false;
+                auto ep = (m_tcpSocket ? m_routeBack : (m_nat ? m_routeBack : m_localEndpoint));
                 auto secureWrapper = QKnxNetIpSecureWrapperProxy::secureBuilder()
                     .setSecureSessionId(m_sessionId)
                     .setSequenceNumber(m_sequenceNumber)
                     .setSerialNumber(m_serialNumber)
                     // .setMessageTag(0x0000) TODO: Do we need an API for this?
                     .setEncapsulatedFrame(QKnxNetIpConnectRequestProxy::builder()
-                        .setControlEndpoint(m_nat ? m_routeBack : m_localEndpoint)
-                        .setDataEndpoint(m_nat ? m_routeBack : m_localEndpoint)
+                        .setControlEndpoint(ep)
+                        .setDataEndpoint(ep)
                         .setRequestInformation(m_cri)
                         .create())
                     .create(QKnxCryptographicEngine::sessionKey(m_secureConfig.d->privateKey,
@@ -927,7 +928,9 @@ void QKnxNetIpEndpointConnectionPrivate::processConnectResponse(const QKnxNetIpF
             m_remoteDataEndpoint = response.dataEndpoint();
             m_lastStateRequest = QKnxNetIpConnectionStateRequestProxy::builder()
                 .setChannelId(m_channelId)
-                .setControlEndpoint(m_nat ? m_routeBack : m_localEndpoint)
+                .setControlEndpoint(
+                        m_tcpSocket ? m_routeBack : (m_nat ? m_routeBack : m_localEndpoint)
+                    )
                 .create();
 
             QTimer::singleShot(0, [&]() { sendStateRequest(); });
