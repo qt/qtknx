@@ -1253,16 +1253,14 @@ void QKnxNetIpEndpointConnection::connectToHost(const QHostAddress &address, qui
     if (!d->initConnection(address, port, protocol))
         return;
 
-    d->m_tcpSocket->connectToHost(address, port);
-
     connect(d->m_tcpSocket, &QTcpSocket::connected, this, [&]() {
         Q_D(QKnxNetIpEndpointConnection);
         d->m_localEndpoint = { d->m_tcpSocket->localAddress(), d->m_tcpSocket->localPort(),
             QKnxNetIp::HostProtocol::TCP_IPv4 };
 
         auto request = QKnxNetIpConnectRequestProxy::builder()
-            .setControlEndpoint(d->m_nat ? d->m_routeBack : d->m_localEndpoint)
-            .setDataEndpoint(d->m_nat ? d->m_routeBack : d->m_localEndpoint)
+            .setControlEndpoint(d->m_routeBack)
+            .setDataEndpoint(d->m_routeBack)
             .setRequestInformation(d->m_cri)
             .create();
         d->m_controlEndpointVersion = request.header().protocolVersion();
@@ -1271,6 +1269,7 @@ void QKnxNetIpEndpointConnection::connectToHost(const QHostAddress &address, qui
         d->m_tcpSocket->write(request.bytes().toByteArray());
         d->m_connectRequestTimer->start(QKnxNetIp::ConnectRequestTimeout);
     });
+    d->m_tcpSocket->connectToHost(address, port);
 }
 
 /*!
