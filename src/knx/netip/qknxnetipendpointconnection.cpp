@@ -1361,15 +1361,13 @@ void QKnxNetIpEndpointConnection::connectToHostEncrypted(const QHostAddress &add
     if (d->m_serialNumber.size() != 6)
         return d->setAndEmitErrorOccurred(Error::SerialNumber, tr("Invalid device serial number."));
 
-    d->m_tcpSocket->connectToHost(address, port);
-
     connect(d->m_tcpSocket, &QTcpSocket::connected, this, [&]() {
         Q_D(QKnxNetIpEndpointConnection);
         d->m_localEndpoint = Endpoint(d->m_tcpSocket->localAddress(),
             d->m_tcpSocket->localPort(), QKnxNetIp::HostProtocol::TCP_IPv4);
 
         auto request = QKnxNetIpSessionRequestProxy::builder()
-            .setControlEndpoint(d->m_nat ? d->m_routeBack : d->m_localEndpoint)
+            .setControlEndpoint(d->m_routeBack)
             .setPublicKey(d->m_secureConfig.d->publicKey.bytes())
             .create();
         d->m_controlEndpointVersion = request.header().protocolVersion();
@@ -1386,6 +1384,7 @@ void QKnxNetIpEndpointConnection::connectToHostEncrypted(const QHostAddress &add
         });
         d->m_secureTimer->start(QKnxNetIp::SecureSessionRequestTimeout);
     });
+    d->m_tcpSocket->connectToHost(address, port);
 }
 
 /*!
