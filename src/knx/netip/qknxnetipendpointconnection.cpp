@@ -316,14 +316,13 @@ QKnxNetIp::ServiceType
         const auto seqNumber = proxy.sequenceNumber();
         const auto serialNumber = proxy.serialNumber();
         const auto messageTag = proxy.messageTag();
-        const auto sessionKey = QKnxCryptographicEngine::sessionKey(m_secureConfig.d->privateKey,
-            m_serverPublicKey);
-        const auto decData = QKnxCryptographicEngine::decryptSecureWrapperPayload(sessionKey,
+
+        const auto decData = QKnxCryptographicEngine::decryptSecureWrapperPayload(m_sessionKey,
             proxy.encapsulatedFrame(), seqNumber, serialNumber, messageTag);
 
-        const auto mac = QKnxCryptographicEngine::computeMessageAuthenticationCode(sessionKey,
+        const auto mac = QKnxCryptographicEngine::computeMessageAuthenticationCode(m_sessionKey,
             frame.header(), proxy.secureSessionId(), decData, seqNumber, serialNumber, messageTag);
-        const auto decMac = QKnxCryptographicEngine::decryptMessageAuthenticationCode(sessionKey,
+        const auto decMac = QKnxCryptographicEngine::decryptMessageAuthenticationCode(m_sessionKey,
             proxy.messageAuthenticationCode(), seqNumber, serialNumber, messageTag);
 
         if (decMac != mac)
@@ -343,14 +342,14 @@ QKnxNetIp::ServiceType
         if (!proxy.isValid())
             break;
 
-        m_deviceAuthHash = QKnxCryptographicEngine::deviceAuthenticationCodeHash(m_secureConfig.
-                d->deviceAuthenticationCode);
-        m_xorX_Y = QKnxCryptographicEngine::XOR(m_secureConfig.d->publicKey.bytes(), proxy
+        const auto authHash = QKnxCryptographicEngine::deviceAuthenticationCodeHash(m_secureConfig.
+            d->deviceAuthenticationCode);
+        const auto xorX_Y = QKnxCryptographicEngine::XOR(m_secureConfig.d->publicKey.bytes(), proxy
             .publicKey());
 
-        auto mac = QKnxCryptographicEngine::computeMessageAuthenticationCode(m_deviceAuthHash,
-            frame.header(), proxy.secureSessionId(), m_xorX_Y);
-        auto decMac = QKnxCryptographicEngine::decryptMessageAuthenticationCode(m_deviceAuthHash,
+        auto mac = QKnxCryptographicEngine::computeMessageAuthenticationCode(authHash,
+            frame.header(), proxy.secureSessionId(), xorX_Y);
+        auto decMac = QKnxCryptographicEngine::decryptMessageAuthenticationCode(authHash,
             proxy.messageAuthenticationCode());
 
         if (decMac != mac)
@@ -359,7 +358,8 @@ QKnxNetIp::ServiceType
         m_secureTimer->stop();
         m_secureTimer->disconnect();
         m_sessionId = proxy.secureSessionId();
-        m_serverPublicKey = QKnxSecureKey::fromBytes(QKnxSecureKey::Type::Public, proxy.publicKey());
+        m_sessionKey = QKnxCryptographicEngine::sessionKey(m_secureConfig.d->privateKey,
+            QKnxSecureKey::fromBytes(QKnxSecureKey::Type::Public, proxy.publicKey()));
 
         auto secureWrapper = QKnxNetIpSecureWrapperProxy::secureBuilder()
             .setSecureSessionId(m_sessionId)
@@ -370,8 +370,7 @@ QKnxNetIp::ServiceType
                 .setUserId(m_secureConfig.d->userId)
                 .create(m_secureConfig.d->userPassword, m_secureConfig.d->publicKey.bytes(), proxy
                     .publicKey()))
-            .create(QKnxCryptographicEngine::sessionKey(m_secureConfig.d->privateKey,
-                m_serverPublicKey));
+            .create(m_sessionKey);
 
         ++m_sequenceNumber;
         m_waitForAuthentication = true;
@@ -391,8 +390,7 @@ QKnxNetIp::ServiceType
                 .setEncapsulatedFrame(QKnxNetIpSessionStatusProxy::builder()
                     .setStatus(QKnxNetIp::SecureSessionStatus::Close)
                     .create())
-                .create(QKnxCryptographicEngine::sessionKey(m_secureConfig.d->privateKey,
-                    m_serverPublicKey));
+                .create(m_sessionKey);
             if (m_tcpSocket)
                 m_tcpSocket->write(secureStatusWrapper.bytes().toByteArray());
 
@@ -431,8 +429,7 @@ QKnxNetIp::ServiceType
                         .setDataEndpoint(ep)
                         .setRequestInformation(m_cri)
                         .create())
-                    .create(QKnxCryptographicEngine::sessionKey(m_secureConfig.d->privateKey,
-                        m_serverPublicKey));
+                    .create(m_sessionKey);
 
                 ++m_sequenceNumber;
                 if (m_tcpSocket)
@@ -450,8 +447,7 @@ QKnxNetIp::ServiceType
                         .setEncapsulatedFrame(QKnxNetIpSessionStatusProxy::builder()
                             .setStatus(QKnxNetIp::SecureSessionStatus::KeepAlive)
                             .create())
-                        .create(QKnxCryptographicEngine::sessionKey(m_secureConfig.d->privateKey,
-                            m_serverPublicKey));
+                        .create(m_sessionKey);
                     qDebug() << "Sending keep alive status frame:" << secureStatusWrapper;
 
                     ++m_sequenceNumber;
@@ -659,8 +655,7 @@ bool QKnxNetIpEndpointConnectionPrivate::sendCemiRequest()
                 .setSerialNumber(m_serialNumber)
                 // .setMessageTag(0x0000) TODO: Do we need an API for this?
                 .setEncapsulatedFrame(m_lastSendCemiRequest)
-                .create(QKnxCryptographicEngine::sessionKey(m_secureConfig.d->privateKey,
-                    m_serverPublicKey));
+                .create(m_sessionKey);
             ++m_sequenceNumber;
             m_tcpSocket->write(secureFrame.bytes().toByteArray());
         } else {
@@ -684,8 +679,7 @@ void QKnxNetIpEndpointConnectionPrivate::sendStateRequest()
                 .setSerialNumber(m_serialNumber)
                 // .setMessageTag(0x0000) TODO: Do we need an API for this?
                 .setEncapsulatedFrame(m_lastStateRequest)
-                .create(QKnxCryptographicEngine::sessionKey(m_secureConfig.d->privateKey,
-                    m_serverPublicKey));
+                .create(m_sessionKey);
             ++m_sequenceNumber;
             m_tcpSocket->write(secureFrame.bytes().toByteArray());
         } else {
@@ -990,8 +984,7 @@ void QKnxNetIpEndpointConnectionPrivate::processDisconnectRequest(const QKnxNetI
                     .setSerialNumber(m_serialNumber)
                     // .setMessageTag(0x0000) TODO: Do we need an API for this?
                     .setEncapsulatedFrame(responseFrame)
-                    .create(QKnxCryptographicEngine::sessionKey(m_secureConfig.d->privateKey,
-                        m_serverPublicKey));
+                    .create(m_sessionKey);
                 ++m_sequenceNumber;
             }
             m_tcpSocket->write(responseFrame.bytes().toByteArray());
