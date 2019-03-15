@@ -313,20 +313,21 @@ QKnxNetIp::ServiceType
         if (!proxy.isValid())
             break;
 
-        auto mac = QKnxCryptographicEngine::computeMessageAuthenticationCode(m_deviceAuthHash,
-            frame.header(), proxy.secureSessionId(), m_xorX_Y);
-        auto decMac = QKnxCryptographicEngine::decryptMessageAuthenticationCode(m_deviceAuthHash,
-            proxy.messageAuthenticationCode());
+        const auto seqNumber = proxy.sequenceNumber();
+        const auto serialNumber = proxy.serialNumber();
+        const auto messageTag = proxy.messageTag();
+        const auto sessionKey = QKnxCryptographicEngine::sessionKey(m_secureConfig.d->privateKey,
+            m_serverPublicKey);
+        const auto decData = QKnxCryptographicEngine::decryptSecureWrapperPayload(sessionKey,
+            proxy.encapsulatedFrame(), seqNumber, serialNumber, messageTag);
+
+        const auto mac = QKnxCryptographicEngine::computeMessageAuthenticationCode(sessionKey,
+            frame.header(), proxy.secureSessionId(), decData, seqNumber, serialNumber, messageTag);
+        const auto decMac = QKnxCryptographicEngine::decryptMessageAuthenticationCode(sessionKey,
+            proxy.messageAuthenticationCode(), seqNumber, serialNumber, messageTag);
 
         if (decMac != mac)
             break; // MAC could not be verified, bail out
-
-        const auto sessionKey = QKnxCryptographicEngine::sessionKey(m_secureConfig
-            .d->privateKey, m_serverPublicKey);
-
-        auto decData = QKnxCryptographicEngine::decryptSecureWrapperPayload(sessionKey,
-            proxy.encapsulatedFrame(), proxy.sequenceNumber(), proxy.serialNumber(),
-            proxy.messageTag());
 
         return processReceivedFrame(QKnxNetIpFrame::fromBytes(decData));
     }   break;
