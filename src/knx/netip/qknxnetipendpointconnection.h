@@ -34,7 +34,7 @@
 #include <QtKnx/qknxnetipcri.h>
 #include <QtKnx/qknxnetipframe.h>
 #include <QtKnx/qknxnetiphpai.h>
-#include <QtKnx/qknxsecureconfiguration.h>
+#include <QtKnx/qknxnetipsecureconfiguration.h>
 
 #include <QtNetwork/qudpsocket.h>
 
@@ -121,8 +121,8 @@ public:
     QKnxByteArray serialNumber() const;
     void setSerialNumber(const QKnxByteArray &serialNumber);
 
-    QKnxSecureConfiguration secureConfiguration() const;
-    void setSecureConfiguration(const QKnxSecureConfiguration &config);
+    QKnxNetIpSecureConfiguration secureConfiguration() const;
+    void setSecureConfiguration(const QKnxNetIpSecureConfiguration &config);
 
     void connectToHostEncrypted(const QKnxNetIpHpai &controlEndpoint);
     void connectToHostEncrypted(const QHostAddress &address, quint16 port);

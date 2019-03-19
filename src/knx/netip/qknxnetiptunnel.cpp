@@ -115,25 +115,8 @@ public:
     void processConnectResponse(const QKnxNetIpFrame &frame) override;
     void processTunnelingFeatureFrame(const QKnxNetIpFrame &frame) override;
 
-    void updateCri()
-    {
-        if (m_criAddress.isValid()) {
-            setCri(QKnxNetIpCriProxy::builder()
-                .setTunnelLayer(m_layer)
-                .setIndividualAddress(m_criAddress)
-                .create()
-            );
-        } else {
-            setCri(QKnxNetIpCriProxy::builder()
-                .setTunnelLayer(m_layer)
-                .create()
-            );
-        }
-    }
-
 private:
     QKnxAddress m_address;
-    QKnxAddress m_criAddress;
     QKnxNetIp::TunnelLayer m_layer { QKnxNetIp::TunnelLayer::Unknown };
 };
 
@@ -224,22 +207,17 @@ QKnxAddress QKnxNetIpTunnel::individualAddress() const
     return d_func()->m_address;
 }
 
+#if QT_DEPRECATED_SINCE(5, 13)
 /*!
-    Sets the requested individual address of the KNXnet/IP client extended
-    connect request information (CRI) structure to \a address.
+    \obsolete
 
-    If the \a address is a valid individual address, a extended CRI is used
-    to send the connect request. To reset the behavior in favor of a standard
-    CRI pass an invalid \a address to the function.
+    Use \l QKnxNetIpSecureConfiguration::setIndivdualAddress() instead.
 */
 void QKnxNetIpTunnel::setIndividualAddress(const QKnxAddress &address)
 {
-    if (address.type() != QKnxAddress::Type::Individual)
-        return;
-
-    d_func()->m_criAddress = address;
-    d_func()->updateCri();
+    d_func()->updateCri(address);
 }
+#endif
 
 /*!
     Returns the layer used for the tunnel connection.
@@ -263,7 +241,7 @@ void QKnxNetIpTunnel::setTunnelLayer(QKnxNetIp::TunnelLayer layer)
         return;
 
     d_func()->m_layer = layer;
-    d_func()->updateCri();
+    d_func()->updateCri(layer);
 }
 
 /*!

@@ -54,7 +54,9 @@ public:
         QKnxNetIp::TunnelLayer layer, QObject *parent = nullptr);
 
     QKnxAddress individualAddress() const;
-    void setIndividualAddress(const QKnxAddress &address);
+#if QT_DEPRECATED_SINCE(5, 13)
+    QT_DEPRECATED void setIndividualAddress(const QKnxAddress &address);
+#endif
 
     QKnxNetIp::TunnelLayer layer() const;
     void setTunnelLayer(QKnxNetIp::TunnelLayer layer);

@@ -1,13 +1,10 @@
 HEADERS += ssl/qknxcryptographicengine.h \
            ssl/qknxsecurekey.h \
-           ssl/qknxsecureconfiguration.h \
-           ssl/qknxsecureconfiguration_p.h \
            ssl/qknxssl_p.h \
            ssl/qknxkeyring_p.h
 
 SOURCES += ssl/qknxcryptographicengine.cpp \
            ssl/qknxsecurekey.cpp \
-           ssl/qknxsecureconfiguration.cpp \
            ssl/qknxssl_openssl.cpp \
            ssl/qknxkeyring.cpp
 

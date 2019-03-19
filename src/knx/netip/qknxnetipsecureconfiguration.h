@@ -27,8 +27,8 @@
 **
 ****************************************************************************/
 
-#ifndef QKNXSECURECONFIGURATION_H
-#define QKNXSECURECONFIGURATION_H
+#ifndef QKNXNETIPSECURECONFIGURATION_H
+#define QKNXNETIPSECURECONFIGURATION_H
 
 #include <QtCore/qshareddata.h>
 
@@ -38,8 +38,8 @@
 
 QT_BEGIN_NAMESPACE
 
-class QKnxSecureConfigurationPrivate;
-class Q_KNX_EXPORT QKnxSecureConfiguration
+class QKnxNetIpSecureConfigurationPrivate;
+class Q_KNX_EXPORT QKnxNetIpSecureConfiguration
 {
 public:
     enum class Type : quint8
@@ -48,13 +48,13 @@ public:
         DeviceManagement = 001
     };
 
-    QKnxSecureConfiguration();
-    ~QKnxSecureConfiguration();
+    QKnxNetIpSecureConfiguration();
+    ~QKnxNetIpSecureConfiguration();
 
-    static QVector<QKnxSecureConfiguration> fromKeyring(QKnxSecureConfiguration::Type type,
+    static QVector<QKnxNetIpSecureConfiguration> fromKeyring(QKnxNetIpSecureConfiguration::Type type,
         const QString &keyring, const QByteArray &password, bool validate);
 
-    static QKnxSecureConfiguration fromKeyring(QKnxSecureConfiguration::Type type,
+    static QKnxNetIpSecureConfiguration fromKeyring(QKnxNetIpSecureConfiguration::Type type,
         const QKnxAddress &ia, const QString &keyring, const QByteArray &password, bool validate);
 
     bool isNull() const;
@@ -80,23 +80,23 @@ public:
     bool isSecureSessionKeepAliveSet() const;
     void setKeepSecureSessionAlive(bool keepAlive);
 
-    QKnxSecureConfiguration(const QKnxSecureConfiguration &other);
-    QKnxSecureConfiguration &operator=(const QKnxSecureConfiguration &other);
+    QKnxNetIpSecureConfiguration(const QKnxNetIpSecureConfiguration &other);
+    QKnxNetIpSecureConfiguration &operator=(const QKnxNetIpSecureConfiguration &other);
 
-    QKnxSecureConfiguration(QKnxSecureConfiguration &&other) Q_DECL_NOTHROW;
-    QKnxSecureConfiguration &operator=(QKnxSecureConfiguration &&other) Q_DECL_NOTHROW;
+    QKnxNetIpSecureConfiguration(QKnxNetIpSecureConfiguration &&other) Q_DECL_NOTHROW;
+    QKnxNetIpSecureConfiguration &operator=(QKnxNetIpSecureConfiguration &&other) Q_DECL_NOTHROW;
 
-    void swap(QKnxSecureConfiguration &other) Q_DECL_NOTHROW;
+    void swap(QKnxNetIpSecureConfiguration &other) Q_DECL_NOTHROW;
 
-    bool operator==(const QKnxSecureConfiguration &other) const;
-    bool operator!=(const QKnxSecureConfiguration &other) const;
+    bool operator==(const QKnxNetIpSecureConfiguration &other) const;
+    bool operator!=(const QKnxNetIpSecureConfiguration &other) const;
 
 private:
     friend class QKnxNetIpEndpointConnection;
     friend class QKnxNetIpEndpointConnectionPrivate;
-    QSharedDataPointer<QKnxSecureConfigurationPrivate> d;
+    QSharedDataPointer<QKnxNetIpSecureConfigurationPrivate> d;
 };
-Q_DECLARE_SHARED(QKnxSecureConfiguration)
+Q_DECLARE_SHARED(QKnxNetIpSecureConfiguration)
 
 QT_END_NAMESPACE
 

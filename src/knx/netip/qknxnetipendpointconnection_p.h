@@ -48,7 +48,7 @@
 #include <QtKnx/qknxdevicemanagementframe.h>
 #include <QtKnx/qknxlinklayerframe.h>
 #include <QtKnx/qknxnetipendpointconnection.h>
-#include <QtKnx/qknxsecureconfiguration.h>
+#include <QtKnx/qknxnetipsecureconfiguration.h>
 
 #include <QtNetwork/qhostaddress.h>
 
@@ -167,7 +167,30 @@ public:
     void setAndEmitStateChanged(QKnxNetIpEndpointConnection::State newState);
     void setAndEmitErrorOccurred(QKnxNetIpEndpointConnection::Error newError, const QString &message);
 
-    void setCri(const QKnxNetIpCri &cri) { m_cri = cri; }
+    QKnxNetIpCri cri() const { return m_cri; }
+    void updateCri(QKnxNetIp::TunnelLayer layer)
+    {
+        QKnxNetIpCriProxy proxy(m_cri);
+        m_cri = proxy.builder()
+            .setTunnelLayer(layer)
+            .setIndividualAddress(proxy.individualAddress())
+            .create();
+    }
+
+    void updateCri(const QKnxAddress &ia)
+    {
+        QKnxNetIpCriProxy proxy(m_cri);
+        if (ia.isValid()) {
+            m_cri = QKnxNetIpCriProxy::builder()
+                .setTunnelLayer(proxy.tunnelLayer())
+                .setIndividualAddress(ia)
+                .create();
+        } else {
+            m_cri = proxy.builder()
+                .setTunnelLayer(proxy.tunnelLayer())
+                .create();
+        }
+    }
 
 private:
     QKnxNetIpCri m_cri;
@@ -225,7 +248,7 @@ private:
     QTimer *m_secureTimer { nullptr };
 
     QKnxSecureKey m_serverPublicKey;
-    QKnxSecureConfiguration m_secureConfig;
+    QKnxNetIpSecureConfiguration m_secureConfig;
 
     // TODO: We need some kind of device configuration class as well.
     QKnxByteArray m_serialNumber { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
