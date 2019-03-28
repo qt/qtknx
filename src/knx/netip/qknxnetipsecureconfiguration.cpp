@@ -45,6 +45,7 @@ namespace QKnxPrivate
         QKnxNetIpSecureConfiguration s;
         s.setUserId(QKnxNetIp::SecureUserId(iface.UserID));
         s.setPrivateKey(QKnxSecureKey::generatePrivateKey());
+        s.setHost({ QKnxAddress::Type::Individual, iface.Host });
         s.setUserPassword(QKnxCryptographicEngine::decodeAndDecryptPassword(pwHash,
             createdHash, iface.Password).toByteArray());
         s.setIndividualAddress({ QKnxAddress::Type::Individual, iface.IndividualAddress });
@@ -59,6 +60,7 @@ namespace QKnxPrivate
         QKnxNetIpSecureConfiguration s;
         s.setUserId(QKnxNetIp::SecureUserId::Management);
         s.setPrivateKey(QKnxSecureKey::generatePrivateKey());
+        s.setHost({ QKnxAddress::Type::Individual, device.IndividualAddress });
         s.setUserPassword(QKnxCryptographicEngine::decodeAndDecryptPassword(pwHash,
             createdHash, device.ManagementPassword).toByteArray());
         s.setIndividualAddress({ QKnxAddress::Type::Individual, device.IndividualAddress });
@@ -233,6 +235,28 @@ bool QKnxNetIpSecureConfiguration::isValid() const
 
     return d->privateKey.type() == QKnxSecureKey::Type::Private && d->privateKey.isValid()
         && QKnxNetIp::isSecureUserId(d->userId) && (!d->deviceAuthenticationCode.isEmpty());
+}
+
+/*!
+    Returns the host address of the secure KNX device this secure configuration
+    targets. The host address can be empty and is not required to establish a
+    secure session.
+
+    The purpose of this field is more to help GUI applications to indicate
+    which KNX secure device can be used with this secure configuration.
+*/
+QKnxAddress QKnxNetIpSecureConfiguration::host() const
+{
+    return d->host;
+}
+
+/*!
+    Sets the secure configurations host address to \a hostAddress. The host
+    address can be empty and is not required to establish a secure session.
+*/
+void QKnxNetIpSecureConfiguration::setHost(const QKnxAddress &hostAddress)
+{
+    d->host = hostAddress;
 }
 
 /*!
@@ -427,6 +451,7 @@ void QKnxNetIpSecureConfiguration::swap(QKnxNetIpSecureConfiguration &other) Q_D
 bool QKnxNetIpSecureConfiguration::operator==(const QKnxNetIpSecureConfiguration &other) const
 {
     return d == other.d || (d->privateKey == other.d->privateKey
+        && d->host == other.d->host
         && d->userId == other.d->userId
         && d->userPassword == other.d->userPassword
         && d->ia == other.d->ia

@@ -55,6 +55,7 @@ public:
 
     QKnxSecureKey privateKey;
     QKnxSecureKey publicKey;
+    QKnxAddress host;
     QKnxNetIp::SecureUserId userId { QKnxNetIp::SecureUserId::Reserved };
     QByteArray userPassword;
     QKnxAddress ia;

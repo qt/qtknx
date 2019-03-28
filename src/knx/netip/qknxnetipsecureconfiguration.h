@@ -62,6 +62,9 @@ public:
 
     QKnxSecureKey publicKey() const;
 
+    QKnxAddress host() const;
+    void setHost(const QKnxAddress &host);
+
     QKnxSecureKey privateKey() const;
     bool setPrivateKey(const QKnxSecureKey &key);
 
