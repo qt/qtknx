@@ -69,11 +69,15 @@ public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
 
+signals:
+    void keyringChanged(const QString &fileName, const QString &password);
+
 private slots:
     void newServerSelected(int serverBoxIndex);
     void newIPAddressSelected(int localIpBoxIndex);
     void showServerAndServices(const QKnxNetIpServerInfo &info);
     void on_radioButtonTCP_toggled(bool checked);
+    void on_actionEtsKeyringImport_triggered();
 
 private:
     void fillLocalIpBox();

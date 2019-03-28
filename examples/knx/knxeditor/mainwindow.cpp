@@ -52,8 +52,11 @@
 #include "ui_mainwindow.h"
 
 #include <QElapsedTimer>
+#include <QFileDialog>
+#include <QInputDialog>
 #include <QNetworkInterface>
 #include <QStandardItem>
+#include <QStandardPaths>
 
 Ui::MainWindow *MainWindow::s_ui { nullptr };
 
@@ -272,6 +275,34 @@ void MainWindow::on_radioButtonTCP_toggled(bool checked)
     ui->tunneling->setTcpEnable(checked);
     ui->deviceManagement->setTcpEnable(checked);
     ui->tunnelingFeatures->setTcpEnable(checked);
+}
+
+void MainWindow::on_actionEtsKeyringImport_triggered()
+{
+    auto fileName = QFileDialog::getOpenFileName(this, tr("Import keyring file"),
+        QStandardPaths::standardLocations(QStandardPaths::DesktopLocation).value(0),
+        tr("KNX keyring file (*.knxkeys)"));
+
+    if (fileName.isEmpty())
+        return;
+
+    bool ok;
+    auto password = QInputDialog::getText(this, tr("Import keyring file"),
+        tr("Keyring file password:"), QLineEdit::Normal, {}, &ok);
+    if (!ok || password.isEmpty())
+        return;
+
+    auto mgmtConfigs = QKnxNetIpSecureConfiguration::fromKeyring(QKnxNetIpSecureConfiguration
+        ::Type::DeviceManagement, fileName, password.toUtf8(), true);
+    ui->deviceManagement->onKeyringChanged(mgmtConfigs);
+
+    for (auto &config : mgmtConfigs)
+        config.setIndividualAddress({});
+
+    auto tunnelConfigs = QKnxNetIpSecureConfiguration::fromKeyring(QKnxNetIpSecureConfiguration
+        ::Type::Tunneling, fileName, password.toUtf8(), true);
+    ui->tunneling->onKeyringChanged(mgmtConfigs + tunnelConfigs);
+    ui->tunnelingFeatures->onKeyringChanged(mgmtConfigs + tunnelConfigs);
 }
 
 void MainWindow::fillLocalIpBox()

@@ -247,7 +247,13 @@
     <property name="title">
      <string>File</string>
     </property>
-    <addaction name="separator"/>
+    <widget class="QMenu" name="menuImport">
+     <property name="title">
+      <string>Import</string>
+     </property>
+     <addaction name="actionEtsKeyringImport"/>
+    </widget>
+    <addaction name="menuImport"/>
     <addaction name="separator"/>
     <addaction name="actionExit"/>
    </widget>
@@ -308,6 +314,11 @@
   <action name="actionClear_All">
    <property name="text">
     <string>Clear All</string>
+   </property>
+  </action>
+  <action name="actionEtsKeyringImport">
+   <property name="text">
+    <string>KNX keyring file...</string>
    </property>
   </action>
  </widget>

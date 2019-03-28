@@ -51,11 +51,13 @@
 #include "tunneling.h"
 #include "ui_tunneling.h"
 
-#include <QtCore/QMetaEnum>
-#include <QtCore/QMetaType>
-#include <QtGui/QStandardItemModel>
-#include <QtKnx/QKnxLinkLayerFrameBuilder>
-#include <QtWidgets/QTreeView>
+#include <QKnxLinkLayerFrameBuilder>
+#include <QKnxNetIpSecureConfiguration>
+#include <QMetaEnum>
+#include <QMetaType>
+#include <QStandardItemModel>
+#include <QTreeView>
+#include <QTreeWidget>
 
 // -- KnxAddressValidator
 
@@ -94,9 +96,16 @@ Tunneling::Tunneling(QWidget* parent)
 
     connect(ui->connectTunneling, &QPushButton::clicked, this, [&]() {
         m_tunnel.setLocalPort(0);
-        m_tunnel.connectToHost(m_server.controlEndpointAddress(),
-            m_server.controlEndpointPort(),
-            m_proto);
+        if (ui->secureSessionCheckBox->isChecked()) {
+            auto config = m_configs.value(ui->secureSessionCb->currentIndex());
+            config.setKeepSecureSessionAlive(true);
+            m_tunnel.setSecureConfiguration(config);
+            m_tunnel.connectToHostEncrypted(m_server.controlEndpointAddress(),
+                m_server.controlEndpointPort());
+        } else {
+            m_tunnel.connectToHost(m_server.controlEndpointAddress(),
+                m_server.controlEndpointPort(), m_proto);
+        }
     });
 
     connect(&m_tunnel, &QKnxNetIpTunnel::connected, this, [&] {
@@ -266,6 +275,8 @@ void Tunneling::setKnxNetIpServer(const QKnxNetIpServerInfo &server)
         ui->connectTunneling->setEnabled(true);
         ui->disconnectTunneling->setEnabled(false);
     }
+
+    updateSecureConfigCombo();
     ui->tunnelingSendRequest->setEnabled(false);
 }
 
@@ -334,6 +345,12 @@ void Tunneling::on_manualInput_clicked(bool checked)
     ui->cemiFrame->setFocus();
 }
 
+void Tunneling::onKeyringChanged(const QVector<QKnxNetIpSecureConfiguration> &configs)
+{
+    m_configs = configs;
+    updateSecureConfigCombo();
+}
+
 void Tunneling::setupApciTpciComboBox()
 {
     int index = QKnxTpdu::staticMetaObject.indexOfEnumerator("ApplicationControlField");
@@ -386,4 +403,23 @@ void Tunneling::updateAdditionalInfoTypesComboBox()
     }
     model->item(0)->setEnabled(false);
     model->item(model->rowCount() - 1)->setEnabled(false);
+}
+
+void Tunneling::updateSecureConfigCombo()
+{
+    ui->secureSessionCb->clear();
+
+    ui->secureSessionCheckBox->setEnabled(!m_configs.isEmpty());
+    ui->secureSessionCheckBox->setChecked(m_proto == QKnxNetIp::HostProtocol::TCP_IPv4);
+
+    for (int i = 0; i < m_configs.size(); ++i) {
+        const auto &config = m_configs[i];
+        if (m_server.individualAddress() != config.host())
+            continue;
+
+        const auto ia = config.individualAddress();
+        ui->secureSessionCb->addItem(tr("User ID: %1 (Individual Address: %2)")
+            .arg(config.userId())
+            .arg(ia.isValid() ? ia.toString() : tr("No specific address")), i);
+    }
 }

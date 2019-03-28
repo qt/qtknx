@@ -51,9 +51,9 @@
 #ifndef LOCALDEVICEMANAGEMENT_H
 #define LOCALDEVICEMANAGEMENT_H
 
-#include <QWidget>
 #include <QKnxNetIpDeviceManagement>
 #include <QKnxNetIpServerInfo>
+#include <QWidget>
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -78,6 +78,7 @@ public:
     void setLocalAddress(const QHostAddress &address);
     void setKnxNetIpServer(const QKnxNetIpServerInfo &server);
     void setTcpEnable(bool value);
+    void onKeyringChanged(const QVector<QKnxNetIpSecureConfiguration> &configs);
 
 public slots:
     void clearLogging();
@@ -100,6 +101,7 @@ private:
     int keyToValue(const QMetaObject &object, const QString &key, bool *ok);
     void setupComboBox(QComboBox *comboBox, const QMetaObject &object, const QSet<int> &values = {});
     void selectFirstSubitem(QTreeWidget *treeView, QTreeWidgetItem *rootItem, QComboBox *comboBox);
+    void updateSecureConfigCombo();
 
 private:
     Ui::LocalDeviceManagement *ui { nullptr };
@@ -110,6 +112,7 @@ private:
     QKnxNetIpServerInfo m_server;
     QKnxNetIpDeviceManagement m_management;
     QKnxNetIp::HostProtocol m_proto { QKnxNetIp::HostProtocol::UDP_IPv4 };
+    QVector<QKnxNetIpSecureConfiguration> m_configs;
 };
 
 #endif

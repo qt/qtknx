@@ -52,8 +52,9 @@
 #include "ui_localdevicemanagement.h"
 
 #include <QKnxByteArray>
-#include <QtKnx/QKnxDeviceManagementFrameBuilder>
+#include <QKnxDeviceManagementFrameBuilder>
 #include <QKnxInterfaceObjectPropertyDataType>
+#include <QKnxNetIpSecureConfiguration>
 #include <QMetaEnum>
 #include <QMetaType>
 #include <QTreeWidget>
@@ -82,9 +83,16 @@ LocalDeviceManagement::LocalDeviceManagement(QWidget* parent)
 
     connect(ui->connectRequestDeviceManagement, &QPushButton::clicked, this, [&]() {
         m_management.setLocalPort(0);
-        m_management.connectToHost(m_server.controlEndpointAddress(),
-            m_server.controlEndpointPort(),
-            m_proto);
+        if (ui->secureSessionCheckBox->isChecked()) {
+            auto config = m_configs.value(ui->secureSessionCb->currentIndex());
+            config.setKeepSecureSessionAlive(true);
+            m_management.setSecureConfiguration(config);
+            m_management.connectToHostEncrypted(m_server.controlEndpointAddress(),
+                m_server.controlEndpointPort());
+        } else {
+            m_management.connectToHost(m_server.controlEndpointAddress(),
+                m_server.controlEndpointPort(), m_proto);
+        }
     });
 
     connect(&m_management, &QKnxNetIpDeviceManagement::connected, this, [&] {
@@ -139,7 +147,7 @@ LocalDeviceManagement::LocalDeviceManagement(QWidget* parent)
 
     connect(&m_management, &QKnxNetIpDeviceManagement::errorOccurred, this,
         [&] (QKnxNetIpEndpointConnection::Error, QString errorString) {
-        ui->textOuputDeviceManagement->append(errorString);
+            ui->textOuputDeviceManagement->append(errorString);
     });
 
     ui->cemiData->setValidator(new QRegExpValidator(QRegExp("[0-9a-fA-F]+")));
@@ -172,6 +180,8 @@ void LocalDeviceManagement::setKnxNetIpServer(const QKnxNetIpServerInfo &server)
         ui->connectRequestDeviceManagement->setEnabled(true);
         ui->disconnectRequestDeviceManagement->setEnabled(false);
     }
+
+    updateSecureConfigCombo();
     ui->deviceManagementSendRequest->setEnabled(false);
 }
 
@@ -279,6 +289,12 @@ void LocalDeviceManagement::on_manualInput_clicked(bool checked)
         ui->cemiFrame->setText(m_fullCemiFrame);
         on_mc_currentIndexChanged(ui->mc->currentIndex());
     }
+}
+
+void LocalDeviceManagement::onKeyringChanged(const QVector<QKnxNetIpSecureConfiguration> &configs)
+{
+    m_configs = configs;
+    updateSecureConfigCombo();
 }
 
 void LocalDeviceManagement::setupMessageCodeComboBox()
@@ -410,4 +426,21 @@ void LocalDeviceManagement::selectFirstSubitem(QTreeWidget *treeWidget, QTreeWid
     comboBox->setCurrentIndex(0);
     treeWidget->setCurrentItem(treeWidget->invisibleRootItem(), 0);
     comboBox->setRootModelIndex(treeWidget->currentIndex());
+}
+
+void LocalDeviceManagement::updateSecureConfigCombo()
+{
+    ui->secureSessionCb->clear();
+
+    ui->secureSessionCheckBox->setEnabled(!m_configs.isEmpty());
+    ui->secureSessionCheckBox->setChecked(m_proto == QKnxNetIp::HostProtocol::TCP_IPv4);
+
+    for (int i = 0; i < m_configs.size(); ++i) {
+        const auto &config = m_configs[i];
+        if (m_server.individualAddress() != config.host())
+            continue;
+
+        ui->secureSessionCb->addItem(tr("User ID: %1 (Individual Address: %2)").arg(config.userId())
+            .arg(config.individualAddress().toString()), i);
+    }
 }

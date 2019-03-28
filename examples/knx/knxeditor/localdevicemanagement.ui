@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>830</width>
+    <width>856</width>
     <height>385</height>
    </rect>
   </property>
@@ -265,6 +265,29 @@
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout_3">
      <item>
+      <widget class="QCheckBox" name="secureSessionCheckBox">
+       <property name="enabled">
+        <bool>false</bool>
+       </property>
+       <property name="text">
+        <string>Use secure session</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QComboBox" name="secureSessionCb">
+       <property name="enabled">
+        <bool>false</bool>
+       </property>
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+      </widget>
+     </item>
+     <item>
       <spacer name="horizontalSpacer">
        <property name="orientation">
         <enum>Qt::Horizontal</enum>
@@ -387,8 +410,8 @@
      <y>45</y>
     </hint>
     <hint type="destinationlabel">
-     <x>332</x>
-     <y>16</y>
+     <x>384</x>
+     <y>26</y>
     </hint>
    </hints>
   </connection>
@@ -403,8 +426,8 @@
      <y>42</y>
     </hint>
     <hint type="destinationlabel">
-     <x>439</x>
-     <y>22</y>
+     <x>485</x>
+     <y>29</y>
     </hint>
    </hints>
   </connection>
@@ -419,8 +442,8 @@
      <y>49</y>
     </hint>
     <hint type="destinationlabel">
-     <x>753</x>
-     <y>19</y>
+     <x>845</x>
+     <y>29</y>
     </hint>
    </hints>
   </connection>
@@ -451,8 +474,8 @@
      <y>49</y>
     </hint>
     <hint type="destinationlabel">
-     <x>666</x>
-     <y>19</y>
+     <x>752</x>
+     <y>29</y>
     </hint>
    </hints>
   </connection>
@@ -467,8 +490,24 @@
      <y>49</y>
     </hint>
     <hint type="destinationlabel">
-     <x>378</x>
-     <y>19</y>
+     <x>433</x>
+     <y>29</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>secureSessionCheckBox</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>secureSessionCb</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>16</x>
+     <y>368</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>147</x>
+     <y>369</y>
     </hint>
    </hints>
   </connection>

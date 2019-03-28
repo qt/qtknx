@@ -53,15 +53,20 @@ public:
     void setLocalAddress(const QHostAddress &address);
     void setKnxNetIpServer(const QKnxNetIpServerInfo &server);
     void setTcpEnable(bool value);
+    void onKeyringChanged(const QVector<QKnxNetIpSecureConfiguration> &configs);
 
 private:
     void checkFeatureValue();
-    Ui::TunnelingFeatures *ui;
+    void updateSecureConfigCombo();
+
+private:
+    Ui::TunnelingFeatures *ui { nullptr };
 
     QKnxNetIpServerInfo m_server;
     QKnxNetIpTunnel m_tunnel;
 
     QKnxNetIp::HostProtocol m_protocol = { QKnxNetIp::HostProtocol::UDP_IPv4 };
+    QVector<QKnxNetIpSecureConfiguration> m_configs;
 };
 
 #endif // TUNNELINGFEATURES_H
