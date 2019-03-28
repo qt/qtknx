@@ -180,6 +180,9 @@ public:
     void updateCri(const QKnxAddress &ia)
     {
         QKnxNetIpCriProxy proxy(m_cri);
+        if (proxy.connectionType() == QKnxNetIp::ConnectionType::DeviceManagement)
+            return;
+
         if (ia.isValid()) {
             m_cri = QKnxNetIpCriProxy::builder()
                 .setTunnelLayer(proxy.tunnelLayer())
