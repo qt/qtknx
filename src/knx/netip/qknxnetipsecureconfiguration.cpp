@@ -451,6 +451,7 @@ void QKnxNetIpSecureConfiguration::swap(QKnxNetIpSecureConfiguration &other) Q_D
 bool QKnxNetIpSecureConfiguration::operator==(const QKnxNetIpSecureConfiguration &other) const
 {
     return d == other.d || (d->privateKey == other.d->privateKey
+        && d->publicKey == other.d->publicKey
         && d->host == other.d->host
         && d->userId == other.d->userId
         && d->userPassword == other.d->userPassword
