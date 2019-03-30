@@ -74,12 +74,21 @@ TunnelingFeatures::TunnelingFeatures(QWidget *parent)
     ui->featureValue->setEnabled(false);
 
     connect(ui->connectTunneling, &QPushButton::clicked, this, [&]() {
-        ui->textOuputTunneling->append(tr("Connecting to: %1 on port: %2 protocol: %3").arg(m_server
-            .controlEndpointAddress().toString()).arg(m_server.controlEndpointPort()).arg(int(m_protocol)));
+        ui->textOuputTunneling->append(tr("Connecting to: %1 on port: %2 protocol: %3")
+            .arg(m_server.controlEndpointAddress().toString())
+            .arg(m_server.controlEndpointPort()).arg(int(m_protocol)));
+
         m_tunnel.setLocalPort(0);
-        m_tunnel.connectToHost(m_server.controlEndpointAddress(),
-            m_server.controlEndpointPort(),
-            m_protocol);
+        if (ui->secureSessionCheckBox->isChecked()) {
+            auto config = m_configs.value(ui->secureSessionCb->currentIndex());
+            config.setKeepSecureSessionAlive(true);
+            m_tunnel.setSecureConfiguration(config);
+            m_tunnel.connectToHostEncrypted(m_server.controlEndpointAddress(),
+                m_server.controlEndpointPort());
+        } else {
+            m_tunnel.connectToHost(m_server.controlEndpointAddress(),
+                m_server.controlEndpointPort(), m_protocol);
+        }
     });
 
     connect(ui->tunnelingSend, &QPushButton::clicked, this, [&]() {
@@ -100,7 +109,7 @@ TunnelingFeatures::TunnelingFeatures(QWidget *parent)
         else if (type == ServType::TunnelingFeatureSet)
             m_tunnel.sendTunnelingFeatureSet(featureType, bytes);
 
-        ui->statusBar->setText(tr("Status: (%1) Messages sent.").arg(m_tunnel
+        ui->textOuputTunneling->append(tr("Status: (%1) Messages sent.").arg(m_tunnel
             .sequenceCount(QKnxNetIpEndpointConnection::SequenceType::Send) + 1));
     });
 
@@ -190,7 +199,7 @@ TunnelingFeatures::TunnelingFeatures(QWidget *parent)
         ui->textOuputTunneling->append(tr("Successfully connected to: %1 on port: %2").arg(m_server
             .controlEndpointAddress().toString()).arg(m_server.controlEndpointPort()));
 
-        ui->statusBar->setText("Status: Connected.");
+        ui->textOuputTunneling->append("Status: Connected.");
     });
 
     connect(ui->disconnectTunneling, &QPushButton::clicked, this, [&]() {
@@ -206,7 +215,7 @@ TunnelingFeatures::TunnelingFeatures(QWidget *parent)
         ui->featureValue->setEnabled(false);
         ui->textOuputTunneling->append(tr("Successfully disconnected from: %1 on port: %2\n")
             .arg(m_server.controlEndpointAddress().toString()).arg(m_server.controlEndpointPort()));
-        ui->statusBar->setText("Status: Disconnected.");
+        ui->textOuputTunneling->append("Status: Disconnected.");
     });
 
     connect(&m_tunnel, &QKnxNetIpTunnel::errorOccurred, this,
@@ -217,10 +226,10 @@ TunnelingFeatures::TunnelingFeatures(QWidget *parent)
     connect(ui->tunnelServiceType, &QComboBox::currentTextChanged, this, [&](const QString &text) {
         if (text == QString("TunnelingFeatureSet")) {
             ui->featureValue->setEnabled(true);
-            ui->statusBar->setText("Status: Fill in the feature type and value fields.");
+            ui->textOuputTunneling->append("Status: Fill in the feature type and value fields.");
         } else {
             ui->featureValue->setEnabled(false);
-            ui->statusBar->setText("");
+            ui->textOuputTunneling->append("");
         }
         checkFeatureValue();
     });
@@ -259,8 +268,10 @@ void TunnelingFeatures::setKnxNetIpServer(const QKnxNetIpServerInfo &server)
         ui->connectTunneling->setEnabled(true);
         ui->disconnectTunneling->setEnabled(false);
     }
+
+    updateSecureConfigCombo();
     ui->tunnelingSend->setEnabled(false);
-    ui->statusBar->setText("Status: Start by clicking connect.");
+    ui->textOuputTunneling->append("Status: Start by clicking connect.");
 }
 
 void TunnelingFeatures::setTcpEnable(bool value)
@@ -268,10 +279,16 @@ void TunnelingFeatures::setTcpEnable(bool value)
     m_protocol = (value ? QKnxNetIp::HostProtocol::TCP_IPv4 : QKnxNetIp::HostProtocol::UDP_IPv4);
 }
 
+void TunnelingFeatures::onKeyringChanged(const QVector<QKnxNetIpSecureConfiguration> &configs)
+{
+    m_configs = configs;
+    updateSecureConfigCombo();
+}
+
 void TunnelingFeatures::checkFeatureValue()
 {
     if (!ui->featureValue->isEnabled()) {
-        ui->statusBar->setText("");
+        ui->textOuputTunneling->append("");
         ui->tunnelingSend->setEnabled(m_tunnel.state() == QKnxNetIpEndpointConnection::State::Connected);
         return;
     }
@@ -289,10 +306,29 @@ void TunnelingFeatures::checkFeatureValue()
     auto text = ui->featureValue->text();
     if (text.isEmpty() || !validFeature(type, featureType, bytes)
         || ((text.size() % 2) != 0)) {
-        ui->statusBar->setText("Status: Invalid value entered");
+        ui->textOuputTunneling->append("Status: Invalid value entered");
         ui->tunnelingSend->setEnabled(false);
         return;
     }
-    ui->statusBar->setText("Status: Valid value entered, click send.");
+    ui->textOuputTunneling->append("Status: Valid value entered, click send.");
     ui->tunnelingSend->setEnabled(m_tunnel.state() == QKnxNetIpEndpointConnection::State::Connected);
+}
+
+void TunnelingFeatures::updateSecureConfigCombo()
+{
+    ui->secureSessionCb->clear();
+
+    ui->secureSessionCheckBox->setEnabled(!m_configs.isEmpty());
+    ui->secureSessionCheckBox->setChecked(m_protocol == QKnxNetIp::HostProtocol::TCP_IPv4);
+
+    for (int i = 0; i < m_configs.size(); ++i) {
+        const auto &config = m_configs[i];
+        if (m_server.individualAddress() != config.host())
+            continue;
+
+        const auto ia = config.individualAddress();
+        ui->secureSessionCb->addItem(tr("User ID: %1 (Individual Address: %2)")
+            .arg(config.userId())
+            .arg(ia.isValid() ? ia.toString() : tr("No specific address")), i);
+    }
 }

@@ -180,6 +180,9 @@ public:
     void updateCri(const QKnxAddress &ia)
     {
         QKnxNetIpCriProxy proxy(m_cri);
+        if (proxy.connectionType() == QKnxNetIp::ConnectionType::DeviceManagement)
+            return;
+
         if (ia.isValid()) {
             m_cri = QKnxNetIpCriProxy::builder()
                 .setTunnelLayer(proxy.tunnelLayer())
@@ -243,11 +246,8 @@ private:
     quint48 m_sequenceNumber { 0 };
     bool m_waitForAuthentication { false };
 
-    QKnxByteArray m_xorX_Y;
-    QKnxByteArray m_deviceAuthHash;
+    QKnxByteArray m_sessionKey;
     QTimer *m_secureTimer { nullptr };
-
-    QKnxSecureKey m_serverPublicKey;
     QKnxNetIpSecureConfiguration m_secureConfig;
 
     // TODO: We need some kind of device configuration class as well.

@@ -53,11 +53,11 @@
 
 #include <QKnxControlField>
 #include <QKnxExtendedControlField>
+#include <QKnxLinkLayerFrame>
 #include <QKnxNetIpTunnel>
 #include <QKnxNetIpServerInfo>
-#include <QKnxLinkLayerFrame>
-#include <QValidator>
 #include <QRegularExpression>
+#include <QValidator>
 #include <QWidget>
 
 QT_BEGIN_NAMESPACE
@@ -94,6 +94,7 @@ public:
     void setLocalAddress(const QHostAddress &address);
     void setKnxNetIpServer(const QKnxNetIpServerInfo &server);
     void setTcpEnable(bool value);
+    void onKeyringChanged(const QVector<QKnxNetIpSecureConfiguration> &configs);
 
 public slots:
     void clearLogging();
@@ -108,6 +109,7 @@ private:
     void setupApciTpciComboBox();
     void setupMessageCodeComboBox();
     void updateAdditionalInfoTypesComboBox();
+    void updateSecureConfigCombo();
 
 private:
     Ui::Tunneling *ui { nullptr };
@@ -119,6 +121,8 @@ private:
     QKnxNetIpTunnel m_tunnel;
     QKnxNetIpServerInfo m_server;
     QKnxNetIp::HostProtocol m_proto { QKnxNetIp::HostProtocol::UDP_IPv4 };
+    QVector<QKnxNetIpSecureConfiguration> m_configs;
+
 };
 
 #endif

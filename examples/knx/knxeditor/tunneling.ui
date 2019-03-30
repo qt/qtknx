@@ -7,13 +7,13 @@
     <x>0</x>
     <y>0</y>
     <width>856</width>
-    <height>385</height>
+    <height>404</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Form</string>
   </property>
-  <layout class="QVBoxLayout" name="verticalLayout_4" stretch="0,0,0,1,0">
+  <layout class="QVBoxLayout" name="verticalLayout_2">
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout_3" stretch="0,1,0,0,0,0,0">
      <item>
@@ -540,7 +540,7 @@
     </layout>
    </item>
    <item>
-    <layout class="QHBoxLayout" name="horizontalLayout_5">
+    <layout class="QHBoxLayout" name="horizontalLayout_4">
      <item>
       <widget class="QLabel" name="label_3">
        <property name="sizePolicy">
@@ -608,26 +608,7 @@
     </layout>
    </item>
    <item>
-    <widget class="QTextEdit" name="textOuputTunneling">
-     <property name="focusPolicy">
-      <enum>Qt::StrongFocus</enum>
-     </property>
-     <property name="contextMenuPolicy">
-      <enum>Qt::DefaultContextMenu</enum>
-     </property>
-     <property name="acceptDrops">
-      <bool>false</bool>
-     </property>
-     <property name="undoRedoEnabled">
-      <bool>false</bool>
-     </property>
-     <property name="readOnly">
-      <bool>true</bool>
-     </property>
-    </widget>
-   </item>
-   <item>
-    <layout class="QHBoxLayout" name="horizontalLayout_4">
+    <layout class="QHBoxLayout" name="horizontalLayout_5">
      <item>
       <widget class="QCheckBox" name="manualInput">
        <property name="text">
@@ -636,7 +617,7 @@
       </widget>
      </item>
      <item>
-      <spacer name="horizontalSpacer_3">
+      <spacer name="horizontalSpacer_7">
        <property name="orientation">
         <enum>Qt::Horizontal</enum>
        </property>
@@ -679,8 +660,60 @@
      </item>
      <item>
       <widget class="QPushButton" name="tunnelingSendRequest">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
        <property name="text">
         <string>Send Request</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <widget class="QTextEdit" name="textOuputTunneling">
+     <property name="focusPolicy">
+      <enum>Qt::StrongFocus</enum>
+     </property>
+     <property name="contextMenuPolicy">
+      <enum>Qt::DefaultContextMenu</enum>
+     </property>
+     <property name="acceptDrops">
+      <bool>false</bool>
+     </property>
+     <property name="undoRedoEnabled">
+      <bool>false</bool>
+     </property>
+     <property name="readOnly">
+      <bool>true</bool>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <layout class="QHBoxLayout" name="horizontalLayout_2">
+     <item>
+      <widget class="QCheckBox" name="secureSessionCheckBox">
+       <property name="enabled">
+        <bool>false</bool>
+       </property>
+       <property name="text">
+        <string>Use secure session</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QComboBox" name="secureSessionCb">
+       <property name="enabled">
+        <bool>false</bool>
+       </property>
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
        </property>
       </widget>
      </item>
@@ -690,7 +723,7 @@
         <enum>Qt::Horizontal</enum>
        </property>
        <property name="sizeType">
-        <enum>QSizePolicy::Fixed</enum>
+        <enum>QSizePolicy::Expanding</enum>
        </property>
        <property name="sizeHint" stdset="0">
         <size>
@@ -740,8 +773,6 @@
   <tabstop>data</tabstop>
   <tabstop>manualInput</tabstop>
   <tabstop>tunnelingSendRequest</tabstop>
-  <tabstop>connectTunneling</tabstop>
-  <tabstop>disconnectTunneling</tabstop>
  </tabstops>
  <resources/>
  <connections>
@@ -752,8 +783,8 @@
    <slot>setDisabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>16</x>
-     <y>364</y>
+     <x>26</x>
+     <y>282</y>
     </hint>
     <hint type="destinationlabel">
      <x>23</x>
@@ -768,8 +799,8 @@
    <slot>setDisabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>37</x>
-     <y>363</y>
+     <x>47</x>
+     <y>282</y>
     </hint>
     <hint type="destinationlabel">
      <x>94</x>
@@ -784,8 +815,8 @@
    <slot>setDisabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>58</x>
-     <y>361</y>
+     <x>68</x>
+     <y>282</y>
     </hint>
     <hint type="destinationlabel">
      <x>42</x>
@@ -800,8 +831,8 @@
    <slot>setDisabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>69</x>
-     <y>362</y>
+     <x>79</x>
+     <y>282</y>
     </hint>
     <hint type="destinationlabel">
      <x>462</x>
@@ -816,8 +847,8 @@
    <slot>setDisabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>14</x>
-     <y>359</y>
+     <x>24</x>
+     <y>282</y>
     </hint>
     <hint type="destinationlabel">
      <x>576</x>
@@ -832,8 +863,8 @@
    <slot>setDisabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>56</x>
-     <y>360</y>
+     <x>66</x>
+     <y>282</y>
     </hint>
     <hint type="destinationlabel">
      <x>402</x>
@@ -848,8 +879,8 @@
    <slot>setDisabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>57</x>
-     <y>364</y>
+     <x>67</x>
+     <y>282</y>
     </hint>
     <hint type="destinationlabel">
      <x>706</x>
@@ -864,8 +895,8 @@
    <slot>setDisabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>50</x>
-     <y>357</y>
+     <x>60</x>
+     <y>282</y>
     </hint>
     <hint type="destinationlabel">
      <x>845</x>
@@ -880,12 +911,12 @@
    <slot>setDisabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>29</x>
-     <y>355</y>
+     <x>39</x>
+     <y>282</y>
     </hint>
     <hint type="destinationlabel">
-     <x>181</x>
-     <y>256</y>
+     <x>539</x>
+     <y>254</y>
     </hint>
    </hints>
   </connection>
@@ -896,8 +927,8 @@
    <slot>setDisabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>79</x>
-     <y>355</y>
+     <x>89</x>
+     <y>282</y>
     </hint>
     <hint type="destinationlabel">
      <x>680</x>
@@ -912,12 +943,12 @@
    <slot>setDisabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>12</x>
-     <y>365</y>
+     <x>22</x>
+     <y>282</y>
     </hint>
     <hint type="destinationlabel">
-     <x>19</x>
-     <y>251</y>
+     <x>280</x>
+     <y>254</y>
     </hint>
    </hints>
   </connection>
@@ -928,12 +959,12 @@
    <slot>setDisabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>15</x>
-     <y>369</y>
+     <x>25</x>
+     <y>282</y>
     </hint>
     <hint type="destinationlabel">
-     <x>116</x>
-     <y>245</y>
+     <x>411</x>
+     <y>254</y>
     </hint>
    </hints>
   </connection>
@@ -944,12 +975,12 @@
    <slot>setDisabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>51</x>
-     <y>363</y>
+     <x>61</x>
+     <y>282</y>
     </hint>
     <hint type="destinationlabel">
-     <x>416</x>
-     <y>256</y>
+     <x>36</x>
+     <y>254</y>
     </hint>
    </hints>
   </connection>
@@ -960,12 +991,28 @@
    <slot>setDisabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>51</x>
-     <y>363</y>
+     <x>61</x>
+     <y>282</y>
     </hint>
     <hint type="destinationlabel">
-     <x>472</x>
-     <y>256</y>
+     <x>254</x>
+     <y>254</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>secureSessionCheckBox</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>secureSessionCb</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>75</x>
+     <y>384</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>150</x>
+     <y>383</y>
     </hint>
    </hints>
   </connection>
