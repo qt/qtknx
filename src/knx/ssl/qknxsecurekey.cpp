@@ -46,7 +46,8 @@ public:
     ~QKnxSecureKeyData()
     {
 #if QT_CONFIG(opensslv11)
-        q_EVP_PKEY_free(m_evpPKey);
+        if (m_evpPKey)
+            q_EVP_PKEY_free(m_evpPKey);
 #endif
     }
 
