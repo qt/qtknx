@@ -127,6 +127,10 @@ void tst_QKnxDatapointType::dpt1_1Bit()
     QCOMPARE(dpt1Bit.isValid(), true);
     QCOMPARE(dpt1Bit.bytes(), QKnxByteArray({ 0x00 }));
     QCOMPARE(dpt1Bit.type(), QKnxDatapointType::Type::Dpt1_1Bit);
+    QCOMPARE(dpt1Bit.minimum(), QVariant::fromValue(false));
+    QCOMPARE(dpt1Bit.maximum(), QVariant::fromValue(true));
+    QCOMPARE(dpt1Bit.minimumText(), QString("false"));
+    QCOMPARE(dpt1Bit.maximumText(), QString("true"));
 
     dpt1Bit.setBit(true);
     QCOMPARE(dpt1Bit.bit(), true);
@@ -144,6 +148,10 @@ void tst_QKnxDatapointType::dpt1_1Bit()
     QCOMPARE(dptSwitch.value(), QKnxSwitch::State::Off);
     QCOMPARE(dptSwitch.bytes(), QKnxByteArray({ 0x00 }));
     QCOMPARE(dptSwitch.type(), QKnxDatapointType::Type::DptSwitch);
+    QCOMPARE(dptSwitch.minimum(), QVariant::fromValue(false));
+    QCOMPARE(dptSwitch.maximum(), QVariant::fromValue(true));
+    QCOMPARE(dptSwitch.minimumText(), QString("Off"));
+    QCOMPARE(dptSwitch.maximumText(), QString("On"));
 
     dptSwitch.setValue(QKnxSwitch::State::On);
     QCOMPARE(dptSwitch.isValid(), true);
@@ -187,6 +195,10 @@ void tst_QKnxDatapointType::dpt1_1Bit()
     QCOMPARE(dptWindowDoor.value(), QKnxWindowDoor::State::Closed);
     QCOMPARE(dptWindowDoor.bytes(), QKnxByteArray({ 0x00 }));
     QCOMPARE(dptWindowDoor.type(), QKnxDatapointType::Type::DptWindowDoor);
+    QCOMPARE(dptWindowDoor.minimum(), QVariant::fromValue(false));
+    QCOMPARE(dptWindowDoor.maximum(), QVariant::fromValue(true));
+    QCOMPARE(dptWindowDoor.minimumText(), QString("Closed"));
+    QCOMPARE(dptWindowDoor.maximumText(), QString("Open"));
 }
 
 void tst_QKnxDatapointType::dpt2_1BitControlled()
