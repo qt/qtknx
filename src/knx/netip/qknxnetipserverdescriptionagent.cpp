@@ -41,15 +41,18 @@ QT_BEGIN_NAMESPACE
     \brief The QKnxNetIpServerDescriptionAgent class establishes a point-to-point
     connection with a KNXnet/IP server and requests its description.
 
-    First, the \l QKnxNetIpServerDiscoveryAgent class is used to choose a
-    server, as illustrated by the following code snippet:
+    First, the \l QKnxNetIpServerDiscoveryAgent class is used to search the
+    network for available KNXnet/IP devices. After successful discovery of
+    such a device, the server needs to be chosen to fetch the description.
+    This can be been done as illustrated by the following code snippet:
 
     \code
-        QKnxNetIpServerDescriptionAgent agent;
-        QKnxAddress clientLocalAddress = ...
-        agent.setLocalAddress(clientLocalAddress);
-        QKnxNetIpServerInfo server = agent.discoveredServers()[0]; // for example
-        agent.start(server);
+        QKnxNetIpServerDescriptionAgent descriptionAgent;
+        QHostAddress clientLocalAddress = ...
+        descriptionAgent.setLocalAddress(clientLocalAddress);
+
+        auto server = discoveryAgent.discoveredServers()[0]; // for example
+        descriptionAgent.start(server);
     \endcode
 
     When the description is received from the server, the
@@ -301,8 +304,8 @@ QKnxNetIpServerDescriptionAgent::QKnxNetIpServerDescriptionAgent(const QHostAddr
     Creates a KNXnet/IP server description agent with the host address
     \a localAddress, the port number \a port, and the parent \a parent.
 
-    \note If the port number is already bound by a different process, discovery
-    will fail.
+    \note If the port number is already bound by a different process,
+    description requests will fail.
 */
 QKnxNetIpServerDescriptionAgent::QKnxNetIpServerDescriptionAgent(const QHostAddress &localAddress,
         quint16 port, QObject *parent)
@@ -361,8 +364,8 @@ quint16 QKnxNetIpServerDescriptionAgent::localPort() const
 /*!
     Sets the port number used by a description agent to \a port.
 
-    \note If the port changes during discovery, the new port will not be used
-    until the next run.
+    \note If the port changes during a description request, the new port will
+    not be used until the next run.
 */
 void QKnxNetIpServerDescriptionAgent::setLocalPort(quint16 port)
 {
@@ -383,8 +386,8 @@ QHostAddress QKnxNetIpServerDescriptionAgent::localAddress() const
 /*!
     Sets the host address of a description agent to \a address.
 
-    \note If the address changes during discovery, the new address will not be
-    used until the next run.
+    \note If the address changes during a description request, the new address
+    will not be used until the next run.
 */
 void QKnxNetIpServerDescriptionAgent::setLocalAddress(const QHostAddress &address)
 {
@@ -430,10 +433,10 @@ bool QKnxNetIpServerDescriptionAgent::natAware() const
 }
 
 /*!
-    Sets whether the server discovery agent is using NAT to \a useNat.
+    Sets whether the server description agent is using NAT to \a useNat.
 
-    \note If the setting changes during discovery, it will not be used until the
-    next run.
+    \note If the setting changes during a description request, it will not be
+    used until the next run.
 */
 void QKnxNetIpServerDescriptionAgent::setNatAware(bool useNat)
 {
