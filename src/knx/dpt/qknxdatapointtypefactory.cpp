@@ -223,6 +223,7 @@ QKnxDatapointTypeFactory::QKnxDatapointTypeFactory()
     registerType<QKnxLogicalFunction>();
     registerType<QKnxSceneAB>();
     registerType<QKnxShutterBlindsMode>();
+    registerType<QKnxHeatCool>();
 
     // DPT-2
     registerType<QKnx1BitControlled>();
