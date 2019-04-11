@@ -5,5 +5,5 @@ TEMPLATE = subdirs
 SUBDIRS += discoverer knxproj tunnelclient router
 
 qtHaveModule(widgets) {
-    SUBDIRS += knxeditor
+    SUBDIRS += knxeditor group
 }
