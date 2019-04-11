@@ -501,7 +501,7 @@ void QKnxNetIpServerDescriptionAgent::start(const QKnxNetIpHpai &server)
 */
 void QKnxNetIpServerDescriptionAgent::start(const QKnxNetIpServerInfo &server)
 {
-    start(server.controlEndpointAddress(), server.controlEndpointPort());
+    start(server.endpoint());
 }
 
 /*!
