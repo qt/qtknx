@@ -1,0 +1,158 @@
+/****************************************************************************
+**
+** Copyright (C) 2019 The Qt Company Ltd.
+** Contact: https://www.qt.io/licensing/
+**
+** This file is part of the documentation of the Qt Toolkit.
+**
+** $QT_BEGIN_LICENSE:FDL$
+** Commercial License Usage
+** Licensees holding valid commercial Qt licenses may use this file in
+** accordance with the commercial license agreement provided with the
+** Software or, alternatively, in accordance with the terms contained in
+** a written agreement between you and The Qt Company. For licensing terms
+** and conditions see https://www.qt.io/terms-conditions. For further
+** information use the contact form at https://www.qt.io/contact-us.
+**
+** GNU Free Documentation License Usage
+** Alternatively, this file may be used under the terms of the GNU Free
+** Documentation License version 1.3 as published by the Free Software
+** Foundation and appearing in the file included in the packaging of
+** this file. Please review the following information to ensure
+** the GNU Free Documentation License version 1.3 requirements
+** will be met: https://www.gnu.org/licenses/fdl-1.3.html.
+** $QT_END_LICENSE$
+**
+****************************************************************************/
+
+/*!
+    \example group
+    \title KNX Group Communication Example
+    \ingroup qtknx-examples
+
+    \brief A KNX client for handling KNXnet/IP group communication.
+
+    \image group.png "KNX group communication example"
+
+    The KNX group communication example user interface contains various
+    Qt Widgets, most prominently a \l QTreeWidget to display detailed
+    information about sent and received KNX group messages.
+
+    To get started, users select one of the network interfaces on their
+    machine in the \uicontrol {Interface} field. Once that is done, the
+    application automatically performs a continuous search for available
+    KNXnet/IP devices and displays the results in the \uicontrol {Device}
+    field.
+
+    To connect to a KKXnet/IP device, either the one preselected in the
+    \uicontrol {Device} can be used or a different one must be chosen from
+    the list of discovered devices.
+
+    The application also supports KNXnet/IP secure devices, but to be able to
+    connect to such a device a KNX ETS keyring file needs to be imported via
+    the \uicontrol {File} menu.
+
+    Once a connection is successfully established, the user has the
+    possibility to just monitor KNX group messages or issue a read or write
+    command to an existing KNX group address. The example currently limits
+    the possible datapoint types that can be used to DPT1.
+
+    The application consists of three classes:
+
+    \list
+        \li \c MainWindow is a \l QMainWindow that renders the general layout
+            of the application.
+        \li \c GroupAddressValidator is a \l QValidator that provides
+            validation of group address input text.
+        \li \c DeviceItem is a \l QStandardItem that is used to display
+            and store information about discovered KNXnet/IP devices.
+    \endlist
+
+    \section1 Main Window Class Definition and Implementation
+
+    \quotefromfile group/mainwindow.h
+    \skipto class MainWindow :
+    \printuntil /^\}/
+
+    The \c MainWindow class uses a \l QKnxNetIpServerDiscoveryAgent instance
+    that allows discovering KNXnet/IP servers by sending continuous search
+    requests to the network that the client is connected to. It also saves an
+    instance of the \l QKnxNetIpTunnel used to establish the connection to the
+    KNX network and a list of imported KNX \l QKnxNetIpSecureConfiguration
+    secure configurations.
+
+    There are signal handlers installed for every signal emitted by the
+    \l QKnxNetIpTunnel. Here is an example of the setup capturing the
+    signals emitted when an event occurs targeting the KNXnet/IP connection.
+    In this specific example, we will see how to set up the KNXnet/IP tunnel:
+
+    \quotefromfile group/mainwindow.cpp
+    \skipto MainWindow::MainWindow
+    \printuntil {
+    \dots
+    \skipto QKnxNetIpTunnel::connected
+    \printuntil MainWindow::onErrorOccurred);
+    \dots
+    \skipto /^\}/
+    \printuntil /^\}/
+    \skipto void MainWindow::on_connection_clicked
+    \printuntil /^\}/
+
+    The \c QKnxNetIpServerDiscoveryAgent is initialized and started after the
+    user interface has been set up and the necessary tunnel connections have
+    been made. Here is the code snippet doing it:
+
+    \quotefromfile group/mainwindow.cpp
+    \skipto MainWindow::MainWindow
+    \printuntil {
+    \dots
+    \skipto m_discoveryAgent.setTimeout
+    \printuntil /^\}/
+
+    There is a signal handler installed for the device discovered signal
+    emitted by the discovery agent. Here is the example of the setup capturing
+    the \l QKnxNetIpServerDiscoveryAgent::deviceDiscovered signal emitted when
+    a KNXnet/IP device is found:
+
+    \quotefromfile group/mainwindow.cpp
+    \skipto MainWindow::MainWindow
+    \printuntil {
+    \dots
+    \skipto QKnxNetIpServerDiscoveryAgent::deviceDiscovered
+    \printuntil );
+    \dots
+
+    When the signal \l QKnxNetIpServerDiscoveryAgent::deviceDiscovered is
+    triggered, the function \c MainWindow::onDeviceDiscovered() is called.
+    It adds a new device item to the \uicontrol {Device} if it is not already
+    there.
+
+    At this point, users can select one of the available devices to establish
+    a connection, and send the different types of frames or simply monitor the
+    KNX bus traffic:
+
+    \quotefromfile group/mainwindow.cpp
+    \skipto MainWindow::onDeviceDiscovered
+    \printuntil /^\}/
+
+    The \c MainWindow::on_devices_currentIndexChanged method saves the selected
+    KNXnet/IP device in the the \c MainWindow instance.
+
+    In this last example, when the user triggers the \uicontrol {Read} button,
+    the function \c MainWindow::on_sendRead_clicked() is called and a frame is
+    sent to the KNX network to trigger a group value read for the given group
+    address:
+
+    \quotefromfile group/mainwindow.cpp
+    \skipto MainWindow::on_sendRead_clicked
+    \printuntil /^\}/
+
+    \section1 The Main Function
+
+    The KNX group communication example \c main() function does not have any
+    special handling. It looks like the main function for any Qt app:
+
+    \quotefromfile group/main.cpp
+    \skipto #include
+    \printuntil /^\}/
+*/
