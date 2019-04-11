@@ -89,6 +89,8 @@ QT_BEGIN_NAMESPACE
            A network error occurred.
     \value NotIPv4
            The network protocol used is not IPv4.
+    \value Timeout
+           A timeout occurred while waiting for the description response.
     \value Unknown
            An unknown error occurred.
 */
@@ -148,6 +150,7 @@ namespace QKnxPrivate
 void QKnxNetIpServerDescriptionAgentPrivate::setupSocket()
 {
     usedPort = port;
+    timeoutHit = true;
     QKnxPrivate::clearSocket(&socket);
 
     Q_Q(QKnxNetIpServerDescriptionAgent);
@@ -258,6 +261,7 @@ void QKnxNetIpServerDescriptionAgentPrivate::setAndEmitStateChanged(
 void QKnxNetIpServerDescriptionAgentPrivate::setAndEmitServerDescriptionReceived(
                                                             const QKnxNetIpServerInfo &description)
 {
+    timeoutHit = false;
     m_description = description;
 
     Q_Q(QKnxNetIpServerDescriptionAgent);
@@ -525,6 +529,11 @@ void QKnxNetIpServerDescriptionAgent::stop()
 
     QKnxPrivate::clearSocket(&(d->socket));
     QKnxPrivate::clearTimer(&(d->receiveTimer));
+
+    if (d->timeoutHit) {
+        emit d->setAndEmitErrorOccurred(Error::Timeout, tr("A timeout occurred while waiting for "
+            "the description response."));
+    }
 
     d->setAndEmitStateChanged(QKnxNetIpServerDescriptionAgent::State::NotRunning);
 }

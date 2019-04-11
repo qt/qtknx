@@ -81,6 +81,8 @@ private:
 
     quint8 ttl { 60 };
     bool nat { false };
+
+    bool timeoutHit { true };
     int timeout { QKnxNetIp::Timeout::DescriptionTimeout };
 
     QString errorString;
