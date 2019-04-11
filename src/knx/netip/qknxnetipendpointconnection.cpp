@@ -1232,11 +1232,14 @@ void QKnxNetIpEndpointConnection::connectToHost(const QHostAddress &address, qui
         .create();
     d->m_controlEndpointVersion = request.header().protocolVersion();
 
-    qDebug() << "Sending connect request:" << request;
     d->setAndEmitStateChanged(QKnxNetIpEndpointConnection::State::Connecting);
+
+    qDebug() << "Sending connect request:" << request;
     d->m_udpSocket->writeDatagram(request.bytes().toByteArray(),
         d->m_remoteControlEndpoint.address, d->m_remoteControlEndpoint.port);
-    d->m_connectRequestTimer->start(QKnxNetIp::ConnectRequestTimeout);
+
+    if (d->m_connectRequestTimer)
+        d->m_connectRequestTimer->start(QKnxNetIp::ConnectRequestTimeout);
 }
 
 /*!
