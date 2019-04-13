@@ -211,7 +211,7 @@ QKnxAddress QKnxNetIpTunnel::individualAddress() const
 /*!
     \obsolete
 
-    Use \l QKnxNetIpSecureConfiguration::setIndivdualAddress() instead.
+    Use \l QKnxNetIpSecureConfiguration::setIndividualAddress() instead.
 */
 void QKnxNetIpTunnel::setIndividualAddress(const QKnxAddress &address)
 {
