@@ -642,15 +642,21 @@ void QKnxNetIpEndpointConnectionPrivate::cleanup()
 
 bool QKnxNetIpEndpointConnectionPrivate::sendCemiRequest()
 {
-    if (!m_waitForAcknowledgement && !m_tcpSocket) {
+    if (m_udpSocket) {
+        if (m_waitForAcknowledgement)
+            return false; // still waiting for an ACK from an previous request
+
         m_waitForAcknowledgement = true;
         m_udpSocket->writeDatagram(m_lastSendCemiRequest.bytes().toByteArray(),
-                                m_remoteDataEndpoint.address,
-                                m_remoteDataEndpoint.port);
+            m_remoteDataEndpoint.address,
+            m_remoteDataEndpoint.port);
 
         m_cemiRequests++;
         m_acknowledgeTimer->start(m_acknowledgeTimeout);
-    } else if (m_tcpSocket) {
+        return true;
+    }
+
+    if (m_tcpSocket) {
         if (m_secureConfig.isValid()) {
             auto secureFrame = QKnxNetIpSecureWrapperProxy::secureBuilder()
                 .setSecureSessionId(m_sessionId)
@@ -664,9 +670,9 @@ bool QKnxNetIpEndpointConnectionPrivate::sendCemiRequest()
         } else {
             m_tcpSocket->write(m_lastSendCemiRequest.bytes().toByteArray());
         }
-        m_waitForAcknowledgement = false;
+        return true; // TCP connections do not send an ACK
     }
-    return !m_waitForAcknowledgement;
+    return false;
 }
 
 void QKnxNetIpEndpointConnectionPrivate::sendStateRequest()
