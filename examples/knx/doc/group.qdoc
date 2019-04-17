@@ -84,7 +84,8 @@
     There are signal handlers installed for every signal emitted by the
     \l QKnxNetIpTunnel. Here is an example of the setup capturing the
     signals emitted when an event occurs targeting the KNXnet/IP connection.
-    In this specific example, we will see how to set up the KNXnet/IP tunnel:
+    In this specific example, we will also see how to set up the KNXnet/IP
+    tunnel and connect to the KNXnet/IP device:
 
     \quotefromfile group/mainwindow.cpp
     \skipto MainWindow::MainWindow
@@ -110,31 +111,19 @@
     \printuntil /^\}/
 
     There is a signal handler installed for the device discovered signal
-    emitted by the discovery agent. Here is the example of the setup capturing
-    the \l QKnxNetIpServerDiscoveryAgent::deviceDiscovered signal emitted when
-    a KNXnet/IP device is found:
-
-    \quotefromfile group/mainwindow.cpp
-    \skipto MainWindow::MainWindow
-    \printuntil {
-    \dots
-    \skipto QKnxNetIpServerDiscoveryAgent::deviceDiscovered
-    \printuntil );
-    \dots
-
+    emitted by the discovery agent.
     When the signal \l QKnxNetIpServerDiscoveryAgent::deviceDiscovered is
     triggered, the function \c MainWindow::onDeviceDiscovered() is called.
     It adds a new device item to the \uicontrol {Device} if it is not already
     there.
 
-    At this point, users can select one of the available devices to establish
-    a connection, and send the different types of frames or simply monitor the
-    KNX bus traffic:
-
-    \quotefromfile group/mainwindow.cpp
-    \skipto MainWindow::onDeviceDiscovered
+    \quotefromfile device/mainwindow.cpp
+    \skipto void MainWindow::onDeviceDiscovered
     \printuntil /^\}/
 
+    At this point, users can select one of the available devices to establish
+    a connection, create and send the different types of frames or simply
+    monitor the KNX bus traffic.
     The \c MainWindow::on_devices_currentIndexChanged method saves the selected
     KNXnet/IP device in the the \c MainWindow instance.
 
