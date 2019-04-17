@@ -39,7 +39,7 @@ moduleheader = QtKnx
 
 Cpp.ignoretokens += Q_KNX_EXPORT
 
-depends += qtcore qtdoc qtnetwork qmake
+depends += qtcore qtdoc qtgui qtnetwork qmake qtwidgets
 
 # Custom module header for Clang doc builds
 moduleheader = QtKnx_pch.h
@@ -50,3 +50,4 @@ manifestmeta.thumbnail.names                += "QtKnx/Discoverer*" \
 
 navigation.landingpage = "Qt KNX"
 navigation.cppclassespage = "Qt KNX C++ Classes"
+navigation.homepage = Qt for Automation
