@@ -60,6 +60,7 @@ public:
         None,
         Network,
         NotIPv4,
+        Timeout,
         Unknown = 0x80
     };
     Q_ENUM(Error)

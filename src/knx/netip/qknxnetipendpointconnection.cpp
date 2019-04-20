@@ -642,15 +642,21 @@ void QKnxNetIpEndpointConnectionPrivate::cleanup()
 
 bool QKnxNetIpEndpointConnectionPrivate::sendCemiRequest()
 {
-    if (!m_waitForAcknowledgement && !m_tcpSocket) {
+    if (m_udpSocket) {
+        if (m_waitForAcknowledgement)
+            return false; // still waiting for an ACK from an previous request
+
         m_waitForAcknowledgement = true;
         m_udpSocket->writeDatagram(m_lastSendCemiRequest.bytes().toByteArray(),
-                                m_remoteDataEndpoint.address,
-                                m_remoteDataEndpoint.port);
+            m_remoteDataEndpoint.address,
+            m_remoteDataEndpoint.port);
 
         m_cemiRequests++;
         m_acknowledgeTimer->start(m_acknowledgeTimeout);
-    } else if (m_tcpSocket) {
+        return true;
+    }
+
+    if (m_tcpSocket) {
         if (m_secureConfig.isValid()) {
             auto secureFrame = QKnxNetIpSecureWrapperProxy::secureBuilder()
                 .setSecureSessionId(m_sessionId)
@@ -664,9 +670,9 @@ bool QKnxNetIpEndpointConnectionPrivate::sendCemiRequest()
         } else {
             m_tcpSocket->write(m_lastSendCemiRequest.bytes().toByteArray());
         }
-        m_waitForAcknowledgement = false;
+        return true; // TCP connections do not send an ACK
     }
-    return !m_waitForAcknowledgement;
+    return false;
 }
 
 void QKnxNetIpEndpointConnectionPrivate::sendStateRequest()
@@ -1232,11 +1238,14 @@ void QKnxNetIpEndpointConnection::connectToHost(const QHostAddress &address, qui
         .create();
     d->m_controlEndpointVersion = request.header().protocolVersion();
 
-    qDebug() << "Sending connect request:" << request;
     d->setAndEmitStateChanged(QKnxNetIpEndpointConnection::State::Connecting);
+
+    qDebug() << "Sending connect request:" << request;
     d->m_udpSocket->writeDatagram(request.bytes().toByteArray(),
         d->m_remoteControlEndpoint.address, d->m_remoteControlEndpoint.port);
-    d->m_connectRequestTimer->start(QKnxNetIp::ConnectRequestTimeout);
+
+    if (d->m_connectRequestTimer)
+        d->m_connectRequestTimer->start(QKnxNetIp::ConnectRequestTimeout);
 }
 
 /*!

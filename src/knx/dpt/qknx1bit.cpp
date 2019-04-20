@@ -111,7 +111,7 @@ QKnx1Bit::QKnx1Bit(int subType, bool bit)
     : QKnxFixedSizeDatapointType(MainType, subType, TypeSize)
 {
     setDescription(tr("1-bit"));
-    setRangeText(tr("true"), tr("false"));
+    setRangeText(tr("false"), tr("true"));
     setRange(QVariant(0x00), QVariant(0x01));
 
     setBit(bit);

@@ -390,7 +390,7 @@ void QKnxNetIpServerDiscoveryAgentPrivate::setupAndStartFrequencyTimer()
         frequencyTimer->setSingleShot(false);
         frequencyTimer->start(60000 / frequency);
 
-        QObject::connect(receiveTimer, &QTimer::timeout, [&]() {
+        QObject::connect(frequencyTimer, &QTimer::timeout, [&]() {
             Q_Q(QKnxNetIpServerDiscoveryAgent);
             if (q->state() == QKnxNetIpServerDiscoveryAgent::State::Running) {
                 servers.clear();
