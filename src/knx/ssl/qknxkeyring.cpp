@@ -42,11 +42,7 @@ QT_BEGIN_NAMESPACE
 
 /*!
     \internal
-    \namespace QKnx::Ets
-*/
-
-/*!
-    \internal
+    \inmodule QtKnx
     \namespace QKnx::Ets::Keyring
 */
 

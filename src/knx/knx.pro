@@ -8,6 +8,7 @@ QMAKE_DOCS = $$PWD/doc/qtknx.qdocconf
 
 include (core/core.pri)
 include(dpt/dpt.pri)
+include(ets/ets.pri)
 include(knxproj/knxproj.pri)
 include(netip/netip.pri)
 include(ssl/ssl.pri)
