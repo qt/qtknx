@@ -39,9 +39,10 @@ namespace QKnx
 {
     Q_KNX_EXPORT Q_NAMESPACE
 
+    // ### Qt6: make this 16 bit
     enum class EmiType : quint8
     {
-        Unknown,
+        Unknown = 0x00,
         EMI1 = 0x01,
         EMI2 = 0x02,
         cEMI = 0x04
