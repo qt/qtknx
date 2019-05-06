@@ -246,7 +246,7 @@ void MainWindow::on_connection_clicked()
     m_last->setFirstColumnSpanned(true);
 
     if (ui->secureSession->isChecked()) {
-        auto secureConfiguration = m_secureConfigs.value(ui->secureConfigs->currentIndex());
+        auto secureConfiguration = m_secureConfigs.value(ui->secureConfigs->currentData().toInt());
         secureConfiguration.setKeepSecureSessionAlive(true);
         m_tunnel.setSecureConfiguration(secureConfiguration);
         m_tunnel.connectToHostEncrypted(m_device->info().controlEndpointAddress(),
@@ -368,7 +368,6 @@ void MainWindow::setText(QKnx::InterfaceFeature feature, const QKnxByteArray &da
         break;
     }
     m_last->setText(3, value);
-
 }
 
 void MainWindow::populateFrame(QKnxNetIp::ServiceType type, QKnx::InterfaceFeature feature,

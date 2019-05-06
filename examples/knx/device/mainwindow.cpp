@@ -277,7 +277,7 @@ void MainWindow::on_connection_clicked()
     m_last->setFirstColumnSpanned(true);
 
     if (ui->secureSession->isChecked()) {
-        auto secureConfiguration = m_secureConfigs.value(ui->secureConfigs->currentIndex());
+        auto secureConfiguration = m_secureConfigs.value(ui->secureConfigs->currentData().toInt());
         secureConfiguration.setKeepSecureSessionAlive(true);
         m_management.setSecureConfiguration(secureConfiguration);
         m_management.connectToHostEncrypted(m_device->info().controlEndpointAddress(),
