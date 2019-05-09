@@ -303,6 +303,14 @@ void MainWindow::setupInterfaces()
         }
     }
     ui->interfaces->setCurrentIndex(bool(ui->interfaces->count()));
+
+    connect(ui->interfaces, QOverload<int>::of(&QComboBox::currentIndexChanged), this, [&](int i) {
+        if (i < 0)
+            return;
+        m_discoveryAgent.stop();
+        m_discoveryAgent.setLocalAddress(QHostAddress(ui->interfaces->currentData().toString()));
+        m_discoveryAgent.start();
+    });
 }
 
 void MainWindow::toggleUi(bool value)
