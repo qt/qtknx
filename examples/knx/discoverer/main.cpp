@@ -58,7 +58,7 @@
 
 #include <QtNetwork/QNetworkInterface>
 
-static QString familieToString(QKnxNetIp::ServiceFamily id)
+static QString familyToString(QKnxNetIp::ServiceFamily id)
 {
     switch (id) {
         case QKnxNetIp::ServiceFamily::Core:
@@ -214,7 +214,7 @@ int main(int argc, char *argv[])
             qInfo().noquote() << QString::fromLatin1("    Supported services:");
             for (const auto service : services) {
                 qInfo().noquote() << QString::fromLatin1("      KNXnet/IP %1, Version: %2")
-                    .arg(familieToString(service.ServiceFamily)).arg(service.ServiceFamilyVersion);
+                    .arg(familyToString(service.ServiceFamily)).arg(service.ServiceFamilyVersion);
             }
 
             const auto dib = server.extendedHardware();
