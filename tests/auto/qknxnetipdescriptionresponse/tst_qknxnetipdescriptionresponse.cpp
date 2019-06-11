@@ -156,15 +156,15 @@ void tst_QKnxNetIpDescriptionResponse::testSupportedFamiliesAccessor()
         .create();
     QKnxNetIpDescriptionResponseProxy descriptionResponse(frame);
 
-    auto familie = descriptionResponse.supportedFamilies();
-    const QKnxNetIpServiceFamiliesDibProxy view(familie);
+    auto family = descriptionResponse.supportedFamilies();
+    const QKnxNetIpServiceFamiliesDibProxy view(family);
 
     QCOMPARE(view.isValid(), m_sf.isValid());
     QCOMPARE(view.descriptionType(), QKnxNetIpServiceFamiliesDibProxy(m_sf).descriptionType());
-    QCOMPARE(familie.size(), m_sf.size());
-    QCOMPARE(familie.bytes(), m_sf.bytes());
-    QCOMPARE(familie.data().size(), m_sf.data().size());
-    QCOMPARE(familie.data(), m_sf.data());
+    QCOMPARE(family.size(), m_sf.size());
+    QCOMPARE(family.bytes(), m_sf.bytes());
+    QCOMPARE(family.data().size(), m_sf.data().size());
+    QCOMPARE(family.data(), m_sf.data());
 }
 
 void tst_QKnxNetIpDescriptionResponse::testSupportedFamiliesVersions()

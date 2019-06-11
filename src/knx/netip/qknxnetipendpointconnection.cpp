@@ -633,6 +633,20 @@ void QKnxNetIpEndpointConnectionPrivate::cleanup()
         m_udpSocket->close();
         QKnxPrivate::clearSocket(&m_udpSocket);
     } else if (m_tcpSocket) {
+        if (m_secureConfig.isValid()) {
+            auto secureStatusWrapper = QKnxNetIpSecureWrapperProxy::secureBuilder()
+                .setSecureSessionId(m_sessionId)
+                .setSequenceNumber(m_sequenceNumber)
+                .setSerialNumber(m_serialNumber)
+                // .setMessageTag(0x0000) TODO: Do we need an API for this?
+                .setEncapsulatedFrame(QKnxNetIpSessionStatusProxy::builder()
+                    .setStatus(QKnxNetIp::SecureSessionStatus::Close)
+                    .create())
+                .create(m_sessionKey);
+            ++m_sequenceNumber;
+            m_tcpSocket->write(secureStatusWrapper.bytes().toByteArray());
+            m_tcpSocket->waitForBytesWritten();
+        }
         m_tcpSocket->close();
         QKnxPrivate::clearSocket(&m_tcpSocket);
     }
@@ -1419,7 +1433,19 @@ void QKnxNetIpEndpointConnection::disconnectFromHost()
 
         qDebug() << "Sending disconnect request:" << frame;
         if (d->m_tcpSocket) {
-            d->m_tcpSocket->write(frame.bytes().toByteArray());
+            if (d->m_secureConfig.isValid()) {
+                auto secureFrame = QKnxNetIpSecureWrapperProxy::secureBuilder()
+                    .setSecureSessionId(d->m_sessionId)
+                    .setSequenceNumber(d->m_sequenceNumber)
+                    .setSerialNumber(d->m_serialNumber)
+                    // .setMessageTag(0x0000) TODO: Do we need an API for this?
+                    .setEncapsulatedFrame(frame)
+                    .create(d->m_sessionKey);
+                ++(d->m_sequenceNumber);
+                d->m_tcpSocket->write(secureFrame.bytes().toByteArray());
+            } else {
+                d->m_tcpSocket->write(frame.bytes().toByteArray());
+            }
         } else {
             d->m_udpSocket->writeDatagram(frame.bytes().toByteArray(),
                 d->m_remoteControlEndpoint.address, d->m_remoteControlEndpoint.port);

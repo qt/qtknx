@@ -60,7 +60,7 @@
 
 Ui::MainWindow *MainWindow::s_ui { nullptr };
 
-static QString familieToString(QKnxNetIp::ServiceFamily id)
+static QString familyToString(QKnxNetIp::ServiceFamily id)
 {
     switch (id) {
     case QKnxNetIp::ServiceFamily::Core:
@@ -201,7 +201,7 @@ void MainWindow::newServerSelected(int serverBoxIndex)
             const auto services = info.supportedServices();
             for (const auto &service : services) {
                 value.append(tr("<tr><td class=\"padding\">%1</td></th>")
-                    .arg(tr("KNXnet/IP %1, Version: %2").arg(familieToString(service.ServiceFamily))
+                    .arg(tr("KNXnet/IP %1, Version: %2").arg(familyToString(service.ServiceFamily))
                         .arg(service.ServiceFamilyVersion)));
                 if (service.ServiceFamilyVersion >= 2)
                      version2Supported = true;
@@ -263,7 +263,7 @@ void MainWindow::showServerAndServices(const QKnxNetIpServerInfo &info)
     const auto services = info.supportedServices();
     for (const auto service : services) {
         ui->outputEdit->append(tr("    KNXnet/IP %1, Version: %2")
-            .arg(familieToString(service.ServiceFamily)).arg(service.ServiceFamilyVersion));
+            .arg(familyToString(service.ServiceFamily)).arg(service.ServiceFamilyVersion));
     }
 
     ui->serverBox->addItem(tr("%1 (%2:%3)").arg(info.deviceName(), info.controlEndpointAddress()
