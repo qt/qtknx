@@ -242,7 +242,9 @@ void MainWindow::on_connection_clicked()
     if (m_tunnel.state() == QKnxNetIpTunnel::State::Connected)
         return m_tunnel.disconnectFromHost();
 
-    m_tunnel.setLocalAddress(QHostAddress(ui->interfaces->currentData().toString()));
+    const auto list = ui->interfaces->currentData().toStringList();
+    m_tunnel.setLocalAddress(QHostAddress(list.first()));
+    m_tunnel.setSerialNumber(QKnxByteArray::fromHex(list.last().toLatin1()));
 
     m_last = new QTreeWidgetItem(ui->communication, m_last);
     m_last->setText(0, tr("Establish connection to: %1 (%2 : %3)")
@@ -252,7 +254,7 @@ void MainWindow::on_connection_clicked()
     m_last->setFirstColumnSpanned(true);
 
     if (ui->secureSession->isChecked()) {
-        auto secureConfiguration = m_secureConfigs.value(ui->secureConfigs->currentIndex());
+        auto secureConfiguration = m_secureConfigs.value(ui->secureConfigs->currentData().toInt());
         secureConfiguration.setKeepSecureSessionAlive(true);
         m_tunnel.setSecureConfiguration(secureConfiguration);
         m_tunnel.connectToHostEncrypted(m_device->info().controlEndpointAddress(),
@@ -270,16 +272,26 @@ void MainWindow::setupInterfaces()
     firstItem->setSelectable(false);
 
     const auto interfaces = QNetworkInterface::allInterfaces();
-    for (int i = 0; i < interfaces.size(); i++) {
-        const auto addressEntries = interfaces[i].addressEntries();
+    for (const auto &iface : interfaces) {
+        const auto addressEntries = iface.addressEntries();
         for (int j = 0; j < addressEntries.size(); j++) {
             const auto ip = addressEntries[j].ip();
             if (ip.isLoopback() || ip.toIPv4Address() == 0)
                 continue;
-            ui->interfaces->addItem(interfaces[i].name() + ": " + ip.toString(), ip.toString());
+            ui->interfaces->addItem(iface.name() + ": " + ip.toString(),
+                QStringList { ip.toString(), iface.hardwareAddress().remove(QLatin1Literal(":")) });
         }
     }
     ui->interfaces->setCurrentIndex(bool(ui->interfaces->count()));
+
+    connect(ui->interfaces, QOverload<int>::of(&QComboBox::currentIndexChanged), this, [&](int i) {
+        if (i < 0)
+            return;
+        m_discoveryAgent.stop();
+        m_discoveryAgent.setLocalAddress(QHostAddress(ui->interfaces->currentData()
+            .toStringList().first()));
+        m_discoveryAgent.start();
+    });
 }
 
 void MainWindow::toggleUi(bool value)
