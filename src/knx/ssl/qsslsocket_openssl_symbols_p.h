@@ -253,6 +253,10 @@ QT_BEGIN_NAMESPACE
 #  define DEFINEFUNC7(ret, func, arg1, a, arg2, b, arg3, c, arg4, d, arg5, e, arg6, f, arg7, g, err, funcret) \
     ret q_##func(arg1, arg2, arg3, arg4, arg5, arg6, arg7) { funcret func(a, b, c, d, e, f, g); }
 
+// ret func(arg1, arg2, arg3, arg4, arg6, arg7, arg8)
+#  define DEFINEFUNC8(ret, func, arg1, a, arg2, b, arg3, c, arg4, d, arg5, e, arg6, f, arg7, g, arg8, h, err, funcret) \
+    ret q_##func(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8) { funcret func(a, b, c, d, e, f, g, h); }
+
 // ret func(arg1, arg2, arg3, arg4, arg6, arg7, arg8, arg9)
 #  define DEFINEFUNC9(ret, func, arg1, a, arg2, b, arg3, c, arg4, d, arg5, e, arg6, f, arg7, g, arg8, h, arg9, i, err, funcret) \
     ret q_##func(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9) { funcret func(a, b, c, d, e, f, g, h, i); }
