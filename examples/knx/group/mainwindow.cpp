@@ -279,7 +279,7 @@ void MainWindow::setupInterfaces()
             if (ip.isLoopback() || ip.toIPv4Address() == 0)
                 continue;
             ui->interfaces->addItem(iface.name() + ": " + ip.toString(),
-                QStringList { ip.toString(), iface.hardwareAddress().remove(QLatin1Literal(":")) });
+                QStringList { ip.toString(), iface.hardwareAddress().remove(QLatin1String(":")) });
         }
     }
     ui->interfaces->setCurrentIndex(bool(ui->interfaces->count()));
