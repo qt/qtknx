@@ -82,6 +82,7 @@ Q_AUTOTEST_EXPORT const BIO_METHOD *q_BIO_s_mem();
 
 int q_DSA_bits(DSA *a);
 int q_EVP_CIPHER_CTX_reset(EVP_CIPHER_CTX *c);
+Q_AUTOTEST_EXPORT int q_EVP_PKEY_up_ref(EVP_PKEY *a);
 int q_EVP_PKEY_base_id(EVP_PKEY *a);
 int q_RSA_bits(RSA *a);
 int q_OPENSSL_sk_num(OPENSSL_STACK *a);
@@ -136,7 +137,6 @@ unsigned long q_SSL_SESSION_get_ticket_lifetime_hint(const SSL_SESSION *session)
         q_SSL_CTX_ctrl(ctx, SSL_CTRL_SET_MAX_PROTO_VERSION, version, nullptr)
 
 int q_EVP_PKEY_set_type(EVP_PKEY *pkey, int type);
-int q_EVP_PKEY_up_ref(EVP_PKEY *pkey);
 int q_EVP_PKEY_set1_tls_encodedpoint(EVP_PKEY *pkey,
                                      const unsigned char *pt, size_t ptlen);
 
