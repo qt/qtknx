@@ -6,7 +6,7 @@ QT_FOR_PRIVATE += network core-private network-private
 
 QMAKE_DOCS = $$PWD/doc/qtknx.qdocconf
 
-include (core/core.pri)
+include(core/core.pri)
 include(dpt/dpt.pri)
 include(ets/ets.pri)
 include(knxproj/knxproj.pri)
