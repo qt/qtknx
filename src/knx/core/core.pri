@@ -1,7 +1,7 @@
 INCLUDEPATH += $$PWD
 
 SOURCES += \
-    $$PWD\qknxbytearray.cpp
+    $$PWD/qknxbytearray.cpp
 
 HEADERS += \
-    $$PWD\qknxbytearray.h
+    $$PWD/qknxbytearray.h
