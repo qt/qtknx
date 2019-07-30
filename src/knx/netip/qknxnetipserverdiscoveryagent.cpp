@@ -209,7 +209,7 @@ void QKnxNetIpServerDiscoveryAgentPrivate::setupSocket()
     socket = new QUdpSocket(q);
     socket->setSocketOption(QUdpSocket::SocketOption::MulticastTtlOption, ttl);
 
-    QObject::connect(socket, &QUdpSocket::stateChanged, [&](QUdpSocket::SocketState s) {
+    QObject::connect(socket, &QUdpSocket::stateChanged, q, [&](QUdpSocket::SocketState s) {
         Q_Q(QKnxNetIpServerDiscoveryAgent);
         switch (s) {
         case QUdpSocket::BoundState:
@@ -283,7 +283,7 @@ void QKnxNetIpServerDiscoveryAgentPrivate::setupSocket()
 
     using overload = void (QUdpSocket::*)(QUdpSocket::SocketError);
     QObject::connect(socket,
-        static_cast<overload>(&QUdpSocket::error), [&](QUdpSocket::SocketError) {
+        static_cast<overload>(&QUdpSocket::error), q, [&](QUdpSocket::SocketError) {
             setAndEmitErrorOccurred(QKnxNetIpServerDiscoveryAgent::Error::Network,
                 socket->errorString());
 
@@ -291,7 +291,7 @@ void QKnxNetIpServerDiscoveryAgentPrivate::setupSocket()
             q->stop();
     });
 
-    QObject::connect(socket, &QUdpSocket::readyRead, [&]() {
+    QObject::connect(socket, &QUdpSocket::readyRead, q, [&]() {
         Q_Q(QKnxNetIpServerDiscoveryAgent);
         while (socket->hasPendingDatagrams()) {
             if (q->state() != QKnxNetIpServerDiscoveryAgent::State::Running)
@@ -390,7 +390,7 @@ void QKnxNetIpServerDiscoveryAgentPrivate::setupAndStartFrequencyTimer()
         frequencyTimer->setSingleShot(false);
         frequencyTimer->start(60000 / frequency);
 
-        QObject::connect(frequencyTimer, &QTimer::timeout, [&]() {
+        QObject::connect(frequencyTimer, &QTimer::timeout, q, [&]() {
             Q_Q(QKnxNetIpServerDiscoveryAgent);
             if (q->state() == QKnxNetIpServerDiscoveryAgent::State::Running) {
                 servers.clear();
