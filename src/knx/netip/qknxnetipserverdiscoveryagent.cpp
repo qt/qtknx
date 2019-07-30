@@ -234,6 +234,9 @@ void QKnxNetIpServerDiscoveryAgentPrivate::setupSocket()
                     }
                 }
 
+                if (mni.isValid())
+                    socket->setMulticastInterface(mni);
+
                 if (socket->joinMulticastGroup(multicastAddress, mni)) {
                     usedPort = multicastPort;
                     usedAddress = multicastAddress;
