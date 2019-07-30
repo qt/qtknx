@@ -207,13 +207,13 @@ void QKnxNetIpServerDiscoveryAgentPrivate::setupSocket()
 
     Q_Q(QKnxNetIpServerDiscoveryAgent);
     socket = new QUdpSocket(q);
-    socket->setSocketOption(QUdpSocket::SocketOption::MulticastTtlOption, ttl);
 
     QObject::connect(socket, &QUdpSocket::stateChanged, q, [&](QUdpSocket::SocketState s) {
         Q_Q(QKnxNetIpServerDiscoveryAgent);
         switch (s) {
         case QUdpSocket::BoundState:
             setAndEmitStateChanged(QKnxNetIpServerDiscoveryAgent::State::Running);
+            socket->setSocketOption(QUdpSocket::SocketOption::MulticastTtlOption, ttl);
 
             if (type == QKnxNetIpServerDiscoveryAgent::ResponseType::Multicast) {
                 QNetworkInterface mni;
