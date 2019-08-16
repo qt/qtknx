@@ -169,13 +169,16 @@ void MainWindow::on_actionImport_triggered()
     on_devices_currentIndexChanged(ui->devices->currentIndex());
 }
 
-void MainWindow::on_devices_currentIndexChanged(int /* index */)
+void MainWindow::on_devices_currentIndexChanged(int index)
 {
     delete m_device;
+    m_device = nullptr;
     ui->secureConfigs->clear();
 
-    const auto model = qobject_cast<QStandardItemModel*>(ui->devices->model());
-    m_device = static_cast<DeviceItem *> (model->item(ui->devices->currentIndex()))->clone();
+    if (index >= 0) {
+        const auto model = qobject_cast<QStandardItemModel*>(ui->devices->model());
+        m_device = static_cast<DeviceItem *> (model->item(ui->devices->currentIndex()))->clone();
+    }
 
     if (m_device) {
         const auto deviceInfo = m_device->info();
@@ -189,6 +192,8 @@ void MainWindow::on_devices_currentIndexChanged(int /* index */)
                 .arg(config.userId())
                 .arg(ia.isValid() ? ia.toString() : tr("No specific address")), i);
         }
+    } else {
+        m_device = new DeviceItem({});
     }
 
     ui->secureConfigs->setEnabled(bool(ui->secureConfigs->count())
@@ -288,6 +293,7 @@ void MainWindow::setupInterfaces()
         if (i < 0)
             return;
         m_discoveryAgent.stop();
+        ui->devices->clear();
         m_discoveryAgent.setLocalAddress(QHostAddress(ui->interfaces->currentData()
             .toStringList().first()));
         m_discoveryAgent.start();
