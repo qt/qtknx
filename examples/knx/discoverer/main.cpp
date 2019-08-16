@@ -204,6 +204,9 @@ int main(int argc, char *argv[])
         qInfo().noquote() << endl << QString::fromLatin1("%1 server(s) found on the network.")
             .arg(servers.size());
         for (auto server : servers) {
+            qInfo().noquote() << QString::fromLatin1("  Network interface: %1, address: %2")
+                .arg(server.networkInterface().humanReadableName(),
+                     server.networkInterface().addressEntries().value(1).ip().toString());
             qInfo().noquote() << QString::fromLatin1("  Server: %1").arg(server.deviceName());
             qInfo().noquote() << QString::fromLatin1("      Individual address: %1").arg(server
                 .individualAddress().toString());

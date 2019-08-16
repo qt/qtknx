@@ -59,6 +59,7 @@ struct Q_KNX_EXPORT QKnxNetIpServerInfoPrivate final : public QSharedData
     QKnxNetIpDib services;
     QKnxNetIpDib tunnelingInfo;
     QKnxNetIpDib extendedHardware;
+    QNetworkInterface interface;
 };
 
 QT_END_NAMESPACE

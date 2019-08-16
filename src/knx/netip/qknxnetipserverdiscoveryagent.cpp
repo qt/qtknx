@@ -324,7 +324,8 @@ void QKnxNetIpServerDiscoveryAgentPrivate::setupSocket()
                                     .setHostAddress(datagram.senderAddress())
                                     .setPort(datagram.senderPort()).create()
                             : response.controlEndpoint()
-                        ), response.deviceHardware(), response.supportedFamilies()
+                        ), response.deviceHardware(), response.supportedFamilies(),
+                        QNetworkInterface::interfaceFromIndex(datagram.interfaceIndex())
                     });
             }
 
@@ -337,6 +338,7 @@ void QKnxNetIpServerDiscoveryAgentPrivate::setupSocket()
                                     .setPort(datagram.senderPort()).create()
                             : response.controlEndpoint()
                         ), response.deviceHardware(), response.supportedFamilies(),
+                        QNetworkInterface::interfaceFromIndex(datagram.interfaceIndex()),
                            [&optionalDibs]() -> QKnxNetIpDib {
                                 for (const auto &dib : qAsConst(optionalDibs)) {
                                     if (dib.code() == QKnxNetIp::DescriptionType::TunnelingInfo)
