@@ -300,7 +300,7 @@ void tst_QKnxLinkLayerFrameBuilder::testMemoryRead()
             .create();
     QCOMPARE(extctr.destinationAddressType(), QKnxAddress::Type::Individual);
     auto byts = extctr.bytes();
-    QCOMPARE(extctr.bytes(), QKnxByteArray{0x60});
+    QCOMPARE(extctr.bytes(), QKnxByteArray { 0x60 });
 
     auto frame = QKnxLinkLayerFrame::builder().setControlField(ctrl).setExtendedControlField(extctr)
             .setTpdu(tpdu).setDestinationAddress(destination).setSourceAddress(source)
