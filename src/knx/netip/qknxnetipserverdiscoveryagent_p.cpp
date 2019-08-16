@@ -30,15 +30,9 @@
 #include "qknxnetipserverdiscoveryagent.h"
 #include "qknxnetipserverdiscoveryagent_p.h"
 
-#include <QtNetwork/qnetworkinterface.h>
+#include <QtCore/qthread.h>
 
 QT_BEGIN_NAMESPACE
-
-QKnxNetIpServerDiscoveryAgentPrivate::QKnxNetIpServerDiscoveryAgentPrivate(const QHostAddress &addr,
-        quint16 prt)
-    : port(prt)
-    , address(addr)
-{}
 
 namespace QKnxPrivate
 {
@@ -50,7 +44,252 @@ namespace QKnxPrivate
             (*socket) = nullptr;
         }
     }
+
+    static void clearTimer(QTimer **timer)
+    {
+        if (*timer) {
+            (*timer)->stop();
+            (*timer)->disconnect();
+            (*timer)->deleteLater();
+            (*timer) = nullptr;
+        }
+    }
+
+    static QVector<Adapter> adaptersForAddresses(const QVector<QHostAddress> addresses)
+    {
+        QVector<Adapter> adapters;
+        auto all = QNetworkInterface::allInterfaces();
+        for (const auto &iface : all) {
+            const auto flags = iface.flags();
+            if (!flags.testFlag(QNetworkInterface::IsUp)
+                && !flags.testFlag(QNetworkInterface::IsRunning)
+                && !flags.testFlag(QNetworkInterface::CanMulticast)) continue;
+
+            const auto type = iface.type();
+            if (type != QNetworkInterface::Wifi
+                && type != QNetworkInterface::Loopback
+                && type != QNetworkInterface::Ethernet) continue;
+
+            const auto entries = iface.addressEntries();
+            for (const auto &entry : entries) {
+                const auto address = entry.ip();
+                if (address.protocol() != QAbstractSocket::IPv4Protocol)
+                    continue;
+                if (!addresses.contains(address))
+                    continue;
+                adapters.append({ address, iface });
+                break;
+            }
+        }
+        return adapters;
+    }
 }
+
+Discoverer::Discoverer(const QHostAddress &address, const QNetworkInterface iface, const DiscovererConfig &c)
+    : QObject(nullptr)
+    , m_address(address)
+    , m_iface(iface)
+    , m_config(c)
+{}
+
+Discoverer::~Discoverer()
+{
+    finish();
+}
+
+void Discoverer::start()
+{
+    if (m_state != QKnxNetIpServerDiscoveryAgent::State::NotRunning)
+        return;
+
+    setAndEmitStateChanged(QKnxNetIpServerDiscoveryAgent::State::Starting);
+
+    auto isIPv4 = true;
+    m_address.toIPv4Address(&isIPv4);
+    if (!isIPv4) {
+        emit errorOccurred(QKnxNetIpServerDiscoveryAgent::Error::NotIPv4,
+            QKnxNetIpServerDiscoveryAgent::tr("Only IPv4 local address supported."));
+        return finish();
+    }
+
+    m_socket = new QUdpSocket;
+    connect(m_socket, &QUdpSocket::readyRead, this, &Discoverer::onReadyRead);
+    using overload = void (QUdpSocket::*)(QUdpSocket::SocketError);
+    connect(m_socket, static_cast<overload>(&QUdpSocket::error), this, &Discoverer::onError);
+
+    bool bound = m_socket->bind(m_config.Multicast ? QHostAddress::AnyIPv4
+                                                   : m_address,
+                                m_config.Multicast ? 3671 : 0,
+                                QUdpSocket::ShareAddress | QUdpSocket::ReuseAddressHint);
+    if (!bound)
+        return finish();
+
+    setAndEmitStateChanged(QKnxNetIpServerDiscoveryAgent::State::Running);
+
+    if (m_config.Multicast) {
+        m_socket->setMulticastInterface(m_iface);
+        if (!m_socket->joinMulticastGroup(m_multicast, m_iface)) {
+            emit errorOccurred(QKnxNetIpServerDiscoveryAgent::Error::Network,
+                QKnxNetIpServerDiscoveryAgent::tr("Could not join multicast group."));
+            return finish();
+        }
+        m_socket->setSocketOption(QUdpSocket::SocketOption::MulticastTtlOption, m_config.Ttl);
+    }
+
+    m_timer = new QTimer;
+    m_timer->setSingleShot(true);
+    connect(m_timer, &QTimer::timeout, this, &Discoverer::onTimeout);
+
+    if (m_config.DiscoveryCoreV1) {
+        const auto frame = QKnxNetIpSearchRequestProxy::builder()
+            .setDiscoveryEndpoint(QKnxNetIpHpaiProxy::Builder()
+                .setPort(m_config.Nat ? 0 : (m_config.Multicast ? 3671 : m_socket->localPort()))
+                .setHostAddress(m_config.Nat ? QHostAddress::AnyIPv4
+                    : (m_config.Multicast ? m_multicast : m_address))
+                .create())
+            .create();
+
+        if (frame.isValid())
+            m_socket->writeDatagram(frame.bytes().toByteArray(), m_multicast, 3671);
+    }
+
+    if (m_config.DiscoveryCoreV2) {
+        const auto frame = QKnxNetIpSearchRequestProxy::extendedBuilder()
+            .setDiscoveryEndpoint(QKnxNetIpHpaiProxy::Builder()
+                .setPort(m_config.Nat ? 0 : (m_config.Multicast ? 3671 : m_socket->localPort()))
+                .setHostAddress(m_config.Nat ? QHostAddress::AnyIPv4
+                    : (m_config.Multicast ? m_multicast : m_address))
+                .create())
+            .setExtendedParameters(m_config.ExtendedSearchParameters)
+            .create();
+        if (frame.isValid())
+            m_socket->writeDatagram(frame.bytes().toByteArray(), m_multicast, 3671);
+    }
+
+    m_timer->start(m_config.Timeout);
+}
+
+void Discoverer::finish()
+{
+    if (m_state == QKnxNetIpServerDiscoveryAgent::State::Stopping
+        || m_state == QKnxNetIpServerDiscoveryAgent::State::NotRunning) {
+        return;
+    }
+
+    setAndEmitStateChanged(QKnxNetIpServerDiscoveryAgent::State::Stopping);
+
+    QKnxPrivate::clearTimer(&m_timer);
+
+    if (m_socket) {
+        if (m_config.Multicast && m_socket->state() == QUdpSocket::BoundState) {
+            m_socket->setMulticastInterface({});
+            m_socket->leaveMulticastGroup(m_multicast, m_iface);
+        }
+        QKnxPrivate::clearSocket(&m_socket);
+    }
+
+    setAndEmitStateChanged(QKnxNetIpServerDiscoveryAgent::State::NotRunning);
+}
+
+void Discoverer::onTimeout()
+{
+    if (m_devices.isEmpty())
+        emit timeout();
+    finish();
+}
+
+void Discoverer::onReadyRead()
+{
+    while (m_socket->hasPendingDatagrams()) {
+        if (m_state != QKnxNetIpServerDiscoveryAgent::State::Running)
+            break;
+
+        const auto datagram = m_socket->receiveDatagram();
+        const auto data = QKnxByteArray::fromByteArray(datagram.data());
+        const auto header = QKnxNetIpFrameHeader::fromBytes(data, 0);
+        if (!header.isValid())
+            continue;
+
+        if (header.serviceType() != QKnxNetIp::ServiceType::SearchResponse
+            && header.serviceType() != QKnxNetIp::ServiceType::ExtendedSearchResponse) {
+            continue;
+        }
+
+        const auto frame = QKnxNetIpFrame::fromBytes(data);
+        const auto proxy = QKnxNetIpSearchResponseProxy(frame);
+        if (!proxy.isValid())
+            continue;
+
+        if (m_config.DiscoveryCoreV1 && !proxy.isExtended()) {
+            emit deviceDiscovered(
+                {
+                    (m_config.Nat ? QKnxNetIpHpaiProxy::builder()
+                                        .setHostAddress(datagram.senderAddress())
+                                        .setPort(datagram.senderPort()).create()
+                                  : proxy.controlEndpoint()),
+                    proxy.deviceHardware(),
+                    proxy.supportedFamilies(),
+                    m_iface
+                }
+            );
+        }
+
+        if (m_config.DiscoveryCoreV2 && proxy.isExtended()) {
+            const auto optionalDibs = proxy.optionalDibs();
+            emit deviceDiscovered(
+                {
+                    (m_config.Nat ? QKnxNetIpHpaiProxy::builder()
+                                        .setHostAddress(datagram.senderAddress())
+                                        .setPort(datagram.senderPort()).create()
+                                  : proxy.controlEndpoint()),
+                    proxy.deviceHardware(),
+                    proxy.supportedFamilies(),
+                    m_iface,
+                    [&optionalDibs]() -> QKnxNetIpDib {
+                        for (const auto &dib : qAsConst(optionalDibs)) {
+                            if (dib.code() == QKnxNetIp::DescriptionType::TunnelingInfo)
+                                return dib;
+                        }
+                        return {};
+                    }(),
+                    [&optionalDibs]() -> QKnxNetIpDib {
+                        for (const auto &dib : qAsConst(optionalDibs)) {
+                            if (dib.code() == QKnxNetIp::DescriptionType::ExtendedDeviceInfo)
+                                return dib;
+                        }
+                        return {};
+                    }()
+                }
+            );
+        }
+    }
+}
+
+void Discoverer::onError(QUdpSocket::SocketError /* error */)
+{
+    emit errorOccurred(QKnxNetIpServerDiscoveryAgent::Error::Network,
+        m_socket ? m_socket->errorString()
+                 : QKnxNetIpServerDiscoveryAgent::tr("Unknown socket error happened.")
+    );
+    finish();
+}
+
+void Discoverer::setAndEmitStateChanged(QKnxNetIpServerDiscoveryAgent::State state)
+{
+    m_state = state;
+    emit stateChanged(m_state);
+
+    if (m_state == QKnxNetIpServerDiscoveryAgent::State::Starting)
+        emit started();
+    if (m_state == QKnxNetIpServerDiscoveryAgent::State::Stopping)
+        emit finished(this);
+}
+
+QKnxNetIpServerDiscoveryAgentPrivate::QKnxNetIpServerDiscoveryAgentPrivate(const QHostAddress &addr,
+        quint16 prt)
+    : port(prt)
+    , address(addr)
+{}
 
 void QKnxNetIpServerDiscoveryAgentPrivate::setupSocket()
 {
@@ -61,6 +300,7 @@ void QKnxNetIpServerDiscoveryAgentPrivate::setupSocket()
     Q_Q(QKnxNetIpServerDiscoveryAgent);
     socket = new QUdpSocket(q);
 
+    adapter = QKnxPrivate::adaptersForAddresses(QVector<QHostAddress> { address }).value(0);
     QObject::connect(socket, &QUdpSocket::stateChanged, q, [&](QUdpSocket::SocketState s) {
         Q_Q(QKnxNetIpServerDiscoveryAgent);
         switch (s) {
@@ -177,8 +417,7 @@ void QKnxNetIpServerDiscoveryAgentPrivate::setupSocket()
                                     .setHostAddress(datagram.senderAddress())
                                     .setPort(datagram.senderPort()).create()
                             : response.controlEndpoint()
-                        ), response.deviceHardware(), response.supportedFamilies(),
-                        QNetworkInterface::interfaceFromIndex(datagram.interfaceIndex())
+                        ), response.deviceHardware(), response.supportedFamilies(), adapter.iface
                     });
             }
 
@@ -190,8 +429,7 @@ void QKnxNetIpServerDiscoveryAgentPrivate::setupSocket()
                                     .setHostAddress(datagram.senderAddress())
                                     .setPort(datagram.senderPort()).create()
                             : response.controlEndpoint()
-                        ), response.deviceHardware(), response.supportedFamilies(),
-                        QNetworkInterface::interfaceFromIndex(datagram.interfaceIndex()),
+                        ), response.deviceHardware(), response.supportedFamilies(), adapter.iface,
                            [&optionalDibs]() -> QKnxNetIpDib {
                                 for (const auto &dib : qAsConst(optionalDibs)) {
                                     if (dib.code() == QKnxNetIp::DescriptionType::TunnelingInfo)
@@ -210,19 +448,6 @@ void QKnxNetIpServerDiscoveryAgentPrivate::setupSocket()
             }
         }
     });
-}
-
-namespace QKnxPrivate
-{
-    static void clearTimer(QTimer **timer)
-    {
-        if (*timer) {
-            (*timer)->stop();
-            (*timer)->disconnect();
-            (*timer)->deleteLater();
-            (*timer) = nullptr;
-        }
-    }
 }
 
 void QKnxNetIpServerDiscoveryAgentPrivate::setupAndStartReceiveTimer()
@@ -312,21 +537,6 @@ void QKnxNetIpServerDiscoveryAgentPrivate::setAndEmitErrorOccurred(
     emit q->errorOccurred(error, errorString);
 }
 
-namespace QKnxPrivate
-{
-    QString interfaceFromAddress(const QHostAddress &address)
-    {
-        auto interfaces = QNetworkInterface::allInterfaces();
-        for (const auto &interface : qAsConst(interfaces)) {
-            auto entries = interface.addressEntries();
-            for (const auto &entry : entries) {
-                if (entry.ip() == address)
-                    return interface.humanReadableName();
-            }
-        }
-        return QLatin1String("Unknown");
-    }
-}
 void QKnxNetIpServerDiscoveryAgentPrivate::start()
 {
     if (state != QKnxNetIpServerDiscoveryAgent::State::NotRunning)
@@ -343,15 +553,106 @@ void QKnxNetIpServerDiscoveryAgentPrivate::start()
         if (type == QKnxNetIpServerDiscoveryAgent::ResponseType::Multicast) {
             socket->bind(QHostAddress::AnyIPv4, multicastPort, QUdpSocket::ShareAddress
                 | QAbstractSocket::ReuseAddressHint);
-            qDebug() << "Multicast response using iface:" << QKnxPrivate::interfaceFromAddress(address);
         } else {
             socket->bind(address, port);
-            qDebug() << "Unicast response using interface:" << QKnxPrivate::interfaceFromAddress(address);
         }
     } else {
         setAndEmitErrorOccurred(QKnxNetIpServerDiscoveryAgent::Error::NotIPv4,
             QKnxNetIpServerDiscoveryAgent::tr("Only IPv4 local address supported."));
     }
+}
+
+void QKnxNetIpServerDiscoveryAgentPrivate::start(const QVector<Adapter> &adapters)
+{
+    if (state != QKnxNetIpServerDiscoveryAgent::State::NotRunning)
+        return;
+
+    setAndEmitStateChanged(QKnxNetIpServerDiscoveryAgent::State::Starting);
+
+    if (adapters.isEmpty())
+        return stop();
+
+    Q_Q(QKnxNetIpServerDiscoveryAgent);
+    const QFlags<QKnxNetIpServerDiscoveryAgent::ResponseType> rtype(type);
+    const QFlags<QKnxNetIpServerDiscoveryAgent::DiscoveryMode> dmode(mode);
+    const DiscovererConfig config {
+        ttl,
+        timeout,
+        nat,
+        rtype.testFlag(QKnxNetIpServerDiscoveryAgent::ResponseType::Multicast),
+        dmode.testFlag(QKnxNetIpServerDiscoveryAgent::DiscoveryMode::CoreV1),
+        dmode.testFlag(QKnxNetIpServerDiscoveryAgent::DiscoveryMode::CoreV2),
+        srps
+    };
+
+    bool connectError = (adapters.count() == 1);
+    for (const auto &adapter : adapters) {
+        auto discoverer = new Discoverer(adapter.address, adapter.iface, config);
+        discoveries.append(discoverer);
+
+        auto thread = new QThread;
+        discoverer->moveToThread(thread);
+        QObject::connect(thread, &QThread::started, discoverer, &Discoverer::start);
+        QObject::connect(thread, &QThread::finished, discoverer, &Discoverer::deleteLater);
+
+        QObject::connect(thread, &QThread::started, discoverer, &Discoverer::start);
+        QObject::connect(thread, &QThread::finished, discoverer, &Discoverer::finish);
+
+        QObject::connect(discoverer, &Discoverer::finished, q, [&](Discoverer *ds) {
+            discoveries.removeAll(ds);
+            if (discoveries.isEmpty())
+                stop();
+        });
+        QObject::connect(discoverer, &Discoverer::finished, thread, &QThread::quit);
+        QObject::connect(discoverer, &Discoverer::deviceDiscovered, q, [&](const QKnxNetIpServerInfo &server) {
+            setAndEmitDeviceDiscovered(server);
+        });
+        if (connectError) {
+            QObject::connect(discoverer, &Discoverer::errorOccurred, q,
+                [&](QKnxNetIpServerDiscoveryAgent::Error error, const QString &errorString) {
+                setAndEmitErrorOccurred(error, errorString);
+            });
+        }
+        thread->start();
+    }
+
+    setAndEmitStateChanged(QKnxNetIpServerDiscoveryAgent::State::Running);
+}
+
+void QKnxNetIpServerDiscoveryAgentPrivate::start(const QVector<QHostAddress> addresses)
+{
+    start(QKnxPrivate::adaptersForAddresses(addresses));
+}
+
+void QKnxNetIpServerDiscoveryAgentPrivate::start(QKnxNetIpServerDiscoveryAgent::InterfaceTypes types)
+{
+    QVector<Adapter> adapters;
+    auto all = QNetworkInterface::allInterfaces();
+    for (const auto &iface : all) {
+        const auto flags = iface.flags();
+        if (!flags.testFlag(QNetworkInterface::IsUp)
+            && !flags.testFlag(QNetworkInterface::IsRunning)
+            && !flags.testFlag(QNetworkInterface::CanMulticast)) continue;
+
+        const bool wifi = types.testFlag(QKnxNetIpServerDiscoveryAgent::InterfaceType::Wifi);
+        const bool loopback = types.testFlag(QKnxNetIpServerDiscoveryAgent::InterfaceType::Loopback);
+        const bool ethernet = types.testFlag(QKnxNetIpServerDiscoveryAgent::InterfaceType::Ethernet);
+
+        const auto type = iface.type();
+        if (!(wifi && type == QNetworkInterface::Wifi)
+            && !(loopback && type == QNetworkInterface::Loopback)
+            && !(ethernet && type == QNetworkInterface::Ethernet)) continue;
+
+        const auto entries = iface.addressEntries();
+        for (const auto &entry : entries) {
+            const auto address = entry.ip();
+            if (address.protocol() != QAbstractSocket::IPv4Protocol)
+                continue;
+            adapters.append({ address, iface });
+            break;
+        }
+    }
+    start(adapters);
 }
 
 void QKnxNetIpServerDiscoveryAgentPrivate::stop()

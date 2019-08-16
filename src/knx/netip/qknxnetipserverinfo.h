@@ -47,6 +47,7 @@ struct QKnxNetIpServerInfoPrivate;
 
 class Q_KNX_EXPORT QKnxNetIpServerInfo final
 {
+    friend class Discoverer;
     friend class QKnxNetIpServerDiscoveryAgentPrivate;
     friend class QKnxNetIpServerDescriptionAgentPrivate;
 

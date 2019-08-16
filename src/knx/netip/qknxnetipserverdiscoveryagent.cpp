@@ -326,7 +326,6 @@ void QKnxNetIpServerDiscoveryAgent::setTimeout(int msec)
 {
     Q_D(QKnxNetIpServerDiscoveryAgent);
     d->timeout = msec;
-    d->setupAndStartReceiveTimer();
 }
 
 /*!
@@ -489,6 +488,28 @@ void QKnxNetIpServerDiscoveryAgent::start(int timeout)
 {
     d_func()->timeout = timeout;
     d_func()->start();
+}
+
+/*!
+    Starts a server discovery agent with the network interfaces specified by
+    the list of local host \a addresses.
+
+    \note Does not emit the errorOccurred signal.
+*/
+void QKnxNetIpServerDiscoveryAgent::start(const QVector<QHostAddress> &addresses)
+{
+    d_func()->start(addresses);
+}
+
+/*!
+    Starts a server discovery agent with the network interfaces specified by
+    the list of interface types \a types.
+
+    \note Does not emit the errorOccurred signal.
+*/
+void QKnxNetIpServerDiscoveryAgent::start(QKnxNetIpServerDiscoveryAgent::InterfaceTypes types)
+{
+    d_func()->start(types);
 }
 
 /*!

@@ -80,6 +80,15 @@ public:
     Q_ENUM(DiscoveryMode)
     Q_DECLARE_FLAGS(DiscoveryModes, DiscoveryMode)
 
+    enum class InterfaceType : quint8
+    {
+        Loopback = 0x01,
+        Ethernet = 0x02,
+        Wifi = 0x04
+    };
+    Q_ENUM(InterfaceType)
+    Q_DECLARE_FLAGS(InterfaceTypes, InterfaceType)
+
     QKnxNetIpServerDiscoveryAgent(QObject *parent = nullptr);
     ~QKnxNetIpServerDiscoveryAgent() override;
 
@@ -123,8 +132,11 @@ public:
 
 public Q_SLOTS:
     void start();
-    void start(int timeout);
     void stop();
+
+    void start(int timeout);
+    void start(const QVector<QHostAddress> &localAddresses);
+    void start(QKnxNetIpServerDiscoveryAgent::InterfaceTypes types);
 
 Q_SIGNALS:
     void started();
@@ -138,6 +150,7 @@ private:
     QKnxNetIpServerDiscoveryAgent(QKnxNetIpServerDiscoveryAgentPrivate &dd, QObject *parent);
 };
 Q_DECLARE_OPERATORS_FOR_FLAGS(QKnxNetIpServerDiscoveryAgent::DiscoveryModes)
+Q_DECLARE_OPERATORS_FOR_FLAGS(QKnxNetIpServerDiscoveryAgent::InterfaceTypes)
 
 QT_END_NAMESPACE
 

@@ -56,8 +56,6 @@
 #include <QtKnx/QKnxNetIpServerDiscoveryAgent>
 #include <QtKnx/QKnxNetIpSrpBuilder>
 
-#include <QtNetwork/QNetworkInterface>
-
 static QString familyToString(QKnxNetIp::ServiceFamily id)
 {
     switch (id) {
@@ -81,17 +79,6 @@ static QString familyToString(QKnxNetIp::ServiceFamily id)
             break;
     }
     return "Unknown";
-}
-
-QString interfaceFromAddress(const QHostAddress &address)
-{
-    auto interfaces = QNetworkInterface::allInterfaces();
-    for (const auto &interface : qAsConst(interfaces)) {
-        if (interface.allAddresses().contains(address))
-            return interface.humanReadableName();
-    }
-    return QString(address == QHostAddress(QKnxNetIp::Constants::MulticastAddress)
-        ? "Multicast" : "Unknown");
 }
 
 int main(int argc, char *argv[])
@@ -130,10 +117,8 @@ int main(int argc, char *argv[])
     agent.setLocalPort(parser.value("localPort").toUInt());
     agent.setTimeout(parser.value("timeout").toInt() * 1000);
 
-    if (parser.isSet("localAddress")) {
+    if (parser.isSet("localAddress"))
         agent.setLocalAddress(QHostAddress(parser.value("localAddress")));
-        agent.setResponseType(QKnxNetIpServerDiscoveryAgent::ResponseType::Unicast);
-    }
 
     if (parser.isSet("unicast"))
         agent.setResponseType(QKnxNetIpServerDiscoveryAgent::ResponseType::Unicast);
@@ -189,15 +174,17 @@ int main(int argc, char *argv[])
     QObject::connect(&agent, &QKnxNetIpServerDiscoveryAgent::finished, &discoverer,
         &QCoreApplication::quit);
 
-    agent.start();
+    if (!parser.isSet("localAddress")) {
+        agent.start(QKnxNetIpServerDiscoveryAgent::InterfaceType::Ethernet
+            | QKnxNetIpServerDiscoveryAgent::InterfaceType::Wifi);
+    } else {
+        agent.start(QVector<QHostAddress> { agent.localAddress() });
+    }
 
-    if (agent.error() == QKnxNetIpServerDiscoveryAgent::Error::None)
-        discoverer.exec();
-
-    qInfo().noquote() << endl << "Device used to send the search request:";
-    qInfo().noquote() << QString::fromLatin1("  Network interface: %1, address: %2, port: %3")
-        .arg(interfaceFromAddress(agent.localAddress()), agent.localAddress().toString())
-        .arg(agent.localPort());
+    if (agent.error() == QKnxNetIpServerDiscoveryAgent::Error::None
+        && agent.state() == QKnxNetIpServerDiscoveryAgent::State::Running) {
+            discoverer.exec();
+    }
 
     const auto servers = agent.discoveredServers();
     if (servers.size() > 0) {

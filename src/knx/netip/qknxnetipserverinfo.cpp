@@ -98,7 +98,9 @@ QT_BEGIN_NAMESPACE
 */
 QKnxNetIpServerInfo::QKnxNetIpServerInfo()
     : d_ptr(new QKnxNetIpServerInfoPrivate)
-{}
+{
+    qRegisterMetaType<QKnxNetIpServerInfo>();
+}
 
 /*!
     Deletes a KNXnet/IP server information object.
