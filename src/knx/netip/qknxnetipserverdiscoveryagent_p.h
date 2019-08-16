@@ -70,7 +70,10 @@ public:
 
     void setAndEmitStateChanged(QKnxNetIpServerDiscoveryAgent::State newState);
     void setAndEmitDeviceDiscovered(const QKnxNetIpServerInfo &discoveryInfo);
-    void setAndEmitErrorOccurred(QKnxNetIpServerDiscoveryAgent::Error e, const QString &message);
+    void setAndEmitErrorOccurred(QKnxNetIpServerDiscoveryAgent::Error newError, const QString &message);
+
+    void start();
+    void stop();
 
 private:
     QUdpSocket *socket { nullptr };
@@ -78,12 +81,12 @@ private:
     QTimer *frequencyTimer { nullptr };
 
     quint16 port { 0 }, usedPort { 0 };
-    QHostAddress address { QHostAddress::AnyIPv4 }, usedAddress;
+    QHostAddress address { QHostAddress::Null }, usedAddress;
 
     const quint16 multicastPort { QKnxNetIp::Constants::DefaultPort };
     const QHostAddress multicastAddress { QLatin1String(QKnxNetIp::Constants::MulticastAddress) };
 
-    quint8 ttl { 60 };
+    quint8 ttl { 64 };
     bool nat { false };
     int frequency { 0 };
     int timeout { QKnxNetIp::Timeout::SearchTimeout };
@@ -96,7 +99,7 @@ private:
     QKnxNetIpServerDiscoveryAgent::ResponseType
         type { QKnxNetIpServerDiscoveryAgent::ResponseType::Multicast };
 
-    QKnxNetIpServerDiscoveryAgent::DiscoveryModes discoveryMode
+    QKnxNetIpServerDiscoveryAgent::DiscoveryModes mode
         { QKnxNetIpServerDiscoveryAgent::DiscoveryMode::CoreV1 };
     QVector<QKnxNetIpSrp> srps;
 };

@@ -60,6 +60,7 @@ public:
         None,
         Network,
         NotIPv4,
+        Timeout,
         Unknown = 0x80
     };
     Q_ENUM(Error)
@@ -80,7 +81,7 @@ public:
     Q_DECLARE_FLAGS(DiscoveryModes, DiscoveryMode)
 
     QKnxNetIpServerDiscoveryAgent(QObject *parent = nullptr);
-    ~QKnxNetIpServerDiscoveryAgent();
+    ~QKnxNetIpServerDiscoveryAgent() override;
 
     explicit QKnxNetIpServerDiscoveryAgent(const QHostAddress &localAddress,
         QObject *parent = nullptr);
