@@ -258,6 +258,19 @@ QKnxNetIpDib QKnxNetIpServerInfo::extendedHardware() const
 /*!
     \since 5.14
 
+    Returns the host address which has been used to discover the KNXnet/IP
+    server hardware.
+
+    \sa QHostAddress
+*/
+QHostAddress QKnxNetIpServerInfo::hostAddress() const
+{
+    return d_ptr->address;
+}
+
+/*!
+    \since 5.14
+
     Returns the network interface which has been used to discover the KNXnet/IP
     server hardware.
 
@@ -265,7 +278,7 @@ QKnxNetIpDib QKnxNetIpServerInfo::extendedHardware() const
 */
 QNetworkInterface QKnxNetIpServerInfo::networkInterface() const
 {
-    return d_ptr->interface;
+    return d_ptr->iinterface;
 }
 
 /*!
@@ -355,7 +368,7 @@ QKnxNetIpServerInfo::QKnxNetIpServerInfo(const QKnxNetIpHpai &hpai, const QKnxNe
 */
 QKnxNetIpServerInfo::QKnxNetIpServerInfo(const QKnxNetIpHpai &hpai, const QKnxNetIpDib &hardware,
         const QKnxNetIpDib &services, const QKnxNetIpDib &tunneling, const QKnxNetIpDib &extHardware)
-    : QKnxNetIpServerInfo(hpai, hardware, services, {}, tunneling, extHardware)
+    : QKnxNetIpServerInfo(hpai, hardware, services, {}, {}, tunneling, extHardware)
 {}
 
 #endif
@@ -364,16 +377,17 @@ QKnxNetIpServerInfo::QKnxNetIpServerInfo(const QKnxNetIpHpai &hpai, const QKnxNe
     \internal
 */
 QKnxNetIpServerInfo::QKnxNetIpServerInfo(const QKnxNetIpHpai &hpai, const QKnxNetIpDib &hardware,
-        const QKnxNetIpDib &services, const QNetworkInterface &iface, const QKnxNetIpDib &tunneling,
-        const QKnxNetIpDib &extHardware)
+        const QKnxNetIpDib &services, const QHostAddress &address, const QNetworkInterface &iinterface,
+        const QKnxNetIpDib &tunneling, const QKnxNetIpDib &extHardware)
     : QKnxNetIpServerInfo()
 {
     d_ptr->hpai = hpai;
     d_ptr->hardware = hardware;
     d_ptr->services = services;
+    d_ptr->address = address;
+    d_ptr->iinterface = iinterface;
     d_ptr->tunnelingInfo = tunneling;
     d_ptr->extendedHardware = extHardware;
-    d_ptr->interface = iface;
 }
 
 /*!

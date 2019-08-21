@@ -74,6 +74,7 @@ public:
     QKnxNetIpDib tunnelingInfo() const;
     QKnxNetIpDib extendedHardware() const;
 
+    QHostAddress hostAddress() const;
     QNetworkInterface networkInterface() const;
 
     QKnxNetIpServerInfo(const QKnxNetIpServerInfo &other);
@@ -100,7 +101,8 @@ private:
     QKnxNetIpServerInfo(const QKnxNetIpHpai &hpai,
         const QKnxNetIpDib &hardware,
         const QKnxNetIpDib &services,
-        const QNetworkInterface &iface,
+        const QHostAddress &hostAddress,
+        const QNetworkInterface &iinterface,
         const QKnxNetIpDib &tunnelingInfo = {},
         const QKnxNetIpDib &extendedHardware = {});
 

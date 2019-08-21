@@ -229,7 +229,7 @@ void Discoverer::onReadyRead()
                                   : proxy.controlEndpoint()),
                     proxy.deviceHardware(),
                     proxy.supportedFamilies(),
-                    m_iface
+                    m_address, m_iface
                 }
             );
         }
@@ -244,7 +244,7 @@ void Discoverer::onReadyRead()
                                   : proxy.controlEndpoint()),
                     proxy.deviceHardware(),
                     proxy.supportedFamilies(),
-                    m_iface,
+                    m_address, m_iface,
                     [&optionalDibs]() -> QKnxNetIpDib {
                         for (const auto &dib : qAsConst(optionalDibs)) {
                             if (dib.code() == QKnxNetIp::DescriptionType::TunnelingInfo)
@@ -417,7 +417,8 @@ void QKnxNetIpServerDiscoveryAgentPrivate::setupSocket()
                                     .setHostAddress(datagram.senderAddress())
                                     .setPort(datagram.senderPort()).create()
                             : response.controlEndpoint()
-                        ), response.deviceHardware(), response.supportedFamilies(), adapter.iface
+                        ), response.deviceHardware(), response.supportedFamilies(),
+                        adapter.address, adapter.iface
                     });
             }
 
@@ -429,7 +430,8 @@ void QKnxNetIpServerDiscoveryAgentPrivate::setupSocket()
                                     .setHostAddress(datagram.senderAddress())
                                     .setPort(datagram.senderPort()).create()
                             : response.controlEndpoint()
-                        ), response.deviceHardware(), response.supportedFamilies(), adapter.iface,
+                        ), response.deviceHardware(), response.supportedFamilies(),
+                        adapter.address, adapter.iface,
                            [&optionalDibs]() -> QKnxNetIpDib {
                                 for (const auto &dib : qAsConst(optionalDibs)) {
                                     if (dib.code() == QKnxNetIp::DescriptionType::TunnelingInfo)
