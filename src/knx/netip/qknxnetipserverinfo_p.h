@@ -42,10 +42,14 @@
 //
 
 #include <QtCore/qshareddata.h>
+
 #include <QtKnx/qtknxglobal.h>
 #include <QtKnx/qknxnetipdevicedib.h>
 #include <QtKnx/qknxnetiphpai.h>
 #include <QtKnx/qknxnetipservicefamiliesdib.h>
+
+#include <QtNetwork/qhostaddress.h>
+#include <QtNetwork/qnetworkinterface.h>
 
 QT_BEGIN_NAMESPACE
 
@@ -59,6 +63,8 @@ struct Q_KNX_EXPORT QKnxNetIpServerInfoPrivate final : public QSharedData
     QKnxNetIpDib services;
     QKnxNetIpDib tunnelingInfo;
     QKnxNetIpDib extendedHardware;
+    QHostAddress address;
+    QNetworkInterface iinterface;
 };
 
 QT_END_NAMESPACE

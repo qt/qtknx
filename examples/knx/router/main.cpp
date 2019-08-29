@@ -238,14 +238,13 @@ int main(int argc, char *argv[])
     QNetworkInterface iface { QNetworkInterface::interfaceFromName(cliParser.value("interface")) };
     if (!iface.isValid()) {
         auto interfaces = iface.allInterfaces();
-        QList<QNetworkInterface>::iterator found = ( std::find_if(interfaces.begin(),
-                             interfaces.end(),
-                             [](const QNetworkInterface &i){
-                                return i.type() == QNetworkInterface::Ethernet;
-        }));
+        QList<QNetworkInterface>::iterator found = std::find_if(
+            interfaces.begin(), interfaces.end(), [](const QNetworkInterface &i) {
+                return i.type() == QNetworkInterface::Ethernet;
+            }
+        );
         if (found ==  iface.allInterfaces().end()) {
-            qInfo().noquote() << "No valid network interface given and no "
-                                 "Ethernet adapter found. ";
+            qInfo().noquote() << "No valid network interface given and no Ethernet adapter found.";
             cliParser.showHelp();
         }
         iface = static_cast<QNetworkInterface>(*found);
