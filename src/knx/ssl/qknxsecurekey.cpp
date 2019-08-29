@@ -57,9 +57,9 @@ public:
     }
 
 #if QT_CONFIG(opensslv11)
-    EVP_PKEY *m_evpPKey{ nullptr };
+    EVP_PKEY *m_evpPKey { nullptr };
 #endif
-    QKnxSecureKey::Type m_type{ QKnxSecureKey::Type::Invalid };
+    QKnxSecureKey::Type m_type { QKnxSecureKey::Type::Invalid };
 };
 
 /*!

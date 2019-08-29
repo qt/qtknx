@@ -237,7 +237,7 @@ QKnxNetIpConnectionHeader QKnxNetIpConnectionHeader::fromBytes(const QKnxByteArr
     if (availableSize < 4 && availableSize < totalSize)
         return {}; // header might be corrupted
 
-    QKnxNetIpConnectionHeader hdr{ bytes.at(index + 1), bytes.at(index + 2), bytes.at(index + 3) };
+    QKnxNetIpConnectionHeader hdr { bytes.at(index + 1), bytes.at(index + 2), bytes.at(index + 3) };
     if (totalSize > 4)
         hdr.setConnectionTypeSpecificHeaderItems(bytes.mid(index + 4, totalSize - 4));
     return hdr;

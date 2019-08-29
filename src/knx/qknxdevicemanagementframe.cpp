@@ -339,6 +339,7 @@ void QKnxDeviceManagementFrame::setObjectInstance(quint8 instance)
 {
     if (instance < 1)
         return;
+    d_ptr->m_serviceInformation.resize(3);
     d_ptr->m_serviceInformation.set(2, instance);
 }
 
@@ -359,8 +360,10 @@ QKnxInterfaceObjectProperty QKnxDeviceManagementFrame::property() const
 */
 void QKnxDeviceManagementFrame::setProperty(QKnxInterfaceObjectProperty pid)
 {
-    if (QKnxInterfaceObjectProperty::isProperty(pid))
+    if (QKnxInterfaceObjectProperty::isProperty(pid)) {
+        d_ptr->m_serviceInformation.resize(4);
         d_ptr->m_serviceInformation.set(3, quint8(pid));
+    }
 }
 
 /*!
@@ -384,6 +387,8 @@ void QKnxDeviceManagementFrame::setNumberOfElements(quint8 numOfElements)
 {
     if (numOfElements > 0x0f)
         return;
+
+    d_ptr->m_serviceInformation.resize(5);
     d_ptr->m_serviceInformation.set(4,
         (d_ptr->m_serviceInformation.value(4) & 0x0f) | (numOfElements << 4));
 }
@@ -475,8 +480,7 @@ void QKnxDeviceManagementFrame::setError(QKnxNetIpCemiServer::Error error)
     switch (messageCode()) {
     case MessageCode::PropertyReadConfirmation:
     case MessageCode::PropertyWriteConfirmation: {
-        if (d_ptr->m_serviceInformation.size() < 7)
-            d_ptr->m_serviceInformation.resize(7);
+        d_ptr->m_serviceInformation.resize(7);
         d_ptr->m_serviceInformation.set(6, quint8(error));
     }
     default:
@@ -523,8 +527,7 @@ void QKnxDeviceManagementFrame::setReturnCode(QKnxNetIpCemiServer::ReturnCode co
         return;
     }
 
-    if (d_ptr->m_serviceInformation.size() < 6)
-        d_ptr->m_serviceInformation.resize(6);
+    d_ptr->m_serviceInformation.resize(6);
     d_ptr->m_serviceInformation.set(5, quint8(code));
 }
 

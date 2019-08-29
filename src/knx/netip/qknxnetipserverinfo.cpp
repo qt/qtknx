@@ -98,7 +98,9 @@ QT_BEGIN_NAMESPACE
 */
 QKnxNetIpServerInfo::QKnxNetIpServerInfo()
     : d_ptr(new QKnxNetIpServerInfoPrivate)
-{}
+{
+    qRegisterMetaType<QKnxNetIpServerInfo>();
+}
 
 /*!
     Deletes a KNXnet/IP server information object.
@@ -254,6 +256,32 @@ QKnxNetIpDib QKnxNetIpServerInfo::extendedHardware() const
 }
 
 /*!
+    \since 5.14
+
+    Returns the host address which has been used to discover the KNXnet/IP
+    server hardware.
+
+    \sa QHostAddress
+*/
+QHostAddress QKnxNetIpServerInfo::hostAddress() const
+{
+    return d_ptr->address;
+}
+
+/*!
+    \since 5.14
+
+    Returns the network interface which has been used to discover the KNXnet/IP
+    server hardware.
+
+    \sa QNetworkInterface
+*/
+QNetworkInterface QKnxNetIpServerInfo::networkInterface() const
+{
+    return d_ptr->iinterface;
+}
+
+/*!
     Constructs a copy of \a other.
 */
 QKnxNetIpServerInfo::QKnxNetIpServerInfo(const QKnxNetIpServerInfo &other)
@@ -321,16 +349,13 @@ void QKnxNetIpServerInfo::swap(QKnxNetIpServerInfo &other) Q_DECL_NOTHROW
     d_ptr.swap(other.d_ptr);
 }
 
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
 
 /*!
     \internal
 */
 QKnxNetIpServerInfo::QKnxNetIpServerInfo(const QKnxNetIpHpai &hpai, const QKnxNetIpDib &hardware,
-#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
         QKnxNetIpDib services)
-#else
-        const QKnxNetIpDib &services) // ### Qt6: pass services as const reference
-#endif
     : QKnxNetIpServerInfo()
 {
     d_ptr->hpai = hpai;
@@ -338,17 +363,29 @@ QKnxNetIpServerInfo::QKnxNetIpServerInfo(const QKnxNetIpHpai &hpai, const QKnxNe
     d_ptr->services = services;
 }
 
-
 /*!
     \internal
 */
 QKnxNetIpServerInfo::QKnxNetIpServerInfo(const QKnxNetIpHpai &hpai, const QKnxNetIpDib &hardware,
         const QKnxNetIpDib &services, const QKnxNetIpDib &tunneling, const QKnxNetIpDib &extHardware)
+    : QKnxNetIpServerInfo(hpai, hardware, services, {}, {}, tunneling, extHardware)
+{}
+
+#endif
+
+/*!
+    \internal
+*/
+QKnxNetIpServerInfo::QKnxNetIpServerInfo(const QKnxNetIpHpai &hpai, const QKnxNetIpDib &hardware,
+        const QKnxNetIpDib &services, const QHostAddress &address, const QNetworkInterface &iinterface,
+        const QKnxNetIpDib &tunneling, const QKnxNetIpDib &extHardware)
     : QKnxNetIpServerInfo()
 {
     d_ptr->hpai = hpai;
     d_ptr->hardware = hardware;
     d_ptr->services = services;
+    d_ptr->address = address;
+    d_ptr->iinterface = iinterface;
     d_ptr->tunnelingInfo = tunneling;
     d_ptr->extendedHardware = extHardware;
 }

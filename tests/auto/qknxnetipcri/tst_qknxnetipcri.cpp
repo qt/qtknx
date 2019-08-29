@@ -200,7 +200,7 @@ void tst_QKnxNetIpCri::testAdditionalData()
         .create();
     frame2 = QKnxNetIpCriProxy::builder()
         .setConnectionType(QKnxNetIp::ConnectionType::Tunnel)
-        .setAdditionalData(QKnxByteArray{ quint8(QKnxNetIp::TunnelLayer::Link), 0x00 }
+        .setAdditionalData(QKnxByteArray { quint8(QKnxNetIp::TunnelLayer::Link), 0x00 }
             + address.bytes())
         .create();
     QCOMPARE(frame, frame2);

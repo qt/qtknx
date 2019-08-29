@@ -243,6 +243,9 @@ void QKnxByteArray::clear()
 */
 void QKnxByteArray::resize(int size)
 {
+    if (size == m_bytes.size())
+        return;
+
     if (size > m_bytes.size())
         m_bytes.append(size - m_bytes.size(), 0x00);
     else

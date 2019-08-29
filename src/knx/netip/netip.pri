@@ -96,6 +96,7 @@ SOURCES += $$PWD/qknxnetip.cpp \
     $$PWD/qknxnetipsearchresponse.cpp \
     $$PWD/qknxnetipserverdescriptionagent.cpp \
     $$PWD/qknxnetipserverdiscoveryagent.cpp \
+    $$PWD/qknxnetipserverdiscoveryagent_p.cpp \
     $$PWD/qknxnetipserverinfo.cpp \
     $$PWD/qknxnetipservicefamiliesdib.cpp \
     $$PWD/qknxnetipstruct.cpp \
