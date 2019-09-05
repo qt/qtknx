@@ -156,7 +156,7 @@ QKnxNetIpRoutingIndicationProxy::Builder QKnxNetIpRoutingIndicationProxy::builde
     \code
         QKnxLinkLayerFrame linkFrame = // create a link frame ....;
         auto netIpframe = QKnxNetIpRoutingIndicationProxy::builder()
-            .setLinkLayerFrame(linkFrame)
+            .setCemi(linkFrame)
             .create();
     \endcode
 
