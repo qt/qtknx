@@ -39,6 +39,7 @@
 #include <QtKnx/qknxnetiptunnelinginfodib.h>
 
 #include <QtNetwork/qhostaddress.h>
+#include <QtNetwork/qnetworkinterface.h>
 
 QT_BEGIN_NAMESPACE
 
@@ -46,6 +47,7 @@ struct QKnxNetIpServerInfoPrivate;
 
 class Q_KNX_EXPORT QKnxNetIpServerInfo final
 {
+    friend class Discoverer;
     friend class QKnxNetIpServerDiscoveryAgentPrivate;
     friend class QKnxNetIpServerDescriptionAgentPrivate;
 
@@ -72,6 +74,9 @@ public:
     QKnxNetIpDib tunnelingInfo() const;
     QKnxNetIpDib extendedHardware() const;
 
+    QHostAddress hostAddress() const;
+    QNetworkInterface networkInterface() const;
+
     QKnxNetIpServerInfo(const QKnxNetIpServerInfo &other);
     QKnxNetIpServerInfo &operator=(const QKnxNetIpServerInfo &other);
 
@@ -84,16 +89,23 @@ public:
     void swap(QKnxNetIpServerInfo &other) Q_DECL_NOTHROW;
 
 private:
-    QKnxNetIpServerInfo(const QKnxNetIpHpai &hpai, const QKnxNetIpDib &hardware,
 #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+    QKnxNetIpServerInfo(const QKnxNetIpHpai &hpai, const QKnxNetIpDib &hardware,
         QKnxNetIpDib services);
-#else
-        const QKnxNetIpDib &services);
-#endif
 
     QKnxNetIpServerInfo(const QKnxNetIpHpai &hpai, const QKnxNetIpDib &hardware,
         const QKnxNetIpDib &services, const QKnxNetIpDib &tunnelingInfo,
         const QKnxNetIpDib &extendedHardware);
+#endif
+
+    QKnxNetIpServerInfo(const QKnxNetIpHpai &hpai,
+        const QKnxNetIpDib &hardware,
+        const QKnxNetIpDib &services,
+        const QHostAddress &hostAddress,
+        const QNetworkInterface &iinterface,
+        const QKnxNetIpDib &tunnelingInfo = {},
+        const QKnxNetIpDib &extendedHardware = {});
+
     explicit QKnxNetIpServerInfo(QKnxNetIpServerInfoPrivate &dd);
 
 private:
