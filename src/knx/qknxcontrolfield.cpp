@@ -198,9 +198,9 @@ const std::bitset<8> gPriorityMask = 0x0c;
 */
 
 /*!
-    \fn QKnxControlField::setRepeat(QKnxControlField::Repeat repeat)
+    \fn QKnxControlField::setRepeat(QKnxControlField::Repeat rep)
 
-    Sets the repetition flag to \a repeat.
+    Sets the repetition flag to \a rep.
 */
 
 /*!
@@ -219,9 +219,9 @@ const std::bitset<8> gPriorityMask = 0x0c;
 */
 
 /*!
-    \fn QKnxControlField::setConfirm(QKnxControlField::Confirm confirm)
+    \fn QKnxControlField::setConfirm(QKnxControlField::Confirm conf)
 
-    Sets the confirm flag to \a confirm.
+    Sets the confirm flag to \a conf.
 */
 
 /*!
