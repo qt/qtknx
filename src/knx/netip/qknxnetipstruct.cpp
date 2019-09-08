@@ -156,17 +156,17 @@ QT_BEGIN_NAMESPACE
 */
 
 /*!
-    \fn template <typename CodeType> QKnxNetIpStruct<CodeType>::QKnxNetIpStruct(CodeType code, const QKnxByteArray &data = {})
+    \fn template <typename CodeType> QKnxNetIpStruct<CodeType>::QKnxNetIpStruct(CodeType codeType, const QKnxByteArray &dataField = {})
 
-    Creates a new KNXnet/IP structure with the specified \a code and payload
-    \a data.
+    Creates a new KNXnet/IP structure with the specified \a codeType and payload
+    \a dataField.
 */
 
 /*!
-    \fn template <typename CodeType> QKnxNetIpStruct<CodeType>::QKnxNetIpStruct(const QKnxNetIpStructHeader<CodeType> &header, const QKnxByteArray &data = {})
+    \fn template <typename CodeType> QKnxNetIpStruct<CodeType>::QKnxNetIpStruct(const QKnxNetIpStructHeader<CodeType> &headerField, const QKnxByteArray &dataField = {})
 
-    Creates a new KNXnet/IP structure with the specified \a header and payload
-    \a data.
+    Creates a new KNXnet/IP structure with the specified \a headerField and payload
+    \a dataField.
 
     The header is expected to be fully set up and all values describing the
     payload are expected to match the specified payload.
@@ -238,16 +238,16 @@ QT_BEGIN_NAMESPACE
 */
 
 /*!
-    \fn template <typename CodeType> QKnxNetIpStruct<CodeType>::setData(const QKnxByteArray &data)
+    \fn template <typename CodeType> QKnxNetIpStruct<CodeType>::setData(const QKnxByteArray &dataField)
 
-    Sets the data stored in the KNXnet/IP structure to \a data and updates the
+    Sets the data stored in the KNXnet/IP structure to \a dataField and updates the
     data size accordingly.
 */
 
 /*!
-    \fn template <typename CodeType> QKnxNetIpStruct<CodeType>::setHeader(const QKnxNetIpStructHeader<CodeType> &header)
+    \fn template <typename CodeType> QKnxNetIpStruct<CodeType>::setHeader(const QKnxNetIpStructHeader<CodeType> &headerField)
 
-    Sets the header stored in the KNXnet/IP structure to \a header.
+    Sets the header stored in the KNXnet/IP structure to \a headerField.
 */
 
 /*!

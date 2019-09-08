@@ -92,11 +92,11 @@ public:
     void resize(int size);
 
     inline quint8 at(int i) const { return m_bytes.at(i); }
-    inline void set(int i, quint8 value) { m_bytes[i] = value; }
+    inline void set(int i, quint8 val) { m_bytes[i] = val; }
 
-    inline void setValue(int i, quint8 value)
+    inline void setValue(int i, quint8 val)
     {
-        if (i >= 0 && i < m_bytes.size()) m_bytes[i] = value;
+        if (i >= 0 && i < m_bytes.size()) m_bytes[i] = val;
     }
     inline quint8 value(int i, quint8 defaultValue = {}) const
     {
