@@ -1,0 +1,272 @@
+# Generated from knx.pro.
+
+#####################################################################
+## Knx Module:
+#####################################################################
+
+add_qt_module(Knx
+    SOURCES
+        core/qknxbytearray.cpp core/qknxbytearray.h
+        dpt/qknx1bit.cpp
+        dpt/qknx1bitcontrolled.cpp
+        dpt/qknx1byte.cpp
+        dpt/qknx2bitset.cpp
+        dpt/qknx2bytefloat.cpp
+        dpt/qknx2bytesignedvalue.cpp
+        dpt/qknx2byteunsignedvalue.cpp
+        dpt/qknx32bitset.cpp
+        dpt/qknx3bitcontrolled.cpp
+        dpt/qknx4bytefloat.cpp
+        dpt/qknx4bytesignedvalue.cpp
+        dpt/qknx4byteunsignedvalue.cpp
+        dpt/qknx8bitset.cpp
+        dpt/qknx8bitsignedvalue.cpp
+        dpt/qknx8bitunsignedvalue.cpp
+        dpt/qknxchar.cpp
+        dpt/qknxcharstring.cpp
+        dpt/qknxdatapointtype.cpp
+        dpt/qknxdatapointtypefactory.cpp
+        dpt/qknxdatetime.cpp
+        dpt/qknxelectricalenergy.cpp
+        dpt/qknxentranceaccess.cpp
+        dpt/qknxscene.cpp
+        dpt/qknxstatusmode3.cpp
+        dpt/qknxtime.cpp
+        dpt/qknxutf8string.cpp
+        dpt/qknxvarstring.cpp
+        ets/manufacturers.cpp
+        knxproj/qknxbuildings.cpp
+        knxproj/qknxdeviceinstance.cpp
+        knxproj/qknxgroupaddresses.cpp
+        knxproj/qknxgroupaddressinfo.cpp knxproj/qknxgroupaddressinfo.h
+        knxproj/qknxgroupaddressinfos.cpp knxproj/qknxgroupaddressinfos.h
+        knxproj/qknxinstallation.cpp
+        knxproj/qknxprojectinformation.cpp
+        knxproj/qknxprojectroot.cpp
+        knxproj/qknxprojectutils.cpp
+        knxproj/qknxtopology.cpp
+        knxproj/qzip.cpp
+        manufacturers.h
+        netip/qknxnetip.cpp
+        netip/qknxnetipconfigdib.cpp
+        netip/qknxnetipconnectionheader.cpp
+        netip/qknxnetipconnectionstaterequest.cpp
+        netip/qknxnetipconnectionstateresponse.cpp
+        netip/qknxnetipconnectrequest.cpp
+        netip/qknxnetipconnectresponse.cpp
+        netip/qknxnetipcrd.cpp
+        netip/qknxnetipcri.cpp
+        netip/qknxnetipcurrentconfigdib.cpp
+        netip/qknxnetipdescriptionrequest.cpp
+        netip/qknxnetipdescriptionresponse.cpp
+        netip/qknxnetipdeviceconfigurationacknowledge.cpp
+        netip/qknxnetipdeviceconfigurationrequest.cpp
+        netip/qknxnetipdevicedib.cpp
+        netip/qknxnetipdevicemanagement.cpp
+        netip/qknxnetipdisconnectrequest.cpp
+        netip/qknxnetipdisconnectresponse.cpp
+        netip/qknxnetipendpointconnection.cpp
+        netip/qknxnetipextendeddevicedib.cpp
+        netip/qknxnetipframe.cpp
+        netip/qknxnetipframeheader.cpp
+        netip/qknxnetiphpai.cpp
+        netip/qknxnetipknxaddressesdib.cpp
+        netip/qknxnetipmanufacturerdib.cpp
+        netip/qknxnetiprouter.cpp netip/qknxnetiprouter_p.cpp
+        netip/qknxnetiproutingbusy.cpp
+        netip/qknxnetiproutingindication.cpp
+        netip/qknxnetiproutinglostmessage.cpp
+        netip/qknxnetiproutingsystembroadcast.cpp
+        netip/qknxnetipsearchrequest.cpp
+        netip/qknxnetipsearchresponse.cpp
+        netip/qknxnetipsecureconfiguration.cpp
+        netip/qknxnetipsecuredservicefamiliesdib.cpp
+        netip/qknxnetipsecurewrapper.cpp
+        netip/qknxnetipserverdescriptionagent.cpp
+        netip/qknxnetipserverdiscoveryagent.cpp netip/qknxnetipserverdiscoveryagent_p.cpp
+        netip/qknxnetipserverinfo.cpp
+        netip/qknxnetipservicefamiliesdib.cpp
+        netip/qknxnetipsessionauthenticate.cpp
+        netip/qknxnetipsessionrequest.cpp
+        netip/qknxnetipsessionresponse.cpp
+        netip/qknxnetipsessionstatus.cpp
+        netip/qknxnetipsrp.cpp
+        netip/qknxnetipstruct.cpp
+        netip/qknxnetipstructheader.cpp
+        netip/qknxnetiptimernotify.cpp
+        netip/qknxnetiptunnel.cpp
+        netip/qknxnetiptunnelingacknowledge.cpp
+        netip/qknxnetiptunnelingfeatureget.cpp
+        netip/qknxnetiptunnelingfeatureinfo.cpp
+        netip/qknxnetiptunnelingfeatureresponse.cpp
+        netip/qknxnetiptunnelingfeatureset.cpp
+        netip/qknxnetiptunnelinginfodib.cpp
+        netip/qknxnetiptunnelingrequest.cpp
+        qknx1bit.h
+        qknx1bitcontrolled.h
+        qknx1byte.h
+        qknx2bitset.h
+        qknx2bytefloat.h
+        qknx2bytesignedvalue.h
+        qknx2byteunsignedvalue.h
+        qknx32bitset.h
+        qknx3bitcontrolled.h
+        qknx4bytefloat.h
+        qknx4bytesignedvalue.h
+        qknx4byteunsignedvalue.h
+        qknx8bitset.h
+        qknx8bitsignedvalue.h
+        qknx8bitunsignedvalue.h
+        qknxadditionalinfo.cpp qknxadditionalinfo.h
+        qknxaddress.cpp qknxaddress.h
+        qknxbuilderdata_p.h
+        qknxbuildings_p.h
+        qknxchar.h
+        qknxcharstring.h
+        qknxcontrolfield.cpp qknxcontrolfield.h
+        qknxdatapointtype.h qknxdatapointtype_p.h
+        qknxdatapointtypefactory.h
+        qknxdatetime.h
+        qknxdeviceinstance_p.h
+        qknxdevicemanagementframe.cpp qknxdevicemanagementframe.h
+        qknxdevicemanagementframefactory.cpp qknxdevicemanagementframefactory.h
+        qknxelectricalenergy.h
+        qknxentranceaccess.h
+        qknxextendedcontrolfield.cpp qknxextendedcontrolfield.h
+        qknxgroupaddresses_p.h
+        qknxinstallation_p.h
+        qknxinterfaceobjectproperty.cpp qknxinterfaceobjectproperty.h
+        qknxinterfaceobjectpropertydatatype.cpp qknxinterfaceobjectpropertydatatype.h
+        qknxinterfaceobjecttype.cpp qknxinterfaceobjecttype.h
+        qknxlinklayerframe.cpp qknxlinklayerframe.h
+        qknxlinklayerframebuilder.cpp qknxlinklayerframebuilder.h
+        qknxnamespace.cpp qknxnamespace.h
+        qknxnetip.h
+        qknxnetipconfigdib.h
+        qknxnetipconnectionheader.h
+        qknxnetipconnectionstaterequest.h
+        qknxnetipconnectionstateresponse.h
+        qknxnetipconnectrequest.h
+        qknxnetipconnectresponse.h
+        qknxnetipcrd.h
+        qknxnetipcri.h
+        qknxnetipcurrentconfigdib.h
+        qknxnetipdescriptionrequest.h
+        qknxnetipdescriptionresponse.h
+        qknxnetipdeviceconfigurationacknowledge.h
+        qknxnetipdeviceconfigurationrequest.h
+        qknxnetipdevicedib.h
+        qknxnetipdevicemanagement.h
+        qknxnetipdisconnectrequest.h
+        qknxnetipdisconnectresponse.h
+        qknxnetipendpointconnection.h qknxnetipendpointconnection_p.h
+        qknxnetipextendeddevicedib.h
+        qknxnetipframe.h
+        qknxnetipframeheader.h
+        qknxnetiphpai.h
+        qknxnetipknxaddressesdib.h
+        qknxnetipmanufacturerdib.h
+        qknxnetiprouter.h
+        qknxnetiproutingbusy.h
+        qknxnetiproutingindication.h
+        qknxnetiproutinglostmessage.h
+        qknxnetiproutingsystembroadcast.h
+        qknxnetipsearchrequest.h
+        qknxnetipsearchresponse.h
+        qknxnetipsecureconfiguration.h qknxnetipsecureconfiguration_p.h
+        qknxnetipsecuredservicefamiliesdib.h
+        qknxnetipsecurewrapper.h
+        qknxnetipserverdescriptionagent.h qknxnetipserverdescriptionagent_p.h
+        qknxnetipserverdiscoveryagent.h qknxnetipserverdiscoveryagent_p.h
+        qknxnetipserverinfo.h qknxnetipserverinfo_p.h
+        qknxnetipservicefamiliesdib.h
+        qknxnetipsessionauthenticate.h
+        qknxnetipsessionrequest.h
+        qknxnetipsessionresponse.h
+        qknxnetipsessionstatus.h
+        qknxnetipsrp.h
+        qknxnetipstruct.h
+        qknxnetipstructheader.h
+        qknxnetiptestrouter_p.h
+        qknxnetiptimernotify.h
+        qknxnetiptunnel.h
+        qknxnetiptunnelingacknowledge.h
+        qknxnetiptunnelingfeatureget.h
+        qknxnetiptunnelingfeatureinfo.h
+        qknxnetiptunnelingfeatureresponse.h
+        qknxnetiptunnelingfeatureset.h
+        qknxnetiptunnelinginfodib.h
+        qknxnetiptunnelingrequest.h
+        qknxprojectinformation_p.h
+        qknxprojectroot_p.h
+        qknxprojectutils_p.h
+        qknxscene.h
+        qknxstatusmode3.h
+        qknxtime.h
+        qknxtopology_p.h
+        qknxtpdu.cpp qknxtpdu.h
+        qknxtpdufactory_p.h
+        qknxtpdufactory_broadcast.cpp
+        qknxtpdufactory_multicast.cpp
+        qknxtpdufactory_p2p.cpp
+        qknxtraits.h
+        qknxutf8string.h
+        qknxutils.h
+        qknxvarstring.h
+        qtknxglobal.h qtknxglobal_p.h
+        qzipreader_p.h
+        qzipwriter_p.h
+        ssl/qknxcryptographicengine.cpp ssl/qknxcryptographicengine.h
+        ssl/qknxkeyring.cpp ssl/qknxkeyring_p.h
+        ssl/qknxsecurekey.cpp ssl/qknxsecurekey.h
+        ssl/qknxssl_p.h
+        ssl/qknxssl_openssl.cpp
+    DEFINES
+        QT_NO_CAST_FROM_ASCII
+    INCLUDE_DIRECTORIES
+        core
+        dpt
+        ets
+        knxproj
+        netip
+    LIBRARIES
+        Qt::CorePrivate
+        Qt::Network
+        Qt::NetworkPrivate
+        ZLIB::ZLIB
+    PUBLIC_LIBRARIES
+        Qt::Core
+)
+
+#### Keys ignored in scope 1:.:.:knx.pro:<TRUE>:
+# _LOADED = "qt_module"
+
+## Scopes:
+#####################################################################
+
+extend_target(Knx CONDITION QT_FEATURE_opensslv11
+    SOURCES
+        ssl/qsslsocket_openssl11_symbols_p.h
+        ssl/qsslsocket_openssl_symbols.cpp ssl/qsslsocket_openssl_symbols_p.h
+    DEFINES
+        OPENSSL_API_COMPAT=0x10100000L
+)
+
+extend_target(Knx CONDITION QT_FEATURE_openssl_linked AND QT_FEATURE_opensslv11
+    LIBRARIES
+        OpenSSL::SSL
+)
+
+extend_target(Knx CONDITION QT_FEATURE_opensslv11 AND NOT QT_FEATURE_openssl_linked
+    LIBRARIES
+        OpenSSL::SSL_nolink
+)
+
+extend_target(Knx CONDITION QT_FEATURE_opensslv11 AND WIN32
+    LIBRARIES
+        crypt32
+)
+add_qt_docs(
+    doc/qtknx.qdocconf
+)
+

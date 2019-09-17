@@ -1,0 +1,9 @@
+add_qt_test(tst_qknxtpdufactory
+    GUI
+    SOURCES
+        tst_qknxtpdufactory.cpp
+    LIBRARIES
+        Qt::KnxPrivate
+    PUBLIC_LIBRARIES
+        Qt::Knx
+)

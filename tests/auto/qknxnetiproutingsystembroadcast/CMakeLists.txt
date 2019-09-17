@@ -1,0 +1,10 @@
+add_qt_test(tst_qknxnetiproutingsystembroadcast
+    GUI
+    SOURCES
+        tst_qknxnetiproutingsystembroadcast.cpp
+    LIBRARIES
+        Qt::KnxPrivate
+    PUBLIC_LIBRARIES
+        Qt::Knx
+        Qt::Network
+)

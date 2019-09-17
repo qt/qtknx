@@ -1,0 +1,9 @@
+add_qt_test(tst_qknxtunnelframefactory
+    GUI
+    SOURCES
+        tst_qknxtunnelframefactory.cpp
+    LIBRARIES
+        Qt::KnxPrivate
+    PUBLIC_LIBRARIES
+        Qt::Knx
+)

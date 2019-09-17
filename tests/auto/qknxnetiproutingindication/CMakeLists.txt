@@ -1,0 +1,10 @@
+add_qt_test(tst_qknxnetiproutingindication
+    GUI
+    SOURCES
+        tst_qknxnetiproutingindication.cpp
+    LIBRARIES
+        Qt::KnxPrivate
+    PUBLIC_LIBRARIES
+        Qt::Knx
+        Qt::Network
+)
