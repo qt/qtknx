@@ -55,7 +55,7 @@ int main(int argc, char *argv[])
     bool verbose = cliParser.isSet(verboseOption);
 
     if (!cliParser.isSet(projFilePathOption)) {
-        qInfo() << "Error: Missing project file name" << endl;
+        qInfo() << "Error: Missing project file name" << Qt::endl;
         cliParser.showHelp(EXIT_FAILURE);
     }
 
@@ -93,7 +93,7 @@ int main(int argc, char *argv[])
                     qInfo().noquote() << QString::fromLatin1("      %1: %2")
                                          .arg(addInfo.name()).arg(addInfo.address().toString());
             }
-            qInfo() << endl;
+            qInfo() << Qt::endl;
         }
     }
 

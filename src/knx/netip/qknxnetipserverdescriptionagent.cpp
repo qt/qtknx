@@ -213,7 +213,11 @@ void QKnxNetIpServerDescriptionAgentPrivate::setupSocket()
                 continue;
 
             setAndEmitServerDescriptionReceived({ m_server, response.deviceHardware(),
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
                 response.supportedFamilies() });
+#else
+                response.supportedFamilies(), {}, {} });
+#endif
         }
     });
 }
