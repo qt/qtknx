@@ -327,7 +327,7 @@ QKnxNetIpFrame dummyRoutingIndication(QKnxAddress dst, quint8 hopCount = 6)
         .setMedium(QKnx::MediumType::NetIP)
         .createFrame();
     return QKnxNetIpRoutingIndicationProxy::builder()
-        .setLinkLayerFrame(frame)
+        .setCemi(frame)
         .create();
 }
 
