@@ -46,22 +46,22 @@ public:
     QKnxNetIpStructHeader() = default;
     ~QKnxNetIpStructHeader() = default;
 
-    explicit QKnxNetIpStructHeader(CodeType code)
-        : QKnxNetIpStructHeader(code, 0)
+    explicit QKnxNetIpStructHeader(CodeType c)
+        : QKnxNetIpStructHeader(c, 0)
     {}
 
-    QKnxNetIpStructHeader(CodeType code, quint16 dataSize)
+    QKnxNetIpStructHeader(CodeType c, quint16 dataFieldSize)
     {
-        setCode(code);
-        setDataSize(dataSize);
+        setCode(c);
+        setDataSize(dataFieldSize);
     }
 
     template <typename T = CodeType,
         typename = typename std::enable_if<is_type<T, QKnxNetIp::SearchParameterType>::value>::type>
-    QKnxNetIpStructHeader(CodeType code, quint16 dataSize, bool mandatory)
+    QKnxNetIpStructHeader(CodeType c, quint16 dSize, bool mandatory)
     {
-        setCode(code);
-        setDataSize(dataSize);
+        setCode(c);
+        setDataSize(dSize);
         setMandatory(mandatory);
     }
 
@@ -97,21 +97,21 @@ public:
         return totalSize() - size();
     }
 
-    void setDataSize(quint16 dataSize)
+    void setDataSize(quint16 dataFieldSize)
     {
         // 2.1.3 Structures: If the amount of data exceeds 252 octets, the length octet shall
         // be 0xff and the next two octets shall contain the length as a 16 bit value. Then the
         // structure data shall start at the fifth octet.
 
         const auto tmp = code();
-        setSize(dataSize > 0xfc ? 4 : 2);
+        setSize(dataFieldSize > 0xfc ? 4 : 2);
 
-        if (dataSize > 0xfc) {
+        if (dataFieldSize > 0xfc) {
             setByte(0, 0xff);
-            setByte(1, quint8((dataSize + 4) >> 8));
-            setByte(2, quint8(dataSize + 4));
+            setByte(1, quint8((dataFieldSize + 4) >> 8));
+            setByte(2, quint8(dataFieldSize + 4));
         } else {
-            setByte(0, quint8(dataSize + 2));
+            setByte(0, quint8(dataFieldSize + 2));
         }
         setCode(tmp);
     }
@@ -121,9 +121,9 @@ public:
         return codeType();
     }
 
-    void setCode(CodeType code)
+    void setCode(CodeType c)
     {
-        setCodeType(code);
+        setCodeType(c);
     }
 
     quint8 byte(quint8 index) const
@@ -197,9 +197,9 @@ public:
     }
 
 private:
-    void setSize(quint8 size)
+    void setSize(quint8 structSize)
     {
-        m_bytes[0] = size;
+        m_bytes[0] = structSize;
     }
 
     void setByte(quint8 index, quint8 value)
@@ -227,24 +227,24 @@ private:
 
     template<class T = CodeType>
     typename std::enable_if<is_type<T, QKnxNetIp::SearchParameterType>::value, void>::type
-        /* void */ setCodeType(CodeType code)
+        /* void */ setCodeType(CodeType c)
     {
         if (isNull()) {
             setSize(2);
             setByte(0, 2);
         }
-        setByte(size() - 1, (quint8(code) & ~(1 << 7)) | (quint8(isMandatory()) << 7));
+        setByte(size() - 1, (quint8(c) & ~(1 << 7)) | (quint8(isMandatory()) << 7));
     }
 
     template<class T = CodeType>
     typename std::enable_if<!is_type<T, QKnxNetIp::SearchParameterType>::value, void>::type
-        /* void */ setCodeType(CodeType code)
+        /* void */ setCodeType(CodeType c)
     {
         if (isNull()) {
             setSize(2);
             setByte(0, 2);
         }
-        setByte(size() - 1, quint8(code));
+        setByte(size() - 1, quint8(c));
     }
 
     template<class T = CodeType>

@@ -6,8 +6,3 @@ requires(!integrity)
 
 load(configure)
 load(qt_parts)
-
-include($$OUT_PWD/src/knx/qtknx-config.pri)
-QT_FOR_CONFIG += knx-private
-
-requires(qtConfig(compiletest))
