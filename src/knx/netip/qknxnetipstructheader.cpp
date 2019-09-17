@@ -64,19 +64,19 @@ QT_BEGIN_NAMESPACE
 */
 
 /*!
-    \fn template <typename CodeType> QKnxNetIpStructHeader<CodeType>::QKnxNetIpStructHeader(CodeType code)
+    \fn template <typename CodeType> QKnxNetIpStructHeader<CodeType>::QKnxNetIpStructHeader(CodeType codeType)
 
     Constructs a valid header object and sets the KNXnet/IP structure identifier
-    to \a code.
+    to \a codeType.
 
     \sa isValid(), code(), setCode()
 */
 
 /*!
-    \fn template <typename CodeType> QKnxNetIpStructHeader<CodeType>::QKnxNetIpStructHeader(CodeType code, quint16 dataSize)
+    \fn template <typename CodeType> QKnxNetIpStructHeader<CodeType>::QKnxNetIpStructHeader(CodeType codeType, quint16 dataFieldSize)
 
     Constructs a valid header object and sets the KNXnet/IP structure identifier
-    to \a code and the data size to \a dataSize and updates the header size and
+    to \a codeType and the data size to \a dataFieldSize and updates the header size and
     total size accordingly.
 
     \sa isValid(), code(), setCode(), dataSize(), setDataSize()
@@ -143,9 +143,9 @@ QT_BEGIN_NAMESPACE
 */
 
 /*!
-    \fn template <typename CodeType> void QKnxNetIpStructHeader<CodeType>::setDataSize(quint16 dataSize)
+    \fn template <typename CodeType> void QKnxNetIpStructHeader<CodeType>::setDataSize(quint16 dataFieldSize)
 
-    Sets the KNXnet/IP structure data size to \a dataSize and updates the
+    Sets the KNXnet/IP structure data size to \a dataFieldSize and updates the
     header and total size accordingly.
 */
 
@@ -156,9 +156,9 @@ QT_BEGIN_NAMESPACE
 */
 
 /*!
-    \fn template <typename CodeType> void QKnxNetIpStructHeader<CodeType>::setCode(CodeType code)
+    \fn template <typename CodeType> void QKnxNetIpStructHeader<CodeType>::setCode(CodeType codeType)
 
-    Sets the KNXnet/IP structure's code identifier to \a code.
+    Sets the KNXnet/IP structure's code identifier to \a codeType.
 */
 
 /*!

@@ -77,8 +77,9 @@ public:
     Q_ENUM(Repeat)
     QKnxControlField::Repeat repeat() const // ### Qt6: Replace byte() with m_ctrl1
         { return static_cast<Repeat> (quint8(testBit(byte(), 5))); }
-    void setRepeat(QKnxControlField::Repeat repeat) // ### Qt6: Replace byte() with m_ctrl1
-        { m_ctrl1 = setBit(byte(), bool(static_cast<int> (repeat)), 5); }
+    void setRepeat(QKnxControlField::Repeat rep) // ### Qt6: Replace byte() with m_ctrl1
+        { m_ctrl1 = setBit(byte(), bool(static_cast<int> (rep)), 5); }
+
 
     enum class Broadcast : quint8
     {
@@ -121,8 +122,8 @@ public:
     Q_ENUM(Confirm)
     QKnxControlField::Confirm confirm() const // ### Qt6: Replace byte() with m_ctrl1
         { return static_cast<Confirm> (quint8(testBit(byte(), 0))); }
-    void setConfirm(QKnxControlField::Confirm confirm) // ### Qt6: Replace byte() with m_ctrl1
-        { m_ctrl1 = setBit(byte(), bool(static_cast<int> (confirm)), 0); }
+    void setConfirm(QKnxControlField::Confirm conf) // ### Qt6: Replace byte() with m_ctrl1
+        { m_ctrl1 = setBit(byte(), bool(static_cast<int> (conf)), 0); }
 
     quint8 byte() const { return quint8(m_ctrl1.to_ulong()); }
     QKnxByteArray bytes() const { return { byte() }; }

@@ -262,18 +262,18 @@ void QKnxByteArray::resize(int size)
 */
 
 /*!
-    \fn void QKnxByteArray::set(int i, quint8 value)
+    \fn void QKnxByteArray::set(int i, quint8 val)
 
-    Sets the character at the index position \a i in the byte array to \a value.
+    Sets the character at the index position \a i in the byte array to \a val.
 
     \a i must be a valid index position in the byte array (that is, between
     0 and the value returned by size()).
 */
 
 /*!
-    \fn void QKnxByteArray::setValue(int i, quint8 value)
+    \fn void QKnxByteArray::setValue(int i, quint8 val)
 
-    Sets the value at the index position \a i in the byte array to \a value.
+    Sets the value at the index position \a i in the byte array to \a val.
 
     If the index \a i is out of bounds, the function does nothing. If you
     are certain that \a i is within bounds, you can use set() instead, which
