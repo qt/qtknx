@@ -188,7 +188,7 @@ int main(int argc, char *argv[])
 
     const auto servers = agent.discoveredServers();
     if (servers.size() > 0) {
-        qInfo().noquote() << endl << QString::fromLatin1("%1 server(s) found on the network.")
+        qInfo().noquote() << Qt::endl << QString::fromLatin1("%1 server(s) found on the network.")
             .arg(servers.size());
         for (auto server : servers) {
             qInfo().noquote() << QString::fromLatin1("  Network interface: %1, address: %2")

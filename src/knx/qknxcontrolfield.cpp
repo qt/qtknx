@@ -198,9 +198,9 @@ const std::bitset<8> gPriorityMask = 0x0c;
 */
 
 /*!
-    \fn QKnxControlField::setRepeat(QKnxControlField::Repeat repeat)
+    \fn QKnxControlField::setRepeat(QKnxControlField::Repeat rep)
 
-    Sets the repetition flag to \a repeat.
+    Sets the repetition flag to \a rep.
 */
 
 /*!
@@ -219,9 +219,9 @@ const std::bitset<8> gPriorityMask = 0x0c;
 */
 
 /*!
-    \fn QKnxControlField::setConfirm(QKnxControlField::Confirm confirm)
+    \fn QKnxControlField::setConfirm(QKnxControlField::Confirm conf)
 
-    Sets the confirm flag to \a confirm.
+    Sets the confirm flag to \a conf.
 */
 
 /*!
@@ -319,7 +319,7 @@ QKnxControlField::Builder QKnxControlField::builder()
 QDebug operator<<(QDebug debug, const QKnxControlField &field)
 {
     QDebugStateSaver _(debug);
-    debug.nospace().noquote() << "0x" << hex << qSetFieldWidth(2) << qSetPadChar(QLatin1Char('0'))
+    debug.nospace().noquote() << "0x" << Qt::hex << qSetFieldWidth(2) << qSetPadChar(QLatin1Char('0'))
         << field.bytes();
     return debug;
 }
