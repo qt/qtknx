@@ -77,7 +77,7 @@ void tst_QKnxNetIpKnxAddressesDib::testConstructorWithOneArgument()
     QKnxNetIpKnxAddressesDibProxy view(addresses);
     QCOMPARE(view.isValid(), true);
     QCOMPARE(view.descriptionType(), QKnxNetIp::DescriptionType::KnxAddresses);
-    QCOMPARE(view.individualAddresses(), { QKnxAddress::createIndividual(1, 1, 1) });
+    QCOMPARE(view.individualAddresses(), QVector<QKnxAddress> { QKnxAddress::createIndividual(1, 1, 1) });
 }
 
 void tst_QKnxNetIpKnxAddressesDib::testConstructorWithTwoArguments()

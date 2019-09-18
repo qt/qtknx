@@ -421,8 +421,8 @@ QDebug operator<<(QDebug debug, const QKnxAddress &address)
     QDebugStateSaver _(debug);
     if (address.isValid()) {
         const auto rawData = address.bytes();
-        debug.nospace().noquote() << "0x" << hex << qSetFieldWidth(2) << qSetPadChar(QLatin1Char('0'))
-            << rawData.at(0) << hex << rawData.at(1);
+        debug.nospace().noquote() << "0x" << Qt::hex << qSetFieldWidth(2)
+            << qSetPadChar(QLatin1Char('0')) << rawData.at(0) << Qt::hex << rawData.at(1);
     } else {
          debug.nospace().noquote() << "0x1nv4l1d";
     }

@@ -190,7 +190,7 @@ void tst_QKnxNetIpCri::testAdditionalData()
     QKnxNetIpCriProxy cri(frame);
     QCOMPARE(cri.isValid(), true);
     QCOMPARE(cri.isExtended(), false);
-    QCOMPARE(cri.individualAddress(), {});
+    QCOMPARE(cri.individualAddress(), QKnxAddress{});
 
     QKnxAddress address { QKnxAddress::Type::Individual, 2013 };
     frame = QKnxNetIpCriProxy::builder()

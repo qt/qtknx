@@ -142,7 +142,7 @@ bool QKnxGroupAddressInfosPrivate::readProject(const QKnxProject &project)
         }
         projects.insert(project.Id, info);
     } else {
-        projects.insert(project.Id, {}); // projects can have empty installations
+        projects.insert(project.Id, { QString(), {} }); // projects can have empty installations
     }
 
     return status == QKnxGroupAddressInfos::Status::NoError;
@@ -369,7 +369,7 @@ QVector<QString> QKnxGroupAddressInfos::projectIds() const
 */
 QString QKnxGroupAddressInfos::projectName(const QString &projectId) const
 {
-    return d_ptr->projects.value(projectId, {}).name;
+    return d_ptr->projects.value(projectId, { QString(), {} }).name;
 }
 
 /*!
@@ -377,7 +377,7 @@ QString QKnxGroupAddressInfos::projectName(const QString &projectId) const
 */
 QVector<QString> QKnxGroupAddressInfos::installations(const QString &projectId) const
 {
-    return d_ptr->projects.value(projectId, {}).installations.keys().toVector();
+    return d_ptr->projects.value(projectId, { QString(), {} }).installations.keys().toVector();
 }
 
 /*!
@@ -386,7 +386,7 @@ QVector<QString> QKnxGroupAddressInfos::installations(const QString &projectId) 
 */
 qint32 QKnxGroupAddressInfos::infoCount(const QString &projectId, const QString &installation) const
 {
-    const auto installations = d_ptr->projects.value(projectId, {}).installations;
+    const auto installations = d_ptr->projects.value(projectId, { QString(), {} }).installations;
     if (installations.isEmpty())
         return -1;
 
@@ -404,7 +404,7 @@ QVector<QKnxGroupAddressInfo> QKnxGroupAddressInfos::addressInfos(const QString 
 {
     if (projectId.isEmpty())
         return {};
-    return d_ptr->projects.value(projectId, {}).installations.value(installation);
+    return d_ptr->projects.value(projectId, { QString(), {} }).installations.value(installation);
 }
 
 /*!
