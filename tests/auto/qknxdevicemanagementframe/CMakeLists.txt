@@ -1,5 +1,10 @@
-add_qt_test(tst_qknxdevicemanagementframe
-    GUI
+# Generated from qknxdevicemanagementframe.pro.
+
+#####################################################################
+## tst_qknxdevicemanagementframe Test:
+#####################################################################
+
+qt_add_test(tst_qknxdevicemanagementframe
     SOURCES
         tst_qknxdevicemanagementframe.cpp
     PUBLIC_LIBRARIES

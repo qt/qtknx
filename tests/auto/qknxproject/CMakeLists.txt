@@ -1,5 +1,10 @@
-add_qt_test(tst_qknxproject
-    GUI
+# Generated from qknxproject.pro.
+
+#####################################################################
+## tst_qknxproject Test:
+#####################################################################
+
+qt_add_test(tst_qknxproject
     SOURCES
         tst_qknxproject.cpp
     LIBRARIES
@@ -19,9 +24,10 @@ set(project_resource_files
     "data/unassigneddevices.xml"
 )
 
-add_qt_resource(tst_qknxproject "project"
+qt_add_resource(tst_qknxproject "project"
     PREFIX
         "/"
     FILES
         ${project_resource_files}
 )
+

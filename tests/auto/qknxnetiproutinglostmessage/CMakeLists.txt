@@ -1,5 +1,10 @@
-add_qt_test(tst_qknxnetiproutinglostmessage
-    GUI
+# Generated from qknxnetiproutinglostmessage.pro.
+
+#####################################################################
+## tst_qknxnetiproutinglostmessage Test:
+#####################################################################
+
+qt_add_test(tst_qknxnetiproutinglostmessage
     SOURCES
         tst_qknxnetiproutinglostmessage.cpp
     PUBLIC_LIBRARIES

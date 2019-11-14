@@ -1,5 +1,10 @@
-add_qt_test(tst_qknxgroupaddressinfo
-    GUI
+# Generated from qknxgroupaddressinfo.pro.
+
+#####################################################################
+## tst_qknxgroupaddressinfo Test:
+#####################################################################
+
+qt_add_test(tst_qknxgroupaddressinfo
     SOURCES
         tst_qknxgroupaddressinfo.cpp
     PUBLIC_LIBRARIES
@@ -12,9 +17,10 @@ set(project_resource_files
     "data/qt.io.knxproj"
 )
 
-add_qt_resource(tst_qknxgroupaddressinfo "project"
+qt_add_resource(tst_qknxgroupaddressinfo "project"
     PREFIX
         "/"
     FILES
         ${project_resource_files}
 )
+

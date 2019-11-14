@@ -1,5 +1,10 @@
-add_qt_test(tst_qknxnetipdevicedib
-    GUI
+# Generated from qknxnetipdevicedib.pro.
+
+#####################################################################
+## tst_qknxnetipdevicedib Test:
+#####################################################################
+
+qt_add_test(tst_qknxnetipdevicedib
     SOURCES
         tst_qknxnetipdevicedib.cpp
     PUBLIC_LIBRARIES

@@ -1,5 +1,10 @@
-add_qt_test(tst_qknxnetiproutinginterface
-    GUI
+# Generated from qknxnetiprouter.pro.
+
+#####################################################################
+## tst_qknxnetiproutinginterface Test:
+#####################################################################
+
+qt_add_test(tst_qknxnetiproutinginterface
     SOURCES
         tst_qknxnetiprouter.cpp
     LIBRARIES

@@ -1,5 +1,10 @@
-add_qt_test(tst_qknxnetipdescriptionrequest
-    GUI
+# Generated from qknxnetipdescriptionrequest.pro.
+
+#####################################################################
+## tst_qknxnetipdescriptionrequest Test:
+#####################################################################
+
+qt_add_test(tst_qknxnetipdescriptionrequest
     SOURCES
         tst_qknxnetipdescriptionrequest.cpp
     PUBLIC_LIBRARIES

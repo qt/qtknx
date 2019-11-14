@@ -1,5 +1,10 @@
-add_qt_test(tst_qknxnetiproutingsystembroadcast
-    GUI
+# Generated from qknxnetiproutingsystembroadcast.pro.
+
+#####################################################################
+## tst_qknxnetiproutingsystembroadcast Test:
+#####################################################################
+
+qt_add_test(tst_qknxnetiproutingsystembroadcast
     SOURCES
         tst_qknxnetiproutingsystembroadcast.cpp
     LIBRARIES

@@ -8,7 +8,7 @@ if(BUILD_SHARED_LIBS)
     qt_find_package(ZLIB REQUIRED PROVIDED_TARGETS ZLIB::ZLIB)
 endif()
 
-add_qt_module(Knx
+qt_add_module(Knx
     SOURCES
 # core
         core/qknxbytearray.cpp
@@ -279,14 +279,11 @@ add_qt_module(Knx
         Qt::Core
 )
 
-#### Keys ignored in scope 1:.:.:knx.pro:<TRUE>:
-# _LOADED = "qt_module"
-
 ## Scopes:
 #####################################################################
 
 # special case begin
-extend_target(Knx CONDITION QT_FEATURE_opensslv11
+qt_extend_target(Knx CONDITION QT_FEATURE_opensslv11
     SOURCES
         ssl/qsslsocket_openssl11_symbols_p.h
         ssl/qsslsocket_openssl_symbols.cpp
@@ -296,22 +293,22 @@ extend_target(Knx CONDITION QT_FEATURE_opensslv11
 )
 # special case end
 
-extend_target(Knx CONDITION QT_FEATURE_openssl_linked AND QT_FEATURE_opensslv11
+qt_extend_target(Knx CONDITION QT_FEATURE_openssl_linked AND QT_FEATURE_opensslv11
     LIBRARIES
         OpenSSL::SSL
 )
 
 # special case begin
-#extend_target(Knx CONDITION QT_FEATURE_opensslv11 AND NOT QT_FEATURE_openssl_linked
+#qt_extend_target(Knx CONDITION QT_FEATURE_opensslv11 AND NOT QT_FEATURE_openssl_linked
 #    LIBRARIES
-#        OpenSSL::SSL_nolink
+#       OpenSSL::SSL_nolink
 #)
 # special case end
 
-extend_target(Knx CONDITION QT_FEATURE_opensslv11 AND WIN32
+qt_extend_target(Knx CONDITION QT_FEATURE_opensslv11 AND WIN32
     LIBRARIES
         crypt32
 )
-add_qt_docs(
+qt_add_docs(Knx
     doc/qtknx.qdocconf
 )

@@ -1,5 +1,10 @@
-add_qt_test(tst_qknxnetipconnectionstaterequest
-    GUI
+# Generated from qknxnetipconnectionstaterequest.pro.
+
+#####################################################################
+## tst_qknxnetipconnectionstaterequest Test:
+#####################################################################
+
+qt_add_test(tst_qknxnetipconnectionstaterequest
     SOURCES
         tst_qknxnetipconnectionstaterequest.cpp
     PUBLIC_LIBRARIES

@@ -4,7 +4,7 @@
 ## Knx Module:
 #####################################################################
 
-add_qt_module(Knx
+qt_add_module(Knx
     SOURCES
         core/qknxbytearray.cpp core/qknxbytearray.h
         dpt/qknx1bit.cpp
@@ -238,13 +238,10 @@ add_qt_module(Knx
         Qt::Core
 )
 
-#### Keys ignored in scope 1:.:.:knx.pro:<TRUE>:
-# _LOADED = "qt_module"
-
 ## Scopes:
 #####################################################################
 
-extend_target(Knx CONDITION QT_FEATURE_opensslv11
+qt_extend_target(Knx CONDITION QT_FEATURE_opensslv11
     SOURCES
         ssl/qsslsocket_openssl11_symbols_p.h
         ssl/qsslsocket_openssl_symbols.cpp ssl/qsslsocket_openssl_symbols_p.h
@@ -252,21 +249,21 @@ extend_target(Knx CONDITION QT_FEATURE_opensslv11
         OPENSSL_API_COMPAT=0x10100000L
 )
 
-extend_target(Knx CONDITION QT_FEATURE_openssl_linked AND QT_FEATURE_opensslv11
+qt_extend_target(Knx CONDITION QT_FEATURE_openssl_linked AND QT_FEATURE_opensslv11
     LIBRARIES
         OpenSSL::SSL
 )
 
-extend_target(Knx CONDITION QT_FEATURE_opensslv11 AND NOT QT_FEATURE_openssl_linked
+qt_extend_target(Knx CONDITION QT_FEATURE_opensslv11 AND NOT QT_FEATURE_openssl_linked
     LIBRARIES
         OpenSSL::SSL_nolink
 )
 
-extend_target(Knx CONDITION QT_FEATURE_opensslv11 AND WIN32
+qt_extend_target(Knx CONDITION QT_FEATURE_opensslv11 AND WIN32
     LIBRARIES
         crypt32
 )
-add_qt_docs(
+qt_add_docs(Knx
     doc/qtknx.qdocconf
 )
 

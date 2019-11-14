@@ -1,5 +1,10 @@
-add_qt_test(tst_qknxtpdufactory
-    GUI
+# Generated from qknxtpdufactory.pro.
+
+#####################################################################
+## tst_qknxtpdufactory Test:
+#####################################################################
+
+qt_add_test(tst_qknxtpdufactory
     SOURCES
         tst_qknxtpdufactory.cpp
     LIBRARIES

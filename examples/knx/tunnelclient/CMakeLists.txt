@@ -1,4 +1,6 @@
-cmake_minimum_required(VERSION 3.15.0)
+# Generated from tunnelclient.pro.
+
+cmake_minimum_required(VERSION 3.14)
 project(tunnelclient LANGUAGES CXX)
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
@@ -7,7 +9,7 @@ set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 set(CMAKE_AUTOUIC ON)
 
-set(INSTALL_EXAMPLEDIR "examples")
+set(INSTALL_EXAMPLEDIR "examples/knx/tunnelclient")
 
 find_package(Qt6 COMPONENTS Core)
 find_package(Qt6 COMPONENTS Knx)
@@ -19,6 +21,7 @@ add_executable(tunnelclient
 target_include_directories(tunnelclient PUBLIC
     .
 )
+
 target_link_libraries(tunnelclient PUBLIC
     Qt::Core
     Qt::Knx

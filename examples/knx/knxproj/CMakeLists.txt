@@ -1,4 +1,6 @@
-cmake_minimum_required(VERSION 3.15.0)
+# Generated from knxproj.pro.
+
+cmake_minimum_required(VERSION 3.14)
 project(knxproj LANGUAGES CXX)
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
@@ -7,7 +9,7 @@ set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 set(CMAKE_AUTOUIC ON)
 
-set(INSTALL_EXAMPLEDIR "examples")
+set(INSTALL_EXAMPLEDIR "examples/knx/knxproj")
 
 find_package(Qt6 COMPONENTS Core)
 find_package(Qt6 COMPONENTS Knx)
@@ -18,6 +20,7 @@ add_executable(knxproj
 target_include_directories(knxproj PUBLIC
     .
 )
+
 target_link_libraries(knxproj PUBLIC
     Qt::Core
     Qt::Knx

@@ -1,5 +1,10 @@
-add_qt_test(tst_qknxnetipsessionrequest
-    GUI
+# Generated from qknxnetipsessionrequest.pro.
+
+#####################################################################
+## tst_qknxnetipsessionrequest Test:
+#####################################################################
+
+qt_add_test(tst_qknxnetipsessionrequest
     SOURCES
         tst_qknxnetipsessionrequest.cpp
     PUBLIC_LIBRARIES

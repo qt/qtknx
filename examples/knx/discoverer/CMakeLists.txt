@@ -1,4 +1,6 @@
-cmake_minimum_required(VERSION 3.15.0)
+# Generated from discoverer.pro.
+
+cmake_minimum_required(VERSION 3.14)
 project(discoverer LANGUAGES CXX)
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
@@ -7,7 +9,7 @@ set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 set(CMAKE_AUTOUIC ON)
 
-set(INSTALL_EXAMPLEDIR "examples")
+set(INSTALL_EXAMPLEDIR "examples/knx/discoverer")
 
 find_package(Qt6 COMPONENTS Core)
 find_package(Qt6 COMPONENTS Knx)
@@ -19,6 +21,7 @@ add_executable(discoverer
 target_include_directories(discoverer PUBLIC
     .
 )
+
 target_link_libraries(discoverer PUBLIC
     Qt::Core
     Qt::Knx

@@ -1,5 +1,10 @@
-add_qt_test(tst_qknxnetiproutingindication
-    GUI
+# Generated from qknxnetiproutingindication.pro.
+
+#####################################################################
+## tst_qknxnetiproutingindication Test:
+#####################################################################
+
+qt_add_test(tst_qknxnetiproutingindication
     SOURCES
         tst_qknxnetiproutingindication.cpp
     LIBRARIES
