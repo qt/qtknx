@@ -56,6 +56,8 @@ struct Q_KNX_EXPORT QKnxTrade
     Q_DECLARE_TR_FUNCTIONS(QKnxTrade)
 
 public:
+    ~QKnxTrade() noexcept = default;
+
     QString Id; // optional, non-colonized name, pattern [\i-[:]][\c-[:]]*
     QString Name; // 255 character max.
     QString Number; // optional, 255 character max.

@@ -89,6 +89,8 @@ struct Q_KNX_EXPORT QKnxBuildingPart
     Q_DECLARE_TR_FUNCTIONS(QKnxBuildingPart)
 
 public:
+    ~QKnxBuildingPart() noexcept = default;
+
     QString Id; // non-colonized name, pattern [\i-[:]][\c-[:]]*
     QString Name; // 255 character max.
     QString Type; // Building, BuildingPart, Floor, Room, DistributionBoard, Stairway, Corridor

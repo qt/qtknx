@@ -58,6 +58,7 @@
 #include <QMetaEnum>
 #include <QMetaType>
 #include <QTreeWidget>
+#include <QRegularExpressionValidator>
 
 LocalDeviceManagement::LocalDeviceManagement(QWidget* parent)
     : QWidget(parent)
@@ -150,8 +151,8 @@ LocalDeviceManagement::LocalDeviceManagement(QWidget* parent)
             ui->textOuputDeviceManagement->append(errorString);
     });
 
-    ui->cemiData->setValidator(new QRegExpValidator(QRegExp("[0-9a-fA-F]+")));
-    ui->cemiFrame->setValidator(new QRegExpValidator(QRegExp("[0-9a-fA-F]+")));
+    ui->cemiData->setValidator(new QRegularExpressionValidator(QRegularExpression("[0-9a-fA-F]+")));
+    ui->cemiFrame->setValidator(new QRegularExpressionValidator(QRegularExpression("[0-9a-fA-F]+")));
 }
 
 LocalDeviceManagement::~LocalDeviceManagement()

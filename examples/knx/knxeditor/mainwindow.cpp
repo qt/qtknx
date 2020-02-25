@@ -147,10 +147,8 @@ MainWindow::MainWindow(QWidget *parent)
         ui->tunnelingFeatures->setNatAware(checked);
     });
 
-    connect(ui->localIpBox, QOverload<int>::of(&QComboBox::activated), this,
-        &MainWindow::newIPAddressSelected);
-    connect(ui->serverBox, QOverload<int>::of(&QComboBox::activated), this,
-        &MainWindow::newServerSelected);
+    connect(ui->localIpBox, &QComboBox::activated, this, &MainWindow::newIPAddressSelected);
+    connect(ui->serverBox, &QComboBox::activated, this, &MainWindow::newServerSelected);
 
     connect(ui->actionExit, &QAction::triggered, this, &QApplication::quit);
     connect(ui->actionClear_Output, &QAction::triggered, ui->outputEdit, &QTextEdit::clear);

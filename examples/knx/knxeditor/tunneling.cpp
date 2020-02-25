@@ -58,6 +58,7 @@
 #include <QStandardItemModel>
 #include <QTreeView>
 #include <QTreeWidget>
+#include <QRegularExpressionValidator>
 
 // -- KnxAddressValidator
 
@@ -245,8 +246,8 @@ Tunneling::Tunneling(QWidget* parent)
 
     ui->destAddress->setValidator(new KnxAddressValidator(QLatin1Char('/')));
     ui->sourceAddress->setValidator(new KnxAddressValidator(QLatin1Char('.')));
-    ui->data->setValidator(new QRegExpValidator(QRegExp("[0-9a-fA-F]+")));
-    ui->additionallnfoData->setValidator(new QRegExpValidator(QRegExp("[0-9a-fA-F]+")));
+    ui->data->setValidator(new QRegularExpressionValidator(QRegularExpression("[0-9a-fA-F]+")));
+    ui->additionallnfoData->setValidator(new QRegularExpressionValidator(QRegularExpression("[0-9a-fA-F]+")));
 }
 
 Tunneling::~Tunneling()
