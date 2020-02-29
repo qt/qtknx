@@ -66,7 +66,7 @@ Q_GLOBAL_STATIC_WITH_ARGS(QMutex, qt_knxOpenSslInitMutex, (QMutex::Recursive))
 bool QKnxOpenSsl::supportsSsl()
 {
 #if QT_CONFIG(opensslv11)
-    if (!q_resolveOpenSslSymbols())
+    if (!QKnxPrivate::q_resolveOpenSslSymbols())
         return false;
 
     const QMutexLocker locker(qt_knxOpenSslInitMutex);
@@ -74,18 +74,18 @@ bool QKnxOpenSsl::supportsSsl()
         s_libraryLoaded = true;
 
         // Initialize OpenSSL.
-        if (q_OPENSSL_init_ssl(0, nullptr) != 1)
+        if (QKnxPrivate::q_OPENSSL_init_ssl(0, nullptr) != 1)
             return false;
-        q_SSL_load_error_strings();
-        q_OpenSSL_add_all_algorithms();
+        QKnxPrivate::q_SSL_load_error_strings();
+        QKnxPrivate::q_OpenSSL_add_all_algorithms();
 
         // Initialize OpenSSL's random seed.
-        if (!q_RAND_status()) {
+        if (!QKnxPrivate::q_RAND_status()) {
             qWarning("Random number generator not seeded, disabling SSL support");
             return false;
         }
 
-        if (q_EVP_PKEY_type(NID_X25519) == NID_undef) {
+        if (QKnxPrivate::q_EVP_PKEY_type(NID_X25519) == NID_undef) {
             qWarning("The X25519 algorithm is not supported, disabling SSL support");
             return false;
         }
@@ -105,7 +105,7 @@ long QKnxOpenSsl::sslLibraryVersionNumber()
 {
 #if QT_CONFIG(opensslv11)
     if (supportsSsl())
-        return q_OpenSSL_version_num();
+        return QKnxPrivate::q_OpenSSL_version_num();
 #endif
     return 0;
 }
@@ -136,32 +136,33 @@ QKnxByteArray QKnxSsl::doCrypt(const QKnxByteArray &key, const QKnxByteArray &iv
     if (!qt_QKnxOpenSsl->supportsSsl())
         return {};
 
-    QSharedPointer<EVP_CIPHER_CTX> ctxPtr(q_EVP_CIPHER_CTX_new(), q_EVP_CIPHER_CTX_free);
+    QSharedPointer<EVP_CIPHER_CTX> ctxPtr(QKnxPrivate::q_EVP_CIPHER_CTX_new(),
+        QKnxPrivate::q_EVP_CIPHER_CTX_free);
     if (ctxPtr.isNull())
         return {};
-    q_EVP_CIPHER_CTX_reset(ctxPtr.data());
+    QKnxPrivate::q_EVP_CIPHER_CTX_reset(ctxPtr.data());
 
     const auto ctx = ctxPtr.data();
-    const auto c = q_EVP_aes_128_cbc();
-    if (q_EVP_CipherInit_ex(ctx, c, nullptr, nullptr, nullptr, mode) <= 0)
+    const auto c = QKnxPrivate::q_EVP_aes_128_cbc();
+    if (QKnxPrivate::q_EVP_CipherInit_ex(ctx, c, nullptr, nullptr, nullptr, mode) <= 0)
         return {};
 
-    if (q_EVP_CIPHER_CTX_set_padding(ctx, 0) <= 0)
+    if (QKnxPrivate::q_EVP_CIPHER_CTX_set_padding(ctx, 0) <= 0)
         return {};
 
-    Q_ASSERT(q_EVP_CIPHER_CTX_iv_length(ctx) == 16);
-    Q_ASSERT(q_EVP_CIPHER_CTX_key_length(ctx) == 16);
+    Q_ASSERT(QKnxPrivate::q_EVP_CIPHER_CTX_iv_length(ctx) == 16);
+    Q_ASSERT(QKnxPrivate::q_EVP_CIPHER_CTX_key_length(ctx) == 16);
 
-    if (q_EVP_CipherInit_ex(ctx, nullptr, nullptr, key.constData(), iv.constData(), mode) <= 0)
+    if (QKnxPrivate::q_EVP_CipherInit_ex(ctx, nullptr, nullptr, key.constData(), iv.constData(), mode) <= 0)
         return {};
 
     int outl, offset = 0;
-    QKnxByteArray out(data.size() + q_EVP_CIPHER_block_size(c), 0x00);
-    if (q_EVP_CipherUpdate(ctx, out.data(), &outl, data.constData(), data.size()) <= 0)
+    QKnxByteArray out(data.size() + QKnxPrivate::q_EVP_CIPHER_block_size(c), 0x00);
+    if (QKnxPrivate::q_EVP_CipherUpdate(ctx, out.data(), &outl, data.constData(), data.size()) <= 0)
         return {};
     offset += outl;
 
-    if (q_EVP_CipherFinal_ex(ctx, out.data() + offset, &outl) <= 0)
+    if (QKnxPrivate::q_EVP_CipherFinal_ex(ctx, out.data() + offset, &outl) <= 0)
         return {};
     offset += outl;
 

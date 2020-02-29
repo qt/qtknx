@@ -110,6 +110,8 @@ QT_BEGIN_NAMESPACE
 
 Q_DECLARE_LOGGING_CATEGORY(lcSsl)
 
+namespace QKnxPrivate {
+
 #define DUMMYARG
 
 #if !defined QT_LINKED_OPENSSL
@@ -602,6 +604,8 @@ void q_SSL_get0_alpn_selected(const SSL *ssl, const unsigned char **data,
 
     const EVP_MD *q_EVP_sha256(void);
 #endif
+
+} // namespace QKnxPrivate
 
 // Helper function
 class QDateTime;
