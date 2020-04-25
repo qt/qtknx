@@ -78,6 +78,8 @@
 
 QT_BEGIN_NAMESPACE
 
+namespace QKnxPrivate {
+
 /*
     Note to maintainer:
     -------------------
@@ -1437,5 +1439,7 @@ QDateTime q_getTimeFromASN1(const ASN1_TIME *aTime)
     }
 
 }
+
+} // namespace QKnxPrivate
 
 QT_END_NAMESPACE
