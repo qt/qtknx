@@ -475,7 +475,7 @@ QKnxAddress::QKnxAddress(QKnxAddress::Type type, quint16 sec1, quint16 *sec2, qu
     }
 }
 
-uint qHash(const QKnxAddress &key, uint seed) Q_DECL_NOTHROW
+size_t qHash(const QKnxAddress &key, uint seed) Q_DECL_NOTHROW
 {
     return qHash(key.bytes(), seed);
 }

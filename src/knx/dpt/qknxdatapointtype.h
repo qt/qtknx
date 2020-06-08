@@ -258,7 +258,7 @@ public:
 };
 Q_KNX_EXPORT QDebug operator<<(QDebug debug, const QKnxDatapointType &dpt);
 
-inline uint qHash(const QKnxDatapointType::Type &key, uint seed)
+inline size_t qHash(const QKnxDatapointType::Type &key, uint seed)
 {
     return qHash(quint32(key), seed);
 }

@@ -605,7 +605,7 @@ bool QKnxNetIpEndpointConnectionPrivate::initConnection(const QHostAddress &a, q
     }
 
     if (socket) {
-        QObject::connect(socket, QOverload<QAbstractSocket::SocketError>::of(&QAbstractSocket::error),
+        QObject::connect(socket, &QAbstractSocket::errorOccurred,
             q, [socket, this](QAbstractSocket::SocketError) {
                 setAndEmitErrorOccurred(QKnxNetIpEndpointConnection::Error::Network,
                     socket->errorString());

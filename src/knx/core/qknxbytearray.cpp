@@ -927,7 +927,7 @@ QDebug operator<<(QDebug debug, const QKnxByteArray &byteArray)
 
     Returns the hash value for the \a key, using \a seed to seed the calculation.
 */
-uint qHash(const QKnxByteArray &ba, uint seed) Q_DECL_NOTHROW
+size_t qHash(const QKnxByteArray &ba, uint seed) Q_DECL_NOTHROW
 {
     return qHash(ba.toByteArray(), seed);
 }

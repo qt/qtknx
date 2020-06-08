@@ -222,7 +222,7 @@ inline const QKnxByteArray operator+(quint8 ch, const QKnxByteArray &ba)
 }
 
 Q_KNX_EXPORT QDebug operator<<(QDebug debug, const QKnxByteArray &);
-Q_KNX_EXPORT Q_DECL_PURE_FUNCTION uint qHash(const QKnxByteArray &ba, uint seed = 0) Q_DECL_NOTHROW;
+Q_KNX_EXPORT Q_DECL_PURE_FUNCTION size_t qHash(const QKnxByteArray &ba, uint seed = 0) Q_DECL_NOTHROW;
 
 QT_END_NAMESPACE
 

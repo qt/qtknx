@@ -187,9 +187,7 @@ Tunneling::Tunneling(QWidget* parent)
             QString(delimiter)));
         updateExtendedControlField();
     });
-    using overload = void (QSpinBox::*)(int);
-    connect(ui->hopCount, static_cast<overload>(&QSpinBox::valueChanged), this,
-        &Tunneling::updateExtendedControlField);
+    connect(ui->hopCount, &QSpinBox::valueChanged, this, &Tunneling::updateExtendedControlField);
     connect(ui->extFrameFormat, &QComboBox::currentTextChanged, this,
         &Tunneling::updateExtendedControlField);
 
@@ -374,7 +372,7 @@ void Tunneling::setupApciTpciComboBox()
 
     regexp = QRegularExpression("(?=[A-Z])");
     for (auto i = 0; i < typeEnum.keyCount() - 1; ++i) {
-        auto string = QString::fromLatin1(typeEnum.key(i)).split(regexp, QString::SkipEmptyParts);
+        auto string = QString::fromLatin1(typeEnum.key(i)).split(regexp, Qt::SkipEmptyParts);
         ui->tpci->addItem("T_" + string.join(QLatin1Char('_')), typeEnum.value(i));
     }
 }

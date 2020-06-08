@@ -185,9 +185,7 @@ void QKnxNetIpServerDescriptionAgentPrivate::setupSocket()
         }
     });
 
-    using overload = void (QUdpSocket::*)(QUdpSocket::SocketError);
-    QObject::connect(socket,
-        static_cast<overload>(&QUdpSocket::error), [&](QUdpSocket::SocketError) {
+    QObject::connect(socket, &QUdpSocket::errorOccurred, [&](QUdpSocket::SocketError) {
             setAndEmitErrorOccurred(QKnxNetIpServerDescriptionAgent::Error::Network,
                 socket->errorString());
 

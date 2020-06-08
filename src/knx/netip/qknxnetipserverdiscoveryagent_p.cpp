@@ -114,8 +114,7 @@ void Discoverer::start()
 
     m_socket = new QUdpSocket;
     connect(m_socket, &QUdpSocket::readyRead, this, &Discoverer::onReadyRead);
-    using overload = void (QUdpSocket::*)(QUdpSocket::SocketError);
-    connect(m_socket, static_cast<overload>(&QUdpSocket::error), this, &Discoverer::onError);
+    connect(m_socket, &QUdpSocket::errorOccurred, this, &Discoverer::onError);
 
     bool bound = m_socket->bind(m_config.Multicast ? QHostAddress::AnyIPv4
                                                    : m_address,
@@ -377,9 +376,7 @@ void QKnxNetIpServerDiscoveryAgentPrivate::setupSocket()
         }
     });
 
-    using overload = void (QUdpSocket::*)(QUdpSocket::SocketError);
-    QObject::connect(socket,
-        static_cast<overload>(&QUdpSocket::error), q, [&](QUdpSocket::SocketError) {
+    QObject::connect(socket, &QUdpSocket::errorOccurred, q, [&](QUdpSocket::SocketError) {
             setAndEmitErrorOccurred(QKnxNetIpServerDiscoveryAgent::Error::Network,
                 socket->errorString());
 

@@ -312,7 +312,7 @@ void MainWindow::setupInterfaces()
     }
     ui->interfaces->setCurrentIndex(bool(ui->interfaces->count()));
 
-    connect(ui->interfaces, &QComboBox::currentIndexChanged, this, [&](int i, const QString &) {
+    connect(ui->interfaces, &QComboBox::currentIndexChanged, this, [&](int i) {
         if (i < 0)
             return;
         m_discoveryAgent.stop();

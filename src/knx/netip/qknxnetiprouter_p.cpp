@@ -214,9 +214,7 @@ void QKnxNetIpRouterPrivate::start()
     });
 
     // handle UDP socket errors
-    using overload = void (QUdpSocket::*)(QUdpSocket::SocketError);
-    QObject::connect(m_socket,
-        static_cast<overload>(&QUdpSocket::error), [&](QUdpSocket::SocketError) {
+    QObject::connect(m_socket, &QUdpSocket::errorOccurred, [&](QUdpSocket::SocketError) {
         errorOccurred(QKnxNetIpRouter::Error::Network,
             m_socket->errorString());
     });
