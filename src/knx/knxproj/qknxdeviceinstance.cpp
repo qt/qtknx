@@ -50,7 +50,7 @@ bool QKnxParameterInstanceRef::parseElement(QXmlStreamReader *reader, bool pedan
         auto attrs = reader->attributes();
 
         // required attributes
-        QStringRef attr;
+        QStringView attr;
         if (!QKnxProjectUtils::fetchAttr(attrs, QLatin1String("RefId"), &attr, reader))
             return false;
         if (!QKnxProjectUtils::setNCName(QLatin1String("RefId"), attr, &RefId, reader, pedantic))
@@ -79,7 +79,7 @@ bool QKnxConnectors::parseElement(QXmlStreamReader *reader, bool pedantic)
     auto fetchAttributes = [&](const QXmlStreamAttributes &attrs, QKnxConnector *connector) -> bool
     {
         // required attributes
-        QStringRef attr;
+        QStringView attr;
         if (!QKnxProjectUtils::fetchAttr(attrs, QLatin1String("GroupAddressRefId"), &attr, reader))
             return false;
         if (!QKnxProjectUtils::setNCName(QLatin1String("GroupAddressRefId"), attr,
@@ -191,7 +191,7 @@ bool QKnxChannelInstance::parseElement(QXmlStreamReader *reader, bool pedantic)
         auto attrs = reader->attributes();
 
         // required attributes
-        QStringRef attr;
+        QStringView attr;
         if (!QKnxProjectUtils::fetchAttr(attrs, QLatin1String("Id"), &attr, reader))
             return false;
         if (!QKnxProjectUtils::setNCName(QLatin1String("Id"), attr, &Id, reader, pedantic))
@@ -222,7 +222,7 @@ bool QKnxAdditionalAddress::parseElement(QXmlStreamReader *reader, bool pedantic
         auto attrs = reader->attributes();
 
         // required attributes
-        QStringRef attr;
+        QStringView attr;
         if (!QKnxProjectUtils::fetchAttr(attrs, QStringLiteral("Address"), &attr, reader))
             return false;
         auto address = attr.toUInt();
@@ -368,7 +368,7 @@ bool QKnxBusInterface::parseElement(QXmlStreamReader *reader, bool pedantic)
                                 reader->skipCurrentElement();
                                 continue;
                             }
-                            QStringRef attr;
+                            QStringView attr;
                             if (!QKnxProjectUtils::fetchAttr(reader->attributes(),
                                 QStringLiteral("GroupAddressRefId"), &attr, reader)) return false;
                             if (pedantic && !QKnxProjectUtils::isNCName(attr.toString()))
@@ -404,7 +404,7 @@ bool QKnxDeviceInstance::parseElement(QXmlStreamReader *reader, bool pedantic)
         auto attrs = reader->attributes();
 
         // required attributes
-        QStringRef attr;
+        QStringView attr;
         if (!QKnxProjectUtils::fetchAttr(attrs, QLatin1String("Id"), &attr, reader))
             return false;
         if (!QKnxProjectUtils::setNCName(QLatin1String("Id"), attr, &Id, reader, pedantic))

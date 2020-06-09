@@ -43,7 +43,7 @@ bool QKnxTrade::parseElement(QXmlStreamReader *reader, bool pedantic)
         auto attrs = reader->attributes();
 
         // required attributes
-        QStringRef attr;
+        QStringView attr;
         if (!QKnxProjectUtils::fetchAttr(attrs, QLatin1String("Name"), &attr, reader))
             return false;
         if (!QKnxProjectUtils::setString(QLatin1String("Name"), attr, 255, &Name, reader, pedantic))
@@ -74,7 +74,7 @@ bool QKnxTrade::parseElement(QXmlStreamReader *reader, bool pedantic)
                         return false;
                     Trade.append(trade);
                 } else if (reader->name() == QStringLiteral("DeviceInstanceRef")) {
-                    QStringRef attr;
+                    QStringView attr;
                     if (!QKnxProjectUtils::fetchAttr(reader->attributes(), QStringLiteral("RefId"),
                         &attr, reader)) return false;
                     QString refId;
@@ -107,7 +107,7 @@ bool QKnxSplitInfo::parseElement(QXmlStreamReader *reader, bool pedantic)
         auto attrs = reader->attributes();
 
         // required attributes
-        QStringRef attr;
+        QStringView attr;
         if (!QKnxProjectUtils::fetchAttr(attrs, QStringLiteral("ObjectPath"), &attr, reader))
             return false;
         ObjectPath = attr.toString();
@@ -137,7 +137,7 @@ bool QKnxInstallation::parseElement(QXmlStreamReader *reader, bool pedantic)
         auto attrs = reader->attributes();
 
         // required attributes
-        QStringRef attr;
+        QStringView attr;
         if (!QKnxProjectUtils::fetchAttr(attrs, QLatin1String("Name"), &attr, reader))
             return false;
         if (!QKnxProjectUtils::setString(QLatin1String("Name"), attr, 50, &Name, reader,

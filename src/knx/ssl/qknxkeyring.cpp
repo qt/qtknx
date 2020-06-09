@@ -50,7 +50,7 @@ namespace QKnx { namespace Ets { namespace Keyring {
 
 namespace QKnxPrivate
 {
-    void writeBytes(QByteArray *dest, const QStringRef &source)
+    void writeBytes(QByteArray *dest, QStringView source)
     {
         dest->append(quint8(source.size()));
         dest->append(source.toString().toUtf8());
@@ -88,7 +88,7 @@ namespace QKnxPrivate
     }
 
     static bool fetchAttr(const QXmlStreamAttributes &attributes, const QString &attrName,
-        QStringRef *value, QXmlStreamReader *reader)
+        QStringView *value, QXmlStreamReader *reader)
     {
         if (!value || !reader)
             return false;
@@ -99,7 +99,7 @@ namespace QKnxPrivate
         return !reader->hasError();
     }
 
-    static bool setString(const QString &name, const QStringRef &attr, int maxSize,
+    static bool setString(const QString &name, QStringView attr, int maxSize,
         QString *field, QXmlStreamReader *reader, bool pedantic)
     {
         if (!reader || !field)
@@ -114,7 +114,7 @@ namespace QKnxPrivate
         return !reader->hasError();
     }
 
-    bool setString(const QString &name, const QStringRef &attr, const QStringList &list,
+    bool setString(const QString &name, QStringView attr, const QStringList &list,
         QString *field, QXmlStreamReader *reader, bool pedantic)
     {
         if (!reader || !field)
@@ -147,7 +147,7 @@ bool QKnxBackbone::parseElement(QXmlStreamReader *reader, bool pedantic)
     if (reader->name() == QStringLiteral("Backbone")) {
         auto attrs = reader->attributes();
 
-        QStringRef attr; // mandatory attributes
+        QStringView attr; // mandatory attributes
         if (!QKnxPrivate::fetchAttr(attrs, QStringLiteral("MulticastAddress"), &attr, reader))
             return false;
         MulticastAddress = attr.toString();
@@ -194,7 +194,7 @@ bool QKnxInterface::QKnxGroup::parseElement(QXmlStreamReader *reader, bool pedan
     if (reader->name() == QStringLiteral("Group")) {
         auto attrs = reader->attributes();
 
-        QStringRef attr; // mandatory attributes
+        QStringView attr; // mandatory attributes
         if (!QKnxPrivate::fetchAttr(attrs, QStringLiteral("Address"), &attr, reader))
             return false;
         Address = attr.toUShort();
@@ -228,7 +228,7 @@ bool QKnxInterface::parseElement(QXmlStreamReader *reader, bool pedantic)
     if (reader->name() == QStringLiteral("Interface")) {
         auto attrs = reader->attributes();
 
-        QStringRef attr; // mandatory attribute
+        QStringView attr; // mandatory attribute
         if (!QKnxPrivate::fetchAttr(attrs, QLatin1String("Type"), &attr, reader))
             return false;
         if (!QKnxPrivate::setString(QLatin1String("Type"), attr, {
@@ -274,7 +274,7 @@ bool QKnxGroupAddresses::QKnxGroup::parseElement(QXmlStreamReader *reader, bool 
     if (reader->name() == QStringLiteral("Group")) {
         auto attrs = reader->attributes();
 
-        QStringRef attr; // mandatory attributes
+        QStringView attr; // mandatory attributes
         if (!QKnxPrivate::fetchAttr(attrs, QStringLiteral("Address"), &attr, reader))
             return false;
         Address = attr.toUShort();
@@ -330,7 +330,7 @@ bool QKnxDevice::parseElement(QXmlStreamReader *reader, bool pedantic)
     if (reader->name() == QStringLiteral("Device")) {
         auto attrs = reader->attributes();
 
-        QStringRef attr; // mandatory attribute
+        QStringView attr; // mandatory attribute
         if (!QKnxPrivate::fetchAttr(attrs, QLatin1String("IndividualAddress"), &attr, reader))
             return false;
         IndividualAddress = attr.toString();
@@ -389,7 +389,7 @@ bool QKnxKeyring::parseElement(QXmlStreamReader *reader, bool pedantic)
     if (reader->name() == QStringLiteral("Keyring")) {
         auto attrs = reader->attributes();
 
-        QStringRef attr; // mandatory attributes
+        QStringView attr; // mandatory attributes
         if (!QKnxPrivate::fetchAttr(attrs, QLatin1String("Project"), &attr, reader))
             return false;
         if (!QKnxPrivate::setString(QLatin1String("Project"), attr, 255, &Project, reader, pedantic))

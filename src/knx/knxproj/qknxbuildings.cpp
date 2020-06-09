@@ -42,7 +42,7 @@ bool QKnxGroupAddressRef::parseElement(QXmlStreamReader *reader, bool pedantic)
         auto attrs = reader->attributes();
 
         // required attributes
-        QStringRef attr;
+        QStringView attr;
         if (!QKnxProjectUtils::fetchAttr(attrs, QStringLiteral("Id"), &attr, reader))
             return false;
         if (!QKnxProjectUtils::setNCName(QLatin1String("Id"), attr, &Id, reader, pedantic))
@@ -83,7 +83,7 @@ bool QKnxFunction::parseElement(QXmlStreamReader *reader, bool pedantic)
         auto attrs = reader->attributes();
 
         // required attributes
-        QStringRef attr;
+        QStringView attr;
         if (!QKnxProjectUtils::fetchAttr(attrs, QStringLiteral("Id"), &attr, reader))
             return false;
         if (!QKnxProjectUtils::setNCName(QLatin1String("Id"), attr, &Id, reader, pedantic))
@@ -144,7 +144,7 @@ bool QKnxBuildingPart::parseElement(QXmlStreamReader *reader, bool pedantic)
        auto attrs = reader->attributes();
 
         // required attributes
-        QStringRef attr;
+        QStringView attr;
         if (!QKnxProjectUtils::fetchAttr(attrs, QStringLiteral("Id"), &attr, reader))
             return false;
         if (!QKnxProjectUtils::setNCName(QLatin1String("Id"), attr, &Id, reader, pedantic))
@@ -192,7 +192,7 @@ bool QKnxBuildingPart::parseElement(QXmlStreamReader *reader, bool pedantic)
                             return false;
                         BuildingPart.append(part);
                 } else if (reader->name() == QStringLiteral("DeviceInstanceRef")) {
-                    QStringRef attr;
+                    QStringView attr;
                     if (!QKnxProjectUtils::fetchAttr(reader->attributes(), QLatin1String("RefId"),
                         &attr, reader)) return false;
                     QString refId;

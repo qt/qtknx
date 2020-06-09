@@ -42,7 +42,7 @@ bool QKnxHistoryEntry::parseElement(QXmlStreamReader *reader, bool pedantic)
         auto attrs = reader->attributes();
 
         // required attributes
-        QStringRef attr;
+        QStringView attr;
         if (!QKnxProjectUtils::fetchAttr(attrs, QStringLiteral("Date"), &attr, reader))
             return false;
         Date = QDateTime::fromString(attr.toString(), Qt::ISODateWithMs);
@@ -77,7 +77,7 @@ bool QKnxToDoItem::parseElement(QXmlStreamReader *reader, bool pedantic)
         auto attrs = reader->attributes();
 
         // required attributes
-        QStringRef attr;
+        QStringView attr;
         if (!QKnxProjectUtils::fetchAttr(attrs, QStringLiteral("Description"), &attr, reader))
             return false;
         Description = attr.toString();
@@ -109,7 +109,7 @@ bool QKnxProjectTrace::parseElement(QXmlStreamReader *reader, bool /*pedantic*/)
         auto attrs = reader->attributes();
 
         // required attributes
-        QStringRef attr;
+        QStringView attr;
         if (!QKnxProjectUtils::fetchAttr(attrs, QStringLiteral("Date"), &attr, reader))
             return false;
         Date = QDateTime::fromString(attr.toString(), Qt::ISODateWithMs);
@@ -141,7 +141,7 @@ bool QKnxDeviceCertificate::parseElement(QXmlStreamReader *reader, bool pedantic
         auto attrs = reader->attributes();
 
         // required attributes
-        QStringRef attr;
+        QStringView attr;
         if (!QKnxProjectUtils::fetchAttr(attrs, QStringLiteral("SerialNumber"), &attr, reader))
             return false;
         SerialNumber = attr.toUtf8();
@@ -176,7 +176,7 @@ bool QKnxUserFile::parseElement(QXmlStreamReader *reader, bool pedantic)
         auto attrs = reader->attributes();
 
         // required attributes
-        QStringRef attr;
+        QStringView attr;
         if (!QKnxProjectUtils::fetchAttr(attrs, QLatin1String("Filename"), &attr, reader))
             return false;
         if (!QKnxProjectUtils::setString(QLatin1String("Filename"), attr, 255, &Filename,
@@ -204,7 +204,7 @@ bool QKnxProjectInformation::parseElement(QXmlStreamReader *reader, bool pedanti
         auto attrs = reader->attributes();
 
         // required attributes
-        QStringRef attr;
+        QStringView attr;
         if (!QKnxProjectUtils::fetchAttr(attrs, QLatin1String("Name"), &attr, reader))
             return false;
         if (!QKnxProjectUtils::setString(QLatin1String("Name"), attr, 50, &Name, reader, pedantic))

@@ -54,16 +54,16 @@ struct Q_KNX_EXPORT QKnxProjectUtils final
 public:
     static bool isNCName(const QString &candidate);
 
-    static bool setNCName(const QString &name, const QStringRef &attr, QString *field,
+    static bool setNCName(const QString &name, QStringView attr, QString *field,
         QXmlStreamReader *reader, bool pedantic);
 
     static bool fetchAttr(const QXmlStreamAttributes &attributes, const QString &attrName,
-        QStringRef *value, QXmlStreamReader *reader);
+        QStringView *value, QXmlStreamReader *reader);
 
-    static bool setString(const QString &name, const QStringRef &attr, int maxSize,
+    static bool setString(const QString &name, QStringView attr, int maxSize,
         QString *field, QXmlStreamReader *reader, bool pedantic);
 
-    static bool setString(const QString &name, const QStringRef &attr, const QStringList &list,
+    static bool setString(const QString &name, QStringView attr, const QStringList &list,
         QString *field, QXmlStreamReader *reader, bool pedantic);
 
     template< typename T> static bool setNumber(const QString &name, const T &attr, T maxValue,

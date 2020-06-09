@@ -50,7 +50,7 @@ bool QKnxGroupAddress::parseElement(QXmlStreamReader *reader, bool pedantic)
         auto attrs = reader->attributes();
 
         // required attributes
-        QStringRef attr;
+        QStringView attr;
         if (!QKnxProjectUtils::fetchAttr(attrs, QStringLiteral("Id"), &attr, reader))
             return false;
         if (!QKnxProjectUtils::setNCName(QLatin1String("Id"), attr, &Id, reader, pedantic))
@@ -112,7 +112,7 @@ bool QKnxGroupRange::parseElement(QXmlStreamReader *reader, bool pedantic)
         auto attrs = reader->attributes();
 
         // required attributes
-        QStringRef attr;
+        QStringView attr;
         if (!QKnxProjectUtils::fetchAttr(attrs, QStringLiteral("Id"), &attr, reader))
             return false;
         if (!QKnxProjectUtils::setNCName(QLatin1String("Id"), attr, &Id, reader, pedantic))

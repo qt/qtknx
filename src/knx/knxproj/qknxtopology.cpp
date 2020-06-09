@@ -45,7 +45,7 @@ bool QKnxBusAccess::parseElement(QXmlStreamReader *reader, bool pedantic)
         auto attrs = reader->attributes();
 
         // required attributes
-        QStringRef attr;
+        QStringView attr;
         if (!QKnxProjectUtils::fetchAttr(attrs, QStringLiteral("Name"), &attr, reader))
             return false;
         Name = attr.toString();
@@ -76,7 +76,7 @@ bool QKnxAdditionalGroupAddress::parseElement(QXmlStreamReader *reader, bool /*p
         return false;
 
     if (reader->name() == QStringLiteral("GroupAddress")) {
-        QStringRef attr; // required attribute
+        QStringView attr; // required attribute
         if (!QKnxProjectUtils::fetchAttr(reader->attributes(), QLatin1String("Address"), &attr,
             reader)) return false;
         Address = attr.toUShort();
@@ -100,7 +100,7 @@ bool QKnxLine::parseElement(QXmlStreamReader *reader, bool pedantic)
          auto attrs = reader->attributes();
 
         // required attributes
-        QStringRef attr;
+        QStringView attr;
         if (!QKnxProjectUtils::fetchAttr(attrs, QLatin1String("Id"), &attr, reader))
             return false;
         if (!QKnxProjectUtils::setNCName(QLatin1String("Id"), attr, &Id, reader, pedantic))
@@ -182,7 +182,7 @@ bool QKnxArea::parseElement(QXmlStreamReader *reader, bool pedantic)
          auto attrs = reader->attributes();
 
          // required attributes
-        QStringRef attr;
+        QStringView attr;
         if (!QKnxProjectUtils::fetchAttr(attrs, QLatin1String("Name"), &attr, reader))
             return false;
         if (!QKnxProjectUtils::setString(QLatin1String("Name"), attr, 255, &Name, reader, pedantic))

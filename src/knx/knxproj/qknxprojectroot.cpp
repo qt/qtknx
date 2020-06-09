@@ -42,7 +42,7 @@ bool QKnxAddinData::parseElement(QXmlStreamReader *reader, bool pedantic)
         auto attrs = reader->attributes();
 
         // required attributes
-        QStringRef attr;
+        QStringView attr;
         if (!QKnxProjectUtils::fetchAttr(attrs, QLatin1String("AddinId"), &attr, reader))
             return false;
         if (!QKnxProjectUtils::setNCName(QLatin1String("AddinId"), attr, &AddinId, reader, pedantic))
@@ -69,7 +69,7 @@ bool QKnxProject::parseElement(QXmlStreamReader *reader, bool pedantic)
         return false;
 
     if (reader->name() == QLatin1String("Project")) {
-        QStringRef attr; // required attribute
+        QStringView attr; // required attribute
         if (!QKnxProjectUtils::fetchAttr(reader->attributes(), QLatin1String("Id"), &attr, reader))
             return false;
         if (!QKnxProjectUtils::setNCName(QLatin1String("Id"), attr, &Id, reader, pedantic))

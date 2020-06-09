@@ -140,8 +140,8 @@ QKnxAddress::QKnxAddress(QKnxAddress::Type type, const QString &address)
         return;
 
     QVector<quint16> sections;
-    const auto convert = [&sections](const QVector<QStringRef> &in) -> bool {
-        for (const QStringRef &section : qAsConst(in)) {
+    const auto convert = [&sections](const QVector<QStringView> &in) -> bool {
+        for (const QStringView &section : qAsConst(in)) {
             bool ok = false;
             const quint16 value = section.toUShort(&ok, 0);
             if (!ok)
@@ -152,7 +152,7 @@ QKnxAddress::QKnxAddress(QKnxAddress::Type type, const QString &address)
     };
 
     if (slashes && type == QKnxAddress::Type::Group) {
-        if (!convert(address.splitRef(QLatin1Char('/'))))
+        if (!convert(QStringView{address}.split(QLatin1Char('/'))))
             return;
         if (sections.count() == 2)
             *this = QKnxAddress(type, sections[0], nullptr, sections[1]);
@@ -160,11 +160,11 @@ QKnxAddress::QKnxAddress(QKnxAddress::Type type, const QString &address)
             *this = QKnxAddress(type, sections[0], &sections[1], sections[2]);
     }
     if (dots && type == QKnxAddress::Type::Individual) {
-        if (convert(address.splitRef(QLatin1Char('.'))) && sections.count() == 3)
+        if (convert(QStringView{address}.split(QLatin1Char('.'))) && sections.count() == 3)
             *this = QKnxAddress(type, sections[0], &sections[1], sections[2]);
     }
     if (type == QKnxAddress::Type::Group || type == QKnxAddress::Type::Individual) {
-        if (convert({ address.midRef(0) }) && sections.count() == 1) {
+        if (convert({ QStringView{address}.mid(0) }) && sections.count() == 1) {
             m_type = type;
             m_address = sections[0];
         }

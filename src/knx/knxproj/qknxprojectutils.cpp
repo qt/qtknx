@@ -42,7 +42,7 @@ bool QKnxProjectUtils::isNCName(const QString &candidate)
     return QXmlUtils::isNCName(candidate);
 }
 
-bool QKnxProjectUtils::setNCName(const QString &name, const QStringRef &attr, QString *field,
+bool QKnxProjectUtils::setNCName(const QString &name, QStringView attr, QString *field,
     QXmlStreamReader *reader, bool pedantic)
 {
     if (!reader || !field)
@@ -59,7 +59,7 @@ bool QKnxProjectUtils::setNCName(const QString &name, const QStringRef &attr, QS
 }
 
 bool QKnxProjectUtils::fetchAttr(const QXmlStreamAttributes &attributes, const QString &attrName,
-    QStringRef *value, QXmlStreamReader *reader)
+    QStringView *value, QXmlStreamReader *reader)
 {
     if (!value || !reader)
         return false;
@@ -70,7 +70,7 @@ bool QKnxProjectUtils::fetchAttr(const QXmlStreamAttributes &attributes, const Q
     return !reader->hasError();
 }
 
-bool QKnxProjectUtils::setString(const QString &name, const QStringRef &attr, int maxSize,
+bool QKnxProjectUtils::setString(const QString &name, QStringView attr, int maxSize,
     QString *field, QXmlStreamReader *reader, bool pedantic)
 {
     if (!reader || !field)
@@ -85,7 +85,7 @@ bool QKnxProjectUtils::setString(const QString &name, const QStringRef &attr, in
     return !reader->hasError();
 }
 
-bool QKnxProjectUtils::setString(const QString &name, const QStringRef &attr,
+bool QKnxProjectUtils::setString(const QString &name, QStringView attr,
     const QStringList &list, QString *field, QXmlStreamReader *reader, bool pedantic)
 {
     if (!reader || !field)
