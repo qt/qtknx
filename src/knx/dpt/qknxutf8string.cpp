@@ -29,7 +29,8 @@
 
 #include "qknxutf8string.h"
 #include "qknxdatapointtype_p.h"
-#include "qtextcodec.h"
+
+#include <QtCore/qstringconverter.h>
 
 QT_BEGIN_NAMESPACE
 
@@ -134,13 +135,12 @@ bool QKnxUtf8String::setString(const char *string, int size)
     if (size >= USHRT_MAX)
         return false;
 
-    QTextCodec *codec = QTextCodec::codecForName("UTF-8");
-    if (!codec)
+    auto toUtf16 = QStringDecoder(QStringDecoder::Utf8, QStringDecoder::Flag::Stateless);
+    if (!toUtf16.isValid())
         return false;
 
-    QTextCodec::ConverterState state;
-    auto text = codec->toUnicode(string, size, &state);
-    if (state.invalidChars > 0)
+    auto text = toUtf16(string, size);
+    if (toUtf16.hasError())
         return false;
     return setString(text);
 }
