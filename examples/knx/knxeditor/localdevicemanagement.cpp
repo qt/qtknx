@@ -292,7 +292,7 @@ void LocalDeviceManagement::on_manualInput_clicked(bool checked)
     }
 }
 
-void LocalDeviceManagement::onKeyringChanged(const QVector<QKnxNetIpSecureConfiguration> &configs)
+void LocalDeviceManagement::onKeyringChanged(const QList<QKnxNetIpSecureConfiguration> &configs)
 {
     m_configs = configs;
     updateSecureConfigCombo();

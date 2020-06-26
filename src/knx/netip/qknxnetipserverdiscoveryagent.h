@@ -31,7 +31,7 @@
 #define QKNXNETIPDISCOVERYAGENT_H
 
 #include <QtCore/qobject.h>
-#include <QtCore/qvector.h>
+#include <QtCore/qlist.h>
 #include <QtKnx/qtknxglobal.h>
 #include <QtKnx/qknxnetipserverinfo.h>
 #include <QtNetwork/qhostaddress.h>
@@ -101,7 +101,7 @@ public:
     QKnxNetIpServerDiscoveryAgent::Error error() const;
 
     QString errorString() const;
-    QVector<QKnxNetIpServerInfo> discoveredServers() const;
+    QList<QKnxNetIpServerInfo> discoveredServers() const;
 
     quint16 localPort() const;
     void setLocalPort(quint16 port);
@@ -127,15 +127,15 @@ public:
     QKnxNetIpServerDiscoveryAgent::DiscoveryModes discoveryMode() const;
     void setDiscoveryMode(QKnxNetIpServerDiscoveryAgent::DiscoveryModes mode);
 
-    QVector<QKnxNetIpSrp> extendedSearchParameters() const;
-    void setExtendedSearchParameters(const QVector<QKnxNetIpSrp> &srps);
+    QList<QKnxNetIpSrp> extendedSearchParameters() const;
+    void setExtendedSearchParameters(const QList<QKnxNetIpSrp> &srps);
 
 public Q_SLOTS:
     void start();
     void stop();
 
     void start(int timeout);
-    void start(const QVector<QHostAddress> &localAddresses);
+    void start(const QList<QHostAddress> &localAddresses);
     void start(QKnxNetIpServerDiscoveryAgent::InterfaceTypes types);
 
 Q_SIGNALS:

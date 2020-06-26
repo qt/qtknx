@@ -122,7 +122,7 @@ public:
     QKnxNetIpSecuredServiceFamiliesDibBuilderPrivate() = default;
     ~QKnxNetIpSecuredServiceFamiliesDibBuilderPrivate() = default;
 
-    QVector<QKnxSecuredServiceInfo> m_infos;
+    QList<QKnxSecuredServiceInfo> m_infos;
 };
 
 /*!
@@ -156,13 +156,13 @@ QKnxNetIp::DescriptionType QKnxNetIpSecuredServiceFamiliesDibProxy::descriptionT
 }
 
 /*!
-    Returns a vector of the QKnxSecuredServiceInfo carried by this KNXnet/IP
+    Returns a list of the QKnxSecuredServiceInfo carried by this KNXnet/IP
     DIB structure if the object that was passed during construction was valid;
-    otherwise returns an empty vector.
+    otherwise returns an empty list.
 */
-QVector<QKnxSecuredServiceInfo> QKnxNetIpSecuredServiceFamiliesDibProxy::serviceInfos() const
+QList<QKnxSecuredServiceInfo> QKnxNetIpSecuredServiceFamiliesDibProxy::serviceInfos() const
 {
-    QVector<QKnxSecuredServiceInfo> infos;
+    QList<QKnxSecuredServiceInfo> infos;
     if (!isValid())
         return infos;
 
@@ -223,7 +223,7 @@ QKnxNetIpSecuredServiceFamiliesDibProxy::Builder::~Builder() = default;
     structure to \a infos and returns a reference to the builder.
 */
 QKnxNetIpSecuredServiceFamiliesDibProxy::Builder &QKnxNetIpSecuredServiceFamiliesDibProxy::
-    Builder::setServiceInfos(const QVector<QKnxSecuredServiceInfo> &infos)
+    Builder::setServiceInfos(const QList<QKnxSecuredServiceInfo> &infos)
 {
     d_ptr->m_infos = infos;
 

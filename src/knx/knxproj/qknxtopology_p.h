@@ -43,7 +43,7 @@
 
 #include <QtCore/qdatetime.h>
 #include <QtCore/qstring.h>
-#include <QtCore/qvector.h>
+#include <QtCore/qlist.h>
 #include <QtKnx/private/qknxdeviceinstance_p.h>
 #include <QtKnx/private/qknxprojectutils_p.h>
 
@@ -89,9 +89,9 @@ public:
     QString Description; // optional
     qint32 Puid { 0 };
 
-    QVector<QKnxDeviceInstance> DeviceInstance; // 0..n
-    QVector<QKnxBusAccess> BusAccess; // 0..1
-    QVector<QKnxAdditionalGroupAddress> AdditionalGroupAddresses; // 0..1
+    QList<QKnxDeviceInstance> DeviceInstance; // 0..n
+    QList<QKnxBusAccess> BusAccess; // 0..1
+    QList<QKnxAdditionalGroupAddress> AdditionalGroupAddresses; // 0..1
 
     bool parseElement(QXmlStreamReader *reader, bool pedantic);
 };
@@ -112,7 +112,7 @@ public:
     QString Description; // optional
     qint32 Puid { 0 };
 
-    QVector<QKnxLine> Line; // 0..16
+    QList<QKnxLine> Line; // 0..16
 
     bool parseElement(QXmlStreamReader *reader, bool pedantic);
 };
@@ -122,8 +122,8 @@ struct Q_KNX_EXPORT QKnxTopology
     Q_DECLARE_TR_FUNCTIONS(QKnxTopology)
 
 public:
-    QVector<QKnxArea> Area; // 0..16
-    QVector<QKnxDeviceInstance> UnassignedDevices; // 0..n
+    QList<QKnxArea> Area; // 0..16
+    QList<QKnxDeviceInstance> UnassignedDevices; // 0..n
 
     bool parseElement(QXmlStreamReader *reader, bool pedantic);
 };

@@ -75,7 +75,7 @@ void tst_QKnxNetIpSecuredServiceFamiliesDib::testDefaultConstructor()
 
 void tst_QKnxNetIpSecuredServiceFamiliesDib::testConstructorWithOneArgument()
 {
-    QVector<QKnxSecuredServiceInfo> infos;
+    QList<QKnxSecuredServiceInfo> infos;
     infos.append({ QKnxNetIp::ServiceFamily::Core, 9 });
     infos.append({ QKnxNetIp::ServiceFamily::DeviceManagement, 2 });
     infos.append({ QKnxNetIp::ServiceFamily::DeviceManagement, 1 });
@@ -217,7 +217,7 @@ void tst_QKnxNetIpSecuredServiceFamiliesDib::testDebugStream()
     qDebug() << QKnxNetIpSecuredServiceFamiliesDibProxy::builder().create();
     QCOMPARE(s_msg, QString::fromLatin1("0x0206"));
 
-    QVector<QKnxSecuredServiceInfo> families;
+    QList<QKnxSecuredServiceInfo> families;
     families.append({ QKnxNetIp::ServiceFamily::Core, 9 });
     families.append({ QKnxNetIp::ServiceFamily::DeviceManagement, 10 });
     families.append({ QKnxNetIp::ServiceFamily::IpTunneling, 11 });

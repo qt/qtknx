@@ -58,7 +58,7 @@ QT_BEGIN_NAMESPACE
     A KNXnet/IP server can support the following service types: core, device
     management, tunneling, routing, remote logging and configuration, and
     object server. The supported services are returned by \l supportedServices()
-    as a vector of \l QKnxServiceInfo objects or by \l services() as a
+    as a list of \l QKnxServiceInfo objects or by \l services() as a
     \l QKnxNetIpDib object which can be accessed via \l QKnxNetIpServiceFamiliesDibProxy.
 
     Furthermore, as specified by the KNX application note AN185, the
@@ -144,7 +144,7 @@ QHostAddress QKnxNetIpServerInfo::controlEndpointAddress() const
 /*!
     Returns the services supported by a KNXnet/IP server.
 */
-QVector<QKnxServiceInfo> QKnxNetIpServerInfo::supportedServices() const
+QList<QKnxServiceInfo> QKnxNetIpServerInfo::supportedServices() const
 {
     return QKnxNetIpServiceFamiliesDibProxy(d_ptr->services).serviceInfos();
 }
@@ -154,12 +154,12 @@ QVector<QKnxServiceInfo> QKnxNetIpServerInfo::supportedServices() const
 
     Returns the available tunneling slots of the discovered KNXnet/IP server
     if it supports providing this kind of information; otherwise returns an
-    empty vector.
+    empty list.
 */
-QVector<QKnxNetIpTunnelingSlotInfo> QKnxNetIpServerInfo::tunnelingSlotInfos() const
+QList<QKnxNetIpTunnelingSlotInfo> QKnxNetIpServerInfo::tunnelingSlotInfos() const
 {
     QKnxNetIpTunnelingInfoDibProxy proxy(d_ptr->tunnelingInfo);
-    return QVector<QKnxNetIpTunnelingSlotInfo> { proxy.tunnelingSlotInfo() }
+    return QList<QKnxNetIpTunnelingSlotInfo> { proxy.tunnelingSlotInfo() }
         + proxy.optionalSlotInfos();
 }
 

@@ -270,7 +270,7 @@ QKnxTpdu QKnxTpduFactory::PointToPoint::createLinkReadTpdu(Mode mode, quint8 gro
 }
 
 QKnxTpdu QKnxTpduFactory::PointToPoint::createLinkResponseTpdu(Mode mode, quint8 groupObjectNumber,
-    quint8 sendingAddress, quint8 startAddress, const QVector<QKnxAddress> &addresses,
+    quint8 sendingAddress, quint8 startAddress, const QList<QKnxAddress> &addresses,
     quint8 seqNumber)
 {
     if (sendingAddress > 15 || startAddress > 15)

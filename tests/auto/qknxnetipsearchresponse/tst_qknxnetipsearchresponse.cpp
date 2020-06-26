@@ -198,7 +198,7 @@ void tst_QKnxNetIpSearchResponse::testSupportedFamiliesVersions()
         .setMacAddress(QKnxByteArray::fromHex("bcaec56690f9"))
         .setDeviceName(QByteArray("qt.io KNX device"))
         .create();
-    QVector<QKnxServiceInfo> fam = {
+    QList<QKnxServiceInfo> fam = {
         { QKnxNetIp::ServiceFamily::IpTunneling, 0x04 },
         { QKnxNetIp::ServiceFamily::Core, 9 },
         { QKnxNetIp::ServiceFamily::DeviceManagement, 2 },

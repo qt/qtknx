@@ -201,7 +201,7 @@ bool QKnxInterface::QKnxGroup::parseElement(QXmlStreamReader *reader, bool pedan
 
         if (!QKnxPrivate::fetchAttr(attrs, QStringLiteral("Senders"), &attr, reader))
             return false;
-        Senders = attr.toString().split(QLatin1Char(' ')).toVector();
+        Senders = attr.toString().split(QLatin1Char(' ')).toList();
         if (pedantic) {
             QRegularExpression regExp;
             regExp.setPattern(QLatin1String(individualAddress));

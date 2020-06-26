@@ -35,7 +35,7 @@
 #include <QtKnx/qtknxglobal.h>
 
 #include <QtCore/qshareddata.h>
-#include <QtCore/qvector.h>
+#include <QtCore/qlist.h>
 
 QT_BEGIN_NAMESPACE
 
@@ -53,7 +53,7 @@ public:
     bool isExtended() const;
 
     QKnxNetIpHpai discoveryEndpoint() const;
-    QVector<QKnxNetIpSrp> extendedSearchParameters() const;
+    QList<QKnxNetIpSrp> extendedSearchParameters() const;
 
     class Q_KNX_EXPORT Builder final
     {
@@ -73,7 +73,7 @@ public:
         ~ExtendedBuilder();
 
         ExtendedBuilder &setDiscoveryEndpoint(const QKnxNetIpHpai &hpai);
-        ExtendedBuilder &setExtendedParameters(const QVector<QKnxNetIpSrp> &srps);
+        ExtendedBuilder &setExtendedParameters(const QList<QKnxNetIpSrp> &srps);
 
         QKnxNetIpFrame create() const;
 

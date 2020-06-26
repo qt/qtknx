@@ -137,7 +137,7 @@ void tst_QKnxNetIpSearchRequest::tst_srpBuilders()
 
         QCOMPARE(proxy.macAddress(), QKnxByteArray());
         QCOMPARE(proxy.serviceInfo(), QKnxServiceInfo());
-        QCOMPARE(proxy.descriptionTypes(), QVector<QKnxNetIp::DescriptionType>());
+        QCOMPARE(proxy.descriptionTypes(), QList<QKnxNetIp::DescriptionType>());
     }
 
     auto macAddress = QKnxByteArray::fromHex("4CCC6AE40000");
@@ -158,7 +158,7 @@ void tst_QKnxNetIpSearchRequest::tst_srpBuilders()
 
         QVERIFY(!proxy.programmingModeOnly());
         QCOMPARE(proxy.serviceInfo(), QKnxServiceInfo());
-        QCOMPARE(proxy.descriptionTypes(), QVector<QKnxNetIp::DescriptionType>());
+        QCOMPARE(proxy.descriptionTypes(), QList<QKnxNetIp::DescriptionType>());
     }
 
     QKnxServiceInfo serviceInfo { QKnxNetIp::ServiceFamily::ObjectServer, 0x04 };
@@ -179,10 +179,10 @@ void tst_QKnxNetIpSearchRequest::tst_srpBuilders()
 
         QVERIFY(!proxy.programmingModeOnly());
         QCOMPARE(proxy.macAddress(), QKnxByteArray());
-        QCOMPARE(proxy.descriptionTypes(), QVector<QKnxNetIp::DescriptionType>());
+        QCOMPARE(proxy.descriptionTypes(), QList<QKnxNetIp::DescriptionType>());
     }
 
-    QVector<QKnxNetIp::DescriptionType> types {
+    QList<QKnxNetIp::DescriptionType> types {
         QKnxNetIp::DescriptionType::DeviceInfo,
         QKnxNetIp::DescriptionType::SupportedServiceFamilies,
         QKnxNetIp::DescriptionType::ExtendedDeviceInfo
@@ -235,7 +235,7 @@ void tst_QKnxNetIpSearchRequest::testExtendSearchRequest()
     QKnxNetIpSrp macSrp2 = QKnxNetIpSrpProxy::macAddressBuilder()
                                     .setMac(macAddress2)
                                     .create();
-    QVector<QKnxNetIpSrp> srps = { macSrp1, macSrp2 };
+    QList<QKnxNetIpSrp> srps = { macSrp1, macSrp2 };
     QCOMPARE(srps.constFirst().isValid(), true);
     QVERIFY(srps.constFirst().header().isMandatory());
     QCOMPARE(srps.constFirst().bytes(),

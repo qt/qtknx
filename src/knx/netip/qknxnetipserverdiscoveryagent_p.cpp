@@ -55,9 +55,9 @@ namespace QKnxPrivate
         }
     }
 
-    static QVector<Adapter> adaptersForAddresses(const QVector<QHostAddress> addresses)
+    static QList<Adapter> adaptersForAddresses(const QList<QHostAddress> addresses)
     {
-        QVector<Adapter> adapters;
+        QList<Adapter> adapters;
         auto all = QNetworkInterface::allInterfaces();
         for (const auto &iface : all) {
             const auto flags = iface.flags();
@@ -299,7 +299,7 @@ void QKnxNetIpServerDiscoveryAgentPrivate::setupSocket()
     Q_Q(QKnxNetIpServerDiscoveryAgent);
     socket = new QUdpSocket(q);
 
-    adapter = QKnxPrivate::adaptersForAddresses(QVector<QHostAddress> { address }).value(0);
+    adapter = QKnxPrivate::adaptersForAddresses(QList<QHostAddress> { address }).value(0);
     QObject::connect(socket, &QUdpSocket::stateChanged, q, [&](QUdpSocket::SocketState s) {
         Q_Q(QKnxNetIpServerDiscoveryAgent);
         switch (s) {
@@ -561,7 +561,7 @@ void QKnxNetIpServerDiscoveryAgentPrivate::start()
     }
 }
 
-void QKnxNetIpServerDiscoveryAgentPrivate::start(const QVector<Adapter> &adapters)
+void QKnxNetIpServerDiscoveryAgentPrivate::start(const QList<Adapter> &adapters)
 {
     if (state != QKnxNetIpServerDiscoveryAgent::State::NotRunning)
         return;
@@ -618,14 +618,14 @@ void QKnxNetIpServerDiscoveryAgentPrivate::start(const QVector<Adapter> &adapter
     setAndEmitStateChanged(QKnxNetIpServerDiscoveryAgent::State::Running);
 }
 
-void QKnxNetIpServerDiscoveryAgentPrivate::start(const QVector<QHostAddress> addresses)
+void QKnxNetIpServerDiscoveryAgentPrivate::start(const QList<QHostAddress> addresses)
 {
     start(QKnxPrivate::adaptersForAddresses(addresses));
 }
 
 void QKnxNetIpServerDiscoveryAgentPrivate::start(QKnxNetIpServerDiscoveryAgent::InterfaceTypes types)
 {
-    QVector<Adapter> adapters;
+    QList<Adapter> adapters;
     auto all = QNetworkInterface::allInterfaces();
     for (const auto &iface : all) {
         const auto flags = iface.flags();

@@ -54,7 +54,7 @@ public:
     bool isValid() const;
 
     QKnxNetIp::DescriptionType descriptionType() const;
-    QVector<QKnxSecuredServiceInfo> serviceInfos() const;
+    QList<QKnxSecuredServiceInfo> serviceInfos() const;
 
     class Q_KNX_EXPORT Builder final
     {
@@ -62,7 +62,7 @@ public:
         Builder();
         ~Builder();
 
-        Builder &setServiceInfos(const QVector<QKnxSecuredServiceInfo> &infos);
+        Builder &setServiceInfos(const QList<QKnxSecuredServiceInfo> &infos);
 
         QKnxNetIpDib create() const;
 

@@ -203,7 +203,7 @@ public:
                                                      quint8 seqNumber = 0);
         static QKnxTpdu createLinkResponseTpdu(Mode mode, quint8 groupObjectNumber,
                                                      quint8 sendingAddress, quint8 startAddress,
-                                                     const QVector<QKnxAddress> &addresses,
+                                                     const QList<QKnxAddress> &addresses,
                                                      quint8 seqNumber = 0);
         static QKnxTpdu createLinkWriteTpdu(Mode mode, quint8 groupObjectNumber,
                                                      QKnxTpdu::LinkWriteFlags flags,

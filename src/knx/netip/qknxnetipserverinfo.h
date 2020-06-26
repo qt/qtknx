@@ -61,8 +61,8 @@ public:
     quint16 controlEndpointPort() const;
     QHostAddress controlEndpointAddress() const;
 
-    QVector<QKnxServiceInfo> supportedServices() const;
-    QVector<QKnxNetIpTunnelingSlotInfo> tunnelingSlotInfos() const;
+    QList<QKnxServiceInfo> supportedServices() const;
+    QList<QKnxNetIpTunnelingSlotInfo> tunnelingSlotInfos() const;
 
     QKnx::MediumStatus mediumStatus() const;
     quint16 maximumLocalApduLength() const;

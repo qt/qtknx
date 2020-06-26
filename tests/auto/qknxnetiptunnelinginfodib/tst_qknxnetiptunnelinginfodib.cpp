@@ -58,7 +58,7 @@ private slots:
         QCOMPARE(proxy.descriptionType(), QKnxNetIp::DescriptionType::Unknown);
         QCOMPARE(proxy.maximumInterfaceApduLength(), 0x0000);
         QCOMPARE(proxy.tunnelingSlotInfo(), QKnxNetIpTunnelingSlotInfo());
-        QCOMPARE(proxy.optionalSlotInfos(), QVector<QKnxNetIpTunnelingSlotInfo>());
+        QCOMPARE(proxy.optionalSlotInfos(), QList<QKnxNetIpTunnelingSlotInfo>());
 
         dib = QKnxNetIpTunnelingInfoDibProxy::builder().create();
         QCOMPARE(proxy.isValid(), false);
@@ -66,7 +66,7 @@ private slots:
         QCOMPARE(proxy.descriptionType(), QKnxNetIp::DescriptionType::Unknown);
         QCOMPARE(proxy.maximumInterfaceApduLength(), 0x0000);
         QCOMPARE(proxy.tunnelingSlotInfo(), QKnxNetIpTunnelingSlotInfo());
-        QCOMPARE(proxy.optionalSlotInfos(), QVector<QKnxNetIpTunnelingSlotInfo>());
+        QCOMPARE(proxy.optionalSlotInfos(), QList<QKnxNetIpTunnelingSlotInfo>());
     }
 
     void testValidDib()

@@ -69,7 +69,7 @@ namespace QKnxPrivate
         return s;
     }
 
-    static QVector<QKnxNetIpSecureConfiguration> fromKeyring(QKnxNetIpSecureConfiguration::Type type,
+    static QList<QKnxNetIpSecureConfiguration> fromKeyring(QKnxNetIpSecureConfiguration::Type type,
         const QKnxAddress &ia, const QString &filePath, const QByteArray &password, bool validate)
     {
         QFile file;
@@ -93,7 +93,7 @@ namespace QKnxPrivate
         const auto createdHash = QKnxCryptographicEngine::hashSha256(keyring.Created.toUtf8());
 
         auto iaString = ia.toString();
-        QVector<QKnxNetIpSecureConfiguration> results;
+        QList<QKnxNetIpSecureConfiguration> results;
 
         if (type == QKnxNetIpSecureConfiguration::Type::Tunneling) {
             if (keyring.Interface.isEmpty())
@@ -177,16 +177,16 @@ QKnxNetIpSecureConfiguration::QKnxNetIpSecureConfiguration()
 QKnxNetIpSecureConfiguration::~QKnxNetIpSecureConfiguration() = default;
 
 /*!
-    Constructs a vector of secure configurations for the given type
+    Constructs a list of secure configurations for the given type
     \a type from an ETS exported \a keyring (*.knxkeys) file that was
     encrypted with the given password \a password. Set the \a validate
     argument to \c true to verify that all data in the keyring file is
     trustworthy, \c false to omit the check.
 
     \note If an error occurred, no or invalid information for \a type
-     was found in the keyring file, the returned vector can be empty.
+     was found in the keyring file, the returned list can be empty.
 */
-QVector<QKnxNetIpSecureConfiguration> QKnxNetIpSecureConfiguration::fromKeyring(Type type,
+QList<QKnxNetIpSecureConfiguration> QKnxNetIpSecureConfiguration::fromKeyring(Type type,
     const QString &keyring, const QByteArray &password, bool validate)
 {
     return QKnxPrivate::fromKeyring(type, {}, keyring, password, validate);

@@ -145,7 +145,7 @@ int main(int argc, char *argv[])
     if (parser.isSet("filterMAC")) {
         agent.setDiscoveryMode(agent.discoveryMode()
             | QKnxNetIpServerDiscoveryAgent::DiscoveryMode::CoreV2);
-        agent.setExtendedSearchParameters(QVector<QKnxNetIpSrp>({
+        agent.setExtendedSearchParameters(QList<QKnxNetIpSrp>({
             QKnxNetIpSrpProxy::macAddressBuilder()
                 .setMac(QKnxByteArray::fromHex(parser.value("filterMAC").toLatin1()))
                 .create()
@@ -163,7 +163,7 @@ int main(int argc, char *argv[])
             agent.setDiscoveryMode(agent.discoveryMode()
                 | QKnxNetIpServerDiscoveryAgent::DiscoveryMode::CoreV2);
 
-            agent.setExtendedSearchParameters(QVector<QKnxNetIpSrp>({
+            agent.setExtendedSearchParameters(QList<QKnxNetIpSrp>({
                 QKnxNetIpSrpProxy::supportedFamilyBuilder()
                     .setServiceInfo({ QKnxNetIp::ServiceFamily(left), right })
                     .create()
@@ -178,7 +178,7 @@ int main(int argc, char *argv[])
         agent.start(QKnxNetIpServerDiscoveryAgent::InterfaceType::Ethernet
             | QKnxNetIpServerDiscoveryAgent::InterfaceType::Wifi);
     } else {
-        agent.start(QVector<QHostAddress> { agent.localAddress() });
+        agent.start(QList<QHostAddress> { agent.localAddress() });
     }
 
     if (agent.error() == QKnxNetIpServerDiscoveryAgent::Error::None

@@ -153,21 +153,21 @@ QKnxNetIpHpai QKnxNetIpSearchRequestProxy::discoveryEndpoint() const
 /*!
     \since 5.12
 
-    Returns a vector of extended search request parameter (SRP) structures.
-    The vector can be empty if no such structures are present or in case of
+    Returns a list of extended search request parameter (SRP) structures.
+    The list can be empty if no such structures are present or in case of
     an error while extracting the SRPs.
 
     \note The function does not perform validity checks on the
     \l QKnxNetIpFrame used to create the search request proxy object.
 */
-QVector<QKnxNetIpSrp> QKnxNetIpSearchRequestProxy::extendedSearchParameters() const
+QList<QKnxNetIpSrp> QKnxNetIpSearchRequestProxy::extendedSearchParameters() const
 {
     const auto &data = m_frame.constData();
 
     auto hpai = QKnxNetIpStructHeader<QKnxNetIp::HostProtocol>::fromBytes(data, 0);
     quint16 index = hpai.totalSize(); // total size of discovery endpoint HPAI
 
-    QVector<QKnxNetIpSrp> srps;
+    QList<QKnxNetIpSrp> srps;
     while (index < data.size()) {
         auto srp = QKnxNetIpSrp::fromBytes(data, index);
         if (!srp.isValid())
@@ -334,11 +334,11 @@ QKnxNetIpSearchRequestProxy::ExtendedBuilder::setDiscoveryEndpoint(const QKnxNet
 }
 
 /*!
-    Adds the QVector of extended parameters \a srps to the KNXnet/IP extended
+    Adds the list of extended parameters \a srps to the KNXnet/IP extended
     search request.
 */
 QKnxNetIpSearchRequestProxy::ExtendedBuilder &
-QKnxNetIpSearchRequestProxy::ExtendedBuilder::setExtendedParameters(const QVector<QKnxNetIpSrp> &srps)
+QKnxNetIpSearchRequestProxy::ExtendedBuilder::setExtendedParameters(const QList<QKnxNetIpSrp> &srps)
 {
     d_ptr->m_srps = srps;
     return *this;

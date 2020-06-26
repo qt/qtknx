@@ -87,7 +87,7 @@ public:
 class QKnxNetIpSrpProxy::RequestDibsPrivate : public QSharedData
 {
 public:
-    QVector<QKnxNetIp::DescriptionType> m_types;
+    QList<QKnxNetIp::DescriptionType> m_types;
     bool m_mandatory { true };
 };
 
@@ -98,7 +98,7 @@ public:
     ~QKnxNetIpSearchRequestExtendedBuilderPrivate() = default;
 
     QKnxNetIpHpai m_hpai = { QKnxNetIp::HostProtocol::Unknown};
-    QVector<QKnxNetIpSrp> m_srps;
+    QList<QKnxNetIpSrp> m_srps;
 };
 
 class QKnxNetIpSearchResponseExtendedBuilderPrivate : public QSharedData

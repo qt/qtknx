@@ -344,7 +344,7 @@ void Tunneling::on_manualInput_clicked(bool checked)
     ui->cemiFrame->setFocus();
 }
 
-void Tunneling::onKeyringChanged(const QVector<QKnxNetIpSecureConfiguration> &configs)
+void Tunneling::onKeyringChanged(const QList<QKnxNetIpSecureConfiguration> &configs)
 {
     m_configs = configs;
     updateSecureConfigCombo();

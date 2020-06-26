@@ -43,7 +43,7 @@
 
 #include <QtCore/qdatetime.h>
 #include <QtCore/qstring.h>
-#include <QtCore/qvector.h>
+#include <QtCore/qlist.h>
 #include <QtKnx/private/qknxprojectutils_p.h>
 
 QT_BEGIN_NAMESPACE
@@ -71,7 +71,7 @@ public:
         bool Acknowledge { false }; // optional
     }
     Send;
-    QVector<QKnxConnector> Receive; // 0..n
+    QList<QKnxConnector> Receive; // 0..n
 
     bool parseElement(QXmlStreamReader *reader, bool pedantic);
 };
@@ -92,12 +92,12 @@ public:
     QString TransmitFlag; // optional, Enabled, Disabled
     QString UpdateFlag; // optional, Enabled, Disabled
     QString ReadOnInitFlag; // optional, Enabled, Disabled
-    QVector<QString> DatapointType; // optional, non-colonized name, pattern [\i-[:]][\c-[:]]*
+    QList<QString> DatapointType; // optional, non-colonized name, pattern [\i-[:]][\c-[:]]*
     QString Description; // optional
     bool IsActive; // optional
     QString ChannelId; // optional, non-colonized name, pattern [\i-[:]][\c-[:]]*
 
-    QVector<QKnxConnectors> Connectors; // 0..1
+    QList<QKnxConnectors> Connectors; // 0..1
 
     bool parseElement(QXmlStreamReader *reader, bool pedantic);
 };
@@ -184,7 +184,7 @@ public:
     QString Comment; // optional
     QString Password; // optional, 20 character max.
 
-    QVector<QString> Connectors; // 0..n, non-colonized name, pattern [\i-[:]][\c-[:]]*
+    QList<QString> Connectors; // 0..n, non-colonized name, pattern [\i-[:]][\c-[:]]*
 
     bool parseElement(QXmlStreamReader *reader, bool pedantic);
 };
@@ -225,14 +225,14 @@ public:
     bool IsRFRetransmitter { false }; // optional
     qint32 Puid { 0 };
 
-    QVector<QKnxParameterInstanceRef> ParameterInstanceRefs; // 0..n
-    QVector<QKnxComObjectInstanceRef> ComObjectInstanceRefs; // 0..n
-    QVector<QKnxChannelInstance> ChannelInstances; // 0..n
-    QVector<QKnxAdditionalAddress> AdditionalAddresses; // 1..254
-    QVector<QKnxBinaryData> BinaryData; // 1..n
+    QList<QKnxParameterInstanceRef> ParameterInstanceRefs; // 0..n
+    QList<QKnxComObjectInstanceRef> ComObjectInstanceRefs; // 0..n
+    QList<QKnxChannelInstance> ChannelInstances; // 0..n
+    QList<QKnxAdditionalAddress> AdditionalAddresses; // 1..254
+    QList<QKnxBinaryData> BinaryData; // 1..n
     QKnxIpConfig IpConfig;
     QKnxSecurity Security;
-    QVector<QKnxBusInterface> BusInterfaces; // 1..n
+    QList<QKnxBusInterface> BusInterfaces; // 1..n
 
     bool parseElement(QXmlStreamReader *reader, bool pedantic);
 };

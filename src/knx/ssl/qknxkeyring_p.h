@@ -42,7 +42,7 @@
 //
 
 #include <QtCore/qcoreapplication.h>
-#include <QtCore/qvector.h>
+#include <QtCore/qlist.h>
 #include <QtCore/qxmlstream.h>
 
 #include <QtKnx/qtknxglobal.h>
@@ -82,11 +82,11 @@ public:
 
     public:
         quint16 Address; // mandatory
-        QVector<QString> Senders; // mandatory
+        QList<QString> Senders; // mandatory
 
         bool parseElement(QXmlStreamReader *reader, bool pedantic);
     };
-    QVector<QKnxGroup> Group; // 0..n
+    QList<QKnxGroup> Group; // 0..n
 
     bool parseElement(QXmlStreamReader *reader, bool pedantic);
 };
@@ -106,7 +106,7 @@ public:
 
         bool parseElement(QXmlStreamReader *reader, bool pedantic);
     };
-    QVector<QKnxGroup> Group; // 1..n
+    QList<QKnxGroup> Group; // 1..n
 
     bool parseElement(QXmlStreamReader *reader, bool pedantic);
 };
@@ -130,7 +130,7 @@ struct Q_KNX_EXPORT QKnxDevices
     Q_DECLARE_TR_FUNCTIONS(QKnxDevices)
 
 public:
-    QVector<QKnxDevice> Device; // 0..n
+    QList<QKnxDevice> Device; // 0..n
     bool parseElement(QXmlStreamReader *reader, bool pedantic);
 };
 
@@ -144,10 +144,10 @@ public:
     QString CreatedBy; // mandatory
     QByteArray Signature; // mandatory, Base64 encoded, pattern [A-Za-z0-9\+/]{21}[AQgw]==
 
-    QVector<QKnxBackbone> Backbone; // 0..1
-    QVector<QKnxInterface> Interface; // 0..n
-    QVector<QKnxGroupAddresses> GroupAddresses; // 0..1
-    QVector<QKnxDevices> Devices; // 0..1
+    QList<QKnxBackbone> Backbone; // 0..1
+    QList<QKnxInterface> Interface; // 0..n
+    QList<QKnxGroupAddresses> GroupAddresses; // 0..1
+    QList<QKnxDevices> Devices; // 0..1
 
     bool parseElement(QXmlStreamReader *reader, bool pedantic);
     bool validate(QXmlStreamReader *reader, const QKnxByteArray &pwHash) const;

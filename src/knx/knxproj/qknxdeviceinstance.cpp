@@ -146,7 +146,7 @@ bool QKnxComObjectInstanceRef::parseElement(QXmlStreamReader *reader, bool pedan
         ReadOnInitFlag = attrs.value(QStringLiteral("ReadOnInitFlag")).toString(); // TODO: pedantic
 
         auto attr = attrs.value(QStringLiteral("DatapointType")).toString();
-        DatapointType = attr.split(QLatin1Char(' ')).toVector(); // TODO: pedantic
+        DatapointType = attr.split(QLatin1Char(' ')).toList(); // TODO: pedantic
 
         Description = attrs.value(QStringLiteral("Description")).toString();
         IsActive = fetchBool(attrs, QStringLiteral("IsActive"));

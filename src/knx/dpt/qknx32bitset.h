@@ -104,7 +104,7 @@ public:
     };
 
     QKnxCombinedInfoOnOff();
-    explicit QKnxCombinedInfoOnOff(const QVector<OutputInfo> &infos);
+    explicit QKnxCombinedInfoOnOff(const QList<OutputInfo> &infos);
     QKnxCombinedInfoOnOff(Output output, OutputState state, OutputValidity validity);
 
     static const constexpr int SubType = 0x01;
@@ -115,7 +115,7 @@ public:
     OutputValidity validity(Output output) const;
     bool setValidity(Output output, OutputValidity validity);
 
-    bool setValue(const QVector<OutputInfo> &infos);
+    bool setValue(const QList<OutputInfo> &infos);
     bool setValue(Output output, OutputState state, OutputValidity validity);
 };
 

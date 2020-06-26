@@ -103,7 +103,7 @@ public:
 
     quint16 maximumInterfaceApduLength() const;
     QKnxNetIpTunnelingSlotInfo tunnelingSlotInfo() const;
-    QVector<QKnxNetIpTunnelingSlotInfo> optionalSlotInfos() const;
+    QList<QKnxNetIpTunnelingSlotInfo> optionalSlotInfos() const;
 
     class Q_KNX_EXPORT Builder final
     {
@@ -113,7 +113,7 @@ public:
 
         Builder &setMaximumInterfaceApduLength(quint16 length);
         Builder &setTunnelingSlotInfo(const QKnxNetIpTunnelingSlotInfo &info);
-        Builder &setOptionalSlotInfos(const QVector<QKnxNetIpTunnelingSlotInfo> &infos);
+        Builder &setOptionalSlotInfos(const QList<QKnxNetIpTunnelingSlotInfo> &infos);
 
         QKnxNetIpDib create() const;
 

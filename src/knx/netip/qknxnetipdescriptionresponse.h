@@ -30,7 +30,7 @@
 #ifndef QKNXNETIPDESCRIPTIONRESPONSE_H
 #define QKNXNETIPDESCRIPTIONRESPONSE_H
 
-#include <QtCore/qvector.h>
+#include <QtCore/qlist.h>
 
 #include <QtKnx/qknxnetipframe.h>
 #include <QtKnx/qtknxglobal.h>
@@ -51,21 +51,21 @@ public:
 
     QKnxNetIpDib deviceHardware() const;
     QKnxNetIpDib supportedFamilies() const;
-    QVector<QKnxNetIpDib> optionalDibs() const;
+    QList<QKnxNetIpDib> optionalDibs() const;
 
     class Q_KNX_EXPORT Builder final
     {
     public:
         Builder &setDeviceHardware(const QKnxNetIpDib &ddib);
         Builder &setSupportedFamilies(const QKnxNetIpDib &sdib);
-        Builder &setOptionalDibs(const QVector<QKnxNetIpDib> &dibs);
+        Builder &setOptionalDibs(const QList<QKnxNetIpDib> &dibs);
 
         QKnxNetIpFrame create() const;
 
     private:
         QKnxNetIpDib m_ddib;
         QKnxNetIpDib m_sdib;
-        QVector<QKnxNetIpDib> m_optionalDibs;
+        QList<QKnxNetIpDib> m_optionalDibs;
     };
     static QKnxNetIpDescriptionResponseProxy::Builder builder();
 

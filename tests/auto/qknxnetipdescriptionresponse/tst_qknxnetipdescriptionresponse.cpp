@@ -169,7 +169,7 @@ void tst_QKnxNetIpDescriptionResponse::testSupportedFamiliesAccessor()
 
 void tst_QKnxNetIpDescriptionResponse::testSupportedFamiliesVersions()
 {
-    QVector<QKnxServiceInfo> fam = {
+    QList<QKnxServiceInfo> fam = {
         { QKnxNetIp::ServiceFamily::IpTunneling, 0x04 },
         { QKnxNetIp::ServiceFamily::Core, 9 },
         { QKnxNetIp::ServiceFamily::DeviceManagement, 2 },

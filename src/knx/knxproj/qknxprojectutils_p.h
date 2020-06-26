@@ -82,7 +82,7 @@ public:
     }
 
     template<typename T>
-    static bool parseChildElement(QXmlStreamReader *reader, bool pedantic, QVector<T> *container)
+    static bool parseChildElement(QXmlStreamReader *reader, bool pedantic, QList<T> *container)
     {
         while (!reader->atEnd() && reader->readNextStartElement()) {
             T element;

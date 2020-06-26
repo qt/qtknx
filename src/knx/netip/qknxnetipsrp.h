@@ -30,7 +30,7 @@
 #ifndef QKNXNETIPSRP_H
 #define QKNXNETIPSRP_H
 
-#include <QtCore/qvector.h>
+#include <QtCore/qlist.h>
 #include <QtCore/qshareddata.h>
 #include <QtKnx/qtknxglobal.h>
 #include <QtKnx/qknxnetipstruct.h>
@@ -61,7 +61,7 @@ public:
     bool programmingModeOnly() const;
     QKnxByteArray macAddress() const;
     QKnxServiceInfo serviceInfo() const;
-    QVector<QKnxNetIp::DescriptionType> descriptionTypes() const;
+    QList<QKnxNetIp::DescriptionType> descriptionTypes() const;
 
     class Q_KNX_EXPORT ProgrammingMode final
     {
@@ -128,7 +128,7 @@ public:
         RequestDibs(const RequestDibs &other);
         RequestDibs &operator=(const RequestDibs &other);
 
-        RequestDibs &setDescriptionTypes(const QVector<QKnxNetIp::DescriptionType> &types);
+        RequestDibs &setDescriptionTypes(const QList<QKnxNetIp::DescriptionType> &types);
         RequestDibs &setMandatory(bool value);
 
         QKnxNetIpSrp create() const;

@@ -29,7 +29,7 @@
 
 #include <QtCore/QCommandLineParser>
 #include <QtCore/qdebug.h>
-#include <QtCore/qvector.h>
+#include <QtCore/qlist.h>
 #include <QtCore/qversionnumber.h>
 #include <QtCore/qxmlstream.h>
 #include <QtKnx/qknxgroupaddressinfos.h>

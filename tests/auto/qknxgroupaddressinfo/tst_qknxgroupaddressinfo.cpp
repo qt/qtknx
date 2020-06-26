@@ -41,12 +41,12 @@ private slots:
     void groupAddressInfosFromZip();
 
 private:
-    QVector<QKnxGroupAddressInfo> initGroupAddressInfos(const QString &install = {});
+    QList<QKnxGroupAddressInfo> initGroupAddressInfos(const QString &install = {});
 };
 
-QVector<QKnxGroupAddressInfo> tst_QKnxGroupAddressInfos::initGroupAddressInfos(const QString &i)
+QList<QKnxGroupAddressInfo> tst_QKnxGroupAddressInfos::initGroupAddressInfos(const QString &i)
 {
-    return QVector<QKnxGroupAddressInfo> {
+    return QList<QKnxGroupAddressInfo> {
         { i, "Living room Ceiling light switching", 0x0900, "DPST-1-1", "Living room Ceiling light" },
         { i, "Living room Desk light switching", 0x0901, "DPST-1-1", "Living room Desk light" },
         { i, "Living room Socket switching", 0x0902, "DPST-1-1", "Living room Socket" },
@@ -200,7 +200,7 @@ void tst_QKnxGroupAddressInfos::groupAddressInfosFromXml()
 {
     QKnxGroupAddressInfos infos(QString(":/data/0.xml"));
 
-    QCOMPARE(infos.projectIds(), QVector<QString>());
+    QCOMPARE(infos.projectIds(), QList<QString>());
     QCOMPARE(infos.projectFile(), QString(":/data/0.xml"));
     QCOMPARE(infos.status(), QKnxGroupAddressInfos::Status::NoError);
     QCOMPARE(infos.errorString(), QString());
@@ -263,7 +263,7 @@ void tst_QKnxGroupAddressInfos::groupAddressInfosFromXml()
 void tst_QKnxGroupAddressInfos::groupAddressInfosFromZip()
 {
     QKnxGroupAddressInfos infos;
-    QCOMPARE(infos.projectIds(), QVector<QString>());
+    QCOMPARE(infos.projectIds(), QList<QString>());
     QCOMPARE(infos.projectFile(), QString());
     QCOMPARE(infos.status(), QKnxGroupAddressInfos::Status::NoError);
     QCOMPARE(infos.errorString(), QString());

@@ -48,16 +48,16 @@ public:
     bool isValid() const;
 
     QKnxNetIp::DescriptionType descriptionType() const;
-    QVector<QKnxAddress> individualAddresses() const;
+    QList<QKnxAddress> individualAddresses() const;
 
     class Q_KNX_EXPORT Builder final
     {
     public:
-        Builder &setIndividualAddresses(const QVector<QKnxAddress> &addresses);
+        Builder &setIndividualAddresses(const QList<QKnxAddress> &addresses);
         QKnxNetIpDib create() const;
 
     private:
-        QVector<QKnxAddress> m_addresses;
+        QList<QKnxAddress> m_addresses;
     };
     static QKnxNetIpKnxAddressesDibProxy::Builder builder();
 

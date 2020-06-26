@@ -30,7 +30,7 @@
 #ifndef QKNXLINKLAYERFRAMEBUILDER_H
 #define QKNXLINKLAYERFRAMEBUILDER_H
 
-#include <QtCore/qvector.h>
+#include <QtCore/qlist.h>
 #include <QtKnx/qknxadditionalinfo.h>
 #include <QtKnx/qknxaddress.h>
 #include <QtKnx/qknxcontrolfield.h>
@@ -54,13 +54,13 @@ public:
     Builder &setMedium(QKnx::MediumType type);
     Builder &setData(const QKnxByteArray &data, quint16 offset = 0);
     Builder &setMessageCode(QKnxLinkLayerFrame::MessageCode code);
-    Builder &setAdditionalInfos(const QVector<QKnxAdditionalInfo> &infos);
+    Builder &setAdditionalInfos(const QList<QKnxAdditionalInfo> &infos);
 
     QKnxLinkLayerFrame createFrame() const;
 
 private:
     QKnxLinkLayerFrame::MessageCode m_code { QKnxLinkLayerFrame::MessageCode::DataRequest };
-    QVector<QKnxAdditionalInfo> m_additionalInfos;
+    QList<QKnxAdditionalInfo> m_additionalInfos;
     QKnxAddress m_src { QKnxAddress::Type::Individual, 0x0000 };
     QKnxAddress m_dest;
     mutable QKnxControlField m_ctrl { 0xbc };

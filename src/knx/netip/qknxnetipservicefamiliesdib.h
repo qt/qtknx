@@ -56,17 +56,17 @@ public:
     bool isValid() const;
 
     QKnxNetIp::DescriptionType descriptionType() const;
-    QVector<QKnxServiceInfo> serviceInfos() const;
+    QList<QKnxServiceInfo> serviceInfos() const;
 
     class Q_KNX_EXPORT Builder final
     {
     public:
-        Builder &setServiceInfos(const QVector<QKnxServiceInfo> &infos);
+        Builder &setServiceInfos(const QList<QKnxServiceInfo> &infos);
 
         QKnxNetIpDib create() const;
 
     private:
-        QVector<QKnxServiceInfo> m_infos;
+        QList<QKnxServiceInfo> m_infos;
     };
     static QKnxNetIpServiceFamiliesDibProxy::Builder builder();
 

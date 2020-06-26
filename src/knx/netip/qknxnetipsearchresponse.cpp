@@ -155,17 +155,17 @@ QKnxNetIpDib QKnxNetIpSearchResponseProxy::supportedFamilies() const
 /*!
     \since 5.12
 
-    Returns the vector of optional KNXnet/IP server device information block
+    Returns the list of optional KNXnet/IP server device information block
     (DIB) structures of the extended search response frame. The function
     therefor will remove the mandatory device hardware and service family DIB.
 
-    The vector can be empty if no optional structures are present or in
+    The list can be empty if no optional structures are present or in
     case of an error while extracting the optional DIBs.
 
     \note The function does not perform validity checks on the
     \l QKnxNetIpFrame used to create the description response proxy object.
 */
-QVector<QKnxNetIpDib> QKnxNetIpSearchResponseProxy::optionalDibs() const
+QList<QKnxNetIpDib> QKnxNetIpSearchResponseProxy::optionalDibs() const
 {
     auto variable = variableDibs();
     variable.erase(std::remove_if(variable.begin(), variable.end(), [](const QKnxNetIpDib &dib) {
@@ -178,15 +178,15 @@ QVector<QKnxNetIpDib> QKnxNetIpSearchResponseProxy::optionalDibs() const
 /*!
     \since 5.12
 
-    Returns the vector of KNXnet/IP server device information blocks (DIBs)
-    structure of the extended search response frame. The vector can be empty
+    Returns the list of KNXnet/IP server device information blocks (DIBs)
+    structure of the extended search response frame. The list can be empty
     if no such structures are present or in case of an error while extracting
     the optional DIBs.
 
     \note The function does not perform validity checks on the
     \l QKnxNetIpFrame used to create the description response proxy object.
 */
-QVector<QKnxNetIpDib> QKnxNetIpSearchResponseProxy::variableDibs() const
+QList<QKnxNetIpDib> QKnxNetIpSearchResponseProxy::variableDibs() const
 {
     if (!isExtended())
          return {};
@@ -194,7 +194,7 @@ QVector<QKnxNetIpDib> QKnxNetIpSearchResponseProxy::variableDibs() const
     const auto &data = m_frame.constData();
     quint16 index = 8;
 
-    QVector<QKnxNetIpDib> dibs;
+    QList<QKnxNetIpDib> dibs;
     while (index < data.size()) {
         auto dib = QKnxNetIpDib::fromBytes(data, index);
         if (!dib.isValid())

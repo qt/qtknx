@@ -43,7 +43,7 @@
 
 #include <QtCore/qdatetime.h>
 #include <QtCore/qstring.h>
-#include <QtCore/qvector.h>
+#include <QtCore/qlist.h>
 #include <QtKnx/private/qknxprojectutils_p.h>
 
 QT_BEGIN_NAMESPACE
@@ -137,11 +137,11 @@ public:
     quint32 LastUsedPuid { 0 };
     quint32 DeviceCount { 0 }; // (optional) not declared inside the knx_project.xsd
 
-    QVector<QKnxHistoryEntry> HistoryEntries; // 0..n
-    QVector<QKnxToDoItem> ToDoItems; // 0..n
-    QVector<QKnxProjectTrace> ProjectTraces; // 0..n
-    QVector<QKnxDeviceCertificate> DeviceCertificates; // 0..n
-    QVector<QKnxUserFile> UserFiles; // 0..n, (optional) not declared inside the knx_project.xsd
+    QList<QKnxHistoryEntry> HistoryEntries; // 0..n
+    QList<QKnxToDoItem> ToDoItems; // 0..n
+    QList<QKnxProjectTrace> ProjectTraces; // 0..n
+    QList<QKnxDeviceCertificate> DeviceCertificates; // 0..n
+    QList<QKnxUserFile> UserFiles; // 0..n, (optional) not declared inside the knx_project.xsd
 
     bool parseElement(QXmlStreamReader *reader, bool pedantic);
 };

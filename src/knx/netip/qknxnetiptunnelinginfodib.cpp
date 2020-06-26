@@ -372,13 +372,13 @@ QKnxNetIpTunnelingSlotInfo QKnxNetIpTunnelingInfoDibProxy::tunnelingSlotInfo() c
 }
 
 /*!
-    Returns a vector of \l QKnxNetIpTunnelingSlotInfo objects carried by this
+    Returns a list of \l QKnxNetIpTunnelingSlotInfo objects carried by this
     KNXnet/IP DIB structure if the object that was passed during construction
-    was valid; otherwise returns an empty vector.
+    was valid; otherwise returns an empty list.
 */
-QVector<QKnxNetIpTunnelingSlotInfo> QKnxNetIpTunnelingInfoDibProxy::optionalSlotInfos() const
+QList<QKnxNetIpTunnelingSlotInfo> QKnxNetIpTunnelingInfoDibProxy::optionalSlotInfos() const
 {
-    QVector<QKnxNetIpTunnelingSlotInfo> infos;
+    QList<QKnxNetIpTunnelingSlotInfo> infos;
     if (!isValid())
         return infos;
 
@@ -441,7 +441,7 @@ public:
 
     quint16 maxApduLength { 0 };
     QKnxNetIpTunnelingSlotInfo m_info; // mandatory
-    QVector<QKnxNetIpTunnelingSlotInfo> m_infos;
+    QList<QKnxNetIpTunnelingSlotInfo> m_infos;
 };
 
 /*!
@@ -483,7 +483,7 @@ QKnxNetIpTunnelingInfoDibProxy::Builder &QKnxNetIpTunnelingInfoDibProxy::Builder
     to \a infos and returns a reference to the builder.
 */
 QKnxNetIpTunnelingInfoDibProxy::Builder &QKnxNetIpTunnelingInfoDibProxy::Builder
-    ::setOptionalSlotInfos(const QVector<QKnxNetIpTunnelingSlotInfo> &infos)
+    ::setOptionalSlotInfos(const QList<QKnxNetIpTunnelingSlotInfo> &infos)
 {
     d_ptr->m_infos = infos;
     return *this;

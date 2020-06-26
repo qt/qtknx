@@ -94,7 +94,7 @@ public:
     void setLocalAddress(const QHostAddress &address);
     void setKnxNetIpServer(const QKnxNetIpServerInfo &server);
     void setTcpEnable(bool value);
-    void onKeyringChanged(const QVector<QKnxNetIpSecureConfiguration> &configs);
+    void onKeyringChanged(const QList<QKnxNetIpSecureConfiguration> &configs);
 
 public slots:
     void clearLogging();
@@ -121,7 +121,7 @@ private:
     QKnxNetIpTunnel m_tunnel;
     QKnxNetIpServerInfo m_server;
     QKnxNetIp::HostProtocol m_proto { QKnxNetIp::HostProtocol::UDP_IPv4 };
-    QVector<QKnxNetIpSecureConfiguration> m_configs;
+    QList<QKnxNetIpSecureConfiguration> m_configs;
 
 };
 

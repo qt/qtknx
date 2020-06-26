@@ -69,7 +69,7 @@ struct DiscovererConfig
     ~DiscovererConfig() = default;
 
     DiscovererConfig(int ttl, int timeout, bool nat, bool multicast, bool coreV1, bool coreV2,
-            const QVector<QKnxNetIpSrp> &srps)
+            const QList<QKnxNetIpSrp> &srps)
         : Ttl(ttl)
         , Timeout(timeout)
         , Nat(nat)
@@ -88,7 +88,7 @@ struct DiscovererConfig
     bool DiscoveryCoreV1 { true };
     bool DiscoveryCoreV2 { true };
 
-    QVector<QKnxNetIpSrp> ExtendedSearchParameters;
+    QList<QKnxNetIpSrp> ExtendedSearchParameters;
 };
 
 class Discoverer : public QObject
@@ -129,7 +129,7 @@ private:
     QUdpSocket *m_socket { nullptr };
 
     DiscovererConfig m_config;
-    QVector<QByteArray> m_devices;
+    QList<QByteArray> m_devices;
 
     QHostAddress m_multicast { QStringLiteral("224.0.23.12") };
     QKnxNetIpServerDiscoveryAgent::State m_state { QKnxNetIpServerDiscoveryAgent::State::NotRunning };
@@ -153,8 +153,8 @@ public:
     void setAndEmitErrorOccurred(QKnxNetIpServerDiscoveryAgent::Error newError, const QString &message);
 
     void start();
-    void start(const QVector<Adapter> &adapters);
-    void start(const QVector<QHostAddress> addresses);
+    void start(const QList<Adapter> &adapters);
+    void start(const QList<QHostAddress> addresses);
     void start(QKnxNetIpServerDiscoveryAgent::InterfaceTypes types);
     void stop();
 
@@ -175,7 +175,7 @@ private:
     int timeout { QKnxNetIp::Timeout::SearchTimeout };
 
     QString errorString;
-    QVector<QKnxNetIpServerInfo> servers;
+    QList<QKnxNetIpServerInfo> servers;
 
     QKnxNetIpServerDiscoveryAgent::Error error { QKnxNetIpServerDiscoveryAgent::Error::None };
     QKnxNetIpServerDiscoveryAgent::State state { QKnxNetIpServerDiscoveryAgent::State::NotRunning };
@@ -184,10 +184,10 @@ private:
 
     QKnxNetIpServerDiscoveryAgent::DiscoveryModes mode
         { QKnxNetIpServerDiscoveryAgent::DiscoveryMode::CoreV1 };
-    QVector<QKnxNetIpSrp> srps;
+    QList<QKnxNetIpSrp> srps;
 
     Adapter adapter;
-    QVector<Discoverer*> discoveries;
+    QList<Discoverer*> discoveries;
 };
 
 QT_END_NAMESPACE

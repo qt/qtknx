@@ -55,8 +55,8 @@ public:
     QKnxNetIpDib deviceHardware() const;
     QKnxNetIpDib supportedFamilies() const;
 
-    QVector<QKnxNetIpDib> optionalDibs() const;
-    QVector<QKnxNetIpDib> variableDibs() const;
+    QList<QKnxNetIpDib> optionalDibs() const;
+    QList<QKnxNetIpDib> variableDibs() const;
 
     class Q_KNX_EXPORT Builder final
     {

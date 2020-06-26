@@ -43,7 +43,7 @@
 
 #include <QtCore/qdatetime.h>
 #include <QtCore/qstring.h>
-#include <QtCore/qvector.h>
+#include <QtCore/qlist.h>
 #include <QtKnx/private/qknxbuildings_p.h>
 #include <QtKnx/private/qknxgroupaddresses_p.h>
 #include <QtKnx/private/qknxprojectutils_p.h>
@@ -69,8 +69,8 @@ public:
     QString Description; // optional
     qint32 Puid { 0 };
 
-    QVector<QKnxTrade> Trade; // 0..n
-    QVector<QString> DeviceInstanceRef; // 0..n, non-colonized name, pattern [\i-[:]][\c-[:]]*
+    QList<QKnxTrade> Trade; // 0..n
+    QList<QString> DeviceInstanceRef; // 0..n, non-colonized name, pattern [\i-[:]][\c-[:]]*
 
     bool parseElement(QXmlStreamReader *reader, bool pedantic);
 };
@@ -110,13 +110,13 @@ public:
     QString IPRoutingBackboneSecurity { QLatin1String("Auto") }; // optional, Auto, On, Off
     QString SplitType; // optional, None, Master, Split
 
-    QVector<QKnxTopology> Topology; // 1
-    QVector<QKnxBuildings> Buildings; // 0..n
-    QVector<QKnxGroupAddresses> GroupAddresses; // 1
+    QList<QKnxTopology> Topology; // 1
+    QList<QKnxBuildings> Buildings; // 0..n
+    QList<QKnxGroupAddresses> GroupAddresses; // 1
 
-    QVector<QKnxTrade> Trades; // 0..n
-    QVector<QKnxBusAccess> BusAccess; // 0..1
-    QVector<QKnxSplitInfo> SplitInfos; // 0..n
+    QList<QKnxTrade> Trades; // 0..n
+    QList<QKnxBusAccess> BusAccess; // 0..1
+    QList<QKnxSplitInfo> SplitInfos; // 0..n
 
     bool parseElement(QXmlStreamReader *reader, bool pedantic);
 };

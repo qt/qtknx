@@ -248,7 +248,7 @@ QString QKnxNetIpServerDiscoveryAgent::errorString() const
 /*!
     Returns a list of servers that were discovered.
 */
-QVector<QKnxNetIpServerInfo> QKnxNetIpServerDiscoveryAgent::discoveredServers() const
+QList<QKnxNetIpServerInfo> QKnxNetIpServerDiscoveryAgent::discoveredServers() const
 {
     return d_func()->servers;
 }
@@ -449,7 +449,7 @@ void QKnxNetIpServerDiscoveryAgent::setDiscoveryMode(QKnxNetIpServerDiscoveryAge
     Returns the search request parameter (SRP) objects used in an
     \l {QKnxNetIpServerDiscoveryAgent::CoreV2} {extended search request}.
 */
-QVector<QKnxNetIpSrp> QKnxNetIpServerDiscoveryAgent::extendedSearchParameters() const
+QList<QKnxNetIpSrp> QKnxNetIpServerDiscoveryAgent::extendedSearchParameters() const
 {
     return d_func()->srps;
 }
@@ -466,7 +466,7 @@ QVector<QKnxNetIpSrp> QKnxNetIpServerDiscoveryAgent::extendedSearchParameters() 
     \sa QKnxNetIpSrpProxy::MacAddress, QKnxNetIpSrpProxy::ProgrammingMode,
         QKnxNetIpSrpProxy::SupportedFamily, QKnxNetIpSrpProxy::RequestDibs
 */
-void QKnxNetIpServerDiscoveryAgent::setExtendedSearchParameters(const QVector<QKnxNetIpSrp> &srps)
+void QKnxNetIpServerDiscoveryAgent::setExtendedSearchParameters(const QList<QKnxNetIpSrp> &srps)
 {
     d_func()->srps = srps;
 }
@@ -496,7 +496,7 @@ void QKnxNetIpServerDiscoveryAgent::start(int timeout)
 
     \note Does not emit the errorOccurred signal.
 */
-void QKnxNetIpServerDiscoveryAgent::start(const QVector<QHostAddress> &addresses)
+void QKnxNetIpServerDiscoveryAgent::start(const QList<QHostAddress> &addresses)
 {
     d_func()->start(addresses);
 }

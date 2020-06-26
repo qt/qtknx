@@ -26,7 +26,7 @@
 **
 ******************************************************************************/
 
-#include <QtCore/qvector.h>
+#include <QtCore/qlist.h>
 #include <QtCore/qmetaobject.h>
 #include <QtKnx/qknx1bit.h>
 #include <QtKnx/qknx1bitcontrolled.h>

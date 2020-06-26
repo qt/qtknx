@@ -60,7 +60,7 @@ void tst_QKnxNetIpKnxAddressesDib::testDefaultConstructor()
     QKnxNetIpKnxAddressesDibProxy view(addrDib);
     QCOMPARE(view.isValid(), true);
     QCOMPARE(view.descriptionType(), QKnxNetIp::DescriptionType::KnxAddresses);
-    QCOMPARE(view.individualAddresses(), QVector<QKnxAddress>{});
+    QCOMPARE(view.individualAddresses(), QList<QKnxAddress>{});
 }
 
 void tst_QKnxNetIpKnxAddressesDib::testConstructorWithOneArgument()
@@ -77,12 +77,12 @@ void tst_QKnxNetIpKnxAddressesDib::testConstructorWithOneArgument()
     QKnxNetIpKnxAddressesDibProxy view(addresses);
     QCOMPARE(view.isValid(), true);
     QCOMPARE(view.descriptionType(), QKnxNetIp::DescriptionType::KnxAddresses);
-    QCOMPARE(view.individualAddresses(), QVector<QKnxAddress> { QKnxAddress::createIndividual(1, 1, 1) });
+    QCOMPARE(view.individualAddresses(), QList<QKnxAddress> { QKnxAddress::createIndividual(1, 1, 1) });
 }
 
 void tst_QKnxNetIpKnxAddressesDib::testConstructorWithTwoArguments()
 {
-    QVector<QKnxAddress> knxAddresses;
+    QList<QKnxAddress> knxAddresses;
     knxAddresses.append(QKnxAddress::createIndividual(1, 1, 0));
     knxAddresses.append(QKnxAddress::createIndividual(1, 2, 5));
     knxAddresses.append(QKnxAddress::createIndividual(2, 3, 8));
@@ -105,7 +105,7 @@ void tst_QKnxNetIpKnxAddressesDib::testConstructorWithTwoArguments()
 
 void tst_QKnxNetIpKnxAddressesDib::testIndividualAddresses()
 {
-    QVector<QKnxAddress> knxAddresses;
+    QList<QKnxAddress> knxAddresses;
     knxAddresses.append(QKnxAddress::createIndividual(1, 1, 0));
     knxAddresses.append(QKnxAddress::createGroup(1, 2, 5));
     knxAddresses.append(QKnxAddress::createIndividual(2, 3, 8));

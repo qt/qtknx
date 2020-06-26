@@ -32,7 +32,7 @@
 
 #include <QtCore/qobject.h>
 #include <QtCore/qshareddata.h>
-#include <QtCore/qvector.h>
+#include <QtCore/qlist.h>
 #include <QtKnx/qknxinterfaceobjectproperty.h>
 #include <QtKnx/qknxdatapointtype.h>
 
@@ -135,7 +135,7 @@ public:
     QKnxInterfaceObjectPropertyDataType::Unit unit() const;
 
     static quint8 size(QKnxInterfaceObjectPropertyDataType::Id id, bool read = false);
-    static QVector<QKnxInterfaceObjectPropertyDataType> fromProperty(QKnxInterfaceObjectProperty p);
+    static QList<QKnxInterfaceObjectPropertyDataType> fromProperty(QKnxInterfaceObjectProperty p);
 
     QKnxInterfaceObjectPropertyDataType(const QKnxInterfaceObjectPropertyDataType &o);
     QKnxInterfaceObjectPropertyDataType &operator=(const QKnxInterfaceObjectPropertyDataType &o);

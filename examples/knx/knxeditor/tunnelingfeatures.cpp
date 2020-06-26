@@ -279,7 +279,7 @@ void TunnelingFeatures::setTcpEnable(bool value)
     m_protocol = (value ? QKnxNetIp::HostProtocol::TCP_IPv4 : QKnxNetIp::HostProtocol::UDP_IPv4);
 }
 
-void TunnelingFeatures::onKeyringChanged(const QVector<QKnxNetIpSecureConfiguration> &configs)
+void TunnelingFeatures::onKeyringChanged(const QList<QKnxNetIpSecureConfiguration> &configs)
 {
     m_configs = configs;
     updateSecureConfigCombo();

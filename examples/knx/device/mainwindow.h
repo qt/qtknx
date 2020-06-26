@@ -100,7 +100,7 @@ private:
 
     QKnxNetIpDeviceManagement m_management;
     QKnxNetIpServerDiscoveryAgent m_discoveryAgent;
-    QVector<QKnxNetIpSecureConfiguration> m_secureConfigs;
+    QList<QKnxNetIpSecureConfiguration> m_secureConfigs;
 };
 
 #endif // MAINWINDOW_H

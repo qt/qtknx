@@ -195,7 +195,7 @@ QKnxLinkLayerFrame::Builder &
     \sa QKnxAdditionalInfo
 */
 QKnxLinkLayerFrame::Builder &
-    QKnxLinkLayerFrame::Builder::setAdditionalInfos(const QVector<QKnxAdditionalInfo> &infos)
+    QKnxLinkLayerFrame::Builder::setAdditionalInfos(const QList<QKnxAdditionalInfo> &infos)
 {
     m_additionalInfos = infos;
     return *this;

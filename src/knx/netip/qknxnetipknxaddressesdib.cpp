@@ -107,13 +107,13 @@ QKnxNetIp::DescriptionType QKnxNetIpKnxAddressesDibProxy::descriptionType() cons
 }
 
 /*!
-    Returns a vector of the individual \l {QKnxAddress} {QKnxAddresses}
+    Returns a list of the individual \l {QKnxAddress} {QKnxAddresses}
     carried by this KNXnet/IP DIB structure if the object that was passed
-    during construction was valid; otherwise returns an empty vector.
+    during construction was valid; otherwise returns an empty list.
 */
-QVector<QKnxAddress> QKnxNetIpKnxAddressesDibProxy::individualAddresses() const
+QList<QKnxAddress> QKnxNetIpKnxAddressesDibProxy::individualAddresses() const
 {
-    QVector<QKnxAddress> addresses;
+    QList<QKnxAddress> addresses;
     if (!isValid())
         return addresses;
 
@@ -161,7 +161,7 @@ QKnxNetIpKnxAddressesDibProxy::Builder QKnxNetIpKnxAddressesDibProxy::builder()
     and returns a reference to the builder.
 */
 QKnxNetIpKnxAddressesDibProxy::Builder &
-    QKnxNetIpKnxAddressesDibProxy::Builder::setIndividualAddresses(const QVector<QKnxAddress> &addresses)
+    QKnxNetIpKnxAddressesDibProxy::Builder::setIndividualAddresses(const QList<QKnxAddress> &addresses)
 {
     m_addresses = addresses;
 

@@ -29,7 +29,7 @@
 
 #include "manufacturers.h"
 
-#include <QtCore/qvector.h>
+#include <QtCore/qlist.h>
 
 QT_BEGIN_NAMESPACE
 
@@ -46,9 +46,9 @@ struct Manufacturer
     QLatin1String manufacturerId;
     QString name;
 
-    static const QVector<Manufacturer> &manufacturers()
+    static const QList<Manufacturer> &manufacturers()
     {
-        static QVector<Manufacturer> sManufacturers {
+        static QList<Manufacturer> sManufacturers {
             { 1, "M-0001", "5369656d656e73" },
             { 2, "M-0002", "414242" },
             { 4, "M-0004", "416c627265636874204a756e67" },

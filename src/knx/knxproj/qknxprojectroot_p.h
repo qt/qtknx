@@ -43,7 +43,7 @@
 
 #include <QtCore/qdatetime.h>
 #include <QtCore/qstring.h>
-#include <QtCore/qvector.h>
+#include <QtCore/qlist.h>
 #include <QtKnx/private/qknxinstallation_p.h>
 #include <QtKnx/private/qknxprojectinformation_p.h>
 #include <QtKnx/private/qknxprojectutils_p.h>
@@ -68,10 +68,10 @@ struct Q_KNX_EXPORT QKnxProject
 public:
     QString Id; // non-colonized name, pattern [\i-[:]][\c-[:]]*
 
-    QVector<QKnxProjectInformation> ProjectInformation; // 0..1
-    QVector<QKnxInstallation> Installations; // 1..16
-    QVector<QKnxUserFile> UserFiles; // 0..n
-    QVector<QKnxAddinData> AddinData; // 0..n
+    QList<QKnxProjectInformation> ProjectInformation; // 0..1
+    QList<QKnxInstallation> Installations; // 1..16
+    QList<QKnxUserFile> UserFiles; // 0..n
+    QList<QKnxAddinData> AddinData; // 0..n
 
     bool parseElement(QXmlStreamReader *reader, bool pedantic);
 };
@@ -84,7 +84,7 @@ public:
     QString CreatedBy; // optional
     QString ToolVersion; // optional
 
-    QVector<QKnxProject> Project; // 0..n
+    QList<QKnxProject> Project; // 0..n
 
     bool parseElement(QXmlStreamReader *reader, bool pedantic);
 };

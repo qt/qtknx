@@ -64,18 +64,18 @@ public:
     Status status() const;
     QString errorString() const;
 
-    QVector<QString> projectIds() const;
+    QList<QString> projectIds() const;
     QString projectName(const QString &projectId) const;
 
-    QVector<QString> installations(const QString &projectId) const;
+    QList<QString> installations(const QString &projectId) const;
 
     qint32 infoCount(const QString &projectId, const QString &installation = {}) const;
 
-    QVector<QKnxGroupAddressInfo> addressInfos(const QString &projectId,
+    QList<QKnxGroupAddressInfo> addressInfos(const QString &projectId,
         const QString &installation = {}) const;
-    QVector<QKnxGroupAddressInfo> addressInfos(const QKnxAddress &address,
+    QList<QKnxGroupAddressInfo> addressInfos(const QKnxAddress &address,
         const QString &projectId, const QString &installation = {}) const;
-    QVector<QKnxGroupAddressInfo> addressInfos(QKnxDatapointType::Type type,
+    QList<QKnxGroupAddressInfo> addressInfos(QKnxDatapointType::Type type,
         const QString &projectId, const QString &installation = {}) const;
 
     void add(const QKnxGroupAddressInfo &info, const QString &projectId);

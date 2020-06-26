@@ -187,13 +187,13 @@ QKnxServiceInfo QKnxNetIpSrpProxy::serviceInfo() const
 }
 
 /*!
-    Returns a vector of QKnx::NetIp::DescriptionType enumeration values used as
+    Returns a list of QKnx::NetIp::DescriptionType enumeration values used as
     search criteria if the object that was passed during construction was valid;
-    otherwise returns an empty vector.
+    otherwise returns an empty list.
 */
-QVector<QKnxNetIp::DescriptionType> QKnxNetIpSrpProxy::descriptionTypes() const
+QList<QKnxNetIp::DescriptionType> QKnxNetIpSrpProxy::descriptionTypes() const
 {
-    QVector<QKnxNetIp::DescriptionType> types;
+    QList<QKnxNetIp::DescriptionType> types;
     if (isValid() && m_srp.code() == QKnxNetIp::SearchParameterType::RequestDIBs) {
         const auto &data = m_srp.constData();
         for (quint16 i = 0; i < m_srp.dataSize(); i++)
@@ -564,7 +564,7 @@ QKnxNetIpSrpProxy::RequestDibs &
     \a types and returns a reference to the SRP builder.
 */
 QKnxNetIpSrpProxy::RequestDibs &
-    QKnxNetIpSrpProxy::RequestDibs::setDescriptionTypes(const QVector<QKnxNetIp::DescriptionType> &types)
+    QKnxNetIpSrpProxy::RequestDibs::setDescriptionTypes(const QList<QKnxNetIp::DescriptionType> &types)
 {
     d_ptr->m_types = types;
     return *this;

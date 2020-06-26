@@ -100,7 +100,7 @@ private:
 
     QKnxNetIpTunnel m_tunnel;
     QKnxNetIpServerDiscoveryAgent m_discoveryAgent;
-    QVector<QKnxNetIpSecureConfiguration> m_secureConfigs;
+    QList<QKnxNetIpSecureConfiguration> m_secureConfigs;
 };
 
 #endif // MAINWINDOW_H

@@ -184,7 +184,7 @@ QKnxCombinedInfoOnOff::QKnxCombinedInfoOnOff()
 /*!
     Creates a fixed size datapoint type with the output information \a infos.
 */
-QKnxCombinedInfoOnOff::QKnxCombinedInfoOnOff(const QVector<OutputInfo> &infos)
+QKnxCombinedInfoOnOff::QKnxCombinedInfoOnOff(const QList<OutputInfo> &infos)
     : QKnx32BitSet(SubType, 0)
 {
     setDescription(tr("Bit-combined info On/Off"));
@@ -252,7 +252,7 @@ bool QKnxCombinedInfoOnOff::setValidity(Output output, OutputValidity validity)
     Returns \c true if the value was set successfully; otherwise returns
     \c false.
 */
-bool QKnxCombinedInfoOnOff::setValue(const QVector<OutputInfo>& infos)
+bool QKnxCombinedInfoOnOff::setValue(const QList<OutputInfo>& infos)
 {
     bool success = true;
     for (const auto &info : qAsConst(infos))

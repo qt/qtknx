@@ -44,7 +44,7 @@ private slots:
     void testDefaultConstructor();
     void testConstructorWithOneArguments();
     void testConstructorWithByteArrayDataArguments();
-    void testConstructorWithVectorDataArguments();
+    void testConstructorWithDataArguments();
     void testDebugStream();
 };
 
@@ -100,7 +100,7 @@ void tst_QKnxNetIpManufacturerDib::testConstructorWithByteArrayDataArguments()
     QCOMPARE(view.manufacturerData().size(), evenData.size());
 }
 
-void tst_QKnxNetIpManufacturerDib::testConstructorWithVectorDataArguments()
+void tst_QKnxNetIpManufacturerDib::testConstructorWithDataArguments()
 {
     const QKnxByteArray data = { 1, 2, 3, 4, 5 };
     const QKnxByteArray evenData = { 1, 2, 3, 4, 5, 0 };

@@ -115,7 +115,7 @@ public:
     void setExtendedControlField(const QKnxExtendedControlField &field);
 
     quint8 additionalInfosSize() const;
-    QVector<QKnxAdditionalInfo> additionalInfos() const;
+    QList<QKnxAdditionalInfo> additionalInfos() const;
     void addAdditionalInfo(const QKnxAdditionalInfo &info);
     void removeAdditionalInfo(QKnxAdditionalInfo::Type type);
     void removeAdditionalInfo(const QKnxAdditionalInfo &info);

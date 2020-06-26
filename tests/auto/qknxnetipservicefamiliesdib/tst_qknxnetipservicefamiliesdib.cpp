@@ -65,7 +65,7 @@ void tst_QKnxNetIpServiceFamiliesDib::testDefaultConstructor()
 
 void tst_QKnxNetIpServiceFamiliesDib::testConstructorWithOneArgument()
 {
-    QVector<QKnxServiceInfo> infos;
+    QList<QKnxServiceInfo> infos;
     infos.append({ QKnxNetIp::ServiceFamily::Core, 9 });
     infos.append({ QKnxNetIp::ServiceFamily::DeviceManagement, 2 });
     infos.append({ QKnxNetIp::ServiceFamily::DeviceManagement, 1 });
@@ -207,7 +207,7 @@ void tst_QKnxNetIpServiceFamiliesDib::testDebugStream()
     qDebug() << QKnxNetIpServiceFamiliesDibProxy::builder().create();
     QCOMPARE(s_msg, QString::fromLatin1("0x0202"));
 
-    QVector<QKnxServiceInfo> families;
+    QList<QKnxServiceInfo> families;
     families.append({ QKnxNetIp::ServiceFamily::Core, 9 });
     families.append({ QKnxNetIp::ServiceFamily::DeviceManagement, 10 });
     families.append({ QKnxNetIp::ServiceFamily::IpTunneling, 11 });

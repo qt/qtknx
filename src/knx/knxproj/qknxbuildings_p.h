@@ -42,7 +42,7 @@
 //
 
 #include <QtCore/qstring.h>
-#include <QtCore/qvector.h>
+#include <QtCore/qlist.h>
 #include <QtKnx/private/qknxprojectutils_p.h>
 
 QT_BEGIN_NAMESPACE
@@ -79,7 +79,7 @@ public:
     QString DefaultGroupRange; // optional, non-colonized name, pattern [\i-[:]][\c-[:]]*
     qint32 Puid { 0 };
 
-    QVector<QKnxGroupAddressRef> GroupAddressRef; // 0..n
+    QList<QKnxGroupAddressRef> GroupAddressRef; // 0..n
 
     bool parseElement(QXmlStreamReader *reader, bool pedantic);
 };
@@ -106,9 +106,9 @@ public:
     QString DefaultLine; // optional
     qint32 Puid { 0 };
 
-    QVector<QKnxBuildingPart> BuildingPart; // 0..n
-    QVector<QString> DeviceInstanceRef; // 0..n, non-colonized name, pattern [\i-[:]][\c-[:]]*
-    QVector<QKnxFunction> Function; // 0..n
+    QList<QKnxBuildingPart> BuildingPart; // 0..n
+    QList<QString> DeviceInstanceRef; // 0..n, non-colonized name, pattern [\i-[:]][\c-[:]]*
+    QList<QKnxFunction> Function; // 0..n
 
     bool parseElement(QXmlStreamReader *reader, bool pedantic);
 };
@@ -118,7 +118,7 @@ struct Q_KNX_EXPORT QKnxBuildings
     Q_DECLARE_TR_FUNCTIONS(QKnxBuildings)
 
 public:
-    QVector<QKnxBuildingPart> BuildingPart; // 0..n
+    QList<QKnxBuildingPart> BuildingPart; // 0..n
 
     bool parseElement(QXmlStreamReader *reader, bool pedantic);
 };

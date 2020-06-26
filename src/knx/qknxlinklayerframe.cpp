@@ -125,7 +125,7 @@ public:
     QKnxExtendedControlField m_extCtrl;
     quint8 m_additionalInfoSize { 0 };
     mutable bool m_additionalInfosSorted { true };
-    mutable QVector<QKnxAdditionalInfo> m_additionalInfos;
+    mutable QList<QKnxAdditionalInfo> m_additionalInfos;
 };
 
 /*!
@@ -508,11 +508,11 @@ void QKnxLinkLayerFrame::addAdditionalInfo(const QKnxAdditionalInfo &info)
 }
 
 /*!
-    Returns a vector of additional information contained in the frame.
+    Returns a list of additional information contained in the frame.
 
     \sa QKnxAdditionalInfo
 */
-QVector<QKnxAdditionalInfo> QKnxLinkLayerFrame::additionalInfos() const
+QList<QKnxAdditionalInfo> QKnxLinkLayerFrame::additionalInfos() const
 {
     if (!d_ptr->m_additionalInfosSorted) {
         std::sort(d_ptr->m_additionalInfos.begin(), d_ptr->m_additionalInfos.end(),

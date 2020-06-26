@@ -139,8 +139,8 @@ QKnxAddress::QKnxAddress(QKnxAddress::Type type, const QString &address)
     if (dots && slashes)
         return;
 
-    QVector<quint16> sections;
-    const auto convert = [&sections](const QVector<QStringView> &in) -> bool {
+    QList<quint16> sections;
+    const auto convert = [&sections](const QList<QStringView> &in) -> bool {
         for (const QStringView &section : qAsConst(in)) {
             bool ok = false;
             const quint16 value = section.toUShort(&ok, 0);

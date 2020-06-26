@@ -896,7 +896,7 @@ private Q_SLOTS:
 
         QCOMPARE(comRef.ChannelId, QLatin1String("ChannelId"));
         QCOMPARE(comRef.CommunicationFlag, QLatin1String("Enabled"));
-        QCOMPARE(comRef.DatapointType, QVector<QString>({ QStringLiteral("Dpt-1-1") }));
+        QCOMPARE(comRef.DatapointType, QList<QString>({ QStringLiteral("Dpt-1-1") }));
         QCOMPARE(comRef.Description, QLatin1String("Description"));
         QCOMPARE(comRef.FunctionText, QLatin1String("FunctionText"));
         QCOMPARE(comRef.Id, QLatin1String("Id12346"));

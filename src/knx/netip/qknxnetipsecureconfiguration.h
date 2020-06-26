@@ -51,7 +51,7 @@ public:
     QKnxNetIpSecureConfiguration();
     ~QKnxNetIpSecureConfiguration();
 
-    static QVector<QKnxNetIpSecureConfiguration> fromKeyring(QKnxNetIpSecureConfiguration::Type type,
+    static QList<QKnxNetIpSecureConfiguration> fromKeyring(QKnxNetIpSecureConfiguration::Type type,
         const QString &keyring, const QByteArray &password, bool validate);
 
     static QKnxNetIpSecureConfiguration fromKeyring(QKnxNetIpSecureConfiguration::Type type,

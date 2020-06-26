@@ -40,7 +40,7 @@ QT_BEGIN_NAMESPACE
 struct KnxProjectInfo final
 {
     QString name;
-    QHash<QString, QVector<QKnxGroupAddressInfo>> installations;
+    QHash<QString, QList<QKnxGroupAddressInfo>> installations;
 
     bool operator==(const KnxProjectInfo &other) const
     {
@@ -57,7 +57,7 @@ class QKnxGroupAddressInfosPrivate final : public QSharedData
 public:
     bool parseData(const QByteArray &data);
     bool readProject(const QKnxProject &project);
-    QVector<QKnxGroupAddressInfo> readRange(const QKnxGroupRange &range, const QString &install);
+    QList<QKnxGroupAddressInfo> readRange(const QKnxGroupRange &range, const QString &install);
 
     QString projectFile;
     QString errorString;
@@ -133,7 +133,7 @@ bool QKnxGroupAddressInfosPrivate::readProject(const QKnxProject &project)
                     .arg(install.Name.isEmpty() ? QStringLiteral("<empty>") : install.Name);
                 return false;
             }
-            QVector<QKnxGroupAddressInfo> addressInfos;
+            QList<QKnxGroupAddressInfo> addressInfos;
             for (const auto &addresses : qAsConst(install.GroupAddresses)) {
                 for (const auto &range : qAsConst(addresses.GroupRanges))
                     addressInfos.append(readRange(range, install.Name));
@@ -151,10 +151,10 @@ bool QKnxGroupAddressInfosPrivate::readProject(const QKnxProject &project)
 /*!
     \internal
 */
-QVector<QKnxGroupAddressInfo>
+QList<QKnxGroupAddressInfo>
     QKnxGroupAddressInfosPrivate::readRange(const QKnxGroupRange &range, const QString &install)
 {
-    QVector<QKnxGroupAddressInfo> addressInfos;
+    QList<QKnxGroupAddressInfo> addressInfos;
     for (const auto &groupRange : qAsConst(range.GroupRange))
         addressInfos.append(readRange(groupRange, install));
 
@@ -355,11 +355,11 @@ QString QKnxGroupAddressInfos::errorString() const
 }
 
 /*!
-    Returns a vector of all KNX project ids found in the KNX project file.
+    Returns a list of all KNX project ids found in the KNX project file.
 */
-QVector<QString> QKnxGroupAddressInfos::projectIds() const
+QList<QString> QKnxGroupAddressInfos::projectIds() const
 {
-    return d_ptr->projects.keys().toVector();
+    return d_ptr->projects.keys().toList();
 }
 
 /*!
@@ -373,11 +373,11 @@ QString QKnxGroupAddressInfos::projectName(const QString &projectId) const
 }
 
 /*!
-    Returns a vector of all installation ids for the given KNX \a projectId ID.
+    Returns a list of all installation ids for the given KNX \a projectId ID.
 */
-QVector<QString> QKnxGroupAddressInfos::installations(const QString &projectId) const
+QList<QString> QKnxGroupAddressInfos::installations(const QString &projectId) const
 {
-    return d_ptr->projects.value(projectId, { QString(), {} }).installations.keys().toVector();
+    return d_ptr->projects.value(projectId, { QString(), {} }).installations.keys().toList();
 }
 
 /*!
@@ -396,10 +396,10 @@ qint32 QKnxGroupAddressInfos::infoCount(const QString &projectId, const QString 
 }
 
 /*!
-    Returns a vector of all available group address infos from a KNX project
+    Returns a list of all available group address infos from a KNX project
     identified by \a projectId and \a installation.
 */
-QVector<QKnxGroupAddressInfo> QKnxGroupAddressInfos::addressInfos(const QString &projectId,
+QList<QKnxGroupAddressInfo> QKnxGroupAddressInfos::addressInfos(const QString &projectId,
     const QString &installation) const
 {
     if (projectId.isEmpty())
@@ -408,17 +408,17 @@ QVector<QKnxGroupAddressInfo> QKnxGroupAddressInfos::addressInfos(const QString 
 }
 
 /*!
-    Returns a vector of all available group address infos from a KNX project
+    Returns a list of all available group address infos from a KNX project
     identified by \a address, \a projectId, and \a installation.
 */
-QVector<QKnxGroupAddressInfo> QKnxGroupAddressInfos::addressInfos(const QKnxAddress &address,
+QList<QKnxGroupAddressInfo> QKnxGroupAddressInfos::addressInfos(const QKnxAddress &address,
     const QString &projectId, const QString &installation) const
 {
     const auto infos = addressInfos(projectId, installation);
     if (infos.isEmpty())
         return {};
 
-    QVector<QKnxGroupAddressInfo> results;
+    QList<QKnxGroupAddressInfo> results;
     for (const auto &info : qAsConst(infos)) {
         if (info.address() == address)
             results.append(info);
@@ -427,17 +427,17 @@ QVector<QKnxGroupAddressInfo> QKnxGroupAddressInfos::addressInfos(const QKnxAddr
 }
 
 /*!
-    Returns a vector of all available group address infos from a KNX project
+    Returns a list of all available group address infos from a KNX project
     identified by datapoint \a type, \a projectId and \a installation.
 */
-QVector<QKnxGroupAddressInfo> QKnxGroupAddressInfos::addressInfos(QKnxDatapointType::Type type,
+QList<QKnxGroupAddressInfo> QKnxGroupAddressInfos::addressInfos(QKnxDatapointType::Type type,
          const QString &projectId, const QString &installation) const
 {
     const auto infos = addressInfos(projectId, installation);
     if (infos.isEmpty())
         return {};
 
-    QVector<QKnxGroupAddressInfo> results;
+    QList<QKnxGroupAddressInfo> results;
     for (const auto &info : qAsConst(infos)) {
         if (info.datapointType() == type)
             results.append(info);

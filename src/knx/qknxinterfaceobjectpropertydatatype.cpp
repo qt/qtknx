@@ -335,13 +335,13 @@ quint8 QKnxInterfaceObjectPropertyDataType::size(Id id, bool read)
     Creates a KNX interface object property data type from the property
     \a property.
 */
-QVector<QKnxInterfaceObjectPropertyDataType>
+QList<QKnxInterfaceObjectPropertyDataType>
     QKnxInterfaceObjectPropertyDataType::fromProperty(QKnxInterfaceObjectProperty property)
 {
     if (!QKnxInterfaceObjectProperty::isProperty(property))
         return {};
 
-    using PropertyDataTypeHash = QHash<int, QVector<QKnxInterfaceObjectPropertyDataType>>;
+    using PropertyDataTypeHash = QHash<int, QList<QKnxInterfaceObjectPropertyDataType>>;
 
     static const PropertyDataTypeHash general = []() -> PropertyDataTypeHash {
         return {

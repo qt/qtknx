@@ -42,7 +42,7 @@
 //
 
 #include <QtCore/qstring.h>
-#include <QtCore/qvector.h>
+#include <QtCore/qlist.h>
 #include <QtKnx/private/qknxprojectutils_p.h>
 
 QT_BEGIN_NAMESPACE
@@ -110,8 +110,8 @@ public:
     qint32 Puid { 0 };
     QString Security { QLatin1String("Auto") }; // optional, Auto, On, Off
 
-    QVector<QKnxGroupRange> GroupRange; // 0..65535
-    QVector<QKnxGroupAddress> GroupAddress; // 0..65535
+    QList<QKnxGroupRange> GroupRange; // 0..65535
+    QList<QKnxGroupAddress> GroupAddress; // 0..65535
 
     bool parseElement(QXmlStreamReader *reader, bool pedantic);
 };
@@ -121,7 +121,7 @@ struct Q_KNX_EXPORT QKnxGroupAddresses
     Q_DECLARE_TR_FUNCTIONS(QKnxGroupAddresses)
 
 public:
-    QVector<QKnxGroupRange> GroupRanges; // 0..65535
+    QList<QKnxGroupRange> GroupRanges; // 0..65535
 
     bool parseElement(QXmlStreamReader *reader, bool pedantic);
 };

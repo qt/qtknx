@@ -45,7 +45,7 @@ class tst_QKnxLinkLayerFrame : public QObject
 private slots:
     void testConstructors()
     {
-        QVector<QKnxAdditionalInfo> addInfos = {
+        const QList<QKnxAdditionalInfo> addInfos = {
             { QKnxAdditionalInfo::Type::BiBatInformation, QKnxByteArray::fromHex("1020") },
             { QKnxAdditionalInfo::Type::RfFastAckInformation, QKnxByteArray::fromHex("30405060") },
             { QKnxAdditionalInfo::Type::ManufacturerSpecificData, QKnxByteArray::fromHex("708090") }
@@ -85,7 +85,7 @@ private slots:
 
     void testTpduFetcher()
     {
-        QVector<QKnxAdditionalInfo> addInfos = {
+        const QList<QKnxAdditionalInfo> addInfos = {
             { QKnxAdditionalInfo::Type::BiBatInformation, QKnxByteArray::fromHex("1020") },
             { QKnxAdditionalInfo::Type::RfFastAckInformation, QKnxByteArray::fromHex("30405060") },
             { QKnxAdditionalInfo::Type::ManufacturerSpecificData, QKnxByteArray::fromHex("708090") }

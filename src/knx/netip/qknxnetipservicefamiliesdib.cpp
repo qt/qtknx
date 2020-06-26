@@ -171,13 +171,13 @@ QKnxNetIp::DescriptionType QKnxNetIpServiceFamiliesDibProxy::descriptionType() c
 }
 
 /*!
-    Returns a vector of the QKnxServiceInfo carried by this KNXnet/IP DIB
+    Returns a list of the QKnxServiceInfo carried by this KNXnet/IP DIB
     structure if the object that was passed during construction was valid;
-    otherwise returns an empty vector.
+    otherwise returns an empty list.
 */
-QVector<QKnxServiceInfo> QKnxNetIpServiceFamiliesDibProxy::serviceInfos() const
+QList<QKnxServiceInfo> QKnxNetIpServiceFamiliesDibProxy::serviceInfos() const
 {
-    QVector<QKnxServiceInfo> infos;
+    QList<QKnxServiceInfo> infos;
     if (!isValid())
         return infos;
 
@@ -226,7 +226,7 @@ QKnxNetIpServiceFamiliesDibProxy::Builder QKnxNetIpServiceFamiliesDibProxy::buil
     structure to \a infos and returns a reference to the builder.
 */
 QKnxNetIpServiceFamiliesDibProxy::Builder &
-    QKnxNetIpServiceFamiliesDibProxy::Builder::setServiceInfos(const QVector<QKnxServiceInfo> &infos)
+    QKnxNetIpServiceFamiliesDibProxy::Builder::setServiceInfos(const QList<QKnxServiceInfo> &infos)
 {
     m_infos = infos;
 
