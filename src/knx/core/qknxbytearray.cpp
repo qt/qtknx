@@ -923,7 +923,7 @@ QDebug operator<<(QDebug debug, const QKnxByteArray &byteArray)
 
 /*!
     \relates QKnxByteArray
-    \fn uint qHash(const QKnxByteArray &key, uint seed = 0)
+    \fn size_t qHash(const QKnxByteArray &key, uint seed = 0)
 
     Returns the hash value for the \a key, using \a seed to seed the calculation.
 */

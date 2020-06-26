@@ -157,7 +157,7 @@ Q_KNX_EXPORT QDebug operator<<(QDebug debug, const QKnxNetIpStruct<QKnxNetIp::De
 Q_KNX_EXPORT QDebug operator<<(QDebug debug, const QKnxNetIpStruct<QKnxNetIp::SearchParameterType> &srp);
 
 template <typename CodeType>
-Q_DECL_PURE_FUNCTION uint qHash(const QKnxNetIpStruct<CodeType> &key, uint seed = 0) Q_DECL_NOTHROW
+Q_DECL_PURE_FUNCTION size_t qHash(const QKnxNetIpStruct<CodeType> &key, uint seed = 0) Q_DECL_NOTHROW
 {
     return qHash(key.bytes(), seed);
 }
