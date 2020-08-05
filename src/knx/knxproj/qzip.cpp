@@ -142,8 +142,8 @@ static int inflate(Bytef *dest, ulong *destLen, const Bytef *source, ulong sourc
     if ((uLong)stream.avail_out != *destLen)
         return Z_BUF_ERROR;
 
-    stream.zalloc = (alloc_func)0;
-    stream.zfree = (free_func)0;
+    stream.zalloc = (alloc_func)nullptr;
+    stream.zfree = (free_func)nullptr;
 
     err = inflateInit2(&stream, -MAX_WBITS);
     if (err != Z_OK)
@@ -173,9 +173,9 @@ static int deflate (Bytef *dest, ulong *destLen, const Bytef *source, ulong sour
     stream.avail_out = (uInt)*destLen;
     if ((uLong)stream.avail_out != *destLen) return Z_BUF_ERROR;
 
-    stream.zalloc = (alloc_func)0;
-    stream.zfree = (free_func)0;
-    stream.opaque = (voidpf)0;
+    stream.zalloc = (alloc_func)nullptr;
+    stream.zfree = (free_func)nullptr;
+    stream.opaque = (voidpf)nullptr;
 
     err = deflateInit2(&stream, Z_DEFAULT_COMPRESSION, Z_DEFLATED, -MAX_WBITS, 8, Z_DEFAULT_STRATEGY);
     if (err != Z_OK) return err;
@@ -392,7 +392,6 @@ struct CentralFileHeader
     uchar internal_file_attributes[2];
     uchar external_file_attributes[4];
     uchar offset_local_header[4];
-    LocalFileHeader toLocalHeader() const;
 };
 Q_DECLARE_TYPEINFO(CentralFileHeader, Q_PRIMITIVE_TYPE);
 
@@ -542,19 +541,19 @@ public:
     void addEntry(EntryType type, const QString &fileName, const QByteArray &contents);
 };
 
-LocalFileHeader CentralFileHeader::toLocalHeader() const
+static LocalFileHeader toLocalHeader(const CentralFileHeader &ch)
 {
     LocalFileHeader h;
     writeUInt(h.signature, 0x04034b50);
-    copyUShort(h.version_needed, version_needed);
-    copyUShort(h.general_purpose_bits, general_purpose_bits);
-    copyUShort(h.compression_method, compression_method);
-    copyUInt(h.last_mod_file, last_mod_file);
-    copyUInt(h.crc_32, crc_32);
-    copyUInt(h.compressed_size, compressed_size);
-    copyUInt(h.uncompressed_size, uncompressed_size);
-    copyUShort(h.file_name_length, file_name_length);
-    copyUShort(h.extra_field_length, extra_field_length);
+    copyUShort(h.version_needed, ch.version_needed);
+    copyUShort(h.general_purpose_bits, ch.general_purpose_bits);
+    copyUShort(h.compression_method, ch.compression_method);
+    copyUInt(h.last_mod_file, ch.last_mod_file);
+    copyUInt(h.crc_32, ch.crc_32);
+    copyUInt(h.compressed_size, ch.compressed_size);
+    copyUInt(h.uncompressed_size, ch.uncompressed_size);
+    copyUShort(h.file_name_length, ch.file_name_length);
+    copyUShort(h.extra_field_length, ch.extra_field_length);
     return h;
 }
 
@@ -706,7 +705,7 @@ void QZipWriterPrivate::addEntry(EntryType type, const QString &fileName, const 
     }
 // TODO add a check if data.length() > contents.length().  Then try to store the original and revert the compression method to be uncompressed
     writeUInt(header.h.compressed_size, data.length());
-    uint crc_32 = ::crc32(0, 0, 0);
+    uint crc_32 = ::crc32(0, nullptr, 0);
     crc_32 = ::crc32(crc_32, (const uchar *)contents.constData(), contents.length());
     writeUInt(header.h.crc_32, crc_32);
 
@@ -750,7 +749,7 @@ void QZipWriterPrivate::addEntry(EntryType type, const QString &fileName, const 
 
     fileHeaders.append(header);
 
-    LocalFileHeader h = header.h.toLocalHeader();
+    LocalFileHeader h = toLocalHeader(header.h);
     device->write((const char *)&h, sizeof(LocalFileHeader));
     device->write(header.file_name);
     device->write(data);
@@ -886,7 +885,7 @@ bool QZipReader::isReadable() const
 bool QZipReader::exists() const
 {
     QFile *f = qobject_cast<QFile*> (d->device);
-    if (f == 0)
+    if (f == nullptr)
         return true;
     return f->exists();
 }
@@ -1178,7 +1177,7 @@ bool QZipWriter::isWritable() const
 bool QZipWriter::exists() const
 {
     QFile *f = qobject_cast<QFile*> (d->device);
-    if (f == 0)
+    if (f == nullptr)
         return true;
     return f->exists();
 }
