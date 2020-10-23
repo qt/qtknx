@@ -58,7 +58,7 @@ bool QKnxOpenSsl::s_libraryLoaded = false;
 bool QKnxOpenSsl::s_libraryEnabled = false;
 
 Q_GLOBAL_STATIC(QKnxOpenSsl, qt_QKnxOpenSsl)
-Q_GLOBAL_STATIC_WITH_ARGS(QMutex, qt_knxOpenSslInitMutex, (QMutex::Recursive))
+Q_GLOBAL_STATIC(QRecursiveMutex, qt_knxOpenSslInitMutex)
 
 /*!
     \internal
@@ -69,7 +69,7 @@ bool QKnxOpenSsl::supportsSsl()
     if (!QKnxPrivate::q_resolveOpenSslSymbols())
         return false;
 
-    const QMutexLocker locker(qt_knxOpenSslInitMutex);
+    const QMutexLocker<QRecursiveMutex> locker(qt_knxOpenSslInitMutex);
     if (!s_libraryLoaded) {
         s_libraryLoaded = true;
 

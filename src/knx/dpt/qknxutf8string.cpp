@@ -139,7 +139,7 @@ bool QKnxUtf8String::setString(const char *string, int size)
     if (!toUtf16.isValid())
         return false;
 
-    auto text = toUtf16(string, size);
+    auto text = toUtf16(QByteArrayView{ string, size });
     if (toUtf16.hasError())
         return false;
     return setString(text);
