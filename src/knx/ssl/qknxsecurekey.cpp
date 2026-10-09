@@ -29,13 +29,7 @@
 
 #include "qknxsecurekey.h"
 #include "qknxcryptographicengine.h"
-
-#include <QtNetwork/private/qtnetworkglobal_p.h>
-
-#if QT_CONFIG(opensslv11)
-# include "private/qsslsocket_openssl_symbols_p.h"
-# include "private/qsslsocket_openssl11_symbols_p.h"
-#endif
+#include "private/qsslsocket_openssl_symbols_p.h"
 
 QT_BEGIN_NAMESPACE
 
@@ -45,10 +39,8 @@ public:
     QKnxSecureKeyData() = default;
     ~QKnxSecureKeyData()
     {
-#if QT_CONFIG(opensslv11)
         if (m_evpPKey)
             QKnxPrivate::q_EVP_PKEY_free(m_evpPKey);
-#endif
     }
 
     bool isTypeValid() const
@@ -56,9 +48,7 @@ public:
         return m_type >= QKnxSecureKey::Type::Private && m_type < QKnxSecureKey::Type::Invalid;
     }
 
-#if QT_CONFIG(opensslv11)
     EVP_PKEY *m_evpPKey { nullptr };
-#endif
     QKnxSecureKey::Type m_type { QKnxSecureKey::Type::Invalid };
 };
 
@@ -115,11 +105,7 @@ QKnxSecureKey::Type QKnxSecureKey::type() const
 */
 bool QKnxSecureKey::isNull() const
 {
-#if QT_CONFIG(opensslv11)
     return d_ptr->m_evpPKey == nullptr;
-#else
-    return true;
-#endif
 }
 
 /*!
@@ -128,11 +114,7 @@ bool QKnxSecureKey::isNull() const
 */
 bool QKnxSecureKey::isValid() const
 {
-#if QT_CONFIG(opensslv11)
     return !isNull() && d_ptr->isTypeValid() && QKnxCryptographicEngine::supportsCryptography();
-#else
-    return false;
-#endif
 }
 
 /*!
@@ -143,7 +125,6 @@ bool QKnxSecureKey::isValid() const
 */
 QKnxByteArray QKnxSecureKey::bytes() const
 {
-#if QT_CONFIG(opensslv11)
     if (!isValid())
         return {};
 
@@ -151,22 +132,15 @@ QKnxByteArray QKnxSecureKey::bytes() const
         size_t len = 32;
         QKnxByteArray ba(int(len), 0);
         if (QKnxPrivate::q_EVP_PKEY_get_raw_private_key(d_ptr->m_evpPKey, ba.data(), &len) <= 0)
-            return {}; // preferred, no other way possible
+            return {};
         return ba;
     }
 
     size_t len = 32;
     QKnxByteArray pub(32, Qt::Uninitialized);
     if (QKnxPrivate::q_EVP_PKEY_get_raw_public_key(d_ptr->m_evpPKey, pub.data(), &len) > 0)
-        return pub; // preferred way
-
-    pub.resize(QKnxPrivate::q_i2d_PUBKEY(d_ptr->m_evpPKey, nullptr));
-    auto tmp = pub.data();
-    QKnxPrivate::q_i2d_PUBKEY(d_ptr->m_evpPKey, &tmp);
-    return pub.right(32);
-#else
+        return pub;
     return {};
-#endif
 }
 
 /*!
@@ -178,7 +152,6 @@ QKnxByteArray QKnxSecureKey::bytes() const
 QKnxSecureKey QKnxSecureKey::fromBytes(QKnxSecureKey::Type type, const QKnxByteArray &data,
     quint16 index)
 {
-#if QT_CONFIG(opensslv11)
     auto ba = data.mid(index, 32);
     if (ba.size() < 32)
         return {};
@@ -190,40 +163,18 @@ QKnxSecureKey QKnxSecureKey::fromBytes(QKnxSecureKey::Type type, const QKnxByteA
     key.d_ptr->m_type = type;
 
     if (type == Type::Private) {
-        key.d_ptr->m_evpPKey = QKnxPrivate::q_EVP_PKEY_new_raw_private_key(NID_X25519, nullptr, ba.constData(),
-            ba.size()); // preferred way
-        if (key.d_ptr->m_evpPKey)
-            return key;
-
-        static const auto pkcs8 = QKnxByteArray::fromHex("302e020100300506032b656e04220420");
-        auto tmp = pkcs8 + ba;  // PKCS #8 is a standard syntax for storing private key information
-
-        BIO *bio = nullptr;
-        if ((bio = QKnxPrivate::q_BIO_new_mem_buf(reinterpret_cast<void *> (tmp.data()), tmp.size())))
-            key.d_ptr->m_evpPKey = QKnxPrivate::q_d2i_PrivateKey_bio(bio, nullptr);
-        QKnxPrivate::q_BIO_free(bio);
+        key.d_ptr->m_evpPKey = QKnxPrivate::q_EVP_PKEY_new_raw_private_key(NID_X25519, nullptr,
+            ba.constData(), ba.size());
         return key;
     }
 
     if (type == Type::Public) {
-        key.d_ptr->m_evpPKey = QKnxPrivate::q_EVP_PKEY_new_raw_public_key(NID_X25519, nullptr, ba.constData(),
-            ba.size()); // preferred way
+        key.d_ptr->m_evpPKey = QKnxPrivate::q_EVP_PKEY_new_raw_public_key(NID_X25519, nullptr,
+            ba.constData(), ba.size());
         if (key.d_ptr->m_evpPKey)
             return key;
-
-        key.d_ptr->m_evpPKey = QKnxPrivate::q_EVP_PKEY_new();
-        if (QKnxPrivate::q_EVP_PKEY_set_type(key.d_ptr->m_evpPKey, NID_X25519) <= 0)
-            return {};
-
-        if (QKnxPrivate::q_EVP_PKEY_set1_tls_encodedpoint(key.d_ptr->m_evpPKey, ba.constData(), ba.size()) <= 0)
-            return {};
-        return key;
     }
-#else
-    Q_UNUSED(type)
-    Q_UNUSED(data)
-    Q_UNUSED(index)
-#endif
+
     return {};
 }
 
@@ -233,17 +184,15 @@ QKnxSecureKey QKnxSecureKey::fromBytes(QKnxSecureKey::Type type, const QKnxByteA
 QKnxSecureKey QKnxSecureKey::generatePrivateKey()
 {
     QKnxSecureKey key;
-#if QT_CONFIG(opensslv11)
     if (!QKnxCryptographicEngine::supportsCryptography())
         return key;
 
-    if (auto *pctx = QKnxPrivate::q_EVP_PKEY_CTX_new_id(NID_X25519, nullptr)) {
+    if (auto *pctx = QKnxPrivate::q_EVP_PKEY_CTX_new_from_name(nullptr, "X25519", nullptr)) {
         QKnxPrivate::q_EVP_PKEY_keygen_init(pctx);
         key.d_ptr->m_type = Type::Private;
-        QKnxPrivate::q_EVP_PKEY_keygen(pctx, &key.d_ptr->m_evpPKey);
+        QKnxPrivate::q_EVP_PKEY_generate(pctx, &key.d_ptr->m_evpPKey);
         QKnxPrivate::q_EVP_PKEY_CTX_free(pctx);
     }
-#endif
     return key;
 }
 
@@ -254,15 +203,11 @@ QKnxSecureKey QKnxSecureKey::generatePrivateKey()
 QKnxSecureKey QKnxSecureKey::publicKeyFromPrivate(const QKnxSecureKey &privateKey)
 {
     QKnxSecureKey key;
-#if QT_CONFIG(opensslv11)
     if (privateKey.type() == QKnxSecureKey::Type::Private && privateKey.isValid()) {
         QKnxPrivate::q_EVP_PKEY_up_ref(privateKey.d_ptr->m_evpPKey);
         key.d_ptr->m_type = Type::Public;
         key.d_ptr->m_evpPKey = privateKey.d_ptr->m_evpPKey;
     }
-#else
-    Q_UNUSED(privateKey)
-#endif
     return key;
 }
 
@@ -298,14 +243,13 @@ void QKnxSecureKey::generateKeys(QKnxSecureKey *privateKey, QKnxSecureKey *publi
 QKnxByteArray QKnxSecureKey::sharedSecret(const QKnxSecureKey &privateKey,
     const QKnxSecureKey &peerPublicKey)
 {
-#if QT_CONFIG(opensslv11)
     if (privateKey.type() != QKnxSecureKey::Type::Private || !privateKey.isValid())
         return {};
 
     if (peerPublicKey.type() != QKnxSecureKey::Type::Public || !peerPublicKey.isValid())
         return {};
 
-    auto evpPKeyCtx = QKnxPrivate::q_EVP_PKEY_CTX_new(privateKey.d_ptr->m_evpPKey, nullptr);
+    auto evpPKeyCtx = QKnxPrivate::q_EVP_PKEY_CTX_new_from_pkey(nullptr, privateKey.d_ptr->m_evpPKey, nullptr);
     if (!evpPKeyCtx)
         return {};
 
@@ -330,11 +274,6 @@ QKnxByteArray QKnxSecureKey::sharedSecret(const QKnxSecureKey &privateKey,
     if (QKnxPrivate::q_EVP_PKEY_derive(evpPKeyCtx, ba.data(), &keylen) <= 0)
         return {};
     return ba;
-#else
-    Q_UNUSED(privateKey)
-    Q_UNUSED(peerPublicKey)
-    return {};
-#endif
 }
 
 /*!
@@ -371,9 +310,7 @@ QKnxSecureKey &QKnxSecureKey::operator=(const QKnxSecureKey &other)
 bool QKnxSecureKey::operator==(const QKnxSecureKey &other) const
 {
     return d_ptr == other.d_ptr
-#if QT_CONFIG(opensslv11)
         || (d_ptr->m_evpPKey == other.d_ptr->m_evpPKey && d_ptr->m_type == other.d_ptr->m_type)
-#endif
         || (bytes() == other.bytes());
 }
 

@@ -54,7 +54,7 @@
 #include <QtKnx/QKnxByteArray>
 #include <QtKnx/QKnxLinkLayerFrameBuilder>
 #include <QtKnx/QKnxNetIpTunnel>
-#include <QtNetwork/QNetworkInterface>
+#include <QtKnx/QtNetwork/QNetworkInterface>
 
 #ifdef Q_OS_WIN
 # include <QtCore/QWinEventNotifier>

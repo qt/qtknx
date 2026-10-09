@@ -30,6 +30,8 @@
 #ifndef QKNXNETIPSRP_H
 #define QKNXNETIPSRP_H
 
+#pragma qt_class(QKnxNetIpSrpBuilder)
+
 #include <QtCore/qlist.h>
 #include <QtCore/qshareddata.h>
 #include <QtKnx/qtknxglobal.h>

@@ -61,6 +61,8 @@ public:
         const QKnxByteArray &data, Mode mode);
 };
 
+Q_DECLARE_LOGGING_CATEGORY(lcTlsBackend)
+
 QT_END_NAMESPACE
 
 #endif

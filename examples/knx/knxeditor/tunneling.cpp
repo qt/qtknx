@@ -51,7 +51,7 @@
 #include "tunneling.h"
 #include "ui_tunneling.h"
 
-#include <QKnxLinkLayerFrameBuilder>
+#include <QtKnx/QKnxLinkLayerFrameBuilder>
 #include <QKnxNetIpSecureConfiguration>
 #include <QMetaEnum>
 #include <QMetaType>

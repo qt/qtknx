@@ -73,7 +73,7 @@ namespace QKnxPrivate
                 return lhs.name() < rhs.name();
         });
 
-        for (auto attribute : qAsConst(attributes)) {
+        for (auto attribute : std::as_const(attributes)) {
             QKnxPrivate::writeBytes(bytes, attribute.name());
             QKnxPrivate::writeBytes(bytes, attribute.value());
         }
@@ -173,7 +173,7 @@ bool QKnxBackbone::parseElement(QXmlStreamReader *reader, bool pedantic)
                 return false;
             }
 
-            if (!QRegularExpression(QLatin1String(oneBlockBase64)).match(attr).hasMatch()) {
+            if (!QRegularExpression(QLatin1String(oneBlockBase64)).matchView(attr).hasMatch()) {
                 reader->raiseError(tr("The 'Key' attribute is invalid. The Pattern constraint "
                     "failed, got: '%1'.").arg(QString::fromUtf8(Key)));
                 return false;
@@ -205,7 +205,7 @@ bool QKnxInterface::QKnxGroup::parseElement(QXmlStreamReader *reader, bool pedan
         if (pedantic) {
             QRegularExpression regExp;
             regExp.setPattern(QLatin1String(individualAddress));
-            for (auto sender : qAsConst(Senders)) {
+            for (auto sender : std::as_const(Senders)) {
                 if (!regExp.match(sender).hasMatch()) {
                     reader->raiseError(tr("The 'Senders' attribute is invalid. The Pattern "
                         "constraint failed, got: '%1'.").arg(sender));
@@ -282,7 +282,7 @@ bool QKnxGroupAddresses::QKnxGroup::parseElement(QXmlStreamReader *reader, bool 
         if (!QKnxPrivate::fetchAttr(attrs, QStringLiteral("Key"), &attr, reader))
             return false;
         Key = attr.toUtf8();
-        if (pedantic && !QRegularExpression(QLatin1String(oneBlockBase64)).match(attr).hasMatch()) {
+        if (pedantic && !QRegularExpression(QLatin1String(oneBlockBase64)).matchView(attr).hasMatch()) {
             reader->raiseError(tr("The 'Key' attribute is invalid. The Pattern "
                 "constraint failed, got: '%1'.").arg(QString::fromUtf8(Key)));
             return false;
@@ -407,7 +407,7 @@ bool QKnxKeyring::parseElement(QXmlStreamReader *reader, bool pedantic)
             return false;
         Signature = attr.toUtf8();
         if (pedantic) {
-            if (!QRegularExpression(QLatin1String(oneBlockBase64)).match(attr).hasMatch()) {
+            if (!QRegularExpression(QLatin1String(oneBlockBase64)).matchView(attr).hasMatch()) {
                 reader->raiseError(tr("The 'Signature' attribute is invalid. The Pattern "
                     "constraint failed, got: '%1'.").arg(attr));
                 return false;

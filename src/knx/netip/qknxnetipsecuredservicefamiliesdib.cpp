@@ -257,7 +257,7 @@ QKnxNetIpSecuredServiceFamiliesDibProxy::Builder &QKnxNetIpSecuredServiceFamilie
 QKnxNetIpDib QKnxNetIpSecuredServiceFamiliesDibProxy::Builder::create() const
 {
     QKnxByteArray bytes;
-    for (const auto &info : qAsConst(d_ptr->m_infos))
+    for (const auto &info : std::as_const(d_ptr->m_infos))
         bytes += { quint8(info.ServiceFamily), info.RequiredSecurityVersion };
     return { QKnxNetIp::DescriptionType::SecuredServices, bytes };
 }

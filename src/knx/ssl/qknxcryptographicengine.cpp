@@ -369,7 +369,8 @@ QKnxByteArray QKnxCryptographicEngine::computeMessageAuthenticationCode(const QK
 
     if (B.isEmpty())
         return {};
-    B.resize(B.size() + (16 - (B.size() % 16))); // pad to multiple of 16
+    if (const int rem = B.size() % 16; rem != 0)
+        B.resize(B.size() + (16 - rem));
 
     return QKnxSsl::doCrypt(key, { QKnxPrivate::iv, 16 }, B, QKnxSsl::Encrypt).right(16);
 }

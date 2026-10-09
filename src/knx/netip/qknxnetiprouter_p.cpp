@@ -99,7 +99,8 @@ void QKnxNetIpRouterPrivate::start()
     m_busyTimer->setSingleShot(true);
 
     // while neighbor router busy don't overflow him with messages, timeout until some msec
-    QObject::connect(m_busyTimer, &QTimer::timeout, [&]() {
+    Q_Q(QKnxNetIpRouter);
+    QObject::connect(m_busyTimer, &QTimer::timeout, q, [this]() {
         switch (m_busyStage) {
         case BusyTimerStage::NotInit:
             break;
@@ -134,7 +135,7 @@ void QKnxNetIpRouterPrivate::start()
     m_socket->setSocketOption(QUdpSocket::SocketOption::MulticastTtlOption, 60);
 
     // handle QUdpSocket state changes here
-    QObject::connect(m_socket, &QUdpSocket::stateChanged, [&](QUdpSocket::SocketState s) {
+    QObject::connect(m_socket, &QUdpSocket::stateChanged, q, [this](QUdpSocket::SocketState s) {
         switch (s) {
         case QUdpSocket::BoundState:
             m_socket->setMulticastInterface(m_iface);
@@ -159,7 +160,7 @@ void QKnxNetIpRouterPrivate::start()
     });
 
     // handle frames received by the UDP socket
-    QObject::connect(m_socket, &QUdpSocket::readyRead, [&]() {
+    QObject::connect(m_socket, &QUdpSocket::readyRead, q, [this]() {
         // TODO: Review this part, the following members might get cleared unexpectedly
         // when messages come in one after the other and are not contained all in a single
         // datagram.
@@ -214,7 +215,7 @@ void QKnxNetIpRouterPrivate::start()
     });
 
     // handle UDP socket errors
-    QObject::connect(m_socket, &QUdpSocket::errorOccurred, [&](QUdpSocket::SocketError) {
+    QObject::connect(m_socket, &QUdpSocket::errorOccurred, q, [this](QUdpSocket::SocketError) {
         errorOccurred(QKnxNetIpRouter::Error::Network,
             m_socket->errorString());
     });

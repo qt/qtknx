@@ -30,6 +30,9 @@
 #ifndef QKNXNETIP_H
 #define QKNXNETIP_H
 
+#pragma qt_class(NetIp)
+#pragma qt_class(CemiServer)
+
 #include <QtKnx/qtknxglobal.h>
 #include <QtKnx/qknxnamespace.h>
 

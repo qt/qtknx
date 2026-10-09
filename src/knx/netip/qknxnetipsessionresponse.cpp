@@ -353,7 +353,6 @@ QKnxNetIpSessionResponseProxy::SecureBuilder &
 QKnxNetIpFrame QKnxNetIpSessionResponseProxy::SecureBuilder::create(const QByteArray &devicePassword,
     const QKnxByteArray &clientPublicKey) const
 {
-#if QT_CONFIG(opensslv11)
     if (d_ptr->m_id < 0 || clientPublicKey.size() != 32 || d_ptr->m_serverPublicKey.size() != 32)
         return { QKnxNetIp::ServiceType::SessionResponse };
 
@@ -373,11 +372,6 @@ QKnxNetIpFrame QKnxNetIpSessionResponseProxy::SecureBuilder::create(const QByteA
     mac = QKnxCryptographicEngine::encryptMessageAuthenticationCode(deviceAuthenticationCode, mac);
 
     return builder.setMessageAuthenticationCode(mac).create();
-#else
-    Q_UNUSED(devicePassword)
-    Q_UNUSED(clientPublicKey)
-    return { QKnxNetIp::ServiceType::SessionResponse };
-#endif
 }
 
 /*!

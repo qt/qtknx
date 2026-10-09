@@ -30,12 +30,7 @@
 #include "qknxssl_p.h"
 
 #include <private/qtnetworkglobal_p.h>
-
-#if QT_CONFIG(opensslv11)
-# include "private/qsslsocket_openssl_symbols_p.h"
-# include "private/qsslsocket_openssl11_symbols_p.h"
-#endif
-
+#include "private/qsslsocket_openssl_symbols_p.h"
 #include <QtCore/qmutex.h>
 
 QT_BEGIN_NAMESPACE
@@ -65,7 +60,6 @@ Q_GLOBAL_STATIC(QRecursiveMutex, qt_knxOpenSslInitMutex)
 */
 bool QKnxOpenSsl::supportsSsl()
 {
-#if QT_CONFIG(opensslv11)
     if (!QKnxPrivate::q_resolveOpenSslSymbols())
         return false;
 
@@ -74,14 +68,8 @@ bool QKnxOpenSsl::supportsSsl()
         s_libraryLoaded = true;
 
         // Initialize OpenSSL.
-        if (QKnxPrivate::q_OPENSSL_init_ssl(0, nullptr) != 1)
-            return false;
-        QKnxPrivate::q_SSL_load_error_strings();
-        QKnxPrivate::q_OpenSSL_add_all_algorithms();
-
-        // Initialize OpenSSL's random seed.
-        if (!QKnxPrivate::q_RAND_status()) {
-            qWarning("Random number generator not seeded, disabling SSL support");
+        if (QKnxPrivate::q_OPENSSL_init_ssl(0, nullptr) != 1) {
+            qWarning("SSL could not be initialized, disabling SSL support");
             return false;
         }
 
@@ -92,10 +80,6 @@ bool QKnxOpenSsl::supportsSsl()
         s_libraryEnabled = true;
     }
     return s_libraryEnabled;
-#else
-    Q_UNUSED(qt_knxOpenSslInitMutex)
-    return false;
-#endif
 }
 
 /*!
@@ -103,10 +87,9 @@ bool QKnxOpenSsl::supportsSsl()
 */
 long QKnxOpenSsl::sslLibraryVersionNumber()
 {
-#if QT_CONFIG(opensslv11)
+
     if (supportsSsl())
         return QKnxPrivate::q_OpenSSL_version_num();
-#endif
     return 0;
 }
 
@@ -118,21 +101,14 @@ bool QKnxSsl::supportsCryptography()
     return qt_QKnxOpenSsl->supportsSsl();
 }
 
-/*!
-    \internal
-*/
 long QKnxSsl::sslLibraryVersionNumber()
 {
     return qt_QKnxOpenSsl->sslLibraryVersionNumber();
 }
 
-/*!
-    \internal
-*/
 QKnxByteArray QKnxSsl::doCrypt(const QKnxByteArray &key, const QKnxByteArray &iv,
     const QKnxByteArray &data, Mode mode)
 {
-#if QT_CONFIG(opensslv11)
     if (!qt_QKnxOpenSsl->supportsSsl())
         return {};
 
@@ -150,14 +126,14 @@ QKnxByteArray QKnxSsl::doCrypt(const QKnxByteArray &key, const QKnxByteArray &iv
     if (QKnxPrivate::q_EVP_CIPHER_CTX_set_padding(ctx, 0) <= 0)
         return {};
 
-    Q_ASSERT(QKnxPrivate::q_EVP_CIPHER_CTX_iv_length(ctx) == 16);
-    Q_ASSERT(QKnxPrivate::q_EVP_CIPHER_CTX_key_length(ctx) == 16);
+    Q_ASSERT(QKnxPrivate::q_EVP_CIPHER_CTX_get_iv_length(ctx) == 16);
+    Q_ASSERT(QKnxPrivate::q_EVP_CIPHER_CTX_get_key_length(ctx) == 16);
 
     if (QKnxPrivate::q_EVP_CipherInit_ex(ctx, nullptr, nullptr, key.constData(), iv.constData(), mode) <= 0)
         return {};
 
     int outl, offset = 0;
-    QKnxByteArray out(data.size() + QKnxPrivate::q_EVP_CIPHER_block_size(c), 0x00);
+    QKnxByteArray out(data.size() + QKnxPrivate::q_EVP_CIPHER_get_block_size(c), 0x00);
     if (QKnxPrivate::q_EVP_CipherUpdate(ctx, out.data(), &outl, data.constData(), data.size()) <= 0)
         return {};
     offset += outl;
@@ -165,15 +141,7 @@ QKnxByteArray QKnxSsl::doCrypt(const QKnxByteArray &key, const QKnxByteArray &iv
     if (QKnxPrivate::q_EVP_CipherFinal_ex(ctx, out.data() + offset, &outl) <= 0)
         return {};
     offset += outl;
-
     return out.left(offset);
-#else
-    Q_UNUSED(key)
-    Q_UNUSED(iv)
-    Q_UNUSED(data)
-    Q_UNUSED(mode)
-    return {};
-#endif
 }
 
 QT_END_NAMESPACE

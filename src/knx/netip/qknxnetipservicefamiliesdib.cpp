@@ -260,7 +260,7 @@ QKnxNetIpServiceFamiliesDibProxy::Builder &
 QKnxNetIpDib QKnxNetIpServiceFamiliesDibProxy::Builder::create() const
 {
     QKnxByteArray bytes;
-    for (const auto &info : qAsConst(m_infos))
+    for (const auto &info : std::as_const(m_infos))
         bytes += { quint8(info.ServiceFamily), info.ServiceFamilyVersion };
     return { QKnxNetIp::DescriptionType::SupportedServiceFamilies, bytes };
 }

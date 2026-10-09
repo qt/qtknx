@@ -508,7 +508,6 @@ QKnxNetIpSecureWrapperProxy::SecureBuilder &
 QKnxNetIpFrame
     QKnxNetIpSecureWrapperProxy::SecureBuilder::create(const QKnxByteArray &sessionKey) const
 {
-#if QT_CONFIG(opensslv11)
     if (sessionKey.isEmpty() || d_ptr->m_seqNumber > Q_UINT48_MAX || d_ptr->m_serial.size() != 6
         || !d_ptr->m_unencryptedFrame.isValid()) {
             return { QKnxNetIp::ServiceType::SecureWrapper };
@@ -536,10 +535,6 @@ QKnxNetIpFrame
             d_ptr->m_seqNumber, d_ptr->m_serial, d_ptr->m_tag);
 
     return builder.setMessageAuthenticationCode(mac).create();
-#else
-    Q_UNUSED(sessionKey)
-    return { QKnxNetIp::ServiceType::SecureWrapper };
-#endif
 }
 
 /*!

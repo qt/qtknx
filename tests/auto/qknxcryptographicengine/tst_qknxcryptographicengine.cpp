@@ -66,7 +66,7 @@ private slots:
         QCOMPARE(key.bytes(), QKnxByteArray());
         QCOMPARE(key.type(), QKnxSecureKey::Type::Invalid);
 
-        if (QKnxCryptographicEngine::sslLibraryVersionNumber() < 0x1010000fL)
+        if (QKnxCryptographicEngine::sslLibraryVersionNumber() < 0x1010100fL)
             return;
 
         auto bytes = QKnxByteArray::fromHex("bdf099909923143ef0a5de0b3be3687b"
@@ -102,7 +102,7 @@ private slots:
         QCOMPARE(key.bytes(), QKnxByteArray());
         QCOMPARE(key.type(), QKnxSecureKey::Type::Invalid);
 
-        if (QKnxCryptographicEngine::sslLibraryVersionNumber() < 0x1010000fL)
+        if (QKnxCryptographicEngine::sslLibraryVersionNumber() < 0x1010100fL)
             return;
 
         key = QKnxSecureKey::generatePrivateKey();
@@ -133,7 +133,7 @@ private slots:
 
     void testSharedSecret()
     {
-        if (QKnxCryptographicEngine::sslLibraryVersionNumber() < 0x1010000fL)
+        if (QKnxCryptographicEngine::sslLibraryVersionNumber() < 0x1010100fL)
             return;
 
         auto pubBytes = QKnxByteArray::fromHex("0aa227b4fd7a32319ba9960ac036ce0e"
@@ -180,7 +180,7 @@ private slots:
 
     void testMessageAuthenticationCode()
     {
-        if (QKnxCryptographicEngine::sslLibraryVersionNumber() < 0x1010000fL)
+        if (QKnxCryptographicEngine::sslLibraryVersionNumber() < 0x1010100fL)
             return;
 
         /* This test more or less follows KNX AN156 - Annex A */
@@ -369,7 +369,7 @@ private slots:
 
     void testSecureWrapperFrame()
     {
-        if (QKnxCryptographicEngine::sslLibraryVersionNumber() < 0x1010000fL)
+        if (QKnxCryptographicEngine::sslLibraryVersionNumber() < 0x1010100fL)
             return;
 
         auto sessionAuthenticate = QKnxNetIpSessionAuthenticateProxy::builder()
@@ -406,7 +406,7 @@ private slots:
 
     void testTimerNotifyFrame()
     {
-        if (QKnxCryptographicEngine::sslLibraryVersionNumber() < 0x1010000fL)
+        if (QKnxCryptographicEngine::sslLibraryVersionNumber() < 0x1010100fL)
             return;
 
         quint48 timerValue = 211938428830917;
@@ -447,7 +447,7 @@ private slots:
 
     void testSessionResponseFrame()
     {
-        if (QKnxCryptographicEngine::sslLibraryVersionNumber() < 0x1010000fL)
+        if (QKnxCryptographicEngine::sslLibraryVersionNumber() < 0x1010100fL)
             return;
 
         auto clientPublicKey = QKnxByteArray::fromHex("0aa227b4"
@@ -485,7 +485,7 @@ private slots:
 
     void testSessionAuthenticateFrame()
     {
-        if (QKnxCryptographicEngine::sslLibraryVersionNumber() < 0x1010000fL)
+        if (QKnxCryptographicEngine::sslLibraryVersionNumber() < 0x1010100fL)
             return;
 
         auto clientPublicKey = QKnxByteArray::fromHex("0aa227b4"

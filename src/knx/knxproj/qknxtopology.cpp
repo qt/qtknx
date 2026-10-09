@@ -52,7 +52,7 @@ bool QKnxBusAccess::parseElement(QXmlStreamReader *reader, bool pedantic)
 
         if (!QKnxProjectUtils::fetchAttr(attrs, QStringLiteral("Edi"), &attr, reader))
             return false;
-        if (pedantic && !QRegularExpression(QLatin1String(pattern)).match(attr).hasMatch())
+        if (pedantic && !QRegularExpression(QLatin1String(pattern)).matchView(attr).hasMatch())
             return false;
         Edi = attr.toString();
 

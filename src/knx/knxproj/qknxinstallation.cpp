@@ -114,7 +114,7 @@ bool QKnxSplitInfo::parseElement(QXmlStreamReader *reader, bool pedantic)
 
         if (!QKnxProjectUtils::fetchAttr(attrs, QStringLiteral("Cookie"), &attr, reader))
             return false;
-        if (pedantic && !QRegularExpression(QLatin1String(pattern)).match(attr).hasMatch())
+        if (pedantic && !QRegularExpression(QLatin1String(pattern)).matchView(attr).hasMatch())
             return false;
         Cookie = attr.toString();
 

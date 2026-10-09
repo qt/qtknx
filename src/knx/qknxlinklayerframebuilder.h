@@ -30,6 +30,8 @@
 #ifndef QKNXLINKLAYERFRAMEBUILDER_H
 #define QKNXLINKLAYERFRAMEBUILDER_H
 
+#pragma qt_class(QKnxLinkLayerFrameBuilder)
+
 #include <QtCore/qlist.h>
 #include <QtKnx/qknxadditionalinfo.h>
 #include <QtKnx/qknxaddress.h>

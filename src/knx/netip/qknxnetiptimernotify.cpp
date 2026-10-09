@@ -401,7 +401,6 @@ QKnxNetIpTimerNotifyProxy::SecureBuilder &
 QKnxNetIpFrame
     QKnxNetIpTimerNotifyProxy::SecureBuilder::create(const QKnxByteArray &backboneKey, quint16 ssid) const
 {
-#if QT_CONFIG(opensslv11)
     if (d_ptr->m_timer > Q_UINT48_MAX || d_ptr->m_serial.size() != 6 || d_ptr->m_tag < 0)
         return { QKnxNetIp::ServiceType::TimerNotify };
 
@@ -420,11 +419,6 @@ QKnxNetIpFrame
         d_ptr->m_timer, d_ptr->m_serial, d_ptr->m_tag);
 
     return builder.setMessageAuthenticationCode(mac).create();
-#else
-    Q_UNUSED(backboneKey)
-    Q_UNUSED(ssid)
-    return { QKnxNetIp::ServiceType::TimerNotify };
-#endif
 }
 
 /*!

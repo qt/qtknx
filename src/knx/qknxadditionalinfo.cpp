@@ -321,7 +321,7 @@ QDebug operator<<(QDebug debug, const QKnxAdditionalInfo &info)
         QDebug &dbg = debug.nospace().noquote() << "0x" << Qt::hex << qSetFieldWidth(2)
             << qSetPadChar(QLatin1Char('0'));
         const auto rawData = info.bytes();
-        for (quint8 byte : qAsConst(rawData))
+        for (quint8 byte : std::as_const(rawData))
             dbg << byte;
     } else {
          debug.nospace().noquote() << "0x1nv4l1d";

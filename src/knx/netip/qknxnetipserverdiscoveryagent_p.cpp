@@ -245,14 +245,14 @@ void Discoverer::onReadyRead()
                     proxy.supportedFamilies(),
                     m_address, m_iface,
                     [&optionalDibs]() -> QKnxNetIpDib {
-                        for (const auto &dib : qAsConst(optionalDibs)) {
+                        for (const auto &dib : std::as_const(optionalDibs)) {
                             if (dib.code() == QKnxNetIp::DescriptionType::TunnelingInfo)
                                 return dib;
                         }
                         return {};
                     }(),
                     [&optionalDibs]() -> QKnxNetIpDib {
-                        for (const auto &dib : qAsConst(optionalDibs)) {
+                        for (const auto &dib : std::as_const(optionalDibs)) {
                             if (dib.code() == QKnxNetIp::DescriptionType::ExtendedDeviceInfo)
                                 return dib;
                         }
@@ -430,14 +430,14 @@ void QKnxNetIpServerDiscoveryAgentPrivate::setupSocket()
                         ), response.deviceHardware(), response.supportedFamilies(),
                         adapter.address, adapter.iface,
                            [&optionalDibs]() -> QKnxNetIpDib {
-                                for (const auto &dib : qAsConst(optionalDibs)) {
+                                for (const auto &dib : std::as_const(optionalDibs)) {
                                     if (dib.code() == QKnxNetIp::DescriptionType::TunnelingInfo)
                                         return dib;
                                 }
                                 return {};
                             }(),
                             [&optionalDibs]() -> QKnxNetIpDib {
-                                for (const auto &dib : qAsConst(optionalDibs)) {
+                                for (const auto &dib : std::as_const(optionalDibs)) {
                                     if (dib.code() == QKnxNetIp::DescriptionType::ExtendedDeviceInfo)
                                         return dib;
                                 }

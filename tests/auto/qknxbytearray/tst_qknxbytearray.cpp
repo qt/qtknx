@@ -268,7 +268,7 @@ void tst_QKnxByteArray::replace_data()
     QTest::newRow("4") << QKnxByteArray() << 0 << 0 << QKnxByteArray() << QKnxByteArray();
     // index out of range
     QTest::newRow("5") << QKnxByteArray() << 3 << 0 << QKnxByteArray::fromByteArray("hi")
-        << QKnxByteArray::fromByteArray("   hi");
+        << QKnxByteArray::fromByteArray("");
     // Optimized path
     QTest::newRow("6") << QKnxByteArray::fromByteArray("abcdef") << 3 << 12
         << QKnxByteArray::fromByteArray("abcdefghijkl")
@@ -424,10 +424,14 @@ void tst_QKnxByteArray::lastIndexOf_data()
 
     QTest::newRow( "empty" ) << QKnxByteArray("", 0) << QKnxByteArray("x", 1) << -1 << -1;
     QTest::newRow( "null" ) << QKnxByteArray() << QKnxByteArray("x", 1) << -1 << -1;
-    QTest::newRow( "null-in-null") << QKnxByteArray() << QKnxByteArray() << -1 << 0;
-    QTest::newRow( "empty-in-null") << QKnxByteArray() << QKnxByteArray("", 0) << -1 << 0;
-    QTest::newRow( "null-in-empty") << QKnxByteArray("", 0) << QKnxByteArray() << -1 << 0;
-    QTest::newRow( "empty-in-empty") << QKnxByteArray("", 0) << QKnxByteArray("", 0) << -1 << 0;
+    QTest::newRow( "null-in-null-from-0") << QKnxByteArray() << QKnxByteArray() << 0 << 0;
+    QTest::newRow( "empty-in-null-from-0") << QKnxByteArray() << QKnxByteArray("", 0) << 0 << 0;
+    QTest::newRow( "null-in-empty-from-0") << QKnxByteArray("", 0) << QKnxByteArray() << 0 << 0;
+    QTest::newRow( "empty-in-empty-from-0") << QKnxByteArray("", 0) << QKnxByteArray("", 0) << 0 << 0;
+    QTest::newRow( "null-in-null-from-minus-1") << QKnxByteArray() << QKnxByteArray() << -1 << -1;
+    QTest::newRow( "empty-in-null-from-minus-1") << QKnxByteArray() << QKnxByteArray("", 0) << -1 << -1;
+    QTest::newRow( "null-in-empty-from-minus-1") << QKnxByteArray("", 0) << QKnxByteArray() << -1 << -1;
+    QTest::newRow( "empty-in-empty-from-minus-1") << QKnxByteArray("", 0) << QKnxByteArray("", 0) << -1 << -1;
 }
 
 void tst_QKnxByteArray::lastIndexOf()
@@ -515,7 +519,7 @@ void tst_QKnxByteArray::toFromHex_data()
         << QKnxByteArray::fromByteArray("00")
         << QKnxByteArray::fromByteArray("0");
 
-    QTest::newRow("no-leading-zero")
+    QTest::newRow("no-leading-zero-single-byte")
         << QKnxByteArray::fromByteArray("\xf")
         << '\0'
         << QKnxByteArray::fromByteArray("0f")

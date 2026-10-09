@@ -480,7 +480,7 @@ QString QKnx::Ets::Manufacturers::fromId(const QString &id, const QString &defau
     const auto m = Manufacturer::manufacturers();
     const auto it = std::lower_bound(m.constBegin(), m.constEnd(), id,
         [](const Manufacturer &mf, const QString &id) {
-            return mf.id < id;
+            return mf.manufacturerId < id;
     });
     if (it != m.constEnd())
         return it->name;

@@ -30,6 +30,8 @@
 #ifndef QKNXDEVICEMANAGEMENTFRAMEFACTORY_H
 #define QKNXDEVICEMANAGEMENTFRAMEFACTORY_H
 
+#pragma qt_class(QKnxDeviceManagementFrameBuilder)
+
 #include <QtKnx/qknxbytearray.h>
 #include <QtKnx/qknxinterfaceobjecttype.h>
 #include <QtKnx/qknxdevicemanagementframe.h>

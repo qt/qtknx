@@ -189,7 +189,7 @@ QKnxCombinedInfoOnOff::QKnxCombinedInfoOnOff(const QList<OutputInfo> &infos)
 {
     setDescription(tr("Bit-combined info On/Off"));
 
-    for (const auto &info : qAsConst(infos))
+    for (const auto &info : std::as_const(infos))
         setValue(info.Output, info.OutputState, info.OutputValidity);
 }
 
@@ -255,7 +255,7 @@ bool QKnxCombinedInfoOnOff::setValidity(Output output, OutputValidity validity)
 bool QKnxCombinedInfoOnOff::setValue(const QList<OutputInfo>& infos)
 {
     bool success = true;
-    for (const auto &info : qAsConst(infos))
+    for (const auto &info : std::as_const(infos))
         success |= setValue(info.Output, info.OutputState, info.OutputValidity);
     return success;
 }

@@ -30,6 +30,8 @@
 #ifndef QKNXNAMESPACE_H
 #define QKNXNAMESPACE_H
 
+#pragma qt_class(QKnx)
+
 #include <QtCore/qmetaobject.h>
 #include <QtKnx/qtknxglobal.h>
 

@@ -157,7 +157,7 @@ void QKnxNetIpServerDescriptionAgentPrivate::setupSocket()
     socket = new QUdpSocket(q);
     socket->setSocketOption(QUdpSocket::SocketOption::MulticastTtlOption, ttl);
 
-    QObject::connect(socket, &QUdpSocket::stateChanged, [&](QUdpSocket::SocketState s) {
+    QObject::connect(socket, &QUdpSocket::stateChanged, q, [this](QUdpSocket::SocketState s) {
         Q_Q(QKnxNetIpServerDescriptionAgent);
         switch (s) {
         case QUdpSocket::BoundState:
@@ -185,7 +185,7 @@ void QKnxNetIpServerDescriptionAgentPrivate::setupSocket()
         }
     });
 
-    QObject::connect(socket, &QUdpSocket::errorOccurred, [&](QUdpSocket::SocketError) {
+    QObject::connect(socket, &QUdpSocket::errorOccurred, q, [this](QUdpSocket::SocketError) {
             setAndEmitErrorOccurred(QKnxNetIpServerDescriptionAgent::Error::Network,
                 socket->errorString());
 
@@ -193,7 +193,7 @@ void QKnxNetIpServerDescriptionAgentPrivate::setupSocket()
             q->stop();
     });
 
-    QObject::connect(socket, &QUdpSocket::readyRead, [&]() {
+    QObject::connect(socket, &QUdpSocket::readyRead, q, [this]() {
         Q_Q(QKnxNetIpServerDescriptionAgent);
         while (socket->hasPendingDatagrams()) {
             if (q->state() != QKnxNetIpServerDescriptionAgent::State::Running)

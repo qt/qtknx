@@ -141,7 +141,7 @@ QKnxAddress::QKnxAddress(QKnxAddress::Type type, const QString &address)
 
     QList<quint16> sections;
     const auto convert = [&sections](const QList<QStringView> &in) -> bool {
-        for (const QStringView &section : qAsConst(in)) {
+        for (const QStringView &section : std::as_const(in)) {
             bool ok = false;
             const quint16 value = section.toUShort(&ok, 0);
             if (!ok)

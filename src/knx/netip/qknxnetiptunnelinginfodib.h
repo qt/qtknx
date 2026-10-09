@@ -30,6 +30,8 @@
 #ifndef QKNXNETIPTUNNELINGINFODIB_H
 #define QKNXNETIPTUNNELINGINFODIB_H
 
+#pragma qt_class(QKnxNetIpTunnelingSlotInfo)
+
 #include <QtCore/qshareddata.h>
 #include <QtKnx/qknxaddress.h>
 #include <QtKnx/qknxnetipstruct.h>

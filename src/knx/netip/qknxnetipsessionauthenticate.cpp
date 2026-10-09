@@ -330,7 +330,6 @@ QKnxNetIpFrame QKnxNetIpSessionAuthenticateProxy::SecureBuilder::create(
                                                         const QKnxByteArray &clientPublicKey,
                                                         const QKnxByteArray &serverPublicKey) const
 {
-#if QT_CONFIG(opensslv11)
     if (!QKnxNetIp::isSecureUserId(d_ptr->m_id))
         return { QKnxNetIp::ServiceType::SessionAuthenticate };
 
@@ -346,12 +345,6 @@ QKnxNetIpFrame QKnxNetIpSessionAuthenticateProxy::SecureBuilder::create(
     mac = QKnxCryptographicEngine::encryptMessageAuthenticationCode(userPasswordHash, mac);
 
     return builder.setMessageAuthenticationCode(mac).create();
-#else
-    Q_UNUSED(sessionPassword)
-    Q_UNUSED(clientPublicKey)
-    Q_UNUSED(serverPublicKey)
-    return { QKnxNetIp::ServiceType::SessionAuthenticate };
-#endif
 }
 
 /*!

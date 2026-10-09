@@ -103,7 +103,7 @@ bool QKnxGroupAddressInfosPrivate::parseData(const QByteArray &data)
         return false;
     }
 
-    for (const auto &project : qAsConst(root.Project)) {
+    for (const auto &project : std::as_const(root.Project)) {
         if (readProject(project))
             continue;
         projects.clear();
@@ -126,7 +126,7 @@ bool QKnxGroupAddressInfosPrivate::readProject(const QKnxProject &project)
 
     if (project.Installations.size() > 0) {
         KnxProjectInfo info;
-        for (const auto &install : qAsConst(project.Installations)) {
+        for (const auto &install : std::as_const(project.Installations)) {
             if (info.installations.contains(install.Name)) {
                 status = QKnxGroupAddressInfos::Status::ProjectError;
                 errorString = QKnxGroupAddressInfos::tr("Installation '%1' exists more than once.")
@@ -134,8 +134,8 @@ bool QKnxGroupAddressInfosPrivate::readProject(const QKnxProject &project)
                 return false;
             }
             QList<QKnxGroupAddressInfo> addressInfos;
-            for (const auto &addresses : qAsConst(install.GroupAddresses)) {
-                for (const auto &range : qAsConst(addresses.GroupRanges))
+            for (const auto &addresses : std::as_const(install.GroupAddresses)) {
+                for (const auto &range : std::as_const(addresses.GroupRanges))
                     addressInfos.append(readRange(range, install.Name));
             }
             info.installations.insert(install.Name, addressInfos);
@@ -155,10 +155,10 @@ QList<QKnxGroupAddressInfo>
     QKnxGroupAddressInfosPrivate::readRange(const QKnxGroupRange &range, const QString &install)
 {
     QList<QKnxGroupAddressInfo> addressInfos;
-    for (const auto &groupRange : qAsConst(range.GroupRange))
+    for (const auto &groupRange : std::as_const(range.GroupRange))
         addressInfos.append(readRange(groupRange, install));
 
-    for (const auto &address : qAsConst(range.GroupAddress)) {
+    for (const auto &address : std::as_const(range.GroupAddress)) {
         addressInfos.append({ install, address.Name, quint16(address.Address),
             address.DatapointType, address.Description });
     }
@@ -293,7 +293,7 @@ bool QKnxGroupAddressInfos::parse()
     QSet<QString> files;
     QZipReader zipReader(&file);
     const auto fileInfos = zipReader.fileInfoList();
-    for (const auto &fileInfo : qAsConst(fileInfos)) {
+    for (const auto &fileInfo : std::as_const(fileInfos)) {
         auto file = fileInfo.filePath;
         file = file.mid(file.lastIndexOf(QLatin1Char('/'), -5) + 1);
         if (file == QStringLiteral("0.xml"))
@@ -303,7 +303,7 @@ bool QKnxGroupAddressInfos::parse()
     if (files.isEmpty())
         return d_ptr->parseData({});
 
-    for (auto file : qAsConst(files)) {
+    for (auto file : std::as_const(files)) {
         if (d_ptr->parseData(zipReader.fileData(file))) {
             const auto data = zipReader.fileData(file.replace(QStringLiteral("0.xml"),
                 QStringLiteral("project.xml")));
@@ -315,7 +315,7 @@ bool QKnxGroupAddressInfos::parse()
             QKnxProjectRoot root;
             if (!root.parseElement(&r, true))
                 continue;
-            for (const auto &project : qAsConst(root.Project)) {
+            for (const auto &project : std::as_const(root.Project)) {
                 if (d_ptr->projects.contains(project.Id))
                     d_ptr->projects[project.Id].name = project.ProjectInformation.value(0).Name;
             }
@@ -419,7 +419,7 @@ QList<QKnxGroupAddressInfo> QKnxGroupAddressInfos::addressInfos(const QKnxAddres
         return {};
 
     QList<QKnxGroupAddressInfo> results;
-    for (const auto &info : qAsConst(infos)) {
+    for (const auto &info : std::as_const(infos)) {
         if (info.address() == address)
             results.append(info);
     }
@@ -438,7 +438,7 @@ QList<QKnxGroupAddressInfo> QKnxGroupAddressInfos::addressInfos(QKnxDatapointTyp
         return {};
 
     QList<QKnxGroupAddressInfo> results;
-    for (const auto &info : qAsConst(infos)) {
+    for (const auto &info : std::as_const(infos)) {
         if (info.datapointType() == type)
             results.append(info);
     }

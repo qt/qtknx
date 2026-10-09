@@ -290,7 +290,7 @@ QKnxTpdu QKnxTpduFactory::PointToPoint::createLinkResponseTpdu(Mode mode, quint8
         + QKnxUtils::QUint8::bytes(quint8(sendingAddress << 4) | quint8(startAddress & 0x0f))
         + [&]() -> QKnxByteArray {
             QKnxByteArray ba;
-            for (auto address : qAsConst(addresses))
+            for (auto address : std::as_const(addresses))
                 ba += address.bytes();
             return ba;
         }() };

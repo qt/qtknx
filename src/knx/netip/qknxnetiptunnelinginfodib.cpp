@@ -506,7 +506,7 @@ QKnxNetIpDib QKnxNetIpTunnelingInfoDibProxy::Builder::create() const
         return { QKnxNetIp::DescriptionType::TunnelingInfo };
 
     auto bytes = QKnxUtils::QUint16::bytes(d_ptr->maxApduLength) + d_ptr->m_info.bytes();
-    for (const auto &info : qAsConst(d_ptr->m_infos)) {
+    for (const auto &info : std::as_const(d_ptr->m_infos)) {
         if (info.isValid())
             bytes += info.bytes();
     }

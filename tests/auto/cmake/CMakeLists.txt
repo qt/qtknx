@@ -1,14 +1,16 @@
+cmake_minimum_required(VERSION 3.16)
 
-cmake_minimum_required(VERSION 2.8)
+project(qt_cmake_files)
 
-project(qmake_cmake_files)
+find_package(Qt6 REQUIRED COMPONENTS Core Knx)
 
-enable_testing()
-
-find_package(Qt5Core REQUIRED)
-
-include("${_Qt5CTestMacros}")
-
-test_module_includes(
-  Knx QKnxNetIpTunnel
+file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/test_Knx_includes.cpp"
+    "#include <QKnxNetIpTunnel>\n"
+    "#include <QtKnx/QKnxNetIpTunnel>\n"
+    "int main() { return 0; }\n"
 )
+
+add_executable(test_Knx_includes "${CMAKE_CURRENT_BINARY_DIR}/test_Knx_includes.cpp")
+target_link_libraries(test_Knx_includes PRIVATE Qt6::Knx)
+
+add_test(NAME cmake_Knx_module_includes COMMAND test_Knx_includes)
